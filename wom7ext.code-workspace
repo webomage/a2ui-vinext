@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "./wom7ext"
+		},
+		{
+			"path": "wom7job"
+		},
+		{
+			"path": "wom7api"
+		}
+	],
+	"settings": {}
+}

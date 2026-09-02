@@ -1,0 +1,46 @@
+{
+	"folders": [
+		{
+			"name": "wom7web",
+			"path": "wom7web"
+		},
+		{
+			"name": "wom7api",
+			"path": "wom7api"
+		},
+		{
+			"name": "wom7cfworkers",
+			"path": "wom7cfworkers"
+		},
+		{
+			"name": "wom7chatops",
+			"path": "wom7chatops"
+		},
+		{
+			"name": "wom7ext",
+			"path": "wom7ext"
+		},
+		{
+			"name": "wom7sec",
+			"path": "wom7sec"
+		},
+		{
+			"name": "upwork-ai-research",
+			"path": "_ext/upwork-ai-research"
+		},
+		{
+			"name": "simploy",
+			"path": "_ext/simploy"
+		}
+	],
+	"settings": {
+		"npm.packageManager": "pnpm",
+		"files.associations": {
+			"*.spec": "gauge",
+			"*.cpt": "gauge"
+		},
+		"files.autoSave": "afterDelay",
+		"files.autoSaveDelay": 500,
+		"tfa.cache.warningSize": 10240
+	}
+}

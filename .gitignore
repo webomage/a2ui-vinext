@@ -1,0 +1,49 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# w0m — the ESTATE WORKSPACE repo (T294).
+#
+# This repo holds what sits BESIDE the seven repos and belonged to none of them:
+# estate-root agent config, editor workspaces, and cross-repo reports. It is
+# emphatically NOT a monorepo — every repo below stays its own repo, and this
+# file is the guarantee. Sweeping seven repos into an eighth is the failure AC2
+# exists to prevent, so the exclusions come first and are proven by
+# `git add -A && git status --porcelain` staging none of them.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── the seven declared repos + the fork container ────────────────────────────
+# Each is an independent repo with its own history, remote and hooks. `wom7mlx`
+# is the container; the repo itself is nested at wom7mlx/wom7mlx.
+/wom7api/
+/wom7cfworkers/
+/wom7ext/
+/wom7mlx/
+/wom7sec/
+/wom7skills/
+/wom7web/
+# wom7open holds open-source FORKS (orca, tart-guest-agent) — upstream code with
+# its own remotes, not estate content. T294 records that it is an undeclared
+# eighth directory; ignoring it here does not decide that question.
+/wom7open/
+
+# ── archives and scratch (~1.4 GB), and client material ──────────────────────
+# _in carries prospect/client documents. The KB content policy keeps client work
+# out of shared tiers, so it is excluded regardless of this repo's visibility.
+/_ds_arc/
+/_ds_arc_pack/
+/_ext/
+/_in/
+/_t99_arc/
+
+# ── generated ────────────────────────────────────────────────────────────────
+/graphify-out/
+/supabase/.temp/
+
+# ── large or machine-local state inside otherwise-tracked config ─────────────
+.serena/cache/
+.headroom/memory.db
+
+# ── a bug artefact, not a directory anyone meant to create ───────────────────
+# A tool wrote an unexpanded VS Code variable as a literal path.
+${input:db_path}
+
+.DS_Store
+*.log

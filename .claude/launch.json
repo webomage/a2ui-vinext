@@ -1,0 +1,53 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "just",
+      "runtimeArgs": [
+        "--justfile",
+        "wom7api/justfile",
+        "--working-directory",
+        "wom7api",
+        "dev"
+      ],
+      "port": 4321
+    },
+    {
+      "name": "demo",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "-C",
+        "wom7web",
+        "--filter",
+        "demo",
+        "dev"
+      ],
+      "port": 4324
+    },
+    {
+      "name": "cp",
+      "runtimeExecutable": "just",
+      "runtimeArgs": [
+        "--justfile",
+        "wom7api/justfile",
+        "--working-directory",
+        "wom7api",
+        "dev-cp"
+      ],
+      "port": 4325
+    },
+    {
+      "name": "docs",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4399",
+        "--directory",
+        "wom7web/docs"
+      ],
+      "port": 4399
+    }
+  ]
+}

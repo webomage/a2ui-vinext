@@ -1,0 +1,36 @@
+# Hooks for the ESTATE WORKSPACE repo (T294 AC3).
+#
+# Deliberately SHORT. This repo holds estate-root config, editor workspaces and cross-repo reports —
+# no application code — so oxlint/mypy/deno/osv would have nothing to inspect, and a gate that never
+# looks at anything is worse than no gate: it reports green and teaches people the check exists.
+#
+# 🔴 The reason a hook stack is required here at all: this repo's FIRST commit ran through nothing,
+# because `.git/hooks` did not exist yet. That commit was secrets-scanned by hand, and the scan found
+# a real Supabase service key quoted in AUDIT-2026-06-13.md. Nothing but the manual scan stood
+# between that value and this repo's permanent history.
+default_install_hook_types: [pre-commit, commit-msg]
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
+
+  - repo: local
+    hooks:
+      # AC2's guarantee, enforced rather than asserted. The estate is a workspace of seven
+      # INDEPENDENT repos; sweeping one into this eighth is the failure the .gitignore prevents and
+      # this hook catches if that file is ever loosened. A one-time `git add -A` proof expires the
+      # moment someone edits an ignore rule.
+      - id: no-nested-repos
+        name: refuse to commit any file from a nested repo
+        entry: python3 scripts/no_nested_repos.py
+        language: system
+        pass_filenames: true
+        always_run: false
+
+      - id: conventional-commit
+        name: Conventional Commits
+        entry: python3 scripts/conventional_commit.py
+        language: system
+        stages: [commit-msg]
+        always_run: true
