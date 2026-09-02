@@ -9,20 +9,17 @@
 # `git add -A && git status --porcelain` staging none of them.
 # ─────────────────────────────────────────────────────────────────────────────
 
-# ── the seven declared repos + the fork container ────────────────────────────
-# Each is an independent repo with its own history, remote and hooks. `wom7mlx`
-# is the container; the repo itself is nested at wom7mlx/wom7mlx.
-/wom7api/
-/wom7cfworkers/
-/wom7ext/
-/wom7mlx/
-/wom7sec/
-/wom7skills/
-/wom7web/
-# wom7open holds open-source FORKS (orca, tart-guest-agent) — upstream code with
-# its own remotes, not estate content. T294 records that it is an undeclared
-# eighth directory; ignoring it here does not decide that question.
-/wom7open/
+# ── the seven repos are excluded via .git/info/exclude, NOT here ─────────────
+# 🔴 A directory pattern here is read by tools BELOW this repo. Git stops applying .gitignore at a
+# repo root, but osv-scanner does not: with `/wom7web/` in this file it walked up from inside
+# wom7web, applied the pattern, concluded the whole repo was ignored, and reported "No package
+# sources found" — exit 128 in ALL SEVEN repos at once. A security gate, silently disabled estate-wide
+# by one line in a parent .gitignore.
+#
+# So the nested-repo exclusions live in `.git/info/exclude`, which is inside .git/ and therefore
+# invisible to anything walking the worktree. That file is not versioned, so `scripts/install_excludes.py`
+# is the versioned surface and re-running it is what makes this reproducible — the same reasoning
+# install_hooks.py already records for `.git/hooks/`.
 
 # ── archives and scratch (~1.4 GB), and client material ──────────────────────
 # _in carries prospect/client documents. The KB content policy keeps client work
