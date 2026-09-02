@@ -28,7 +28,14 @@
 /_ds_arc_pack/
 /_ext/
 /_in/
+# …but track its README: `_in` was ALREADY the inbound tray before it was named one — it holds a
+# June prospect proposal and a symlink into wom7open/orca. A convention nobody can discover is not a
+# convention, so the README is versioned while the tray's contents stay out (client material, and
+# a tray is not an archive).
+!/_in/README.md
 /_t99_arc/
+/_msg/
+!/_msg/README.md
 
 # ── generated ────────────────────────────────────────────────────────────────
 /graphify-out/
