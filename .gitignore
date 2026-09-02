@@ -27,15 +27,20 @@
 /_ds_arc/
 /_ds_arc_pack/
 /_ext/
-/_in/
+# 🔴 `/_in/*` not `/_in/` — git does not descend into an ignored DIRECTORY, so a `!` negation
+# inside one never matches. Excluding the CONTENTS instead leaves the directory walkable and the
+# negation effective. Same for /_msg/*.
+/_in/*
 # …but track its README: `_in` was ALREADY the inbound tray before it was named one — it holds a
 # June prospect proposal and a symlink into wom7open/orca. A convention nobody can discover is not a
 # convention, so the README is versioned while the tray's contents stay out (client material, and
 # a tray is not an archive).
 !/_in/README.md
 /_t99_arc/
-/_msg/
+/_msg/*
 !/_msg/README.md
+!/_msg/inbound/
+!/_msg/outbound/
 
 # ── generated ────────────────────────────────────────────────────────────────
 /graphify-out/
