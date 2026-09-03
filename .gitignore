@@ -45,6 +45,13 @@
 # ── generated ────────────────────────────────────────────────────────────────
 /graphify-out/
 /supabase/.temp/
+# Python bytecode. Two .pyc files were TRACKED here until 2026-09-02 — `scripts/` is tracked and
+# nothing excluded the cache beside it, so `git add` took the compiled output along with the source.
+# They are per-interpreter build artefacts (`cpython-312`), so they churn on every run and would
+# conflict for anyone on a different Python. The BridgeRoad workspace's ignore file already carried
+# this rule for `vm-seed/__pycache__`; this is the same rule, one repo later.
+__pycache__/
+*.pyc
 
 # ── large or machine-local state inside otherwise-tracked config ─────────────
 .serena/cache/
