@@ -63,3 +63,4 @@ ${input:db_path}
 
 .DS_Store
 *.log
+.playwright-mcp/

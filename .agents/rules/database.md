@@ -1,0 +1,1 @@
+# Database Connections\n- NEVER CHANGE `DATABASE_URL` to an IPv4 endpoint in any `.env` file. The environment strictly requires the direct IPv6 connection to the Supabase database. Do not attempt to "fix" connection errors by switching to the IPv4 connection pooler.

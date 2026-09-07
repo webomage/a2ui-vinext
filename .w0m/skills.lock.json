@@ -1,0 +1,168 @@
+{
+  "lockfileVersion": 1,
+  "generatedAt": "2026-09-07T23:22:35.698Z",
+  "skills": {
+    "doubt-driven-development": {
+      "provider": "skills.sh",
+      "source": "addyosmani/agent-skills",
+      "resolved": "unknown",
+      "scope": "project",
+      "path": ".claude/skills/doubt-driven-development",
+      "integrity": "sha256-13a65ed0dc71e5351f061105f67625523a323c2d4f1e7c3fa7525b10895e947c"
+    },
+    "fact-checker": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/fact-checker",
+      "integrity": "sha256-715d359b3279acf271fda996cd05ae04f7f8c1b8fcfedd04b7e1f907d192c158"
+    },
+    "feynman": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/feynman",
+      "integrity": "sha256-a6b8b44b8fb2c12ef7fddab397e5e8d6e7f57be4a1494287e1ff24276f83803c"
+    },
+    "socrates": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/socrates",
+      "integrity": "sha256-6f9a19303230964fab6fbcf22c334ff3c363ff030b81e87dec41ab02a079cfed"
+    },
+    "torvalds": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/torvalds",
+      "integrity": "sha256-96c6c2c06adf5201960ef96b27b2080fe7f0eaef25bf91c43f16b6bc12f67a83"
+    },
+    "w0m": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m",
+      "integrity": "sha256-2509907690ba4950bc494c0ba993cd962fd60a5895727cb4b002217fdfdff3a0"
+    },
+    "w0m-handoff": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-handoff",
+      "integrity": "sha256-8042f486294cbeed2d95b8a368859827e084c3ee618607b2663d1793697007b1"
+    },
+    "w0m-lessons": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-lessons",
+      "integrity": "sha256-0fe921d2a541717dd83f44522f7bb1584c4f1b2b2da6b509e373447dfb2e14f4"
+    },
+    "w0m-mcp-builder": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-mcp-builder",
+      "integrity": "sha256-52c2bc24592706d1f9335ecc23eea682f8006175bfcb34205e9494330417e0b2"
+    },
+    "w0m-sdlc-archive": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-sdlc-archive",
+      "integrity": "sha256-669cba9d7a6793c9e6e5d8ab0bb082dd1ed20266ef330cebeb1c33dc24212915"
+    },
+    "w0m-sdlc-build": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-sdlc-build",
+      "integrity": "sha256-ce01bd83f72ef2b2cb254146427f72a985d27df17c29e9fccb2d4c3861fac4ca"
+    },
+    "w0m-sdlc-deploy": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-sdlc-deploy",
+      "integrity": "sha256-8069def942ab4b137eef0373cec85dffa1df307b60b34fe2b6e1880d8a7fb81a"
+    },
+    "w0m-sdlc-new": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-sdlc-new",
+      "integrity": "sha256-54763b661c3791a8e99f149232fdab17504e1f4ac5a52a004d8e6166890e6a4d"
+    },
+    "w0m-sdlc-research": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-sdlc-research",
+      "integrity": "sha256-52ab85f35bd2f69e3e30c105a5019cab6dcdd099ae076eaaf0bc19f63d59a3bb"
+    },
+    "w0m-sdlc-review": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-sdlc-review",
+      "integrity": "sha256-b4316e4976ffe24e2dc2d6abd759292c258bcdfd402285f82a624df6b43d1dc9"
+    },
+    "w0m-sdlc-security": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-sdlc-security",
+      "integrity": "sha256-28096de171b1b8664087398e505bb6157e0ba27cf972e965434f25e0d2825809"
+    },
+    "w0m-sdlc-spec": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-sdlc-spec",
+      "integrity": "sha256-47b2d492bd6fc1e29ea21234b72ad4391bb25da927a5cc88682382289455ec1b"
+    },
+    "w0m-sdlc-start": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-sdlc-start",
+      "integrity": "sha256-76a5634b7f9147c2106229567e19edc9a73399c77c61b26cc0afea7702a48dc8"
+    },
+    "w0m-sdlc-verify": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-sdlc-verify",
+      "integrity": "sha256-b70346be06ac80b8af6add9ce4860c92286fd487e330cf2f2a5347885b8cef4e"
+    },
+    "w0m-state-load": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-state-load",
+      "integrity": "sha256-7055668af2f8eb9cec31a0b3b9dff5b6df402184b10a67627625d76e92e4957a"
+    },
+    "w0m-state-save": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-state-save",
+      "integrity": "sha256-b7f3ed8b6ab002cae2237ca9e0a7edd80aaa532647022daafd3dbdfd8f339a2f"
+    },
+    "w0m-tasks": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-tasks",
+      "integrity": "sha256-39585a777021f884606548f23364c3c88f034deaa3f7d53d96f49e6440bfd64e"
+    },
+    "w0m-tdd": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".claude/skills/w0m-tdd",
+      "integrity": "sha256-a3a83c5fb8e945007a6be5f46157b8f9d4a41bf4e1a95c38e82ddb06c843c30a"
+    }
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "$schema": "https://raw.githubusercontent.com/casualuser/wom7skills/beta/skills.schema.json",
+  "project": "w0m",
+  "skills": {
+    "doubt-driven-development": {
+      "provider": "skills.sh",
+      "source": "addyosmani/agent-skills",
+      "version": "unknown"
+    },
+    "fact-checker": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.08.10-1786372074"
+    },
+    "feynman": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    },
+    "socrates": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    },
+    "torvalds": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.08.17-1786980540"
+    },
+    "w0m-handoff": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m-lessons": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.08.14-1786721068"
+    },
+    "w0m-mcp-builder": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m-sdlc-archive": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.08.18-1787069807"
+    },
+    "w0m-sdlc-build": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.08.04-1785835505"
+    },
+    "w0m-sdlc-deploy": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m-sdlc-new": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m-sdlc-research": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.08.15-1786812216"
+    },
+    "w0m-sdlc-review": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m-sdlc-security": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m-sdlc-spec": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.08.25-1787670695"
+    },
+    "w0m-sdlc-start": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.08.17-1786980540"
+    },
+    "w0m-sdlc-verify": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m-state-load": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.08.07-1786130329"
+    },
+    "w0m-state-save": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.08.07-1786133956"
+    },
+    "w0m-tasks": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.09.07-1788817891"
+    },
+    "w0m-tdd": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.07.27-1785131185"
+    }
+  },
+  "auto_recommend": true
+}
