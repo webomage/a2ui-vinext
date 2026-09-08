@@ -2,7 +2,7 @@
 name: fact-checker
 description: Enforce rigorous verification of facts in code, architecture, or live deployments against docs, specs, Gauge user stories, and current codebase state. Use this skill whenever checking if an implementation aligns with specifications, verifying architectural claims, or testing live system behavior.
 metadata:
-  version: "2026.08.10-1786372074"
+  version: "2026.09.08-1788883539"
 ---
 
 # Fact Checker Skill
@@ -11,7 +11,7 @@ This skill instills an adversarial, Torvalds-esque rigor when making assumptions
 
 ## When to use this skill
 - Verifying if a deployed feature or local code actually matches the requirements in OpenSpec or Gauge user stories.
-- The user requests modifications to systems known to be deprecated (e.g., `openclaw`, `wom7unit`, `wom7workers`, `wom7swarm`, `wom7md`, LiteLLM). ⚠️ **The authoritative list is the workspace-root `DECOMMISSIONED.md`** — check it rather than this sentence, which is a sample and will lag. It records `packages/openclaw` + `UpworkPollerWorkflow` (2026-07-20), `wom7swarm` (2026-07-11) and `wom7md` (2026-08-08). 🔴 That file lives at the workspace root, which is not a git repo, so it is unversioned — see debt row D15.
+- The user requests modifications to systems known to be deprecated (e.g., `openclaw`, `wom7unit`, `wom7workers`, `wom7swarm`, `wom7md`, LiteLLM). ⚠️ **The authoritative list is `wom7web/DECOMMISSIONED.md`** — check it rather than this sentence, which is a sample and will lag. It records `packages/openclaw` + `UpworkPollerWorkflow` (2026-07-20), `wom7swarm` (2026-07-11) and `wom7md` (2026-08-08). 🔴 **This line was wrong twice until 2026-09-08.** It said the file *"lives at the workspace root, which is not a git repo, so it is unversioned — see debt row D15"*. There is no `DECOMMISSIONED.md` at the workspace root — it is `wom7web/DECOMMISSIONED.md`, 22 KB, **tracked** — and **D15 is closed** (2026-08-31), as is its sibling D32 (2026-09-02, when the root itself became `casualuser/w0m`). Neither has a row in `TECH-DEBT.md` any more. ⇒ **A closed debt row keeps its claim alive wherever prose cites it** — which is exactly the failure mode this skill exists to catch, and it was sitting in the skill.
 - You are unsure if a package belongs in Supabase Edge Functions or Cloudflare Workers.
 - The user makes an architectural claim that contradicts your current context or seems out of date.
 - You need to validate that a live deployment is behaving as documented.
