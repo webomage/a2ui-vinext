@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-09-07T23:22:35.698Z",
+  "generatedAt": "2026-09-08T00:27:34.748Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -57,7 +57,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".claude/skills/w0m-lessons",
-      "integrity": "sha256-0fe921d2a541717dd83f44522f7bb1584c4f1b2b2da6b509e373447dfb2e14f4"
+      "integrity": "sha256-dda7115ceb86c513a2ed49f419786c1472f2d97c12fb8297c2e69cfe7dfd0158"
     },
     "w0m-mcp-builder": {
       "provider": "w0m-native",
@@ -141,7 +141,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".claude/skills/w0m-state-load",
-      "integrity": "sha256-7055668af2f8eb9cec31a0b3b9dff5b6df402184b10a67627625d76e92e4957a"
+      "integrity": "sha256-b1e1213aaaed7578ce7b52c13755201b95a2c2193cb5d7fb5cccd48f2599e1c4"
     },
     "w0m-state-save": {
       "provider": "w0m-native",

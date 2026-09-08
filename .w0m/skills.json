@@ -40,7 +40,7 @@
     "w0m-lessons": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.08.14-1786721068"
+      "observed_version": "2026.09.07-1788827126"
     },
     "w0m-mcp-builder": {
       "provider": "w0m-native",
@@ -100,7 +100,7 @@
     "w0m-state-load": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.08.07-1786130329"
+      "observed_version": "2026.09.07-1788827126"
     },
     "w0m-state-save": {
       "provider": "w0m-native",

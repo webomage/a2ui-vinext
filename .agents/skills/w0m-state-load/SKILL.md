@@ -7,7 +7,7 @@ description: >
 metadata:
   author: w0m
   namespace: w0m
-  version: "2026.08.07-1786130329"
+  version: "2026.09.07-1788827126"
 ---
 
 # w0m-state-load — the pickup gate
@@ -36,7 +36,7 @@ Read `wom7web/STATE.md`, and take from it only these:
 
 Do not yet accept a single number, count, gate result, or branch state from it.
 
-### ⛔ Read the file. Do NOT read the archive.
+### Read the file. Do NOT read the archive.
 
 `STATE.md` is **bounded** as of 2026-08-07 ([[T174]]) — ~450 lines, budgeted at 900 lines / 80 KiB
 and gated at pre-push. Before that it was **4,141 lines / ~83k tokens**, of which **93.9% was dated

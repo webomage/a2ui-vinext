@@ -2,7 +2,7 @@
 name: w0m-lessons
 description: Capture and document lessons learned from the previous task. Writes findings to LESSONS.md to prevent future regressions. Use when a tricky issue is resolved or at the end of a feature to log an architectural rule.
 metadata:
-  version: "2026.08.14-1786721068"
+  version: "2026.09.07-1788827126"
 ---
 
 # /w0m:lessons (Continuous Learning Phase)
@@ -45,7 +45,7 @@ die at one entry: nothing could be found, so nothing was read, so nothing was ad
 ## The Lesson Format
 
 ```markdown
-### ⛔ THE RULE, IMPERATIVE, IN CAPS — NOT A DESCRIPTION OF THE BUG
+### THE RULE, IMPERATIVE, IN CAPS — NOT A DESCRIPTION OF THE BUG
 **YYYY-MM-DD, T##. How many times it bit, if more than once.**
 
 What actually happened, concretely, with the code or the measurement. Enough that a reader who was
@@ -74,7 +74,7 @@ A register is read by skimming headings, so a heading that only names a symptom 
 * **Rule/Lesson:** Always use standard HTML `<img>` tags (not Astro's `<Image>`) when serving `.svg` files in this ecosystem.
 ```
 
-## 🛑 Guardrails
+## Guardrails
 * **No Fluff**: Keep the lessons highly technical and objective.
 * **Actionable**: The "Rule/Lesson" section must tell the agent *exactly* what to do or avoid in the future.
 * **Append Only**: Do not overwrite existing lessons. Append to the end of the file.
