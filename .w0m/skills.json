@@ -110,7 +110,7 @@
     "w0m-tasks": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.07-1788817891"
+      "observed_version": "2026.09.07-1788832835"
     },
     "w0m-tdd": {
       "provider": "w0m-native",

@@ -2,41 +2,39 @@
 name: w0m-tasks
 description: Show and triage the ranked w0m ticket queue — HOT (what can be started) and SDLC (closest to done). Use when the user asks about the ticket queue, what to work on next, project tasks, or triage. Passes arguments through to `just tasks`.
 metadata:
-  version: "2026.09.07-1788817891"
+  version: "2026.09.07-1788832835"
 ---
 
 # /w0m:tasks — the w0m ticket queue
 
 Show the w0m ticket queue, ranked.
 
-**Run this, from `wom7api/` — that is where the justfile lives** (wom7web's is a symlink to it):
+**Run this directly from the workspace root `@wom` or from `wom7web`:**
 
 ```bash
-cd /Users/proto/Projects/@self/@wom/wom7api && just tasks $ARGUMENTS
+just tasks $ARGUMENTS
 ```
 
-`$ARGUMENTS` passes straight through. With none, you get both boards, which is the default and the
-common case. Other slices: `hot --parts`, `list --priority P2 -n 10`, `blocked`, `stats`.
+`$ARGUMENTS` passes straight through. With none, you get both boards (`hot` and `sdlc`), which is the default and common case. Other core slices: `hot --parts`, `list --priority P2 -n 10`, `blocked`, `stats`.
 
-**`plan`** tracks the ONE thing the estate decided to ship — the stages declared in
-`.w0m/sdlc.json → current_plan`, which points at `ROADMAP.md §33` rather than restating it.
-The default board renders it as a **table, LAST — after `sdlc`** (the owner reads the report
-bottom-up, so the plan sits where scrolling stops); `plan` is the standalone view with
-each stage's tickets and its `exit` criterion. ⚠️ **Report the AC percentages as progress, never
-as stage completion** — every stage carries a written `exit`, and the blocking stage's is a
-probe result. Ticking a checkbox is a claim; running the probe is evidence. A stage showing
-100% with an unmet `exit` is not done, and saying otherwise is the failure this estate keeps
-shipping. It exits **1** when the plan names a ticket that does not exist — that is plan↔queue
-drift, not a rounding note, and it must be surfaced rather than skipped.
+### Triage Commands
 
-**`overview`** answers what the two rankings structurally cannot — not *which ticket next* but
-**what this queue is about**. Groups the open set by **area/theme**, by **ROADMAP §** (rolled up:
-`§13`, `§13.2` and `§13 — … (child of T149)` are one section written three ways), by **tag**, and
-into **bundles** — same area *and* same section, i.e. work worth doing together because the context
-is paid for once. Reach for it when triaging or planning, not when picking the next ticket.
-⚠️ Every block prints its own denominator, and the gaps are the point: **39 of 119 tickets carry no
-epic**, 27 have no acceptance criteria, and 113 of 153 tags appear exactly once. Read those numbers
-before trusting any grouping — a roll-up over 80 of 119 tickets is not the roadmap.
+- **`next`**: Shows the single most actionable next ticket and prints the exact pickup command (`just sdlc-start <id>`).
+- **`wip`**: Lists all currently active `in-progress` tickets with AC progress bars, priority, and blocker links, sorted by completion.
+- **`tree [--ticket <id>]`**: Visualises the dependency tree for a ticket (defaults to current context / active branch), showing what blocks it and what it unblocks.
+
+### Epic & Milestone Boards
+
+The third board in `tasks` output is **`EPIC`** (callable standalone via `just tasks epic`, `just tasks current`, or `just tasks plan`):
+- **`epic`**: By default, dynamically projects the active Epic from your working ticket / git branch (e.g. `ROADMAP §13`).
+- **`epic --epic <section|name>`**: Projects the board for any specified Epic (e.g. `just tasks epic --epic 13.8`). Groups epic tickets into `wip`, `queued`, `blocked`, and `done` stages with AC progress bars.
+- **`current`**: Shows the estate's canonical active program/milestone declared in `.w0m/sdlc.json → current_plan` (pointing at `ROADMAP.md §33`).
+- **`plan`**: Backwards-compatible alias. Supports `--tickets <T1,T2,...>`, `--tag <tag>`, and `--plan <name>`.
+
+⚠️ **Report the AC percentages as progress, never as stage completion** — every stage carries a written `exit`, and the blocking stage's is a probe result. Ticking a checkbox is a claim; running the probe is evidence. A stage showing 100% with an unmet `exit` is not done, and saying otherwise is the failure this estate keeps shipping. It exits **1** when the plan names a ticket that does not exist — that is plan↔queue drift, not a rounding note, and it must be surfaced rather than skipped.
+
+**`overview`** answers what the two rankings structurally cannot — not *which ticket next* but **what this queue is about**. Groups the open set by **area/theme**, by **ROADMAP §** (rolled up: `§13`, `§13.2` and `§13 — … (child of T149)` are one section written three ways), by **tag**, and into **bundles** — same area *and* same section, i.e. work worth doing together because the context is paid for once. Reach for it when triaging or planning, not when picking the next ticket.
+⚠️ Every block prints its own denominator, and the gaps are the point: **39 of 119 tickets carry no epic**, 27 have no acceptance criteria, and 113 of 153 tags appear exactly once. Read those numbers before trusting any grouping — a roll-up over 80 of 119 tickets is not the roadmap.
 
 ## Presenting the result
 
