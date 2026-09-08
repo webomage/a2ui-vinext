@@ -24,8 +24,6 @@
 # ── archives and scratch (~1.4 GB), and client material ──────────────────────
 # _in carries prospect/client documents. The KB content policy keeps client work
 # out of shared tiers, so it is excluded regardless of this repo's visibility.
-/_ds_arc/
-/_ds_arc_pack/
 /_ext/
 # 🔴 `/_in/*` not `/_in/` — git does not descend into an ignored DIRECTORY, so a `!` negation
 # inside one never matches. Excluding the CONTENTS instead leaves the directory walkable and the
@@ -41,6 +39,10 @@
 !/_msg/README.md
 !/_msg/inbound/
 !/_msg/outbound/
+# _arch is the general-purpose soft-delete bin (recycle bin): move something here
+# instead of `rm` when unsure, instead of one-off `_xxx_arc/` folders when sure.
+/_arch/*
+!/_arch/README.md
 
 # ── generated ────────────────────────────────────────────────────────────────
 /graphify-out/
