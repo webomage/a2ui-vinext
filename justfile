@@ -78,6 +78,69 @@ skills-chips *args:
     @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" chips {{ args }}
 
 
+# ── Tart Virtual Machine Sandboxes ──────────────────────────────────────────
+# VM management shortcuts for local sandboxes (macOS, Ubuntu, BridgeRoad)
+vm command="list" name="macos-mini-sandbox":
+    @case "{{ command }}" in \
+        list) tart list ;; \
+        run) tart run {{ name }} ;; \
+        isolated) tart run --net-softnet {{ name }} ;; \
+        headless) tart run --no-graphics {{ name }} ;; \
+        ip) tart ip {{ name }} ;; \
+        stop) tart stop {{ name }} ;; \
+        reset) \
+            tart stop {{ name }} 2>/dev/null || true; \
+            tart delete {{ name }} 2>/dev/null || true; \
+            tart clone ghcr.io/cirruslabs/macos-tahoe-vanilla:latest {{ name }}; \
+            tart set {{ name }} --cpu 4 --memory 6144 --display 1440x900pt; \
+            echo "[OK] {{ name }} cleanly reset to mint state" ;; \
+        prune) tart prune ;; \
+        doctor) just --justfile wom7web/justfile vm-doctor ;; \
+        install-guest) wom7open/tart-guest-agent/packaging/install-darwin.sh {{ name }} ;; \
+        *) \
+            echo "Unknown VM command: '{{ command }}'"; \
+            echo "Usage: just vm [list|run|isolated|headless|ip|stop|reset|prune|doctor|install-guest] [name]"; \
+            exit 1 ;; \
+    esac
+
+# Explicit recipes for tab-completion
+vm-list:
+    @tart list
+
+# Run VM doctor: inspect host hypervisor, VM states, runaway CPU, and guest agents
+vm-doctor *args:
+    @just --justfile wom7web/justfile vm-doctor {{ args }}
+
+vm-run name="macos-mini-sandbox":
+    @tart run {{ name }}
+
+vm-run-isolated name="macos-mini-sandbox":
+    @tart run --net-softnet {{ name }}
+
+vm-run-headless name="macos-mini-sandbox":
+    @tart run --no-graphics {{ name }}
+
+vm-ip name="macos-mini-sandbox":
+    @tart ip {{ name }}
+
+vm-stop name="macos-mini-sandbox":
+    @tart stop {{ name }}
+
+vm-reset-macos name="macos-mini-sandbox":
+    @tart stop {{ name }} 2>/dev/null || true
+    @tart delete {{ name }} 2>/dev/null || true
+    @tart clone ghcr.io/cirruslabs/macos-tahoe-vanilla:latest {{ name }}
+    @tart set {{ name }} --cpu 4 --memory 6144 --display 1440x900pt
+    @echo "[OK] {{ name }} cleanly reset to mint state"
+
+vm-prune:
+    @tart prune
+
+# Install and verify enhanced w0m tart-guest-agent inside guest VM (T296)
+vm-install-guest name="macos-mini-sandbox":
+    @wom7open/tart-guest-agent/packaging/install-darwin.sh {{ name }}
+
+
 # ── Core Plan & Queue Tests ──────────────────────────────────────────────────
 plan-verdict-test:
     @just --justfile wom7web/justfile plan-verdict-test
