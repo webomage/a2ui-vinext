@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-09-08T02:00:56.133Z",
+  "generatedAt": "2026-09-11T05:49:32.275Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -15,7 +15,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".claude/skills/fact-checker",
-      "integrity": "sha256-715d359b3279acf271fda996cd05ae04f7f8c1b8fcfedd04b7e1f907d192c158"
+      "integrity": "sha256-4cf971381b9dea8cec5ea090568a7b032bfe388eff8dcc10256c715f9850657e"
     },
     "feynman": {
       "provider": "w0m-native",

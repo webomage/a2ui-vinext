@@ -62,6 +62,22 @@ skills-sync *args:
 skills-test *args:
     @cd wom7skills && pnpm run skill-test {{ args }}
 
+skills-update *args:
+    @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" update --canonical {{ args }}
+
+skills-diff *args:
+    @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" diff {{ args }}
+
+skills-backport *args:
+    @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" backport {{ args }}
+
+skills-audit-tools *args:
+    @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" audit-tools {{ args }}
+
+skills-chips *args:
+    @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" chips {{ args }}
+
+
 # ── Core Plan & Queue Tests ──────────────────────────────────────────────────
 plan-verdict-test:
     @just --justfile wom7web/justfile plan-verdict-test
