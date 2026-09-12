@@ -12,6 +12,10 @@ default:
 tasks *args:
     @just --justfile wom7web/justfile tasks {{ args }}
 
+# ── GitHub PR Tool (T345) ────────────────────────────────────────────────────
+prs *args:
+    @just --justfile wom7web/justfile prs {{ args }}
+
 # Forwarding target for running any arbitrary wom7web recipe from workspace root
 do recipe *args:
     @just --justfile wom7web/justfile {{ recipe }} {{ args }}
