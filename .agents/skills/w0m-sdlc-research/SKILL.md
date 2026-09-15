@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: research
-  version: "2026.08.15-1786812216"
+  version: "2026.09.12-1789241242"
 ---
 
 # w0m-sdlc-research — the deep grounding gate
@@ -43,8 +43,9 @@ text. Extract the concrete claims and intended outcomes to test.
 Run all that apply; record what each *actually* shows with a citation:
 
 - **Knowledge.** Auto-memory (`MEMORY.md` + the relevant memory files), `CLAUDE.md`/`AGENTS.md`,
-  `docs/` + KB, `.agent/LESSONS.md`, prior `docs/sessions/*`. → What do we already know that bears
-  on this — decisions, gotchas, prior attempts, constraints?
+  `docs/` + KB, root `LESSONS.md` via **`just lessons "<query>"`** (not `.agent/LESSONS.md` — moved 2026-08-14), prior
+  `docs/sessions/*`. → What do we already know that bears on this — decisions, gotchas, prior
+  attempts, constraints?
 - **Code state.** For each entity/behavior the ticket claims or needs: **`just ask` FIRST** (T163 —
   the graph is the default, grep is the fallback), else Grep/Read; `git log` for prior work. →
   Does it already exist (fully/partially)? What's the *real* starting point vs. the ticket's

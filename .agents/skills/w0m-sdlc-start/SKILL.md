@@ -118,7 +118,7 @@ start work on a ticket that shouldn't be started. Otherwise carry its report int
 - **Standing debt:** read `{tech_debt.register}` (TECH-DEBT.md) for decided debt in the
   touched area, and run `{tech_debt.markers}` for raw TODO/FIXME occurrences. The old
   `public.tech_debt` Supabase census was retired 2026-07-21 — do not query it.
-- **Gotchas:** pull relevant traps from auto-memory (`MEMORY.md`) and `CLAUDE.md`/`AGENTS.md`.
+- **Gotchas & Lessons (T232 AC10):** query earned rules via **`just lessons "<domain|symbols>"`** (or scan root `LESSONS.md`), plus traps from auto-memory (`MEMORY.md`) and `CLAUDE.md`/`AGENTS.md`. `LESSONS.md` is **READ-FIRST** — review relevant tells before starting.
 
 ## Step 4 — Produce the Start Brief (the gate's deliverable)
 - **Verified state** — what is *actually* true now, each claim backed by evidence (commit hash,

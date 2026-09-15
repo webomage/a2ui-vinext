@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-09-11T05:49:32.275Z",
+  "generatedAt": "2026-09-15T05:23:16.606Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -57,7 +57,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".claude/skills/w0m-lessons",
-      "integrity": "sha256-dda7115ceb86c513a2ed49f419786c1472f2d97c12fb8297c2e69cfe7dfd0158"
+      "integrity": "sha256-b0a2d4e891d1fd24fd42987ad202ac21a3a5eb50ebb6337e170fa0675a9afde0"
     },
     "w0m-mcp-builder": {
       "provider": "w0m-native",
@@ -99,7 +99,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".claude/skills/w0m-sdlc-research",
-      "integrity": "sha256-52ab85f35bd2f69e3e30c105a5019cab6dcdd099ae076eaaf0bc19f63d59a3bb"
+      "integrity": "sha256-0625d895edfa238294721f5e2a7444611898eec9f4afd49ffba674462a2c3784"
     },
     "w0m-sdlc-review": {
       "provider": "w0m-native",
@@ -127,7 +127,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".claude/skills/w0m-sdlc-start",
-      "integrity": "sha256-76a5634b7f9147c2106229567e19edc9a73399c77c61b26cc0afea7702a48dc8"
+      "integrity": "sha256-f1f10d4e34c74bc40bd5792b652157dcc4961104682038da132a1380ccd4cea9"
     },
     "w0m-sdlc-verify": {
       "provider": "w0m-native",

@@ -75,6 +75,10 @@ A register is read by skimming headings, so a heading that only names a symptom 
 ```
 
 ## Guardrails
-* **No Fluff**: Keep the lessons highly technical and objective.
+* **Read-First, Write-Last**: `LESSONS.md` is read-first during grounding (`just lessons <query>`) and write-last upon completion (`w0m-sdlc-archive`).
+* **Confidence & Promotion (T232 AC11)**: High confidence is earned when a rule is backed by an automated regression probe or observed across multiple tickets. Medium confidence applies to single confirmed incidents.
+* **Bounded Retention**: `LESSONS.md` retention limit is 1,000 lines / 90 KiB (declared in `.w0m/sdlc.json`). When approaching the ceiling, superseded lessons are pruned or rotated.
+* **No Fluff**: Keep the lessons highly technical, objective, and free of decorative emoji in headings.
 * **Actionable**: The "Rule/Lesson" section must tell the agent *exactly* what to do or avoid in the future.
-* **Append Only**: Do not overwrite existing lessons. Append to the end of the file.
+* **Append Only**: Do not overwrite existing active lessons. Append under the appropriate theme section.
+

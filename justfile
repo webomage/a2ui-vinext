@@ -59,6 +59,9 @@ state-save *args:
 state-rotate *args:
     @just --justfile wom7web/justfile state-rotate {{ args }}
 
+lessons *args:
+    @just --justfile wom7web/justfile lessons {{ args }}
+
 # ── Skills Platform (Level 1 & Level 2) ──────────────────────────────────────
 skills-sync *args:
     @cd wom7skills && pnpm run skills:sync {{ args }}
