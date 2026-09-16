@@ -40,12 +40,17 @@
     "w0m-lessons": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.07-1788827126"
+      "observed_version": "2026.09.15-1789449781"
     },
     "w0m-mcp-builder": {
       "provider": "w0m-native",
       "version": "canonical",
       "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m-prs": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.09.12-1789239194"
     },
     "w0m-sdlc-archive": {
       "provider": "w0m-native",
@@ -70,7 +75,7 @@
     "w0m-sdlc-research": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.12-1789241242"
+      "observed_version": "2026.09.15-1789449781"
     },
     "w0m-sdlc-review": {
       "provider": "w0m-native",
@@ -90,7 +95,7 @@
     "w0m-sdlc-start": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.08.17-1786980540"
+      "observed_version": "2026.09.15-1789449781"
     },
     "w0m-sdlc-verify": {
       "provider": "w0m-native",

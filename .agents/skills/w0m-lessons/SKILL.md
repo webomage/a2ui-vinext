@@ -2,7 +2,7 @@
 name: w0m-lessons
 description: Capture and document lessons learned from the previous task. Writes findings to LESSONS.md to prevent future regressions. Use when a tricky issue is resolved or at the end of a feature to log an architectural rule.
 metadata:
-  version: "2026.09.07-1788827126"
+  version: "2026.09.15-1789449781"
 ---
 
 # /w0m:lessons (Continuous Learning Phase)

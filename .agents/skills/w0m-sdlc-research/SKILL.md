@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: research
-  version: "2026.09.12-1789241242"
+  version: "2026.09.15-1789449781"
 ---
 
 # w0m-sdlc-research — the deep grounding gate

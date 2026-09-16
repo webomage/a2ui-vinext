@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: start
-  version: "2026.08.17-1786980540"
+  version: "2026.09.15-1789449781"
 ---
 
 # w0m-sdlc-start — the ticket kickoff gate
