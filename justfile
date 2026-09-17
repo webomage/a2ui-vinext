@@ -5,7 +5,7 @@
 set dotenv-load := false
 
 default:
-    @just --justfile wom7web/justfile --list
+    @just --justfile wom7web/justfile default
 
 # ── Queue & Triage (T146 / T232) ─────────────────────────────────────────────
 # Hot list, SDLC rank, dynamic epic/ticket-set plan projections, and triage tools
@@ -21,6 +21,9 @@ prs-open *args:
 
 prs-test:
     @just --justfile wom7web/justfile prs-test
+
+default-test:
+    @just --justfile wom7web/justfile default-test
 
 
 # Forwarding target for running any arbitrary wom7web recipe from workspace root
