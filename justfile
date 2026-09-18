@@ -52,6 +52,36 @@ do recipe *args:
 ask *args:
     @just --justfile wom7web/justfile ask {{ args }}
 
+crg-serve *args:
+    @just --justfile wom7web/justfile crg-serve {{ args }}
+
+crg-open *args:
+    @just --justfile wom7web/justfile crg-open {{ args }}
+
+crg-extract *args:
+    @just --justfile wom7web/justfile crg-extract {{ args }}
+
+graph-tree *args:
+    @just --justfile wom7web/justfile graph-tree {{ args }}
+
+graph-callflow *args:
+    @just --justfile wom7web/justfile graph-callflow {{ args }}
+
+graph-query *args:
+    @just --justfile wom7web/justfile graph-query {{ args }}
+
+graph-explain *args:
+    @just --justfile wom7web/justfile graph-explain {{ args }}
+
+graph-path *args:
+    @just --justfile wom7web/justfile graph-path {{ args }}
+
+graph-affected *args:
+    @just --justfile wom7web/justfile graph-affected {{ args }}
+
+graph-benchmark *args:
+    @just --justfile wom7web/justfile graph-benchmark {{ args }}
+
 # ── SDLC Lifecycle Gates ─────────────────────────────────────────────────────
 sdlc-start *args:
     @just --justfile wom7web/justfile sdlc-start {{ args }}
