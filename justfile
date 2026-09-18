@@ -164,3 +164,17 @@ plan-verdict-test:
 
 tasks-render-test:
     @just --justfile wom7web/justfile tasks-render-test
+
+# ── oMLX Service Lifecycle (T374) ────────────────────────────────────────────
+omlx-status:
+    @just --justfile wom7web/justfile omlx-status
+
+omlx-start:
+    @just --justfile wom7web/justfile omlx-start
+
+omlx-stop:
+    @just --justfile wom7web/justfile omlx-stop
+
+omlx-restart:
+    @just --justfile wom7web/justfile omlx-restart
+
