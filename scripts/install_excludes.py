@@ -22,8 +22,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MARK = "# w0m: nested repos — installed by scripts/install_excludes.py"
 NESTED = ["wom7api", "wom7authz", "wom7cfworkers", "wom7ext", "wom7mlx",
-          "wom7sec", "wom7skills", "wom7web", "wom7open"]
-BLOCK = "\n".join([MARK] + [f"/{n}/" for n in NESTED]) + "\n"
+          "wom7sec", "wom7skills", "wom7web", "wom7pr", "k7"]
+BLOCK = "\n".join([MARK] + [f"/{n}/" if n != "k7" else f"/{n}" for n in NESTED]) + "\n"
 
 
 def main() -> int:
@@ -33,7 +33,8 @@ def main() -> int:
         return 2
     current = exclude.read_text() if exclude.exists() else ""
     if MARK in current:
-        missing = [n for n in NESTED if f"/{n}/" not in current]
+        expected_entries = [f"/{n}/" if n != "k7" else f"/{n}" for n in NESTED]
+        missing = [e for e in expected_entries if e not in current]
         if "--check" in sys.argv:
             if missing:
                 print(f"✗ exclude block is present but incomplete: {missing}")

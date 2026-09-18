@@ -12,12 +12,30 @@ default:
 tasks *args:
     @just --justfile wom7web/justfile tasks {{ args }}
 
-# ── GitHub PR Tool (T345 / T369) ────────────────────────────────────────────
+# ── GitHub PR Tool (T345 / T369 / T377) ─────────────────────────────────────────
 prs *args:
     @just --justfile wom7web/justfile prs {{ args }}
 
 prs-open *args:
     @just --justfile wom7web/justfile prs-open {{ args }}
+
+forks *args:
+    @just --justfile wom7web/justfile forks {{ args }}
+
+forks-check:
+    @just --justfile wom7web/justfile forks-check
+
+forks-fetch *args:
+    @just --justfile wom7web/justfile forks-fetch {{ args }}
+
+forks-info repo *args:
+    @just --justfile wom7web/justfile forks-info {{ repo }} {{ args }}
+
+forks-update *args:
+    @just --justfile wom7web/justfile forks-update {{ args }}
+
+forks-sync *args:
+    @just --justfile wom7web/justfile forks-sync {{ args }}
 
 prs-test:
     @just --justfile wom7web/justfile prs-test
@@ -113,7 +131,7 @@ vm command="list" name="macos-mini-sandbox":
             echo "[OK] {{ name }} cleanly reset to mint state" ;; \
         prune) tart prune ;; \
         doctor) just --justfile wom7web/justfile vm-doctor ;; \
-        install-guest) wom7open/tart-guest-agent/packaging/install-darwin.sh {{ name }} ;; \
+        install-guest) wom7pr/tart-guest-agent/packaging/install-darwin.sh {{ name }} ;; \
         *) \
             echo "Unknown VM command: '{{ command }}'"; \
             echo "Usage: just vm [list|run|isolated|headless|ip|stop|reset|prune|doctor|install-guest] [name]"; \
@@ -155,7 +173,7 @@ vm-prune:
 
 # Install and verify enhanced w0m tart-guest-agent inside guest VM (T296)
 vm-install-guest name="macos-mini-sandbox":
-    @wom7open/tart-guest-agent/packaging/install-darwin.sh {{ name }}
+    @wom7pr/tart-guest-agent/packaging/install-darwin.sh {{ name }}
 
 
 # ── Core Plan & Queue Tests ──────────────────────────────────────────────────

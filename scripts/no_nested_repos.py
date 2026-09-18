@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 NESTED = {"wom7api", "wom7cfworkers", "wom7ext", "wom7mlx",
-          "wom7sec", "wom7skills", "wom7web", "wom7open"}
+          "wom7sec", "wom7skills", "wom7web", "wom7pr", "k7"}
 
 bad = [f for f in sys.argv[1:] if Path(f).parts and Path(f).parts[0] in NESTED]
 if bad:
