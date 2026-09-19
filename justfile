@@ -50,6 +50,14 @@ ticket-dups *args:
 ticket-dups-test:
     @just --justfile wom7web/justfile ticket-dups-test
 
+# ── Automated Ticket Recycling (T397) ─────────────────────────────────────────
+ticket-recycle *args:
+    @just --justfile wom7web/justfile ticket-recycle {{ args }}
+
+ticket-recycle-test:
+    @just --justfile wom7web/justfile ticket-recycle-test
+
+
 
 # Forwarding target for running any arbitrary wom7web recipe from workspace root
 do recipe *args:
