@@ -226,3 +226,13 @@ omlx-stop:
 omlx-restart:
     @just --justfile wom7web/justfile omlx-restart
 
+# ── Version Management (T391) ────────────────────────────────────────────────
+version-sync *args:
+    @just --justfile wom7web/justfile version-sync {{ args }}
+
+version-check *args:
+    @just --justfile wom7web/justfile version-check {{ args }}
+
+sync-manifest-versions-test:
+    @just --justfile wom7web/justfile sync-manifest-versions-test
+
