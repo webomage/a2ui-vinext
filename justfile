@@ -57,6 +57,13 @@ ticket-recycle *args:
 ticket-recycle-test:
     @just --justfile wom7web/justfile ticket-recycle-test
 
+# ── Zero-NPX Invariant Audit (T398) ──────────────────────────────────────────
+npx-audit *args:
+    @just --justfile wom7web/justfile npx-audit {{ args }}
+
+npx-audit-test:
+    @just --justfile wom7web/justfile npx-audit-test
+
 
 
 # Forwarding target for running any arbitrary wom7web recipe from workspace root
