@@ -9,8 +9,8 @@
 			"path": "wom7api"
 		},
 		{
-			"name": "wom7cfworkers",
-			"path": "wom7cfworkers"
+			"name": "wom7func",
+			"path": "wom7func"
 		},
 		{
 			"name": "wom7chatops",

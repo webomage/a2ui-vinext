@@ -5,7 +5,7 @@
 This is the top-level workspace root (`@wom`) containing the 7 estate repositories:
 - `wom7web`: Canonical monorepo (Astro apps, shared packages, design system, specs, SDLC tracking).
 - `wom7api`: Backend capability layer (Supabase migrations, edge functions, worker).
-- `wom7cfworkers`: Edge worker and cron dispatch.
+- `wom7func`: Edge worker and cron dispatch.
 - `wom7ext`: Webomage browser extensions.
 - `wom7sec`: Security probes and policies.
 - `wom7skills`: Canonical w0m Agent Skills source and sync tooling.
