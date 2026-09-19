@@ -43,6 +43,13 @@ prs-test:
 default-test:
     @just --justfile wom7web/justfile default-test
 
+# ── Ticket Duplication Checks (T403) ──────────────────────────────────────────
+ticket-dups *args:
+    @just --justfile wom7web/justfile ticket-dups {{ args }}
+
+ticket-dups-test:
+    @just --justfile wom7web/justfile ticket-dups-test
+
 
 # Forwarding target for running any arbitrary wom7web recipe from workspace root
 do recipe *args:
