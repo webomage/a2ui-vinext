@@ -168,4 +168,5 @@ activation_command_timeout: 180.0
 language_servers:
 - typescript
 - svelte
+- astro
 - python
