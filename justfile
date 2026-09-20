@@ -7,16 +7,28 @@ set dotenv-load := false
 default:
     @just --justfile wom7web/justfile default
 
-# ── Queue & Triage (T146 / T232) ─────────────────────────────────────────────
+# ── Queue & Triage (T146 / T232 / T412) ─────────────────────────────────────
 # Hot list, SDLC rank, dynamic epic/ticket-set plan projections, and triage tools
 tasks *args:
-    @just --justfile wom7web/justfile tasks {{ args }}
+    @python3 scripts/tasks_query.py {{ args }}
 
 tasks-render *args:
-    @just --justfile wom7web/justfile tasks-render {{ args }}
+    @python3 scripts/tasks_render.py {{ args }}
 
 agent-concurrency-test:
-    @just --justfile wom7web/justfile agent-concurrency-test
+    @python3 wom7web/project/scripts/tests/test_agent_concurrency.py
+
+ticket-audit *args:
+    @python3 scripts/ticket_audit.py {{ args }}
+
+ticket-audit-test:
+    @python3 wom7web/project/scripts/tests/test_ticket_audit.py
+
+dod-check *args:
+    @python3 scripts/dod_check.py {{ args }}
+
+sync-tickets *args:
+    @python3 scripts/sync_github.py {{ args }}
 
 # ── Coordinated Multi-Agent Worktrees (T411 AC5) ─────────────────────────────
 worktree-agent id *args:
@@ -94,6 +106,13 @@ npx-audit-test:
 
 
 
+# ── Preflight & SDLC Doctor ──────────────────────────────────────────────────
+preflight *args:
+    @just --justfile wom7web/justfile preflight {{ args }}
+
+sdlc-doctor *args:
+    @just --justfile wom7web/justfile sdlc-doctor {{ args }}
+
 # Forwarding target for running any arbitrary wom7web recipe from workspace root
 do recipe *args:
     @just --justfile wom7web/justfile {{ recipe }} {{ args }}
@@ -157,15 +176,18 @@ sdlc-deploy *args:
 sdlc-archive *args:
     @just --justfile wom7web/justfile sdlc-archive {{ args }}
 
-# ── State Surface ────────────────────────────────────────────────────────────
+# ── State Surface (T145 / T412) ──────────────────────────────────────────────
 state-check *args:
-    @just --justfile wom7web/justfile state-check {{ args }}
+    @python3 scripts/state_doctor.py --check {{ args }}
 
 state-save *args:
-    @just --justfile wom7web/justfile state-save {{ args }}
+    @python3 scripts/state_doctor.py --write {{ args }}
 
 state-rotate *args:
-    @just --justfile wom7web/justfile state-rotate {{ args }}
+    @python3 scripts/state_doctor.py --rotate {{ args }}
+
+state-doctor-test:
+    @python3 wom7web/project/scripts/tests/test_state_doctor.py
 
 lessons *args:
     @just --justfile wom7web/justfile lessons {{ args }}
@@ -261,7 +283,7 @@ plan-verdict-test:
     @just --justfile wom7web/justfile plan-verdict-test
 
 tasks-render-test:
-    @just --justfile wom7web/justfile tasks-render-test
+    @python3 wom7web/project/scripts/tests/test_tasks_render.py
 
 # ── oMLX Service Lifecycle (T374) ────────────────────────────────────────────
 omlx-status:

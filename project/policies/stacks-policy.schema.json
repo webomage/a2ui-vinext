@@ -1,0 +1,240 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/casualuser/webomage.com/beta/project/stacks-policy.schema.json",
+  "title": "w0m per-stack tech/tools registry",
+  "description": "Per-stack, tech-aware extension of the global toolchain contract (.w0m/sdlc.json -> toolchain, T119) — T130. Declares, for each live stack, its runtime, the techs/frameworks that define it, and the CLIs that operate it (each bound to the `just` recipe that drives it). Read by project/scripts/discovery.py (`just discovery` / `--enforce`). This is the tech-aware layer above tools-policy.json (host CLI floors) and deps-policy.json (npm security floors), neither of which is stack-scoped.",
+  "type": "object",
+  "required": [
+    "project",
+    "stacks"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "commandRole": {
+      "enum": [
+        "build",
+        "check",
+        "dep-licenses-check",
+        "deploy",
+        "dev",
+        "docs-check",
+        "fmt",
+        "fmt-check",
+        "graph-docs",
+        "graph-docs-inc",
+        "graph-global",
+        "graph-health",
+        "hooks-check",
+        "license-check",
+        "lint",
+        "mcp-exposure",
+        "mcp-ratchet",
+        "mcp-ratchet-test",
+        "scan",
+        "sdlc-trace",
+        "secrets-check",
+        "serve",
+        "state-check",
+        "state-rotate",
+        "state-save",
+        "tasks",
+        "test",
+        "test-e2e",
+        "toolset-status",
+        "typecheck",
+        "typecheck-ratchet",
+        "version-check",
+        "version-stamp"
+      ],
+      "description": "Canonical command roles. The first six are `.w0m/sdlc.json -> toolchain.canonical_recipes`; dev/deploy/fmt/scan/serve are documented ecosystem extensions; T135 adds the read-only hygiene roles: `fmt-check` (verify formatting WITHOUT writing — distinct from `fmt`, which mutates and so can never be a gate), `docs-check` (required human-facing files, AC5), `license-check` (license audit + publication safety, AC6/AC11), `secrets-check` (Infisical conformance, AC10), and `dep-licenses-check` (the TRANSITIVE dependency-licence audit, AC6 — deliberately a SEPARATE role from `license-check`: that one reads the repos' OWN manifests and vendored trees, this one reads `pnpm licenses list --prod` across the whole dependency graph. Merging them would hide which half went red, and they fail for unrelated reasons). T131 adds `version-check`/`version-stamp` over the canonical skill corpus — the same verify-vs-write split as `state-check`/`state-save`, and for the same reason: the writer mutates tracked files, so it is `manual` by policy rather than by deferral. T149 AC4 adds `toolset-status`: the COMPOSED status surface over the other checks. It is `manual` NOT by deferral but by design — its children already run at pre-commit/pre-push, so gating on it would run every one of them twice and roughly double push time for no new information. T154 adds the three HOST-exposure roles: `mcp-exposure` (the inventory — what is listening and is it usable without credentials), `mcp-ratchet` (the may-shrink-never-grow gate over the declared baseline) and `mcp-ratchet-test` (its fixture-only regression proof). All three are `manual` and, uniquely, one of them is manual by an AC's explicit REQUIREMENT rather than by cost: T154 AC6 forbids a pre-push gate, because these are host facts that change when a desktop app launches, not when code is pushed. Its cadence is `just audit` outside `--quick`. T174 adds `state-rotate`: the MOVER that relocates superseded STATE.md history into project/state-archive/. Same verify-vs-write split again — the mover mutates a tracked file, so it is `manual` by policy, and the GATE that makes it run is `state-check`'s size budget. ⚠️ This enum is why the role had to be declared in two places; the registry gate caught the omission immediately, which is the enum earning its keep."
+    },
+    "gatePhase": {
+      "enum": [
+        "pre-commit",
+        "pre-push",
+        "manual"
+      ],
+      "description": "Where the role is enforced. `pre-commit` = fast, staged-scope. `pre-push` = whole-repo, slower. `manual` = deliberately NOT gated (a deferral: requires a reason)."
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "_comment": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string",
+      "description": "Human-readable project identifier."
+    },
+    "enforce_raw": {
+      "type": "boolean",
+      "description": "When true, `discovery --enforce` also BLOCKS on raw tool-invocations found in tracked automation (else they are advisory only). Default false: the scan is heuristic and pre-existing raw-tool debt must not wall off the gate. Flip on once the debt is cleared. The declared-command→recipe check and drift block regardless of this flag."
+    },
+    "exempt": {
+      "type": "object",
+      "description": "Stacks/repos with no build or tool interface at all (prose-only) — skipped by enforcement AND discovery. This is the TOOLCHAIN-dimension exempt, distinct from .w0m/sdlc.json toolchain.exempt (which is secrets-scoped): a repo can be secrets-exempt yet still have a real tool-driven stack here (e.g. wom7skills, wom7ext, wom7sec). T135: the value is a REQUIRED, substantive reason — an exemption is a decision and a decision without a recorded reason cannot be re-evaluated. A bare repo name, an empty string or a restatement of the key fails validation.",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 25,
+        "description": "Why this stack/repo is exempt. Must say something the key does not — the next agent re-evaluates the exemption against this sentence."
+      }
+    },
+    "stacks": {
+      "type": "object",
+      "description": "Live stacks keyed by short id (web, worker, edge, skills, cf, mlx, ext, sec).",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "repo",
+          "path",
+          "runtime",
+          "justfile",
+          "techs",
+          "commands",
+          "gates",
+          "enabled",
+          "push_gate"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "repo": {
+            "type": "string",
+            "description": "Owning repo/dir, relative to the workspace root (…/@wom)."
+          },
+          "path": {
+            "type": "string",
+            "description": "Stack root relative to `repo` ('.' for whole-repo stacks)."
+          },
+          "runtime": {
+            "enum": [
+              "node",
+              "deno",
+              "python",
+              "rust"
+            ],
+            "description": "Primary runtime the stack targets."
+          },
+          "justfile": {
+            "type": "string",
+            "description": "The justfile hosting this stack's recipes, relative to the workspace root. web/worker/edge/skills/cf resolve against the canonical wom7api/justfile; ext/sec/mlx have their own."
+          },
+          "techs": {
+            "type": "array",
+            "description": "The frameworks/libraries that DEFINE the stack (not every dependency). Each carries a `detect` signal so `discovery` can diff declared-vs-code.",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "detect"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "detect": {
+                  "type": "string",
+                  "pattern": "^(dep|config|import):.+$",
+                  "description": "How discovery detects this tech in code: `dep:<pkg>` (package.json deps/devDeps or deno.json imports), `config:<filename>` (a config file present under the stack), or `import:<specifier>` (an import in the source surface)."
+                },
+                "note": {
+                  "type": "string"
+                },
+                "skills": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "T127 AC5 — skills relevant WHEN THIS TECH IS DETECTED in a target project. `w0m skill match` intersects detected techs with this list, subtracts what is already installed and what the consumer manifest excludes, then reports or installs the rest. An EMPTY list is a deliberate 'no skill for this tech'; an ABSENT key means nobody has decided yet. The two must not collapse into the same silence."
+                }
+              }
+            }
+          },
+          "commands": {
+            "type": "object",
+            "description": "The justfile COMMAND CONTRACT for this stack: SDLC canonical command roles → the `just` recipe that fulfills each. Roles are the canonical set from `.w0m/sdlc.json -> toolchain.canonical_recipes` (check/typecheck/lint/test/test-e2e/build) plus documented ecosystem extensions (dev/deploy/fmt/scan/serve) and the T135 hygiene roles (docs-check/license-check/secrets-check/fmt-check). A stack declares only the roles it supports. Every recipe MUST resolve in `justfile` (`just --show`) — enforcement (discovery.py --enforce) hard-fails otherwise. Every declared role MUST also carry a phase in `gates`. This is how 'all stack tools via `just`' becomes per-stack and structural.",
+            "propertyNames": {
+              "$ref": "#/definitions/commandRole"
+            },
+            "additionalProperties": {
+              "type": "string",
+              "description": "The `just` recipe name fulfilling this role, resolved against `justfile`."
+            }
+          },
+          "gates": {
+            "type": "object",
+            "description": "T135 (AC4): WHEN each declared command role runs. Maps the same role keys as `commands` → the lifecycle phase that enforces it. There is NO implicit default: a role present in `commands` but absent here fails validation, and a role here that is not in `commands` fails as an orphan phase. That is what makes the owner's 'per-stack subset' decision for pre-push mechanically checkable rather than prose. Phase `manual` is a DEFERRAL and must carry a `reason` (AC8) — use the object form.",
+            "propertyNames": {
+              "$ref": "#/definitions/commandRole"
+            },
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/gatePhase",
+                  "description": "Shorthand for an enforced phase. Not valid for `manual`, which requires a reason."
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "phase",
+                    "reason"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Long form — required whenever the phase is `manual`, so every deferral records its cause.",
+                  "properties": {
+                    "phase": {
+                      "$ref": "#/definitions/gatePhase"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 25,
+                      "description": "Why this role is not gated at commit/push time. AC8: a deferral without a cause is indistinguishable from an oversight."
+                    },
+                    "remeasure": {
+                      "type": "string",
+                      "description": "The observable condition under which this deferral should be re-tested (AC8 requires a re-measure trigger, not just a cause)."
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether the stack is under the toolchain contract. `false` = a known stack not yet just-wired — recorded but skipped by enforcement (discovery still reports it advisory)."
+          },
+          "note": {
+            "type": "string"
+          },
+          "push_gate": {
+            "type": "object",
+            "description": "T135 AC4 — pre-push coverage must be a DECISION, not an accident. Every stack declares how it is gated at push time. `local` means this stack has its own pre-push roles and is falsifiable: hooks-check fails it if no role actually declares phase `pre-push`. `central` means another stack's pre-push covers it, and must name which. `none` means deliberately ungated at push. `central` and `none` both require a reason, so an ungated repo is a recorded choice a reviewer can disagree with rather than a gap nobody noticed.",
+            "properties": {
+              "mode": {
+                "enum": [
+                  "local",
+                  "central",
+                  "none"
+                ]
+              },
+              "covered_by": {
+                "type": "string",
+                "description": "Stack whose pre-push covers this one. Required when mode is `central`."
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 20
+              }
+            },
+            "required": [
+              "mode"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  }
+}

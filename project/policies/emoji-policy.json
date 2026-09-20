@@ -1,0 +1,247 @@
+{
+  "$comment": [
+    "T256 — where emoji are allowed, where they are forbidden, and where they are PROTOCOL.",
+    "",
+    "Owner instruction 2026-08-22: 'emojies cause a lot of issues with parsing so let's prohibit",
+    "using emojies in logs, reports, etc and use everywhere .md/.mmd format as default'. The",
+    "instruction is correct and was earned the same day: a grep for ROADMAP section 33 reported NO",
+    "MATCH because the heading reads '## (door) 33.' with a pictograph between the hashes and the",
+    "number. Seven tickets cite that section and every one of them was right.",
+    "",
+    "But a blanket ban is unlandable and, worse, would BREAK the estate. Measured 2026-08-22:",
+    "4266 emoji in markdown headings across 2178 files, 918 emoji-bearing output lines across 141",
+    "scripts. And eight parsers read emoji AS DATA -- run_suites.py counts test results with",
+    "re.compile(r'^\\s*[PASS/FAIL glyphs]\\s'). Deleting emoji from script output without changing",
+    "that regex would make every suite report zero checks and pass vacuously.",
+    "",
+    "So: three tiers. HARD where a matcher has actually broken. PROTOCOL where a parser depends on",
+    "the glyph, asserted rather than banned. RATCHET everywhere else -- the count may fall, never",
+    "rise. A gate that fires 4266 times gets switched off (T135 AC8); a ratchet gets obeyed."
+  ],
+  "definition": {
+    "$comment": [
+      "An emoji is a PICTOGRAPH. Typographic marks are deliberately NOT emoji: the arrow, the",
+      "em-dash, the middot and the section sign are single-width, carry no variation selector, and",
+      "no matcher in this estate has ever broken on one. Banning them would be cargo-culting the",
+      "rule instead of applying it."
+    ],
+    "ranges": [
+      "1F000-1FAFF",
+      "2600-27BF",
+      "2B00-2BFF",
+      "23E9-23FF",
+      "FE0F",
+      "2139",
+      "25B6"
+    ],
+    "not_emoji": [
+      "→ arrow",
+      "— em-dash",
+      "· middot",
+      "§ section",
+      "─ box-drawing"
+    ],
+    "$range_gap_found": [
+      "The range list read 23F0-23FF until 2026-08-22. U+23ED (NEXT TRACK, the skip marker used in",
+      "sync_subissues, w0m_audit and graph_global) sits just OUTSIDE it, so the glyph was NEVER",
+      "detected -- only the U+FE0F selector trailing it was. The gate therefore reported those lines",
+      "as carrying a decorative selector and nothing else.",
+      "",
+      "🔑 Found only because converting the other 103 lines left the orphaned selectors behind and",
+      "they had to be explained. A hole in a character-range list is invisible until something",
+      "adjacent to it moves -- which is the argument for widening to 23E9-23FF rather than adding",
+      "23ED alone."
+    ]
+  },
+  "hard": {
+    "$comment": [
+      "Zero tolerance, enforced now. Markdown HEADINGS in the governance documents -- the files",
+      "whose sections other files cite by number. This is the exact position that broke today.",
+      "Verified safe before enforcing: epic_completeness.py:22 matches",
+      "'^##\\s+(?:\\S+\\s+)?(\\d+)\\.' where the pictograph group is ALREADY OPTIONAL, so removing it",
+      "keeps every section resolvable. That optional group is itself evidence someone had already",
+      "worked around the emoji rather than removing it."
+    ],
+    "zone": "markdown headings",
+    "files": [
+      "ROADMAP.md",
+      "TECH-DEBT.md",
+      "TASKS.md",
+      "CLAUDE.md",
+      "AGENTS.md",
+      "CONTRIBUTING.md",
+      "README.md",
+      "docs/PROJECT-TOOLING.md",
+      "openspec/SPEC-AUTHORING-STANDARD.md"
+    ]
+  },
+  "protocol": {
+    "$comment": [
+      "Emoji that are LOAD-BEARING: a parser reads the glyph as a value. These are NOT violations",
+      "and must not be 'cleaned up' -- but the coupling is invisible in both directions, so the",
+      "gate asserts each parser still contains its glyph and PRINTS the list every run. An",
+      "acknowledgement that vanishes from the report is indistinguishable from a gate that stopped",
+      "looking (T246 AC5).",
+      "",
+      "Retiring one of these means changing producer AND parser in the same commit. That is a",
+      "migration with a blast radius, tracked as T257 -- not a cleanup."
+    ],
+    "couplings": [
+      {
+        "parser": "project/scripts/run_suites.py",
+        "reads": "✅❌ℹ✓✗×",
+        "why": "counts per-probe pass/fail from suite stdout -- the whole test aggregate depends on it. FOUR dialects, not one: CHECK reads the first pair, TICK reads the second trio (version-test, deps-check, mmd-validate, skills-catalogue-test), NODE_TEST reads the info glyph for node:test output (skills, deno-test). The hand-written declaration named only the first pair, so the other four glyphs sat in the DECORATIVE bucket -- i.e. the bucket something eventually cleans up, stopping four suites from counting."
+      },
+      {
+        "parser": "project/scripts/tasks_bounds.py",
+        "reads": "✅🔵⚪🟡🟢💤",
+        "why": "STATUS_GLYPH -- the TASKS.md row status IS the glyph"
+      },
+      {
+        "parser": "project/scripts/deploy_logged.py",
+        "reads": "🔑✅❌📸🔍⏳▶",
+        "why": "STEP regex segments the deploy log into steps"
+      },
+      {
+        "parser": "project/scripts/w0m_audit.py",
+        "reads": "✅❌✗⚠️",
+        "why": "summarises a probe by its leading marker, over subprocess stdout+stderr. Reads the cross glyph and warning indicator as well as the pair."
+      },
+      {
+        "parser": "project/scripts/authz_bucket_gate_test.py",
+        "reads": "🔴🟡",
+        "why": "counts findings by severity marker"
+      },
+      {
+        "parser": "project/scripts/authz_grant_gate_test.py",
+        "reads": "🔴🟡",
+        "why": "counts findings by severity marker"
+      },
+      {
+        "parser": "project/scripts/debt_register_check.py",
+        "reads": "🔻✅",
+        "why": "RESOLVED matches `^\\s*(?:<down>\\s*)?<check>\\s*\\*\\*(RESOLVED|PAID DOWN|FIXED AND DELETED)` over TECH-DEBT.md rows. The down-arrow is OPTIONAL in the pattern, so losing it degrades quietly rather than failing -- a resolved row simply stops being recognised as resolved."
+      },
+      {
+        "parser": "project/scripts/state_doctor.py",
+        "reads": "⭐",
+        "why": "PICKUP_RE matches `^#{2,3} ⭐ PICK UP HERE` — the handoff marker IS the glyph, so state rotation stops finding the current block without it. Found 2026-08-22 while writing a handoff, AFTER the first six were declared: the coupling list is discovered, not complete."
+      }
+    ]
+  },
+  "protocol_discovery": {
+    "$comment": [
+      "`discovered_couplings()` sweeps every matcher-shaped line in project/scripts for pictographs.",
+      "It is deliberately BROAD -- a false positive costs one line here, a false negative costs a",
+      "silently-green gate. These are the reviewed false positives and probe fixtures.",
+      "",
+      "The sweep is why this policy is trustworthy at all. The couplings list was hand-written from",
+      "grepping and reading: six entries, then a seventh when a handoff heading broke the gate. The",
+      "sweep then found 18 undeclared matcher sites across 45 total, THREE of which were real",
+      "readers -- including run_suites.py's other three dialects. A remembered list presented as a",
+      "measurement is the exact defect this whole gate exists to catch, and the list had it."
+    ]
+  },
+  "ratchet": {
+    "$comment": [
+      "Baselines measured over AUTHORED files only. The number may fall; a rise is a failure.",
+      "Update a baseline DOWNWARD when work removes emoji -- never upward to make a gate green.",
+      "Raising a baseline is the same act as deleting a failing test.",
+      "",
+      "DATED MOVES, with their causes -- a number that falls because work was done and one that",
+      "falls because the corpus was corrected are different events and must not read the same.",
+      "",
+      "2026-08-23 (T261) -- md_headings_estate 3012 -> 476. CORPUS CORRECTED, NO WORK DONE.",
+      "  `authored()` globbed the FILESYSTEM and called the result authored, so every file on disk",
+      "  counted -- including 1,801 markdown files under the gitignored `project/data/upwork_vault/`",
+      "  and 652 more written by the scheduled Supabase Storage backup into `wom7api/supabase/",
+      "  backups/`. 2,536 of the 3,012 were in trees the repos are configured never to keep.",
+      "  Found when a backup ran at 09:00 and moved this BLOCKING ratchet by +1, leaving only two",
+      "  apparent remedies: raise the baseline (prohibited) or delete a backup. The measured number",
+      "  was never stable -- it rose and fell with whether a backup had run that morning.",
+      "  The filter is now IGNORED, not UNTRACKED: a file just written and not yet committed is",
+      "  authored; a file the repo is configured never to keep is not. Probe:",
+      "  `emoji-check-test` asserts an ignored file is excluded and a tracked sibling is not.",
+      "2026-08-29 (T228 AC8b) -- md_headings_estate 476 -> 475. WORK DONE, not a corpus correction: tasks-rotate moved 95 done rows out of TASKS.md into project/tickets/archive/, and one emoji-bearing heading went with them. Lowered to hold the ground.",
+      "2026-09-03 (T307) -- measured 792, baseline held at 475, NOT raised. `git check-ignore` fatally",
+      "  refuses any pathspec that crosses a symlink, and T307 AC1 made `@wom/k7` exactly that (a",
+      "  symlink into `@self/@k7`, excluded from the estate worktree via `.git/info/exclude`, NOT",
+      "  `.gitignore`). `_ignored()` batches every file with no nearer repo into one `git check-ignore",
+      "  --stdin` call per group; the one fatal k7 pathspec killed the whole batch, so nothing in it --",
+      "  including `_ext` etc., legitimately gitignored at the estate root -- came back marked ignored.",
+      "  Added `k7` to `exclude_paths` (same remedy as `vendor`/`node_modules`): it skips the crash",
+      "  instead of teaching `_ignored()` to survive one. The measured count returned to baseline on",
+      "  its own once the poison path left the glob; no work was done and none was needed.",
+      "2026-09-05 (T312 follow-up) -- measured 480, baseline held at 475, NOT raised. A different bug",
+      "  than the k7 incident, though the same family: T312's own commit the day before linked",
+      "  `@wom/.agents` -> `wom7web/.agents` for multi-agent parity. `.agents` is a dot-directory but",
+      "  the glob DOES traverse it, so every skill under it is walked a SECOND time at a second path,",
+      "  and `authored()` had no dedup by real path -- two distinct `Path` objects, same inode,",
+      "  counted twice. 3 SKILL.md files carrying a heading emoji were double-counted, +5 exactly.",
+      "  Confirmed: `.agents/skills/mcp-builder/SKILL.md` and `wom7web/.agents/skills/mcp-builder/",
+      "  SKILL.md` share an inode. Excluding `.agents` in `exclude_paths` was tried and REJECTED --",
+      "  that filter matches a bare component ANYWHERE in the path, so it also silently dropped",
+      "  `wom7web/.agents/...` itself (the real, non-symlinked content) and under-shot to 470, hiding",
+      "  5 legitimate headings rather than 5 duplicates. Fixed at the root instead: `authored()` now",
+      "  dedups by `Path.resolve()`, so ANY symlink alias -- this one, `.claude/skills`, or a future",
+      "  one -- collapses to the one file it actually is, without a per-symlink entry to maintain.",
+      "2026-09-07 (T232) -- md_headings_estate 475 -> 469. WORK DONE: removed decorative emoji headings from w0m-lessons and w0m-state-load canonical skills. Lowered to hold the ground.",
+      "2026-09-08 -- md_headings_estate 469 -> 468. Lowered to hold the ground.",
+      "2026-09-15 (T90) -- md_headings_estate 468 -> 412. Lowered to hold the ground.",
+      "2026-09-17 -- md_headings_estate 412 -> 411. Lowered to hold the ground.",
+      "2026-09-17 -- md_headings_estate 411 -> 401. Lowered to hold ground taken.",
+      "2026-09-18 -- md_headings_estate 401 -> 349. CORPUS CORRECTED: excluded vendored/third-party trees `_ext`, `_in`, and `ext` (aligned with ignore-policy.json vendored prefixes) as read-only per owner directive.",
+      "2026-09-20 (T208) -- md_headings_estate 349 -> 345. Lowered to hold ground taken."
+    ],
+    "zones": {
+      "md_headings_estate": {
+        "baseline": 345,
+        "what": "DECORATIVE (non-protocol) emoji in markdown headings, whole estate, AUTHORED files only -- see the dated move of 2026-08-23 for why this is not 3012"
+      },
+      "script_output": {
+        "baseline": 0,
+        "what": "DECORATIVE (non-protocol) emoji on print/log lines in project/scripts -- ZERO, reached 2026-08-22 under T257 AC1"
+      }
+    }
+  },
+  "discovery_exempt": {
+    "$comment": "Reviewed 2026-08-22. Keyed by file:line. Each is NOT a glyph read as data.",
+    "project/scripts/call_site_schema_drift.py:230": "Not a read: `glyph = <red> if cls != 'UNREACHABLE' else <orange>` picks a marker to PRINT. The line contains a comparison, which is why the broad sweep caught it.",
+    "project/scripts/tasks_query.py:1120": "Not a read: a print of the tag long-tail note.",
+    "project/scripts/tools_check.py:329": "Not a read: builds the below-min display string. Its cross glyph IS counted downstream by run_suites TICK, so this line is a PRODUCER of protocol, not a reader of it -- which is why the glyph is declared globally and this site needs no declaration of its own.",
+    "project/scripts/tools_check.py:362": "Not a read: prints the optional-tools warning header. The warning sign is decorative here and stays in the ratchet.",
+    "project/scripts/tools_upgrade.py:233": "Not a read: prints the post-upgrade rejection. Same producer-not-reader case as tools_check.py:329.",
+    "project/scripts/upwork_export_vault_md.py:312": "Not a read: prints the export summary. Note the glyph is HEAVY CHECK MARK U+2714, which run_suites TICK does NOT match (it reads U+2713) -- so this one is genuinely decorative and a ratchet target.",
+    "project/scripts/tests/test_emoji_policy_check.py": "WHOLE FILE. Every pictograph in this gate's own probe file is a FIXTURE -- the glyph is the subject under test (is it recognised as emoji, does a heading carrying it fail, does a heading-blind rule miss it). Exempt by file rather than by line because adding probes renumbers them: the first line-keyed version broke when five probes were inserted above two fixtures, moving them from :128 to :154.",
+    "project/scripts/tests/test_tasks_render.py": "WHOLE FILE. Fixtures asserting `_vis_width()` measures a pictograph as TWO columns, including the variation-selector case. The glyph is the input under test, and display width is not character count -- which is the bug those probes were written for.",
+    "project/scripts/tests/test_ticket_schema_check.py:142": "A real assertion, but on ONE literal string: it checks sync_github's body opens with the PARTIAL PROJECTION banner. 🔑 Declaring the warning sign globally would be wrong -- it appears on 83 decorative output lines, and excluding all of them from the ratchet to protect one banner would gut the measurement. The banner's glyph is protocol for that single string only, and retiring it is tracked in T257. Re-pointed :139 -> :142 on 2026-09-05: three lines were added above it (T228 AC8b absence-probe update), the SITE did not change -- exactly the renumbering trap this file's own test_emoji_policy_check.py entry warns about.",
+    "project/scripts/ticket_graph.py:121": "Not a read: builds a display string for the epic mismatch note. ⚠️ Re-pointed :100 -> :121 on 2026-08-27: the SITE did not change, a function was added above it (T228 AC6b). These keys are `path:LINE`, so any edit above an entry re-raises it as a new undeclared coupling. Re-keying on content would end that churn; not done here because changing how exemptions are identified is a change to the gate, not to a ticket that happens to trip it.",
+    "project/scripts/tasks_render.py:113": "Not a read: `task_text = f\"🆕 **{title}**\" if status == \"queued\" else ...` formats the queued task marker to PRINT (T411). The line contains a comparison (`status == \"queued\"`), which is why the broad sweep caught it."
+  },
+  "exclude_paths": [
+    "node_modules",
+    ".git",
+    ".quartz-engine",
+    "dist",
+    "build",
+    ".astro",
+    "target",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".next",
+    "graphify-out",
+    "codegraph-out",
+    ".codegraph",
+    "vendor",
+    "k7",
+    "mob",
+    "wom7open",
+    "wom7pr",
+    "_ext",
+    "_in",
+    "ext",
+    ".claude",
+    ".tasks"
+  ]
+}

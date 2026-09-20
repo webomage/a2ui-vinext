@@ -1,0 +1,735 @@
+{
+  "$schema": "./sdlc.schema.json",
+  "profile": "w0m",
+  "_profile_note": "The estate itself — seven repos under one config, the full w0m-sdlc-* gate pipeline, and the w0m-bound skill set. `skills-install-generic` refuses this target by design.",
+  "_comment_format": [
+    "THIS FILE IS STRICT JSON, NOT JSONC. Do not add `//` comments.",
+    "Measured 2026-08-23 (T242): 27 of its ~32 readers parse it with a plain",
+    "`json.loads` — only a handful go through `strip_jsonc`. Adding one comment line",
+    "broke `tasks-bounds` immediately and would have broken 26 more gates, each with a",
+    "JSONDecodeError naming a line number rather than the cause. The estate's config",
+    "preference is JSONC, and this file is the exception because its reader set is wide",
+    "and unversioned. Document values with `_comment` / `_comment_<key>` arrays instead,",
+    "which is what `project/test-suites.json` already does."
+  ],
+  "project": "w0m",
+  "root": ".",
+  "canonical_repo": "wom7web",
+  "tickets": {
+    "source": "files",
+    "board": "TASKS.md",
+    "dir": ".tasks",
+    "pattern": "T{id}.md",
+    "template": "project/templates/ticket.md",
+    "id_prefix": "T",
+    "sync": "project/scripts/sync_github.py"
+  },
+  "milestones": [
+    {
+      "id": "audit-2026-07-17",
+      "title": "Security & Architecture Audit 2026-07-17",
+      "dueOn": "2026-07-17",
+      "description": "Findings and remediation tasks from the comprehensive security and architecture audit on 2026-07-17.",
+      "membership": "derived"
+    }
+  ],
+  "specs": {
+    "system": "openspec",
+    "dir": "openspec/changes",
+    "standard": "openspec/SPEC-AUTHORING-STANDARD.md",
+    "verify_skill": "openspec-verify-change",
+    "naming": {
+      "_comment": "T119 AC4 — decided 2026-07-22. Change dirs keep the YYYY-MM-DD- prefix: it gives chronology and backtracing at a glance, which is worth more than CLI ergonomics. The cost is that openspec CLI >=1.6.0 REJECTS names starting with a digit, so: create letter-first, then rename the directory. Use POSITIONAL commands (`openspec validate <name> --type change`) — the `--change <name>` FLAG rejects dated names. `openspec list` and `validate --all` work either way.",
+      "change_prefix": "YYYY-MM-DD-",
+      "create_then_rename": true,
+      "prefer_positional_commands": true
+    }
+  },
+  "repos": {
+    "web": "wom7web",
+    "api": "wom7api",
+    "cf": "wom7func",
+    "func": "wom7func",
+    "ext": "wom7ext",
+    "sec": "wom7sec",
+    "skills": "wom7skills",
+    "mlx": "wom7mlx/wom7mlx",
+    "ava": "wom7ava",
+    "clips": "wom7clips"
+  },
+  "vcs": {
+    "provider": "github",
+    "repo": "webomage/wom7board",
+    "default_branch": "beta",
+    "_comment_gh_account": [
+      "The ACTING PRINCIPAL — the account `gh auth switch --user` pins, isolated via GH_CONFIG_DIR.",
+      "NOT the board owner. `sync_github.py` used to read `OWNER = ACCOUNT`, collapsing the two",
+      "into one string; see `board` below for why one value cannot serve both (T242)."
+    ],
+    "gh_account": "casualuser"
+  },
+  "board": {
+    "_comment": [
+      "The Projects v2 board, declared ONCE (T242). Before this block, one board had THREE",
+      "resolution strategies and no declared identity: `sync_github.py` looked it up by",
+      "(owner, title) and took the FIRST match, while `populate_project_fields.py` and",
+      "`sync_project_fields.py` each hardcoded (owner, number) — and both also hardcoded the",
+      "owner TYPE into their GraphQL root as `user(login:...)`, which an organization-owned",
+      "project is simply not reachable through.",
+      "",
+      "Every one of those failure modes EXITS 0. A stale owner finds a real, live-looking board",
+      "(a `gh project copy` leaves two boards with the same title), items land on it, and nothing",
+      "reaches the intended one.",
+      "",
+      "`number` is authoritative and `title` is the GUARD: resolution is by number, then the title",
+      "is CHECKED against this declaration. Title-matching alone is what the copy defeats.",
+      "`owner_type` decides the GraphQL root (`user` vs `organization`) and must change in the",
+      "same edit as `owner`. Changing one without the other resolves to null, not to an error —",
+      "there is no way to tell a user from an organization by login.",
+      "",
+      "Read it through `project/scripts/board_identity.py`. Held by `just board-identity-test`."
+    ],
+    "owner": "webomage",
+    "owner_type": "organization",
+    "number": 2,
+    "title": "w0m Delivery"
+  },
+  "codegraph": {
+    "enabled": true,
+    "indexed": [
+      "wom7web",
+      "wom7api",
+      "wom7func"
+    ]
+  },
+  "secrets": {
+    "manager": "infisical",
+    "run": "infisical run --env=beta --",
+    "db_url_env": "DATABASE_URL",
+    "_comment": "T119 AC2b (DONE — verified 2026-07-25): secrets reach a command by PROCESS INJECTION via `run` — never a file. wom7web/.env, the apps/*/.dev.vars exports, `dotenv-load` and every `infisical export` call are GONE, and debt row D18 was deleted with them. Do not add a new .env dependency: there is nothing left to migrate from, so re-introducing one is a regression. NOTE this guarantees only that GATE COMMANDS inject secrets — it does NOT verify that a skill or tool actually takes its secrets from infisical; that gap is the open ask in STATE.md 0m."
+  },
+  "commands": {
+    "_comment": "T119 AC1: commands resolve through `just` — the standard command interface. Do not put raw pnpm/npx here; add or fix a recipe in wom7api/justfile instead. Commands needing secrets are wrapped by the gate with secrets.run (see `secrets`).",
+    "test": "just test",
+    "typecheck": "just typecheck",
+    "lint": "just lint",
+    "e2e": "just test-e2e",
+    "build": "just build",
+    "deploy": "just deploy-all",
+    "doctor": "just sdlc-doctor",
+    "env": {
+      "_comment": "T119 AC2: NON-SECRET environment every gate injects. Secrets never go here — they come from secrets.run. Keeps telemetry/log writes out of $HOME so a sandboxed agent does not hit EPERM and request escalation.",
+      "ASTRO_TELEMETRY_DISABLED": "1",
+      "DO_NOT_TRACK": "1",
+      "WRANGLER_SEND_METRICS": "false",
+      "NEXT_TELEMETRY_DISABLED": "1",
+      "CI": "1"
+    },
+    "needs_secrets": [
+      "e2e",
+      "deploy"
+    ],
+    "preflight": "just preflight --fast",
+    "preflight_full": "just preflight",
+    "coverage_scan": "just coverage-scan",
+    "coverage_scan_test": "just coverage-scan-test",
+    "skills_outdated": "just skill outdated",
+    "skills_reconcile": "just skill reconcile",
+    "skills_check_user_scope": "just skill check --scope user",
+    "tools_outdated": "just tools-outdated",
+    "plan": "just tasks plan"
+  },
+  "quality_gates": {
+    "required": [
+      "gitleaks",
+      "semgrep",
+      "osv",
+      "conventional-commits",
+      "type-gate"
+    ],
+    "security_review_skill": "security-guardrails"
+  },
+  "tech_debt": {
+    "store": "markdown",
+    "register": "TECH-DEBT.md",
+    "markers": "just tech-debt   # scoped grep for TODO/FIXME/HACK in real source",
+    "lexicon_lint": "project/scripts/lexicon_lint.py",
+    "note": "The public.tech_debt Supabase census was retired 2026-07-21 — 78% noise, never resolved anything, and its documented query referenced columns that do not exist. Decided debt is a row in TECH-DEBT.md; occurrences stay in the code."
+  },
+  "conventions": {
+    "commit_style": "conventional",
+    "reference_ticket_in_commit": true,
+    "never_skip_hooks": true,
+    "no_coauthor_trailer": true,
+    "tool_ladder": [
+      "mcp",
+      "cli",
+      "python",
+      "typescript",
+      "bash-oneliner"
+    ]
+  },
+  "lifecycle": [
+    "new",
+    "start",
+    "spec",
+    "build",
+    "review",
+    "security",
+    "verify",
+    "deploy",
+    "archive"
+  ],
+  "grounding_gate": "research",
+  "state_surface": {
+    "_comment": "T145 — STATE.md is the handoff surface, and it is now MECHANICALLY maintained instead of by convention. Owner directive 2026-07-26: regenerate the top-10 hot header whenever a ticket closes through the SDLC, and refresh it when one advances a stage. The generated managed block holds the top-10 hot table + per-repo dirty/unpushed/HEAD + gate exit codes + the rowless-ticket set; prose OUTSIDE the markers is editorial and never touched by the tool.",
+    "file": "STATE.md",
+    "check": "state-check",
+    "save": "state-save",
+    "refresh_on": [
+      "archive",
+      "deploy"
+    ],
+    "refresh_on_stage_change": true,
+    "_gate": "`state-check` is wired at pre-push and BLOCKS. It is verify-only — it never rewrites the file, because a hook that mutates a tracked file mid-commit must re-stage it and can fight the commit. On failure: run `just state-save`, then review the editorial sections by hand.",
+    "_why_hot_is_generated": "The top-10 hot ranking used to be re-derived from prose by whichever agent was in the chair, then hand-written — so it reflected that agent and went stale the moment a ticket moved (a recorded entry still claimed '29 fileless tickets' after they were fixed). It is now computed by `just tasks hot` from recorded fields with the score components printed, and `state-check` compares the ranked ORDER, so closing or advancing a ticket makes the header provably stale rather than quietly wrong.",
+    "retention": {
+      "_comment": "T174 (§0q deliverable 3, asked 2026-07-25, unbuilt until 2026-08-07) — T145 made the MECHANICAL block generated and deliberately never touched the prose, which is where the growth was: measured 2026-08-07 the file was 333,768 B / 4,141 lines and 93.9% of it was dated history, having gone 5 KB → 333 KB in 16 days. `w0m-state-load` tells the next agent to read it, so orientation cost ~83k tokens before any work started. Retention is declared HERE rather than living in state_doctor.py so the policy is readable without reading the implementation — the 2026-08-07 Obsidian-port incident is what that rule is for: a governance file that had INFERRED a fact disagreed with reality for twelve days.",
+      "rotate": "state-rotate",
+      "archive_dir": "project/state-archive",
+      "archive_pattern": "{date}-{slug}.md",
+      "max_lines": 900,
+      "max_bytes": 81920,
+      "_budget_rationale": "MEASURED, then RAISED. The estimate was ~31,000 B; the actual post-rotation file is 47,246 B / 450 lines — the ⭐ block (8.7 KB), the consolidated §4 gotchas and the 56-row archive index are all bigger than projected. At the first-chosen 65,536 that left only 28% headroom, i.e. ONE session of slack, so the budget was raised to 80 KiB / 900 lines (~42% headroom, 2-3 sessions). Per T135 AC8 a gate set close to the post-change size starts effectively red and gets bypassed — and `--no-verify` is prohibited here, so 'always red' is not a survivable design. Steady state is flat, not growing: each session adds a pickup block (~9 KB) and `state-save` rotates the previous one out; the only monotonic growth is one ~200 B archive-index row per session, which reaches this budget in ~150 sessions. ⚠️ Do NOT raise it again to accommodate a file that stopped rotating — check `just state-rotate` ran first.",
+      "rotate_patterns": [
+        "^### ⭐ \\(was\\) PICK UP HERE",
+        "^### 0y\\d*\\. superseded pickup block"
+      ],
+      "_why_two_patterns": "These two literal shapes covered 19 of 66 sections and 188,319 B — 56.4% of the file — and identifying them needs NO judgement, which is what makes rotation separable from the triage of the remaining 37. Add a pattern only when a new shape is provably mechanical; anything requiring a reading is a triage decision and belongs in the disposition record.",
+      "never_rotate": [
+        "W0M-STATE:BEGIN",
+        "W0M-STATE:END",
+        "^## 0\\. Orient",
+        "^## ⭐ PICK UP HERE",
+        "^## 1\\. Standing thread",
+        "^## 2\\. Shipped earlier",
+        "^## 3\\. Other open threads",
+        "^## 4\\. Gotchas the next agent MUST know",
+        "^## 5\\. How to continue"
+      ],
+      "_verbatim": "Rotation MOVES content and must never transform it. This is a security clause, not a style one: several sections are the only record of credential incidents (the 2026-07-12 leak, the force-push-resurrects-leaked-objects warning), and a tool that 'helpfully' rewrote one would be an unreviewed edit to a security record.",
+      "disposition_record": "project/state-archive/DISPOSITION.md",
+      "_disposition": "Every editorial section must appear exactly once with a disposition — archived | promoted-to-auto-memory | promoted-to-CLAUDE.md | kept-live. An unaccounted section is a HARD FAILURE, never a default-archive: the failure to fear in this change is not a slow triage but a lesson quietly dropped with nobody able to tell.",
+      "second_surface": {
+        "_comment": "T174 AC5 — the reason the naive fix is wrong. MEMORY.md is auto-loaded EVERY session; STATE.md is read ONCE, and only when an agent chooses to. Draining one into the other converts a large occasional cost into a permanent one, so `archived` is the DEFAULT disposition and promotion must earn its place. If the COMBINED cost of both surfaces rises, the split is wrong.",
+        "file": "~/.claude/projects/-Users-proto-Projects--self--wom/memory/MEMORY.md",
+        "max_bytes": 24576,
+        "versioned": false,
+        "_unversioned": "🔴 This path is outside git, per-machine, and invisible to every gate — a THIRD occupant of the D32/D15 class and worse than the other two, being per-USER rather than per-workspace. Tracked as D36. No secret, token or connection string may be promoted there, and every promoted fact must leave a versioned pointer in the repo so a fact leaving git still produces a reviewable diff."
+      }
+    }
+  },
+  "lessons_surface": {
+    "_comment": "T232 AC11 — LESSONS.md is the earned rules register. Retention limits prevent unbounded context growth, while `just lessons` provides active querying.",
+    "file": "LESSONS.md",
+    "query": "lessons",
+    "retention": {
+      "max_lines": 1000,
+      "max_bytes": 92160,
+      "archive_dir": "project/lessons-archive",
+      "_budget_rationale": "Measured 2026-09-15: 711 lines / 63,311 bytes across 7 theme sections. Bound declared at 1,000 lines / 90 KiB provides headroom while ensuring agents can search and orient without context bloat."
+    }
+  },
+  "toolchain": {
+    "_comment": "T119 AC7: the two standard SDLC interfaces. Both are required:true in project/tools-policy.json; this block is the CONTRACT that gates use them. Verified by `just sdlc-doctor`.",
+    "commands_via": "just",
+    "secrets_via": "infisical",
+    "canonical_recipes": [
+      "check",
+      "typecheck",
+      "lint",
+      "test",
+      "test-e2e",
+      "build"
+    ],
+    "exempt": {
+      "wom7skills": "skills library — consumed by agents, not built or deployed",
+      "wom7ext": "🔴 EXEMPTION LAPSED — re-evaluated 2026-07-26 (T135 task 6.3). Its own trigger FIRED: the standing text said 'build/test/lint gates need no secrets (add .infisical.json if that changes)', and that changed. `extension/build.js:38` injects `process.env.SUPABASE_PUBLISHABLE_KEY` AT BUILD TIME, and `extension/tests/e2e/steps/world.js` reads `GEMINI_API_KEY` and `MISTRAL_API_KEY` — so both the build and the test gate consume secrets. Each reads `|| \"\"`, so a missing secret degrades to an EMPTY STRING rather than an error: the gate runs with no credential and reports whatever that produces. Remediated so far: `.infisical.json` created (same workspace as web/api/cf) and added to `wom7ext/.gitignore`, which lacked the rule the other three repos have. STILL OPEN: wire the build/test recipes through `infisical run` and replace the `|| \"\"` fallbacks with a loud failure — tracked, not silently exempt.",
+      "wom7sec": "security toolchain, early-stage — no secret files on disk; gates need no secrets (add .infisical.json when it grows a deploy/secret surface). ✅ RE-CONFIRMED 2026-07-26 (T135 task 6.3) — condition still holds, measured not assumed: 3 tracked code files, ZERO secret-shaped env references, no deploy surface. Unlike wom7ext, whose identical condition had fired.",
+      "wom7ava": "T323 bootstrap scaffold only — README/AGENTS/CLAUDE.md + .gitignore, no package.json/pyproject.toml, no build/deploy surface yet. Add the canonical justfile symlink and .infisical.json when real tooling (interface ports, hardware detector, vault) lands — re-evaluate then, not on the mere arrival of a repo entry.",
+      "wom7clips": "T322 bootstrap scaffold only — README/AGENTS/CLAUDE.md + .gitignore, no package.json/pyproject.toml, no build/deploy surface yet. Add the canonical justfile symlink and .infisical.json when real tooling (interface ports, hardware detector, Brand Kit vault) lands — re-evaluate then, not on the mere arrival of a repo entry."
+    }
+  },
+  "skills": {
+    "_comment": "T182: the installed-skill CATALOGUE — agent skills as a declared tool surface beside `toolchain` and `stacks`, not just a per-repo governance file. Skills are executable instructions loaded into every agent session, which makes them a SUPPLY-CHAIN surface (the phrasing is 1945's, whose sdlc.json carried this key first; adopting it here CONVERGES that divergence rather than retiring it). Read by project/scripts/skills_catalogue.py — `just skills-catalogue` lists every installed skill across every declared project with its two settings resolved, `--enforce` blocks on deviations. 🔑 `policy` is read from HERE and there is no fallback: delete this block and the catalogue stops rather than quietly using a hardcoded path, which is what keeps the key load-bearing. Per-repo integrity remains `just skill check` (T127); this is the estate-wide view that did not exist.",
+    "store": "wom7skills",
+    "manifest": ".w0m/skills.json",
+    "lockfile": ".w0m/skills.lock.json",
+    "policy": "project/skills-policy.json",
+    "schema": "project/skills-policy.schema.json",
+    "catalogue_command": "just skills-catalogue",
+    "layers": {
+      "_comment": "The two-layer layout, and why the split matters: integrity is computed over the GOVERNED layer, agents read the RUNTIME layer. A skill written into the runtime layer as a real directory is therefore visible to agents and invisible to hashing — which is exactly how CLI-generated families (openspec-*) are meant to sit there, and exactly what an accidental write looks like.",
+      "governed": ".agents/skills",
+      "runtime": ".claude/skills"
+    },
+    "defaults": {
+      "_comment": "The estate's recommendation for every installed skill. Reported by the catalogue; enforced only under --enforce, because the user-scope corpus lives on a developer's own machine and a hard failure there is unactionable in CI.",
+      "managed": "project",
+      "sandboxed": true
+    }
+  },
+  "stacks": {
+    "_comment": "T130: the per-stack tech/tools registry — the tech-aware, stack-scoped extension of `toolchain`. Declared in a separate policy file (mirrors project/tools-policy.json + deps-policy.json), validated by its own JSON Schema, read by project/scripts/discovery.py. `just discovery` reports drift (used-not-declared / declared-not-used); `just discovery --enforce` gates (declared-tool-without-recipe = hard fail; raw-invocation + drift = block). Honors this block's `exempt` (toolchain-dimension, distinct from toolchain.exempt which is secrets-scoped).",
+    "policy": "project/stacks-policy.json",
+    "schema": "project/stacks-policy.schema.json",
+    "discovery": "project/scripts/discovery.py"
+  },
+  "ide_surfaces": {
+    "_comment": "T192 AC1: the connected IDEs — which agentic tools this project is used with, and therefore whose autoload surface must carry the same contract. 🔑 THE DECLARATION IS THE SOURCE OF TRUTH, and it has to be, because nothing else records it: `openspec init --tools` writes each chosen tool's surface and keeps NO memory of the choice (measured 2026-08-10 — `openspec/config.yaml` contains `schema: spec-driven` and nothing else, in every project that has one). Read by project/scripts/ide_trace.py (`just ide-trace` / `--enforce`); the per-tool autoload knowledge and the non-negotiables checked for parity live in the policy file, never here. ⚠️ `connected` is a DICT here because w0m is one project spanning seven repos under this single sdlc.json — keys are `repos` keys, and each repo is scanned as its own unit since each autoloads its own CLAUDE.md. A single-root project (every client) declares a plain LIST instead.",
+    "policy": "project/ide-policy.json",
+    "connected": {
+      "_comment": "Declared connected IDEs (T192 / T232). Full multi-agent triad (`claude`, `antigravity`, `opencode`) connects across all core subrepos with native CLAUDE.md / AGENTS.md entrypoints and .agents/workflows/ / .opencode/ surfaces where generated. Historical note (2026-08-10): `opencode` was previously withheld when it existed in no project, to prevent red gates on ungenerated surfaces. With multi-agent parity established under T232, both opencode and antigravity are actively governed alongside Claude; Gemini was dropped from the target list per owner decision (2026-09-08).",
+      "web": [
+        "claude",
+        "antigravity",
+        "opencode"
+      ],
+      "api": [
+        "claude",
+        "antigravity",
+        "opencode"
+      ],
+      "cf": [
+        "claude",
+        "antigravity",
+        "opencode"
+      ],
+      "ext": [
+        "claude",
+        "antigravity",
+        "opencode"
+      ],
+      "sec": [
+        "claude",
+        "antigravity",
+        "opencode"
+      ],
+      "skills": [
+        "claude",
+        "antigravity",
+        "opencode"
+      ],
+      "mlx": [
+        "claude",
+        "cursor",
+        "gemini",
+        "windsurf"
+      ]
+    }
+  },
+  "mcp": {
+    "_comment": "T130: the MCP servers enabled for this project — the top rung of the tool ladder (MCP > CLI > python > ts > bash). Names + purpose ONLY: configuration and credentials live in the host Claude config (~/.claude.json) or plugins, NEVER here. `enabled` = intended project surface; `scope` = where it is configured (global = ~/.claude.json, plugin = a Claude Code plugin, session = host/plugin-provided, availability varies). Live availability is a harness fact, not a file fact — do not assume a server is connected because it is listed here (e.g. supabase is often NOT connected → psql fallback). T154 AC8: every entry MUST record `transport` (stdio | remote | local-http). `local-http` additionally requires `bind` + `auth` — it is the only kind a local port scan can reconcile against, and the only kind that can be the finding this ticket started from. `just mcp-exposure` fails on an entry with no transport.",
+    "servers": {
+      "codegraph": {
+        "enabled": true,
+        "transport": "stdio",
+        "scope": "global",
+        "purpose": "cross-repo code graph — `just ask`, graph-before-grep (indexed 2026-07-28, T151 AC1: wom7web/wom7api/wom7func/wom7skills/wom7ext/wom7sec — 6 of 7; NOT wom7mlx. Was '6 of 8' until T186 decommissioned wom7md 2026-08-08.)"
+      },
+      "graphify": {
+        "enabled": true,
+        "transport": "stdio",
+        "scope": "project",
+        "purpose": "UNITED cross-repo code graph over ~/.graphify/global-graph.json (7 repos, ~54.9k nodes) — 10 tools incl. query_graph/shortest_path/god_nodes. T151 AC8, live 2026-07-28. Configured in the ESTATE-ROOT .mcp.json (@wom/.mcp.json), which is NOT in any git repo and therefore unversioned — this entry is the tracked declaration. stdio only, never HTTP (T154). Needs graphifyy[mcp] with mcp<2 pinned: 0.9.15 imports AnyUrl from mcp.types, dropped in mcp 2.x. Refresh with `just graph-global`, verify with `just graph-health`."
+      },
+      "cloudflare": {
+        "enabled": true,
+        "transport": "remote",
+        "scope": "global",
+        "purpose": "Workers/DNS/zone — deploy target for the edge + cf stacks"
+      },
+      "github": {
+        "enabled": true,
+        "transport": "remote",
+        "scope": "plugin",
+        "purpose": "ticket/board/PR/issue sync — Project #2, casualuser/webomage.com (see `vcs`)"
+      },
+      "supabase": {
+        "enabled": true,
+        "transport": "remote",
+        "scope": "session",
+        "purpose": "DB/edge admin — OFTEN NOT connected; fall back to psql over the injected DATABASE_URL (see STATE/migration gotcha)"
+      },
+      "claude-in-chrome": {
+        "enabled": true,
+        "transport": "stdio",
+        "scope": "session",
+        "purpose": "browser automation for the verify gate (real logged-in Chrome)"
+      },
+      "hostinger-domains": {
+        "enabled": false,
+        "transport": "remote",
+        "scope": "global",
+        "purpose": "domain registration/transfer/WHOIS for webomage.com — DECOMMISSIONED / DISABLED (Project 1945 paused)"
+      },
+      "hostinger-dns": {
+        "enabled": false,
+        "transport": "remote",
+        "scope": "global",
+        "purpose": "DNS records/snapshots (records wrangler/Terraform do not own) — DECOMMISSIONED / DISABLED (Project 1945 paused)"
+      },
+      "hostinger-hosting": {
+        "enabled": false,
+        "transport": "remote",
+        "scope": "global",
+        "purpose": "hosting/website/cron/db-remote management — DECOMMISSIONED / DISABLED (Project 1945 paused)"
+      },
+      "hostinger-billing": {
+        "enabled": false,
+        "transport": "remote",
+        "scope": "global",
+        "purpose": "subscriptions/catalog/payment methods (read-mostly) — DECOMMISSIONED / DISABLED (Project 1945 paused)"
+      },
+      "hostinger-reach": {
+        "enabled": false,
+        "transport": "remote",
+        "scope": "global",
+        "purpose": "contacts/segments (email reach) — DECOMMISSIONED / DISABLED (Project 1945 paused)"
+      },
+      "hostinger-wordpress": {
+        "enabled": false,
+        "transport": "remote",
+        "scope": "global",
+        "purpose": "WordPress management — configured but not used by any w0m stack — DECOMMISSIONED / DISABLED (Project 1945 paused)"
+      },
+      "upwork": {
+        "enabled": true,
+        "transport": "remote",
+        "scope": "global",
+        "purpose": "Official Upwork MCP server (https://mcp.upwork.com/mcp) — OAuth 2.1; job discovery, proposal drafting, live contract/milestone tracking, talent search"
+      },
+      "serena": {
+        "enabled": true,
+        "transport": "stdio",
+        "scope": "global",
+        "purpose": "LSP-backed SYMBOL-level edits + diagnostics (T166) — NOT a graph engine. `just ask` stays the graph entry point; reach for serena when you need to rename/replace/delete a symbol with compiler awareness, or read diagnostics for a file. Installed by Headroom as its default --code-memory backend. PINNED 2026-09-20 (T170) to maintained fork `git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1` with native .astro LSP support."
+      },
+      "headroom": {
+        "enabled": true,
+        "transport": "stdio",
+        "scope": "global",
+        "purpose": "Headroom MCP tools (T169) — `headroom_compress` / `headroom_retrieve` / `headroom_stats`. ⚠️ compress is a MEASURED NO-OP here: a 628-token payload returned transforms:['router:noop'], tokens_saved 0, output byte-identical (2026-08-05). `headroom_stats` IS useful — it reads the proxy counters, which is how a bypassed run is detected. Distinct from the proxy daemon below: same binary, different process and transport. See TECH-DEBT D29/D30."
+      },
+      "headroom-proxy": {
+        "enabled": true,
+        "transport": "local-http",
+        "bind": "127.0.0.1:8787",
+        "auth": "none (loopback-only)",
+        "scope": "global",
+        "purpose": "Headroom LLM optimization proxy (T169) — launchd `com.headroom.default`, the ONLY listening surface in this declaration and therefore the only one `just mcp-exposure` can reconcile. 🔴 It carries a Pro-subscription OAuth token, so it is declared to make that visible, not because it is load-bearing: the Claude App pins ANTHROPIC_BASE_URL and CANNOT route through it (measured), and compression has saved 0 tokens ever. It serves `claude -p` subprocesses only (`just headroom-task`). Loopback bind is the mitigation; auth is `none`, which is acceptable ONLY while the bind stays loopback. See TECH-DEBT D29/D30."
+      },
+      "obsidian-wom7web": {
+        "enabled": true,
+        "required": false,
+        "transport": "local-http",
+        "bind": "127.0.0.1:3007",
+        "auth": "required — per-vault semantic-vault-mcp apiKey; unauthenticated probe returns 401",
+        "scope": "host",
+        "purpose": "Obsidian vault access over MCP, served by the **`semantic-vault-mcp`** plugin (\"Semantic Notes Vault MCP\" 0.11.42, Aaron Bockelie) running inside an Obsidian renderer process — NOT a standalone daemon, so it exists only while that vault window is open. 🔴 CORRECTED 2026-08-07: this entry previously attributed both ports to `obsidian-local-rest-api` v5.0.2. That was wrong, and the estate contradicted itself about it — `project/mcp-exposure-baseline.json` had already named the right plugin. Proven by elimination, not by reading a name off the thing: BOTH vaults' local-rest-api `apiKey`s are rejected 401 by BOTH ports, while `<vault>/.obsidian/plugins/semantic-vault-mcp/data.json` records `httpPort` matching exactly. ✅ port↔vault mapping RESOLVED 2026-08-07 (was recorded unknown): the plugin config carries the port, so it was readable all along — the earlier probe looked in the local-rest-api config, which only ever records 27123/27124. ✅ REACHABLE from a Claude session since 2026-08-07 via the stdio bridge `wom7web/project/scripts/obsidian_mcp_bridge.py`, wired in the estate-root `.mcp.json`. The bridge exists because the server needs `Authorization: Bearer <apiKey>` and CLAUDE.md forbids secrets in files: it reads the key at launch from the plugin's own gitignored `data.json`, so the credential is never copied into any config. It also reads the PORT from there rather than taking one on the command line — the two vaults have collided on ports before, and a hardcoded port would silently talk to the wrong vault. ⚠️ Session-ful transport: everything after `initialize` 400s unless the returned `Mcp-Session-Id` is echoed, and the server returns that header LOWER-CASED. 🔴 Exposes 8 tools incl. **`edit`**, and `readOnlyMode` is **false** in both vaults — an agent with these tools can WRITE to the vault. For `wom7web` that vault is a live code repo, so writes land outside the normal Edit/git path. ✅ **OWNER DECISION 2026-08-07: keep `readOnlyMode: false` on BOTH.** Write access is the point — the intended use is manual and Obsidian-tool analysis written back to `.md` through MCP. This is a deliberate, reasoned acceptance, not an unreviewed default. ⚠️ What that means in practice, and it is on the agent doing the writing: an MCP `edit` in the **wom7web** vault touches the code repo **outside** the Edit/git path, so it produces no diff you read first and can leave the working tree dirty without anything announcing it. 🔴 T186 (2026-08-08): this used to say *'prefer the wom7md vault for notes'* — **there is no second vault any more**, so that escape hatch is gone and every MCP write lands in a live code repo. `git status` afterwards is now the only check. Ties [[T144]]. Port 3007 → the **wom7web** vault, which is also the code repo."
+      }
+    },
+    "boundary": {
+      "_comment": [
+        "T150 AC7 — WHICH SURFACE IS FOR WHOM, and why. Recorded as policy so the next agent does",
+        "not 'finish the MCP migration' by putting an unauthenticatable server in a hook.",
+        "",
+        "agent_facing (MCP): interactive, agent-in-the-loop work. An MCP server may require an",
+        "  OAuth flow, a browser round-trip, or a human approving a tool call. That is FINE here",
+        "  because a human is present.",
+        "",
+        "automation_facing (just/CLI): hooks, cron, CI, deploys — anything that runs with nobody",
+        "  watching. These MUST be reachable with an injected secret and nothing else.",
+        "",
+        "THE CONSTRAINT, stated plainly: MCP AUTH IS NOT HEADLESS. Several connectors authenticate",
+        "interactively and simply cannot complete in a non-interactive session — observed",
+        "2026-08-02, when `plugin:figma:figma` required an OAuth flow this session could not run.",
+        "A hook that depended on it would fail for a reason the hook cannot report and the operator",
+        "cannot fix from the error. That is why the mirror in .husky/pre-push calls `gh` directly",
+        "and not an MCP server, and why it is the single sanctioned forge call site (T150 AC3b,",
+        "enforced by hooks_check.py and proven RED by test_hooks_check.py).",
+        "",
+        "A surface may be BOTH — codegraph has `codegraph_explore` (agent) and `just ask` (CLI).",
+        "That is the healthy shape: the automation path never depends on the interactive one."
+      ],
+      "agent_facing": {
+        "transport": [
+          "stdio",
+          "remote",
+          "local-http"
+        ],
+        "may_require_interactive_auth": true,
+        "examples": [
+          "codegraph_explore",
+          "graphify",
+          "cloudflare",
+          "supabase",
+          "github (MCP)"
+        ]
+      },
+      "automation_facing": {
+        "must_run_headless": true,
+        "secrets_via": "infisical run",
+        "examples": [
+          "just ask",
+          "gh (in .husky/pre-push only)",
+          "just sync-tickets",
+          "just test"
+        ]
+      },
+      "rule": "Automation MUST NOT depend on an MCP surface. If a hook, cron job or deploy needs a capability, it takes the CLI path — even when an MCP server offers the same capability more conveniently."
+    },
+    "_obsidian_note": "Declared 2026-08-07 after `just mcp-exposure` surfaced three undeclared Obsidian listeners. Only the two MCP ports (3001, 3007) are declared here, per owner instruction. 🔴 The THIRD listener, 127.0.0.1:27123, is deliberately NOT declared as MCP: it is the plugin's REST half and it answers `GET /` with HTTP 200 while UNAUTHENTICATED, disclosing plugin id, version, Obsidian version and plugin directory. That is an information-disclosure surface, not an MCP server — it belongs in a security review, not in this list. ⚠️ Both open vaults' plugin configs declare the SAME ports (insecure 27123 / secure 27124), so only the first vault to start can bind them — a collision that makes which vault answers 27123 an accident of startup order. ⚠️ Both endpoints send `Access-Control-Allow-Origin: *`, so any web page you visit may attempt cross-origin requests to them; the API key is the only barrier."
+  },
+  "iac": {
+    "_comment": "T125: infrastructure-as-code, declared so the gates can see it. THE RULE: `plan`/`drift` are read-only and safe to automate; `apply` is NEVER automated and never run by a gate. Terraform here can perform deployments via local-exec null_resources (TECH-DEBT D22), so an apply is not 'just infrastructure' — treat it as a deploy until that debt is paid.",
+    "tool": "terraform",
+    "dirs": [
+      "wom7api/cloudflare",
+      "wom7api/monitoring"
+    ],
+    "plan": "just tf-plan",
+    "drift": "just tf-drift",
+    "apply": null,
+    "apply_policy": "manual-only; requires a reviewed plan and no local-exec side effects",
+    "owns": "DNS/zone/ruleset config that wrangler does NOT manage. Workers custom domains are owned by wrangler — Terraform must not manage those records or the two fight."
+  },
+  "backups": {
+    "_comment": "T229 AC2 — how stale a backup may be before `just backup-freshness` calls it a missed run. In config because the CADENCE is a decision that changes more often than the checker, and a cadence written into a script is one nobody edits. ⚠️ These are AGE LIMITS, not a schedule: this estate's scheduler surface is split (desktop-app routines are invisible to the CLI scheduler), so freshness is verified by the artefact ON DISK, never by asking a scheduler. postgres=7 because the database changes constantly and 7 days is already a lot of lost work; storage=30 because it is append-mostly at ~54 MB a copy, so monthly is proportionate. Raise either only with a reason, and remember the storage copy proves completeness, not a restore.",
+    "max_age_days": {
+      "postgres": 7,
+      "storage": 30
+    }
+  },
+  "supabase_limits": {
+    "_comment": "T229 AC6 — OWNER DECISION 2026-08-18: stay on the Supabase FREE tier and do not hit the limits; Pro is available for the w0m project if genuinely needed, but Free is the default. A limit you have chosen to live inside must be watched, because these fail ABRUPTLY rather than gradually. Caps are Supabase's published Free-tier numbers; warn/fail percentages are ours. \\u26a0\\ufe0f EGRESS (5 GB/month) is deliberately absent: the Management API exposes no usage endpoint (/usage and /daily-stats both 404 as of 2026-08-18), so it is reported as NOT MEASURED rather than given a threshold nothing can evaluate.",
+    "projects_per_org": 2,
+    "db_bytes_per_project": 524288000,
+    "storage_bytes": 1073741824,
+    "warn_at_percent": 70,
+    "fail_at_percent": 90
+  },
+  "versioning": {
+    "_comment": "T131 AC1 — the w0m release version schema, declared ONCE so the gates can verify it. ROADMAP §4 requires YYYY.MM.DD-<unixtimestamp>; before this block it was applied in exactly one place and verified nowhere, which is how two orphaned producers survived in the tree. Verified by `just version-check` (project/scripts/version_doctor.py).",
+    "format": "YYYY.MM.DD-<unixtimestamp>",
+    "regex": "^[0-9]{4}\\.[0-9]{2}\\.[0-9]{2}-[0-9]{9,10}$",
+    "example": "2026.07.26-1784444444",
+    "producer": {
+      "_comment": "ONE producer. `just version` prints it; the justfile variable is the same expression evaluated once per invocation, which is what the deploy recipes interpolate. Any other site that constructs a version string is a second format waiting to happen — version-check finds them.",
+      "recipe": "just version",
+      "expression": "date +%Y.%m.%d-%s",
+      "declared_at": "wom7api/justfile (deploy_version, symlinked into wom7web)",
+      "consumers": [
+        "deploy-functions",
+        "deploy-web",
+        "deploy-join",
+        "deploy-job",
+        "deploy-demo",
+        "deploy-workers",
+        "deploy-cp",
+        "_log-deploy",
+        "build"
+      ],
+      "_consumers_comment": "T131 AC6 — VERIFIED, not merely listed. `just version-check` now asserts each name here has a justfile recipe AND that the recipe interpolates `deploy_version`, so this list cannot claim coverage the justfile does not have. Its first run found `deploy-cfworkers` dangling: the recipe had been renamed `deploy-workers` (the 2026-08-01 worker-name split) and the declaration was never updated — invisible for as long as nothing checked. `build` joins the list because AC2 made it a real consumer; `_stamp` deliberately does NOT, because it takes the triple as arguments and never interpolates the producer itself."
+    },
+    "scan": {
+      "_comment": "WHICH SET version-check enumerates — stated, never implied. It scans tracked files under these globs in these repos. A version producer outside this set is invisible to the gate; widen the set rather than trusting a clean number (T149's standing rule).",
+      "repos": [
+        "wom7web",
+        "wom7api",
+        "wom7skills"
+      ],
+      "globs": [
+        "justfile",
+        "scripts/**",
+        "project/scripts/**",
+        "*.ts",
+        "*.js"
+      ]
+    },
+    "exempt": {
+      "package.json": "T391: All governed private manifests (@wom root, wom7web monorepo, and apps/*) uniformly declare the canonical date-timestamp release version format. Because private: true is set across all apps, pnpm permits this without registry publishing friction. External published packages retain semver.",
+      "report filenames": "Audit/report files use %Y%m%d_%H%M%S for UNIQUENESS, not release identity. ⚠️ This is a CATEGORY note, not a path — the matcher is path-substring, so it matches nothing on its own; the two scripts above are the concrete entries. Kept because the category is the reasoning future entries should follow.",
+      "project/scripts/w0m_audit.py": "Report header prose (`%Y-%m-%d %H:%M UTC`) and the IDEMPOTENT per-day filename `W0M-STATUS-<day>.md`. Both fall under versioning.artifact_naming.does_not_apply_to — the header is written for a person, and the daily file's stable path is its purpose. Not drift: excluded by category, under the declared standard.",
+      "project/scripts/tools_check.py": "A machine-parsed ISO `generated` field read back with datetime.fromisoformat to compute an age. Excluded by category under versioning.artifact_naming.does_not_apply_to: the release schema is not ISO-8601 and would not parse. It is a data field, not an artefact name.",
+      "project/scripts/tools_upgrade.py": "T247 AC1 — the same category as tools_check.py above, and for the same field: a machine-parsed ISO `ran` timestamp in .tools-weekly-status.json, read back with datetime.fromisoformat to say how long ago the last toolchain run failed. It is a data field, not an artefact name or a release identity. ⚠️ This file DOES talk about versions constantly — it is the tool upgrader — which is exactly why the year+version heuristic fired here, and why the exemption is scoped to the timestamp rather than the file being waved through: any future release-shaped string in it should still be a finding.",
+      "project/scripts/tests/test_toolchain_chain.py": "T247 AC7 — the regression proof for the toolchain chain. Its `datetime` use FABRICATES run timestamps (a 4-day-old failed run, a fresh clean one) to assert that a held tool is surfaced with its age, and its version strings are FIXTURES the checker is run against — the same category as wom7skills/tests/skills_version.test.ts. A test that must not contain version-shaped strings cannot test a version reconciler. ⚠️ Scoped to this file for that reason, not because test files are exempt as a class.",
+      "wom7skills/tests/skills_version.test.ts": "T131 AC3's regression suite. The version strings in it are FIXTURES the checker is run against — a conforming one, a non-conforming `1.0` reproducing the pre-T131 state, and a deliberately varying producer that proves a no-op stamp stays a no-op even when the clock moves. None is a release identity and none reaches any artifact. ⚠️ Exempting a TEST is the narrow case: the thing under test is the version format itself, so it must be able to write bad versions on purpose. This does NOT extend to the tool it tests — `wom7skills/version.ts` is deliberately NOT exempt and is not flagged, because it reads `producer.expression` from this file rather than carrying a format of its own. If version.ts ever starts constructing a literal, the gate SHOULD fire on it.",
+      "wom7api/scripts/db_backup.py": "T229 AC1 — the %Y%m%d_%H%M%S in `backup_<stamp>.sql` names a DUMP FILE for uniqueness and chronological sort; it is not a release identity and nothing reads it back as a version. Exempted by PATH rather than under the existing 'report filenames' category note because that entry says of itself that it is a category, not a path — leaning on it would make this exemption unverifiable. ⚠️ If this file ever produces a string that something PARSES as a version, this exemption is wrong and should be removed rather than widened.",
+      "wom7api/scripts/storage_backup.py": "T229 AC4 — the %Y%m%d_%H%M%S in `storage_<stamp>/` names a BACKUP DIRECTORY for uniqueness and chronological sort, matching the `wom7api/scripts/db_backup.py` precedent exactly; nothing treats it as a release identity. ⚠️ Naming the caveat that precedent raises, because this case brushes it: `db_restore_verify.py` DOES parse `backup_<stamp>` back — but as the DUMP TIME used to tell post-dump growth from data loss, never as a version. A timestamp read as a timestamp is not the thing this gate exists to catch. If anything ever parses either stamp as a VERSION, both exemptions are wrong and should be removed rather than widened.",
+      "wom7web/scripts/hook_log_wrap.sh": "T230 — the %Y%m%d_%H%M%S in `<repo>-<hook>-<stamp>.log` names a HOOK RUN LOG for uniqueness and chronological sort. Nothing parses it back as a version, and the file has no release semantics at all. Exempted by PATH, matching the `wom7api/scripts/db_backup.py` precedent where the date-stamp is likewise intrinsic to a generated filename. ⚠️ Distinct from `tasks_query.py`, which was REWORDED instead: there the word 'version' appeared incidentally in prose beside an unrelated date-parse, so removing it kept the gate's signal sharp. Exempt when the stamp is the file's job; reword when the match is an accident.",
+      "wom7api/scripts/backup_freshness.py": "T229 AC2 / T231 AC4 — a FALSE POSITIVE with two halves, both stated because neither alone justifies the exemption. (1) The `%Y%m%d%H%M%S` is a strptime PARSE of `backup_<stamp>.sql` / `storage_<stamp>/` names, i.e. reading a date this file did not create — dating backup artefacts IS this file's job, matching the `db_backup.py` precedent. (2) The word that actually tripped the gate is `signature_version=\"s3v4\"`, boto3's S3 CONFIG KEYWORD. \\u26a0\\ufe0f This estate's own rule is *exempt when the stamp is the file's job; REWORD when the match is an accident* — and the match here IS an accident, but it cannot be reworded: it is a third-party API parameter name, not our prose. That is the only reason this is an exemption rather than a rename. \\ud83d\\udd34 If a future version of this file constructs a version string, this exemption is wrong and should be removed rather than widened.",
+      "wom7web/project/scripts/upwork_mcp_sync.py": "T155 — TWO non-release uses, both verified rather than waved through. (1) Line 73 `clientInfo: {name, version: \"1.0\"}` is the MCP INITIALIZE HANDSHAKE — the protocol's own field for a client identifying itself to the Upwork server. It is the version of this SYNC CLIENT as the remote sees it, not of any w0m release, and MCP fixes the field name. (2) Lines 439/447 `synced_at: %Y-%m-%dT%H:%M:%SZ` is an ISO timestamp recording WHEN a record was pulled, stored in the JSONL row. Neither is a release identifier; neither reconstructs the release expression. ⚠️ This file first tripped version-check on 2026-08-19 when `git add -A` swept it into an unrelated commit — the gate catching it there is why that mistake was noticed at all, so the exemption is narrowed to this PATH and not widened to the pattern.",
+      "wom7web/project/scripts/prepush_runner.py": "T375 — ISO-8601 timestamps (datetime.now(timezone.utc).isoformat()) recorded in checkpoint JSON to track step execution timestamps and durations. The word 'version' appears incidentally in the registered gate list citing the 'version-check' gate (T131). It is a diagnostic execution stamp, not a release identifier or artefact name.",
+      "wom7web/project/scripts/sync_manifest_versions.py": "T391 — synchronizes governed workspace and sub-app package.json manifests with the canonical release version format emitted by `just version`. It propagates the declared producer's output; it does not define a competing release format."
+    },
+    "artifact_naming": {
+      "_comment": "OWNER DECISION 2026-08-14: the release format is ALSO the standard timestamp-versioned schema for generated ARTEFACT FILENAMES, not just releases. One schema, one producer, so an artefact can be lined up against a release without translating between formats. First adopter: deploy transcripts (`deploy-<version>.log`).",
+      "format": "YYYY.MM.DD-<unixtimestamp>",
+      "producer": "just version — NEVER reconstruct the expression at the call site",
+      "applies_to": [
+        "generated artefact filenames that identify ONE run (deploy transcripts, export bundles, snapshot dumps)"
+      ],
+      "does_not_apply_to": {
+        "_comment": "A standard without a stated boundary gets applied where it does damage, or ignored wholesale once it does. These three are NOT timestamp-versioned artefacts and are excluded by category, with the reason each would break.",
+        "machine-parsed timestamp FIELDS inside data": "e.g. tools_check.py's `generated` ISO field, which is read back with datetime.fromisoformat to compute an age. The schema is not ISO-8601 and would not parse — this is a data field, not a name.",
+        "human-readable time in report PROSE": "e.g. w0m_audit.py's `%Y-%m-%d %H:%M UTC` header line. It is written to be read by a person, not matched by a gate.",
+        "IDEMPOTENT per-day documents": "e.g. docs/audit_and_research/W0M-STATUS-<day>.md. Its stable, predictable path is the point — a unix timestamp would mint a new file on every run and break every inbound link. ⚠️ Convert this one only alongside a decision about what links to it."
+      }
+    }
+  },
+  "preflight": {
+    "_comment": "T147 AC7 — the session-start preflight, declared here so a skill reads it instead of hardcoding a command. Answers 'is the environment wired up RIGHT NOW': MCP servers, graph index, repos, required binaries. Deliberately NOT a second toolset-status — that asks whether the governed registries are conformant and takes ~23s; this asks what a session can actually reach and takes ~1.6s, because AC1's whole point is that a preflight nobody runs is worse than none. 🔴 It REPORTS, it does not block (AC5): `skill check`, `discovery --enforce` and `state-check` already own the blocking, and a second blocking hook here would just be a slower push. ⚠️ It cannot tell you whether an MCP server is connected to the RUNNING SESSION — that is a harness fact, not a file or port fact, and both Obsidian servers were declared, enabled and listening for twelve days while zero Obsidian tools existed. It says so in its own output rather than printing a number it cannot measure.",
+    "fast": "just preflight --fast",
+    "full": "just preflight",
+    "test": "just preflight-test",
+    "script": "project/scripts/preflight.py",
+    "checks": [
+      "mcp",
+      "graph",
+      "repos",
+      "tools"
+    ],
+    "budget_seconds": 2,
+    "blocking": false,
+    "session_hook": "SessionStart in the estate-root .claude/settings.local.json, calling the script directly by absolute path rather than via `just`: the session's project dir is the estate root, which has no justfile, and `just` startup would cost ~0.5s of a 2s budget. Same single implementation either way."
+  },
+  "current_plan": {
+    "_comment": "THE ONE THING THE ESTATE IS TRYING TO FINISH RIGHT NOW — called `plan`, NOT `program`: T203 is already titled 'PARENT PROGRAM', and `epic:`/`batch` are both taken too (a ticket frontmatter field, and T200's rule that a batch's members share a surface). Two things called 'program' is the ambiguity this estate normally hunts — owner ask 2026-08-17: 'set it for now as Clients first step we planned'. The two ranked boards answer 'what next?' and 'what is nearly done?', and neither can answer 'are we getting closer to the thing we decided to ship' — a queue of 155+ tickets has no opinion about which of them is the plan. This block is that opinion, declared once and read by BOTH `just tasks` and the HTML dashboard so they cannot drift into two different answers. 🔴 It is a POINTER, not a second copy of the plan: the stages and their reasoning live in ROADMAP §19 / the linked tickets, and only ticket ids live here. Duplicating the prose would create exactly the second source of truth §32 exists to forbid. ⚠️ A stage is NOT complete because its tickets are ticked — every stage below carries a MEASURED exit criterion, because ticking an AC is a claim and a probe is evidence.",
+    "_swap_comment": "🔁 CONTINUED (not swapped) 2026-09-18. The prior plan target, 'Authorization Core', was a narrow sub-batch of ROADMAP §19 (T200's batch + T206/T205 + Ring-2) and was declared fully exhausted 2026-09-18 — all 12 of its tickets are `status: done` at 100% AC. §19 itself ('Security, RBAC & Platform Hardening') is much larger and has accumulated tickets continuously since 2026-07-14: of 57 tickets tagged `epic: security-rbac-hardening`, 20 remain open. Owner decision 2026-09-18: stay on §19 rather than pick a different section, and — before naming stages — review all 20 open tickets against LIVE reality rather than trusting frontmatter. That review is recorded below and drove the stage design; it found no ticket whose status/pct was internally wrong, but did find: (a) T196's two flagged secrets (`TELEGRAM_BOT_TOKEN`, `HATCHET_CLIENT_TOKEN`) are STILL live 2026-09-18 (`getMe`→200, JWT exp 2126) despite the leaking plist itself being quarantined since 2026-08-10 — containment happened, rotation did not, and T244 AC5's unrelated 2026-08-21 fix synced a DIFFERENT concern (getting the token into Infisical) without rotating the value, so it does not close T196 AC1; (b) T201's `DEBUG_BYPASS_KEY` (`wom7api/supabase/functions/contact-submit/index.ts:22`) and hardcoded hCaptcha site keys are still live in source, PLUS one hCaptcha file (`apps/web/src/components/ChatApp.svelte`) not in the ticket's own enumeration; (c) T329's claimed bug is real and still present — `authz_probe_suite.py build()` resolves `client_uid`/`client_org`/`admin_uid` via three independent uncorrelated `LIMIT 1` subqueries, so the probe suite can silently pair a client user with the WRONG org; (d) T208's `user_profiles` ghost callers are still exactly as filed — `just callsite-drift` (re-run 2026-09-18) reports GHOST: 2 at the same two call sites; (e) T327 is a genuine, real scope gap left by the ALREADY-DONE T202, not a duplicate or a data error — T202 removed the RLS-bypassing shared client from SSR pages, T327 (filed later, 2026-09-07) found 33 OTHER importers of the same client still in CP staff pages, none authorising themselves; (f) T396 (filed TODAY, 2026-09-18) heavily overlaps T233's 'one security posture' composition ask and already-done T198/T202/T206 ground, and its AC5 names `just security-check`, which is NOT a real recipe — flagged for narrowing, not staged as-is; (g) T17/T18/T19/T31 are genuinely owner-decision-blocked, not assignable engineering work, and are deliberately left OUT of the staged tickets below rather than padding a stage with work no agent can advance. Authorization Core's full stage history is preserved in git (`git log -- .w0m/sdlc.json`), not deleted.",
+    "name": "Security & RBAC Hardening",
+    "roadmap": "ROADMAP.md §19",
+    "active_stage": "stage-1",
+    "_deferred_owner_decision": "Open in this epic but excluded from the staged tickets below because the remaining work is an owner call, not engineering that an agent can advance: T17 (purge .env.bak from git history — a repo-wide history rewrite affecting every clone, needs owner sign-off before anyone force-pushes rewritten history) · T18 (paused, its one AC literally reads 'TODO: define acceptance criteria' — cannot be worked until the owner scopes it) · T19 (P3, one-line decision: keep or delete a synthetic `jordan@acme-test.io` row in `leads`) · T31 (paused, remaining 3 of 4 AC are owner/infra work tied to T22, not engineering). Re-admit any of these to a stage once the owner has made the call it's waiting on.",
+    "_needs_narrowing": "T396 ('Client Delivery Readiness: end-to-end client functions security and authz audit', filed 2026-09-18, 0/5 AC) overlaps T233 AC1's 'one security posture command' ask and re-covers ground T198/T202/T206 already closed (tenant isolation, active-hat enforcement). Its AC5 cites `just security-check`, which does not exist as a recipe — an unticked AC naming a gate it intends to build is a plan per T255's own rule, not a violation, but it should be built as the SAME composition T233 AC1 asks for, not a second one. Recommend narrowing T396 to the client-surface ground T233/T381/T382 don't cover (guest portals, onboarding invite flows) before staging it, or folding its distinct ACs into T233. Left OUT of the stages below pending that owner/agent decision.",
+    "stages": [
+      {
+        "id": "stage-0",
+        "name": "Confirmed-live exposure — close what is measurably still open",
+        "blocking": false,
+        "tickets": [
+          "T196",
+          "T201",
+          "T329"
+        ],
+        "exit": "Each ticket closes on its own acceptance criteria — no single probe covers 'rotate a secret' + 'swap a captcha vendor' + 'fix a probe script's own bug'. Named as a stage because all three share one property the review just re-confirmed: the vulnerable state is not hypothetical, it is live in production/source TODAY, unlike most of the rest of this epic which is composition or feature work.",
+        "exit_checks": [],
+        "_not_yet_checked": "No `just` recipe exists yet for any of these three claims, so per `_exit_check_rule` all of them are UNCHECKED, not passed: (1) T196 AC1 — TELEGRAM_BOT_TOKEN and HATCHET_CLIENT_TOKEN rotated (old value's sha256 digest no longer matches what `getMe`/the Hatchet JWT accept) and AC2-5's host-surface baseline gate built; (2) T201 — DEBUG_BYPASS_KEY removed from `wom7api/supabase/functions/contact-submit/index.ts`, all 7 hCaptcha files (6 the ticket names + `apps/web/src/components/ChatApp.svelte`, found this review) migrated to Turnstile; (3) T329 — `authz_probe_suite.py build()`'s three independent `LIMIT 1` subqueries replaced with one correlated query so client_uid/client_org always come from the same row. Re-verify each with a plain grep/API check before marking done; do not trust frontmatter alone.",
+        "_exit_met_comment": "MET 2026-09-19: All 3 tickets closed at 100% AC (16/16). T196 (Hatchet token revoked, quarantine cleaned, host surface gate enforced), T201 (DEBUG_BYPASS_KEY removed, Turnstile cutover complete), T329 (authz_probe atomic client actor binding live 18/18 green, 20/20 offline red probes passing)."
+      },
+      {
+        "id": "stage-1",
+        "name": "RLS/authz enforcement residue — the gaps left by already-closed tickets",
+        "blocking": true,
+        "tickets": [
+          "T381",
+          "T382",
+          "T327",
+          "T208"
+        ],
+        "exit": "Each ticket closes on its own acceptance criteria. Grouped because all four are gaps a DONE ticket left behind rather than net-new surface — T202 (done) removed the RLS-bypassing shared client from SSR pages but T327 found 33 other importers in CP staff pages; T198/T200 (done) built the admin/hat model but T381 found lead-api/guild-api not enforcing it; T208's two ghost callers are the two sites T194's drop-derived gate structurally cannot see.",
+        "exit_checks": [],
+        "_not_yet_checked": "🔴 `just callsite-drift` is DELIBERATELY NOT wired as an exit_check even though it is the ticket's own named proof (T208 AC5) — it is ADVISORY and exits 0 unconditionally regardless of findings, so `just tasks plan --check` would report this stage MET purely from the exit code while the printed body still says GHOST: 2. Re-run 2026-09-18: GHOST: 2, same two sites as filed (wom7api/src/workflows/linkedin-data-erasure.ts:77, wom7web/packages/lib/src/auth/handlers.ts:440) — T208 is NOT resolved. Wire this claim only once T208/T194 add an `--enforce` mode that actually fails on GHOST > 0. T381 (admin-hat enforcement in lead-api/guild-api) and T382 (withServiceRole adoption) have no gate at all yet. T327 AC1 asks to promote `just authz-admin-client` from advisory to `--enforce` with a downward-only baseline (33 importers today) — that flag does not exist until T327 ships it, so citing it now would be citing proof that doesn't exist (T255's own rule). Once AC1 lands, wire `just authz-admin-client --enforce` here.",
+        "_exit_met_comment": "Not yet met."
+      },
+      {
+        "id": "stage-2",
+        "name": "Identity & MFA surface",
+        "blocking": false,
+        "tickets": [
+          "T53",
+          "T100"
+        ],
+        "exit": "Each ticket closes on its own acceptance criteria. Sequenced deliberately: T53 builds TOTP enrollment/management and the personal-access-token surface on /profile; T100 builds the sign-in-time 2FA challenge and the dormant-OAuth-provider decision, which depends on T53's enrollment UI existing (you cannot be challenged for a factor with no way to enroll one). Do not start T100's AC1-3/AC6 ahead of T53's AC3/AC4.",
+        "exit_checks": [],
+        "_not_yet_checked": "No gate exists for either ticket yet — both are net-new UI + schema + middleware work (T53: 7 AC, `personal_access_tokens` table + RLS; T100: 6 AC, AuthForm.astro challenge step + E2E test). T100 AC6 names its own E2E test as proof; wire it here once built.",
+        "_exit_met_comment": "Not yet met."
+      },
+      {
+        "id": "stage-3",
+        "name": "Posture composition & remaining hygiene",
+        "blocking": false,
+        "tickets": [
+          "T233",
+          "T213",
+          "T52",
+          "T139",
+          "T244"
+        ],
+        "exit": "T233 AC1's composed `just audit` (host + platform families, one FAIL/WARN/SKIP/PASS headline) is the centerpiece — it is also what T396's AC5 should be built against instead of a second `just security-check`, see `_needs_narrowing`. T213, T52, T139 and any remaining T244 ACs are smaller, independent hygiene items that ride along because they share no dependency worth a separate stage.",
+        "exit_checks": [],
+        "_not_yet_checked": "T233 (8 AC, composition work — none of AC1-8 has a command yet by construction, since AC1 IS the command). T213 (8 AC, job-board fail-open + credential injection). T52 — verify first whether Supabase's compromised-password check is reachable via the Management API/MCP before assuming it needs an owner to click the dashboard toggle by hand; do not guess. T139 is exploratory (evaluate generated columns/materialized views) and may resolve to 'no change' rather than a build. T244 was 4/5 AC as of this review (AC5 — the live Telegram-bot-token vault fix — already done 2026-08-21); confirm its remaining AC before folding it in.",
+        "_exit_met_comment": "Not yet met."
+      }
+    ],
+    "_exit_check_rule": "A stage's exit is MET only when every condition has a command AND every command exits 0. A condition with no command is UNCHECKED and blocks the stage from ever reporting met — deliberately, because the alternative is a stage that declares itself complete on the strength of the conditions someone happened to automate. Unchecked is not neutral; it is the reason the stage cannot be called done.",
+    "_active_stage_note": "Plan opened 2026-09-18, continuing ROADMAP §19 after 'Authorization Core' (the prior narrower target within the same section) was declared exhausted the same day. Stage-0 is `blocking: true` and is where work should start — it is the only stage where the underlying condition was independently re-verified as live, TODAY, rather than inferred from ticket frontmatter. Stages 1-3 are ordered by how much of their gap is residue from already-done work (stage-1) vs net-new build (stage-2/3), not by priority label alone — several stage-2/3 tickets carry P1 but are large net-new features, not closeable gaps. T17/T18/T19/T31 and T396 are deliberately absent from every stage; see `_deferred_owner_decision` and `_needs_narrowing` above for why, and re-admit them once their blocking decision is made rather than defaulting them into a stage to make the count look complete."
+  },
+  "skills_governance_scopes": {
+    "_comment": "T147 AC2+AC4, owner decision 2026-08-17. TWO governance roots, not one. The project manifest (wom7web/.w0m/skills.json) governs .claude/skills; the USER manifest (~/.claude/.w0m/skills.json) governs ~/.claude/skills, which held 15 skills no manifest covered — real directories, no version, no integrity hash, loaded into EVERY session on this host while `check` printed '0 unmanaged' about the project tree beside them. They are governed separately rather than annexed by whichever project you happened to run from: a project manifest describes one repo, and these load everywhere. ⚠️ The user manifest is UNVERSIONED (~/.claude is not a git repo), so its decisions cannot be reviewed in a diff — accepted because the lockfile's job is DETECTION, which works unversioned; the reasoning belongs in a ticket. 🔴 Adoption is never automatic: `reconcile` with no decision flag only LISTS, and each skill is decided one at a time, because a bulk yes is indistinguishable from never having looked.",
+    "project_manifest": ".w0m/skills.json",
+    "user_manifest": "~/.claude/.w0m/skills.json",
+    "user_root_env_override": "W0M_USER_ROOT (test seam only — user scope is the one root a temp --project cannot simulate; production never sets it)",
+    "reconcile_outcomes": [
+      "allow (adopt + hash, requires --source)",
+      "preserve (exclude, requires --reason)"
+    ],
+    "update_availability": {
+      "skills": "just skill outdated — three-state: current / STALE / NOT COMPARABLE with a reason. Measured 2026-08-17: 21 current · 0 stale · 56 not comparable. The 56 come from skills.sh, whose schema states the original commit is unrecoverable, so a version compare is a fact the provider cannot supply. Never folded into 'current'.",
+      "tools": "just tools-outdated (T112) — NOT duplicated by the skills report, which points at it instead. Live 2026-08-17: 4 updates available, all classed manual."
+    },
+    "user_scope_open": "The 15 user-scope skills are still UNDECIDED as of 2026-08-17. Their provenance is not locally resolvable — no Cloudflare plugin is installed (plugins live in ~/.claude/plugins/cache with their own registry), so these are loose, directly-placed directories. Adopting them with a guessed --source would fabricate provenance, which is the exact defect T127's review caught. Resolve by CONTENT diff against a fetched upstream before allowing any of them."
+  },
+  "coverage_scan": {
+    "_comment": "T147 AC3 — what is in the repos that NO stack claims. The INVERSE of `just discovery`, which is the whole point: discovery walks the REGISTRY and asks whether each declared thing is real, so it can only ever find what the registry already knows to look at — T149's organising finding verbatim ('a gate reports zero because it only looks where it already knows to look'). This walks the CODE and asks what nobody declared. 🔴 'Uncovered' means NO STACK DECLARES THE PATH — it does NOT mean ungated: pnpm-workspace.yaml globs `packages/*`, so `just typecheck` probably does reach packages/ui even though no stack entry names it. Both are true and they are different statements; registry coverage is the one that matters because the registry is what the gates read. Corpus is git-tracked (`git ls-files`), NOT the filesystem — the estate has already been bitten by that difference (a preflight globbed the disk and counted a gitignored file; .astro is 210 tracked vs 220 on disk).",
+    "command": "just coverage-scan",
+    "test": "just coverage-scan-test",
+    "script": "project/scripts/coverage_scan.py",
+    "corpus": "git-tracked",
+    "blocking": false,
+    "not_in_preflight_composite": "Deliberately NOT added to preflight's FULL_CHILDREN. That table composes children by EXIT CODE, and this scan is report-only (always 0), so including it would print a green tick over a 524-item worklist — the exact vacuous-green shape T147 AC6 exists to prevent. It is also the wrong cadence: a worklist is something someone sits down with, not something a session start prints.",
+    "baseline_2026_08_17": {
+      "tracked": 8957,
+      "covered_by_a_stack": 4737,
+      "uncovered_code": 524,
+      "uncovered_other": 3696,
+      "leading_gaps": "wom7api/supabase/migrations (228 .sql, governed by db-migrate + wom_ddl_guard but named by no stack) · wom7web/packages/ui (70 — the LIVE runtime design system) · design-system/components (50) · wom7web/scripts (46, a second script dir beside the declared project/scripts) · packages/lib (27)"
+    },
+    "exempt_key": "`coverage_exempt` in stacks-policy.json maps <repo>/<path-prefix> to a REASON. Separate from that registry's `exempt` (which exempts a whole STACK from drift) because this exempts a PATH from needing a stack at all — a different decision about a different noun. Same T135 discipline: a reasonless exemption refuses."
+  },
+  "deploy_logs": {
+    "_comment": "OWNER DECISION 2026-08-14: deploy transcripts rotate MONTHLY. They are gitignored working artefacts — one full deploy is ~170 KB, so an unrotated directory becomes the thing nobody opens. Rotation buckets by the month in the transcript's OWN NAME (the versioning.artifact_naming schema), not by mtime: a copied or restored file keeps its identity, and mtime does not.",
+    "dir": "wom7api/deploy-logs",
+    "rotate": "monthly",
+    "keep_months": 1,
+    "keep_months_reason": "OWNER 2026-08-14: ONE month. A transcript's job is to explain the deploy you just did or the one that just broke — both are days old, not months. Older ones are reconstructable from the `deploy_log` table and the CHANGELOG, which are versioned; these are 170 KB gitignored working files. ⚠️ Pruning DELETES, and the recipe names every file it removes rather than reporting a count, because a silent delete and a no-op look identical."
+  },
+  "tasks_surface": {
+    "_comment": "T228 AC8 — TASKS.md is the traced queue and it had NO declared bound, while STATE.md has had one since T174. Measured 2026-08-20: 512,655 bytes, of which 231 ticket rows are 95%. The file does not grow by gaining rows — it grows by rows becoming essays: median row 1,420 B, longest 16,415 B, one row alone 3% of the file.",
+    "file": "TASKS.md",
+    "check": "just tasks-bounds",
+    "retention": {
+      "_comment": "🔑 These are TARGET numbers, not current ones. max_bytes is set BELOW today's size on purpose: a bound placed just above the present state declares the present state to be the norm, which is how the file reached half a megabyte unremarked. 409,600 is what remains once the 48 done rows (110,769 B, 21%) collapse — i.e. it is satisfied by doing AC8's rotation, not by editing the number.",
+      "max_bytes": 409600,
+      "max_lines": 400,
+      "max_row_bytes": 4096,
+      "_max_row_bytes": "The binding constraint, and the one STATE.md's model has no equivalent for. A whole-file bound can be met while single rows keep swelling; 4,096 B is ~3x the median and leaves room for a genuinely dense row, while the current 16,415 B outlier is 4x it. ⚠️ A row over the bound is a REPORT, never an automatic edit — several long rows carry the only standing record of a live defect, which is exactly what T174's first rotation caught.",
+      "rotate": "ticket-archive",
+      "archive_dir": ".tasks/archive",
+      "never_rotate": [
+        "a `done` ticket that is still the SOLE record of something live — it needs a disposition row, not a move",
+        "any row whose gh_issue mapping would break — 223 issue links depend on it"
+      ]
+    }
+  }
+}

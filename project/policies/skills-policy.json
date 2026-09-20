@@ -1,0 +1,30 @@
+{
+  "$schema": "./skills-policy.schema.json",
+  "_comment": "The skills catalogue policy — the two settings the estate wants on every installed skill, and the recommendation the catalogue makes when a skill deviates. Read by project/scripts/skills_catalogue.py (`just skills-catalogue` / `--enforce`), referenced from `.w0m/sdlc.json -> skills`. 🔑 Skills are executable instructions loaded into every agent session, which makes them a SUPPLY-CHAIN surface — the phrasing is 1945's own, and this catalogue exists to make that surface enumerable rather than assumed. NOTE the recommended defaults are RECOMMENDATIONS: `just skills-catalogue` reports deviations and exits 0; only `--enforce` blocks. That is deliberate — the user-scope corpus is a developer's own machine, and a gate that fails on it would be unactionable in CI.",
+  "project": "w0m",
+
+  "recommended": {
+    "managed": "project",
+    "sandboxed": true,
+    "_why_managed_project": "A project-scope skill is vendored into the repo, declared in the manifest and content-hashed in the lockfile — so a change to it shows up in review and in `w0m skill check`. A user-scope skill (~/.claude/skills) loads into sessions for that developer ONLY, is invisible to the repo, and is invisible to every gate: it cannot be diffed, hashed, or reviewed. Two developers can therefore run the same prompt against different instructions with nothing to detect it.",
+    "_why_sandboxed": "A skill can ship runnable files, and something else then invokes them by path — Artemio's `just idea-refine-init` did, and broke when upstream swapped the helper's language. `sandboxed: true` asserts that a skill's shipped code is only executed in an isolated environment, never directly on the host. Same meaning wom7sec already uses: no audited code executes on the host."
+  },
+
+  "detect_executable": {
+    "_comment": "How the catalogue decides a skill SHIPS EXECUTABLE CONTENT — the population for which `sandboxed` is load-bearing rather than decorative. Measured 2026-08-09 across the whole estate: exactly 2 skills of 115 qualify (w0m `webapp-testing`, Artemio `idea-refine`). Reported honestly rather than inflated — a setting that applies to 2 things should say so.",
+    "suffixes": [".sh", ".py", ".mjs", ".js", ".ts", ".bash", ".zsh", ".rb", ".pl"],
+    "executable_bit": true
+  },
+
+  "overrides": {
+    "_comment": "Per-skill exceptions to the recommendation, keyed `<project>:<skill>`. A reason is MANDATORY — an unreasoned override is how a recommendation quietly becomes a rubber stamp.",
+    "artemio:idea-refine": {
+      "sandboxed": false,
+      "reason": "Declared false because it IS false, and the catalogue proved it: `just idea-refine-init` (justfile:215) runs the skill's shipped `scripts/idea-refine.sh` with `bash`, on the host. The inherited `sandboxed: true` default asserted the opposite. The script itself is trivial — it creates `docs/ideas` and echoes JSON — so the exposure is small, but the honest record is `false` plus this reason, not a default nobody chose. ⚠️ Revisit if the skill's shipped code ever does more than mkdir."
+    },
+    "w0m:webapp-testing": {
+      "sandboxed": false,
+      "reason": "Ships `scripts/with_server.py`, whose entire job is to start this project's OWN dev servers on real ports, wait for them, run a command against them and clean up. Sandboxing it would defeat its purpose — it exists to exercise this repo on this host. ⚠️ Recorded after READING the file: the first draft of this override named a script that does not exist (`scripts/with-dev-server.sh`), which is precisely the unverified-claim shape this catalogue is meant to expose."
+    }
+  }
+}

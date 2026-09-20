@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://webomage.com/schemas/skills-policy.schema.json",
+  "title": "w0m skills catalogue policy (T182)",
+  "description": "Validates the catalogue policy. Its main job is structural: an override MUST carry a reason, so a recommendation can never be waived silently.",
+  "type": "object",
+  "required": ["project", "recommended", "detect_executable"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "_comment": { "type": "string" },
+    "project": { "type": "string", "const": "w0m" },
+    "recommended": {
+      "type": "object",
+      "required": ["managed", "sandboxed"],
+      "description": "What the estate wants for every installed skill.",
+      "properties": {
+        "managed": { "enum": ["project", "user"] },
+        "sandboxed": { "type": "boolean" }
+      },
+      "patternProperties": { "^_": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "detect_executable": {
+      "type": "object",
+      "description": "How a skill is judged to SHIP RUNNABLE CODE — the population for which `sandboxed` is load-bearing. Driven from here, not hardcoded; the regression proof empties it and requires the population to collapse.",
+      "properties": {
+        "suffixes": { "type": "array", "items": { "type": "string" } },
+        "executable_bit": { "type": "boolean" }
+      },
+      "patternProperties": { "^_": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "overrides": {
+      "type": "object",
+      "description": "Per-skill explicit decisions, keyed `<project>:<skill>`.",
+      "patternProperties": {
+        "^_": { "type": "string" },
+        "^[a-z0-9-]+:[a-z0-9-]+$": {
+          "type": "object",
+          "required": ["sandboxed", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "sandboxed": { "type": "boolean" },
+            "reason": {
+              "type": "string",
+              "minLength": 30,
+              "description": "Mandatory, and not a token string. An unreasoned override is how a recommendation quietly becomes a rubber stamp."
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

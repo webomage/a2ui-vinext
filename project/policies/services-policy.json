@@ -1,0 +1,202 @@
+{
+  "_comment": [
+    "T134 — the third-party services this estate integrates with.",
+    "",
+    "🔴 NOTHING DECLARED THESE before 2026-08-13. They appeared only incidentally in skills.json,",
+    "hygiene-policy.json and mcp-exposure-baseline.json, so a catalog derived from the other",
+    "registries (tools-policy, stacks-policy, sdlc.json -> mcp, deps-policy, /health,",
+    "social_integrations) rendered host CLIs and SDKs while omitting every third-party API —",
+    "and looked complete doing it. That is the failure mode this whole surface exists to prevent.",
+    "",
+    "credentials       the env keys the service needs, MEASURED against infisical dev on",
+    "                  2026-08-13, not guessed. ⚠️ The first draft of this file invented 11 names",
+    "                  and SIX WERE WRONG — AWS in particular uses AWS_ACCESS_KEY /",
+    "                  AWS_ACCESS_SECRET, NOT the AWS-standard AWS_ACCESS_KEY_ID /",
+    "                  AWS_SECRET_ACCESS_KEY. A wrong key here makes a service read",
+    "                  'credential missing' forever, i.e. confidently wrong about the one thing",
+    "                  this file exists to report. Re-measure before adding an entry.",
+    "                  VALUES ARE NEVER READ — only presence and digests (see the change's",
+    "                  requirement 4).",
+    "expected_absent   true = the credentials were verified ABSENT from infisical dev at authoring",
+    "                  time. This is a CLAIM, and it is what separates 'we know it is not there'",
+    "                  from 'nobody checked'. Without it those two render identically.",
+    "probe             'http' = a URL that answers without auth. 'none' = liveness is not",
+    "                  observable from here, which renders as `unknown`, NEVER as down.",
+    "",
+    "🔗 T95 owns the human-readable half — the connector map and the per-service data-flow .mmd.",
+    "This is the machine-readable half. The two must agree, and a service in one but not the",
+    "other is drift worth reporting.",
+    "",
+    "oauth_providers  the per-member account links, declared 2026-08-14 (T134 Phase 2). There was NO",
+    "                 provider vocabulary anywhere before this: `social_integrations.provider` is free",
+    "                 text with one live value (`linkedin`), and `provider_type_enum` is",
+    "                 person|organization — the ENTITY type, not the provider. So the connections page",
+    "                 had nothing to enumerate and hardcoded LinkedIn.",
+    "  implemented    false = declared, NOT built. It renders disabled with its note rather than a",
+    "                 Connect button that cannot work. T94(b) owns building the connectors."
+  ],
+  "services": [
+    {
+      "key": "stripe",
+      "title": "Stripe",
+      "credentials": [
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET"
+      ],
+      "expected_absent": true,
+      "note": "🔴 No STRIPE_* key exists in infisical dev, yet the stripe-checkout and stripe-webhook edge functions are DEPLOYED and ACTIVE. Either they are configured through another store, or they cannot work. The catalog should render this as declared ✅ / configured ❌ — which is true and is the point.",
+      "docs": "docs/backend/connectors/stripe.md",
+      "probe": {
+        "kind": "none"
+      }
+    },
+    {
+      "key": "tinybird",
+      "title": "Tinybird",
+      "credentials": [
+        "TINYBIRD_TOKEN",
+        "TINYBIRD_URL"
+      ],
+      "docs": "docs/backend/connectors/tinybird.md",
+      "probe": {
+        "kind": "none"
+      }
+    },
+    {
+      "key": "hume-evi",
+      "title": "Hume EVI",
+      "credentials": [
+        "HUME_API_KEY",
+        "HUME_SECRET_KEY"
+      ],
+      "note": "VITE_HUME_API_KEY also exists — a client-exposed duplicate of HUME_API_KEY. Worth a look: a VITE_-prefixed key is bundled into the browser by design.",
+      "docs": "docs/backend/connectors/hume.md",
+      "probe": {
+        "kind": "none"
+      }
+    },
+    {
+      "key": "ga4",
+      "title": "Google Analytics 4",
+      "credentials": [
+        "PUBLIC_GA4_MEASUREMENT_ID"
+      ],
+      "expected_absent": true,
+      "note": "No GA4 key in infisical dev. The key name here is the expected shape, not a measured one — confirm before treating a 'missing' verdict as real.",
+      "docs": "docs/backend/connectors/ga4.md",
+      "probe": {
+        "kind": "none"
+      }
+    },
+    {
+      "key": "calendly",
+      "title": "Calendly",
+      "credentials": [
+        "CALENDLY_TOKEN"
+      ],
+      "expected_absent": true,
+      "note": "No Calendly key in infisical dev. Same caveat as ga4 — expected shape, not measured.",
+      "docs": "docs/backend/connectors/calendly.md",
+      "probe": {
+        "kind": "none"
+      }
+    },
+    {
+      "key": "github-app",
+      "title": "GitHub App",
+      "credentials": [
+        "GITHUB_APP_ID",
+        "GITHUB_APP_NAME",
+        "GITHUB_APP_PRIVATE_KEY",
+        "GITHUB_APP_CLIENT_ID",
+        "GITHUB_APP_CLIENT_SECRET",
+        "GITHUB_APP_WEBHOOK_SECRET"
+      ],
+      "docs": "docs/backend/connectors/github-app.md",
+      "probe": {
+        "kind": "none"
+      }
+    },
+    {
+      "key": "aws",
+      "title": "AWS",
+      "credentials": [
+        "AWS_ACCESS_KEY",
+        "AWS_ACCESS_SECRET"
+      ],
+      "note": "⚠️ NON-STANDARD key names — AWS_ACCESS_KEY / AWS_ACCESS_SECRET, not the AWS SDK's AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY. Measured 2026-08-13. Anything reading these via a default AWS credential provider will not find them.",
+      "docs": "docs/backend/connectors/aws.md",
+      "probe": {
+        "kind": "none"
+      }
+    },
+    {
+      "key": "telegram",
+      "title": "Telegram",
+      "credentials": [
+        "TELEGRAM_BOT_TOKEN",
+        "TELEGRAM_ADMIN_CHAT_ID",
+        "TELEGRAM_WEBHOOK_SECRET"
+      ],
+      "docs": "docs/backend/connectors/telegram.md",
+      "probe": {
+        "kind": "none"
+      }
+    },
+    {
+      "key": "crypto-payouts",
+      "title": "Crypto Payouts",
+      "credentials": [
+        "SUPABASE_SERVICE_ROLE_KEY"
+      ],
+      "note": "T95 — added 2026-09-16. No external credential exists because no real chain settlement exists yet: process-payout's 'approve' action generates a mocked tx hash, never calling out to any blockchain. Its only auth is an exact-match check against SUPABASE_SERVICE_ROLE_KEY — a platform-wide secret, not one minted for this connector, but still the credential its auth model depends on.",
+      "docs": "docs/backend/connectors/crypto-payouts.md",
+      "probe": {
+        "kind": "none"
+      }
+    }
+  ],
+  "oauth_providers": [
+    {
+      "key": "linkedin",
+      "title": "LinkedIn",
+      "implemented": true,
+      "entity": "person",
+      "docs": "docs/backend/connectors/linkedin.md",
+      "note": "The only built connector. `linkedin-oauth` edge fn → public.social_integrations; the CP's Connect button drives it."
+    },
+    {
+      "key": "github",
+      "title": "GitHub",
+      "implemented": false,
+      "entity": "person",
+      "docs": "docs/backend/connectors/github-app.md",
+      "note": "T94(b) — declared, NOT implemented. ⚠️ The GITHUB_APP_* credentials in `services` above are for the APP, not for a member's account link; do not read their presence as this connector existing."
+    },
+    {
+      "key": "upwork",
+      "title": "Upwork",
+      "implemented": false,
+      "entity": "person",
+      "docs": "docs/backend/connectors/upwork.md",
+      "note": "T94(b) — declared, NOT implemented. The `upwork-poller` edge fn has its own auth path and is not a per-member connection."
+    },
+    {
+      "key": "credly",
+      "title": "Credly",
+      "implemented": false,
+      "entity": "person",
+      "docs": "docs/backend/connectors/credly.md",
+      "note": "T94(b) — declared, NOT implemented. No connector, no credentials declared."
+    },
+    {
+      "key": "reddit",
+      "title": "Reddit",
+      "implemented": false,
+      "entity": "person",
+      "priority": "high",
+      "docs": "docs/backend/CONNECTOR-RESEARCH-MATRIX.md",
+      "note": "T94(b) — declared, NOT implemented. HIGH PRIORITY per owner ask 2026-09-16 (see project/tickets/T94.md Status notes). OAuth2 authorization_code, 1h access tokens, refreshable; rung 2 (read sync) on the depth ladder, no webhook, no official MCP. New Data API apps must register with Reddit by 2026-09-30 — sequence the adapter build accordingly."
+    }
+  ]
+}

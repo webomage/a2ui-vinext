@@ -1,0 +1,121 @@
+{
+  "$schema": "./ide-policy.schema.json",
+  "_comment": "T192 — the connected-IDE contract. `openspec init --tools` writes a SEPARATE instruction surface per IDE; the estate has been governing exactly one of them. Read by project/scripts/ide_trace.py (`just ide-trace` / `--enforce`); the per-project declaration of WHICH IDEs are connected lives in `.w0m/sdlc.json -> ide_surfaces`, never here. 🔴 THE DESIGN RULE, learned by getting it wrong in this ticket's own filing: an IDE surface is identified by its MARKER, never by its directory name. The first filing called `servicios777/.kilocode` (a node package dir holding `@kilocode/plugin`) and `wom7ext/.agent` (untracked scratch, no rules.md) 'IDE surfaces found by scanning' purely because the names matched — the estate's own recorded *never match on a name the inspected thing supplies* trap, committed in the ticket written to catch it. ⚠️ The name trap is not hypothetical for the wider set either: openspec's skillsDir for `github-copilot` is `.github`, which exists in nearly every repo on earth.",
+  "project": "w0m",
+  "canonical": {
+    "_comment": "The instruction surface that IS the contract. Every other connected IDE's autoload file is measured against it. Claude Code's CLAUDE.md is canonical because it is the one the estate actually maintains — 16,320 B and current, versus Antigravity's 1,646 B copied from another repo.",
+    "tool": "claude",
+    "file": "CLAUDE.md"
+  },
+  "marker": {
+    "_comment": "🔑 What proves a directory is an openspec-MANAGED surface. openspec generates the `opsx` command/workflow family into every tool's skillsDir (`.claude/commands/opsx/`, `.agent/workflows/opsx-*.md`), so ONE marker covers all 31 tools with no per-tool knowledge to go stale — verified against wom7web, wom7api and artemio. 🔴 `openspec*` WAS in this list and has been REMOVED, because adding it was the fourth instance of this ticket's own trap and the first one I committed myself: wom7mlx's `.cursor/rules/openspec.md`, `.gemini/rules/openspec.toml`, `.windsurf/rules/openspec.md` and `.claude/rules/openspec.md` are **hand-written**, not generated — landed by a feature commit (*\"Add OpenSpec rules for Gemini CLI\"*), pointing at a `specs/meta/methodology.md` layout, in a repo with **no `openspec/` directory at all**, and the installed CLI contains no code that emits a `rules/openspec.md`. I widened the marker on the ASSUMPTION they were an earlier openspec layout, which is matching on a name the inspected thing supplies — exactly what the rule below forbids. They are real surfaces; they are `foreign`, and that is what the gate now says.",
+    "globs": [
+      "opsx*"
+    ],
+    "instruction_dirs": [
+      "rules",
+      "workflows",
+      "commands",
+      "prompts",
+      "memories",
+      "skills",
+      "instructions"
+    ],
+    "instruction_files": [
+      "rules.md",
+      "AGENTS.md",
+      "copilot-instructions.md"
+    ],
+    "instruction_note": "A surface can be REAL without being openspec's. `wom7ext/.windsurf/workflows/speckit.*` is GitHub Spec Kit — a second spec framework, generating Windsurf workflows nobody declared — and `artemio/.gemini/commands/*.toml` is a hand-built command set in a client repo. Both autoload. So presence of instruction-shaped content in a tool dir makes it a surface that must be DECLARED, whoever generated it; the openspec marker only decides who maintains it."
+  },
+  "delegation": {
+    "_comment": "🔑 A surface satisfies the contract by CARRYING the rules or by POINTING at the file that does — and pointing is what this estate actually chose: five of six sibling repos open with `Canonical conventions live in ../wom7web/CLAUDE.md`, which is the *one fact, one home* rule applied correctly. A parity gate with no concept of delegation scores all five at 1/6 and demands they duplicate the canonical text, i.e. it would enforce exactly the drift it exists to prevent. 🔴 But the pointer must RESOLVE: a dangling reference is the `$schema` defect recorded in project/client-profile.json, where two declarations passed every presence check while validating against nothing. It also follows the chain (`max_hops`, with cycle detection) and requires the file it ENDS at to carry every rule — wom7mlx points at a local AGENTS.md hub *\"that every agent (Claude, Cursor, Windsurf, Gemini) shares\"*, so one hop is not enough to model this estate. Delegating to a file that carries the rules no better than you do is delegation to nowhere. So the gate extracts the path and stats it, and a pointer to a file that does not exist is a HARDER finding than no pointer at all — it looks like compliance.",
+    "pattern": "(?:conventions live in|conventions are in|read (?:it|them) first[^\\n]{0,40}in)\\s*\\**\\s*\\[?[`\\\"]?([^`\\\"\\n\\]\\(\\)]*(?:CLAUDE|AGENTS)\\.md)",
+    "must_resolve": true,
+    "target": "CLAUDE.md | AGENTS.md",
+    "max_hops": 2
+  },
+  "non_negotiables": {
+    "_comment": "The rules CLAUDE.md states as non-negotiable. Each is a regex checked against every connected IDE's autoload surface. 🔴 These are matched on the RULE's distinctive token, not on prose: an IDE file could paraphrase 'always run the hooks' and mean it, so a miss here is a prompt to READ the file, not proof of malice. The gate reports which rules are missing from which surface; it does not rewrite anyone's prose.",
+    "never_no_verify": "--no-verify|no-verify",
+    "graph_before_grep": "graph before grep|graph-before-grep|just ask",
+    "db_via_migrations": "db-migrate|migrations",
+    "secrets_via_manager": "infisical",
+    "no_attribution_trailer": "Co-Authored-By|attribution trailer",
+    "state_save_before_push": "state-save|state-check"
+  },
+  "tools": {
+    "_comment": "Per-tool autoload knowledge. `skills_dir` is cross-checked against openspec's own registry at runtime — if openspec renames one, the trace FAILS loudly instead of scanning a stale path. `autoload` is w0m's own knowledge (openspec's registry does not record it) and so carries evidence per tool. A tool with `autoload: null` can be traced for PRESENCE but not for PARITY, and declaring it connected is itself a finding — an IDE whose contract we cannot read is an IDE we cannot govern.",
+    "claude": {
+      "skills_dir": ".claude",
+      "autoload": "CLAUDE.md",
+      "autoload_note": "Claude Code loads CLAUDE.md from the repo root automatically. Observed in all 7 w0m repos (2,275–16,320 B) and all 4 client projects."
+    },
+    "antigravity": {
+      "skills_dir": ".agents",
+      "autoload": [
+        ".agents/rules/*.md",
+        "AGENTS.md"
+      ],
+      "autoload_shared": true,
+      "autoload_note": "🔬 Antigravity loads `.agents/rules/*.md` and root `AGENTS.md` (verified live in session rules prompt). `autoload_shared: true` allows subrepos with canonical `AGENTS.md` to be governed for Antigravity without requiring separate `.agents/rules/` duplicates. Skills live in `.agents/skills/`."
+    },
+    "opencode": {
+      "skills_dir": ".opencode",
+      "autoload": "AGENTS.md",
+      "autoload_shared": true,
+      "autoload_note": "⚠️ UNVERIFIED against a live install — `.opencode` exists in NO project in this estate, so nothing here has been observed. AGENTS.md is the convention OpenCode follows; confirm before relying on it (AC6)."
+    },
+    "codex": {
+      "skills_dir": ".agents",
+      "autoload": "AGENTS.md",
+      "autoload_shared": true,
+      "autoload_note": "Evidenced by the GLOBAL surface: ~/.codex/AGENTS.md exists (806 B, the tool-managed CodeGraph block). ⚠️ `autoload_shared` — AGENTS.md is a CONVENTION several tools read, and in this estate it is also a first-class human document (wom7web/AGENTS.md is the 21,595 B long-form reference). Its presence therefore proves nothing about which tool is connected, so it never raises an undeclared-surface finding; only a tool-specific directory does. Inferring Codex from AGENTS.md would be the name trap wearing a filename.  🔬 MOVED 2026-08-30 from `.codex`. openspec 1.7.0 transitioned Codex to skills-only mode and 1.11.0 puts those skills in the shared `.agents/` root; the registry reports `.agents` and `ide-trace` refused to run against the stale `.codex`. `autoload` stays AGENTS.md — Codex reads it natively (it is OpenAI's own standard, now stewarded by the Linux Foundation's Agentic AI Foundation), and that is unaffected by where skills live."
+    },
+    "gemini": {
+      "skills_dir": ".gemini",
+      "autoload": [
+        "GEMINI.md",
+        ".gemini/rules/*"
+      ],
+      "autoload_note": "Two surfaces: a root GEMINI.md and `.gemini/rules/*`. Evidenced globally by ~/.gemini/GEMINI.md (2,238 B, carrying w0m SDLC rules) and per-project by wom7mlx/.gemini/rules/openspec.toml — hand-written, not generated."
+    },
+    "cursor": {
+      "skills_dir": ".cursor",
+      "autoload": [
+        ".cursor/rules/*.md"
+      ],
+      "autoload_note": "Cursor loads a rules DIRECTORY, not a root file — `.cursor/rules/*`. Declared as a glob because that is what the IDE actually reads; pinning one filename would measure an artefact the tool never opens. Observed: wom7mlx/.cursor/rules/openspec.md."
+    },
+    "github-copilot": {
+      "skills_dir": ".github",
+      "autoload": ".github/copilot-instructions.md",
+      "autoload_note": "🔴 The sharpest name trap in openspec's registry: `.github` exists in nearly every repo and almost never means Copilot. Only the marker or a real copilot-instructions.md makes it a surface — none exists in this estate; wom7ext/.github and wom7sec/.github are EMPTY directories."
+    },
+    "windsurf": {
+      "skills_dir": ".windsurf",
+      "autoload": [
+        ".windsurf/rules/*.md"
+      ],
+      "autoload_note": "Windsurf loads `.windsurf/rules/*` per project. Its GLOBAL surface is not under ~/.windsurf at all but ~/.codeium/windsurf/memories/global_rules.md (0 B) — which is why `global_surfaces` is declared by path and not derived from skillsDir."
+    },
+    "kilocode": {
+      "skills_dir": ".kilocode",
+      "autoload": null,
+      "autoload_note": "Autoload unverified — and the only `.kilocode` in the estate is not a Kilo Code rules surface at all (see known_not_ide_surfaces)."
+    }
+  },
+  "global_surfaces": {
+    "_comment": "AC4 — instruction surfaces that load into EVERY session for this developer, live in no repo, and are reviewed by nothing. Declared by PATH, not derived from skillsDir, because the derivation is wrong for at least one tool: Windsurf's global rules are under ~/.codeium/, not ~/.windsurf/. Measured 2026-08-10. The generic ~/<skillsDir> scan still runs on top of this, to catch a surface nobody declared.",
+    "claude": "~/.claude/CLAUDE.md",
+    "codex": "~/.codex/AGENTS.md",
+    "gemini": "~/.gemini/GEMINI.md",
+    "windsurf": "~/.codeium/windsurf/memories/global_rules.md",
+    "_ruled_no_autoload": "⚠️ NOT a value — a ruling. `~/.cline`, `~/.continue`, `~/.cursor` and `~/.junie` exist and were inspected 2026-08-10: app data and config only (cline: data/ + skills/; continue: config.ts; cursor: extensions/ + ide_state.json; junie: mcp/ + skills/). NO rules or instruction file in any of them, so none is an autoload surface and the gate stops raising them. 🔑 Two of them hold a `skills/` tree, which IS governance-relevant — user-scope skills load into every session and sit in no repo (T182 found 12) — but that is the skills gate's subject, not this one's. Recorded here so the next scan does not re-derive it."
+  },
+  "known_not_ide_surfaces": {
+    "_comment": "Directory names that LOOK like an IDE surface and are not, keyed `<unit>/<dir>`. Recorded so the next scan does not re-raise them as findings and so the REASON survives the person who found it. A name-only directory NOT listed here is reported — an unruled lookalike is a question, not a pass.",
+    "w0m:ext/.agent": "Untracked local scratch — implementation_plan.md + walkthrough.md only. No rules.md, no workflows/, no openspec marker, 0 files tracked in git. Not an Antigravity surface.",
+    "servicios777/.kilocode": "A node package directory holding `@kilocode/plugin` — package.json + package-lock.json, untracked, 0 files in git, no openspec marker. A Kilo Code plugin footprint, not an openspec-generated rules surface."
+  }
+}

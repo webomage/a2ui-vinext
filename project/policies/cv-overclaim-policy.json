@@ -1,0 +1,33 @@
+{
+  "_comment": "T165 task 3.5 — what the CV may ASSERT versus what `resume.json` + `claims.json` can support. A CV is a covering document over a dataset, and until now the two could only be compared by hand: on 2026-08-26 that hand-check found two invented employers, a mis-dated consultancy, and 21 of 27 careers missing. This gate makes the comparison mechanical. The term corpus is DISCOVERED from the document, never declared — a hand-listed vocabulary silently misses whatever is added next, which is the failure mode this estate keeps finding in its own gates. `accepted` is downward-only: entries leave as the data is filled in, and adding one is a deliberate edit with a reason and a `clears_when`, because a gate that auto-accepts what it finds ratifies the claim it exists to test.",
+  "documents": [
+    "docs/backend/branding/Aleksei_CV_2026_Public.md",
+    "docs/backend/branding/Aleksei_CV_2026_Private_Master.md"
+  ],
+  "zones": [
+    "## Executive Summary"
+  ],
+  "_why_only_the_summary": "Deliberately NARROW (the T255 precedent). Scoped to the skills section too it reports 47 findings, because canonical `skills` holds 5 categories x 4 loose keyword phrases while the CV lists ~90 technologies — TypeScript, Solidity, Datadog, Ollama, MLX, CephFS and Fastify are all absent from both source files. That finding is real but it is 'your CV lists more skills than your JSON', which is true of every CV and is a DATA gap, not an over-claim. A gate firing 47 times gets switched off (T135 AC8). The Executive Summary is where over-claiming carries actual risk: credentials an employer can verify, platform metrics, and named exotic technology.",
+  "ignore": {
+    "JSS": "An abbreviation defined inline by the sentence that uses it — 'Job Success Score (JSS)'. The extractor sees the parenthetical as its own term; the claim is 'Job Success Score', which is checked and backed."
+  },
+  "accepted": {
+    "verified IELTS English proficiency": {
+      "reason": "Owner 2026-08-27: real, stays as written; the test date is being located and is most likely 2024, matching the ACS assessment. The earlier suggestion to DROP this line was withdrawn — it rested on 'the record has no evidence', which is a gap in the record and not evidence against the claim. Recording the band and date in `certificates` backs it; whether the CV prints the number is a separate presentational choice this gate does not care about.",
+      "clears_when": "an IELTS entry with a band and test date exists in resume.json `certificates`"
+    },
+    "10,500+ tracked platform hours": {
+      "reason": "UNDERSTATES the record, which is the rare safe direction. Canonical is 10,600+ personal hours across 93 contracts plus 700+ agency; the summary says 10,500+ across 100+ engagements. Raised twice on 2026-08-26 and reaffirmed by the owner, so it is a decision, not an error — recorded here so a future reconciliation does not silently 'correct' it. Notable that this gate rediscovered it independently on its first clean run.",
+      "clears_when": "the summary quotes the canonical figure, or resume.json is revised to match the summary"
+    },
+    "100+ international engagements": {
+      "reason": "OWNER DECISION 2026-08-27: kept as written — 'sounds good in general and do not expose real numbers'. Raised twice and reaffirmed, so this is a decision, not an oversight. The honest reading: 92 is the UPWORK count (summary_2026-01-11.json: totalContracts 92, totalClients 72), and the record is incomplete — direct, non-Upwork clients (artemioquirocomer, 1945socialclub and others) are not imported yet, so career-wide 100+ is plausible and simply unevidenced rather than false. ⚠️ The residual issue is PLACEMENT, not the number: it sits inside a sentence explicitly about Upwork ('tracked platform hours', 'Job Success Score'), so it reads as an Upwork count. Moving it to the career-wide opening line would make it defensible without changing a word or exposing any figure. Noted, not applied — the owner has ruled on the wording.",
+      "clears_when": "the direct-client engagements are imported and the total passes 100, or the phrase moves out of the Upwork-scoped sentence"
+    },
+    "Kairos": {
+      "reason": "Owner 2026-09-05: real, currently being tested for Webomage's own infrastructure — not yet part of a billed/recorded engagement, so it has no home in resume.json/claims.json yet.",
+      "clears_when": "a Kairos-using engagement or internal Webomage infra project is added to resume.json"
+    }
+  },
+  "_dynamodb_note": "DynamoDB is deliberately NOT in `accepted`: it is asserted on the CV's AWS line under Cloud & Virtualization, which is outside this gate's scanned zone, so an entry here would be one nothing ever checks — the gate's own stale-acceptance guard rejected it, which is the guard doing its job. Owner 2026-08-27: real, from an older Upwork engagement not yet identified. Tracked on T165 instead. It measures 0/0 and predates this session — an existing claim nobody had ever tested."
+}

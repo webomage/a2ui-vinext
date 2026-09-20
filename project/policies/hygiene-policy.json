@@ -1,0 +1,207 @@
+{
+  "$schema": "./hygiene-policy.schema.json",
+  "_comment": "T135 — repo-hygiene policy. The declarative half of `just docs-check` / `license-check` / `secrets-check` (project/scripts/repo_hygiene.py), the tech-agnostic sibling of stacks-policy.json (per-stack tools), deps-policy.json (npm floors + licenses) and tools-policy.json (host CLI floors). The `repos` list is DECLARED, not discovered: a gate whose scope is inferred from whatever happens to be on disk silently shrinks when a checkout is missing, so a declared repo that is absent is a HARD FAILURE, not a skip. Manifests inside each repo ARE discovered (T135 task 5.9) because a hardcoded manifest list missed 15 of 19.",
+  "project": "w0m",
+  "repos": [
+    {
+      "path": "wom7web",
+      "role": "canonical monorepo — Astro apps + shared packages"
+    },
+    {
+      "path": "wom7api",
+      "role": "worker + supabase edge functions; owns the canonical justfile"
+    },
+    {
+      "path": "wom7func",
+      "role": "serverless edge functions & scheduled workflows (Cloudflare Workflows)"
+    },
+    {
+      "path": "wom7skills",
+      "role": "agent-skills library (TS toolchain)"
+    },
+    {
+      "path": "wom7ext",
+      "role": "browser extension (two surfaces: extension/, extension-ff/)"
+    },
+    {
+      "path": "wom7sec",
+      "role": "security/code-audit toolchain — early-stage, empty src/"
+    },
+    {
+      "path": "wom7mlx/wom7mlx",
+      "role": "Rust MLX port. NOTE the repo is the INNER dir; the outer wom7mlx/ is a workspace of upstream clones and is not a git repo."
+    }
+  ],
+  "docs": {
+    "_comment": "AC5. Owner decisions, 2026-07-25: (2) the required set is UNIVERSAL across all repos — baseline for the last three was zero; (1) the README bar is REQUIRED SECTIONS as detectable headings, deliberately NOT a length rule (padding passes) and NOT file-exists (vacuous — that is the gate this project has shipped three times).",
+    "required_files": [
+      {
+        "name": "README.md",
+        "note": "Content-checked against `readme_sections` below, not merely present."
+      },
+      {
+        "name": "LICENSE",
+        "must_match": "(?i)all rights reserved",
+        "note": "Owner decision (3): proprietary / UNLICENSED. These repos are not being opened."
+      },
+      {
+        "name": "SECURITY.md",
+        "must_match": "(?i)(security@webomage\\.com|aleksei@webomage\\.com)",
+        "note": "Must name a REAL reporting channel — a placeholder address is a vacuous pass and fails review (task 4.6)."
+      },
+      {
+        "name": "CONTRIBUTING.md"
+      },
+      {
+        "name": "CODE_OF_CONDUCT.md"
+      }
+    ],
+    "readme_sections": [
+      {
+        "id": "what-is",
+        "any_heading_matching": [
+          "^what is\\b",
+          "^what it is\\b",
+          "^overview$",
+          "^about\\b",
+          "^purpose\\b"
+        ],
+        "note": "What this repo IS. A bare title line does not count — it must be a heading in the body."
+      },
+      {
+        "id": "how-to-run",
+        "any_heading_matching": [
+          "^(how to )?run\\b",
+          "^usage\\b",
+          "^getting started\\b",
+          "^quick ?start\\b",
+          "^(local )?develop(ment|ing)?\\b",
+          "^install(ation)?\\b"
+        ],
+        "note": "How to run or develop it. ⚠️ The optional `local ` prefix was added 2026-07-26 (T135 task 4.4) for `wom7cfworkers`' existing `## Local Development` heading. Recorded because widening a pattern to make a repo pass is exactly how a gate gets hollowed out, and this one is defensible only because it is NOT a weakening: `Local Development` genuinely IS a how-to-run section, so this admits a true positive rather than excusing a miss. A README with no such section still fails — re-verified in both directions. The alternative was renaming the heading to fit the regex, i.e. bending prose to satisfy a gate, which is the padding failure mode this change exists to reject."
+      },
+      {
+        "id": "where-are-docs",
+        "any_heading_matching": [
+          "^doc(s|umentation)\\b",
+          "^where.*doc",
+          "^further reading\\b",
+          "^reference\\b",
+          "^see also\\b",
+          "^more\\b"
+        ],
+        "note": "Where the fuller docs live."
+      }
+    ]
+  },
+  "licenses": {
+    "_comment": "AC6/AC11 first-party rules. The transitive dependency-license audit reads deps-policy.json -> licenses (task 5.1/5.2); this block covers the repos' OWN manifests and vendored trees.",
+    "first_party_license": "UNLICENSED",
+    "require_private": true,
+    "vendored_markers": [
+      "/vendor/",
+      "extension/package/"
+    ],
+    "vendored_notice_files": [
+      "LICENSE",
+      "LICENSE.txt",
+      "LICENSE.md",
+      "NOTICE",
+      "COPYING"
+    ],
+    "vendored_trees": [
+      {
+        "children_of": "extension/src/vendor",
+        "note": "Third-party SDK drops bundled into the extension. Each child is one upstream project and needs its own retained notice."
+      },
+      {
+        "children_of": ".agents/skills",
+        "provenance": ".w0m/skills.json",
+        "first_party_provider": "w0m-native",
+        "note": "AC6's ~50 vendored skills. ⚠️ This tree is MIXED: T127 governance records 13 `w0m-native` skills (ours — no upstream notice to retain) against 56 `skills.sh` + 1 `local` (third-party — notice required). Treating the whole tree as vendored produced ~144 findings against our OWN skills; treating none of it as vendored misses the real defects. Provenance is already recorded, so read it rather than guessing from the path."
+      },
+      {
+        "path": "extension/package",
+        "note": "Vendored @mcp-b/websocket-bridge. Already compliant (declares MIT, ships a tracked LICENSE) — it is the MODEL for what a remediated vendored tree looks like, and must never be rewritten to UNLICENSED."
+      }
+    ],
+    "vendored_exempt": {
+      "_comment": "Vendored trees that legitimately carry no notice file, each with a reason. NOT a place to silence real defects — the two known live defects (extension/src/vendor/mcp-sdk, mcp-builder) are remediated in task 5.6, not exempted.",
+      "wom7web/.agents/skills/tinybird-best-practices": "🔴 OWNER DECISION 2026-08-08 — ACCEPTED RISK, not a resolved licence, and the only such entry in the estate. `tinybirdco/tinybird-agent-skills` carries NO licence: verified exhaustively on 2026-08-08 — GitHub's licence API returns null, the FULL RECURSIVE file tree contains no LICENSE/NOTICE/COPYING at any path, and the README carries no licence statement. (The API alone was not trusted: T135 records that it only detects a ROOT licence and 404s on repos that license per directory, which is how `anthropics/skills` was nearly recorded as unlicensed.) ⚠️ THE SIBLING REPO DOES NOT HELP: `tinybirdco/tinybird-sdk-typescript` is MIT, but copyright is per-work — a licence in one repo grants nothing in another, same org or not. That was the owner's hypothesis on 2026-08-08 and it was checked and rejected as a GRANT, while retained as evidence of INTENT. WHY THE RISK IS ACCEPTED: (1) 50 of 56 third-party skills here are MIT (89%) and 2 more are Apache-2.0 — publishing agent skills with no licence is anomalous against that norm and reads as oversight, not withheld permission; (2) the repo has a CONTRIBUTING.md but no LICENSE, the classic oversight shape; (3) the skills are published expressly for agents to consume; (4) Tinybird is genuinely IN this stack — `@tinybirdco/sdk` is a dependency of wom7web/wom7api/wom7cfworkers, imported by src/lib/tinybird.ts in two of them and by the `_shared/tinybird.ts` edge function, with a live health probe surfaced in the CP dashboard — so these skills have real utility and deleting them has a cost. ⏳ INTERIM, NOT FINAL: an upstream issue asking Tinybird to add a LICENSE is drafted at `project/drafts/tinybird-licence-request.md`. If they respond, DELETE this exemption and retain the real notice instead. Re-check before assuming this is settled.",
+      "wom7web/.agents/skills/tinybird-cli-guidelines": "🔴 OWNER DECISION 2026-08-08 — ACCEPTED RISK, not a resolved licence, and the only such entry in the estate. `tinybirdco/tinybird-agent-skills` carries NO licence: verified exhaustively on 2026-08-08 — GitHub's licence API returns null, the FULL RECURSIVE file tree contains no LICENSE/NOTICE/COPYING at any path, and the README carries no licence statement. (The API alone was not trusted: T135 records that it only detects a ROOT licence and 404s on repos that license per directory, which is how `anthropics/skills` was nearly recorded as unlicensed.) ⚠️ THE SIBLING REPO DOES NOT HELP: `tinybirdco/tinybird-sdk-typescript` is MIT, but copyright is per-work — a licence in one repo grants nothing in another, same org or not. That was the owner's hypothesis on 2026-08-08 and it was checked and rejected as a GRANT, while retained as evidence of INTENT. WHY THE RISK IS ACCEPTED: (1) 50 of 56 third-party skills here are MIT (89%) and 2 more are Apache-2.0 — publishing agent skills with no licence is anomalous against that norm and reads as oversight, not withheld permission; (2) the repo has a CONTRIBUTING.md but no LICENSE, the classic oversight shape; (3) the skills are published expressly for agents to consume; (4) Tinybird is genuinely IN this stack — `@tinybirdco/sdk` is a dependency of wom7web/wom7api/wom7cfworkers, imported by src/lib/tinybird.ts in two of them and by the `_shared/tinybird.ts` edge function, with a live health probe surfaced in the CP dashboard — so these skills have real utility and deleting them has a cost. ⏳ INTERIM, NOT FINAL: an upstream issue asking Tinybird to add a LICENSE is drafted at `project/drafts/tinybird-licence-request.md`. If they respond, DELETE this exemption and retain the real notice instead. Re-check before assuming this is settled.",
+      "wom7web/.agents/skills/tinybird-python-sdk-guidelines": "🔴 OWNER DECISION 2026-08-08 — ACCEPTED RISK, not a resolved licence, and the only such entry in the estate. `tinybirdco/tinybird-agent-skills` carries NO licence: verified exhaustively on 2026-08-08 — GitHub's licence API returns null, the FULL RECURSIVE file tree contains no LICENSE/NOTICE/COPYING at any path, and the README carries no licence statement. (The API alone was not trusted: T135 records that it only detects a ROOT licence and 404s on repos that license per directory, which is how `anthropics/skills` was nearly recorded as unlicensed.) ⚠️ THE SIBLING REPO DOES NOT HELP: `tinybirdco/tinybird-sdk-typescript` is MIT, but copyright is per-work — a licence in one repo grants nothing in another, same org or not. That was the owner's hypothesis on 2026-08-08 and it was checked and rejected as a GRANT, while retained as evidence of INTENT. WHY THE RISK IS ACCEPTED: (1) 50 of 56 third-party skills here are MIT (89%) and 2 more are Apache-2.0 — publishing agent skills with no licence is anomalous against that norm and reads as oversight, not withheld permission; (2) the repo has a CONTRIBUTING.md but no LICENSE, the classic oversight shape; (3) the skills are published expressly for agents to consume; (4) Tinybird is genuinely IN this stack — `@tinybirdco/sdk` is a dependency of wom7web/wom7api/wom7cfworkers, imported by src/lib/tinybird.ts in two of them and by the `_shared/tinybird.ts` edge function, with a live health probe surfaced in the CP dashboard — so these skills have real utility and deleting them has a cost. ⏳ INTERIM, NOT FINAL: an upstream issue asking Tinybird to add a LICENSE is drafted at `project/drafts/tinybird-licence-request.md`. If they respond, DELETE this exemption and retain the real notice instead. Re-check before assuming this is settled.",
+      "wom7web/.agents/skills/tinybird-typescript-sdk-guidelines": "🔴 OWNER DECISION 2026-08-08 — ACCEPTED RISK, not a resolved licence, and the only such entry in the estate. `tinybirdco/tinybird-agent-skills` carries NO licence: verified exhaustively on 2026-08-08 — GitHub's licence API returns null, the FULL RECURSIVE file tree contains no LICENSE/NOTICE/COPYING at any path, and the README carries no licence statement. (The API alone was not trusted: T135 records that it only detects a ROOT licence and 404s on repos that license per directory, which is how `anthropics/skills` was nearly recorded as unlicensed.) ⚠️ THE SIBLING REPO DOES NOT HELP: `tinybirdco/tinybird-sdk-typescript` is MIT, but copyright is per-work — a licence in one repo grants nothing in another, same org or not. That was the owner's hypothesis on 2026-08-08 and it was checked and rejected as a GRANT, while retained as evidence of INTENT. WHY THE RISK IS ACCEPTED: (1) 50 of 56 third-party skills here are MIT (89%) and 2 more are Apache-2.0 — publishing agent skills with no licence is anomalous against that norm and reads as oversight, not withheld permission; (2) the repo has a CONTRIBUTING.md but no LICENSE, the classic oversight shape; (3) the skills are published expressly for agents to consume; (4) Tinybird is genuinely IN this stack — `@tinybirdco/sdk` is a dependency of wom7web/wom7api/wom7cfworkers, imported by src/lib/tinybird.ts in two of them and by the `_shared/tinybird.ts` edge function, with a live health probe surfaced in the CP dashboard — so these skills have real utility and deleting them has a cost. ⏳ INTERIM, NOT FINAL: an upstream issue asking Tinybird to add a LICENSE is drafted at `project/drafts/tinybird-licence-request.md`. If they respond, DELETE this exemption and retain the real notice instead. Re-check before assuming this is settled."
+    }
+  },
+  "secrets": {
+    "_comment": "AC10. Scope is CORPUS + TOOLING CONFORMANCE only. T119 AC2b already retired file-based secrets from gate commands and is genuinely done — do not redo it. Re-introducing a .env is a regression, not a migration.",
+    "manager": "infisical",
+    "forbidden_patterns": [
+      {
+        "id": "dotenv-load",
+        "regex": "set\\s+dotenv-load\\s*:=\\s*true",
+        "note": "justfile auto-loading a .env — the mechanism T119 removed."
+      },
+      {
+        "id": "infisical-export",
+        "regex": "infisical[\"',\\s]+export\\b",
+        "note": "Materialises secret VALUES to stdout/a file instead of injecting them into a process. The separator class is deliberate: the real offender in this estate is an argv LIST — subprocess.run([\"infisical\", \"export\", …]) — which a shell-shaped /infisical\\s+export/ never matches."
+      },
+      {
+        "id": "secrets-values-print",
+        "regex": "infisical[\"',\\s]+secrets\\b(?![^\\n]*\\b(set|delete)\\b)[^\\n]*--(plain|format)",
+        "note": "Debt row D19: a values-printing call leaked ADMIN_LOGIN_PASSWORD into a transcript. Presence-check through `infisical run` instead."
+      },
+      {
+        "id": "dotenv-source",
+        "regex": "(source|\\.)\\s+[^\\s]*\\.env\\b",
+        "note": "Sourcing a .env file into a shell."
+      },
+      {
+        "id": "dotvars-read",
+        "regex": "\\.dev\\.vars\\b",
+        "note": "wrangler's file-based secret surface — removed by T119 AC2b."
+      },
+      {
+        "id": "dotenv-library",
+        "regex": "(load_dotenv|dotenv\\.config|from\\s+dotenv\\s+import|import\\s+[\"']dotenv|require\\s*\\(\\s*[\"']dotenv)",
+        "note": "A dotenv LIBRARY load. Found 2026-07-26: the gate reported 2 leaks while 14 tracked scripts loaded dotenv, because `dotenv-source` is shell-shaped and matches only `source .env`. A library call is the same file-based read with different syntax — and it fails SILENTLY when the file is absent, so it reads as working while supplying nothing."
+      },
+      {
+        "id": "secret-file-read",
+        "regex": "(dev_secrets[\\w-]*\\.json|\\.env\\.infisical|secrets\\.json|credentials\\.json)",
+        "match_in_string": true,
+        "note": "Reading secret VALUES out of a plaintext file. Found 2026-07-26: `wom7api/dev_secrets.json` — a 21KB `infisical export` dump of 83 live secrets, gitignored and never committed, but sitting in the working tree and read by two tracked scripts. The .env patterns all missed it because it is not named .env. ⚠️ `match_in_string` is REQUIRED here and is not a loosening: a filename in real code is always a string literal, so the default string-literal exclusion made this pattern STRUCTURALLY VACUOUS — it could not fire in any file, ever. Its red probe returned exit 0 and exposed that. Prose protection comes from comment/docstring stripping instead, which is why the docstrings in healthcheck.py and sync_supabase_secrets.py that NAME these files do not trip it."
+      }
+    ],
+    "scan_globs": [
+      "justfile",
+      "*.justfile",
+      ".husky/*",
+      ".pre-commit-config.yaml",
+      "project/scripts/*.py",
+      "scripts/*.py",
+      "scripts/*.sh",
+      "scripts/*.js",
+      "scripts/*.mjs",
+      "scripts/*.cjs",
+      "scripts/*.ts",
+      "scripts/**/*.py",
+      "scripts/**/*.js",
+      "scripts/**/*.mjs",
+      ".github/workflows/*.yml"
+    ],
+    "_scan_globs_note": "⚠️ The glob set is HALF the gate. Until 2026-07-26 it omitted *.mjs, *.cjs, *.ts and any subdirectory, so 14 offending scripts — including every .mjs in wom7web/scripts — were invisible and the recorded baseline read '2 real leaks'. A pattern that matches nothing because no file was offered to it is indistinguishable from a clean estate. When adding a language to any repo, widen this list in the same change.",
+    "skills_corpus": {
+      "_comment": "AC10's skills half. DENOMINATOR, written down before any target is set (task 6.2): the corpus is every SKILL.md under the canonical wom7skills/skills/ tree, counted RECURSIVELY — not top-level directories. The recorded '2 of 27' used top-level dirs as the denominator; T131's re-measure put the real corpus at 40 SKILL.md files. Both numbers were 'right', which is why the denominator must be stated.",
+      "root": "wom7skills/skills",
+      "unit": "SKILL.md (recursive)",
+      "rule": "TWO TIERS. A skill that CONSUMES a secret (a variable-shaped reference, or an instruction to inject via `secrets.run`) MUST reference the manager — that is the gate. A skill that only MENTIONS the topic in prose is counted and reported, never failed.",
+      "_tier_note": "⚠️ Both halves of this were wrong before 2026-07-26, in opposite directions. (1) The signal was pure prose-matching, so it flagged `observability-instrumentation` for the RULE **\"never log secrets\"** and `w0m/w0m-spec` for the words \"Invalid Credentials\" in an example Gherkin login scenario — punishing documentation for describing good hygiene, the same false-positive class that once fired on comments documenting T119's own fix. (2) The manager signal demanded the LITERAL string `infisical`, which flagged all five `w0m-sdlc-*` skills even though they correctly reference `{secrets.run}` — the `.w0m/sdlc.json` indirection that RESOLVES to `infisical run --env=beta --`. Requiring the literal name would have forced the hardcoding CLAUDE.md explicitly forbids: an agent appeasing this gate would have made the project-agnostic skills project-specific. 9 reported offenders were 1 real one.",
+      "_denominator_note": "Measured 2026-07-26: corpus=40 SKILL.md · consuming=7 · prose-only=4 · offenders=1. The CONSUMING count (7) is the denominator that matters, and it is deliberately not 1 — an earlier candidate regex narrowed `consuming` to a single file, which would have made the rule near-vacuous (a gate that applies to 1 of 40 inputs can pass forever without meaning anything). Watch this number: if it collapses toward 1, the signal has over-narrowed, not the estate improved.",
+      "secret_signal_regex": "(\\$\\{?[A-Z][A-Z0-9_]*(KEY|SECRET|TOKEN|PASSWORD|CREDENTIALS?)\\b|process\\.env\\.[A-Z][A-Z0-9_]*|os\\.environ(\\[|\\.get\\()|\\bsecrets\\.run\\b|\\b[A-Z][A-Z0-9_]*_(API_KEY|SECRET|TOKEN|PASSWORD|SERVICE_ROLE_KEY)\\b)",
+      "prose_mention_regex": "(?i)(api[_-]?key|secret|token|password|credential|\\bBearer\\b)",
+      "manager_signal_regex": "(?i)(infisical|secrets\\.run|secrets\\.manager)"
+    }
+  }
+}

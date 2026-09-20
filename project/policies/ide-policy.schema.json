@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://webomage.com/schemas/ide-policy.schema.json",
+  "title": "w0m connected-IDE policy (T192)",
+  "description": "Validates project/ide-policy.json — the per-tool autoload knowledge and the non-negotiables every connected IDE's autoload surface is diffed against. ⚠️ This file exists because the policy's own `$schema` would otherwise DANGLE: `project/client-profile.json` records that w0m's and Artemio's `.w0m/sdlc.json` both point at a `./sdlc.schema.json` that does not exist, so both have passed every presence check while never being validated. Shipping a governance policy with an unresolvable $schema inside the ticket about ungoverned surfaces would be the same defect one level up.",
+  "type": "object",
+  "required": [
+    "project",
+    "canonical",
+    "marker",
+    "non_negotiables",
+    "tools"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "_comment": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string"
+    },
+    "canonical": {
+      "description": "The instruction surface that IS the contract; every connected IDE is measured against it.",
+      "type": "object",
+      "required": [
+        "tool",
+        "file"
+      ],
+      "properties": {
+        "_comment": {
+          "type": "string"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "file": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "marker": {
+      "description": "What proves a directory is a REAL surface rather than a name collision — content, never the directory name.",
+      "type": "object",
+      "required": [
+        "globs",
+        "instruction_dirs",
+        "instruction_files"
+      ],
+      "properties": {
+        "_comment": {
+          "type": "string"
+        },
+        "instruction_note": {
+          "type": "string"
+        },
+        "globs": {
+          "description": "Path-component globs that mark an openspec-generated surface. ⚠️ ONE entry, `opsx*`, verified against three repos. It briefly held `openspec*` too, on the assumption that wom7mlx's `rules/openspec.md` files were an earlier openspec layout — they are hand-written, and adding a glob because a FILENAME looked right is the very trap this policy is built around. Widen this only with evidence from the generator, never from a name.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "instruction_dirs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "instruction_files": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "non_negotiables": {
+      "description": "rule name → regex matched against every connected IDE's autoload file. An EMPTY set would make the parity gate vacuously green on every surface, so at least one is required.",
+      "type": "object",
+      "minProperties": 2,
+      "properties": {
+        "_comment": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "tools": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "_comment": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "skills_dir",
+          "autoload",
+          "autoload_note"
+        ],
+        "properties": {
+          "skills_dir": {
+            "description": "Cross-checked against openspec's live registry at runtime; disagreement is a hard error, not a preference.",
+            "type": "string",
+            "pattern": "^\\."
+          },
+          "autoload": {
+            "description": "What the tool loads by itself: a path, or a LIST of paths/globs when the tool reads a rules directory (Cursor, Windsurf) or more than one surface (Gemini). `null` = unknown, which makes the tool traceable for presence but NOT parity.",
+            "type": [
+              "string",
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "autoload_shared": {
+            "description": "true when the autoload path is a CONVENTION several tools read (AGENTS.md). Its presence then proves nothing about which tool is connected and never raises an undeclared-surface finding.",
+            "type": "boolean"
+          },
+          "autoload_note": {
+            "description": "Required: how the autoload path was established — observed, or convention-and-unverified. The distinction is the whole difference between measurement and guessing.",
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "global_surfaces": {
+      "description": "AC4 — surfaces under $HOME, declared by PATH rather than derived from skillsDir, because the derivation is wrong for at least one tool (Windsurf's global rules live under ~/.codeium/).",
+      "type": "object",
+      "properties": {
+        "_comment": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "known_not_ide_surfaces": {
+      "description": "Lookalikes ruled on, keyed `<unit>/<dir>`. The value is the REASON and must be non-empty — an unreasoned dismissal is how a real surface gets silenced.",
+      "type": "object",
+      "properties": {
+        "_comment": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 20
+      }
+    },
+    "delegation": {
+      "description": "How a surface may satisfy the contract by REFERENCE instead of restating it — the estate's actual pattern (5 of 6 sibling repos). `must_resolve` is what keeps it honest: a dangling pointer reads as compliance.",
+      "type": "object",
+      "required": [
+        "pattern",
+        "must_resolve",
+        "target"
+      ],
+      "properties": {
+        "_comment": {
+          "type": "string"
+        },
+        "pattern": {
+          "type": "string",
+          "minLength": 1
+        },
+        "must_resolve": {
+          "type": "boolean"
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "max_hops": {
+          "description": "How far a 'read X' chain is followed. >1 because wom7mlx delegates CLAUDE.md → AGENTS.md → the estate contract.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

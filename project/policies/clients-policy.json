@@ -1,0 +1,376 @@
+{
+  "$schema": "./clients-policy.schema.json",
+  "_comment": "T182 Phase 1 — the DECLARED set of projects the client-import inventory measures. Read by project/scripts/client_inventory.py (`just client-inventory`). The set is POLICY, not discovery: a project absent from this file is never inventoried, and a declared root that is missing or is not a git repo ROOT is a hard failure — not a skip. `role: estate` names the project whose .w0m/sdlc.json IS the contract every other project is diffed against; exactly one is required. Paths are relative to the estate ROOT (…/@wom) and MAY point outside it — the two clients do. Read-only by construction: this tool never writes to a client repo (T182 Phase 0, AC6).",
+  "project": "w0m",
+  "contract_file": ".w0m/sdlc.json",
+  "projects": [
+    {
+      "id": "w0m",
+      "role": "estate",
+      "root": ".",
+      "enabled": true,
+      "runtime": {
+        "substrate": "host"
+      },
+      "note": "T294 — the estate is a WORKSPACE of seven repos, not the single repo `wom7web` it was declared as until 2026-09-02. Declaring it as one repo made the estate's own shape invisible to its own registry, and left T268's workspace mode with zero production users despite ten passing probes. `repos` is imported from graph_health.REPOS rather than retyped — mlx is nested at wom7mlx/wom7mlx, so a hand-written list gets it wrong in the one place that hard-fails. `canonical_repo: wom7web` keeps the contract (.w0m/sdlc.json) where its readers already expect it — wom7api/scripts/supabase_limits.py resolves it from a hardcoded wom7web path.",
+      "repos": {
+        "wom7api": "wom7api",
+        "wom7func": "wom7func",
+        "wom7ext": "wom7ext",
+        "wom7mlx": "wom7mlx/wom7mlx",
+        "wom7sec": "wom7sec",
+        "wom7skills": "wom7skills",
+        "wom7web": "wom7web"
+      },
+      "canonical_repo": "wom7web",
+      "identity": {
+        "git_user_name": "Aleksei Tcelishchev",
+        "git_user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      }
+    },
+    {
+      "id": "1945",
+      "role": "client",
+      "root": "../../_self/1945",
+      "enabled": true,
+      "runtime": {
+        "substrate": "host"
+      },
+      "identity": {
+        "git_user_name": "Aleksei Tcelishchev",
+        "git_user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "note": "React (72 .jsx, 0 .tsx). On branch `beta`. Partly imported by no defined path: 5 divergent keys and NO $schema, so no validator has ever read its sdlc.json. Owner-write-only. NOTE the root is `_self/1945`, NOT `_self/1945/1945socialclub.com` — the latter is a subdirectory whose enclosing repo `git -C` silently reports (T172/T180/T182 trap; the root check below exists because of it)."
+    },
+    {
+      "id": "artemio",
+      "role": "client",
+      "root": "../../_self/delivery/artemioquierocomer.mx",
+      "enabled": true,
+      "runtime": {
+        "substrate": "host"
+      },
+      "vcs": {
+        "provider": "github",
+        "repo": "casualuser/artemioquierocomer.mx",
+        "default_branch": "main"
+      },
+      "identity": {
+        "git_user_name": "Aleksei Tcelishchev",
+        "git_user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "note": "Astro 6 + Svelte 5 + Tailwind 4 — w0m's own stack. On branch `main`. Host-managed execution directly on macOS host without Tart VM sandbox isolation (T313). Bound to delivery project container a7e31002-2660-4000-8000-000000000001. 55 skills governed in .w0m/skills.json + lockfile, symlinked in .claude/skills. CLAUDE.md is an 11-byte `@AGENTS.md` import directive that resolves. T338 — `vcs.repo` verified 2026-09-11 via `git remote -v`/`gh repo view`; Artemio's own `.w0m/sdlc.json` had it wrong as `proto/artemioquierocomer.mx`."
+    },
+    {
+      "id": "servicios777",
+      "role": "client",
+      "root": "../../_self/servicios777.mx",
+      "enabled": true,
+      "runtime": {
+        "substrate": "host"
+      },
+      "identity": {
+        "git_user_name": "Aleksei Tcelishchev",
+        "git_user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "note": "🧊 THE COLD RUN (T182 AC7). Registered 2026-08-09 having never been imported — no `.w0m/` at all, unlike every other project here. On `main`. Chosen precisely because nothing about it was shaped by the two imports that produced the path: if the written procedure only works on projects it was derived from, this is where that shows."
+    },
+    {
+      "id": "personaje0",
+      "role": "client",
+      "root": "../../_self/personaje0",
+      "enabled": true,
+      "runtime": {
+        "substrate": "host"
+      },
+      "identity": {
+        "git_user_name": "Aleksei Tcelishchev",
+        "git_user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "note": "🔴 A THIRD partly-imported project, found 2026-08-09 while looking for an AC7 subject — it has `.w0m/sdlc.json` + `templates/` and nobody had mentioned it. The ticket's framing (\"both clients are already partly imported\") was an UNDERCOUNT: the estate had three, and the third was invisible because nothing enumerated projects. Registered read-only so it is measured rather than remembered. On `main`."
+    },
+    {
+      "id": "bridgeroad",
+      "role": "half-managed",
+      "root": "../../_proj/bridgeroad",
+      "runtime": {
+        "substrate": "tart-linux",
+        "guest_name": "w0m-bridgeroad"
+      },
+      "repos": {
+        "app": "BridgeMvp"
+      },
+      "canonical_repo": ".",
+      "identity": {
+        "git_user_name": "Aleksei Tcelishchev",
+        "git_user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "repo_identities": {
+        "app": {
+          "git_user_name": "Elena Shatalova",
+          "git_user_email": "elenashatalova.it@gmail.com",
+          "ssh_key": "~/.ssh/id_ed25519_bridgeroad",
+          "gh_account": "Shinagawa-monkey",
+          "gh_config_dir": "~/.config/gh-elena"
+        }
+      },
+      "enabled": true,
+      "tier_reason": "Elena Shatalova's Upwork engagement for Hadi Alshahrouri; the app repo belongs to a third-party org (BridgeRoad/bridgeroad-app) and w0m writes nothing to it. Skills, tools and the SDLC workflow apply; ticketing does not — no T-ids, no GitHub mirroring (T265 AC4). The contract lives at the workspace root because that root is now `bridgeroad-w0m`, a repo we own: the alternative was putting .w0m/ inside the client's repository, which happened once and published this estate's Infisical invocation into their org (T294 AC3).",
+      "note": "T265 AC3 / T294 AC6 — declared 2026-09-02, after the tier existed to declare it into. The AGY run's original registration (role: client, root pointing at a non-repo) is preserved at project/clients/bridgeroad/PENDING-registration-T265-AC1.patch as the record of what was held."
+    },
+    {
+      "id": "evercred",
+      "role": "half-managed",
+      "root": "../../_proj/Evercred",
+      "runtime": {
+        "substrate": "tart-linux",
+        "guest_name": "evercred"
+      },
+      "repos": {
+        "app": "evercred",
+        "iac": "evercred-iac",
+        "agent": "evercred-agent",
+        "gauge-test": "evercred-gauge-test"
+      },
+      "identity": {
+        "git_user_name": "Elena Shatalova",
+        "git_user_email": "59675339+Shinagawa-monkey@users.noreply.github.com",
+        "ssh_key": "~/.ssh/id_ed25519_bridgeroad",
+        "gh_account": "Shinagawa-monkey",
+        "gh_config_dir": "~/.config/gh-elena"
+      },
+      "enabled": true,
+      "tier_reason": "Elena Shatalova's engagement; all four repos belong to the third-party HPECid org and the real work happens inside a running Tart VM. NO w0m contract exists and none will be placed — T265 AC8 forbids writing to the project or inside its VM, so creating a .w0m/ here would itself be the write we refuse. Declared so it is VISIBLE with its reason rather than absent, because the registry states an absent project is never inventoried and an invisible category is indistinguishable from an oversight.",
+      "note": "T265 AC3 — declared 2026-09-02 WITHOUT a contract (no canonical_repo). 🔬 Corrects this ticket's own premise: T265 recorded 'Evercred is not a git repo', true of the 17 GB parent but it holds FOUR nested repos, so the workspace shape fits and the 'stated skip' AC3 anticipated was not needed. ⚠️ No estate gate reaches inside the VM where the work actually happens."
+    },
+    {
+      "id": "k7",
+      "role": "client",
+      "root": "k7",
+      "runtime": {
+        "substrate": "host"
+      },
+      "repos": {
+        "k7c": "k7c/k7c",
+        "k7d": "k7d/k7d",
+        "k7s": "k7s/k7s",
+        "k7llm": "k7llm/k7llm",
+        "k7sol": "k7sol/k7sol",
+        "k7spec": "k7spec/k7spec",
+        "k7tg": "k7tg"
+      },
+      "canonical_repo": "k7d",
+      "identity": {
+        "git_user_name": "Aleksei Tcelishchev",
+        "git_user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "enabled": true,
+      "note": "T307 — the @k7 developer tooling & Rust TUI family. Managed workspace of 7 repositories with k7d as the Tart VM & daemon control panel."
+    },
+    {
+      "id": "mob",
+      "role": "client",
+      "root": "mob",
+      "runtime": {
+        "substrate": "host"
+      },
+      "repos": {
+        "solar": "solar/solar",
+        "mantrabox": "mantrabox/mantrabox",
+        "mantrabox-flutter": "mantrabox/mantrabox.flutter"
+      },
+      "canonical_repo": "solar",
+      "identity": {
+        "git_user_name": "Aleksei Tcelishchev",
+        "git_user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "enabled": true,
+      "note": "T348 — the @mob mobile apps portfolio (solar, mantrabox, birds-echo) onboarded as Indie projects for Aleksei (aleksei@webomage.com), where Aleksei acts as both Client patron and Indie Operator holding PM/TPM/Dev delivery roles."
+    }
+  ],
+  "state_surface_candidates": [
+    "STATE.md",
+    "LESSONS.md",
+    "SESSIONS.md",
+    "PROGRESS.md",
+    "DECISIONS.md"
+  ],
+  "tiers": {
+    "_comment": "T265 AC2 — every governance surface decided IN or OUT for the half-managed tier, explicitly. A surface not named is a gap, not a default, so every one of the estate contract's 33 keys appears here plus the surfaces AC2 names that are not contract keys. The organising principle: IN if it describes the project or is read-only and is part of skills/tools/SDLC; OUT if it is ticketing (owner instruction) or requires WRITE access to something that is not ours.",
+    "half-managed": {
+      "definition": "Skills, tools and the SDLC workflow apply. Ticketing does not. Nothing is written to the project.",
+      "contract_surfaces": {
+        "project": {
+          "status": "in",
+          "reason": "Identity. Without it the project cannot be named in any output."
+        },
+        "root": {
+          "status": "in",
+          "reason": "Where it lives. Read-only."
+        },
+        "repos": {
+          "status": "in",
+          "reason": "Which repos it has — the workspace shape (T268)."
+        },
+        "canonical_repo": {
+          "status": "in",
+          "reason": "Where the contract lives. T294 AC5 allows '.' so it need not be inside a repo we do not own."
+        },
+        "vcs": {
+          "status": "in",
+          "reason": "Where the code lives. Read-only; declaring it is not access to it."
+        },
+        "profile": {
+          "status": "in",
+          "reason": "Declares the tier itself — the key that makes this project visible rather than absent."
+        },
+        "stacks": {
+          "status": "in",
+          "reason": "What it runs. Read-only description; it is what makes skills and tools selectable at all."
+        },
+        "toolchain": {
+          "status": "in",
+          "reason": "Tool versions — half of what 'skills and tools apply' means."
+        },
+        "skills": {
+          "status": "in",
+          "reason": "The tier IS this. Owner: 'half managed with skills/tools and sdlc/workflow'."
+        },
+        "skills_governance_scopes": {
+          "status": "in",
+          "reason": "Follows skills; a governed skill with an ungoverned scope is not governed."
+        },
+        "mcp": {
+          "status": "in",
+          "reason": "Tools."
+        },
+        "commands": {
+          "status": "in",
+          "reason": "How to build and test it — the workflow half of the tier."
+        },
+        "lifecycle": {
+          "status": "in",
+          "reason": "The SDLC workflow itself."
+        },
+        "conventions": {
+          "status": "in",
+          "reason": "Workflow conventions."
+        },
+        "grounding_gate": {
+          "status": "in",
+          "reason": "An SDLC workflow stage, not an enforcement hook."
+        },
+        "ide_surfaces": {
+          "status": "in",
+          "reason": "Agent surfaces — where skills and tools are actually reachable."
+        },
+        "codegraph": {
+          "status": "in",
+          "reason": "Read-only analysis we run on our own machine. Nothing is written to the project."
+        },
+        "preflight": {
+          "status": "in",
+          "reason": "Read-only checks."
+        },
+        "state_surface": {
+          "status": "in",
+          "reason": "The handoff convention. Evercred already runs it (STATE.md, HANDOFF-*) — this declares what exists rather than imposing it."
+        },
+        "quality_gates": {
+          "status": "in",
+          "reason": "DECLARED, NOT ENFORCED — and the distinction is the point. We can say what good looks like; we cannot install a hook in a repo we do not control. Recorded as in-scope so the expectation is legible, with enforcement explicitly theirs."
+        },
+        "tickets": {
+          "status": "out",
+          "reason": "🔴 Owner instruction: 'without our ticketing system'. No T-ids, no GitHub mirroring, no ticket sync. AC4 verifies this by RUNNING the sync and observing they are untouched."
+        },
+        "board": {
+          "status": "out",
+          "reason": "Ticketing."
+        },
+        "tasks_surface": {
+          "status": "out",
+          "reason": "Ticketing. ⚠️ AC5: _proj/Evercred/TASKS.md is unrelated correspondence, not a board — a filename is not a task surface."
+        },
+        "current_plan": {
+          "status": "out",
+          "reason": "Planning is theirs; it is the thing ticketing would carry."
+        },
+        "specs": {
+          "status": "out",
+          "reason": "Planning artefact, same reason."
+        },
+        "tech_debt": {
+          "status": "out",
+          "reason": "The debt register is a ticketing surface. Naming their debt in our register would create work items in a system they are explicitly outside."
+        },
+        "secrets": {
+          "status": "out",
+          "reason": "🔴 Their credentials, and the sharpest line here. Declaring our secrets tooling against their project is how this estate's Infisical `--env=beta` invocation ended up inside a client's repository (T294 AC3)."
+        },
+        "iac": {
+          "status": "out",
+          "reason": "Their infrastructure. We do not provision it."
+        },
+        "backups": {
+          "status": "out",
+          "reason": "Their data. Running or asserting backups implies access we do not have and responsibility we have not taken."
+        },
+        "deploy_logs": {
+          "status": "out",
+          "reason": "We do not deploy them, so there is nothing to log."
+        },
+        "coverage_scan": {
+          "status": "out",
+          "reason": "Requires running their test suite and writing results somewhere."
+        },
+        "versioning": {
+          "status": "out",
+          "reason": "Their release process. w0m's YYYY.MM.DD-<unixtimestamp> is ours, not a rule for a project we do not release."
+        },
+        "supabase_limits": {
+          "status": "out",
+          "reason": "Estate-only and provably so: wom7api/scripts/supabase_limits.py reads it from a HARDCODED wom7web path, so a client's declaration could not be read even if written."
+        }
+      },
+      "non_contract_surfaces": {
+        "ci_deploy": {
+          "status": "out",
+          "reason": "We neither run nor gate their CI. ⚠️ Also moot here: GitHub Actions is dead on this account (100/100 startup_failure)."
+        },
+        "disk_cleanup": {
+          "status": "out",
+          "reason": "🔴 Approval is the PROJECT OWNER's, not w0m's — for both subjects that is Elena, corrected in T274 AC3. A tier that quietly granted us deletion rights over someone else's 17 GB would be the opposite of what 'half-managed' means."
+        },
+        "writes_to_project": {
+          "status": "out",
+          "reason": "🔴 The rule the others follow from: T265 AC8 — no write to either project, and no write inside its VM. Neither is ours."
+        }
+      }
+    }
+  }
+}

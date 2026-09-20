@@ -1,0 +1,400 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://webomage.com/schemas/clients-policy.schema.json",
+  "title": "w0m client-import registry (T182)",
+  "description": "Declares the projects the client-import inventory measures, and which one carries the contract. Validated so the registry itself cannot become the divergent, unread schema this ticket exists to fix.",
+  "type": "object",
+  "required": [
+    "project",
+    "contract_file",
+    "projects"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "_comment": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string",
+      "const": "w0m"
+    },
+    "contract_file": {
+      "type": "string",
+      "description": "Path, relative to each project root, of the declaration file diffed across projects."
+    },
+    "projects": {
+      "type": "array",
+      "minItems": 2,
+      "description": "At least two: the estate plus one client. A single-entry registry would make the diff vacuous.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "root",
+          "enabled",
+          "runtime"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "runtime": {
+            "$ref": "#/definitions/runtime"
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "role": {
+            "$ref": "#/definitions/role"
+          },
+          "root": {
+            "type": "string",
+            "description": "Path relative to the estate root (\u2026/@wom). May resolve outside it. SIMPLE mode (no `repos`): this MUST be a git repo root \u2014 the original rule, unchanged. WORKSPACE mode (`repos` present): this is the PROJECT root, a parent folder that need not be a repo itself; the repos under it carry the git-root guarantee instead. T268."
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string"
+          },
+          "repos": {
+            "type": "object",
+            "description": "WORKSPACE mode. Logical name -> path relative to this project's `root`, the same vocabulary `.w0m/sdlc.json` already uses for w0m's own seven repos. Presence of this key IS the mode \u2014 there is deliberately no separate `mode` field, because a flag can disagree with the shape it describes. EVERY entry must resolve to a git repo ROOT: the hard-fail simple mode applies to `root` moves here, it is not relaxed.",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            },
+            "propertyNames": {
+              "pattern": "^[a-z0-9][a-z0-9_-]*$"
+            }
+          },
+          "canonical_repo": {
+            "type": "string",
+            "description": "WORKSPACE mode, required with `repos`. Where the project's `.w0m/` contract lives. Two legal forms: a key of `repos` (the contract sits in that repo \u2014 w0m uses \"wom7web\", whose path wom7api/scripts/supabase_limits.py resolves from a hardcoded location), or \".\" meaning the WORKSPACE ROOT itself. The second form exists because a client's only app repo may not be ours \u2014 BridgeRoad's single repo is a third-party org's, and putting our contract there is what T265 AC8 forbids. \ud83d\udd34 \".\" is legal ONLY when the workspace root is itself a git repo root. T268 AC7 made 'configuration at an untracked parent' (D32) inexpressible by requiring the contract inside a declared repo; allowing the root because it IS a repo we own is a different claim from allowing an untracked parent, and client_inventory hard-fails the latter by name. \u26a0\ufe0f OPTIONAL for role 'half-managed', where its ABSENCE means the project has NO w0m contract at all \u2014 we place none, because we write nothing to it. That is NOT D32: D32 is configuration that EXISTS while versioned nowhere; this is configuration that does not exist by decision. Conflating them would let 'we left our config lying in someone's directory' hide behind 'we deliberately have none'.",
+            "minLength": 1
+          },
+          "tier_reason": {
+            "type": "string",
+            "minLength": 40,
+            "description": "Required for role 'half-managed'. WHY this project is not fully managed \u2014 ownership, who runs it, what the estate deliberately does not reach. A tier without a reason degrades into a status nobody can question; `enabled: false` already reads as 'paused', and this must not become a second such value. Printed by client-inventory beside the project."
+          },
+          "vcs": {
+            "$ref": "#/definitions/vcs"
+          },
+          "identity": {
+            "$ref": "#/definitions/identity"
+          },
+          "repo_identities": {
+            "type": "object",
+            "description": "Per-repo identity overrides in workspace mode (keyed by repo name).",
+            "additionalProperties": {
+              "$ref": "#/definitions/identity"
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "repos"
+              ],
+              "properties": {
+                "role": {
+                  "not": {
+                    "const": "half-managed"
+                  }
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "canonical_repo"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "role": {
+                  "const": "half-managed"
+                }
+              },
+              "required": [
+                "role"
+              ]
+            },
+            "then": {
+              "required": [
+                "tier_reason"
+              ]
+            }
+          },
+          {
+            "if": {
+              "required": [
+                "role"
+              ],
+              "properties": {
+                "role": {
+                  "const": "half-managed"
+                }
+              },
+              "not": {
+                "required": [
+                  "repos"
+                ]
+              }
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "canonical_repo"
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "runtime": {
+                  "properties": {
+                    "substrate": {
+                      "enum": [
+                        "tart-linux",
+                        "tart-macos"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "runtime": {
+                  "required": [
+                    "guest_name"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "state_surface_candidates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Agent-maintained files whose size is reported per project (T177/T174 linkage). Reported, never judged \u2014 the threshold belongs to the profile gate, not the inventory."
+    },
+    "tiers": {
+      "type": "object",
+      "description": "T265 AC2 \u2014 per-tier IN/OUT decisions for every governance surface, keyed by role name. Tier names are constrained to the SAME definition the `role` property uses, so a tier cannot be defined for a role that does not exist, and adding a role cannot silently leave its tier unschema'd. \u26a0\ufe0f COMPLETENESS against the estate contract stays with client_inventory: the contract's key set is data read at runtime, and a schema cannot know it.",
+      "minProperties": 1,
+      "properties": {
+        "_comment": {
+          "type": "string"
+        }
+      },
+      "propertyNames": {
+        "anyOf": [
+          {
+            "const": "_comment"
+          },
+          {
+            "$ref": "#/definitions/role"
+          }
+        ]
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/tier"
+      }
+    }
+  },
+  "definitions": {
+    "runtime": {
+      "type": "object",
+      "description": "T297 AC1/AC2/AC3 — Where the project executes. Absence is NOT permitted (no default to 'host'). 🔴 AC3 boundary rule: estate gates (preflight, linters, tests, security probes) inspect only macOS host paths and do NOT reach inside guest VMs. A project inside a guest is therefore ungoverned from the host's point of view, and declaring runtime: tart-* makes this visible rather than implying coverage.",
+      "required": [
+        "substrate"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "substrate": {
+          "type": "string",
+          "enum": [
+            "host",
+            "tart-linux",
+            "tart-macos"
+          ],
+          "description": "host — runs directly on macOS host. tart-linux — runs inside a Linux Tart VM (e.g. Ubuntu 26.04). tart-macos — runs inside a macOS Tart VM (limited to 2 per host by kernel cap)."
+        },
+        "guest_name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the local Tart VM instance (e.g. 'w0m-bridgeroad', 'evercred'). Expected for tart-* runtimes so tooling can verify its presence via tart list (AC4)."
+        }
+      }
+    },
+    "role": {
+      "enum": [
+        "estate",
+        "client",
+        "half-managed"
+      ],
+      "description": "estate \u2014 the project whose .w0m/sdlc.json IS the contract; exactly one required. client \u2014 a fully managed project: every governance surface applies. half-managed (T265) \u2014 skills, tools and the SDLC workflow apply, but NOT ticketing: no T-ids, no GitHub mirroring, no ticket sync. The tier exists because the registry states 'a project absent from this file is never inventoried' \u2014 absent means INVISIBLE, and an invisible category is indistinguishable from an oversight. That is how BridgeRoad got filed as an import. A half-managed project is therefore declared and visible, with its reason, rather than left out."
+    },
+    "vcs": {
+      "type": "object",
+      "description": "T338 \u2014 OPTIONAL. Reuses the exact vocabulary `.w0m/sdlc.json` already defines for `vcs` (see `.w0m/README.md`) rather than inventing a second shape for the same fact. Absence means the link is not yet recorded here, not that the project has no repo \u2014 a project's own `.w0m/sdlc.json` (when it has one) remains the primary source; this field exists so the estate-level registry can show the link without opening every client's own config.",
+      "required": [
+        "provider",
+        "repo"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": [
+            "github"
+          ]
+        },
+        "repo": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$",
+          "description": "`owner/name`, verified against the actual remote (`git remote -v` / `gh repo view`) \u2014 not copied from a project's own possibly-stale config."
+        },
+        "default_branch": {
+          "type": "string"
+        }
+      }
+    },
+    "surface": {
+      "type": "object",
+      "description": "One governance surface, decided. `status` is the decision; `reason` is why. Both required: a surface listed without a decision is indistinguishable from one nobody considered, which is the state this tier system exists to end.",
+      "required": [
+        "status",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "in",
+            "out"
+          ],
+          "description": "in \u2014 w0m governs this surface for the tier. out \u2014 it does not."
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 5,
+          "description": "Why. Deliberately short-friendly: real entries include \"Tools.\" and \"Ticketing.\", which classify rather than argue and are the right length for a per-surface label. The bar only rejects empty and one-character values \u2014 an unexplained decision, not a terse one."
+        }
+      }
+    },
+    "surface_map": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "Surface name -> decision. Must not be empty: an empty map reads as 'every surface decided' while deciding nothing.",
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/surface"
+      }
+    },
+    "tier": {
+      "type": "object",
+      "required": [
+        "definition",
+        "contract_surfaces",
+        "non_contract_surfaces"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "definition": {
+          "type": "string",
+          "minLength": 40,
+          "description": "What the tier means in one paragraph, long enough to be a claim someone can disagree with."
+        },
+        "contract_surfaces": {
+          "$ref": "#/definitions/surface_map"
+        },
+        "non_contract_surfaces": {
+          "$ref": "#/definitions/surface_map"
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "description": "Declared developer or agent identity for git commits, SSH transport, and GitHub CLI (T300).",
+      "additionalProperties": false,
+      "properties": {
+        "git_user_name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The expected git user.name (e.g. 'Aleksei Tcelishchev' or 'Elena Shatalova')."
+        },
+        "git_user_email": {
+          "type": "string",
+          "minLength": 3,
+          "description": "The expected git user.email."
+        },
+        "ssh_key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filesystem path or pointer to SSH key (e.g. '~/.ssh/id_rsa'), NEVER private key content."
+        },
+        "gh_account": {
+          "type": "string",
+          "minLength": 1,
+          "description": "GitHub username active for CLI operations."
+        },
+        "gh_config_dir": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Path to isolated GH_CONFIG_DIR directory (e.g. '~/.config/gh-w0m')."
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "projects": {
+            "contains": {
+              "type": "object",
+              "required": [
+                "role"
+              ],
+              "properties": {
+                "role": {
+                  "const": "half-managed"
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "tiers"
+        ],
+        "properties": {
+          "tiers": {
+            "required": [
+              "half-managed"
+            ]
+          }
+        }
+      },
+      "_comment": "If any project claims the half-managed tier, the tier must be defined. Otherwise a project can sit in a tier whose obligations are written nowhere."
+    }
+  ]
+}

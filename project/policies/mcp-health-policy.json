@@ -1,0 +1,19 @@
+{
+  "_comment": [
+    "Skip list for `just mcp-health`. Empty today, and it should stay that way if possible.",
+    "",
+    "An entry here means 'this server cannot be probed', and it must say WHY — not 'this server",
+    "is allowed to be broken'. The two get confused, and the second is how a health gate stops",
+    "meaning anything.",
+    "",
+    "Legitimate reasons to skip: a server that needs interactive OAuth (it cannot complete a",
+    "handshake headlessly), or one whose startup has an external cost. NOT a legitimate reason:",
+    "it is failing and nobody has fixed it.",
+    "",
+    "Note the scope. This probes STDIO servers only — the ones this host spawns. An http/sse",
+    "server is someone else's uptime and is out of scope by construction, not by omission.",
+    "The estate's own record already distinguishes declared / configured / listening /",
+    "session-CONNECTED; this adds the rung STARTS-AND-SERVES, and closes none of the others."
+  ],
+  "skip": {}
+}

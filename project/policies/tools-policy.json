@@ -1,0 +1,287 @@
+{
+  "_comment": "Host CLI tools the w0m workflow depends on. Unlike npm deps (deps-policy.json) these are installed per-machine, so version checks are ADVISORY. Per tool: `min` (floor the workflow needs), `known_good` (last verified working), `source` (how it updates — tools-upgrade knows `brew` and `gcloud` in-place; others report-only), `auto` (max bump tools-upgrade may auto-apply: patch|minor|major|none), optional `smoke` (a cheap post-upgrade compatibility command, run from the wom7web dir). `auto:none` = detected + reported but NEVER auto-updated (prod-gating / behavior-sensitive). Checked by project/scripts/tools_check.py (`just tools-check`, `--outdated`) and project/scripts/tools_upgrade.py (`just tools-upgrade`).",
+  "tools": {
+    "ast-grep": {
+      "min": "0.38.0",
+      "known_good": "0.45.3",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "ast-grep --version",
+      "note": "Structural (AST) search-and-rewrite. 🔴 required:false and HONESTLY SO — measured 2026-08-05, the estate has **ZERO** command-position uses of it: no sgconfig.yml, no rule files, no just recipe, only 2 prose mentions in what is now wom7web/docs/research/ (was wom7md/50-research/ until T186). It is governed because it is installed and can rewrite the tree at scale (the serena lesson: an unpinned tool with tree-wide write access is the combination that matters), not because anything depends on it. Give it a job or remove it — do not let it sit here as decoration. 🔑 FIXED 2026-08-05: was `ast-grep-cli` via pip inside pyenv 3.12.9, so it vanished with any interpreter switch and the host resolved it through a pyenv shim while the Evercred guest got it from linuxbrew — two managers, one tool. Now brew on both. ⚠️ Does NOT support .astro, .svelte, .vue or .sql, so it cannot cover serena's .astro blind spot (T166); it handles ts/tsx/js/html/css/json/yaml/python/rust. ⚠️ `ast-grep` exits NON-ZERO on no-match, so an exit-code test reports a supported language as unsupported — check stderr for `is not supported` instead. ⚠️ On Linux `/usr/bin/sg` is newgrp, not ast-grep; the `sg` alias is only safe on this host."
+    },
+    "aws": {
+      "min": "2.20.0",
+      "known_good": "2.36.5",
+      "required": false,
+      "source": "brew",
+      "auto": "none",
+      "note": "cloud CLI; wom7sec deep-audit (§30). Manual."
+    },
+    "az": {
+      "min": "2.60.0",
+      "known_good": "2.88.0",
+      "required": false,
+      "source": "brew",
+      "auto": "none",
+      "note": "azure jumphost IaC. Manual."
+    },
+    "cargo": {
+      "min": "1.95.0",
+      "known_good": "1.97.1",
+      "required": false,
+      "source": "rustup",
+      "auto": "none",
+      "smoke": "cargo --version",
+      "note": "T235 AC1 — the Rust build driver. 🔴 UNDECLARED UNTIL 2026-08-19 while a Rust daemon (`com.zeroclaw.daemon`) ran under launchd and the `mlx` stack declared `runtime: \"rust\"` — the same load-bearing-but-invisible gap omlx/tart/zeroclaw each had. 🔒 **Floor RAISED 1.85.0 → 1.95.0 on 2026-08-19 (owner: \"rize rust version\").** It is not a round number: the floor is the **highest requirement declared by Rust code actually present in this estate**, and both ends were measured, not guessed. `_ext/ai-memory` declares `rust-version = \"1.95\"` AND pins `rust-toolchain.toml` `channel = \"1.95\"`; `wom7mlx` needs ≥1.85 (`edition = \"2024\"`). max(1.95, 1.85) = **1.95**. ⚠️ ai-memory is EVALUATED, NOT ADOPTED (T235 AC7 / T234) — the floor tracks code **present and buildable**, so if ai-memory leaves `_ext/`, this may drop back to 1.85.0. Installed default is 1.97.1, so the floor is satisfied with room; `rustup check` confirms 1.97.1 IS current stable. `source: rustup` — these live in ~/.cargo/bin and are managed by `rustup update`, NOT brew. tools-check cannot resolve an upstream version for them (falls through to `latest = None`), so they are floor-checked, never auto-bumped."
+    },
+    "cargo-clippy": {
+      "min": "0.1.95",
+      "known_good": "0.1.97",
+      "required": false,
+      "source": "rustup",
+      "auto": "none",
+      "smoke": "cargo-clippy --version",
+      "note": "T235 AC1 — the linter. 🔬 DECLARED UNDER ITS REAL BINARY NAME. T235 was filed claiming \"clippy MISSING\"; it is installed — the binary is `cargo-clippy`, and probing the bare name `clippy` returns nothing. tools-check does `shutil.which(<key>)`, so declaring this as `clippy` would have re-committed the exact error the ticket was corrected for. ⚠️ Version scheme differs: clippy 0.1.N ships with rustc 1.N. Floor **0.1.95**, RAISED with the toolchain 2026-08-19 and MEASURED off the pinned toolchain rather than inferred: `rustup run 1.95 cargo-clippy --version` → `clippy 0.1.95`."
+    },
+    "codegraph": {
+      "min": "1.4.0",
+      "known_good": "1.4.1",
+      "required": false,
+      "source": "npm",
+      "auto": "none",
+      "note": "npm global (nvs). Update via npm/pnpm."
+    },
+    "deno": {
+      "min": "2.0.0",
+      "known_good": "2.9.3",
+      "required": true,
+      "source": "brew",
+      "auto": "none",
+      "note": "GATES the deno-check type hook — a version bump can change type-checking. Bump manually + run deno-check."
+    },
+    "gauge": {
+      "min": "1.6.0",
+      "known_good": "1.6.31",
+      "required": false,
+      "source": "brew",
+      "auto": "none",
+      "smoke": "gauge --version",
+      "note": "T237 AC5 — the spec runner for the estate's 190 Gauge specs (`gauge run specs`, wired through `pnpm test:e2e` / `just e2e` / `just e2e-local`). 🔴 UNDECLARED UNTIL 2026-08-19 while load-bearing for the whole corpus — the same invisible-dependency shape omlx, tart, zeroclaw and the Rust toolchain each had, found the same way: by asking what a gate actually depends on. ⚠️ `auto: none` because a runner upgrade changes how specs execute, and this corpus is already the subject of T237 — bumping the thing under test while its trustworthiness is in question would confound both. `required: false`: nothing in the commit/push path runs specs (that is T237 AC4's job), so a machine without gauge is not broken, just unable to run E2E."
+    },
+    "gcloud": {
+      "min": "500.0.0",
+      "known_good": "584.0.0",
+      "required": false,
+      "source": "gcloud",
+      "auto": "major",
+      "smoke": "gcloud version",
+      "note": "self-updates via `gcloud components update --quiet` (NOT brew). Versions are rolling, not semver — `auto:major` just means 'auto-update to latest' (the level cap is nominal). Smoke = `gcloud version` runs offline & reports the new version."
+    },
+    "gh": {
+      "min": "2.60.0",
+      "known_good": "2.100.0",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "gh --version",
+      "note": "GitHub board/PR sync"
+    },
+    "gitleaks": {
+      "min": "8.20.0",
+      "known_good": "8.30.1",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "version_arg": "version",
+      "smoke": "gitleaks version",
+      "note": "pre-commit secret-scan gate (uses `gitleaks version`)"
+    },
+    "graphify": {
+      "min": "0.9.0",
+      "known_good": "0.9.15",
+      "required": false,
+      "source": "uv",
+      "auto": "none",
+      "note": "uv tool (`graphifyy`). Install EXACTLY: `uv tool install \"graphifyy[mcp,sql]==0.9.15\" --with \"mcp<2\"`. Three constraints, each verified 2026-07-28 (T151 AC8): [mcp] provides the MCP server (graphify-mcp) — without it `graphify-mcp` dies with ModuleNotFoundError: No module named 'mcp'. `mcp<2` is REQUIRED: 0.9.15 imports AnyUrl from mcp.types, which mcp 2.x dropped (ImportError). [sql] carries tree-sitter-sql — a plain `uv tool install graphifyy[mcp]` REPLACES the extras set and silently drops SQL parsing, which matters for wom7api's supabase/migrations. ⚠️ `uv tool upgrade` may move off 0.9.15 and re-break the MCP import — re-run `just graph-health` and the MCP handshake after any upgrade."
+    },
+    "headroom": {
+      "min": "0.37.0",
+      "known_good": "0.37.0",
+      "required": false,
+      "source": "uv-tool",
+      "auto": "none",
+      "smoke": "headroom --version",
+      "note": "🔴 SOURCE CORRECTED 2026-08-31: this said `pip` and that was WRONG. There were TWO installs — a uv tool at ~/.local/share/uv/tools/headroom-ai (which owns ~/.local/bin/headroom, the binary that actually runs and that `headroom --version` reports) and a pip install inside pyenv 3.12.9 that NOTHING executes. Upgrading via pip moved the version nobody uses while `headroom --version` kept reporting the old one. Upgrade with `uv tool upgrade headroom-ai`. This is the same two-managers-one-tool shape recorded for ast-grep in this very file. pip into the pyenv 3.12.9 env (`pip install \"headroom-ai[all]\"`); pypi name is headroom-ai, NOT headroom. Provision + verify with `just headroom-bootstrap` / `just headroom-status` (advisory; `--enforce` gates). required:false ON PURPOSE — nothing in the estate depends on it, and its compression measured 0 tokens saved on 2026-08-03 while costing +57% wall clock. The value is the two READ-ONLY analyzers: `just headroom-audit` (transcript waste sizing) and `just headroom-learn` (failure→guidance, ~82k tok/session). ⚠️ Four traps, all hit once: `install apply --providers auto` aborts on any stray provider it auto-detects (it was the retired openclaw binary until that was uninstalled 2026-08-10; keep --providers manual --target claude regardless); `--memory` leaves the backend initialized:false → /readyz 503 → install fails; it installs serena as code-memory and serena needs a `projects` key in ~/.serena/serena_config.yml; and a custom ANTHROPIC_BASE_URL silently disables on-demand tool loading (#746, needs ENABLE_TOOL_SEARCH) and the 1M context window (#1158). ⚠️ Never a bare `headroom learn --apply` — it rewrites the agent memory index; use `just headroom-learn-apply` which pins --target CLAUDE.local.md."
+    },
+    "infisical": {
+      "min": "0.40.0",
+      "known_good": "0.43.129",
+      "required": true,
+      "source": "brew",
+      "auto": "patch",
+      "smoke": "infisical run --env=beta --silent -- printenv PUBLIC_SUPABASE_URL",
+      "note": "PROD-GATING but auto:patch — patch bumps auto-apply IF the smoke (real `infisical run` secret injection) passes; minor/major stay manual. Widen to `minor` only deliberately."
+    },
+    "jq": {
+      "min": "1.6",
+      "known_good": "1.8.2",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "jq --version",
+      "note": "required:true on MEASURED usage, not habit (T164): 2 command-position invocations in the canonical justfile — `| jq .` in the workflow-trigger recipe (line ~792) and `jq -r '.gateway.auth.token'` (line ~843). Those recipes break outright without it. ⚠️ `jq --version` prints `jq-1.7.1`, not a bare semver; tools_check's SEMVER search handles that, so do NOT add a version_arg."
+    },
+    "just": {
+      "min": "1.40.0",
+      "known_good": "1.58.0",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "just --summary",
+      "note": "task runner — every recipe"
+    },
+    "mypy": {
+      "min": "1.15.0",
+      "known_good": "1.15.0",
+      "required": false,
+      "source": "pyenv",
+      "auto": "minor",
+      "smoke": "mypy --version",
+      "note": "T188 — type-checks the Python that implements this estate's gates (`just py-typecheck`, scope in wom7web/mypy.ini). `required: false` because the gate is scoped to one repo's scripts, not to building or shipping anything. ⚠️ SOURCE RISK, recorded rather than discovered later: this resolves through a **pyenv shim** (/Users/proto/.pyenv/shims/mypy), so it vanishes on an interpreter switch — the exact failure that forced `ast-grep` from pip-inside-pyenv to brew (two managers, one tool). A pre-commit hook that disappears with a `pyenv global` change fails confusingly. Move to brew if this bites; until then the risk is written down here, not assumed away."
+    },
+    "node": {
+      "min": "22.0.0",
+      "known_good": "24.17.0",
+      "required": true,
+      "source": "nvs",
+      "auto": "none",
+      "note": "build-time only; managed by nvs (NOT brew node). Update via nvs."
+    },
+    "omlx": {
+      "min": "0.5.0",
+      "known_good": "0.6.2",
+      "required": false,
+      "source": "pip",
+      "auto": "minor",
+      "smoke": "omlx --version",
+      "note": "T184 AC3 — THE local LLM serving tool, by owner decision 2026-08-08: \"we're happy with tart and omlx as tools for LLMs and VMs\" and \"omlx works for me and rapid-mlx is not — we go with omlx\" (rapid-mlx was evaluated and REJECTED, not merely unchosen). OpenAI-compatible multi-model server for Apple Silicon; `omlx serve` defaults to :8000. 🔴 It was undeclared here until 2026-08-09 — installed, load-bearing, and invisible to `tools-check`, so a machine without it would have reported a clean toolchain. Found by revalidating T184's ACs, not by any gate. `required: false` because nothing in the commit/push path needs it; it is a developer-workstation tool."
+    },
+    "osv-scanner": {
+      "min": "2.0.0",
+      "known_good": "2.6.0",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "osv-scanner scan --lockfile=pnpm-lock.yaml",
+      "note": "pre-commit advisory gate"
+    },
+    "python3": {
+      "min": "3.11.0",
+      "known_good": "3.12.9",
+      "required": true,
+      "source": "pyenv",
+      "auto": "none",
+      "note": "pyenv-managed (~/.pyenv/shims, 3.12.9). NOT brew. Update via `pyenv install` + set version. Never auto-touch."
+    },
+    "rustc": {
+      "min": "1.95.0",
+      "known_good": "1.97.1",
+      "required": false,
+      "source": "rustup",
+      "auto": "none",
+      "smoke": "rustc --version",
+      "note": "T235 AC1 — the compiler itself. 🔒 **Floor RAISED 1.85.0 → 1.95.0 on 2026-08-19 (owner: \"rize rust version\").** It is not a round number: the floor is the **highest requirement declared by Rust code actually present in this estate**, and both ends were measured, not guessed. `_ext/ai-memory` declares `rust-version = \"1.95\"` AND pins `rust-toolchain.toml` `channel = \"1.95\"`; `wom7mlx` needs ≥1.85 (`edition = \"2024\"`). max(1.95, 1.85) = **1.95**. ⚠️ ai-memory is EVALUATED, NOT ADOPTED (T235 AC7 / T234) — the floor tracks code **present and buildable**, so if ai-memory leaves `_ext/`, this may drop back to 1.85.0. Installed default is 1.97.1, so the floor is satisfied with room; `rustup check` confirms 1.97.1 IS current stable. ⚠️ `required: false` deliberately: nothing in the commit/push path compiles Rust today (the `mlx` stack holds build/test at `phase: manual` because the VENDORED mlx-rs/candle trees exit 101). Flip to `required: true` the day a Rust gate joins pre-push — not before, or a Rust-less machine fails a check it cannot cause to fail."
+    },
+    "rustfmt": {
+      "min": "1.9.0",
+      "known_good": "1.9.0",
+      "required": false,
+      "source": "rustup",
+      "auto": "none",
+      "smoke": "rustfmt --version",
+      "note": "T235 AC1 — formatter. This one IS gate-adjacent: the `mlx` stack maps `fmt-check` to `phase: pre-commit`, so rustfmt is the only Rust binary already sitting behind a hook. `source: rustup` — these live in ~/.cargo/bin and are managed by `rustup update`, NOT brew. tools-check cannot resolve an upstream version for them (falls through to `latest = None`), so they are floor-checked, never auto-bumped. 🔒 Floor **1.9.0**, RAISED from 1.8.0 on 2026-08-19 with the toolchain. 🔬 Measured, and the measurement mattered: rustfmt does NOT track the rustc number — `rustup run 1.95 rustfmt --version` is **1.9.0-stable**, the SAME rustfmt the 1.97.1 default ships. Inferring \"1.95 → rustfmt 1.5-ish\" from the toolchain version would have set a floor that never matches reality."
+    },
+    "rustup": {
+      "min": "1.27.0",
+      "known_good": "1.29.0",
+      "required": false,
+      "source": "rustup",
+      "auto": "none",
+      "smoke": "rustup --version",
+      "note": "T235 AC1 — the toolchain manager, and the reason the other four carry `auto: none`: it self-updates via `rustup update`, so wiring them to any package manager would fight it. It is the upgrade path for this whole group."
+    },
+    "semgrep": {
+      "min": "1.100.0",
+      "known_good": "1.176.0",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "semgrep --version",
+      "note": "pre-commit SAST gate"
+    },
+    "serena": {
+      "min": "1.7.0",
+      "known_good": "1.7.0",
+      "required": false,
+      "source": "uvx",
+      "auto": "none",
+      "version_cmd": "uvx --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena --version",
+      "smoke": "uvx --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena project health-check .",
+      "note": "🔴 DO NOT INSTALL THE `serena` MARKETPLACE PLUGIN. Removed 2026-08-31 (`claude plugin uninstall serena@claude-plugins-official`). It is authored by Oraios — serena's own upstream — and distributed through Anthropic's official marketplace, so it looks like the sanctioned way to get this tool. It is not compatible with governing it. The plugin ships NOTHING but a manifest and one .mcp.json whose entire content launches `uvx --from git+https://github.com/oraios/serena` with NO ref, so it resolves upstream's DEFAULT BRANCH on every start. Its own version is a marketplace commit SHA describing the WRAPPER, so pinning the plugin does not pin serena — there is no configuration that reconciles the two. Installed 2026-08-12 22:19Z; commit 5b02bbef rewrote all three .serena/project.yml files to the `language_servers:` schema at 2026-08-13 05:16 -0500, under seven hours later, and the pinned 1.6.1 was dead from then until 2026-08-31. Keeping both registrations is the one arrangement that cannot work: they fight over the same config file, and the ungoverned one wins silently. `just mcp-health` now catches a repeat the same day. LSP-backed symbol edits + diagnostics over MCP (T166). PyPI package is **serena-agent**, NOT `serena` — `serena` on PyPI is an unrelated project at 0.9.1, so installing it gets you the wrong software. 🔴 PINNED 2026-08-05 (T166 AC1b): the launch in ~/.claude.json was `uvx --from git+https://github.com/oraios/serena`, which re-resolved the DEFAULT BRANCH on every start — the one tool that can rewrite source at symbol granularity had no version, no lockfile and no integrity check, and was running an unreleased **1.6.2.dev0**. min/known_good were literally unenforceable against a moving branch. 🔴 EXTENDED & FORKED 2026-09-20 (T170): Pinned to w0m-maintained fork tag `v1.7.0-w0m.1` (casualuser/serena) adding @astrojs/language-server support (AstroLanguageServer under solidlsp) with upstream PR #2085. The smoke test exercises project loading (`serena project health-check .`) rather than just `--version`, so broken schemas or missing language providers fail organically. ⚠️ Bumping this means editing BOTH this entry and the `args` in ~/.claude.json — the version lives in the MCP launch line, not in a lockfile. ⚠️ Needs a `projects` key in ~/.serena/serena_config.yml or it fails to boot. Installed by Headroom as its default --code-memory backend, not chosen independently."
+    },
+    "supabase": {
+      "min": "2.100.0",
+      "known_good": "2.113.0",
+      "required": true,
+      "source": "brew",
+      "auto": "patch",
+      "note": "PROD-GATING: edge-fn deploy + migrations. A CLI bump changed prod behavior before (2026-07-10), which is WHY it now carries a real smoke rather than staying auto:none — `migration list` against the live ledger exercises the connection + migration-parsing path a bump would break, and is non-mutating. Same posture as infisical: patch auto-applies IF the smoke passes; minor/major stay manual. The pending 2.109.1 -> 2.113.0 is a MINOR, so this policy deliberately does NOT take it — review + deploy smoke by hand.",
+      "smoke": "cd ../wom7api && infisical run --env=beta --silent -- sh -c 'supabase migration list --db-url \"$DATABASE_URL\" >/dev/null'"
+    },
+    "tart": {
+      "min": "2.0.0",
+      "known_good": "2.35.0",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "tart --version",
+      "note": "T184 AC3 — THE VM tool, by the same owner decision 2026-08-08. Underpins the whole sandbox line ([[T179]] DevPod provider, [[T180]] agent sandboxes, [[T181]] GUI workstation VMs), which is ~24 unstarted ACs resting on it. 🔴 Undeclared here until 2026-08-09 for the same reason as `omlx`. `required: false` — no gate invokes it."
+    },
+    "terraform": {
+      "min": "1.10.0",
+      "known_good": "1.14.3",
+      "required": false,
+      "source": "tfenv",
+      "auto": "none",
+      "note": "via tfenv, not brew. Update via tfenv."
+    },
+    "uv": {
+      "min": "0.5.0",
+      "known_good": "0.10.7",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "uv --version",
+      "note": "required:true, and doubly so: 2 command-position uses in the canonical justfile (`uv pip install -r pyproject.toml`, `uv run playwright install chromium`, lines ~538-539) AND it is the declared `source` of graphify — a governed tool whose install instructions are `uv tool install`. It was undeclared while a tool that depends on it was governed. ⚠️ `uv --version` embeds a commit hash after the semver; first-semver parsing gets it right, leave version_arg unset."
+    },
+    "zeroclaw": {
+      "min": "0.8.3",
+      "known_good": "0.8.3",
+      "required": false,
+      "source": "self",
+      "auto": "none",
+      "smoke": "zeroclaw --version",
+      "note": "T153 — local AI agent runtime (Rust, 31 MB at ~/.cargo/bin/zeroclaw). 🔴 UNDECLARED HERE UNTIL 2026-08-10: installed since 2026-07-27, the subject of a P1 ticket, and invisible to `tools-check` the whole time — the same gap omlx/tart had on 2026-08-09. ⚠️ PROVENANCE CORRECTION: T153 records it as 'installed via cargo'. It is NOT — `cargo install --list` has no entry and neither .crates.toml nor .crates2.json mentions it, so it was built or dropped into ~/.cargo/bin by hand. 🔴 DO NOT WIRE AUTO-UPDATE TO crates.io: the crate NAMED `zeroclaw` there is 0.1.7 (updated 2026-02-27) while this binary is 0.8.3 — a DIFFERENT package. `cargo install zeroclaw` would replace an agent runtime with an unrelated crate. Resolve by content, never by name — the same rule wom7skills applies to skills. ✅ The real upgrade path is its own subcommand: `zeroclaw update`. `auto: none` DELIBERATELY, and this is the reason: the runtime's config still has allowed_roots = ['/'] with workspace_only = false, and forbidden_paths omits ~/.zeroclaw/.secret_key, ~/.infisical and ~/.claude (T153 AC5, NOT STARTED). Auto-pulling an unreviewed binary weekly into that much filesystem access is a supply-chain decision, not a chore. Widen to auto once T153 has hardened the profile."
+    },
+    "openspec": {
+      "min": "1.11.0",
+      "known_good": "1.12.0",
+      "required": false,
+      "source": "pnpm",
+      "auto": "none",
+      "smoke": "openspec --version",
+      "note": "Spec-driven change workflow (`@fission-ai/openspec`; the bare `openspec` npm package is a dead placeholder). 🔴 ADDED 2026-08-30 — it was UNGOVERNED until then, with no floor at all, which is the wrong posture for the one tool that WRITES agent surfaces into every repo: it generates 10 skills + 10 workflows per declared tool into .agent/, .claude/, .opencode/ and keeps no memory of `--tools`, regenerating from whatever is on disk. ⚠️ `min` is 1.11.0 while 1.6.0 is what is installed, so this reports DRIFT on purpose. The floor is set to what the estate needs, not to what is running — setting it to 1.6.0 to stay green is the same act as raising a ratchet. Two things land in 1.11.0 that the estate wants: Antigravity moves to the shared `.agents/` root (matching Antigravity's own documented default, where `.agent/` is now only backward-compat), and 1.8.0 added a vendor-neutral `agents` target writing `.agents/skills/` for AGENTS.md-aware assistants. 🔴 UPGRADE IS NOT A NO-OP — measured on a scratch repo 2026-08-30: `update --force` on a 1.6.0 layout COPIES to `.agents/` and LEAVES `.agent/` in place (duplication, not migration, despite the release note), and it detected and generated for `codex` from 'legacy artifacts' though codex was never declared. A fresh `init` on 1.11.0 is clean (`.agents/` only). Plan the upgrade per repo with the leftover `.agent/` removed deliberately, not as a side effect."
+    }
+  }
+}

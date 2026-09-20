@@ -1,0 +1,108 @@
+{
+  "_comment": "Canonical cross-repo pnpm dependency policy for the w0m TS repos. ONE source of truth for security floors, lockstep groups, and documented per-repo exceptions. Enforced by project/scripts/deps_sync.py (--check / --apply) and wired into `just deps-check` + pre-push. Raise a floor or pin a lockstep dep HERE, once, then --apply. See docs/DEPS-ALIGNMENT.md.",
+  "repos": {
+    "wom7web": "wom7web/package.json",
+    "wom7api": "wom7api/package.json",
+    "wom7func": "wom7func/package.json",
+    "wom7ext": "wom7ext/extension/package.json",
+    "wom7skills": "wom7skills/package.json"
+  },
+  "toolchain": {
+    "_comment": "Pinned build toolchain, enforced identical across all repos (corepack reads packageManager). Bump here once.",
+    "packageManager": "pnpm@10.32.0"
+  },
+  "lockstep": {
+    "_comment": "Must be byte-identical across the listed repos — cross-repo type/ABI coupling. hono: wom7web types its RPC client against the worker's AppType, so a skew breaks `astro check`.",
+    "_hono_upper_bound": "SUPERSEDED 2026-09-08 — the bound is LIFTED to '>=4.13.5', with the real astro check the old note demanded. Three MODERATE advisories affect 4.12.34 (GHSA-crvj-82cr-hjcx query-parser cache-key confusion, GHSA-g6gw-parsebody parseBody memory exhaustion, GHSA-gqvv-2mrq-wpjv toSSG path traversal, incomplete fix for CVE-2026-39408) and ALL THREE are fixed only in 4.13.5 — there is no 4.12.x backport, so the old bound could not be kept without carrying three advisories. 🔴 THE OLD NOTE'S 3 ERRORS WERE A PARTIAL-BUMP ARTEFACT, NOT A 4.13 REGRESSION: apps/web/src/lib/rpc.ts imports AppType across repos from wom7cfworkers/src/index, so bumping wom7web alone types hc from 4.13 against an AppType built by 4.12 and the variance mismatch surfaces as Hono<...> does not satisfy Hono<any,any,any> at rpc.ts:16/:27 plus rpc is unknown at linkedin.ts:128. Reproduced those exact 3 errors on 2026-09-08 by bumping wom7web only; moved wom7cfworkers to 4.13.7 as well and just typecheck returned 0 errors across all 4 projects (153+175+5+7 files). THAT is what lockstep means — the entry lists three repos precisely so they move together, and measuring one of them is the failure mode the bound recorded. wom7api reached >=4.13.5 first in cde8149; the deps gate correctly flagged the resulting skew, which is how this was found.",
+    "hono": {
+      "version": ">=4.13.5",
+      "repos": [
+        "wom7web",
+        "wom7api",
+        "wom7func"
+      ]
+    },
+    "_wrangler_note": "Added 2026-08-11. wrangler is NOT a tools-policy entry and correctly so — it is not on PATH at all (no brew, no global npm), only a devDependency. But it was in NO policy either: three repos carried ^4.112.0 and nothing asserted they agreed. All three deploy Workers to the same Cloudflare account, so a skew means two repos deploying with different compat/bundling behaviour. That is the same cross-repo coupling hono has, so it uses the same mechanism.",
+    "wrangler": {
+      "version": "^4.123.0",
+      "repos": [
+        "wom7web",
+        "wom7api",
+        "wom7func"
+      ],
+      "_reason_2026_08_13": "Raised ^4.112.0 → ^4.123.0 for the Astro 6→7 upgrade (T103 AC7). @cloudflare/vite-plugin@1.52.0, which Astro 7's cloudflare adapter pulls, ASSERTS wrangler ^4.122.0 at config-load time and throws — it is a hard failure, not the peer WARNING it was under Astro 6. Raised HERE once rather than in three lockfiles, which is what this lockstep entry exists for."
+    }
+  },
+  "floors": {
+    "_comment": "Security floors as pnpm.overrides. Every listed repo that ALREADY has this override must be >= the floor; --apply raises the ones below, --check fails if any is below. Raising a floor here is the single edit that replaces chasing an advisory through N lockfiles.",
+    "sharp": ">=0.35.4",
+    "fast-uri": ">=4.1.3",
+    "@hono/node-server": ">=2.0.10",
+    "undici": ">=7.28.0",
+    "esbuild": ">=0.28.1",
+    "ip-address": ">=10.3.1",
+    "uuid": ">=11.1.1",
+    "body-parser": ">=2.3.0",
+    "brace-expansion": ">=5.0.9",
+    "postcss": ">=8.5.23",
+    "postcss>nanoid": ">=3.3.17 <4",
+    "deepmerge-ts": ">=8.0.0",
+    "postcss-selector-parser": ">=7.1.3",
+    "browserslist": ">=4.28.7",
+    "qs": ">=6.16.0",
+    "vitest": ">=4.1.11",
+    "@vitest/mocker": ">=4.1.11",
+    "smol-toml": ">=1.7.1"
+  },
+  "exceptions": {
+    "_comment": "Intentional per-repo divergences — NOT drift. Documented so --check never flags them and nobody 'fixes' them by mistake.",
+    "protobufjs": "wom7api pins '>=7.6.5 <8' (its @grpc/grpc-js needs protobufjs 7); wom7web is on 8. Different majors on purpose.",
+    "ws": "wom7web on the 7.x line ('>=7.5.11', DoS-patched in 7.5.10); wom7api/cfworkers on 8.x ('>=8.21.0'). Both patched — different transitive consumers, not a gap.",
+    "undici": "wom7web pins '>=7.28.0 <8'; wom7api/cfworkers are on the 8.x line and were raised to '>=8.9.0' on 2026-08-04 for GHSA-8xcm-r25x-g524 / jr45-8vmc-qm54 / m8rv-5g2x-5cg5 / v3r7-h72x-cjcm (all fixed in 8.9.0). ⚠️ Their old open-ended '>=7.28.0' override was RESOLVING BELOW their own direct dependency — package.json asked for '^8.8.0' and the lockfile carried 8.5.0, because a range override wins over the dependency range. A '>=' override is not a no-op; it re-resolves. The floors entry stays at '>=7.28.0' because it is shared with wom7web, which cannot cross into 8.x — REASON: the floor is a lower bound only, so it let wom7web resolve undici 8.7.0 — but jsdom@29 (vitest's DOM env) requires undici's internal 'lib/handler/wrap-handler.js', which exists in 7.x and is gone in 8.x. Result: `just test` collected ZERO tests and died with MODULE_NOT_FOUND, i.e. the whole vitest suite was silently not running. 7.29.0 is still >= the security floor, so bounding costs no patch level. api/cfworkers have no jsdom and are fine on 8.x — do NOT 'align' them back to 7."
+  },
+  "aligned_advisory": {
+    "_comment": "Should share a version but NOT enforced — a bump needs per-repo testing. --check warns, never fails; --apply leaves untouched.",
+    "@supabase/supabase-js": {
+      "target": "^2.110.7",
+      "lagging": {
+        "wom7ext": "^2.87.1 — 23 minors behind; bump needs an extension test, own change"
+      }
+    }
+  },
+  "licenses": {
+    "_comment": "T135 AC6 — the TRANSITIVE dependency-license audit. It lives here, beside `floors`, because `project/hygiene-policy.json → licenses` has always said *\"the transitive dependency-license audit reads deps-policy.json -> licenses\"* — and until 2026-08-10 **this key did not exist**. That pointer read as coverage for two weeks while nothing implemented it: the same dangling-reference shape T192 found in a `$schema`. Read by `project/scripts/repo_hygiene.py` (`just deps-license-check`). Source of truth is `pnpm licenses list --json`, run per workspace, NOT a hand-maintained list — 1,210 packages across 24 buckets, and a copied list goes stale on the next install.",
+    "_scope_limit": "🔴 STATE WHAT THIS CANNOT SEE. AC6's wording is *\"copyleft reaching a SHIPPED BUNDLE\"*, and this gate does not know what is bundled — it knows what pnpm classifies as a **production dependency** (`--prod`). Those are different questions: `lightningcss` is a prod dep and a Rust build-time CSS transformer that never reaches a client bundle. So `scope: prod` means *a production dependency*, and whether it is actually distributed is answered by a human in an exemption `reason`, per package. Claiming otherwise would be a gate certifying something it never measured.",
+    "tiers": {
+      "_comment": "Matched against the SPDX expression pnpm reports. A dual licence offering a permissive election (`(MPL-2.0 OR Apache-2.0)`) is NOT copyleft — the permissive branch can be elected, so `dompurify` is advisory, not review. Matching is on the expression, and OR-expressions are decomposed before tiering.",
+      "fail": {
+        "patterns": [
+          "^GPL-",
+          "^AGPL-",
+          "^SSPL",
+          "^OSL-"
+        ],
+        "why": "Strong copyleft or source-available. This estate is PROPRIETARY by owner decision (T135 owner answer 3 — LICENSE says all rights reserved, manifests declare UNLICENSED). A strong-copyleft dependency in a production tree is a licence conflict, not a preference. Currently ZERO — the gate starts green, as AC7 requires. 🔴 The bare `GPL-2.0`/`GPL-3.0` patterns were REMOVED on first run: unanchored, they matched INSIDE `LGPL-3.0-or-later`, tiering a weak-copyleft native binary as strong copyleft. Every pattern here is anchored with `^` for that reason — the same substring trap this estate records for `\\b` matching across hyphens. The gate found this defect in itself on its first execution, which is the argument for running a new check before trusting its policy."
+      },
+      "review": {
+        "patterns": [
+          "^LGPL-",
+          "^MPL-",
+          "^EUPL-",
+          "^CDDL-",
+          "^EPL-",
+          "^CPL-"
+        ],
+        "why": "Weak/file-level copyleft. Obligations usually attach to modification and distribution of the covered files rather than to the whole work, so a blanket FAIL would be wrong — and a blanket ADVISORY would let a new one arrive silently, which is the coverage illusion this whole ticket attacks. So: FAIL unless the package carries a written exemption below. Three exist today; a fourth blocks until someone rules on it."
+      },
+      "advisory": {
+        "why": "Everything else — MIT, Apache-2.0, BSD, ISC, Unlicense, and dual licences with a permissive election. Reported in the stats line, never blocking."
+      }
+    },
+    "exempt": {
+      "_comment": "AC9 — an exemption without a reason is itself a blocking finding (mirrors T127 R3). Keyed by package name. Each reason had to answer the question the tier cannot: is this thing actually distributed?",
+      "@img/sharp-libvips-darwin-arm64": "LGPL-3.0-or-later. A pre-built native libvips binary, pulled in as sharp's per-platform OPTIONAL dependency for image processing at build time. LGPL's obligation is to permit relinking of the covered library; it is consumed as an unmodified shared binary and is not redistributed by this estate — the built site ships images, not libvips. Re-rule if sharp ever moves into a shipped runtime.",
+      "lightningcss": "MPL-2.0. A Rust CSS parser/minifier invoked at BUILD time (Astro/Tailwind pull it in as a prod dep). MPL-2.0 is file-level copyleft: obligations attach to modified MPL files, and none are modified here. No lightningcss source reaches a client bundle — its OUTPUT (transformed CSS) is not a derivative under MPL-2.0.",
+      "lightningcss-darwin-arm64": "MPL-2.0. The per-platform native binary for the entry above; same reasoning, same ruling."
+    }
+  }
+}

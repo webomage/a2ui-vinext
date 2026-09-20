@@ -1,0 +1,599 @@
+{
+  "$schema": "./stacks-policy.schema.json",
+  "_comment": "T130 — per-stack tech/tools registry. Declares, per live stack, the runtime + defining techs + the justfile COMMAND CONTRACT (SDLC canonical roles → the `just` recipe that fulfills each). Read by project/scripts/discovery.py (`just discovery` / `--enforce`). Adjust a stack's declared set HERE; run `just discovery` to see drift vs code, `just discovery --enforce` to gate. Tech-aware layer above tools-policy.json (host CLIs) + deps-policy.json (npm floors). See openspec/changes/2026-07-24-stack-registry-and-discovery. NOTE `enforce_raw:false` — raw tool-invocation findings are ADVISORY (reported, never block) until flipped true (the scan is heuristic + there is pre-existing debt, e.g. wom7web/.husky/pre-push:25 `pnpm … astro check`); the declared-command→recipe check and drift block regardless.",
+  "project": "w0m",
+  "enforce_raw": false,
+  "exempt": {},
+  "stacks": {
+    "web": {
+      "repo": "wom7web",
+      "path": "apps",
+      "runtime": "node",
+      "justfile": "wom7api/justfile",
+      "techs": [
+        {
+          "name": "astro",
+          "detect": "dep:astro",
+          "note": "Astro 6 — the 5 workspace apps (cp/demo/job/join/web).",
+          "skills": [
+            "playwright-best-practices"
+          ]
+        },
+        {
+          "name": "svelte",
+          "detect": "dep:svelte",
+          "note": "Svelte 5 components.",
+          "skills": [
+            "playwright-best-practices"
+          ]
+        },
+        {
+          "name": "@astrojs/svelte",
+          "detect": "dep:@astrojs/svelte"
+        },
+        {
+          "name": "tailwindcss",
+          "detect": "dep:tailwindcss",
+          "note": "Tailwind 4.",
+          "skills": []
+        },
+        {
+          "name": "@supabase/supabase-js",
+          "detect": "dep:@supabase/supabase-js",
+          "note": "browser/SSR DB client.",
+          "skills": [
+            "supabase",
+            "supabase-postgres-best-practices",
+            "rbac-auditor"
+          ]
+        },
+        {
+          "name": "wrangler",
+          "detect": "dep:wrangler",
+          "note": "Cloudflare deploy for the apps.",
+          "skills": [
+            "cloudflare-workers"
+          ]
+        }
+      ],
+      "commands": {
+        "build": "build",
+        "dev": "dev",
+        "typecheck": "typecheck",
+        "docs-check": "docs-check",
+        "license-check": "license-check",
+        "secrets-check": "secrets-check",
+        "state-check": "state-check",
+        "state-save": "state-save",
+        "state-rotate": "state-rotate",
+        "tasks": "tasks",
+        "toolset-status": "toolset-status",
+        "hooks-check": "hooks-check",
+        "typecheck-ratchet": "typecheck-ratchet",
+        "graph-global": "graph-global",
+        "graph-health": "graph-health",
+        "graph-docs": "graph-docs",
+        "graph-docs-inc": "graph-docs-inc",
+        "mcp-exposure": "mcp-exposure",
+        "mcp-ratchet": "mcp-ratchet",
+        "mcp-ratchet-test": "mcp-ratchet-test",
+        "sdlc-trace": "sdlc-trace",
+        "dep-licenses-check": "dep-licenses-check"
+      },
+      "gates": {
+        "typecheck": "pre-push",
+        "docs-check": "pre-push",
+        "state-check": {
+          "phase": "pre-push",
+          "reason": "T145 — STATE.md freshness. VERIFY-ONLY and wired in `.husky/pre-push` (a phase here is a claim; the hook is the mechanism). Owner decision 2026-07-26: pre-push because a push is the handoff boundary, and blocking because a warning nobody must act on is exactly how STATE.md drifted twice inside one session. It never rewrites the file — a hook mutating a tracked file mid-commit needs re-staging and can fight the commit. Proven RED 4 ways (hand-edited gate code · block removed · payload corrupted · rowless set changed), all exit 1, STATE.md byte-identical after.",
+          "remeasure": "Stays here. ⚠️ If it starts firing on every push, the staleness rule has regressed to comparing raw HEADs — it must compare gate codes, the rowless set, the dirty-repo set and the hot-10 ORDER, never HEAD equality."
+        },
+        "state-save": {
+          "phase": "manual",
+          "reason": "A WRITER, not a gate — it regenerates STATE.md's managed block (top-10 hot header + mechanical state). Declared so the registry knows the recipe exists; it must never be a hook, because that is the auto-rewrite the owner explicitly ruled out. Driven by the SDLC archive gate and run by hand at handoff.",
+          "remeasure": "n/a — a generator has no green/red state to promote."
+        },
+        "state-rotate": {
+          "phase": "manual",
+          "reason": "T174 — a MOVER, not a gate. It relocates superseded STATE.md sections into project/state-archive/ verbatim. Same verify-only/write split the owner decided for state-check vs state-save, and for the same reason: a hook that mutates a tracked file mid-commit must re-stage it and can fight the commit. The GATE that makes rotation happen is `state-check`'s size budget (max_lines/max_bytes in .w0m/sdlc.json → state_surface.retention), which fails the push and names this recipe as the fix — the same shape as docs-check → the fix it tells you to run.",
+          "remeasure": "n/a — a mover has no green/red state. ⚠️ If `state-check` starts failing on budget every session, the budget is set too close to the steady state (~40 KB) rather than the post-rotation size; raise it rather than bypassing, per T135 AC8."
+        },
+        "tasks": {
+          "phase": "manual",
+          "reason": "A QUERY tool (`just tasks hot`, `list --priority P2`, `blocked`, `stats`), not a gate — it answers questions and has no pass/fail semantics beyond refusing to rank over an empty ticket set. The hot-10 it produces IS gated, indirectly, via `state-check` comparing the ranked order.",
+          "remeasure": "n/a — a query has no phase to promote."
+        },
+        "license-check": {
+          "phase": "pre-push",
+          "reason": "T135 §5 — PROMOTED to pre-push 2026-08-10 because its own recorded trigger fired. The entry said *'NOT YET GREEN — 234 findings … promote when `just license-check` exits 0'*; it exits 0 (manifests=18, first_party=17, vendored=1, vendored_trees=64). ⚠️ A promotion trigger nobody re-reads is a gate that stays `manual` forever — this one sat green and unpromoted, so the check ran only when someone remembered. Proven red in `just license-check-test`.",
+          "remeasure": "Stays here. If it starts firing, read WHICH half: a first-party manifest losing `private: true`/`UNLICENSED` is a real regression; a vendored tree losing its notice usually means a new third-party drop that owes one."
+        },
+        "secrets-check": {
+          "phase": "pre-commit",
+          "reason": "✅ T135 §6 GREEN + PROMOTED 2026-07-26 (its recorded trigger fired) and WIRED in `.husky/pre-commit` — a phase here is only a claim; the hook is the mechanism. Runs in ~0.9s. Pre-commit rather than pre-push deliberately: a secret read from a file is worth catching before it enters history at all. Final: exit 0, scanned_files=143, corpus_total=40, corpus_consuming=7, corpus_prose_only=4, corpus_offenders=0. 🔴 The recorded baseline of '11 findings / 2 real leaks' was an UNDER-COUNT: the true figure was 16 offending files, because `scan_globs` omitted *.mjs/*.cjs/*.ts and all subdirectories (scanned_files 103 → 143), and no pattern matched a dotenv LIBRARY load or a non-.env secret file. 8 of the 9 skills findings were false positives — see hygiene-policy `_tier_note`.",
+          "remeasure": "Escalate nothing; this is at its intended phase. RE-CHECK if `corpus_consuming` (7) drifts toward 1 — that means the signal over-narrowed, not that the estate improved."
+        },
+        "build": {
+          "phase": "manual",
+          "reason": "A full Astro build of 5 workspace apps is minutes, not seconds — gating it at commit or push time would make every commit unaffordable and get the hook bypassed. `typecheck` at pre-push is the fast proxy that catches the same class of error.",
+          "remeasure": "If the 5-app build drops under ~30s, or CI starts carrying it, promote to pre-push."
+        },
+        "dev": {
+          "phase": "manual",
+          "reason": "`dev` starts a long-running local server. It is an operating recipe, not a check — there is no pass/fail for a gate to read.",
+          "remeasure": "Never — a server has no exit code to gate on. Recorded so the role does not read as an ungated check."
+        },
+        "toolset-status": {
+          "phase": "manual",
+          "reason": "T149 AC4 — the composed toolset status surface (queue/stacks/skills/state/toolchain). `manual` BY DESIGN, not by deferral: every child already runs at pre-commit or pre-push, so wiring the composite into a hook would execute each of them a second time and roughly double push time while producing no information the individual gates did not already give. It is the ask-me surface, not a gate. Budget measured 2026-07-27: ~16.4s over 5 children; re-measure when a child is added — this AC sat blocked on a recorded 'exceeds 5 minutes' that was really ~11s."
+        },
+        "hooks-check": {
+          "phase": "pre-push",
+          "reason": "T149 AC3 + T150 AC3b — hook-layer conformance. PROMOTED manual → pre-push 2026-07-27 once its 4 findings were resolved, exactly as the manual entry's trigger recorded. Blocking at pre-push because the two things it guards only matter at the handoff boundary: that every declared gate phase is really wired, and that exactly ONE sanctioned forge call site exists in the hook layer (T150). Sub-second, no network."
+        },
+        "typecheck-ratchet": {
+          "phase": "pre-push",
+          "reason": "T149 / TECH-DEBT D6 — `join` (12) cannot pass `astro check`, so it is ratcheted rather than gated — `job` GRADUATED 2026-08-10 (107 → 0, given the standalone tsconfig it never had) and moved into `just typecheck`: the count may FALL, never RISE. pre-push and BLOCKING because a ratchet nobody must obey stops nothing, and leaving these apps ungated is precisely how `job` drifted 104 → 107 unnoticed. ⚠️ COST: ~26s (join 6.7 + job 19.7), measured 2026-07-27 — deliberately NOT path-scoped to apps/join|job, because their tsconfigs reach into ../cp/src/** and repo-root files, so a change elsewhere can move their counts. The way to make this cheap is to fix those tsconfig boundaries (T104c), not to narrow the trigger."
+        },
+        "graph-global": {
+          "phase": "pre-push",
+          "reason": "T187 (2026-08-08) — CHANGED from `manual`. Superseded T151 AC2 reason, kept verbatim so the reversal is auditable: \"T151 AC2 — refreshes the united multi-repo graph. Deliberately NOT a gate: a full re-extract is minutes per repo, and the union only needs folding together after a batch of work. Freshness of each repo's OWN graph is handled by graphify's post-commit hook, which is asynchronous.\" 🔴 WHY IT NO LONGER HOLDS, and it was wrong in an instructive way: it priced the WRONG OPERATION. `--rebuild` is minutes per repo; a plain union merge is 1,448 ms measured. And its second clause is true but does not support its conclusion — post-commit does keep each repo's OWN graph fresh, which is precisely why the UNION, a different artifact, was left maintained by nobody. It reached 5 stale repos while CLAUDE.md makes `just ask` (which reads the union) the default first action. NOT a blocking gate even now: wired with `|| true` because the union is a WRITER, and failing a push over graph freshness teaches people to bypass hooks. Declared here so hooks-check enforces declared => wired — an automation living only inside a hook file is one nothing verifies.",
+          "remeasure": "Measured 2026-08-08: ~1.4s on a no-op. A >2s-quiet mtime fast path avoids polling all 7 repos; the naive poll cost 4,341ms and breached T187 AC6's own 3s budget, which is why the fast path exists. If the cost climbs, move the phase rather than paying it on every push. ⚠️ If it starts SKIPPING repos routinely, the post-commit background rebuild is running long — a real signal, not noise: the union then reports the last commit it genuinely merged instead of stamping HEAD over partial content."
+        },
+        "graph-health": {
+          "phase": "manual",
+          "reason": "T151 AC4 — reports graph coverage/staleness/hook state. Manual by design: it is a diagnostic, and gating a push on graph freshness would block work on a cache-warming concern. Use `just graph-health --strict` in a periodic check instead."
+        },
+        "graph-docs": {
+          "phase": "manual",
+          "reason": "T151 — FULL doc+code extraction through a local LLM, ~47s per document (the wom7md vault ~45 min). Never a hook: it is the slowest thing in the estate by two orders of magnitude."
+        },
+        "graph-docs-inc": {
+          "phase": "manual",
+          "reason": "T151 — cache-reusing doc extraction. Stays manual until incrementality is PROVEN: the subset run printed 'incremental cache checkpoint failed … FileSlice', so the cache may never be written, which would make this identical in cost to graph-docs. Prove with `just graph-docs-cache-test` before considering a hook."
+        },
+        "mcp-exposure": {
+          "phase": "manual",
+          "reason": "T154 AC3/AC4 — the host MCP/network exposure INVENTORY: what is listening, is it usable without credentials, and what would that get you. Manual because it answers 'is anything open right now?', which for a container that is not ours is permanently red — a gate that is always red gets muted. The gate-shaped question lives in `mcp-ratchet`. ~5s, probes the local host only."
+        },
+        "mcp-ratchet": {
+          "phase": "manual",
+          "reason": "T154 AC6/AC7 — the exposure RATCHET (may shrink, never grow) against project/mcp-exposure-baseline.json. 🔴 DELIBERATELY NOT A HOOK, and this is the AC's own requirement: these are HOST facts that change when a desktop app launches or a container starts, not when code is pushed, so a commit-time check would be both noisy and blind. Its standing cadence is `just audit` (T96) instead — outside `--quick`, which IS the pre-push subset, so 'never a push gate' is enforced by the call site rather than by a comment. A scheduled task was considered and rejected: a 03:00 launchd run has nobody reading it, this estate has already been bitten by a scheduler surface whose runs silently did not fire, and GitHub Actions is dead on this account."
+        },
+        "mcp-ratchet-test": {
+          "phase": "manual",
+          "reason": "T154 AC7 — regression proof for the ratchet, on fixture snapshots only (never the network): a security gate whose tests depend on what happens to be listening is a gate whose tests are a coin flip. Manual, like the other script test suites."
+        },
+        "sdlc-trace": "pre-push",
+        "dep-licenses-check": {
+          "phase": "pre-push",
+          "reason": "T135 AC6 — the transitive dependency-licence audit. Starts GREEN (0 fail, 3 review all exempted with reasons, 1,170 advisory over 1,173 production packages in 5 workspaces), so it walls off no pre-existing debt (AC7's other half). pre-push rather than pre-commit because it shells out to pnpm once per workspace — ~3.8s, real latency on every commit for a set that only moves on an install. A new GPL/AGPL dependency, or a new weak-copyleft one nobody has ruled on, blocks the push that introduces it. Proven RED 8 ways in `just dep-licenses-check-test`: GPL prod dep · unruled weak copyleft · empty exemption reason · stale exemption · missing `licenses` key · zero `fail` patterns · no pnpm workspace · plus the control that a reasoned exemption passes. 🔴 And a REGRESSION probe, because the gate's first run reported the sharp native binary as strong copyleft: an unanchored `GPL-3.0` pattern matched inside `LGPL-3.0-or-later`. Mutation-tested — re-introducing that pattern turns the suite red on exactly that probe.",
+          "remeasure": "⚠️ `--prod` measures what pnpm calls a production dependency, NOT what reaches a shipped bundle — the two differ (lightningcss is a prod dep and a build-time tool). The distribution question is answered per package in the exemption reason. If the estate ever ships a client bundle containing a review-tier package, that reason is what has to change, not this phase."
+        }
+      },
+      "enabled": true,
+      "push_gate": {
+        "mode": "local",
+        "reason": "Owns the estate's pre-push: 5 gated roles, and the place every cross-repo gate actually runs. If this moves, AC4 must be re-decided."
+      }
+    },
+    "worker": {
+      "repo": "wom7api",
+      "path": "src",
+      "runtime": "node",
+      "justfile": "wom7api/justfile",
+      "techs": [
+        {
+          "name": "hono",
+          "detect": "dep:hono",
+          "note": "Hono 4 — must stay in lockstep with web + cf (deps-policy).",
+          "skills": [
+            "cloudflare-workers"
+          ]
+        },
+        {
+          "name": "typescript",
+          "detect": "dep:typescript",
+          "skills": []
+        },
+        {
+          "name": "drizzle-orm",
+          "detect": "dep:drizzle-orm",
+          "note": "DB access layer.",
+          "skills": [
+            "supabase-postgres-best-practices"
+          ]
+        },
+        {
+          "name": "postgres",
+          "detect": "dep:postgres",
+          "skills": [
+            "supabase-postgres-best-practices"
+          ]
+        },
+        {
+          "name": "@supabase/supabase-js",
+          "detect": "dep:@supabase/supabase-js",
+          "skills": [
+            "supabase",
+            "supabase-postgres-best-practices",
+            "rbac-auditor"
+          ]
+        },
+        {
+          "name": "wrangler",
+          "detect": "dep:wrangler",
+          "note": "the worker deploys to Cloudflare Workers.",
+          "skills": [
+            "cloudflare-workers"
+          ]
+        }
+      ],
+      "commands": {
+        "typecheck": "typecheck-worker"
+      },
+      "gates": {
+        "typecheck": {
+          "phase": "pre-commit",
+          "reason": "T149 AC3, corrected 2026-07-27: declared `pre-push` but MEASURED running at `pre-commit` via wom7api/.pre-commit-config.yaml. The registry was describing an intent, not the mechanism. Corrected DOWNWARD to match reality — pre-commit is strictly stronger than pre-push (it fires earlier and more often), so this records the truth rather than weakening a gate. wom7api has no pre-push hook layer at all, which is why the original declaration could never have been honoured."
+        }
+      },
+      "enabled": true,
+      "note": "T105 — tsc via tsconfig.worker.json (Workers+nodejs_compat).",
+      "push_gate": {
+        "mode": "central",
+        "covered_by": "web",
+        "reason": "Estate-wide gates — state-check, deps-check, spec-drift/openspec, discovery, hooks-check, version-check — all live in `web`'s pre-push and enumerate every repo, so duplicating them here would re-run the same estate checks N times per push. This stack's OWN integrity is gated at pre-commit (gitleaks, osv-scanner, semgrep, plus its type/lint roles). ⚠️ The residual gap, stated rather than hidden: the estate gates only TRIGGER on a `wom7web` push. Pushing this repo alone runs no estate-wide gate. Accepted because every such gate is re-run before any release, and because a per-repo copy would drift from the original."
+      }
+    },
+    "edge": {
+      "repo": "wom7api",
+      "path": "supabase/functions",
+      "runtime": "deno",
+      "justfile": "wom7api/justfile",
+      "techs": [
+        {
+          "name": "deno",
+          "detect": "config:deno.json",
+          "note": "Supabase edge functions — Deno runtime."
+        },
+        {
+          "name": "@supabase/supabase-js",
+          "detect": "dep:@supabase/supabase-js",
+          "skills": [
+            "supabase",
+            "supabase-postgres-best-practices",
+            "rbac-auditor"
+          ]
+        },
+        {
+          "name": "drizzle-orm",
+          "detect": "dep:drizzle-orm",
+          "skills": [
+            "supabase-postgres-best-practices"
+          ]
+        },
+        {
+          "name": "postgres",
+          "detect": "dep:postgres",
+          "skills": [
+            "supabase-postgres-best-practices"
+          ]
+        },
+        {
+          "name": "ai",
+          "detect": "dep:ai",
+          "note": "Vercel AI SDK (pinned; never @latest — 2026-07-10 outage)."
+        }
+      ],
+      "commands": {
+        "typecheck": "deno-check",
+        "test": "deno-test"
+      },
+      "gates": {
+        "typecheck": {
+          "phase": "pre-commit",
+          "reason": "T149 AC3, corrected 2026-07-27: declared `pre-push` but MEASURED running at `pre-commit` via wom7api/.pre-commit-config.yaml. The registry was describing an intent, not the mechanism. Corrected DOWNWARD to match reality — pre-commit is strictly stronger than pre-push (it fires earlier and more often), so this records the truth rather than weakening a gate. wom7api has no pre-push hook layer at all, which is why the original declaration could never have been honoured."
+        },
+        "test": {
+          "phase": "pre-commit",
+          "reason": "T149 AC3 2026-07-27: gate ADDED (it was declared but no hook ran it). Wired at pre-commit rather than the originally declared pre-push because wom7api has no pre-push layer, and pre-commit is strictly stronger. Measured 18 tests / 21ms — cheap enough to run on every commit."
+        }
+      },
+      "enabled": true,
+      "note": "Both at pre-push, not pre-commit: `deno-test` is the 18-test suite proving the T99(d) crypto helper, and a _shared/* edit forces a redeploy of every importer — so the whole-repo scope is the point. Verified green at 18/18 during T135's preflight window.",
+      "push_gate": {
+        "mode": "central",
+        "covered_by": "web",
+        "reason": "Estate-wide gates — state-check, deps-check, spec-drift/openspec, discovery, hooks-check, version-check — all live in `web`'s pre-push and enumerate every repo, so duplicating them here would re-run the same estate checks N times per push. This stack's OWN integrity is gated at pre-commit (gitleaks, osv-scanner, semgrep, plus its type/lint roles). ⚠️ The residual gap, stated rather than hidden: the estate gates only TRIGGER on a `wom7web` push. Pushing this repo alone runs no estate-wide gate. Accepted because every such gate is re-run before any release, and because a per-repo copy would drift from the original."
+      }
+    },
+    "skills": {
+      "repo": "wom7skills",
+      "path": ".",
+      "runtime": "node",
+      "justfile": "wom7api/justfile",
+      "techs": [
+        {
+          "name": "typescript",
+          "detect": "dep:typescript",
+          "note": "T127 — the skills subsystem is TS; no .py automation left.",
+          "skills": []
+        },
+        {
+          "name": "tsx",
+          "detect": "dep:tsx",
+          "note": "run step, no build."
+        }
+      ],
+      "commands": {
+        "typecheck": "skills-typecheck",
+        "test": "skill-test",
+        "version-check": "skills-version-check",
+        "version-stamp": "skills-version-stamp"
+      },
+      "gates": {
+        "typecheck": "pre-commit",
+        "test": "pre-commit",
+        "version-check": "pre-commit",
+        "version-stamp": {
+          "phase": "manual",
+          "reason": "`stamp` WRITES to tracked SKILL.md files, so it can never be a hook: a hook that mutates a tracked file mid-commit has to re-stage it and can fight the commit. That is the same verify-only/write split the owner already decided for state-check vs state-save. The gate is `version-check`; this is the fix it tells you to run.",
+          "remeasure": "Never. This is a policy `manual` — do not 'fix' it by promoting it to a phase."
+        }
+      },
+      "enabled": true,
+      "note": "T135 task 3.2: pre-commit is affordable here — `tsc --noEmit` over a small TS surface, measured green (exit 0) at the start gate, so the gate starts green by construction rather than by walling off debt. The `w0m skill` governance CLI (recipe `skill`, manifest/lockfile drift) is operational, not a lifecycle role. In .w0m/sdlc.json toolchain.exempt for SECRETS (no .infisical.json); NOT toolchain-exempt here — real TS toolchain since T127. Whether it leaves the secrets exempt is a separate owner-confirm (T130 task 1.5).",
+      "push_gate": {
+        "mode": "central",
+        "covered_by": "web",
+        "reason": "Estate-wide gates — state-check, deps-check, spec-drift/openspec, discovery, hooks-check, version-check — all live in `web`'s pre-push and enumerate every repo, so duplicating them here would re-run the same estate checks N times per push. This stack's OWN integrity is gated at pre-commit (gitleaks, osv-scanner, semgrep, plus its type/lint roles). ⚠️ The residual gap, stated rather than hidden: the estate gates only TRIGGER on a `wom7web` push. Pushing this repo alone runs no estate-wide gate. Accepted because every such gate is re-run before any release, and because a per-repo copy would drift from the original."
+      }
+    },
+    "cf": {
+      "repo": "wom7func",
+      "path": ".",
+      "runtime": "node",
+      "justfile": "wom7api/justfile",
+      "techs": [
+        {
+          "name": "wrangler",
+          "detect": "dep:wrangler",
+          "note": "Cloudflare Workflows worker.",
+          "skills": [
+            "cloudflare-workers"
+          ]
+        },
+        {
+          "name": "hono",
+          "detect": "dep:hono",
+          "note": "hono lockstep with web + worker.",
+          "skills": [
+            "cloudflare-workers"
+          ]
+        },
+        {
+          "name": "@supabase/supabase-js",
+          "detect": "dep:@supabase/supabase-js",
+          "skills": [
+            "supabase",
+            "supabase-postgres-best-practices",
+            "rbac-auditor"
+          ]
+        },
+        {
+          "name": "typescript",
+          "detect": "dep:typescript",
+          "skills": []
+        }
+      ],
+      "commands": {
+        "deploy": "deploy-workers",
+        "typecheck": "cf-typecheck",
+        "test": "cf-test"
+      },
+      "gates": {
+        "deploy": {
+          "phase": "manual",
+          "reason": "Deploy is outward-facing and must never be triggered by a commit or a push — .w0m/sdlc.json's iac block sets the same rule for terraform apply. It ships on an explicit human decision at the deploy gate.",
+          "remeasure": "Never. This is a policy `manual`, not a capability deferral — do not 'fix' it by promoting it to a phase."
+        },
+        "typecheck": {
+          "phase": "manual",
+          "reason": "T94 AC3, 2026-08-28. Declared `manual` because that is where it MEASURABLY runs today, not where it should end up — the worker stack's own entry records being corrected for exactly the opposite mistake (it declared pre-push while running at pre-commit, 'describing an intent, not the mechanism'). wom7func has no .pre-commit-config.yaml and is not in wom7web's .husky/pre-push, so nothing fires it automatically. The `cf` stack declared ONLY `deploy` until today, so its TypeScript was ungated entirely.",
+          "remeasure": "When wom7func gains a hook layer, or when its typecheck is added to a central pre-push. Promote to that phase THEN — declaring a phase no mechanism honours is the drift this field exists to prevent."
+        },
+        "test": {
+          "phase": "manual",
+          "reason": "T94 AC3, 2026-08-28. The workers vitest pool opens a REMOTE connection (it prints 'Establishing remote connection' and warns that AI bindings may incur charges even in local dev), so it cannot run on a machine without network and must not sit in a commit or push path. Unlike `cf-typecheck`, which is tsc --noEmit and fully offline.",
+          "remeasure": "If the suite is ever made to run against a local-only pool, it becomes eligible for pre-push."
+        }
+      },
+      "enabled": true,
+      "note": "No dedicated cf typecheck recipe yet — `discovery` flags typescript as used-not-declared until a `typecheck` role is added. Deploy is the operating recipe.",
+      "push_gate": {
+        "mode": "central",
+        "covered_by": "web",
+        "reason": "Estate-wide gates — state-check, deps-check, spec-drift/openspec, discovery, hooks-check, version-check — all live in `web`'s pre-push and enumerate every repo, so duplicating them here would re-run the same estate checks N times per push. This stack's OWN integrity is gated at pre-commit (gitleaks, osv-scanner, semgrep, plus its type/lint roles). ⚠️ The residual gap, stated rather than hidden: the estate gates only TRIGGER on a `wom7web` push. Pushing this repo alone runs no estate-wide gate. Accepted because every such gate is re-run before any release, and because a per-repo copy would drift from the original."
+      }
+    },
+    "mlx": {
+      "repo": "wom7mlx/wom7mlx",
+      "path": ".",
+      "runtime": "rust",
+      "justfile": "wom7mlx/wom7mlx/justfile",
+      "techs": [
+        {
+          "name": "mlx-rs",
+          "detect": "dep:mlx-rs",
+          "note": "Rust MLX port (Cargo.toml) — the tracked git repo at wom7mlx/wom7mlx."
+        },
+        {
+          "name": "mlx-sys",
+          "detect": "dep:mlx-sys"
+        }
+      ],
+      "commands": {
+        "build": "build",
+        "test": "test",
+        "lint": "lint",
+        "fmt": "fmt",
+        "fmt-check": "fmt-check"
+      },
+      "gates": {
+        "fmt-check": "pre-commit",
+        "build": {
+          "phase": "manual",
+          "reason": "Cannot pass: `cargo build`/`check` exits 101 inside the VENDORED mlx-rs clone, which wom7mlx/Cargo.toml path-overrides to ../mlx-rs. Re-measured 2026-07-26: 29 errors (up from 25), zero of them in w0m source — the vendored Rust bindings are version-skewed against the vendored mlx-c. AC8: a permanently-red hook must not be added.",
+          "remeasure": "Re-run `cargo check --all-targets` in wom7mlx/wom7mlx once the in-flight ../mlx-rs work lands. Exit 0 fires the AC2a re-scope trigger."
+        },
+        "test": {
+          "phase": "manual",
+          "reason": "Blocked behind the same compile failure as `build` — the test binary cannot link while the vendored mlx-rs clone does not compile. Deferred for a dependency-skew cause, not a host one (the Metal toolchain was installed and fixed the earlier stage-1 blocker).",
+          "remeasure": "Same trigger as `build`: a green `cargo check` in wom7mlx/wom7mlx."
+        },
+        "lint": {
+          "phase": "manual",
+          "reason": "`cargo clippy` requires compilation, so it inherits the identical vendored-mlx-rs failure. Verified live 2026-07-26: `just lint` reached clippy and exited 101 with the same E0425 errors as cargo check.",
+          "remeasure": "Same trigger as `build`. Promote to pre-push, not pre-commit — clippy over a Rust workspace is slow."
+        },
+        "fmt": {
+          "phase": "manual",
+          "reason": "`fmt` WRITES files, so it can never be a gate — a hook that rewrites the tree under the committer changes what they are committing. The gated read-only counterpart is the `fmt-check` role (cargo fmt --check), added by T135 task 3.4.",
+          "remeasure": "Never for `fmt` itself. Track `fmt-check` instead."
+        }
+      },
+      "enabled": true,
+      "note": "Dual-runtime: Rust port (Cargo, tracked git repo) + a python mlx-vlm serving layer (recipes serve/describe/chat in the same justfile, role `serve`). Modeled as the Rust stack. ✅ RESOLVED 2026-08-29: the hidden `.justfile` was renamed to a plain `justfile` in the repo, and the workspace justfile — 126 UNVERSIONED lines of serving recipes — was merged into it and deleted. `justfile` here now points at wom7mlx/wom7mlx/justfile, the repo's own. Original finding (T135 preflight): the real Rust recipes lived in a HIDDEN wom7mlx/wom7mlx/.justfile violating the plain-`justfile` convention, with the outer wom7mlx/justfile delegating into it by `just`'s upward search, so `ls justfile` reported absent — see the change's tasks.md 0.1 addendum.",
+      "push_gate": {
+        "mode": "none",
+        "reason": "Rust, and NOT this estate's to gate at push: the repo carries another agent's in-flight work and has no upstream for `beta`. `cargo check`/`clippy` are additionally unaddable while the vendored mlx-rs/mlx-sys clones are version-skewed (T135 AC2a). `cargo fmt --check` runs at pre-commit. Re-decide when AC2a's blocker clears."
+      }
+    },
+    "ext": {
+      "repo": "wom7ext",
+      "path": ".",
+      "runtime": "node",
+      "justfile": "wom7ext/justfile",
+      "techs": [
+        {
+          "name": "browser-extension",
+          "detect": "config:package.json",
+          "note": "cross-browser extension build (chrome/edge/firefox/safari/arc).",
+          "skills": [
+            "playwright-best-practices"
+          ]
+        }
+      ],
+      "commands": {
+        "build": "build-extension",
+        "test-e2e": "test-e2e",
+        "lint": "lint-gate",
+        "typecheck": "typecheck"
+      },
+      "gates": {
+        "lint": "pre-commit",
+        "typecheck": {
+          "phase": "pre-commit",
+          "reason": "GATED 2026-08-08 (T135 AC3): `just typecheck` exits 0 and the hook starts green, proven RED by deleting a union member. Covers the CHROME surface (`extension/`) only — `extension-ff/` has no TypeScript dependency and no type-check script, so a gate there could not execute. SUPERSEDED REASON, verbatim, because a reversal that does not say why the original no longer holds invites the next agent to reverse it back: \"The existing `type-check` script does NOT pass: 5 pre-existing TS errors, exit 2 (measured 2026-07-26). AC7/AC8 forbid installing a hook that starts red. ⚠️ Two of the five are latent bugs, not noise: TS2367/TS2339 at extension/src/background.ts:181 and :215 show comparisons against \"PROFILE_SYNC_INGEST\" and \"JOB_SYNC_INGEST\" that can never be true, with `payload` on `never` — two message handlers are dead code that can never fire.\" ⚠️ THAT REASON'S DIAGNOSIS WAS WRONG IN ITS LAST CLAUSE, and the error is worth keeping: it concluded the two handlers were \"dead code that can never fire\". They were LIVE — `extension/src/content/linkedinProfile.ts:33` and `linkedinJobs.ts:77` both `chrome.runtime.sendMessage` them, and background.ts handles each with a Supabase edge-fn invoke, a 24h throttle and storage bookkeeping. The deadness was inferred FROM the type error instead of checked against the senders; in fact `MessageType`/`ExtensionMessage` simply omitted both, so the compiler was calling two working ingest paths unreachable. The 5th error (`process` in a browser bundle) was fixed with a narrow ambient declaration, NOT `@types/node` — `process` does not exist at runtime here, esbuild substitutes the 3 defined keys."
+        },
+        "build": {
+          "phase": "manual",
+          "reason": "`build-extension` runs `pnpm install` before building, so it reaches the network and can rewrite the lockfile — neither belongs in a commit or push hook. The read-only check for this stack is `type-check` (T135 task 3.6), not the bundle build.",
+          "remeasure": "Promote if the recipe is split so the build step no longer installs."
+        },
+        "test-e2e": {
+          "phase": "manual",
+          "reason": "Drives real headless browsers (playwright/puppeteer against LinkedIn surfaces) — slow, network-dependent and externally flaky. Gating it would make hook failures uninformative about the committed diff.",
+          "remeasure": "Only if a hermetic subset is carved out that needs no live third-party site."
+        }
+      },
+      "enabled": true,
+      "note": "Secrets-exempt in .w0m/sdlc.json; has a real build toolchain here. ⚠️ T135 preflight corrected the recorded premise: the toolchain is NOT absent — wom7ext/extension/ has 9 devDeps and 7 scripts including `type-check`, plus a tsconfig.json, and extension-ff/ has its own. The near-empty 4-line manifest is the REPO-ROOT wom7ext/package.json. AC3 is therefore 'wire up what exists'. Two surfaces share the package name `wom7ext-extension` (extension + extension-ff).",
+      "push_gate": {
+        "mode": "central",
+        "covered_by": "web",
+        "reason": "Estate-wide gates — state-check, deps-check, spec-drift/openspec, discovery, hooks-check, version-check — all live in `web`'s pre-push and enumerate every repo, so duplicating them here would re-run the same estate checks N times per push. This stack's OWN integrity is gated at pre-commit (gitleaks, osv-scanner, semgrep, plus its type/lint roles). ⚠️ The residual gap, stated rather than hidden: the estate gates only TRIGGER on a `wom7web` push. Pushing this repo alone runs no estate-wide gate. Accepted because every such gate is re-run before any release, and because a per-repo copy would drift from the original."
+      }
+    },
+    "sec": {
+      "repo": "wom7sec",
+      "path": ".",
+      "runtime": "python",
+      "justfile": "wom7sec/justfile",
+      "techs": [],
+      "commands": {
+        "test": "test",
+        "scan": "scan"
+      },
+      "gates": {
+        "test": {
+          "phase": "manual",
+          "reason": "🔴 EMPTY INPUT SET — T135 preflight measured 11 tracked files, an EMPTY src/ and specs/, and no pyproject.toml. `python3 -m pytest` here collects zero tests, so a hook would report a green tick while running nothing. That is precisely the vacuous pass AC7/task 7.2 forbids, and it is how T127 shipped '0 managed skill(s) match the lockfile ✓'.",
+          "remeasure": "Promote to pre-commit the moment wom7sec has its first real test — i.e. when `git ls-files 'tests/**'` returns a test module and pytest collects > 0. Do NOT promote on the mere arrival of a pyproject.toml."
+        },
+        "scan": {
+          "phase": "manual",
+          "reason": "`scan` is the product this repo SELLS (the T137 audit service), pointed at an arbitrary target path — it is an operating command run against someone else's code, not a self-check of this repo. Gating it on our own commits would be a category error.",
+          "remeasure": "Never as a self-gate. If a self-scan is wanted, that is a distinct role, not this one."
+        }
+      },
+      "enabled": true,
+      "note": "Security/code-audit toolchain (shallow/deep), early-stage — T111/ROADMAP §30. ⚠️ T135 preflight (task 0.3) CONFIRMED this repo exists — its row was previously 'unconfirmed, not fact' — and corrected `runtime` from node to PYTHON: it has .ruff_cache, `python3 -m pytest` (pytest-bdd) and `uvx specify`, with zero JS. ⇒ `ruff` is the CORRECT linter here and must NOT be swept up by task 3.1, which retires ruff from the TS (wom7skills) and Rust (wom7mlx) repos only. Still no manifest (no pyproject.toml, no package.json), so no framework tech is detectable and both roles are vacuous-by-emptiness — see `gates`. Secrets-exempt in .w0m/sdlc.json (no .infisical.json), and that exemption still holds.",
+      "push_gate": {
+        "mode": "none",
+        "reason": "wom7sec is a declared-but-unbuilt toolchain (P1 T111 / ROADMAP §30) — it has 2 manual roles and no build to gate. A push gate here would be the vacuous kind: green because there is nothing to check."
+      }
+    },
+    "tooling": {
+      "repo": "wom7web",
+      "path": "project/scripts",
+      "runtime": "python",
+      "justfile": "wom7api/justfile",
+      "techs": [],
+      "commands": {
+        "typecheck": "py-typecheck",
+        "test": "py-test"
+      },
+      "gates": {
+        "typecheck": {
+          "phase": "pre-commit",
+          "reason": "T188 AC7 — the gate code's own stack. It exists because 132 of the estate's 145 tracked .py files sat inside stacks declared runtime=node (web/worker/ext), so T135 AC2's rule — checks must match the stack — could never fire on the language that IMPLEMENTS every check. The only runtime=python entry was `sec`, a repo T135 measured at zero source files. That is D37's shape: not overlooked, structurally invisible. This entry is the home that makes the next Python-shaped gap findable. Scope is TOP-LEVEL project/scripts only; project/scripts/tests/ and the other repos' Python are excluded with reasons in T188 AC3, and wom7api/scripts (48 files) is the named next increment. GATED 2026-08-08 at ZERO, not ratcheted. Started from 27 findings across 13 files; all were FIXED rather than baselined or suppressed, per the owner decision recorded in T188 AC2. TWO were real defects, not annotations: tools_check.report_outdated fell off the end while declared `-> int`; and tools_check had a literally duplicated `return 0`. ⚠️ CORRECTED 2026-08-08 at the review gate — a THIRD was claimed here and was NOT a defect: sync_github calling push_issue with a possibly-None `live`. The mypy finding was real (the annotation was unprovable), but the failure story attached to it was invented — a test written to exercise the 'deleted upstream' path proved that path unreachable, because phase 1 already drops a dead issue number and re-resolves by title. The fix that shipped for it (a RuntimeError branch) was untestable code, and was removed; the invariant now lives in the type. Full account in project/tickets/T188.md AC5. Recorded here rather than quietly edited out, because this entry is the registry's permanent explanation of why the gate exists — and 'a type error tells you an annotation is unprovable, not that the failure it implies is reachable' is the durable lesson. The ratchet at project/scripts/typecheck_ratchet.py was considered and rejected: with 31 of 44 files already clean there was no need for a baseline that can drift."
+        },
+        "test": {
+          "phase": "manual",
+          "reason": "T376 — modern uv test runner (pytest) for Python tooling and quality-gate suites. Run on demand or as part of full test aggregates."
+        }
+      },
+      "enabled": true,
+      "push_gate": {
+        "mode": "central",
+        "covered_by": "web",
+        "reason": "This stack's code lives INSIDE wom7web (project/scripts), so wom7web's pre-push already covers any push that carries a change to it — there is no separate repo to push. Its own integrity is gated at pre-commit by `py-typecheck`. A local push gate here would re-run the same estate checks on the same push (T188 AC7)."
+      }
+    },
+    "tooling-api": {
+      "repo": "wom7api",
+      "path": "scripts",
+      "runtime": "python",
+      "justfile": "wom7api/justfile",
+      "techs": [],
+      "commands": {
+        "typecheck": "py-typecheck-api"
+      },
+      "gates": {
+        "typecheck": {
+          "phase": "pre-commit",
+          "reason": "T189 — the SECOND half of the estate's gate code. A separate entry rather than widening `tooling`'s path because this registry models one stack = one REPO: `tooling` declares `repo: wom7web`, and a path list there would leave that field lying about what it covers (the schema also types `path` as a string, which is the same statement enforced). Scope: scripts/ TOP LEVEL, 36 files; scripts/archive/ (10) and scripts/tests/ (1) are excluded with reasons in wom7api/mypy.ini. GATED AT ZERO 2026-08-08, not ratcheted — 29 distinct sites fixed. ⚠️ The ticket was FILED at '56 findings'; that is mypy's ERROR-LINE count, which emits one line per union member (25 union-attr lines = 8 real sites). Re-derive by (file, line) before quoting this tool. TWO fixes were real defects, not annotations: (1) gate_advance.fail() was declared `-> None` while always calling sys.exit(1), so every caller's `if x is None: fail(...)` narrowed nothing — declaring NoReturn fixed all SIX of that file's findings at once, the same shape T188 found in four die() helpers; (2) questmaster.py imported Agent/AgentConfig/ToolConfig from `antigravity`, which is the Python STDLIB EASTER EGG — its line 5 is webbrowser.open('https://xkcd.com/353/'), and `from X import Y` executes X first, so every run opened a browser tab before swallowing the ImportError. stdlib precedes site-packages, so no real package could ever shadow it and the SDK flag was always False.",
+          "remeasure": "Stays at pre-commit. The hook is `py-typecheck-api` and calls the PER-REPO recipe on purpose: `just py-typecheck` fronts both repos, and using it in a hook would block a commit here on a finding in wom7web — D6's not-path-scoped complaint. Next increment if this proves its worth: scripts/archive/ is dead code, but scripts/tests/ (1 file) could join cheaply."
+        }
+      },
+      "enabled": true,
+      "push_gate": {
+        "mode": "central",
+        "covered_by": "web",
+        "reason": "Same position as the other two wom7api stacks (`worker`, `edge`): the estate-wide pre-push gates live in `web`'s .husky and enumerate every repo, and wom7api has no .husky of its own. This stack's OWN integrity is gated at pre-commit by `py-typecheck-api`. ⚠️ CORRECTED 2026-08-08 — first written as `mode: local`, which `hooks-check` rejected: `local` asserts a pre-push gate this stack does not declare, and the gate's message is right that a claimed gate which does not exist is worse than a recorded gap. The residual gap is the same one `worker` records: pushing wom7api alone runs no estate-wide gate."
+      }
+    }
+  }
+}

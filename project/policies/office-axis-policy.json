@@ -1,0 +1,25 @@
+{
+  "_comment": "T198 AC7 — the declared state of the office/capability authorization axis. AC7 asked to reconcile `blueprint.publish` with the admin-only write policy: the offices holding the verb must be able to exercise it, or the verb must be withdrawn. Measured 2026-08-27, NEITHER applies: `design.lead` and `talent.trainer` hold the verb, but NO table links a person to an office, no RLS policy reads the axis, no function reads it, and no application code reads `blueprint.publish` (migrations and backups only). It is not a policy gap on one verb — it is an axis with no subjects and no readers, and withdrawing one grant would leave 47 in the identical condition. So the reconciliation is to DECLARE the state and gate the transition, not to edit one row.",
+  "declared_state": "WIRED",
+  "why": "A catalog with subjects and readers. `hats` links a profile to a unit on a project and `resource_grants` links either to an office; `is_capable()`, `wom_effective_capabilities()` and `wom_my_hats()` read them. Both grant tables ship EMPTY, so the axis is wired and unexercised — which is the honest state, not a gap: nobody gained access on the day it landed.",
+  "_what_this_gates": "Not the inert state — the MIDDLE one. `HALF-WIRED` means a person↔office table exists while nothing reads it, which is indistinguishable from working: an admin grants `design.lead`, believes `blueprint.publish` follows, and the database has never heard of it. T198 AC6 names this exact failure — 'the outcome that must not survive this ticket is ... some tables enforcing, some carrying an arm that looks like enforcement'. The gate goes RED there and only there.",
+  "_how_it_clears": "CLEARED 2026-08-28 by T102 migrations 20260828040000 (hats, resource_grants, is_capable, wom_effective_capabilities — subject table and reader in ONE change, as T198 AC6 demanded), 050000 (worn_hats: the hat WORN is the one that grants) and 060000 (the switch). The declared state moved in the commit that did it. 🔴 What is NOT yet true: `rls_policy_readers` is still 0 — no RLS policy consults the axis, so enforcement today runs through function callers only. T102 AC6 / T198 AC6 move the first real policy from possession to capability; until then a grant is exercised by code that asks, not by the database refusing.",
+  "measured_on": "2026-08-28",
+  "measured": {
+    "offices": 10,
+    "capabilities": 38,
+    "grants": 48,
+    "person_to_office_tables": 1,
+    "rls_policy_readers": 0,
+    "function_readers": 3
+  },
+  "blueprint_publish": {
+    "held_by": [
+      "design.lead",
+      "talent.trainer"
+    ],
+    "write_policy_on_blueprints": "Admins can manage blueprints — requires user_roles.role = 'admin'",
+    "verdict": "Still NOT withdrawn, and now exercisable in principle: an office can be granted to a unit and worn as a hat. The write policy on `blueprints` is still possession-based (`user_roles.role = 'admin'`), so holding `design.lead` still does not let you publish one — that is exactly the move T102 AC6 asks for, and it is the reason `rls_policy_readers` reads 0 above.",
+    "_also_found": "`client.blueprint.view` is held by NO office at all — a capability nobody can hold even in principle. Same class, noted rather than deleted."
+  }
+}
