@@ -17,7 +17,7 @@ happened to look.
 ## What is already here
 
 `_in` predates this README — it was being used as an inbound tray before anyone named it one: a June
-prospect proposal, and an `orca` symlink into `wom7open/`. That is the convention this file
+prospect proposal, and an `orca` symlink into `wom7pr/`. That is the convention this file
 documents rather than invents.
 
 ## How to use it

@@ -2,14 +2,14 @@
 name: w0m-prs
 description: GitHub PR discovery, health audit, background polling, and visual reporting tool for w0m and open-source estate. Use when tracking upstream open-source PRs, auditing review decisions and mergeability, monitoring background status updates, or generating publication-grade Markdown reports with validated Mermaid charts.
 metadata:
-  version: "2026.09.12-1789239194"
+  version: "2026.09.20-1789915126"
 ---
 
 # w0m-prs
 
 ## Overview
 
-`w0m-prs` is the canonical w0m developer tool and agent skill for discovering, auditing, polling, and reporting on GitHub Pull Requests across internal repos, upstream dependencies (`wom7open`), and contributor portfolios.
+`w0m-prs` is the canonical w0m developer tool and agent skill for discovering, auditing, polling, and reporting on GitHub Pull Requests across internal repos, upstream dependencies (`wom7pr`), and contributor portfolios.
 
 It provides deterministic CLI interfaces via `just prs`, outputs structured JSON or formatted terminal output, and generates publication-grade Markdown reports with headless `mmd-validate`-compliant Mermaid graphs.
 
@@ -18,14 +18,14 @@ It provides deterministic CLI interfaces via `just prs`, outputs structured JSON
 ### 1. Discovery & Search
 Search PRs by author username, repository target, or preset:
 ```bash
-# Search PRs across active wom7open dependencies (stablyai/orca, openai/tart-guest-agent, bulwarkid/virtual-fido)
-just prs search --preset wom7open
+# Search PRs across active wom7pr dependencies (stablyai/orca, openai/tart-guest-agent, bulwarkid/virtual-fido)
+just prs search --preset wom7pr
 
 # Search PRs authored by a specific user
 just prs search --author casualuser --limit 20
 
 # Output machine-readable JSON
-just prs search --preset wom7open --json
+just prs search --preset wom7pr --json
 ```
 
 ### 2. Deep Health & Mergeability Audit
@@ -34,15 +34,15 @@ Audit merge status (`MERGEABLE` vs `CONFLICTING`), review decisions (`REVIEW_REQ
 # Audit a specific PR in a repository
 just prs audit --repo openai/tart-guest-agent --pr 62
 
-# Audit all open PRs in wom7open preset
-just prs audit --preset wom7open
+# Audit all open PRs in wom7pr preset
+just prs audit --preset wom7pr
 ```
 
 ### 3. Autonomous Background Watch Poller
 Monitor active PRs on a schedule without busy-waiting. Emits delta alerts on state changes (review submissions, CI completion, merge status transitions):
 ```bash
-# Watch wom7open PRs every 5 minutes for 30 minutes with terminal notification on change
-just prs watch --preset wom7open --interval 5 --duration 30 --notify
+# Watch wom7pr PRs every 5 minutes for 30 minutes with terminal notification on change
+just prs watch --preset wom7pr --interval 5 --duration 30 --notify
 
 # Watch a single critical PR
 just prs watch --repo stablyai/orca --pr 16597 --interval 2 --duration 60
@@ -59,7 +59,60 @@ Generates comprehensive Markdown portfolio reports embedding three compliant Mer
 just prs report --author casualuser --out docs/reports/github_prs_report.md
 ```
 
+### 5. Fresh Status Table (`just prs-open` / T369)
+Instantly query, audit, and display an aligned terminal or Markdown table of active PRs across all managed `wom7pr` dependencies (`jundot/omlx`, `Blaizzy/mlx-vlm`, `stablyai/orca`, `openai/tart-guest-agent`, `cirruslabs/tart`, `bulwarkid/virtual-fido`):
+
+```bash
+# Print fresh report table for active PRs in wom7pr dependencies
+just prs-open
+
+# Or via explicit subcommands and flags
+just prs table --preset wom7pr
+just prs table --preset wom7pr --all
+just prs table --preset wom7pr --markdown
+```
+
+### 6. Continuous Fork Synchronization Verification (`just forks` / T377)
+Audit all local open-source forks under `wom7pr/` against upstream and origin remotes:
+
+```bash
+# Fast cached inspection of all forks (ahead/behind counts, dirty worktree)
+just forks --no-fetch
+
+# Live fetch and inspection of all forks against upstream
+just forks
+
+# Strict CI/pre-commit gate mode (exits non-zero if any fork is behind upstream or dirty)
+just forks-check
+
+# Output Markdown table for reports
+just forks --no-fetch --markdown
+
+# Output machine-readable JSON
+just forks --no-fetch --json
+```
+
+### 7. Fork Remote Management & Synchronization (`just forks-fetch`, `forks-info`, `forks-update`)
+Granular management of external fork repositories in `wom7pr/`:
+
+```bash
+# Explicitly fetch upstream and origin remotes for all forks (or a single fork)
+just forks-fetch
+just forks-fetch tart
+
+# Deep dive into a single fork (commit log diff vs upstream, modified files, active branch)
+just forks-info tart
+just forks-info omlx
+just forks-info omlx --json
+
+# Safe synchronization: fast-forward clean default branches, report feature branch status
+just forks-update tart
+just forks-update --rebase omlx
+just forks-sync       # alias to forks-update
+```
+
 ## Agent Best Practices
-- **Verify upstream health**: Always run `just prs audit` before marking tickets depending on upstream PRs as complete.
-- **Check for conflicts**: Run `just prs search --preset wom7open` to proactively catch merge conflicts.
+- **Verify upstream health**: Always run `just prs-open` or `just prs audit` before marking tickets depending on upstream PRs as complete.
+- **Audit fork alignment**: Regularly run `just forks` or `just forks-check` to confirm local feature branches in `wom7pr/` are not lagging behind `upstream/main`.
+- **Check for conflicts**: Run `just prs-open` to proactively catch merge conflicts across upstream contributions.
 - **Diagram validation**: All Mermaid diagrams generated by `just prs report` conform to the estate's `mmd-validate` pre-commit gate.

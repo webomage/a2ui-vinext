@@ -40,6 +40,18 @@ forks-sync *args:
 prs-test:
     @just --justfile wom7web/justfile prs-test
 
+rename-audit *args:
+    @just --justfile wom7web/justfile rename-audit {{ args }}
+
+rename-audit-test:
+    @just --justfile wom7web/justfile rename-audit-test
+
+decommission-check *args:
+    @just --justfile wom7web/justfile decommission-check {{ args }}
+
+decommission-check-test:
+    @just --justfile wom7web/justfile decommission-check-test
+
 default-test:
     @just --justfile wom7web/justfile default-test
 
