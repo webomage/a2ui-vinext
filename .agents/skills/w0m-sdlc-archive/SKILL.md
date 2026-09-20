@@ -23,9 +23,10 @@ Read `.w0m/sdlc.json`. Use `tickets` (board/dir/sync), `specs`, `tech_debt`, `vc
 ## Steps
 1. **Confirm done-ness.** Every acceptance criterion ✅ with evidence (from the verify gate) and
    the change is live (from the deploy gate). If not, stop — it's not archivable.
-2. **Flip all surfaces to done, together.** Ticket `status: done`, board glyph → ✅, and — if
-   github-mirrored — the GH issue closed (re-run `tickets.sync`; markdown/tracker is the source).
-   These must agree; disagreement is exactly the drift the lifecycle exists to prevent.
+2. **Flip surfaces to done, together.** Update ticket frontmatter `status: done` in
+   `{tickets.dir}/{pattern}`. Optionally run `just tasks-render` to compile the board deterministically
+   from tickets (never hand-edit `TASKS.md`), and — if github-mirrored — close the GH issue
+   (re-run `tickets.sync`; ticket markdown is the source).
 3. **Archive the spec.** If `specs.system:"openspec"`, invoke `openspec-archive-change` to move the
    change into the archive and sync deltas into the main specs. (`specs.system:"none"` → skip.)
 4. **Refresh tech-debt.** Update `{tech_debt.register}` (TECH-DEBT.md): add rows for debt this change introduced, DELETE rows it paid down (git history is the audit trail). Anything introduced/paid-down should be reflected

@@ -12,6 +12,22 @@ default:
 tasks *args:
     @just --justfile wom7web/justfile tasks {{ args }}
 
+tasks-render *args:
+    @just --justfile wom7web/justfile tasks-render {{ args }}
+
+agent-concurrency-test:
+    @just --justfile wom7web/justfile agent-concurrency-test
+
+# ── Coordinated Multi-Agent Worktrees (T411 AC5) ─────────────────────────────
+worktree-agent id *args:
+    @python3 scripts/worktree_agent.py create {{ id }} {{ args }}
+
+worktree-agent-remove id *args:
+    @python3 scripts/worktree_agent.py remove {{ id }} {{ args }}
+
+worktree-agent-list:
+    @python3 scripts/worktree_agent.py list
+
 # ── GitHub PR Tool (T345 / T369 / T377) ─────────────────────────────────────────
 prs *args:
     @just --justfile wom7web/justfile prs {{ args }}

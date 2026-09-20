@@ -10,7 +10,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: new
-  version: "2026.07.27-1785131185"
+  version: "2026.09.18-1789790110"
 ---
 
 # w0m-sdlc-new — the task-creation gate
@@ -26,20 +26,24 @@ Read `.w0m/sdlc.json` (walk up from cwd; if none, check one level down into chil
 ## Steps
 1. **Capture the request.** What outcome is wanted, and why. Note the originating source (audit
    finding, roadmap epic, owner ask, bug).
-2. **Allocate the id.** Next free id = max existing `{id_prefix}<n>` across `tickets.dir` + board
-   + 1. **Never reuse a retired id.**
+2. **Allocate the id.** Check if any recyclable duplicate tickets exist: `just ticket-recycle --list`.
+   If an eligible duplicate ticket is available and approved for reuse, recycle it: `just ticket-recycle --recycle <id> --draft <draft>`.
+   Otherwise, next free id = max existing `{id_prefix}<n>` across `tickets.dir` + board + 1. **Never manually overwrite or reuse a retired/delivered id.**
 3. **Draft the ticket** from `tickets.template`: frontmatter (`id`, `title` imperative, `status:
    queued`, `queue`, `priority`, `repos`, `epic`, `spec`, `tags`, `created`), then `## Summary`,
    `## Acceptance criteria` (observable/testable checkboxes — required), `## Definition of Done`
    (per `specs.standard`), `## Links` (epic/spec/related `[[T..]]`).
-4. **Ground it — invoke `w0m-sdlc-research`** on the draft. Act on its verdict:
-   - **already-done / obsolete** → do NOT create; report the evidence and stop (or file as done).
-   - **duplicate / merge** → fold into the existing ticket instead; don't create a second.
-   - **revise** → apply its edits (right-size scope, fix claims, add prior-art + dependency links).
-   - **proceed** → continue.
-5. **Finalize (same commit).** Write the ticket to `{tickets.dir}/{pattern}`, add its row to the
-   `tickets.board` in the correct section, and — if github-mirrored — run `tickets.sync` (markdown
-   is the source). Commit ticket + board together, id referenced (`chore(T##): create`).
+4. **Ground it — pre-flight duplicate check & invoke `w0m-sdlc-research`** on the draft:
+   - Run automated duplicate check: `just ticket-dups --check-draft <draft-file>`. If a high match ($\ge 0.50$) is reported, evaluate if the scope is already tracked.
+   - Invoke `w0m-sdlc-research` on the draft.
+   - Act on its verdict:
+     - **already-done / obsolete** → do NOT create; report the evidence and stop (or file as done).
+     - **duplicate / merge** → fold into the existing ticket instead; don't create a second.
+     - **revise** → apply its edits (right-size scope, fix claims, add prior-art + dependency links).
+     - **proceed** → continue.
+5. **Finalize (same commit).** Write the ticket to `{tickets.dir}/{pattern}`. Run `just tasks-render` to
+   refresh the board view deterministically (never hand-edit `TASKS.md` to avoid multi-agent merge conflicts),
+   and — if github-mirrored — run `tickets.sync`. Commit ticket (+ board if rendered), id referenced (`chore(T##): create`).
 
 ## Conventions
 From config `conventions`: conventional commits w/ id, never skip hooks, no coauthor trailer, tool

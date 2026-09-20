@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: start
-  version: "2026.09.15-1789449781"
+  version: "2026.09.19-1789879847"
 ---
 
 # w0m-sdlc-start — the ticket kickoff gate
@@ -75,8 +75,9 @@ and note that a command in `commands.needs_secrets` WILL fail until the session 
   view <n> --json`. Also load its board row. If a board row exists but the ticket file doesn't
   (or vice-versa), flag it as drift and offer to scaffold from `tickets.template`.
 
-## Step 2 — Verify claimed state vs reality (invoke the research gate)
-**Invoke `w0m-sdlc-research`** on the ticket — it is the shared deep-verify step, run here *before
+## Step 2 — Verify claimed state vs reality (invoke the research gate & ticket-audit)
+1. **Run `just ticket-audit <id>` (T211):** Mechanically verifies the four tracking surfaces and classifies ACs (`confirmed`, `contradicted`, `stale`, `unmeasurable`). If surfaces disagree or ACs are contradicted by code reality, do NOT start the ticket until claims and scope are aligned.
+2. **Invoke `w0m-sdlc-research`** on the ticket — it is the shared deep-verify step, run here *before
 start* (as it was run *after creation* by `w0m-sdlc-new`). Do not re-implement its checks; consume
 its **Grounding Report**. It covers, with evidence:
 - **Status coherence** — tracker status vs board glyph (⚪🟡🔴✅💤) vs GH issue state.
@@ -132,14 +133,12 @@ start work on a ticket that shouldn't be started. Otherwise carry its report int
   if design is needed, else `w0m-sdlc-build`). Name it.
 
 ## Step 5 — Update tracking (only after the user confirms the brief)
-- Set the ticket status → in-progress with the **atomic transition tool** rather than editing the
-  surfaces by hand: `just gate <id> in-progress "<note>"` (T119 AC5). It updates the ticket
-  frontmatter, the board glyph and `tickets.json` together, writing the manifest through the same
-  JSON contract `tickets.sync` uses — hand-editing that file has already corrupted it once by
-  re-encoding every non-ASCII character. If it warns that the board **prose** still contradicts the
-  new glyph, fix the wording by hand: only the glyph is mechanical.
-  If github-mirrored, reflect it (re-run `tickets.sync`; markdown/tracker is the source).
-- Commit **all of these together** with the id in the message per `conventions` (e.g.
+- Set the ticket status → in-progress in `{tickets.dir}/{pattern}`.
+  Update ticket frontmatter (`status: in-progress`) and status notes.
+  Optionally run `just tasks-render` to compile the board deterministically from tickets
+  (never hand-edit `TASKS.md` to prevent multi-agent merge conflicts).
+  If github-mirrored, reflect it (re-run `tickets.sync`; ticket markdown is the source).
+- Commit the ticket update with the id in the message per `conventions` (e.g.
   `chore(T37): start — status → in-progress`). Then hand off to the recommended next gate.
 
 ## Conventions (from config `conventions`, enforced)
