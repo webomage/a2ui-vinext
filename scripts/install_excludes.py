@@ -21,7 +21,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MARK = "# w0m: nested repos — installed by scripts/install_excludes.py"
-NESTED = ["wom7api", "wom7authz", "wom7ava", "wom7cfworkers", "wom7func", "wom7ext", "wom7mlx",
+NESTED = ["wom7api", "wom7authz", "wom7ava", "wom7func", "wom7ext", "wom7mlx",
           "wom7sec", "wom7skills", "wom7web", "wom7pr", "wom7clips", "k7"]
 BLOCK = "\n".join([MARK] + [f"/{n}/" if n != "k7" else f"/{n}" for n in NESTED]) + "\n"
 
