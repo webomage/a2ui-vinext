@@ -121,6 +121,11 @@
       "provider": "w0m-native",
       "version": "canonical",
       "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m-ticket-audit": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.09.19-1789854184"
     }
   },
   "auto_recommend": true
