@@ -28,7 +28,7 @@
     },
     "cargo": {
       "min": "1.95.0",
-      "known_good": "1.97.1",
+      "known_good": "1.98.1",
       "required": false,
       "source": "rustup",
       "auto": "none",
@@ -37,7 +37,7 @@
     },
     "cargo-clippy": {
       "min": "0.1.95",
-      "known_good": "0.1.97",
+      "known_good": "0.1.98",
       "required": false,
       "source": "rustup",
       "auto": "none",
@@ -71,7 +71,7 @@
     },
     "gcloud": {
       "min": "500.0.0",
-      "known_good": "584.0.0",
+      "known_good": "585.0.0",
       "required": false,
       "source": "gcloud",
       "auto": "major",
@@ -80,7 +80,7 @@
     },
     "gh": {
       "min": "2.60.0",
-      "known_good": "2.100.0",
+      "known_good": "2.101.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -116,7 +116,7 @@
     },
     "infisical": {
       "min": "0.40.0",
-      "known_good": "0.43.129",
+      "known_good": "0.43.133",
       "required": true,
       "source": "brew",
       "auto": "patch",
@@ -160,7 +160,7 @@
     },
     "omlx": {
       "min": "0.5.0",
-      "known_good": "0.6.2",
+      "known_good": "0.6.4",
       "required": false,
       "source": "pip",
       "auto": "minor",
@@ -186,7 +186,7 @@
     },
     "rustc": {
       "min": "1.95.0",
-      "known_good": "1.97.1",
+      "known_good": "1.98.1",
       "required": false,
       "source": "rustup",
       "auto": "none",
