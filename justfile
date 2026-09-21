@@ -111,6 +111,13 @@ authz-admin-client *args:
 authz-admin-client-test:
     @just --justfile wom7web/justfile authz-admin-client-test
 
+# ── macOS Host Security Posture (T233) ─────────────────────────────────────────
+host-posture *args:
+    @just --justfile wom7web/justfile host-posture {{ args }}
+
+host-posture-test:
+    @just --justfile wom7web/justfile host-posture-test
+
 
 
 # ── Preflight & SDLC Doctor ──────────────────────────────────────────────────
