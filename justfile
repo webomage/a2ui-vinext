@@ -104,6 +104,13 @@ npx-audit *args:
 npx-audit-test:
     @just --justfile wom7web/justfile npx-audit-test
 
+# ── Authorization Admin Client Ratchet (T202 / T327) ──────────────────────────
+authz-admin-client *args:
+    @just --justfile wom7web/justfile authz-admin-client {{ args }}
+
+authz-admin-client-test:
+    @just --justfile wom7web/justfile authz-admin-client-test
+
 
 
 # ── Preflight & SDLC Doctor ──────────────────────────────────────────────────
