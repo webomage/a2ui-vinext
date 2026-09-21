@@ -30,6 +30,14 @@ dod-check *args:
 sync-tickets *args:
     @python3 scripts/sync_github.py {{ args }}
 
+# ── Estate Search (T406) ─────────────────────────────────────────────────────
+# Bounded multi-repo search with LC_ALL=C and --no-pager. Never silently empty.
+search *args:
+    @python3 scripts/estate_search.py {{ args }}
+
+search-test:
+    @python3 -m pytest wom7web/project/scripts/tests/test_estate_search.py -q
+
 # ── Coordinated Multi-Agent Worktrees (T411 AC5) ─────────────────────────────
 worktree-agent id *args:
     @python3 scripts/worktree_agent.py create {{ id }} {{ args }}
