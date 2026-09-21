@@ -1,1 +1,3 @@
-# Database Connections\n- NEVER CHANGE `DATABASE_URL` to an IPv4 endpoint in any `.env` file. The environment strictly requires the direct IPv6 connection to the Supabase database. Do not attempt to "fix" connection errors by switching to the IPv4 connection pooler.
+# Database Connections
+- NEVER CHANGE `DATABASE_URL` to an IPv4 endpoint in any `.env` file. The environment strictly requires the direct IPv6 connection to the Supabase database. Do not attempt to "fix" connection errors by switching to the IPv4 connection pooler.
+- **Human execution only for migrations:** Agents must NEVER attempt to execute `just db-migrate`. Live database migrations are guarded by the interactive TTY confirmation gate (`docs/DEPLOY-CONFIRM.md`, T161 AC3). Always prepare the migration file in `wom7api/supabase/migrations/`, verify with `just db-drift-check`, and request the human operator to run `just db-migrate`.

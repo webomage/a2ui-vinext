@@ -208,12 +208,17 @@ def load_gh_issue(gh_issue_num: int | None, offline: bool = False) -> dict[str, 
 
 
 def check_git_working_tree(ticket_id: str) -> list[str]:
-    files_to_check = [f"project/tickets/{ticket_id}.md"]
+    if (ROOT / ".tasks").is_dir():
+        files_to_check = [f".tasks/{ticket_id}.md"]
+        cwd = ROOT
+    else:
+        files_to_check = [f"project/tickets/{ticket_id}.md"]
+        cwd = WEB
     uncommitted: list[str] = []
     try:
         res = subprocess.run(
             ["git", "status", "--short", "--"] + files_to_check,
-            cwd=str(WEB),
+            cwd=str(cwd),
             capture_output=True,
             text=True,
             timeout=5,
@@ -222,9 +227,10 @@ def check_git_working_tree(ticket_id: str) -> list[str]:
             uncommitted.extend([line.strip() for line in res.stdout.splitlines() if line.strip()])
 
         # Also check if TASKS.md has uncommitted diff touching this ticket
+        tasks_cwd = ROOT if (ROOT / "TASKS.md").is_file() else WEB
         res_diff = subprocess.run(
             ["git", "diff", "HEAD", "--", "TASKS.md"],
-            cwd=str(WEB),
+            cwd=str(tasks_cwd),
             capture_output=True,
             text=True,
             timeout=5,

@@ -14,6 +14,8 @@ This is the top-level workspace root (`@wom`) containing the 7 estate repositori
 ## Non-negotiables (full text in `wom7web/AGENTS.md`)
 
 - **Never `--no-verify`.** Hooks are the gate; fix the finding instead.
+- **Never run `just db-migrate` or deployment commands (`just deploy`, `just deploy-all`, `deploy-*`) directly from an agent shell.**
+  Live database migrations and production deploys are **strictly gated by the interactive TTY confirmation gate** (`docs/DEPLOY-CONFIRM.md`, T161 AC3, owner direction 2026-08-10). The gate deliberately requires an interactive human terminal (`/dev/tty` or `stdin.isatty()`). Agent subprocesses run without a TTY, causing these commands to block or fail closed. **Agents must NEVER attempt to execute `just db-migrate`, `just deploy`, or `just deploy-all` directly — prepare all code, migrations, tests, and verification checks, and explicitly request the human developer to run them.**
 - **Graph before grep.** `just ask "<symbols>"` is the default first action for *where is X / who calls it / what depends on this* — not Grep.
 - **The database is managed by migrations. No exceptions.** Applied with `just db-migrate`.
 - **Secrets reach a command only by process injection** — `infisical run --env=<env> --silent -- <cmd>`. Do not add a `.env` dependency.
