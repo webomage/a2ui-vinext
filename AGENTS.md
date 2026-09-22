@@ -22,6 +22,7 @@ This is the top-level workspace root (`@wom`) containing the 7 estate repositori
 - **Secrets reach a command only by process injection** — `infisical run --env=<env> --silent -- <cmd>`. Do not add a `.env` dependency.
 - **No `Co-Authored-By` / attribution trailers** in commits. Conventional Commits, referencing the ticket.
 - **`STATE.md` blocked your push? Run `just state-save`, commit, push.** Pre-push `state-check` compares STATE.md's mechanical block against reality.
+- **Zero silent fallbacks, clean cutovers over shims, zero shadow symlinks (AgDR-0025).** Fail fast and fail closed (`docs/ANTI-PATTERNS.md`). Multi-path fallback search ladders and backward-compatibility shims are strictly prohibited. 100% of callers must be updated atomically when a path or contract changes.
 
 ## Fast Project Info & Indexed Data References
 
@@ -36,6 +37,7 @@ This is the top-level workspace root (`@wom`) containing the 7 estate repositori
 | **Mermaid Call-flow Dashboard** | `just graph-callflow [repo]` | Generates interactive zoomable call-flow diagrams |
 | **Full AST Code Review Graph** | `just crg-open [repo]` / `just crg-serve [repo]` | Opens / serves Code-Review-Graph AST visualizer (`:8765`) |
 | **Architectural & Design Decisions** | `docs/DECISIONS.md` (`just decisions`) | Indexed record of all decided architectural choices (T232) |
+| **Architectural Anti-Patterns** | `docs/ANTI-PATTERNS.md` | Banned anti-patterns (fallback traps, lava flows, dual SSOT) & invariants |
 | **Ticket Queue & Task Priorities** | `TASKS.md` (`just tasks`, `just tasks hot`) | Ranked task queue with status, priority, and ACs |
 | **Decided Technical Debt** | `TECH-DEBT.md` (`just debt-check`) | Clean, non-drifting list of accepted debts |
 | **Tech Stacks & Command Registry** | `project/stacks-policy.json` (`just discovery`) | Per-stack contract mapping tools to `just` commands |
