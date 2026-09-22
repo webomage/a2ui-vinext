@@ -1,0 +1,62 @@
+{
+  "$schema_note": "Declared baseline for macOS host startup items (T233 AC3). Used by host_posture.py to enforce drift detection.",
+  "version": "2026-09-20",
+  "login_items": {
+    "Cloudflare WARP": "VPN tunnel client for internal network & IPv6 database connectivity",
+    "Macs Fan Control": "Hardware thermal / fan control utility",
+    "Memory Clean 3": "System memory cleanup utility",
+    "Monosnap": "Screen capture and annotation utility",
+    "Rectangle": "Window management utility"
+  },
+  "root_daemons": {
+    "com.amazonaws.acvc.helper": "AWS Client VPN helper",
+    "com.atrix.helper.rusvpn": "RUSVPN privileged helper (reviewed T233 AC5)",
+    "com.avira.security.installd": "Avira Antivirus installer daemon",
+    "com.avira.security.privd": "Avira Antivirus privileged daemon",
+    "com.avira.security.uninstalld": "Avira Antivirus uninstaller daemon",
+    "com.canonical.multipassd": "Canonical Multipass VM daemon",
+    "com.cloudflare.1dot1dot1dot1.macos.warp.daemon": "Cloudflare WARP tunnel daemon (authorized w0m dependency)",
+    "com.cloudflare.warp.updater": "Cloudflare WARP updater",
+    "com.crystalidea.macsfancontrol.smcwrite": "Macs Fan Control SMC write access helper",
+    "com.docker.socket": "Docker desktop socket daemon",
+    "com.github.containers.podman.helper-proto": "Podman container helper",
+    "com.microsoft.autoupdate.helper": "Microsoft AutoUpdate helper",
+    "com.microsoft.office.licensingV2.helper": "Microsoft Office licensing helper",
+    "com.microsoft.OneDriveStandaloneUpdaterDaemon": "Microsoft OneDrive standalone updater",
+    "com.microsoft.OneDriveUpdaterDaemon": "Microsoft OneDrive updater",
+    "com.microsoft.teams.TeamsUpdaterDaemon": "Microsoft Teams updater daemon",
+    "com.native-instruments.NativeAccess.Helper2": "Native Instruments Native Access helper",
+    "com.windscribe.helper.macos": "Windscribe VPN helper (reviewed T233 AC5)",
+    "dev.orbstack.OrbStack.privhelper": "OrbStack container helper",
+    "net.tunnelblick.tunnelblick.tunnelblickd": "Tunnelblick OpenVPN helper (reviewed T233 AC5)",
+    "org.wireshark.ChmodBPF": "Wireshark BPF packet-capture rights helper",
+    "SessionManagerPlugin": "AWS Session Manager plugin helper",
+    "systems.determinate.nix-daemon": "Determinate Systems Nix package manager daemon",
+    "systems.determinate.nix-installer.nix-hook": "Determinate Systems Nix installer hook",
+    "systems.determinate.nix-store": "Determinate Systems Nix store daemon",
+    "us.zoom.ZoomDaemon": "Zoom video conferencing daemon"
+  },
+  "user_launch_agents": {
+    "com.DigiDNA.iMazing2Mac.Mini": { "status": "dead_but_present", "reason": "iMazing companion agent" },
+    "com.google.GoogleUpdater.wake": { "status": "dead_but_present", "reason": "Google updater wake agent" },
+    "com.google.keystone.agent": { "status": "dead_but_present", "reason": "Google keystone agent" },
+    "com.google.keystone.xpcservice": { "status": "dead_but_present", "reason": "Google keystone XPC service" },
+    "com.headroom.default.plist.bak": { "status": "dead_but_present", "reason": "Superseded headroom backup config" },
+    "com.w0m.audit-daily": { "status": "loaded", "reason": "w0m daily automated security posture and host audit agent (T233)" },
+    "com.w0m.backup-daily": { "status": "loaded", "reason": "w0m daily pg_dump database backup agent" },
+    "com.w0m.backup-weekly": { "status": "loaded", "reason": "w0m weekly storage object backup agent" },
+    "com.w0m.schema-weekly": { "status": "loaded", "reason": "w0m weekly schema drift reconciliation agent" },
+    "com.w0m.tools-weekly": { "status": "loaded", "reason": "w0m weekly toolchain updater agent" },
+    "homebrew.mxcl.postgresql@17": { "status": "dead_but_present", "reason": "Homebrew PostgreSQL 17 service" },
+    "homebrew.mxcl.redis": { "status": "dead_but_present", "reason": "Homebrew Redis service" },
+    "io.mutagen.mutagen": { "status": "dead_but_present", "reason": "Mutagen file synchronization agent" },
+    "sh.brew.headroom": { "status": "loaded", "reason": "Headroom MCP proxy service" },
+    "sh.brew.headroom-local": { "status": "loaded", "reason": "Headroom local development proxy" },
+    "sh.brew.omlx": { "status": "loaded", "reason": "Apple MLX local model inference subsystem" }
+  },
+  "limits": {
+    "unregistered_daemons_max": 0,
+    "unregistered_login_items_max": 0,
+    "unregistered_agents_max": 0
+  }
+}

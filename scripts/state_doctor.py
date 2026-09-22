@@ -66,13 +66,13 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
 
 
 MONO_ROOT = find_workspace_root()
-WEB_ROOT = MONO_ROOT / "wom7web" if (MONO_ROOT / "wom7web").is_dir() else MONO_ROOT
+WEB_ROOT = MONO_ROOT / "wom7web"
 import os
 # Overridable so the gate can be driven against a FIXTURE file. AC9 requires proving this
 # check RED — hand-edit a recorded exit code, observe exit 1 — which cannot be done against
 # the real STATE.md without committing a knowingly-wrong handoff surface.
-STATE_MD = Path(os.environ.get("W0M_STATE_MD") or (WEB_ROOT / "STATE.md"))
-POLICY = MONO_ROOT / "project" / "policies" / "hygiene-policy.json" if (MONO_ROOT / "project" / "policies" / "hygiene-policy.json").is_file() else WEB_ROOT / "project" / "hygiene-policy.json"
+STATE_MD = Path(os.environ.get("W0M_STATE_MD") or (MONO_ROOT / "STATE.md"))
+POLICY = MONO_ROOT / "project" / "policies" / "hygiene-policy.json"
 
 # Matches a TASKS.md ticket row and captures the T-id. Tolerates the id being bare (`| T12 |`),
 # emphasised (`| **T12** |`) or a markdown link (`| [T12](project/tickets/T12.md) · [#9](…) |`) —
@@ -161,10 +161,10 @@ def ticket_facts() -> dict:
     `state-doctor-test` passed throughout because it asserts the *comparison* fails on drift, never
     that this fact is collected correctly.
     """
-    tasks_md = MONO_ROOT / "TASKS.md" if (MONO_ROOT / "TASKS.md").is_file() else WEB_ROOT / "TASKS.md"
-    tickets_dir = MONO_ROOT / ".tasks" if (MONO_ROOT / ".tasks").is_dir() else WEB_ROOT / "project" / "tickets"
+    tasks_md = MONO_ROOT / "TASKS.md"
+    tickets_dir = MONO_ROOT / ".tasks"
     if not tasks_md.exists() or not tickets_dir.is_dir():
-        return {"_error": "TASKS.md or project/tickets/ not found"}
+        return {"_error": "TASKS.md or .tasks/ not found"}
     rows = set(re.findall(TASKS_ROW_RE, tasks_md.read_text(), re.M))
     open_ids, rowless = [], []
     for path in sorted(tickets_dir.glob("T*.md")):
@@ -198,7 +198,7 @@ def pending_mirror() -> tuple[int, int] | None:
     idx_path = WEB_ROOT / "project" / "tickets-sync-index.json"
     if not idx_path.exists():
         return None
-    sys.path.insert(0, str(MONO_ROOT / "scripts")); sys.path.insert(0, str(WEB_ROOT / "project" / "scripts"))
+    sys.path.insert(0, str(MONO_ROOT / "scripts"))
     try:
         import sync_github as sg  # noqa: PLC0415 — late import keeps this script standalone
         # load_tickets() rewrites project/tickets.json as a derived snapshot. `state-check` is a
@@ -225,7 +225,7 @@ def hot_list(n: int = 10) -> list[dict]:
     STATE.md stale and the pre-push gate says so** — which is the mechanism that keeps the header
     honest instead of relying on someone remembering.
     """
-    sys.path.insert(0, str(MONO_ROOT / "scripts")); sys.path.insert(0, str(WEB_ROOT / "project" / "scripts"))
+    sys.path.insert(0, str(MONO_ROOT / "scripts"))
     import tasks_query  # noqa: PLC0415 — deliberately late; keeps this script runnable standalone
     return tasks_query.rank(tasks_query.load(), n)
 
@@ -266,7 +266,7 @@ def render(data: dict) -> str:
     t = data["tickets"]
     rowless = ", ".join(t.get("rowless_open", [])) or "none"
 
-    sys.path.insert(0, str(MONO_ROOT / "scripts")); sys.path.insert(0, str(WEB_ROOT / "project" / "scripts"))
+    sys.path.insert(0, str(MONO_ROOT / "scripts"))
     import tasks_query  # noqa: PLC0415
     hot_md = tasks_query.markdown_hot(data.get("_hot_detail", []))
     # T151/T146: the complement to `hot`. `hot` ranks what can be STARTED and is structurally blind
@@ -352,7 +352,7 @@ class RetentionConfigError(RuntimeError):
     """A declared retention key is missing or malformed. Never swallowed into a default."""
 
 
-SDLC_JSON = MONO_ROOT / ".w0m" / "sdlc.json" if (MONO_ROOT / ".w0m" / "sdlc.json").is_file() else WEB_ROOT / ".w0m" / "sdlc.json"
+SDLC_JSON = MONO_ROOT / ".w0m" / "sdlc.json"
 _REQUIRED_RETENTION_KEYS = (
     "archive_dir", "archive_pattern", "max_lines", "max_bytes",
     "rotate_patterns", "never_rotate", "disposition_record",

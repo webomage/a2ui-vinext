@@ -1,0 +1,952 @@
+# LESSONS — w0m
+
+Durable rules earned by a gate catching something, each with the instance that earned it.
+
+**What belongs here:** a rule that will change how the *next* ticket is written. **Not a bug log** —
+the per-incident record lives in each ticket's `## Status notes`, and the numbers live in
+[`STATE.md`](STATE.md).
+
+🔻 **Restarted 2026-08-14 at the repo root**, adopting the format proven in the **1945** client repo.
+The previous file lived at `wom7web/.agent/LESSONS.md`, held **one lesson**, and had not been touched
+since **2026-06-22**. 1945's root file holds **153 lessons across 5 sections** and is still growing —
+with a **byte-identical** copy of the same `w0m-lessons` skill. Same instructions, two outcomes, so
+the difference was the location and the format, not the discipline. The old entry is carried over
+below, rewritten into this shape.
+
+---
+
+## 1. Assertions
+
+### ⛔ A GREEN STATE MUST BE EARNED BY EVIDENCE, NEVER INHERITED AS A DEFAULT
+**2026-08-13, T69.** The character sheet rendered `0 XP / 0 balance` as fact for a month.
+
+`CharacterSheet.svelte` queried `player_xp_totals` without `.schema('gamification')`. PostgREST
+resolved against `public`, found nothing, returned `PGRST205` — and the component discarded the
+error and rendered the zero. A missing table and a brand-new player were **indistinguishable**.
+
+⇒ **Where an empty result and a failure look the same, the code must distinguish them.** Use
+`maybeSingle()` when "no rows yet" is expected, and throw on everything else.
+⭐ **The tell:** a destructured query that takes `data` and not `error`. `const { data } = await …`
+is a swallowed failure waiting for a schema to move.
+
+### ⛔ WHEN AN ASSERTION COUNTS, ASK WHAT ELSE PRODUCES THAT NUMBER
+**Carried from 1945, T54 — it bit three times inside one ticket.**
+
+Three assertions read `sent.length === 1`; a feature added a second recipient and the obvious fix was
+to bump each to `2`. But `sent.length === 2` also passes when **both** messages go to the wrong
+recipient — precisely the duplicate those clauses existed to catch.
+
+⇒ **Name the subjects; do not tally them.** Resolve *who* received what, not how many did.
+⭐ **The tell:** a magic number that has to change because behaviour grew. A clause edited from 1 to
+2 was measuring the wrong thing.
+
+### A POSITIVE ACCESS PROBE MUST COMPARE AGAINST SERVICE-ROLE GROUND TRUTH
+**2026-09-03 (T266).** `artemio-tenancy-probe` reported FAIL on own-contracts/invoices/milestones, but Artemio had 0 rows in the database across all three tables.
+
+A probe that checks `count > 0` and calls 0 a failure reports a passing RLS policy as broken when a new tenant simply has no data yet. Conversely, inserting dummy data just to turn the probe green creates vacuous green.
+
+⇒ **Compare authenticated tenant counts against `service_role` (unfiltered) counts.**
+- `truth == 0`: Data absence — report UNMEASURABLE / SKIP (not an authorization defect).
+- `truth > 0 and client == truth`: Policy admits own rows — PASS.
+- `truth > 0 and client < truth`: Policy denies own rows — FAIL (real authorization defect).
+⭐ **The tell:** A probe whose failure message admits "got 0 — could be no data or policy denial". If the probe cannot tell them apart, it sends people to debug working RLS.
+
+### AGGREGATE MAP LOOKUPS MUST TREAT ABSENT KEYS AS COUNT ZERO, NOT UNDEFINED-FALSE
+**2026-09-05 (T315).** In `ClientManager.svelte:381`, `memberCounts[client.id] === undefined ? false : memberCounts[client.id] === 0` completely suppressed the `no portal access` indicator for unlinked clients.
+
+Because unlinked clients had 0 rows in `client_users`, `counts[l.client_id] = (counts[l.client_id] ?? 0) + 1` never created an entry for them, leaving `memberCounts[client.id]` as `undefined`. Evaluating `undefined` as `false` meant only clients that had an explicit key with value 0 would trigger the marker—which could never happen from an additive loop over query rows.
+
+⇒ **When aggregating counts from a junction table, an absent key represents count 0.** Distinguish "data failed to load" with an explicit loading state (`membersLoaded = true`), and evaluate count as `(memberCounts[client.id] ?? 0) === 0`.
+⭐ **The tell:** A ternary `map[id] === undefined ? false : map[id] === 0` on an aggregated dictionary. If the aggregator only loops over existing rows, an absent key is the zero count.
+
+### A FINANCIAL RECONCILER MUST REJECT AN EMPTY SET AS VACUOUS, NEVER PASS IT AS RECONCILED
+**2026-09-18, T373 / T290.** A financial ledger reconciler comparing Stripe vs Supabase reported 0 mismatched records when both Stripe and the local database held zero shared transactions.
+
+A naive loop over Stripe charges or database records trivially finds 0 discrepancies when the set is empty, giving a false sense of production billing parity.
+
+⇒ **Enforce a 3-state exit contract for financial reconciliation:**
+- Exit 0: All records match AND at least 1 verified live record exists.
+- Exit 1: Record mismatch OR vacuous empty set (0 Stripe records and 0 DB records).
+- Exit 2: Unmeasurable / missing dependencies / network error.
+⭐ **The tell:** A reconciler that reports "0 errors, all 0 records matched" and exits 0 on a freshly initialized database.
+
+---
+
+### ⛔ A BACKUP THAT HAS NEVER BEEN RESTORED IS AN ASSUMPTION, NOT A BACKUP
+**2026-08-18 (T229).** A 28 MB dump existed and read as safety. Restoring it into a scratch database
+produced **965 errors**, and two of the causes were things **nothing anywhere recorded**: the dump
+does not carry a `postgres` role (414 errors — Homebrew names the superuser after the OS user), and
+it needs **pgvector**, without which the vector-bearing tables do not restore *at all* (342). Both
+would have been met for the first time during a recovery, on a fresh host, under pressure.
+
+⇒ **Exercise the recovery path, not the production path.** The artefact existing is not the claim;
+the artefact *working somewhere else* is. Prerequisites discovered this way go into the tool's
+preflight so the next person never re-derives them from wreckage.
+⭐ **The tell:** "we have backups" with no record of anyone reading one back.
+
+### ⛔ ASK WHAT EXECUTED — "LOOKS IDLE" AND "IS IDLE" ARE DIFFERENT CLAIMS
+**2026-08-18 (T229).** A project everyone described as stale turned out to run a `*/5 * * * *` cron —
+**81,052 runs over 9 months, 288/day, zero failures** — and to be the estate's *larger* database at
+**57% of its plan cap**. The first signal checked, `last_autovacuum`, said "today" and **proved
+nothing**: autovacuum runs on idle databases too. What settled it was `cron.job_run_details`, i.e.
+asking what had actually *run*.
+
+⇒ **Prefer an execution log to an activity-shaped signal.** Many signals move on their own; few
+record work. Name which one you used.
+⭐ **The tell:** a freshness timestamp offered as evidence of use.
+
+### A CLEANUP MUST DELETE BY AN IDENTIFIER IT RECORDED AT CREATION — NEVER ONE IT DERIVES
+
+Both halves of this failed on 2026-08-26, in opposite directions, from one root cause: the cleanup's
+notion of *mine* was **derived** rather than **recorded**.
+
+- **Over-deleting.** [[T281]]'s E2E teardown scoped by ADDRESS — every identity at a reserved domain.
+  `@example.com` belongs to no real person, so the rule read as safe, and it deleted two fixtures
+  created in **May** that the run had never made. An address identifies a **namespace, not an owner**.
+- **Under-deleting.** Hours later the stage-2 suite leaked **26 rows into production** by recording
+  its contract and project ids in an *assertion* step. Runs that acted and then failed before
+  asserting never registered them. Its leads and proposals were cleaned, so the obvious rows were
+  gone and the leak read as nothing at all.
+
+🔑 **The rule: record the id at the moment you create the row, or derive it from a parent you
+already own.** Not from a name, a title, an address, or a step that may not run.
+⚠️ And a half-completed deletion must SAY so. T281's loop discarded every error and printed
+`Purged 2 orphaned test identities` while two of them were still there, profiles gone and auth rows
+alive — a state that cannot be retried into a good one.
+
+### AN ADMIN ACTING FOR THE PLATFORM MUST NOT SUFFER SILENT ROLE DEGRADATION BY DOMAIN CONTEXT
+**2026-09-03 (T310).** Accessing `cp.webomage.com` forced authenticated administrators into `effectiveRole = "member"`, completely hiding the Business console (Clients, Contracts, Projects, Invoices) and triggering member-scoped RLS.
+
+The middleware hardcoded a role demotion based on domain suffix, conflating portal tenancy with operator identity.
+
+⇒ **Preserve highest active operator credentials across domain boundaries.** If domain-based role scoping is applied to limit tenant views, administrative (`admin`) and owner principals must retain platform-wide capabilities unless explicitly choosing to act under a narrower persona or hat.
+⭐ **The tell:** An administrator navigating to a control plane portal and seeing an empty dashboard or missing navigation sections because a hostname override silently stripped their privileges.
+
+### A SELECTION SURFACE MUST ENUMERATE THE CATALOGUE, NOT PREVIOUS ASSIGNMENT ROWS
+**2026-09-03 (T310).** The Control Panel project hat switcher rendered completely blank because it queried `public.hats` (which had 0 rows), preventing admins from wearing any hat.
+
+Even though 13 units existed in `public.units` and active projects existed in `public.projects`, an admin could not put on a hat because the UI expected an existing assignment record before allowing selection.
+
+⇒ **When designing universal assignment or role selection, query the canonical reference catalogue and auto-provision on wear.**
+Admins allowed to wear "any hat on any project" must be presented with the catalogue of available units joined against projects, with wearing an unassigned unit automatically provisioning or activating the assignment tuple in `public.hats`.
+⭐ **The tell:** An empty-state dropdown where a user with permission to assign or adopt any role cannot do so because no one has assigned it to them yet.
+
+### CUSTOMER-FACING ROLES MUST BE DECOUPLED FROM INTERNAL AGENCY MATRIX UNITS
+**2026-09-04 (T311).** Hats management in CP bound directly to internal agency matrix compensation grades (`public.units`), forcing delivery projects to display internal matrix titles (e.g. "Senior Fullstack Specialist IV") instead of customer-contracted functional positions (e.g. "Tech Lead" or "UI/UX Designer").
+
+Internal seniority units track compensation, career progression, and matrix squads. Project delivery contracts specify functional delivery roles per engagement. Coupling them in the database schema forced missing roles (e.g. Designers) to have no representation and prevented projects from defining custom team rosters.
+
+⇒ **Model functional customer delivery roles (`project_roles`) separately from organizational seniority grades (`units`).**
+Bridge them through an optional minimum qualification or backing unit (`min_unit_id`), and let hats reference either or both.
+⭐ **The tell:** A client or project delivery switcher whose options read like internal HR payroll grades rather than team roles.
+
+### NEVER GRANT anon A BLANKET USING (true) ON A TABLE CARRYING SCOPED POLICIES FOR authenticated
+**2026-09-14 (T254).** `authz-probe` flagged `AC4-blanket-beside-scoped FAIL` on `device_sessions`.
+
+A migration added `CREATE POLICY "device_sessions_select_anon" ON public.device_sessions FOR SELECT TO anon USING (true);` alongside an existing tenant-scoped policy (`FOR SELECT TO authenticated USING (profile_id = wom_acting_profile_id())`). Because PostgreSQL permissive RLS policies combine with `OR`, adding a blanket `USING (true)` for `anon` completely dismantled row-level isolation for authenticated users—any caller can access the table anonymously or inherit permissive evaluation, turning scoped tenant boundaries into a no-op.
+
+⇒ **In PostgreSQL RLS, permissive policies are OR-combined: an unrestricted policy for ANY role invalidates row isolation for ALL sibling policies on that command.** When `anon` must inspect rows (e.g. validating an active device token), scope the condition explicitly (e.g. `USING (revoked_at IS NULL AND expires_at > now())`) or split public tokens into a separate unprivileged table.
+⭐ **The tell:** A table definition where one policy scopes by profile/tenant ID and another policy on the same action grants `TO anon USING (true)`.
+
+
+## 2. Instruments
+
+### A SEARCH THAT LOOKED AT NOTHING ANSWERS EXACTLY LIKE ONE THAT LOOKED EVERYWHERE
+**2026-09-20, T406.** `rg` at the estate root: **64 hits, 0.06s**. The same pattern, per repo:
+**5,268**.
+
+`@wom/.git/info/exclude` lists every `wom7*/` directory, so the root repo excludes its own members.
+A grep there is fast, exits 0, prints a plausible handful, and is looking at **19 tracked files out
+of 92,467**. Nothing in a diff can tell you — `.git/info/exclude` is unversioned. And the obvious
+correction is worse: `--no-ignore-vcs` returns **462,277 hits in 5.8s** by walking `node_modules`.
+
+The same session found the other half. The shape that actually costs minutes is not the working
+tree (wom7web: **0.28s**) but **history**: 20 commits **4.1s**, 100 commits **17.5s / 379k lines**,
+all 2,877 commits ≈ **8 minutes and ~11M lines** — a session stalled, then a buried console.
+
+⇒ **The unit of search is a REPO, and history is always bounded.** `just search` does both, and
+reports a repo it could not search as UNMEASURABLE rather than as zero hits.
+⭐ **The tell:** a grep that returns *few* hits *fast* for a symbol you have every reason to believe
+is widespread. Suspicion belongs on the small number, not relief. Corollary: `git --no-pager` is
+load-bearing — on a tty `git grep` hangs on `less` until the agent's own timeout.
+
+### ⛔ THE AUDIT TOOL USUALLY COMMITS THE DEFECT IT HUNTS — RED-PROBE IT BEFORE TRUSTING IT
+**2026-08-13/14. Four separate gates, same session, same shape.**
+
+- `callsite-drift`'s first run read **26 storage buckets** as ghost tables, then read a hoisted
+  `const g = supabase.schema(…)` handle as an unqualified call — flagging **its own ticket's fix** as
+  the bug it fixed.
+- `lookup-index-gate`'s index regex anchored to end-of-string and parsed `WHERE (deleted_at IS NULL)`
+  as the column list, reporting `posts.slug` as unindexed while its unique index sat right there.
+  **Three of the four identifier indexes in this estate are partial**, so one regex made the whole
+  report wrong.
+- `debt-check`'s first run flagged **41 of 48** rows as stale because it matched every `T##` in the
+  prose instead of the `Tracked` column.
+- The `service-handlist` probe resolved `parents[2]` to `project/` and scanned **zero files**.
+
+- `lookup-index` then raised **two more** false alarms on live code: `.limit(1).maybeSingle()` is
+  safe *regardless* of uniqueness (the database cannot return a second row), and uniqueness is a
+  property of a **filter SET**, never of one column — a query filtering a **superset** of a unique
+  index reads at most one row. Judging columns independently reported a correct query as a latent
+  500 because one of its four filters had no index of its own.
+
+⇒ **Every gate ships with probes that prove it goes red, including probes for the false alarms it
+already raised.** A gate nobody has watched fail is indistinguishable from one whose regex silently
+stopped matching.
+⭐ **The tell:** a first run whose hit rate is implausible in either direction. 41-of-48 is a broken
+check; 0-of-everything is a broken corpus. Both mean *measure the measurer* before reporting.
+
+### ⛔ A PROBE PINNED TO MUTABLE THIRD-PARTY DATA INVERTS ITS OWN SIGNAL
+**2026-08-14, T182.** `state-bounds-test` asserted `by["artemio"]["verdict"] == "over"` — true the
+day it was written, red five days later because **Artemio was rotated down to 50,850 B under its
+81,920 B bound**. That is the gate *succeeding*, reported as the tool breaking.
+
+The greener the estate got, the redder the probe went. The same file already carried the rule
+(*"corpus assertions are read from the REGISTRY, never hardcoded"*) and had applied it only to the
+project **set**, not to a **verdict**.
+⇒ **Assert the gate's LOGIC against a fixture you construct, never the world's current state.**
+The replacement declares a 1-byte bound on a synthetic project — nobody can turn it green by tidying
+their own file.
+⭐ **The tell:** a probe that names a real third party. If someone else's housekeeping can flip it,
+it is measuring them, not you.
+
+### ⛔ AN ADVISORY THAT CANNOT FAIL CANNOT ADVISE
+**2026-08-14, T194.** `just drop-callers` reports 7 orphans and **exits 0**, so a hook written as
+`just drop-callers || echo "⚠ …"` had a branch that could never execute.
+
+⇒ **When you absorb a failure with `||`, check the command actually produces one.** The fix was
+`--enforce` (so the exit code means something) *plus* the `||` (so it stays non-blocking) — two
+separate decisions that look like one.
+⭐ **The tell:** a warning nobody has ever seen printed.
+
+### ⛔ AN EMPTY CORPUS MUST FAIL, NEVER PASS
+**2026-08-13/14, T69 and T138.** A probe that scanned nothing printed a clean pass.
+
+⇒ **Every scanner asserts its input is non-empty before reporting on it**, and says so loudly:
+*"parsed 0 — fix the parse; do not read this as 'no drift'."*
+⭐ **The tell:** a check that got *faster* and *greener* at the same time.
+
+### ⛔ A CEILING IS NOT A LEVEL — READ THE SEMANTICS BEFORE CHANGING THE SETTING
+**2026-08-14, tools-policy.** `gh` sat at `auto: "minor"` and 2.97.0 looked uncaught.
+
+`auto` is the **maximum** bump auto-upgrade may apply, not the exact one: `minor` already permits
+2.96.0 → 2.97.0. Nothing needed changing — `tools-outdated` already listed it AUTO. The real gap was
+that **`tools-upgrade` is dry-run by default and nothing schedules it**.
+⚠️ Its docstring also claimed *"never major"*, which is **false** — `ALLOW_RANK` admits major and
+`gcloud` is configured that way.
+⇒ **When a config looks wrong, read its definition and its implementation before editing it.**
+⭐ **The tell:** "declared X" and "X happens" being assumed to be the same statement.
+
+---
+
+### ⛔ A CROSS-INSTANCE COMPARATOR MUST BE FREE OF ZONE, LOCALE AND ORDERING
+**2026-08-18 (T229).** Comparing a restored database against live with `row::text` reported **every
+table corrupt — twice, for two different reasons, and it was wrong both times.** First the local
+session was `America/Cancun` while the server rendered UTC, so the same instant printed differently.
+Then, with UTC pinned, `lc_ctype` quoted multi-byte characters differently and the *entire*
+difference across two rows was `🧠` versus `"🧠"`. `to_jsonb(t)::text` — sorted keys, JSON escaping —
+matched immediately.
+
+⇒ **Before believing a diff, ask what else could make two identical things render differently.** A
+check that had stopped at its first red would have condemned a working backup.
+⭐ **The tell:** *everything* differs. Real corruption is usually narrow; a total mismatch is
+usually the comparator.
+
+### ⛔ VALIDATE WITH THE READER YOUR CONSUMERS USE, NOT A MORE FORGIVING ONE
+**2026-08-18 (T229).** Adding `//` comments to `.w0m/sdlc.json` broke it for **33 consumers** that
+call plain `json.load` — the file is strict JSON carrying `"_comment"` *string* keys, not JSONC. The
+change passed my own check because that check **stripped comments before parsing**: I verified the
+file against a tolerant reader while every real consumer used a strict one.
+
+⇒ **A green check proves what the checker looked at, never what the consumers will do.** Parse a
+config exactly as the code that loads it does — and read what is already in a file before adding a
+syntax to it.
+⭐ **The tell:** a validator that pre-processes the artefact it is validating.
+
+### `SET LOCAL ROLE` OUTSIDE A TRANSACTION IS A NO-OP, AND THE PROBE STILL PRINTS AN ANSWER
+
+Measured 2026-08-26. A live spot-check of what `anon` could read reported confidently — and
+`current_user` had stayed `postgres` the whole time, because `SET LOCAL` needs an explicit
+`BEGIN`. The numbers were real; they described the superuser. One reading appeared to show a client
+able to see all 96 contracts, which was alarming and false.
+
+🔑 **Assert the actor before trusting anything read under it.** One line —
+`select current_user || ' as ' || wom_acting_role()` — separates "the client sees this" from "the
+superuser sees this", and nothing in the output distinguishes them otherwise.
+⚠️ Same family as the RLS-policy trap it was used to investigate: a policy whose subquery is itself
+RLS-filtered matches NOTHING and reads perfectly correct. Both are answered the same way — read a
+row back **as the actor**, never inspect the rule.
+
+### SYNTHETIC COMPACTION DIRECTIVES IN THE USER CHANNEL MIMIC ADVERSARIAL INJECTIONS
+**2026-09-09, session 5feca02b.** Context compaction triggered a synthetic turn demanding "CRITICAL: Respond with TEXT ONLY... Tool calls will be REJECTED...". The agent classified it as an in-flight prompt injection attack and refused to summarize, polluting subsequent compaction states with adversarial warnings.
+
+⇒ **Harness lifecycle directives (compaction, summarization) must be recognized as harness protocol, not adversary input.** An agent must inspect message origin metadata before triggering injection defenses on imperative harness commands; conversely, harnesses must not format compaction triggers as user-channel text coercion.
+⭐ **The tell:** An agent warning about "urgent all-caps text-only prompt injection" immediately preceding or following a `Conversation compacted` boundary.
+
+### TRANSPARENT CLI COMPRESSION PROXIES ON SHARED PORTS SILENTLY MUTATE TOOL STREAMS
+**2026-09-09, session 5feca02b.** Headroom compression proxy running on a local port colliding with a `wrangler cfworkers` app intercepted `git log`/`git show` and returned lossy summaries (`[N words compressed to M... retrieve more: hash=...]`), mimicking repository or hook tampering.
+
+⇒ **Never run lossy compression proxies transparently across CLI tools without isolated ports and strict bypass rules.** When tool output format changes without an environment or repo change, verify whether a local background daemon/proxy is rewriting standard streams before debugging git or scripts.
+⭐ **The tell:** Standard CLI commands (`git log`, `git show`) returning nonstandard truncation or paraphrasing while other shell commands return raw output.
+
+### A `nosemgrep` SUPPRESSION MUST NAME THE EXACT RULE ID — FREE TEXT IS SILENTLY IGNORED
+**2026-09-10, T325.** Semgrep blocked a commit on `python.lang.security.audit.dynamic-urllib-use-detected` for a dynamically-built URL. A first fix added a real mitigation (validate the scheme before opening) plus `# nosemgrep: scheme validated above` — and the commit was blocked again, unchanged. Only replacing the comment text with the finding's full, exact rule ID suppressed it.
+
+⇒ **`nosemgrep` is a pattern match on the rule identifier, not a human-readable waiver.** Free text in the comment is not an error and not a warning — it is silently treated as not matching, so the finding still fires and the mistake looks identical to "I forgot to suppress it" until you diff the two attempts. Pair every suppression with a real mitigation first; this repo had zero prior `nosemgrep` precedent to copy from.
+⭐ **The tell:** a `nosemgrep` comment that still gets blocked on retry — check it echoes the finding's rule ID character-for-character, not a description of why it's safe.
+
+### A CO-TENANCY GUARD THAT ONLY KNOWS DECLARED PATHS IS BLIND TO A HOOK THAT STAGES ONE FOR YOU
+**2026-09-12, T345/T346/T348 (three times in one session).** Three separate commits each swept in
+another agent's brand-new, untracked `project/tickets/T##.md` — content on disk was always correct
+(the other agent's real work), the problem was that *my* commit now claimed authorship of it. Each
+time the fix was the same follow-up commit: `git rm --cached` to untrack it again, leaving the
+working tree untouched. `stage_guard.py` (T235 AC9) — the hook that exists specifically to catch
+"work this agent did not do" — passed clean every time.
+
+It passed because its two checks are both structurally blind to this shape: the co-tenancy registry
+(`project/co-tenancy.json`) only flags **paths declared in advance**, and nobody pre-declares "any
+ticket file I didn't write" as a co-tenant path; the `lsof` live-write-handle check only catches a
+file **currently open for writing**, not one the other agent already wrote and closed moments
+earlier. The actual staging happened one layer downstream of both checks: pre-commit's own
+"Refresh ticket frontmatter" and "Refresh w0m status dashboard" hooks read **every** `T##.md` present
+in the working tree — tracked or not — to regenerate derived fields/the dashboard JSON, and staging
+whatever they touch is exactly what makes a lint-staged-style fixup hook useful for your own files.
+Applied to a shared `project/tickets/` directory with other agents writing into it concurrently, the
+same mechanism silently annexes their in-progress files into whoever happens to commit next.
+
+⇒ **A guard against "not my work" must reason about the *file*, not just the *path*.** A path-based
+registry can never anticipate a file that didn't exist yet when the registry was written; the
+guard needed a check closer to "was this file untracked one second ago, and did *my* diff create
+it" — not "is this exact path on a pre-declared list."
+⭐ **The tell:** `git commit` succeeds, `stage_guard`/T235 prints clean, and the resulting commit's
+`--stat` still lists a `project/tickets/T##.md` you never wrote. Check `git show --stat HEAD`
+against what you actually staged, every time a ticket-adjacent hook ran — a clean guard is not
+proof the diff is yours.
+
+### MIDDLEWARE URL/HOSTNAME LOGIC MUST BE VERIFIED AGAINST A REAL DEV RUNTIME, NOT SYNTHETIC URL OBJECTS
+**2026-09-12 (T220/T221, delivery/artemioquierocomer.mx).** T208 added an `http:` → `https:` 301 redirect in `src/middleware.ts` with a `localhost`/`127.0.0.1` exemption, validated only by unit tests passing hand-built `URL` objects. The unit test stayed green for two tickets. But `wrangler.jsonc` declared a `custom_domain` route, causing `wrangler dev --local` to rewrite the `Host` header and `url.hostname` to the production domain on every local request. The `localhost` exemption never matched locally, and every preview request 301-looped forever until caught by local E2E.
+
+⇒ **When middleware branches on request URL, hostname, or protocol headers, verify against an actual running server instance.** Synthetic `URL` unit tests prove internal function logic, but cannot prove what headers or hostname the platform dev server injects.
+⭐ **The tell:** Routing or redirect unit tests are 100% green, but running `just preview` or local E2E against the real dev server hangs in an infinite 301 redirect loop.
+
+### SCOPE PLAYWRIGHT LOCATORS TO CONTAINERS WHEN INTERACTIVE ELEMENTS ARE DUPLICATED IN DOM
+**2026-09-12 (T222, delivery/artemioquierocomer.mx).** An unscoped `page.locator('button:has-text("..."), ...').first()` timed out after 30 seconds during an E2E run. Both the Hero section and the sticky `UnifiedTopBar` rendered duplicate copies of the language switcher simultaneously, toggling visibility via CSS opacity and `pointer-events-none`. Because the inert copy preceded the interactive copy in DOM order, `.first()` selected an unclickable element.
+
+⇒ **Scope locators to the specific active container rather than relying on DOM-order selectors (`.first()` / `.last()`).** When components keep inactive instances in the DOM for smooth CSS transitions, target the parent container holding the interactive instance (e.g. `#active-header button`).
+⭐ **The tell:** A Playwright click times out after 30s on an element that visually appears visible and interactive on screen.
+
+### PLAYWRIGHT getByRole('button', { name }) SUBSTRING MATCHES BY DEFAULT — USE EXACT MATCHING
+**2026-09-12 (T223, delivery/artemioquierocomer.mx).** `page.locator('#section-menu').getByRole('button', { name: "Delete" }).first()` unexpectedly clicked "Delete Category" instead of "Delete" (the item delete button). In Playwright, `name: "Delete"` performs case-insensitive substring matching unless `{ exact: true }` is passed. Because `<Button>Delete Category</Button>` appeared earlier in the DOM tree, `.first()` matched the compound button, opening the category deletion modal and failing downstream assertions.
+
+⇒ **Always supply `{ exact: true }` (or an anchored regex `/^Delete$/`) when matching short generic button labels ("Delete", "Add", "Edit") where compound buttons exist.**
+⭐ **The tell:** An action button opens a modal or initiates an action with unexpected scope or parameters (e.g. category-level modal instead of item-level).
+
+### HEADLESS MERMAID VALIDATION PREVENTS SPEC AND DIAGRAM ROT WITHOUT BROWSER OVERHEAD
+**2026-09-12 (T213, delivery/artemioquierocomer.mx).** Loose `.mmd` files in `docs/` and wikilink syntax in Obsidian MOC notes broke Mermaid parsing (`Expecting 'SPACELINE', 'NL', 'EOF', got 'NODE_ID'`). Concurrently, specs concatenated multiple diagrams with `---` dividers in a single file, breaking downstream parsers.
+
+⇒ **Validate Mermaid syntax headlessly via `mermaid.parse` over jsdom in static quality gates (`just lint-mmd` / `mmd-validate`).** Keep single diagrams per `.mmd` file or embed inside standard markdown fences with valid identifier quotes.
+⭐ **The tell:** Markdown preview or Obsidian displays raw red parse error blocks on system architecture diagrams.
+
+### DO NOT EMIT EMOJI VARIATION SELECTORS (\uFE0F) IN AUTOMATION SCRIPT OUTPUT
+**2026-09-14 (T207).** `just emoji-check` broke pre-commit on a new verification script emitting an info glyph with a variation selector.
+
+`project/scripts/ds_conformance.py` included a print line formatted with an informational glyph. In Unicode, the standard information symbol `\u2139` followed by variation selector-16 `\uFE0F` forms an emoji presentation. While protocol glyphs like plain `i` or standard checkmarks are parsed as allowed protocol markers in specific tools, unmanaged variation selectors are classified as pictographs under `project/scripts/emoji_policy_check.py`, tripping the zero-tolerance ratchet.
+
+⇒ **Use plain ASCII status tags (`[INFO]`, `[WARN]`, `[FAIL]`, `[OK]`) in tool outputs, never terminal emoji.** When a visual symbol is required by protocol parsers, verify it matches the exact code point declared in `project/emoji-policy.json` without trailing variation selectors (`\uFE0F`).
+⭐ **The tell:** A script printing what looks like a benign info badge or warning failing git pre-commit with `ratchet baseline exceeded`.
+
+### STATIC NAVIGATION AUDITORS MUST PARSE SCRIPT DATA STRUCTURES, NOT ONLY TEMPLATE href ATTRIBUTES
+**2026-09-14 (T207).** `cp-nav-check` reported false-positive orphaned pages across the client control plane.
+
+`cp_nav_policy_test.py` parsed Astro template markup for literal `<a href="...">` attributes. In `ClientLayout.astro`, navigation links were declared in a frontmatter data array (`const navItems = [{ href: '/cp/client/contracts', ... }]`) and rendered dynamically via `{navItems.map(...)}`. Because the AST regex only inspected markup attributes, every client portal page was flagged as an unlinked orphan, threatening the `--enforce` gate.
+
+⇒ **Static navigation and route checkers must inspect both AST/template attributes AND frontmatter data arrays (`navItems = [...]`).** When components separate navigation data from presentation, the policy parser must resolve both surfaces before concluding a route is dead or unlinked.
+⭐ **The tell:** A page visibly clickable and rendered in the browser navigation menu, but flagged as an unregistered orphan by static policy audits.
+
+### A TOOL POINTED AT THE WRONG ROOT DOES NOT FAIL — IT RETURNS A CONFIDENT WRONG ANSWER
+**2026-07 through 2026-09-15 (T190), four occurrences of the same shape.** None of these tools
+crashed or errored. Each ran cleanly, against the wrong directory, and reported a plausible result.
+
+- **`@wom/.serena/project.yml`** ([[D32]]/[[T172]]) — a session rooted at the `@wom` umbrella
+  activates the workspace-root serena config, not the per-repo one, with its own language set;
+  symbol results came back prefixed `@wom/…` instead of the repo name, and nothing said so.
+- **`just skill check` run from `wom7api`** (during [[D42]]) — produced a *false* "several unmanaged
+  skills" claim, since retracted, because it was reading `wom7api`'s tree while the manifest it
+  should have compared against lived in `wom7web`.
+- **`just skill relock`** run from a repo with no `.w0m/skills.json` — instead of refusing, it
+  **created** an empty manifest and lockfile and printed `lockfile re-hashed.`, a success message
+  for an operation that governed nothing (reproduced live from `wom7api` during D42's own fix;
+  fixed under T190 AC1/AC4).
+- **The estate root before [[T232]]** — `@wom/.agents/skills/` held 23 real, tracked skills while
+  every governance tool reported clean, because `skill check` was scoped to `wom7web/.claude/skills`
+  and `skills-sync check` only ever wrote there; neither tool had a notion of the level above it.
+
+⇒ **A tool that resolves "which project/root am I checking?" implicitly will eventually check the
+wrong one, cleanly, and say so with a straight face.** The fix is never "trust it more" — it is
+making the resolved root part of the printed output (`w0m skill check`'s `[project scope: <path>]`
+line, adopted after this pattern's third occurrence) and, where the tool can invent state instead
+of refusing, making the manifest-less case a hard refusal rather than a silent bootstrap.
+⭐ **The tell:** a governance/audit tool that has never once printed which directory it resolved to
+before reporting on it.
+
+### A GATE MATCHER MUST INSPECT EXECUTABLE CAPABILITY, NOT RECIPE SYNTAX
+**2026-09-17 (T240).** `run_suites.py --drift` matched on recipe names (`-check|-test`) and body text (`--enforce|--check|--drift`), reporting 0 undeclared while 12 gates were invisible because they used standard argument forwarding (`*args:` / `{{args}}`).
+
+The recipe forwards CLI flags to an underlying script whose `argparse` or `sys.argv` declares the `--enforce`, `--check`, or `--drift` capability. Text matching on the recipe body only sees the `{{args}}` placeholder, producing a vacuous green report.
+
+⇒ **When discovering gates behind forwarding wrappers, inspect target script parameters (argparse / sys.argv capability), not recipe shell syntax.**
+⭐ **The tell:** A recipe defined as `<gate> *args:` whose body delegates via `{{args}}` without literal flag strings.
+
+### A "RE-MEASURE EVERYTHING" PIPELINE MUST VERIFY ALL OUTPUT ARTIFACTS WITH A RED PROBE
+**2026-09-17 (T205).** `authz-remap` advertised re-measuring the entire authorization surface and regenerating every map, but silently omitted `office_caps.json` and `all_caps.json`. The stale snapshots showed `devops` holding both `deploy.approve` and `deploy.execute` (a false separation-of-duties violation) even after database migrations had renamed the office to `tech.ops` and decoupled the capabilities.
+
+A pipeline that produces multiple output artifacts without asserting each one's existence and recency provides false confidence ("vacuous-green").
+
+⇒ **Every multi-artifact mapping pipeline must be accompanied by an offline integrity probe suite that verifies every declared artifact is generated and fails closed if any output is missing or stale.**
+⭐ **The tell:** A pipeline recipe that claims broad coverage but has no test checking that each downstream consumer artifact is written on each run.
+
+### CLI WRAPPERS FOR DESKTOP ORCHESTRATORS MUST NORMALIZE PROMPT INJECTION FLAGS
+**2026-09-17 (Orca Opencode integration).** Orca launches agents configured with `promptInjectionMode: 'flag-prompt'` by passing `--prompt "<query>"`. When invoking Claude Code as the underlying engine, Claude Code rejected the flag with `error: unknown option '--prompt'`, silently breaking agent startup from worktree cards and prompt dispatch buttons.
+
+⇒ **Intermediary CLI wrappers between IDE orchestrators and underlying AI agents must normalize orchestrator-specific command-line arguments (e.g., converting `--prompt` to positional arguments or `--prefill`).**
+⭐ **The tell:** An agent launching successfully from a bare terminal but failing or erroring on unrecognized flags when triggered from an IDE card or popup button.
+
+### PROCEDURAL TEST SCRIPTS MUST BE RUN IN SUBPROCESSES UNDER PYTEST COLLECTORS
+**2026-09-18 (T376).** Migrating 86 test scripts to a pytest runner caused immediate `INTERNALERROR SystemExit` when importing scripts calling top-level `sys.exit()` directly in-process.
+
+When a repository contains legacy procedural test scripts alongside native test classes/functions, importing the procedural scripts into pytest's process causes top-level `sys.exit(0)` or `sys.exit(1)` to abort pytest collection prematurely.
+
+⇒ **In pytest collection hooks (`pytest_pycollect_makemodule`), inspect file ASTs to partition procedural scripts from class/function test modules. Wrap procedural scripts in custom `pytest.Item` collectors that execute them in isolated subprocesses (`subprocess.run`), capturing stdout/stderr and mapping exit codes cleanly to pytest pass/fail states.**
+⭐ **The tell:** `pytest` aborting collection with `INTERNALERROR` pointing to `SystemExit` from a procedural script's top-level execution.
+
+### NEVER RUN A SECRET-STORE LIST COMMAND — EXISTENCE CHECKS MUST USE A GETTER, NOT A TABLE DUMP
+**2026-09-19 (T201).** While checking only whether `CLOUDFLARE_API_TOKEN` existed before a guarded Turnstile-secret retrieval, `infisical secrets --env=beta --silent | grep -i "cloudflare"` was run to narrow the output. `infisical secrets` is a **list** command — it prints every secret's plaintext **value** in its table by default, with no masked mode. The `grep` only filtered which *rows* appeared; every matching row still carried the full value, so `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` were printed in full into the tool output and the conversation transcript. Piping a value-bearing command through a filter does not make it existence-only — the value was already captured before grep ever ran.
+
+⇒ **To check whether a secret exists, capture the getter's output into a shell variable and pattern-match it — never let the raw output reach anywhere it gets printed, and never trust the exit code.** `infisical secrets get NAME --env=<env> --silent` **always exits 0**, whether the key exists or not (verified 2026-09-19) — `>/dev/null 2>&1; echo $?` reports "success" unconditionally and tells you nothing. The actual signal is in the table body: `out=$(infisical secrets get NAME --env=<env> --silent 2>&1); echo "$out" | grep -q '\*not found\*' && echo missing || echo present; unset out` — this only ever prints the derived boolean, never `$out` itself. A list command is for a human looking at their own terminal, not for a command whose stdout is captured into an agent transcript. Any secret whose value has entered a transcript this way must be treated as compromised and rotated at its source (e.g. Cloudflare dashboard → API Tokens), not merely stopped from being reused.
+
+⭐ **The tell:** reaching for a `grep`/`awk` filter on top of a store's `list`/`env`/`secrets` command to "just check for one name" — the filter narrows rows, not the value already inside them. Also: trusting a CLI's process exit code to mean "found" without first proving it returns nonzero on a deliberately-fake key.
+
+### A RELOCATED SCRIPT ACCESSED BY PROBE AST/READ_TEXT MUST BE A SYMLINK, NOT A PYTHON SHIM
+**2026-09-20 (T412).** Relocating `sync_github.py` from `wom7web/project/scripts/` to root `@wom/scripts/` and replacing the original with a Python forwarding wrapper (`from scripts.sync_github import main`) caused `just board-identity-test` to fail.
+
+Probes like `test_board_identity.py` assert invariants by reading the script's raw text (`(SCRIPTS / "sync_github.py").read_text()`) or parsing its AST, rather than executing its `main()`. A forwarding shim satisfies execution callers (`subprocess.run`), but breaks static source/AST inspections which see only the forwarder stub.
+
+⇒ **When relocating scripts or configs across monorepo boundaries while preserving legacy caller paths, use relative filesystem symlinks instead of language-level forwarding wrappers.** Symlinks are transparent to both code execution and filesystem/AST readers (`read_text()`), ensuring zero behavioral or probe divergence.
+⭐ **The tell:** A CLI command works when invoked, but a test asserting its internal strings or AST structures fails with missing declarations.
+
+### ATTACH @deprecated TO THE ALIAS, NEVER TO THE REPLACEMENT SYMBOL
+**2026-09-20 (T327).** In `apps/cp/src/lib/supabase.ts`, introducing `export const staffAdminClient = adminClient();` and deprecating the legacy `supabase` export by placing `/** @deprecated ... */` above `staffAdminClient` caused `astro check` to raise `ts(6385): 'staffAdminClient' is deprecated` when defining `export const supabase = staffAdminClient;`.
+
+TypeScript applies JSDoc tags to the immediate subsequent identifier declaration. Deprecating the new symbol warns on the assignment within the very file providing the transition alias, while leaving the legacy alias unflagged.
+
+⇒ **Always place `/** @deprecated ... */` directly above the legacy symbol being phased out (`export const supabase = ...`), never above the canonical replacement (`staffAdminClient`).** This provides instant IDE and typecheck hints to existing callers while keeping the new canonical export clean.
+⭐ **The tell:** Typechecker warnings flagging the new replacement symbol as deprecated instead of the legacy export being phased out.
+
+### HOST SECURITY INSPECTION MUST FAIL CLOSED ON PERMISSION DENIAL — NEVER CONFUSE "CANNOT READ" WITH "CLEAN"
+**2026-09-20 (T233).** Auditing macOS TCC permission grants (`TCC.db`) requires Full Disk Access (FDA) for the runner process. If the runner lacks FDA, sqlite queries on `~/Library/Application Support/com.apple.TCC/TCC.db` throw permission errors.
+
+Catching the exception and returning an empty list of apps holding high-privilege entitlements (camera, microphone, screen recording, FDA) turns a hard blind spot into a false clean report. An unprivileged rogue process running the posture check would proudly report zero sensitive entitlements granted.
+
+⇒ **When a system-level audit query cannot read protected state due to OS permissions or sandboxing, fail closed to `NOT MEASURED` (or exit 2 / error), never to empty results or `PASS`.** Always explicitly surface why the dimension could not be evaluated and what entitlement is missing, adhering strictly to T96 AC3 ("a check that did not run is not a check that passed").
+⭐ **The tell:** An exception handler around a sensitive inspection command returning `[]` or `status: PASS` with detail "0 findings".
+
+## 3. Deploys and platforms
+
+### ⛔ SERVE `.svg` WITH `<img>`, NEVER ASTRO'S `<Image>`
+**2026-06-11.** SVG logos rendered as broken images on Cloudflare Pages.
+
+Astro's `<Image>` routes through Cloudflare's image service (`compile`), which does not parse vector
+SVG. *(Carried over from the previous `.agent/LESSONS.md`, rewritten into this format.)*
+
+### ⛔ DEV CONFIG THAT DISAGREES WITH PROD IS A BUG IN DEV, NOT A CONVENIENCE
+**2026-08-14, T134.** The admin CP had **never** been loggable locally.
+
+`apps/cp` set `base: NODE_ENV === 'production' ? undefined : '/cp'`. The shared auth middleware
+matches **absolute** paths (`pathname.startsWith("/api/auth")`), and Astro hands middleware the
+base-prefixed pathname — so in dev the auth callback arrived as `/cp/api/auth/callback`, failed every
+predicate, and **the login endpoint sat behind the login gate**. Measured: `/api/health` 200 vs
+`/cp/api/health` 401.
+⇒ **A dev-only prefix, port or host must be tested against every path predicate it changes.**
+⭐ **The tell:** a fresh credential failing at the callback. That reads as expiry and is often routing.
+⚠️ `demo`, `job` and `join` still carry the identical pattern.
+
+---
+
+### ⛔ READ THE ERROR BODY BEFORE BLAMING THE CREDENTIAL — A 403 CAN BE THE EDGE
+**2026-08-18 (T229).** A script hitting the Supabase Management API died `403 … error code: 1010`
+while **curl with the same token succeeded in the same second**. `1010` is Cloudflare **bot
+detection**: `urllib` sends `Python-urllib/3.x` and the edge rejects it. My first error message
+blamed the PAT — which would have recreated [[T67]] exactly, where a recorded "revoked, 403" claim
+sent later sessions around a token that had been working for weeks.
+
+⇒ **A recorded breakage has no expiry, so never write one you have not proven.** When an auth-shaped
+status appears, reproduce it with a second client before concluding anything about the credential.
+⭐ **The tell:** a 401/403 that only one client sees.
+
+### TART RPC OVER GUEST AGENT BYPASSES HOST NETWORK, WHEREAS GUEST IP/SSH TRAFFIC HANGS IN HOST WARP/VPN ROUTING
+**2026-09-10, T295 / T297.** `nc -zv 192.168.64.56 22` failed with `No route to host` on macOS because Cloudflare WARP (`utun4`) and `bridge100` routing swallow or drop guest IP traffic.
+At the same time, `tart exec` via the Tart Guest Agent connected instantaneously and reliably. The guest agent communicates over the hypervisor's virtio-serial port (`/dev/virtio-ports/tart-version-*`), completely independent of host TCP/IP, VPN routing tables, or DHCP lease drift.
+
+⇒ **Always use `tart exec` via the baked-in Tart Guest Agent for host-to-guest control and automation; never depend on raw guest IP addresses or SSH.**
+⭐ **The tell:** Scripts running `tart ip` followed by `ssh <ip>`, which silently hangs or errors with `No route to host` when host VPN/WARP is active.
+
+### BACKGROUND VMS AND IN-GUEST DAEMONS MUST HAVE HOST SUPERVISION AND HEALTH PROBES, NEVER FIRE-AND-FORGET
+**2026-09-10, T295 / T297.** `tart list` showed `bridgeroad-base` running orphaned on serial console for hours, and `w0m-bridgeroad` had `orca-ide` wedged at 99.9% CPU for 5h 37m with crashed Xvfb and zombie processes, completely invisible to the host.
+Neither VM was registered in estate tracking, neither process was monitored, and nothing on the host noticed the orphaned VM or wedged 100% CPU spinning.
+
+⇒ **Any VM or in-guest background server must have host-side registration, health heartbeats, and process lifecycle supervision rather than being launched unmonitored.**
+⭐ **The tell:** Long-running background `tart run &` or `nohup` invocations without PID tracking, automated health checks, or watchdog teardown.
+
+### CLIENT SOURCE TREES IN VMS MUST BE READ-ONLY AT THE HYPERVISOR LEVEL (:ro), NEVER VIA IN-GUEST MOUNT FLAGS
+**2026-09-10, T265 / T295.** Probed live with `sudo touch /mnt/w0m/repo/.probe` inside `w0m-bridgeroad`: returned `Permission denied` even for guest root.
+An in-guest `mount -o ro` is advisory (a guest root `mount -o remount,rw` bypasses it and writes directly to host files), whereas a hypervisor-level virtiofs `:ro` export (`--dir=repo:<path>:ro`) is strictly enforced by the macOS host kernel and cannot be overridden by guest root.
+
+⇒ **Mount client repositories with hypervisor `:ro` exports, and mount separate writable scratch volumes (`:rw`) for agent session state.**
+⭐ **The tell:** Relying on guest-side mount options or trusting in-guest root/user permissions to protect client codebases.
+
+### GUI GUEST AGENTS REQUIRE A SYSTEMD USER SERVICE, WHILE HEADLESS AGENTS USE A SYSTEM SERVICE
+**2026-09-10, T296.** In `w0m-bridgeroad`, `tart-guest-agent` runs as a system unit under `ubuntu`. For headless execution, RPC/`tart exec` works. But for GUI desktop features (shared clipboard), Linux requires `WAYLAND_DISPLAY`/`DISPLAY` and `XDG_RUNTIME_DIR`, which a system unit lacks—causing clipboard sync to fail silently while `tart exec` appears healthy. Furthermore, `/dev/virtio-ports/com.redhat.spice.0` is `0600 root:root` by default and requires explicit udev rules (`MODE="0666"`) or user access for SPICE file transfer.
+
+⇒ **Run GUI guest agents as `systemctl --user`, and ensure udev permissions on `/dev/virtio-ports/`. Headless sandboxes stay as system units.**
+⭐ **The tell:** Reusing the identical systemd system unit across headless and GUI VM templates.
+
+### TELEGRAM getUpdates AND WEBHOOKS ARE MUTUALLY EXCLUSIVE — NEVER POLL ON AN ACTIVE WEBHOOK
+**2026-09-12 (T215, delivery/artemioquierocomer.mx).** An admin control panel attempted to pair manager devices by polling `https://api.telegram.org/bot<TOKEN>/getUpdates`. Because a webhook was actively registered (`https://<domain>/api/telegram`), Telegram rejected the call with `409 Conflict: can't use getUpdates method while webhook is active`.
+
+⇒ **When a Telegram bot runs in webhook mode, do not poll `getUpdates`.** Log inbound chat interactions inside the webhook handler into a rolling KV buffer (e.g. `telegram_recent_chats`), and provide self-enrollment (`/manager`) or manual ID entry in the admin interface.
+⭐ **The tell:** Admin or setup flows failing with HTTP 400 or 409 when attempting to detect Telegram bot updates on production.
+
+### COMPOSITE FOREIGN KEYS REQUIRE CHILD TABLE TEARDOWN BEFORE RE-POINTING PARENT KEYS
+**2026-09-15, T363.** During data consolidation between legacy and canonical profiles, updating `hats.profile_id` failed with SQLSTATE 23503 because `worn_hats` carried a composite foreign key `(hat_id, profile_id, project_id) REFERENCES hats(id, profile_id, project_id)`. Modifying the parent `hats.profile_id` directly broke referential integrity against the still-pointing child rows.
+
+⇒ **When migrating parent records linked via composite foreign keys, delete dependent child assignments (`worn_hats`) or nullify FKs first, consolidate the parent records, and then re-insert active child state pointing to the canonical ID.**
+⭐ **The tell:** A data migration failing with `foreign key constraint violation` when attempting to re-parent a record that appears to have an active cascade or composite constraint.
+
+### NAME ARTIFACTS BY WHAT THE PROCESS DID, NEVER BY TEXT PATTERNS IN OUTPUT
+**2026-08-26 / 2026-09-17 (T291).** `deploy_logged.py` decided a transcript's file prefix (`deploy-<release>.log` vs `run-*.log`) by regex-matching any version string in stdout.
+
+Running read-only diagnostic commands like `deploy_logged.py version-check` or `just version-check` emitted version numbers, causing the wrapper to fabricate `deploy-*.log` release records for operations that never published anything. These fake release records subsequently tripped `changelog-drift`, blocking commits and pushes until manual deletion.
+
+⇒ **Artifact classifications must depend on intentional command intent and process exit status, never opportunistic string matching on command output.** Determine release artifacts strictly from `exit_code == 0` and explicit release recipe membership (`RELEASE_RECIPES = {"deploy", "_deploy-chain", "deploy-all", "_deploy-all-chain"}`).
+⭐ **The tell:** A logging or audit wrapper naming an artifact as a deployment or transaction because the word "version" or "release" appeared in stdout.
+
+### SUPABASE CLI CANNOT BUNDLE SYMLINKS POINTING OUTSIDE THE REPO ROOT
+**2026-09-19 (T8).** `just deploy-agent-consultant` failed remote API bundling with `WARN: Skipping import path outside source root: ../../wom7web/packages/webmcp/src/manifest.ts` followed by `Cannot find module './tool-manifest.ts'`.
+
+`supabase/functions/_shared/tool-manifest.ts` was a symlink pointing across estate repositories to `wom7web`. When using the Supabase Management API deployment (`supabase functions deploy --use-api`), the CLI packaging step ignores any symlinks targeting files outside the function project's source root, dropping them from the deployed bundle.
+
+⇒ **Edge functions in `wom7api/supabase/functions/_shared/` must be standalone modules contained within the repository root, never cross-repo symlinks to sibling workspaces.**
+⭐ **The tell:** Supabase deployment logs emitting `WARN: Skipping import path outside source root` right before a module resolution failure.
+
+## 4. Dependencies and config
+
+### ⛔ VERIFY EVERY CREDENTIAL KEY NAME AGAINST THE STORE — NEVER TRANSCRIBE FROM MEMORY
+**2026-08-14, T134.** Of eleven key names written from knowledge of the services, **six were wrong**.
+
+AWS uses `AWS_ACCESS_KEY` / `AWS_ACCESS_SECRET` here — **not** the SDK-standard
+`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`. Anything reading them through a default AWS
+credential provider finds nothing.
+⇒ **A wrong key name is not a typo — it makes a service report "credential missing" forever**, i.e.
+the surface is confidently wrong about the one thing it exists to report.
+⭐ **The tell:** a key name that matches the vendor's documentation exactly. That is a sign it was
+recalled, not measured.
+
+### MIRROR MULTI-TENANT SETTINGS TO LEGACY KEYS ON SAVE FOR ZERO-DOWNTIME ROLLOUTS
+**2026-09-12 (T215, delivery/artemioquierocomer.mx).** Migrating a single-value configuration key (`telegram_chat_id`) to a collection (`telegram_managers`) broke secondary consumers across the repository (review submissions, status badges) that still read the legacy key.
+
+⇒ **Update handlers must mirror the primary active record into the legacy key on save, deleting the legacy key only when the collection is emptied.** Migrate on read if the new key is missing to preserve zero-downtime backward compatibility.
+⭐ **The tell:** Refactoring a single-value storage key into an array while disparate consumers across the repo still read the legacy scalar key.
+
+### SCOPE BUILDER COMPILATION AND ISOLATE PYTHON VIRTUALENVS IN STATIC LINTERS
+**2026-09-12 (T219, delivery/artemioquierocomer.mx).** `astro check` passed with 0 errors but emitted 15 compilation hints because `tsconfig.json` included `**/*`, compiling one-off scratch scripts, deprecated Node buffer calls (`buf.slice`), and test files alongside production code. Concurrently, `eslint` failed with 8 fatal `no-undef` errors because third-party JS shims inside a Python virtualenv (`.venv_tg`) were inspected.
+
+⇒ **Scope `tsconfig.json` `"include"` strictly to application paths (`src/**/*`, `scripts/**/*`) and explicitly exclude scratch files and virtualenvs.** Add `.venv/**` and `.venv_*/**` to global linter ignores (`eslint.config.mjs`, `oxlint`).
+⭐ **The tell:** `astro check` or linters reporting errors and hints on files in virtual environments, node shims, or temporary root scripts.
+
+### GOVERNED SKILL PATHS MUST BE RECONCILED IN CANONICAL wom7skills, NEVER DRIFTED LOCALLY
+**2026-09-12 (T220, delivery/artemioquierocomer.mx).** `w0m-sdlc-research`'s Step 2 cited `.agent/LESSONS.md` (deprecated 2026-08-14 in favor of root `LESSONS.md`), causing agents to silently miss earned lessons. Correcting the path locally in a consumer repo fixed the prompt but caused `just skill-check` to fail with a cryptographic SHA-256 hash mismatch against `skills-lock.json`.
+
+⇒ **Backport skill corrections upstream to `wom7skills/skills/` via `just skills-backport`, re-hash the lockfile, and synchronize downstream via `just skills-update --canonical`.** Never leave ad-hoc local skill modifications that break governance integrity gates.
+⭐ **The tell:** `just skill-check` reporting `HASH MISMATCH` on a governed skill after someone manually fixed a typo or path in an installed copy.
+
+### RETIRE REDUNDANT TOOL AND SKILL COMPATIBILITY SHIMS ONCE UPSTREAM STANDARDIZES ON .agents/skills
+**2026-09-17 (T372, Orca / OpenCode / Claude Code integration).** When Claude Code v2.1 natively adopted `.agents/skills/`, legacy `.claude/skills/` symlink shims were retired under T372. However, `skills.ts` continued generating `.opencode/skills/` symlinks pointing to `.agents/skills/`. Because Orca and modern Claude Code traverse both repo and parent directories looking for skills, having `.agents/skills` and `.opencode/skills` side-by-side caused identical skills (e.g. `/w0m-tasks`) to register up to 5 times in the autocomplete interface and system prompts.
+
+⇒ **Remove all compatibility symlink trees (`.claude/skills`, `.opencode/skills`) as soon as agents share the universal standard (`.agents/skills`).** Dual discovery trees always produce N-fold token bloat and duplicated UI autocompletions.
+⭐ **The tell:** Slash command autocompletions showing multiple identical entries with the same name, or prompt token counts scaling linearly with the number of symlink folders.
+
+### A SECRET IN INFISICAL IS NOT SYNCED UNTIL IT IS NAMED IN THE SYNC ALLOWLIST — TWICE NOW
+**2026-09-19 (T201).** `TURNSTILE_SECRET` was set correctly in Infisical `beta` and `just sync-secrets` + `just deploy-functions` were both run — twice — yet `contact-submit` kept treating Turnstile as unconfigured and let captcha-less submissions through (Gauge: 2 of 4 scenarios wrongly getting 200 instead of 400/303). Root cause: `wom7api/scripts/sync_supabase_secrets.py` pushes to Supabase only the keys named in its hardcoded `keys_to_sync` list — the list still had `("HCAPTCHA_SECRET", "HCAPTCHA_SECRET")` and had never been updated to include `TURNSTILE_SECRET`, so the secret sat correctly in Infisical and was silently never forwarded. **This is the identical failure class the file's own comments already document for `HONEYCOMB_API_KEY`** (present in Infisical since 2026-03-14, never in the list, Supabase copy stuck at the empty-string digest for months) — it recurred because adding a new secret consumer did not come with a checklist item to add it to this file.
+
+⇒ **When introducing a new secret an edge function reads, treat "add it to `sync_supabase_secrets.py`'s `keys_to_sync`" as part of the same change as writing the Infisical value — not a separate, forgettable step.** A secret can be present, correctly valued, and timestamped fresh in Infisical while being completely absent from Supabase, and nothing in either store's own tooling will say so; the only way to see the gap is to diff the two stores' key sets directly (`supabase secrets list` vs the Infisical env) rather than trusting that "I set it in Infisical" implies "it reached the consumer."
+⭐ **The tell:** a `Deno.env.get("X")`-backed feature behaves as if `X` is unset in production, despite `infisical secrets get X --env=<env>` proving it exists and `just sync-secrets` having been run — check `sync_supabase_secrets.py`'s allowlist before suspecting anything else.
+
+### INFISICAL SECRETS DELETE DEFAULTS TO --type=personal — A SHARED SECRET 404s 51 TIMES BEFORE THAT REGISTERS
+**2026-09-19 (T201).** `infisical secrets delete HCAPTCHA_SECRET --env=beta --silent` returned `404 Secret not found` 51 times in a row, even though `infisical secrets get HCAPTCHA_SECRET --env=beta` found it seconds earlier (type: `shared`, per its own output). Root cause: `secrets delete --help` shows `--type` defaults to `personal`; `secrets get` has no such flag — it transparently merges `personal` and `shared` (`--secret-overriding` decides precedence when both exist). Every shared secret in this estate (which is effectively all of them) is invisible to a bare `delete` call. Fixed with `--type=shared` added; deleted on the first try after that.
+
+⇒ **`get`/`list` and `delete` are not symmetric on secret type — check `--help` on the mutating subcommand before trusting that a passing read implies the write will target the same object.** A 404 from a delete/write command right after a successful read is a strong signal of a default-flag mismatch, not that the object vanished between the two calls.
+⭐ **The tell:** `infisical secrets get NAME` succeeds, `infisical secrets delete NAME` 404s with "Secret not found" using the identical name/env — add `--type=shared` before assuming the secret was already gone.
+
+---
+
+## 5. Records
+
+### ⛔ SEVERITY IS SET BY EXPOSURE, AND EXPOSURE IS MEASURED — NEVER INFERRED FROM SHAPE
+**2026-08-14, [[T213]].** Filed **P0** — *"four credentials leaked in live workflow code"* — on the
+strength of `process.env.X || "<literal>"` and nothing else. The owner pushed back (*"this looks
+like just a token automatically created, I never created it manually"*). Every claim that set the
+severity was wrong:
+
+| filed | measured |
+|---|---|
+| leaked | **both repos are PRIVATE**; neither live key appears in public GitHub code |
+| four live credentials | **two** live, **one dead** (403, identical to a bogus key), one an app id |
+
+The shape is a strong **prior**, not a finding. Reading it as one produced a P0 that would have
+pre-empted real work, and the confident *"leaked"* framing would have travelled into a rotation
+plan nobody needed.
+⇒ **Before assigning severity, measure the two things severity actually depends on: is it
+reachable, and is it live?** Repo visibility is one command. Liveness is one request — and send a
+**deliberately wrong** credential first, so a rejection is distinguishable from a rate-limit or an
+outage.
+⭐ **The tell:** a severity that follows from what the code *looks like* rather than from a number
+you obtained. ⚠️ And note the symmetry — the ticket it was split from made the **opposite** error
+in the same line, calling the code *"dead"* when a live Workflow imports it. Both directions come
+from describing code instead of running it.
+🟢 **The correction is what found the real defect:** testing revealed all three sources
+`return []` on any HTTP failure, so a dead credential is recorded as a successful zero-result
+fetch. Worth more than the thing it was filed for — **let the test rewrite the ticket.**
+
+### ⛔ CHECK THE QUEUE BEFORE FILING — A NEWER DUPLICATE OUTRANKS ITS ORIGINAL
+**2026-08-13, T208.** Filed with 9 findings; **7 already belonged to T194**, by file and line, for
+three days.
+
+The duplicate scored *higher* than the original because it was newer, and it lacked context the
+original carried (the replacement columns are plaintext at rest).
+⇒ **Grounding is a step before filing, not after.** `w0m-sdlc-new` exists to force it.
+⭐ **The tell:** filing a ticket that feels urgent because you just found it.
+
+### ⛔ A COMMENT IS NOT A CONTROL — READ THE NEXT LINE
+**2026-08-14, T138.** `linkedin-share/index.ts` documented its safety property in full —
+*"Because this function is running with Anon key + Auth Header, RLS applies. They can only see
+tokens they inserted… only the person who linked the page can post to it."* — and **two lines
+later built a `service_role` client, which bypasses RLS entirely**.
+
+The lookup then matched on `(provider, provider_urn, is_active)` with no `user_id`, so any
+admin/editor could retrieve **another user's LinkedIn OAuth access token** by URN and post as them.
+`user.id` was already in scope, and already used correctly 20 lines above.
+⇒ **A stated control is a claim about code that must be re-read, especially when the comment is
+long and confident.** This one also explains itself — it says *"if we want anyone in the agency to
+post, we need a service_role query here"*, and someone did exactly that without removing the
+sentence describing the property they had just deleted.
+⭐ **The tell:** a comment arguing for a safety property rather than stating one. And note what
+found it — not a security review, but an *indexing* gate asking why `.single()` could match two rows.
+
+### ⛔ THE GRANT IS NOT THE CONTROL — RLS IS, AND THEY FAIL DIFFERENTLY
+**2026-08-13/14, T69 and T210.** The `gamification` schema had `nspacl = NULL` — **no USAGE for any
+role, including `service_role`** — so RLS policies written in May had been unreachable ever since.
+~50 call sites across 9 edge functions were dead, and adding the missing `.schema()` qualifier alone
+would have turned a silent `0 XP` into a 401 while the ticket read as fixed.
+
+Conversely, `profiles` grants anon `SELECT` and **RLS is the only thing closing it** — a policy edit
+alone can open it without touching a grant.
+⇒ **RLS filters a grant; it does not substitute for one. Check both, and check them per role.**
+⭐ **The tell:** a policy that "looks right" being offered as proof. A policy that *compiles* is not a
+policy that *scopes* — count rows as each role.
+
+### ⛔ DECLARED ≠ CONFIGURED ≠ LISTENING ≠ CONNECTED — NEVER COLLAPSE THEM TO A GREEN DOT
+**2026-08-07 (T154) and 2026-08-13 (T134).** An MCP server sat at three of those four states for
+**12 days** and read as healthy.
+
+⇒ **A status surface renders each state independently, and says which it cannot observe.** `unknown`
+("not observable from here") and `no` ("observed absent") are different claims.
+⭐ **The tell:** one badge summarising several questions.
+
+### ⛔ A DECLARATION FILE IS NOT A GATE — SOMETHING MUST READ IT
+**2026-08-14.** `schema-drift` compares tables and columns, **never policies**, so
+`_shared/database/schema.ts` declares an `"Allow all access … to public"` policy the database does
+not have, and no gate can see the difference. The same shape retired the Supabase debt census in
+July: 48 hand-written `TECH-DEBT.md` rows that **no gate had ever read**, of which 17 are tracked by
+a ticket that is already done.
+⇒ **When you add a register, add the check that reads it in the same commit.**
+⭐ **The tell:** a file whose accuracy depends entirely on people remembering to update it.
+
+### A GATE'S METRIC MUST BE THE THING YOU CARE ABOUT, NOT A PROXY THAT USUALLY MOVES WITH IT
+**2026-08-23 (T261).** A responsive-layout gate measured **lines** and passed **all 33 rows** while
+**every H1 on the site rendered at 16px** — a destroyed heading fits on one line everywhere. The
+cause was a Tailwind arbitrary value with a function nested in its `var()` fallback
+(`text-[var(--text-hero,clamp(...))]`), which generates **no CSS rule at all**, silently. I reported
+"H1 on one line at every pair" to the owner as success before the proxy was caught.
+⇒ **Ask what a catastrophic failure would look like in your metric.** If it looks like a pass, the
+metric is wrong. The fix here was an `h1-font-size` band — the property actually at risk.
+⭐ **The tell:** a metric that is a *consequence* of the property you want, rather than the property.
+
+### A PROMOTION TRIGGER MUST NAME A STATE OF THE PRODUCT, NEVER OF THE PAPERWORK
+**2026-08-24 (T261 → T275).** A suite was registered non-blocking with the trigger *"flip to
+blocking when that finding is resolved **or accepted as debt**"*. The finding **was** accepted as
+debt — so the condition fired the moment the debt row was written — while the same paragraph argued
+that flipping it would redden the aggregate for a decision already made. **A trigger whose condition
+has fired and whose reasoning says do not act on it is a dead instruction**: the next reader either
+flips it (permanent red) or ignores it (governance text nobody obeys), and neither is a decision.
+⇒ **Condition promotion on a measurable state of the code** — *"when D60 and D61 are resolved"* —
+never on a ticket closing. Archiving a ticket must not arm a gate that cannot pass.
+⭐ **The tell:** a trigger you can satisfy by writing something down.
+
+### A GATE THAT BLOCKS ON WHAT IS OUTSIDE YOUR CHANGE ARGUES FOR THE ONE FORBIDDEN ACTION
+**2026-08-23/24 (T267, T274 AC7 → T267 AC8).** Two gates fired on things the committer was not
+committing: `deploy-in-flight` scans `ps` **host-wide**, so another project's deploy blocked a commit
+here — in a repo that has no `confirm_step.py` at all; and `emoji-check` globs the **working tree**,
+so an **untracked** file nobody had staged blocked a commit, and unstaging did not help. Both fail
+closed, so each cost only a wait — but the only way past either is `--no-verify`, **prohibited in
+every w0m repo**.
+⇒ **Scope a gate to the change at commit time, and to the invariant at push time.** Note they need
+*different* fixes: one needs a narrower predicate, the other the same predicate at a later moment.
+⚠️ And neither was *wrong about its finding* — the file really did breach the rule. **A scoping
+error is not a false positive**, and fixing it must defer the finding, not delete it.
+⭐ **The tell:** you can satisfy the gate by deleting someone else's file.
+
+
+### WHEN TWO GATES DISAGREE ABOUT THE SAME PROPERTY, ONE OF THEM IS LYING
+**2026-08-26 (T289).** A new probe reported `wom_acting_is` reachable by anon *via PUBLIC*. The
+suite's long-standing `G2-definer-acl-explicit` guard asserted, on the same database in the same
+minute, that **no** definer function in `public` retained the default PUBLIC grant. Both had passed
+their own tests. G2 was wrong: it tested `p.proacl IS NULL`, and `proacl` is NULL only while **no
+grant statement has ever touched the function** — Supabase's `ALTER DEFAULT PRIVILEGES` materializes
+an ACL on every function at creation, so the count was 0 on every run and **could not have been
+anything else**. The `=X/postgres` entry sat inside those ACLs, unread, for the guard's whole life.
+Rewritten to `aclexplode(proacl) WHERE grantee = 0` it found 2 real violations immediately.
+⇒ **Resolve the disagreement, do not average it.** The temptation is to trust the older gate
+because it has more runs behind it; runs are not evidence when the predicate cannot fire.
+⚠️ **G2's own rationale text contained the refutation** — *"All 32 carry explicit ACLs"* — i.e. the
+author knew `proacl` was non-NULL everywhere and still shipped `IS NULL` as the test.
+⭐ **The tell:** a gate whose green you cannot describe a way to turn red.
+
+### A REVOKE THAT SUCCEEDS IS NOT A GRANT THAT IS GONE
+**2026-08-26 (T289).** A function in `public` carries up to **two independent** EXECUTE grants —
+PostgreSQL's own `=X/postgres` (PUBLIC, on every new function) and Supabase's `anon=X/postgres`
+(from `ALTER DEFAULT PRIVILEGES`) — and anon reaches it through **either**. This estate got it wrong
+in **both** directions inside one day: two migrations revoked `FROM PUBLIC` and left anon's grant,
+then the correction revoked `FROM anon` and left PUBLIC's on **7 of 8** functions. Every statement
+succeeded. Every diff read correctly. `current_profile_id` was the only one that flipped, because
+its ACL happened to carry no PUBLIC entry — seven identical-looking functions behaved differently
+for a reason visible only in `proacl`.
+⇒ **`revoke ... from public, anon;`** and verify with `has_function_privilege(...)` on **production**
+— a restored dump never receives the `ALTER`, so the property reads clean on a scratch DB while
+being false live. **A grant is gone when the ACL says so, not when a REVOKE naming it succeeds.**
+⭐ **The tell:** you checked the migration text instead of the ACL.
+
+### CROSS-SURFACE HANDOFF (DESKTOP ↔ ORCA) RE-BINDS ACTOR METADATA ON COMPACTION
+**2026-09-09, session 5feca02b.** A session started in Claude Desktop (`aleksei@webomage.com`) was continued in Orca (`servicios777@webomage.com`). Upon context compaction, the harness refreshed `userEmail` to the active Orca runner identity, leading the agent to suspect an in-flight session compromise despite the split being explicitly documented in memory.
+
+⇒ **Session compaction re-reads local harness identity, not the historical creator.** When handing off session state between manager (desktop) and runner (Orca) surfaces, the runtime identity legitimately shifts to the host surface. Agents must verify local surface architecture records before treating identity refreshes as an anomaly.
+⭐ **The tell:** A mid-session `userEmail` switch occurring simultaneously with a `Conversation compacted` event across known split accounts.
+
+### A WORKFLOW FILE MISSING FROM A SURFACE IS NOT A SURFACE THAT SOMETIMES SKIPS THE STEP
+**2026-09-11, T336/T337.** Antigravity (Orca, "Agy") committed both tickets cleanly across two
+commits — ticket body, `ROADMAP.md`, `TASKS.md` all correct — but neither carried a `gh_issue`
+and neither existed in `project/tickets-sync-index.json`; `just sync-tickets` had never run for
+them. Checked `.agent/workflows/` (Antigravity's autoload surface, [[T192]]) against
+`.claude/skills/w0m-sdlc-new/SKILL.md`: the `w0m-sdlc-*` family is **entirely absent** there — only
+`opsx-*` plus four unrelated `w0m-*` files exist. `.opencode/skills/w0m-sdlc-new/SKILL.md`, by
+contrast, carries the identical Step 5 ("Finalize … run `tickets.sync`") verbatim. "pi" is not even
+a declared surface in `.w0m/sdlc.json → ide_surfaces.connected` for this project.
+⇒ **This was never a behavioral lapse to retry — it is a file that does not exist on that surface.**
+`just ide-trace` checks each connected surface against the non-negotiables (never `--no-verify`,
+etc.) but does not check **skill/workflow-file parity** — whether a surface's copy of a multi-step
+gate (like `w0m-sdlc-new`'s Finalize step) is present at all, let alone current. Treat
+`.claude/skills/` as the golden copy and diff every other declared surface's equivalent file
+against it; a missing file is a harder failure than a stale one and neither is caught today.
+⭐ **The tell:** a ticket with acceptance criteria and a clean commit, but no `gh_issue` and no row
+in `tickets-sync-index.json` — sync didn't fail, it was never invoked, because the surface that
+created the ticket had no instruction telling it to.
+
+### A MISSING GATE IN A CLIENT REPO MAY BE A DECIDED BOUNDARY, NOT A GAP
+**2026-09-11, T334 AC6.** An AC required "all changes … pass linters/typechecks/tests without
+`--no-verify`" across two estate repos and one client repo (`artemioquierocomer.mx`). The client
+repo had **no pre-commit hook at all** — only a bare `commit-msg` — which read as the exact defect
+the AC existed to catch, and the reflex was to install one there to match.
+
+`project/clients-policy.json → tiers.half-managed.contract_surfaces.quality_gates` already answered
+it: *"DECLARED, NOT ENFORCED — we cannot install a hook in a repo we do not control."* That line was
+an explicit owner decision ([[T265]] AC2), not an oversight — the half-managed tier states what good
+looks like without installing enforcement in a repo that is not this estate's to govern.
+⇒ **Before treating an absent gate in a client/half-managed project as something to build, check
+whether its tier already decided that on purpose.** Verify the property some other way (here: run
+the client's own equivalent check directly, `just skill-check`) instead of extending estate
+enforcement into a repo the policy deliberately keeps hands off.
+⭐ **The tell:** an AC written against "every repo we touch" that, read literally, would have you
+writing infrastructure into a repo whose ownership tier says otherwise.
+
+### CHECKING OFF THE LAST TASKBOX AT `VERIFY` OBLIGATES `ARCHIVE` BEFORE THE NEXT PUSH
+**2026-09-12/13, T352.** The `verify` gate found `tasks.md`'s 12 checkboxes and the spec's 8
+acceptance-criteria checkboxes still `- [ ]` despite the work being done, and checked them off
+against real evidence — the gate's own job. The very next `git push` failed on the pre-push
+`spec-drift` gate: an openspec change that is **100% complete but not yet archived** is exactly
+what that gate exists to catch, so completing the checklist inside `verify` created a new,
+unavoidable requirement to run `w0m-sdlc-archive` (`openspec archive`) before the accumulated
+commits could reach `origin`.
+⇒ **This is not a bug in the gate — the fix is to keep going through the lifecycle, not to look
+for a way around the block.** `--no-verify` was never on the table; the correct read was "one more
+gate stands between here and pushed," not "something is broken." Deploy can (and did) still ship
+from local disk in the interim, since this project's deploy pipeline builds from the working tree,
+not from `origin`.
+⭐ **The tell:** a push blocked immediately after a verify-gate commit that checked off the last
+remaining task/AC boxes — check `just spec-drift` / `openspec status` before assuming the failure
+is unrelated to what you just committed.
+
+### AN UPSERT'S `ON CONFLICT DO UPDATE` ONLY TOUCHES COLUMNS IN THE PAYLOAD — AN OMITTED ONE KEEPS ITS OLD VALUE
+**2026-09-12, T352 (review gate).** `roles.ts`'s `assign` action upserted a `hats` row without
+`is_fallback` in the payload. On a fresh `INSERT` that's fine — the column defaults to `false`.
+But `INSERT ... ON CONFLICT (profile_id, project_role_id, project_id) DO UPDATE SET col =
+excluded.col` only ever sets the columns named in that `SET` clause; a column absent from both the
+payload and the `SET` list is left exactly as it was. Re-assigning a profile that currently holds a
+system-provisioned fallback hat (`is_fallback = true`) would silently keep it flagged as a fallback
+forever, because the UPDATE path never touches that column.
+⇒ **Fixed by adding `is_fallback: false` to the upsert payload explicitly** — a deliberate
+assignment always clears the fallback flag, on both the insert and the update path.
+⭐ **The tell:** an `ON CONFLICT DO UPDATE` whose `SET`/payload list is shorter than the table's
+column set, touching a column whose value can legitimately have been set by something other than
+this code path (here: a trigger). INSERT-only thinking about a payload is a false comfort once
+`ON CONFLICT` enters the picture.
+
+### EPICS MUST BE ROOTED IN OBSIDIAN VAULTS AND BIDIRECTIONALLY SYNCHRONIZED WITH ISSUE TRACKERS
+**2026-09-12 (T214, delivery/artemioquierocomer.mx).** When epics exist only as conversational milestone labels, ticket tracking drifts from client deliverables. Injecting `epic: "EPIC-XX"` into ticket frontmatter and maintaining corresponding notes in the client Obsidian vault (`_msg/Epics/`) provides an unbroken traceability chain from client requirements to git commits.
+
+⇒ **Maintain an authoritative mapping from Epic ID to GitHub Milestone and local Obsidian Epic note.** Synchronizers must match milestones by both exact title and canonical prefix (`EPIC-XX`).
+⭐ **The tell:** Tickets referencing arbitrary epic names with no corresponding issue tracker milestone or specification note.
+
+### CLIENT ENGAGEMENT RECORDS BELONG IN DEDICATED _msg/ OBSIDIAN VAULTS WITH IN/OUT DIRECTIONALITY
+**2026-09-03 (Proposal / T212).** Flat date folders (`2026.07.08/`, `2026.08.31/`) scattered across workspace roots clutter agent context, obscure chronological communication history, and create search friction.
+
+⇒ **Standardize client project communication into a dedicated `_msg/` Obsidian vault with strict directional separation (`YYYY.MM.DD/in/` for client briefs and `out/` for formal quotes and deliverables), linked by a master `Index.md` Map of Content.**
+⭐ **The tell:** Multiple date-stamped proposal drafts, chat dumps, and meeting transcripts scattered in workspace root folders.
+
+### GOVERNANCE CONTRACTS MEASURE FROM THE DECLARED ROOT, NOT BY REQUIRING LEAF FILES
+**2026-09-03 (T308 / Inventory Correction).** An inventory audit reported six of the seven canonical w0m estate repos as "ungoverned" (`.w0m Contract: No`) because none contained a local `.w0m/sdlc.json`. The estate deliberately governs all seven repos centrally from `wom7web/.w0m/sdlc.json` via its `repos` mapping.
+
+⇒ **Measure governance compliance against the configuration root the policy declares, never an assumed per-repo file presence.** Checking leaf directories for standalone config files reproduces the exact scoping fallacy documented in AGENTS.md.
+⭐ **The tell:** An audit script flagging canonical monorepo members or subprojects as unmanaged when a central workspace orchestrator already declares them.
+
+### PER-PROJECT FOLDER PARTITIONING IN SHARED QA TOOLS (JAM.DEV) PREVENTS ARTIFACT CONTAMINATION
+**2026-09-12 (Jam Standard).** Recording bug captures and visual proof into the team root in Jam.dev mixed client artifacts (`artemioquierocomer.mx`) with internal estate recordings, making automated triage and ticket linking ambiguous.
+
+⇒ **Scope all visual recordings and bug links to dedicated project folders named after the canonical repo ID (`--folder <project_id>`).** Provide dedicated public intake links (`https://recorder.jam.dev/<id>`) and project-scoped CLI recipes (`just jam-proof`).
+⭐ **The tell:** A shared QA dashboard containing an unorganized list of uncategorized recordings from multiple disparate client engagements.
+
+### UNIFIED RESOURCE MONITORING PREVENTS SILENT DISK EXHAUSTION ACROSS HYPERVISORS AND RUNTIMES
+**2026-09-11 (Resource Governance Proposal).** Concurrent development across iOS simulators (`simctl`), local LLM weights (`~/.cache/huggingface`, Ollama), hypervisor virtual machines (Tart, UTM), and Docker (`Docker.raw`) silently consumed 838 GB, leaving only 9.5% free disk space and risking hypervisor disk stalls.
+
+⇒ **Monitor storage across all four virtualization and cache pillars centrally (`just resources`), with automated preflight warnings when free host disk space falls below 10%.**
+⭐ **The tell:** Build or VM operations failing with obscure I/O or disk space errors while host cleanup scripts only inspect node_modules.
+
+### PURE EVENT-DRIVEN GAMIFICATION OVER PHANTOM TASK-TRACKING HIERARCHIES
+**2026-09-17 (T27 / AgDR-0022).** Maintaining a shadow gamification database hierarchy (`adventures`, `raids`, `quests`, `unit_members`) alongside canonical engineering trackers (`TASKS.md`, GitHub PRs, `public.projects`) created 8 empty phantom tables with 0 rows for months, while the live player economy ran independently on `xp_ledger` and `wallets`.
+
+Synchronizing engineering state into a duplicate database task tree creates dual-source drift, schema bloat, and phantom operational overhead. Adopting Model A (Pure Event-Driven Gamification) decouples corporate work (tracked canonically in git/tickets/projects) from gamification (pure internal motivational lens). Real engineering milestones directly invoke `award_gamification_xp` with deterministic idempotency keys and verifiable `source_ref` artifact references into `gamification.xp_ledger` and `wallets`.
+
+⇒ **Gamification layers must be purely event-driven reputation ledgers (`xp_ledger`, `wallets`, `badge_awards`) listening to canonical delivery events, never shadow copies of task-management hierarchies.**
+⭐ **The tell:** A gamification schema defining tables like `quests`, `tasks`, or `tickets` that mirror what git repositories or issue trackers already track canonically.
+
+### MULTI-AGENT CONCURRENCY REQUIRES INDIVIDUAL TICKET FILES AND COORDINATED SUBREPO WORKTREES
+**2026-09-20 (T411).** Parallel AI agents working simultaneously across the estate collided on two major choke points:
+1. `TASKS.md` was a 268 KB monolithic table updated by every agent on every commit, triggering frequent merge conflicts.
+2. Spawning git worktrees at the root wrapper (`casualuser/w0m`) only branched the root repo; because estate child repos (`wom7web`, `wom7api`) are git-excluded subdirectories, all agents in different worktrees actually shared the *exact same* unbranched physical working directories, silently colliding on unstaged files and blocking each other's pre-push gates (`state-check` and `openspec validate`).
+
+⇒ **Deconstruct monolithic tracker boards into individual per-ticket files (`.tasks/T##.md`) as the exclusive Source of Truth, treating `TASKS.md` as a purely rendered view (`just tasks-render`). Scope pre-push validation to the branch diff (`--scope-diff`), and orchestrate multi-repo worktrees (`just worktree-agent <id> [subrepos]`) so every agent operates in an isolated physical tree across root and child repos.**
+⭐ **The tell:** Agents failing pre-push hooks due to uncommitted draft files left by another agent, or merge conflicts on tracking files (`TASKS.md`) when concurrent PRs touch unrelated code.
+
+---
+
+
+## 6. UI/UX & Interactions
+
+### CARD DRAG-AND-DROP CONTAINERS REQUIRE FLOATING HIGH-CONTRAST HANDLES OVER MEDIA HEADERS
+**2026-09-12 (T216, delivery/artemioquierocomer.mx).** Adding rich media headers (dish photographs, thumbnails) to cards managed by `svelte-dnd-action` displaced in-flow drag handles below the fold, breaking drag ergonomics and distorting media bounding boxes.
+
+⇒ **Float drag handles as an absolute badge at the top-left of the media container (`absolute top-2 left-2 z-10 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white/90 border border-white/10`).** This guarantees immediate touch/mouse target visibility across light and dark imagery without visual layout shift.
+⭐ **The tell:** Adding an image header to an interactive grid card and leaving the drag handle inside the text body below the image.
+
+### MULTI-TIER STICKY HEADERS REQUIRE COORDINATE SYNCHRONIZATION AND SCROLL-LISTENER ISOLATION
+**2026-09-12 (T218, delivery/artemioquierocomer.mx).** Injecting an expandable mobile search input (Row 2, 44px) increased total header height from 56px to 100px. Downstream sticky category headers remained docked at static 66px offsets, causing titles to slide behind the search pill. Concurrently, an uncoordinated hero scroll listener detected micro-scrolls on search input focus and prematurely collapsed the search input.
+
+⇒ **Calculate and broadcast downstream sticky offsets atomically via CSS variables (`--row3-sticky-top`, `--row4-sticky-top`), and strictly gate passive scroll-collapse listeners behind header merge state (`!$isHeaderMerged`).**
+⭐ **The tell:** Sticky category titles colliding with expanded search bars on mobile, or search inputs instantly collapsing on focus because an inactive hero scroll listener fired.
+
+### CONTEXT-LOCAL DELIVERY HAT SWITCHERS MUST ENFORCE SINGLE-TOKEN PAYLOAD ATOMICITY
+**2026-09-18 (T54).** Supporting multi-project delivery roles (`role@project`) alongside global administrative hats previously risked creating split session state (a disjoint `sb-active-project` cookie vs `sb-active-role`), leading to desynchronization when exiting hats or switching projects.
+
+Embedding `projectId`, `projectTitle`, `projectRoleId`, `projectRoleName`, and `projectRoleSlug` directly inside the signed `ActiveRolePayload` (`sb-active-role`) guarantees atomic role and project transitions in a single cryptographically signed cookie. Furthermore, keeping project hat switching context-local within the portal (`redirectTo = "/"`) avoids unnecessary cross-domain SSO dances required only for global application jumps (e.g. `cp.w0m.xyz` ↔ `webomage.com`).
+
+⇒ **Embed hierarchical resource scope directly within the signed role token payload, and keep resource-scoped hat switches context-local to the active portal.**
+⭐ **The tell:** Introducing disjoint cookies (`sb-active-role` and `sb-active-project`) that can drift out of sync on partial failure or reset.
+
+---
+
+## 7. Performance & Edge Integration
+
+### DEFER AUXILIARY AND DIAGNOSTIC FLOATING WIDGETS WITH client:idle TO PROTECT LCP AND TTI
+**2026-09-12 (T217, delivery/artemioquierocomer.mx).** Global floating bug report widgets (`BugReportWidget.svelte`) mounted with `client:load` forced immediate bundle evaluation and event listener registration during initial page load, degrading Largest Contentful Paint (LCP) and Time to Interactive (TTI).
+
+⇒ **Hydrate auxiliary diagnostic and floating support widgets with `client:idle` (e.g. `<BugReportWidget client:idle />`).** This defers script execution until the main browser thread is idle, ensuring zero impact on initial storefront rendering or Core Web Vitals.
+⭐ **The tell:** Mounting non-critical administrative, feedback, or diagnostic islands with `client:load` on high-traffic storefront layouts.
+
+### ZERO-DEPENDENCY CANONICAL MANIFEST FOR CROSS-RUNTIME SHARING (DENO EDGE + BROWSER)
+**2026-09-17 (T21).** Unifying LLM tool declarations across client-side WebMCP and server-side Supabase Edge Functions (`chat-core.ts`) required a single source of truth without runtime import divergences.
+
+Node/browser modules that import bundler-specific utilities or Node globals fail to resolve or typecheck in Deno edge functions when symlinked. Keeping `manifest.ts` pure zero-dependency TypeScript with explicit schema typing allows direct symlink importing by Deno (`supabase/functions/_shared/tool-manifest.ts`) and Node/Vite packages simultaneously, preventing schema drift while passing both `deno-check` and monorepo `typecheck`.
+
+⇒ **Declare cross-runtime tool contracts and schemas in pure, zero-dependency modules that rely only on standard TypeScript types.**
+⭐ **The tell:** Duplicating tool parameter schemas between edge functions and client packages because an import map or bundler plugin fails in Deno.
+
+### LOCAL INFERENCE RUNTIMES REQUIRE STRICT CONTEXT BOUNDING TO PREVENT METAL THREADGROUP CRASHES
+**2026-09-17 (T153 / Local Gemma 4 on Apple Silicon oMLX).** Routing Claude Code directly to local `gemma-4-e4b-it-4bit` on oMLX inside a monorepo workspace loaded `CLAUDE.md`, `AGENTS.md`, and 112 skills, producing a 19,666-token prompt. In oMLX, TurboQuant's KV-cache quantization kernel requested a threadgroup size of 1024, violating Apple Silicon Metal's limit (`Thread group size (1024) is greater than the maximum allowed threads per threadgroup (640)`). This locked the Metal command queue with `kIOGPUCommandBufferCallbackErrorSubmissionsIgnored`, causing all subsequent requests to fast-fail in ~300ms and return empty text `[{"type":"text","text":""}]`, which appeared in Orca as an instant `* Cooked for 1s · done`.
+
+⇒ **Local small-model inference (4B–12B) must enforce a lean prompt budget (< 2,000–3,000 tokens) using isolated config directories (`CLAUDE_CONFIG_DIR`), strict MCP server limits (`--strict-mcp-config`), and skill pruning.** Never point an unconstrained cloud-agent profile at a local GPU inference daemon.
+⭐ **The tell:** An interactive agent session responding instantly with `* Cooked for 1s · done` or empty cogitation, coinciding with Metal buffer submissions being ignored in `omlx.log`.
+⚠️ Cloud models (Sonnet 3.7) easily handle 200k tokens via prompt caching; context bounding applies specifically when routing to local hardware.
+
+### UNIFIED MEMORY CEILINGS AND METAL PAGING DEATH SPIRAL IN LOCAL LLM INFERENCE
+**2026-09-18 (T153 / Local Gemma 4 on Apple Silicon oMLX).** Running multi-model local inference on a 32 GB unified memory Mac without strict allocation ceilings allowed oMLX 0.5.3 to balloon to 22 GB resident RAM + 12 GB compressed memory. This pushed the operating system into 20.6 GB of SSD disk swap (`vm.swapusage`) and triggered over 67 million swapouts. On Apple Silicon, unified memory bandwidth dropped from 200 GB/s to disk paging speeds (~100 MB/s), causing generation throughput to collapse from 30 tok/s down to 0.02 tok/s (generating 16 tokens required 2,343 seconds / 39 minutes).
+
+⇒ **Local inference daemons must enforce an explicit physical RAM ceiling (`memory_guard_tier: safe`, `memory_guard_custom_ceiling_gb: 10.0`) and prohibit concurrent loading of unquantized auxiliary models.** Weights and active KV caches must remain 100% resident in physical RAM; paging even 1 GB of model weights to swap induces an unrecoverable latency death spiral.
+⭐ **The tell:** `omlx-server` CPU dropping to near 0% while load average surges above 20 and `vm.swapusage` shows tens of gigabytes of encrypted disk swap.
+
+### THINKING BUDGET SUPPRESSION FOR LOW-LATENCY LOCAL TOOL-CALLING AGENTS
+**2026-09-18 (T153 / Local Gemma 4 in Orca Desktop).** In multi-turn coding loops (`/w0m-tasks`), local Gemma 4 hung for 19m 13s in Orca emitting `* Boondoggling... (19m 13s · 594 tokens · deep in thought)`. Small instruction-tuned models with thinking enabled allocate large default thinking budgets before generating tool calls or responses. Under local inference speeds (10–30 tok/s), spending 500–1,000 tokens on hidden cogitation consumes 30–60 seconds per turn; when combined with memory paging, it locks the UI for tens of minutes.
+
+⇒ **Explicitly disable thinking budgets for local tool-calling models (`thinking_budget_enabled: false`, `thinking_budget_tokens: 0`, `enable_thinking: false` in `model_settings.json`).** Coding and tool routing on 4B–12B models must emit tool calls and structured outputs immediately without multi-turn latent chain-of-thought delays.
+⭐ **The tell:** An agent UI hanging on `Boondoggling... (Xm Ys · 500+ tokens · deep in thought)` before any bash or editing tool execution begins.
+
+### DUAL-PORT PROXY TOPOLOGY FOR DISJOINT LOCAL AND CLOUD AGENT UPSTREAMS
+**2026-09-18 (T153 / Headroom + Claude Code + oMLX).** Headroom proxies bind a single static upstream target URL per protocol per process instance (`api_targets.anthropic`). Attempting to share port 8787 between Cloud Claude Code (Anthropic API with OAuth) and Local Claude Code (oMLX with local dummy key) forced an impossible mutually exclusive configuration: repointing 8787 to oMLX broke Cloud Claude, while leaving 8787 pointing to Anthropic broke Local Gemma.
+
+⇒ **Partition disparate agent upstreams across dedicated, persistent daemon ports via LaunchAgents: port 8787 for Cloud (`sh.brew.headroom` → Anthropic) and port 8788 for Local (`sh.brew.headroom-local` → oMLX:8888).** Both daemons operate simultaneously without cross-talk, enabling instant switching between cloud and offline local development.
+⭐ **The tell:** Local agents receiving 401 Unauthorized from Anthropic Cloud when attempting to talk to local inference, or cloud agents receiving local model errors when proxy targets are manually toggled in place.
+
+### HEADROOM TARGET INJECTION ROUTING TRAP AND CONTEXT LIMIT COLLISION
+**2026-09-18 (Headroom Proxy + Cloud Claude + oMLX).** In Headroom's unified handler (`headroom/proxy/handlers/anthropic.py`), defining `OMLX_TARGET_API_URL` causes any request whose model name does not strictly begin with cloud prefixes (`claude-3`, `claude-opus`, `claude-haiku`, `claude-sonnet-4`, `claude-2`) to evaluate `not is_cloud` as `True` and divert the connection to local oMLX (`http://127.0.0.1:8888`). When standard Claude Code sends shorthand `"model": "sonnet"` through port 8787, the cloud session is silently routed into local hardware. When user context (such as pasted images or multi-file prompts) exceeds the local engine's 32,768 hardware context limit, oMLX rejects the turn with `API Error: 400 Prompt too long: 45396 tokens exceeds max context window of 32768 tokens`, baffling users who assume they are talking to Anthropic Cloud's 200k window.
+
+⇒ **Never inject `OMLX_TARGET_API_URL` or fallback routing logic into the primary cloud proxy daemon.** Cloud proxies must remain strictly dedicated to upstream cloud endpoints with zero local interception. Keep local proxies on dedicated ports (8788) with explicit upstream parameters (`--anthropic-api-url http://127.0.0.1:8888`).
+⭐ **The tell:** Cloud Claude sessions failing with `API Error: 400 Prompt too long: ... exceeds max context window of 32768 tokens` even though Anthropic Cloud supports 200,000 tokens.
+
+### MODEL-AGNOSTIC LOCAL AGENT IDENTITY (CLAUDE-OMLX) FOR SEAMLESS WEIGHT SWAPPING
+**2026-09-18 (oMLX + Claude Code Wrappers).** Naming local Claude configurations, CLI flags, and settings after specific ephemeral model checkpoints (e.g. `claude-sonnet-5`, `gemma4`) tightly couples client scripts, launch wrappers, and desktop IDE tabs to fixed model weights. When Gemma 4 proved memory-bound and was replaced by Qwen 2.5 Coder 7B (54 tok/s, 4.17 GB RAM), all wrapper scripts and settings files risked requiring synchronized renaming, causing confusion with Claude's official Sonnet naming.
+
+⇒ **Standardize local agent identity on a universal alias (`claude-omlx`) across all configuration surfaces (`~/.openclaude/settings.json`, wrapper scripts, desktop tabs).** In the local inference server (`oMLX`), map `model_alias: "claude-omlx"` to whichever underlying weights are active. Swapping between 7B, 12B, MoE, or vision checkpoints requires only changing the backend alias, while all developer tooling remains stable.
+⭐ **The tell:** Hardcoded model names like `claude-sonnet-5` in local wrapper scripts causing confusion with cloud Sonnet tiers and requiring multi-file rewrites when testing new quantized models.
+
+### DISJOINT CLIENT REMEDIATION: NEVER BULK-MIGRATE LEGACY SUPABASE IN BROWSER SVELTE RUNTIMES
+**2026-09-21 (T413 / Build hints analyzer & automated remediation).** TypeScript deprecation `ts(6385)` flags legacy `import { supabase }` across server pages (`.astro`, `.ts`) and client components (`.svelte`). While server-side endpoints require explicit `staffAdminClient` or `adminClient()`, replacing `supabase` with `staffAdminClient` inside `.svelte` components will throw at runtime in the browser (`adminClient() called in the browser. The service-role key must never be bundled — use userClient(accessToken)`). Automated codemods must guard by file extension: server routes (`.astro`, `.ts`) receive `staffAdminClient`/`adminClient()`, while browser Svelte components continue using `userClient()` or component props.
+
+⇒ **Codemods targeting privilege refactors must partition by runtime execution boundary.** Guard against modifying `.svelte` client files with privileged server-side clients.
+⭐ **The tell:** A build-clean refactor that introduces browser runtime crashes on mount due to `adminClient()` invocation in the browser bundle.
+
+### MANDATORY UPSTREAM PRIOR-ART AND ISSUE/PR DISCOVERY BEFORE CREATION
+**2026-09-21 (Open Source / Upstream Contributions & w0m-prs).** When submitting upstream PR #2085 to `oraios/serena` for Astro language server support, maintainers noted two earlier unfinished Astro PRs (#886 from Feb 2026 and #1669 from July 2026) that had used dual-server TypeScript companion architectures. While PR #2085 was intentionally designed as a lean, single-process server (and the earlier PRs had stalled on an unmerged base class #829, merge conflicts, and unsigned CLAs), the lack of pre-flight search meant the initial PR description failed to cite prior art or proactively justify the architectural departure, leading to review friction. Conversely, on `stablyai/orca`, performing pre-flight searches for mobile orientation and theme bugs surfaced active PRs #21191 and #19599, preventing redundant PR creation and enabling targeted, high-value validation and patches.
+
+⇒ **Always search open AND closed issues and pull requests (`gh pr list --state all --search "<keywords>"`, `gh issue list --state all --search "<keywords>"`, or `just prs search`) before opening an upstream PR or issue.**
+- **If an active PR exists**: Do not open a duplicate PR. Test it, validate behavior, and contribute constructive review findings or targeted patches directly.
+- **If stalled/closed PRs exist**: Inspect why they stalled (unmerged dependencies, CLA blocks, conflicts, architecture). Citing them in the PR body is mandatory: explain why they are superseded, contrast architectural trade-offs upfront (e.g. single vs. companion server), and address historical design concerns preemptively.
+- **If an open issue exists**: Link it in the PR description (`Fixes #123` / `Addresses #123`) and announce the PR on the issue.
+⭐ **The tell:** A maintainer asking in review: *"There are already two other PRs for X (#886, #1669) using architecture Y, why does this PR do Z?"*
+

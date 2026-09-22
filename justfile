@@ -48,33 +48,37 @@ worktree-agent-remove id *args:
 worktree-agent-list:
     @python3 scripts/worktree_agent.py list
 
-# ── GitHub PR Tool (T345 / T369 / T377) ─────────────────────────────────────────
+# ── Estate Health Audit (T96 / T414) ─────────────────────────────────────────
+audit *args:
+    @python3 scripts/w0m_audit.py {{ args }}
+
+# ── GitHub PR Tool (T345 / T369 / T377 / T414) ───────────────────────────────
 prs *args:
-    @just --justfile wom7web/justfile prs {{ args }}
+    @python3 scripts/w0m_prs.py {{ args }}
 
 prs-open *args:
-    @just --justfile wom7web/justfile prs-open {{ args }}
+    @python3 scripts/w0m_prs.py table --preset wom7pr {{ args }}
 
 forks *args:
-    @just --justfile wom7web/justfile forks {{ args }}
+    @python3 scripts/w0m_prs.py forks {{ args }}
 
 forks-check:
-    @just --justfile wom7web/justfile forks-check
+    @python3 scripts/w0m_prs.py forks --strict
 
 forks-fetch *args:
-    @just --justfile wom7web/justfile forks-fetch {{ args }}
+    @python3 scripts/w0m_prs.py fetch {{ args }}
 
 forks-info repo *args:
-    @just --justfile wom7web/justfile forks-info {{ repo }} {{ args }}
+    @python3 scripts/w0m_prs.py info {{ repo }} {{ args }}
 
 forks-update *args:
-    @just --justfile wom7web/justfile forks-update {{ args }}
+    @python3 scripts/w0m_prs.py update {{ args }}
 
 forks-sync *args:
-    @just --justfile wom7web/justfile forks-sync {{ args }}
+    @python3 scripts/w0m_prs.py update {{ args }}
 
 prs-test:
-    @just --justfile wom7web/justfile prs-test
+    @python3 wom7web/project/scripts/tests/test_w0m_prs.py
 
 rename-audit *args:
     @just --justfile wom7web/justfile rename-audit {{ args }}
@@ -91,26 +95,26 @@ decommission-check-test:
 default-test:
     @just --justfile wom7web/justfile default-test
 
-# ── Ticket Duplication Checks (T403) ──────────────────────────────────────────
+# ── Ticket Duplication Checks (T403 / T414) ──────────────────────────────────
 ticket-dups *args:
-    @just --justfile wom7web/justfile ticket-dups {{ args }}
+    @python3 scripts/ticket_duplicate_check.py {{ args }}
 
 ticket-dups-test:
-    @just --justfile wom7web/justfile ticket-dups-test
+    @python3 wom7web/project/scripts/tests/test_ticket_duplicate_check.py
 
-# ── Automated Ticket Recycling (T397) ─────────────────────────────────────────
+# ── Automated Ticket Recycling (T397 / T414) ─────────────────────────────────
 ticket-recycle *args:
-    @just --justfile wom7web/justfile ticket-recycle {{ args }}
+    @python3 scripts/ticket_recycle.py {{ args }}
 
 ticket-recycle-test:
-    @just --justfile wom7web/justfile ticket-recycle-test
+    @python3 wom7web/project/scripts/tests/test_ticket_recycle.py
 
-# ── Zero-NPX Invariant Audit (T398) ──────────────────────────────────────────
+# ── Zero-NPX Invariant Audit (T398 / T414) ───────────────────────────────────
 npx-audit *args:
-    @just --justfile wom7web/justfile npx-audit {{ args }}
+    @python3 scripts/npx_audit.py {{ args }}
 
 npx-audit-test:
-    @just --justfile wom7web/justfile npx-audit-test
+    @python3 wom7web/project/scripts/tests/test_npx_audit.py
 
 # ── Authorization Admin Client Ratchet (T202 / T327) ──────────────────────────
 authz-admin-client *args:
@@ -119,21 +123,39 @@ authz-admin-client *args:
 authz-admin-client-test:
     @just --justfile wom7web/justfile authz-admin-client-test
 
-# ── macOS Host Security Posture (T233) ─────────────────────────────────────────
+# ── macOS Host Security Posture (T233 / T414) ─────────────────────────────────
 host-posture *args:
-    @just --justfile wom7web/justfile host-posture {{ args }}
+    @python3 scripts/host_posture.py {{ args }}
+
+host-posture-check:
+    @python3 scripts/host_posture.py --enforce
 
 host-posture-test:
-    @just --justfile wom7web/justfile host-posture-test
+    @python3 wom7web/project/scripts/tests/test_host_posture.py
 
-
-
-# ── Preflight & SDLC Doctor ──────────────────────────────────────────────────
+# ── Preflight & SDLC Doctor (T414) ───────────────────────────────────────────
 preflight *args:
     @just --justfile wom7web/justfile preflight {{ args }}
 
 sdlc-doctor *args:
-    @just --justfile wom7web/justfile sdlc-doctor {{ args }}
+    @python3 scripts/sdlc_doctor.py {{ args }}
+
+# ── SDLC Machinery & Gates (T414) ────────────────────────────────────────────
+gate ticket status note="":
+    @python3 scripts/gate_advance.py {{ ticket }} --status {{ status }} {{ if note == "" { "" } else { "--note '" + note + "'" } }}
+
+ticket-paths ticket:
+    @python3 scripts/check_ticket_paths.py {{ ticket }}
+
+ticket-paths-test:
+    @python3 wom7api/scripts/tests/test_check_ticket_paths.py
+
+# ── Tech Debt Register (T228 / T414) ─────────────────────────────────────────
+debt-check *args:
+    @python3 scripts/debt_register_check.py {{ args }}
+
+debt-check-test:
+    @python3 wom7web/project/scripts/tests/test_debt_register_check.py
 
 # Forwarding target for running any arbitrary wom7web recipe from workspace root
 do recipe *args:
@@ -211,8 +233,12 @@ state-rotate *args:
 state-doctor-test:
     @python3 wom7web/project/scripts/tests/test_state_doctor.py
 
+# ── Lessons Register (T232 / T414) ───────────────────────────────────────────
 lessons *args:
-    @just --justfile wom7web/justfile lessons {{ args }}
+    @python3 scripts/lessons_query.py {{ args }}
+
+lessons-test:
+    @python3 wom7web/project/scripts/tests/test_lessons_query.py
 
 # ── Skills Platform (Level 1 & Level 2) ──────────────────────────────────────
 skills-sync *args:
@@ -320,13 +346,13 @@ omlx-stop:
 omlx-restart:
     @just --justfile wom7web/justfile omlx-restart
 
-# ── Version Management (T391) ────────────────────────────────────────────────
+# ── Version Management (T391 / T414) ─────────────────────────────────────────
 version-sync *args:
-    @just --justfile wom7web/justfile version-sync {{ args }}
+    @python3 scripts/sync_manifest_versions.py {{ args }}
 
 version-check *args:
-    @just --justfile wom7web/justfile version-check {{ args }}
+    @python3 scripts/sync_manifest_versions.py --check {{ args }}
 
 sync-manifest-versions-test:
-    @just --justfile wom7web/justfile sync-manifest-versions-test
+    @python3 wom7web/project/scripts/tests/test_sync_manifest_versions.py
 

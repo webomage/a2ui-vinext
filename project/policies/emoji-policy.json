@@ -69,10 +69,10 @@
       "TASKS.md",
       "CLAUDE.md",
       "AGENTS.md",
-      "CONTRIBUTING.md",
-      "README.md",
-      "docs/PROJECT-TOOLING.md",
-      "openspec/SPEC-AUTHORING-STANDARD.md"
+      "wom7web/CONTRIBUTING.md",
+      "wom7web/README.md",
+      "wom7web/docs/PROJECT-TOOLING.md",
+      "wom7web/openspec/SPEC-AUTHORING-STANDARD.md"
     ]
   },
   "protocol": {
@@ -88,42 +88,42 @@
     ],
     "couplings": [
       {
-        "parser": "project/scripts/run_suites.py",
+        "parser": "wom7web/project/scripts/run_suites.py",
         "reads": "✅❌ℹ✓✗×",
         "why": "counts per-probe pass/fail from suite stdout -- the whole test aggregate depends on it. FOUR dialects, not one: CHECK reads the first pair, TICK reads the second trio (version-test, deps-check, mmd-validate, skills-catalogue-test), NODE_TEST reads the info glyph for node:test output (skills, deno-test). The hand-written declaration named only the first pair, so the other four glyphs sat in the DECORATIVE bucket -- i.e. the bucket something eventually cleans up, stopping four suites from counting."
       },
       {
-        "parser": "project/scripts/tasks_bounds.py",
+        "parser": "wom7web/project/scripts/tasks_bounds.py",
         "reads": "✅🔵⚪🟡🟢💤",
         "why": "STATUS_GLYPH -- the TASKS.md row status IS the glyph"
       },
       {
-        "parser": "project/scripts/deploy_logged.py",
+        "parser": "wom7web/project/scripts/deploy_logged.py",
         "reads": "🔑✅❌📸🔍⏳▶",
         "why": "STEP regex segments the deploy log into steps"
       },
       {
-        "parser": "project/scripts/w0m_audit.py",
+        "parser": "scripts/w0m_audit.py",
         "reads": "✅❌✗⚠️",
         "why": "summarises a probe by its leading marker, over subprocess stdout+stderr. Reads the cross glyph and warning indicator as well as the pair."
       },
       {
-        "parser": "project/scripts/authz_bucket_gate_test.py",
+        "parser": "wom7web/project/scripts/authz_bucket_gate_test.py",
         "reads": "🔴🟡",
         "why": "counts findings by severity marker"
       },
       {
-        "parser": "project/scripts/authz_grant_gate_test.py",
+        "parser": "wom7web/project/scripts/authz_grant_gate_test.py",
         "reads": "🔴🟡",
         "why": "counts findings by severity marker"
       },
       {
-        "parser": "project/scripts/debt_register_check.py",
+        "parser": "scripts/debt_register_check.py",
         "reads": "🔻✅",
         "why": "RESOLVED matches `^\\s*(?:<down>\\s*)?<check>\\s*\\*\\*(RESOLVED|PAID DOWN|FIXED AND DELETED)` over TECH-DEBT.md rows. The down-arrow is OPTIONAL in the pattern, so losing it degrades quietly rather than failing -- a resolved row simply stops being recognised as resolved."
       },
       {
-        "parser": "project/scripts/state_doctor.py",
+        "parser": "scripts/state_doctor.py",
         "reads": "⭐",
         "why": "PICKUP_RE matches `^#{2,3} ⭐ PICK UP HERE` — the handoff marker IS the glyph, so state rotation stops finding the current block without it. Found 2026-08-22 while writing a handoff, AFTER the first six were declared: the coupling list is discovered, not complete."
       }
@@ -191,11 +191,12 @@
       "2026-09-17 -- md_headings_estate 412 -> 411. Lowered to hold the ground.",
       "2026-09-17 -- md_headings_estate 411 -> 401. Lowered to hold ground taken.",
       "2026-09-18 -- md_headings_estate 401 -> 349. CORPUS CORRECTED: excluded vendored/third-party trees `_ext`, `_in`, and `ext` (aligned with ignore-policy.json vendored prefixes) as read-only per owner directive.",
-      "2026-09-20 (T208) -- md_headings_estate 349 -> 345. Lowered to hold ground taken."
+      "2026-09-20 (T208) -- md_headings_estate 349 -> 345. Lowered to hold ground taken.",
+      "2026-09-21 (T414) -- md_headings_estate 345 -> 320. Lowered to hold ground taken."
     ],
     "zones": {
       "md_headings_estate": {
-        "baseline": 345,
+        "baseline": 320,
         "what": "DECORATIVE (non-protocol) emoji in markdown headings, whole estate, AUTHORED files only -- see the dated move of 2026-08-23 for why this is not 3012"
       },
       "script_output": {
