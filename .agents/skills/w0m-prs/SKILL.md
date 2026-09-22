@@ -2,7 +2,7 @@
 name: w0m-prs
 description: GitHub PR discovery, health audit, background polling, and visual reporting tool for w0m and open-source estate. Use when tracking upstream open-source PRs, auditing review decisions and mergeability, monitoring background status updates, or generating publication-grade Markdown reports with validated Mermaid charts.
 metadata:
-  version: "2026.09.20-1789915126"
+  version: "2026.09.21-1790048274"
 ---
 
 # w0m-prs
@@ -59,8 +59,9 @@ Generates comprehensive Markdown portfolio reports embedding three compliant Mer
 just prs report --author casualuser --out docs/reports/github_prs_report.md
 ```
 
-### 5. Fresh Status Table (`just prs-open` / T369)
-Instantly query, audit, and display an aligned terminal or Markdown table of active PRs across all managed `wom7pr` dependencies (`jundot/omlx`, `Blaizzy/mlx-vlm`, `stablyai/orca`, `openai/tart-guest-agent`, `cirruslabs/tart`, `bulwarkid/virtual-fido`):
+### 5. Fresh Status Table (`just prs-open` / T369 / T417)
+Instantly query, audit, and display an aligned terminal or Markdown table of active PRs across all managed `wom7pr` dependencies (`jundot/omlx`, `Blaizzy/mlx-vlm`, `stablyai/orca`, `openai/tart-guest-agent`, `cirruslabs/tart`, `bulwarkid/virtual-fido`, `headroomlabs-ai/headroom`, `oraios/serena`).
+Includes active feedback inspection (`Feedback` column) displaying reviewer questions (`❓`), suggestions (`💡`), comment volume (`💬`), and reviewer attribution (`opcode81`, `AmirF194`).
 
 ```bash
 # Print fresh report table for active PRs in wom7pr dependencies
@@ -112,6 +113,10 @@ just forks-sync       # alias to forks-update
 ```
 
 ## Agent Best Practices
+- **Mandatory upstream pre-flight (prior art & discovery)**: Always search open AND closed PRs and issues (`gh pr list --state all --search "<keywords>"`, `gh issue list --state all --search "<keywords>"`, or `just prs search`) before opening an upstream PR or issue.
+  - If an active PR exists, **do not open a duplicate PR** (Zero Redundant PRs principle). Test it, validate behavior, and contribute constructive QA or targeted patches directly on that PR.
+  - If stalled/closed PRs exist, inspect why they stalled (unmerged dependency abstractions, CLA blocks, merge conflicts, architecture). Citing them in the PR body is mandatory: state what is superseded, contrast architectural trade-offs upfront (e.g. single vs. companion server), and preemptively address maintainer design concerns.
+  - If an open issue exists, link it in the PR description (`Fixes #123` / `Addresses #123`) and notify the issue thread.
 - **Verify upstream health**: Always run `just prs-open` or `just prs audit` before marking tickets depending on upstream PRs as complete.
 - **Audit fork alignment**: Regularly run `just forks` or `just forks-check` to confirm local feature branches in `wom7pr/` are not lagging behind `upstream/main`.
 - **Check for conflicts**: Run `just prs-open` to proactively catch merge conflicts across upstream contributions.
