@@ -56,25 +56,20 @@ WEB_ROOT = WORKSPACE_ROOT / "wom7web" if (WORKSPACE_ROOT / "wom7web").is_dir() e
 
 
 def resolve_tickets_dir(search_root: Path | None = None) -> Path:
-    """Resolve the canonical tickets directory across root .tasks and project/tickets."""
+    """Resolve the canonical tickets directory (.tasks/). Fail fast if absent (AgDR-0025)."""
     if "W0M_TASKS_DIR" in os.environ:
         p = Path(os.environ["W0M_TASKS_DIR"])
         if p.is_dir():
             return p
+        sys.exit(f"❌ W0M_TASKS_DIR={p} is not a valid directory")
     if search_root:
         candidate = search_root / ".tasks"
         if candidate.is_dir():
             return candidate
-        candidate_proj = search_root / "project" / "tickets"
-        if candidate_proj.is_dir():
-            return candidate_proj
     root_tasks = WORKSPACE_ROOT / ".tasks"
     if root_tasks.is_dir():
         return root_tasks
-    local_tasks = WEB_ROOT / ".tasks"
-    if local_tasks.is_dir():
-        return local_tasks
-    return WEB_ROOT / "project" / "tickets"
+    sys.exit(f"❌ Canonical tickets directory not found at {root_tasks} (AgDR-0025: zero silent fallbacks)")
 
 
 TICKETS = resolve_tickets_dir()
@@ -627,7 +622,7 @@ def terminalise(block: str) -> str:
                 except ValueError:
                     p = pathlib.Path(target)
                     if p.name.startswith("T") and p.name.endswith(".md"):
-                        rel = f"project/tickets/{p.name}"
+                        rel = f".tasks/{p.name}"
                     else:
                         try:
                             rel = str(p.relative_to(MONO_ROOT))
@@ -877,7 +872,7 @@ def main() -> int:
         # AC7 discipline: an empty corpus must FAIL, not print a tidy empty list. A queue tool that
         # reports "no hot tickets ✓" over zero parsed files is the vacuous pass this estate keeps
         # shipping.
-        print("❌ parsed 0 tickets from project/tickets/ — refusing to report a ranking over an "
+        print("❌ parsed 0 tickets from .tasks/ — refusing to report a ranking over an "
               "empty set (has the directory or frontmatter format moved?)", file=sys.stderr)
         return 1
 

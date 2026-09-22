@@ -192,11 +192,12 @@
       "2026-09-17 -- md_headings_estate 411 -> 401. Lowered to hold ground taken.",
       "2026-09-18 -- md_headings_estate 401 -> 349. CORPUS CORRECTED: excluded vendored/third-party trees `_ext`, `_in`, and `ext` (aligned with ignore-policy.json vendored prefixes) as read-only per owner directive.",
       "2026-09-20 (T208) -- md_headings_estate 349 -> 345. Lowered to hold ground taken.",
-      "2026-09-21 (T414) -- md_headings_estate 345 -> 320. Lowered to hold ground taken."
+      "2026-09-21 (T414) -- md_headings_estate 345 -> 320. Lowered to hold ground taken.",
+      "2026-09-22 (T418) -- md_headings_estate 320 -> 235. WORK DONE: retired wom7web/project/tickets mirror (413 tickets removed). Lowered to hold ground taken."
     ],
     "zones": {
       "md_headings_estate": {
-        "baseline": 320,
+        "baseline": 235,
         "what": "DECORATIVE (non-protocol) emoji in markdown headings, whole estate, AUTHORED files only -- see the dated move of 2026-08-23 for why this is not 3012"
       },
       "script_output": {

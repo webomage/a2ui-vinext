@@ -84,8 +84,12 @@ def repos() -> list[Path]:
 
     out: list[Path] = []
     absent: list[Path] = []
+    seen: set[Path] = set()
     for dirname in declared.values():
         p = WOM / dirname
+        if p in seen:
+            continue
+        seen.add(p)
         (out if (p / ".git").exists() else absent).append(p)
     if absent:
         names = ", ".join(p.name for p in absent)
@@ -136,7 +140,17 @@ def main() -> int:
     # name yields `wom7mlx/Cargo.toml`, which is not a path that exists on disk.
     reldir = {r.name: str(r.relative_to(WOM)) for r in repo_paths}
     by_basename: dict[str, list[str]] = {}
+    if (WOM / ".git").exists():
+        root_files = tracked(WOM)
+        index["root"] = root_files
+        roots["root"] = WOM
+        reldir["root"] = "."
+        for f in root_files:
+            by_basename.setdefault(f.rsplit("/", 1)[-1], []).append(f)
+
     for repo, files in index.items():
+        if repo == "root":
+            continue
         for f in files:
             by_basename.setdefault(f.rsplit("/", 1)[-1], []).append(f"{reldir[repo]}/{f}")
 
@@ -194,7 +208,7 @@ def main() -> int:
 
     if not quiet:
         print(f"🔎 {tid}: {len(candidates)} path(s) referenced — {len(ok)} resolve "
-              f"({len(index)} repo(s) searched: {', '.join(sorted(index))})")
+              f"({len(repo_paths)} repo(s) searched: {', '.join(sorted(r.name for r in repo_paths))})")
     for c, matches in drift:
         # A basename like `spec.md` exists everywhere; listing 30 candidates is noise, not a lead.
         if len(matches) > 3:

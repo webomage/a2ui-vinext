@@ -40,7 +40,9 @@ WEB = ROOT / "wom7web" if (ROOT / "wom7web").is_dir() else ROOT
 API = ROOT / "wom7api"
 FUNC = ROOT / "wom7func"
 SKILLS = ROOT / "wom7skills"
-TICKETS_DIR = ROOT / ".tasks" if (ROOT / ".tasks").is_dir() else WEB / "project" / "tickets"
+TICKETS_DIR = ROOT / ".tasks"
+if not TICKETS_DIR.is_dir():
+    sys.exit(f"❌ Canonical tickets directory not found at {TICKETS_DIR} (AgDR-0025: zero silent fallbacks)")
 TASKS_FILE = ROOT / "TASKS.md" if (ROOT / "TASKS.md").is_file() else WEB / "TASKS.md"
 TICKETS_JSON = WEB / "project" / "tickets.json"
 SDLC_JSON = ROOT / ".w0m" / "sdlc.json" if (ROOT / ".w0m" / "sdlc.json").is_file() else WEB / ".w0m" / "sdlc.json"
@@ -111,8 +113,6 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
 
 def load_ticket_file(ticket_id: str) -> tuple[dict[str, Any], str, Path | None]:
     path = TICKETS_DIR / f"{ticket_id}.md"
-    if not path.exists() and (WEB / "project" / "tickets" / f"{ticket_id}.md").exists():
-        path = WEB / "project" / "tickets" / f"{ticket_id}.md"
     if not path.exists():
         return {}, "", None
     content = path.read_text(encoding="utf-8", errors="replace")
@@ -208,12 +208,8 @@ def load_gh_issue(gh_issue_num: int | None, offline: bool = False) -> dict[str, 
 
 
 def check_git_working_tree(ticket_id: str) -> list[str]:
-    if (ROOT / ".tasks").is_dir():
-        files_to_check = [f".tasks/{ticket_id}.md"]
-        cwd = ROOT
-    else:
-        files_to_check = [f"project/tickets/{ticket_id}.md"]
-        cwd = WEB
+    files_to_check = [f".tasks/{ticket_id}.md"]
+    cwd = ROOT
     uncommitted: list[str] = []
     try:
         res = subprocess.run(

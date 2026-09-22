@@ -24,11 +24,15 @@ ticket-audit *args:
 ticket-audit-test:
     @python3 wom7web/project/scripts/tests/test_ticket_audit.py
 
+sync-tickets *args:
+    @python3 scripts/sync_github.py {{ args }}
+
+sync-tickets-test:
+    @python3 wom7web/project/scripts/tests/test_ticket_sync.py
+
 dod-check *args:
     @python3 scripts/dod_check.py {{ args }}
 
-sync-tickets *args:
-    @python3 scripts/sync_github.py {{ args }}
 
 # ── Estate Search (T406) ─────────────────────────────────────────────────────
 # Bounded multi-repo search with LC_ALL=C and --no-pager. Never silently empty.

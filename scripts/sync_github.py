@@ -92,7 +92,9 @@ OWNER = BOARD["owner"]
 PROJECT_TITLE = BOARD["title"]
 PROJECT_NUMBER = BOARD["number"]
 ROOT = WEB_ROOT
-TICKETS_DIR = WORKSPACE_ROOT / ".tasks" if (WORKSPACE_ROOT / ".tasks").is_dir() else ROOT / "project" / "tickets"
+TICKETS_DIR = WORKSPACE_ROOT / ".tasks"
+if not TICKETS_DIR.is_dir():
+    sys.exit(f"FATAL: Canonical tickets directory not found at {TICKETS_DIR} (AgDR-0025: zero silent fallbacks)")
 MANIFEST = ROOT / "project" / "tickets.json"
 INDEX = ROOT / "project" / "tickets-sync-index.json"
 
@@ -275,8 +277,8 @@ def build_body(ticket: dict, summary: str, meta: dict | None = None) -> str:
     cut = "\n\n> ⚠️ **Summary truncated at 4,000 characters.**" if m.get("truncated") else ""
     return (f'> ⚠️ **PARTIAL PROJECTION — not the ticket.** This issue carries the `## Summary` '
             f'section only. {ac}; status notes, decisions and history live in the source file.\n'
-            f'> **Source of truth:** [`project/tickets/{tid}.md`]'
-            f'({REPO_BLOB}/project/tickets/{tid}.md) — edit there and re-run the sync; '
+            f'> **Source of truth:** [`.tasks/{tid}.md`]'
+            f'({REPO_BLOB}/.tasks/{tid}.md) — edit there and re-run the sync; '
             f'hand-edits here are overwritten.{cut}\n\n'
             f'{summary}\n\n---\n'
             f'**Epic:** {ticket.get("epic") or "—"} · **Spec:** {ticket.get("spec") or "—"}\n'
@@ -503,7 +505,7 @@ def load_tickets() -> list[dict]:
             # tickets demonstrably disagreed with GitHub. The dry run caught it, exactly as that
             # comment says it did last time. ⇒ **A field is not wired until the LOADER carries it.**
             "closed_as": str(fm.get("closed_as", "")).strip(),
-            "file": f"project/tickets/{f.name}",
+            "file": f".tasks/{f.name}",
         })
     # Every field the schema publishes MUST exist in this projection, or that namespace silently
     # emits nothing. That is not hypothetical: `area:` was added to the schema and produced 0
