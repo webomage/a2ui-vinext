@@ -1025,4 +1025,13 @@ assert condition_met()
 - Configure `gpg.ssh.allowedSignersFile` locally so `git log --show-signature` verifies commits natively.
 ⭐ **The tell:** GitHub PRs displaying gray "Unverified" commit badges, or `git commit` failing with `gpg: signing failed: Inappropriate ioctl for device` in automated or agent shells.
 
+### VOICE AND ATTRIBUTION SEPARATION: NEVER USE "WE" ON PERSONAL OPEN-SOURCE REPOS
+**2026-09-22 (External PRs / Serena & Orca Contributions).** When interacting on upstream open-source repositories (PR descriptions, review comments, commit messages) authored under a personal GitHub account (`casualuser@gmail.com`), using collective or agency-style plural phrasing ("we fixed", "our implementation", "we would like to propose") sounds unnatural, corporate, and out-of-place to open-source maintainers. Conversely, internal w0m and client-facing estate work deliberately operates under the agency plural ("we").
+
+⇒ **Strictly separate voice and persona by repository boundary:**
+- **External open-source repositories (authored by `casualuser`):** NEVER use "we" or "our". Use objective, imperative phrasing for commits and code comments (`fix: clear readiness latch on window close`), and singular first-person ("I noticed", "I updated", "I ran tests") or neutral passive/constructive phrasing ("This change ensures...", "The latch prevents...") for PR bodies and review discussions.
+- **Internal estate / w0m / agency repositories:** Continue using "we" and "our" where acting on behalf of the agency, team, or collective architecture as established in internal records.
+⭐ **The tell:** A commit headline, PR description, or maintainer comment on an external repo starting with *"We updated the handler..."* or *"We would like to propose..."* from a personal GitHub handle.
+
+
 
