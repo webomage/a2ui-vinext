@@ -169,7 +169,7 @@ def _probe_version(name: str, meta: dict) -> str | None:
     entire job. A checker that dies on the condition it exists to report is not a checker.
     """
     import importlib.util
-    spec_path = CANONICAL / "project" / "scripts" / "tools_check.py"
+    spec_path = ROOT / "scripts" / "tools_check.py"
     if not spec_path.exists():
         return None
     spec = importlib.util.spec_from_file_location("w0m_tools_check", spec_path)
@@ -327,7 +327,7 @@ def check_stacks(problems: list[str], notes: list[str]) -> None:
     """T130: cross-reference the per-stack registry. Runs discovery's enforcement
     (every declared command role binds a real `just` recipe; drift blocks) so the
     preflight fails before a gate runs against a broken/stale stacks registry."""
-    discovery = CANONICAL / "project" / "scripts" / "discovery.py"
+    discovery = ROOT / "scripts" / "discovery.py"
     if not discovery.exists():
         return  # registry tooling not present in this project — nothing to check
     code, out = sh("python3", str(discovery), "--enforce", "--quiet")
@@ -346,7 +346,7 @@ def check_hygiene(problems: list[str], notes: list[str]) -> None:
     stops being read. Each check's registry entry carries its promotion trigger (`gates` ->
     `remeasure`); when a strand goes green, move it from this list into `problems`.
     """
-    hygiene = CANONICAL / "project" / "scripts" / "repo_hygiene.py"
+    hygiene = ROOT / "scripts" / "repo_hygiene.py"
     if not hygiene.exists():
         return
     for check in ("docs", "license", "secrets"):
