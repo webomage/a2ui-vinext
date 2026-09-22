@@ -941,6 +941,19 @@ Node/browser modules that import bundler-specific utilities or Node globals fail
 ⇒ **Codemods targeting privilege refactors must partition by runtime execution boundary.** Guard against modifying `.svelte` client files with privileged server-side clients.
 ⭐ **The tell:** A build-clean refactor that introduces browser runtime crashes on mount due to `adminClient()` invocation in the browser bundle.
 
+### ZERO SHADOW SYMLINKS AND CLEAN CUTOVER OVER BACKWARD-COMPATIBILITY SHIMS
+**2026-09-21 (T414 / AgDR-0025 — Central Registers and Estate Tooling Elevation).** When elevating canonical registers (`LESSONS.md`, `STATE.md`, `ROADMAP.md`, `TECH-DEBT.md`) or tooling from subprojects (`wom7web`, `wom7api`) to the workspace root (`@wom`), leaving legacy symlinks behind creates "shadow files" that defeat the single source of truth. Shadow symlinks cause duplicated search results, mask missing references, confuse git ignore checkers, and act as unobservable silent fallbacks. Similarly, writing fallback search ladders (`if (root / path).exists(): ... elif (web / path).exists(): ...`) keeps dead paths artificially alive and encourages permanent drift.
+
+⇒ **Enforce strict single-source-of-truth invariants: clean cutover over shims, zero shadow symlinks, and fail closed immediately if a canonical file is missing (AgDR-0025).**
+- When relocating an estate file to the root, delete the old file completely across all repos in the same commit.
+- Update 100% of callers, policy files, and configurations atomically to address the new canonical root path.
+- Subproject tools like `mypy` running inside member repos must resolve root-level Python scripts via explicit config (`mypy_path = ../scripts` in `mypy.ini`) rather than relying on local symlinks.
+⭐ **The tell:** A tool searching multiple legacy locations sequentially, or `git diff` / `grep` finding two identical files under different directory paths because a symlink was left in place "for backward compatibility".
+
+---
+
+## 8. Open Source & External PRs
+
 ### MANDATORY UPSTREAM PRIOR-ART AND ISSUE/PR DISCOVERY BEFORE CREATION
 **2026-09-21 (Open Source / Upstream Contributions & w0m-prs).** When submitting upstream PR #2085 to `oraios/serena` for Astro language server support, maintainers noted two earlier unfinished Astro PRs (#886 from Feb 2026 and #1669 from July 2026) that had used dual-server TypeScript companion architectures. While PR #2085 was intentionally designed as a lean, single-process server (and the earlier PRs had stalled on an unmerged base class #829, merge conflicts, and unsigned CLAs), the lack of pre-flight search meant the initial PR description failed to cite prior art or proactively justify the architectural departure, leading to review friction. Conversely, on `stablyai/orca`, performing pre-flight searches for mobile orientation and theme bugs surfaced active PRs #21191 and #19599, preventing redundant PR creation and enabling targeted, high-value validation and patches.
 
@@ -950,12 +963,66 @@ Node/browser modules that import bundler-specific utilities or Node globals fail
 - **If an open issue exists**: Link it in the PR description (`Fixes #123` / `Addresses #123`) and announce the PR on the issue.
 ⭐ **The tell:** A maintainer asking in review: *"There are already two other PRs for X (#886, #1669) using architecture Y, why does this PR do Z?"*
 
-### ZERO SHADOW SYMLINKS AND CLEAN CUTOVER OVER BACKWARD-COMPATIBILITY SHIMS
-**2026-09-21 (T414 / AgDR-0025 — Central Registers and Estate Tooling Elevation).** When elevating canonical registers (`LESSONS.md`, `STATE.md`, `ROADMAP.md`, `TECH-DEBT.md`) or tooling from subprojects (`wom7web`, `wom7api`) to the workspace root (`@wom`), leaving legacy symlinks behind creates "shadow files" that defeat the single source of truth. Shadow symlinks cause duplicated search results, mask missing references, confuse git ignore checkers, and act as unobservable silent fallbacks. Similarly, writing fallback search ladders (`if (root / path).exists(): ... elif (web / path).exists(): ...`) keeps dead paths artificially alive and encourages permanent drift.
+### NEVER CACHE TRANSIENT OR EMPTY INITIALIZATION RESPONSES IN LSP/INDEXING SUBSYSTEMS
+**2026-09-22 (Serena PR #2085 / SolidLanguageServer).** Language servers (Nextflow, Lean, Kotlin, Astro) defer AST parsing and full symbol resolution during startup. Calling `get_document_symbols` immediately upon document open returns an empty list `[]`. Persisting `[]` in the document symbols cache permanently poisoned future lookups: subsequent queries returned the cached empty list instead of querying the fully initialized server, breaking downstream callers and causing test flakiness.
 
-⇒ **Enforce strict single-source-of-truth invariants: clean cutover over shims, zero shadow symlinks, and fail closed immediately if a canonical file is missing (AgDR-0025).**
-- When relocating an estate file to the root, delete the old file completely across all repos in the same commit.
-- Update 100% of callers, policy files, and configurations atomically to address the new canonical root path.
-- Subproject tools like `mypy` running inside member repos must resolve root-level Python scripts via explicit config (`mypy_path = ../scripts` in `mypy.ini`) rather than relying on local symlinks.
-⭐ **The tell:** A tool searching multiple legacy locations sequentially, or `git diff` / `grep` finding two identical files under different directory paths because a symlink was left in place "for backward compatibility".
+⇒ **Never persist empty results (`[]` or null) from language server requests during startup into durable cache maps.** Only populate the cache on non-empty results (`if result: self._symbols_cache[path] = result`), or mark empty results with an explicit transient flag that forces re-querying until indexing completion is affirmed.
+⭐ **The tell:** A test or feature asserting `len(symbols) > 0` that fails intermittently across test suites, but passes when run in isolation or after inserting a sleep prior to the first query.
+
+### BOUNDED DEADLINE POLLING OVER RIGID ASSERTIONS FOR ASYNCHRONOUS MULTI-PROCESS READINESS
+**2026-09-22 (Serena PR #2085 & Orca PRs #21157 / #21148).** Integration tests across child processes (LSP daemon workers, Electron renderer IPC) failed intermittently on loaded CI runners (especially GitHub Actions Windows and macOS runners) when using single immediate assertions or fixed `sleep(1)` calls. The child process took 1.2s instead of 0.8s, causing assertions to evaluate before readiness and fail with 0 results.
+
+⇒ **Always synchronize cross-process states with bounded monotonic deadline polling rather than fixed sleeps or single assertions.**
+```python
+deadline = time.monotonic() + timeout_seconds
+while time.monotonic() < deadline:
+    if condition_met():
+        break
+    time.sleep(poll_interval)
+assert condition_met()
+```
+⭐ **The tell:** A test that passes 100% locally in 200ms but flakes on CI runners with "expected count > 0, got 0".
+
+### STRICT TYPE NARROWING FOR SUBCLASS LIFECYCLES UNDER STATIC CHECKERS (TY / MYPY)
+**2026-09-22 (Serena PR #2085 / Nextflow Test Fixtures).** When inspecting or testing subclass-specific properties (e.g. `_ts_server_started`) on an instance typed as base `SolidLanguageServer`, checking `hasattr(ls, "_ts_server_started")` satisfied runtime Python, but strict type checkers (`ty`, `mypy --strict`) rejected the attribute access in CI: `Property '_ts_server_started' does not exist on type 'SolidLanguageServer'`.
+
+⇒ **Narrow subclass instances explicitly with `assert isinstance(ls, TargetSubclass)` before accessing subclass properties, or define abstract hooks on the base protocol.** Static type checkers cannot infer attribute existence from `hasattr()`.
+⭐ **The tell:** CI failing on a strict type check step on code guarded by `if hasattr(obj, "field"): obj.field`.
+
+### CONFIGURATION PROTOCOL WIRE CONTRACTS: RETURN EMPTY ARRAYS FOR PLURAL SETTINGS
+**2026-09-22 (Serena PR #2085 / Astro Volar LSP Integration).** When `AstroLanguageServer` responded to `workspace/configuration` requests, returning `{}` or omitting keys for plural settings like `html.customData` or `css.customData` caused the underlying Volar HTML plugin to crash with `TypeError: customData is not iterable`.
+
+⇒ **Wire protocol handlers answering client/server configuration requests must return empty iterables (`[]`) rather than empty objects (`{}`) or undefined for array-typed configuration sections.**
+⭐ **The tell:** An LSP worker process terminating unexpectedly with `TypeError: ... is not iterable` during initial workspace handshake.
+
+### BIDIRECTIONAL READINESS LATCHES FOR OS-LEVEL DEEP LINK AND IPC DELIVERIES
+**2026-09-22 (Orca PRs #21157 & #21148 / Protocol & Worktree Handlers).** When an Electron application opens via an OS-level protocol URL (`orca://worktree/create?...`) on cold boot, the main process parses the URL before the renderer UI has loaded or registered IPC event listeners. Pushing the payload immediately via `webContents.send()` silently dropped the event. Storing it in state without an explicit consumer pull meant replacement windows never processed pending links. Furthermore, leaving the latch `true` when a window closed allowed subsequent links to be pushed to an unready or non-existent window.
+
+⇒ **Coordinate cold-start IPC payloads with a 4-phase bidirectional latch:**
+1. Main process buffers incoming protocol payloads in state.
+2. Renderer pulls and consumes pending state on mount via `consumePending*()` IPC, which sets `listenerReady = true`.
+3. Main process pushes subsequent links live only when `listenerReady` is true; otherwise it buffers.
+4. The latch MUST be reset to `false` both on window reload (`did-finish-load`) and window closure (`mainWindow = null`).
+⭐ **The tell:** Protocol deep links working reliably when the app window is already running, but silently failing or requiring two clicks when launched from a cold desktop state.
+
+### STRICT INPUT SANITIZATION AND INJECTION SHIELDS ON DESKTOP PROTOCOL SCHEMES
+**2026-09-22 (Orca PR #21157 / Worktree Creation Deep Links).** Protocol handlers registered with the operating system (`orca://`) can be invoked by arbitrary third-party applications, terminal commands, or malicious web links. Passing query parameters (such as `name`, `branch`, or `repoId`) directly to underlying `git worktree add` commands exposes the application to command option injection (`--bare`, `-b`), directory traversal (`../../.git`), or string truncation via NUL bytes (`\0`).
+
+⇒ **Sanitize all external protocol query parameters before passing them to internal workflows or shell commands:**
+- Reject values starting with `-` to block CLI flag injection.
+- Reject path traversal sequences across all platforms (`..`, `/`, `\`).
+- Reject control characters and NUL bytes (`\0`).
+- Validate against strict character allowlists for branch and workspace identifiers.
+⭐ **The tell:** A URL parameter parser accepting `--exec` or `../../secret` as a valid identifier without throwing an explicit validation error.
+
+### NATIVE SSH COMMIT SIGNING OVER FRAGILE GPG DAEMONS FOR UPSTREAM CONTRIBUTIONS
+**2026-09-22 (Orca PRs #21157, #21148 / Verified Commits Requirement).** Upstream repositories (such as `stablyai/orca`) require or enforce verified commits. Developers often encounter severe friction with GPG on macOS: lockfile contention (`pubring.db.lock`), missing pinentry GUI prompts in non-interactive agent shells, and identity mismatches between local GPG keys and GitHub emails. Commits pushed without signatures show as "Unverified" on GitHub, blocking review and merging.
+
+⇒ **Adopt Git 2.34+ native SSH commit signing (`gpg.format = ssh`):**
+- Use existing SSH keys (`~/.ssh/id_rsa.pub`) with zero background daemon overhead.
+- Configure git scoping (`~/.gitconfig-wom`) with `user.signingkey` and `commit.gpgsign = true`.
+- Add the SSH public key to GitHub as a **Signing Key** (Settings → SSH and GPG keys).
+- Configure `gpg.ssh.allowedSignersFile` locally so `git log --show-signature` verifies commits natively.
+⭐ **The tell:** GitHub PRs displaying gray "Unverified" commit badges, or `git commit` failing with `gpg: signing failed: Inappropriate ioctl for device` in automated or agent shells.
+
 
