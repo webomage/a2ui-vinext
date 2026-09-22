@@ -41,6 +41,8 @@ Say which one you are in before you act. Tickets, specs and SDLC config are alwa
 These are not style preferences. Each exists because breaking it has already cost this estate.
 
 - **Never `--no-verify`.** Hooks are the gate; fix the finding instead. There are no exceptions.
+- **Never run `just db-migrate` or deployment commands (`just deploy`, `just deploy-all`, `deploy-*`) directly from an agent shell.**
+  Live database migrations and production deploys are **strictly gated by the interactive TTY confirmation gate** (`docs/DEPLOY-CONFIRM.md`, T161 AC3, owner direction 2026-08-10). The gate deliberately requires an interactive human terminal (`/dev/tty` or `stdin.isatty()`). Agent subprocesses run without a TTY, causing these commands to block or fail closed. **Agents must NEVER attempt to execute `just db-migrate`, `just deploy`, or `just deploy-all` directly — prepare all code, migrations, tests, and verification checks, and explicitly request the human developer to run them.**
 - **Graph before grep.** `just ask "<symbols>"` is the default first action for *where is X / who
   calls it / what depends on this* — not Grep. Name symbols; the query tokenizes, so prose
   returns confident noise.
@@ -59,6 +61,9 @@ These are not style preferences. Each exists because breaking it has already cos
 - **`STATE.md` blocked your push? Run `just state-save`, commit, push.** The pre-push `state-check`
   compares STATE.md's mechanical block against reality. Reaching for `--no-verify` here is
   prohibited *and* pointless — the drift stays.
+- **Zero silent fallbacks, clean cutovers over shims, zero shadow symlinks (AgDR-0025).** Fail fast and fail closed (`docs/ANTI-PATTERNS.md`). Multi-path fallback search ladders and backward-compatibility shims are strictly prohibited. 100% of callers must be updated atomically when a path or contract changes.
+- **Upstream PR & issue pre-flight discovery.** Before opening any new PR or filing an issue in an external/upstream repository (`wom7pr/*` or open-source dependencies), search open AND closed PRs and issues (`gh pr list --state all --search "<q>"`, `gh issue list --state all --search "<q>"`). If an active PR exists, do not duplicate it — contribute QA, verification proof, or targeted patches to that PR. If stalled/closed PRs exist, inspect why they stalled and cite them in the PR body, explaining why they are superseded and contrasting architectural trade-offs upfront.
+- **Visual & architectural reports via Artifacts (anti-terminal-overflow).** Complex architectural reports, broad system audits, and wide Mermaid (`.mmd`) diagrams must NEVER be dumped as raw multiline markdown in terminal chat (which causes terminal width overflow / ASCII diagram fallback warnings). Output them as Antigravity **artifacts** (`UserFacing: true`), preserve a permanent copy in `.agents/reports/` (mirrored to `wom7web/docs/reports/` when relevant), and present only concise summaries with clickable links in terminal responses.
 
 ## Working here
 

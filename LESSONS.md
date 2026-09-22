@@ -1033,5 +1033,14 @@ assert condition_met()
 - **Internal estate / w0m / agency repositories:** Continue using "we" and "our" where acting on behalf of the agency, team, or collective architecture as established in internal records.
 ⭐ **The tell:** A commit headline, PR description, or maintainer comment on an external repo starting with *"We updated the handler..."* or *"We would like to propose..."* from a personal GitHub handle.
 
+### VISUAL ARCHITECTURAL REPORTS VIA ARTIFACTS AND .agents/reports/ PRESERVATION
+**2026-09-22 (T165 / Visual Reports & Terminal Overflows).** When emitting wide Mermaid diagrams (`graph LR`, complex subgraphs) or comprehensive multi-page architectural specs directly as conversational terminal chat markdown, the terminal renderer attempts ASCII box drawing. When diagram widths exceed the viewport (e.g. 386 > 222 cols), it degrades to raw unrendered code blocks with warning banners (`Diagram exceeds terminal width. Displayed as code block. Widen terminal to view inline.`). Furthermore, complex reports generated during chat sessions are lost to context compaction unless committed to disk.
+
+⇒ **Deliver visual/architectural reports via Antigravity Artifacts and persist them in `.agents/reports/`:**
+1. Generate an Antigravity **artifact** (`write_to_file` with `ArtifactMetadata`, `UserFacing: true`) so diagrams render with interactive vector SVG, pan, zoom, and collapsible carousels in the IDE webview.
+2. Mirror and preserve a permanent copy under `.agents/reports/YYYY-MM-DD-<topic>.md` in the workspace root (and `wom7web/docs/reports/` for canonical monorepo architecture).
+3. In conversational chat responses, output only a concise status brief and clickable markdown file links (`[Report](file:///...)`), never raw wide diagram code blocks.
+⭐ **The tell:** A terminal warning stating `Diagram exceeds terminal width (... cols). Displayed as code block. Widen terminal to view inline.`
+
 
 
