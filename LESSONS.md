@@ -950,3 +950,12 @@ Node/browser modules that import bundler-specific utilities or Node globals fail
 - **If an open issue exists**: Link it in the PR description (`Fixes #123` / `Addresses #123`) and announce the PR on the issue.
 ⭐ **The tell:** A maintainer asking in review: *"There are already two other PRs for X (#886, #1669) using architecture Y, why does this PR do Z?"*
 
+### ZERO SHADOW SYMLINKS AND CLEAN CUTOVER OVER BACKWARD-COMPATIBILITY SHIMS
+**2026-09-21 (T414 / AgDR-0025 — Central Registers and Estate Tooling Elevation).** When elevating canonical registers (`LESSONS.md`, `STATE.md`, `ROADMAP.md`, `TECH-DEBT.md`) or tooling from subprojects (`wom7web`, `wom7api`) to the workspace root (`@wom`), leaving legacy symlinks behind creates "shadow files" that defeat the single source of truth. Shadow symlinks cause duplicated search results, mask missing references, confuse git ignore checkers, and act as unobservable silent fallbacks. Similarly, writing fallback search ladders (`if (root / path).exists(): ... elif (web / path).exists(): ...`) keeps dead paths artificially alive and encourages permanent drift.
+
+⇒ **Enforce strict single-source-of-truth invariants: clean cutover over shims, zero shadow symlinks, and fail closed immediately if a canonical file is missing (AgDR-0025).**
+- When relocating an estate file to the root, delete the old file completely across all repos in the same commit.
+- Update 100% of callers, policy files, and configurations atomically to address the new canonical root path.
+- Subproject tools like `mypy` running inside member repos must resolve root-level Python scripts via explicit config (`mypy_path = ../scripts` in `mypy.ini`) rather than relying on local symlinks.
+⭐ **The tell:** A tool searching multiple legacy locations sequentially, or `git diff` / `grep` finding two identical files under different directory paths because a symlink was left in place "for backward compatibility".
+
