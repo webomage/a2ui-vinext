@@ -1,6 +1,6 @@
 # w0m — Workspace Root Entrypoint
 
-**Canonical conventions live in [`wom7web/AGENTS.md`](wom7web/AGENTS.md)** — read it first.
+**Canonical conventions live in this workspace root entrypoint and [`CLAUDE.md`](CLAUDE.md).**
 
 This is the top-level workspace root (`@wom`) containing the 7 estate repositories:
 - `wom7web`: Canonical monorepo (Astro apps, shared packages, design system, specs, SDLC tracking).
@@ -11,7 +11,7 @@ This is the top-level workspace root (`@wom`) containing the 7 estate repositori
 - `wom7skills`: Canonical w0m Agent Skills source and sync tooling.
 - `wom7mlx`: Apple MLX inference subsystem (in `wom7mlx/wom7mlx`).
 
-## Non-negotiables (full text in `wom7web/AGENTS.md`)
+## Non-negotiables
 
 - **Never `--no-verify`.** Hooks are the gate; fix the finding instead.
 - **Never run `just db-migrate` or deployment commands (`just deploy`, `just deploy-all`, `deploy-*`) directly from an agent shell.**
