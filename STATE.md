@@ -15,16 +15,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T414](/Users/proto/Projects/@self/@wom/.tasks/T414.md) | [#414](https://github.com/webomage/wom7board/issues/414) | P1 | in-progress | tools | 100 | Elevate Central Registers (LESSONS, STATE, TECH-DEBT, ROADMAP, docs) and Es 📄 live spec |
-| 2 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 88 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
-| 3 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
-| 4 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 84 | Indeed & X-Team Integrations 📄 live spec |
-| 5 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 83 | Full-observability logging strategy 📄 live spec |
-| 6 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 80 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
-| 7 | [T279](/Users/proto/Projects/@self/@wom/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 78 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
-| 8 | [T336](/Users/proto/Projects/@self/@wom/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 76 | Public free security audit lead magnet & client registration gate 📄 live spec |
-| 9 | [T337](/Users/proto/Projects/@self/@wom/.tasks/T337.md) | [#337](https://github.com/webomage/wom7board/issues/337) | P1 | queued | tools | 76 | Advanced code & infrastructure audit runner with ephemeral air-gapped sandb 📄 live spec |
-| 10 | [T263](/Users/proto/Projects/@self/@wom/.tasks/T263.md) | [#263](https://github.com/webomage/wom7board/issues/263) | P2 | in-progress | ai | 75 | ai-intake-service-requests 📄 live spec |
+| 1 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 88 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
+| 2 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 3 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 84 | Indeed & X-Team Integrations 📄 live spec |
+| 4 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 83 | Full-observability logging strategy 📄 live spec |
+| 5 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 80 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
+| 6 | [T279](/Users/proto/Projects/@self/@wom/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 78 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
+| 7 | [T336](/Users/proto/Projects/@self/@wom/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 76 | Public free security audit lead magnet & client registration gate 📄 live spec |
+| 8 | [T337](/Users/proto/Projects/@self/@wom/.tasks/T337.md) | [#337](https://github.com/webomage/wom7board/issues/337) | P1 | queued | tools | 76 | Advanced code & infrastructure audit runner with ephemeral air-gapped sandb 📄 live spec |
+| 9 | [T263](/Users/proto/Projects/@self/@wom/.tasks/T263.md) | [#263](https://github.com/webomage/wom7board/issues/263) | P2 | in-progress | ai | 75 | ai-intake-service-requests 📄 live spec |
+| 10 | [T365](/Users/proto/Projects/@self/@wom/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 75 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
 
 ### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 188 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **188** are
+> ⚠️ **0 of 186 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **186** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **128** | 30 | `92ef2cbb` |
-| `wom7api` | `beta` | **5** | 5 | `abc7e0c` |
+| `wom7web` | `beta` | **3** | 33 | `adb124c5` |
+| `wom7api` | `beta` | 0 | 6 | `50e17a8` |
 | `wom7func` | `beta` | 0 | 0 | `715848a` |
-| `wom7skills` | `beta` | 0 | 1 | `82b7c03` |
+| `wom7skills` | `beta` | 0 | 2 | `c62ba4d` |
 | `wom7ext` | `beta` | 0 | 0 | `c120e57` |
 | `wom7sec` | `beta` | 0 | 0 | `448d1a7` |
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `e4b7f54` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 188 open · 417 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 186 open · 417 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T414","T290","T29","T63","T43","T214","T279","T336","T337","T263"],"repos":{"wom7api":{"branch":"beta","dirty":5,"has_upstream":true,"head":"abc7e0c","unpushed":5},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"c120e57","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"715848a","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"e4b7f54","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"448d1a7","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"82b7c03","unpushed":1},"wom7web":{"branch":"beta","dirty":128,"has_upstream":true,"head":"92ef2cbb","unpushed":30}},"tickets":{"open":188,"rowless_open":[],"rows":417}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T290","T29","T63","T43","T214","T279","T336","T337","T263","T365"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"50e17a8","unpushed":6},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"c120e57","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"715848a","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"e4b7f54","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"448d1a7","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"c62ba4d","unpushed":2},"wom7web":{"branch":"beta","dirty":3,"has_upstream":true,"head":"adb124c5","unpushed":33}},"tickets":{"open":186,"rowless_open":[],"rows":417}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
