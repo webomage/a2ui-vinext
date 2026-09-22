@@ -67,3 +67,6 @@ ${input:db_path}
 *.log
 .playwright-mcp/
 .superpowers/
+project/.tools-outdated.json
+project/.tools-weekly-status.json
+

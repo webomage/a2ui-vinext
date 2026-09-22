@@ -88,12 +88,12 @@
     ],
     "couplings": [
       {
-        "parser": "wom7web/project/scripts/run_suites.py",
+        "parser": "scripts/run_suites.py",
         "reads": "✅❌ℹ✓✗×",
         "why": "counts per-probe pass/fail from suite stdout -- the whole test aggregate depends on it. FOUR dialects, not one: CHECK reads the first pair, TICK reads the second trio (version-test, deps-check, mmd-validate, skills-catalogue-test), NODE_TEST reads the info glyph for node:test output (skills, deno-test). The hand-written declaration named only the first pair, so the other four glyphs sat in the DECORATIVE bucket -- i.e. the bucket something eventually cleans up, stopping four suites from counting."
       },
       {
-        "parser": "wom7web/project/scripts/tasks_bounds.py",
+        "parser": "scripts/tasks_bounds.py",
         "reads": "✅🔵⚪🟡🟢💤",
         "why": "STATUS_GLYPH -- the TASKS.md row status IS the glyph"
       },

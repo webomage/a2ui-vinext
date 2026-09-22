@@ -281,13 +281,13 @@
   },
   "stacks": {
     "_comment": "T130: the per-stack tech/tools registry — the tech-aware, stack-scoped extension of `toolchain`. Declared in a separate policy file (mirrors project/tools-policy.json + deps-policy.json), validated by its own JSON Schema, read by project/scripts/discovery.py. `just discovery` reports drift (used-not-declared / declared-not-used); `just discovery --enforce` gates (declared-tool-without-recipe = hard fail; raw-invocation + drift = block). Honors this block's `exempt` (toolchain-dimension, distinct from toolchain.exempt which is secrets-scoped).",
-    "policy": "project/stacks-policy.json",
-    "schema": "project/stacks-policy.schema.json",
-    "discovery": "project/scripts/discovery.py"
+    "policy": "project/policies/stacks-policy.json",
+    "schema": "project/policies/stacks-policy.schema.json",
+    "discovery": "scripts/discovery.py"
   },
   "ide_surfaces": {
     "_comment": "T192 AC1: the connected IDEs — which agentic tools this project is used with, and therefore whose autoload surface must carry the same contract. 🔑 THE DECLARATION IS THE SOURCE OF TRUTH, and it has to be, because nothing else records it: `openspec init --tools` writes each chosen tool's surface and keeps NO memory of the choice (measured 2026-08-10 — `openspec/config.yaml` contains `schema: spec-driven` and nothing else, in every project that has one). Read by project/scripts/ide_trace.py (`just ide-trace` / `--enforce`); the per-tool autoload knowledge and the non-negotiables checked for parity live in the policy file, never here. ⚠️ `connected` is a DICT here because w0m is one project spanning seven repos under this single sdlc.json — keys are `repos` keys, and each repo is scanned as its own unit since each autoloads its own CLAUDE.md. A single-root project (every client) declares a plain LIST instead.",
-    "policy": "project/ide-policy.json",
+    "policy": "project/policies/ide-policy.json",
     "connected": {
       "_comment": "Declared connected IDEs (T192 / T232). Full multi-agent triad (`claude`, `antigravity`, `opencode`) connects across all core subrepos with native CLAUDE.md / AGENTS.md entrypoints and .agents/workflows/ / .opencode/ surfaces where generated. Historical note (2026-08-10): `opencode` was previously withheld when it existed in no project, to prevent red gates on ungenerated surfaces. With multi-agent parity established under T232, both opencode and antigravity are actively governed alongside Claude; Gemini was dropped from the target list per owner decision (2026-09-08).",
       "web": [

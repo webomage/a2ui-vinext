@@ -34,3 +34,10 @@ repos:
         language: system
         stages: [commit-msg]
         always_run: true
+
+      - id: emoji-check
+        name: emoji policy check
+        entry: python3 scripts/emoji_policy_check.py --staged
+        language: system
+        pass_filenames: false
+        always_run: true

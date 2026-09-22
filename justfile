@@ -33,6 +33,73 @@ sync-tickets-test:
 dod-check *args:
     @python3 scripts/dod_check.py {{ args }}
 
+tasks-bounds *args:
+    @python3 scripts/tasks_bounds.py {{ args }}
+
+tasks-bounds-test:
+    @python3 wom7web/project/scripts/tests/test_tasks_bounds.py
+
+tasks-rotate *args:
+    @python3 scripts/tasks_rotate.py {{ args }}
+
+tasks-rotate-test:
+    @python3 wom7web/project/scripts/tests/test_tasks_rotate.py
+
+ticket-schema-check *args:
+    @python3 scripts/ticket_schema_check.py {{ args }}
+
+ticket-schema-check-test:
+    @python3 wom7web/project/scripts/tests/test_ticket_schema_check.py
+
+ticket-deps *args:
+    @python3 scripts/ticket_deps.py {{ args }}
+
+ticket-deps-test:
+    @python3 scripts/ticket_deps.py --test
+
+blocker-detection-test:
+    @python3 wom7web/project/scripts/tests/test_blocker_detection.py
+
+ticket-graph *args:
+    @python3 scripts/ticket_graph.py {{ args }}
+
+ac-recipe-check *args:
+    @python3 scripts/ac_recipe_check.py {{ args }}
+
+ac-recipe-check-test:
+    @python3 wom7web/project/scripts/tests/test_ac_recipe_check.py
+
+ac-trace-check *args:
+    @python3 scripts/ac_trace_check.py {{ args }}
+
+# ── Spec & SDLC Quality Gates (T23 / T33 / T72 / T110 / T419) ─────────────────
+spec-drift *args:
+    @python3 scripts/spec_drift_gate.py {{ args }}
+
+spec-drift-ownership-test:
+    @python3 wom7web/project/scripts/tests/test_spec_drift_ownership.py
+
+spec-reality *args:
+    @python3 scripts/spec_reality_check.py {{ args }}
+
+spec-standard *args:
+    @python3 scripts/spec_standard_check.py {{ args }}
+
+spec-standard-test:
+    @python3 wom7web/project/scripts/tests/test_spec_standard.py
+
+spec-systems *args:
+    @python3 scripts/spec_systems_gate.py {{ args }}
+
+spec-systems-test:
+    @python3 scripts/spec_systems_gate.py --selftest
+
+sdlc-trace *args:
+    @python3 scripts/sdlc_trace.py {{ args }}
+
+sdlc-trace-test:
+    @python3 wom7web/project/scripts/tests/test_sdlc_trace.py
+
 
 # ── Estate Search (T406) ─────────────────────────────────────────────────────
 # Bounded multi-repo search with LC_ALL=C and --no-pager. Never silently empty.
@@ -359,4 +426,105 @@ version-check *args:
 
 sync-manifest-versions-test:
     @python3 wom7web/project/scripts/tests/test_sync_manifest_versions.py
+
+# ── Estate Policies & Standards (T130 / T135 / T192 / T256 / T419) ───────────
+emoji-check *args:
+    @python3 scripts/emoji_policy_check.py {{ args }}
+
+emoji-check-test:
+    @python3 wom7web/project/scripts/tests/test_emoji_policy_check.py
+
+emoji-text-dialects-test:
+    @python3 wom7web/project/scripts/tests/test_emoji_text_dialects.py
+
+doc-format-check *args:
+    @python3 scripts/doc_format_check.py {{ args }}
+
+doc-format-check-test:
+    @python3 wom7web/project/scripts/tests/test_doc_format_check.py
+
+hygiene *args:
+    @python3 scripts/repo_hygiene.py all {{ args }}
+
+hygiene-check *args:
+    @python3 scripts/repo_hygiene.py all {{ args }}
+
+repo-hygiene *args:
+    @python3 scripts/repo_hygiene.py all {{ args }}
+
+hygiene-check-test:
+    @python3 wom7web/project/scripts/tests/test_repo_hygiene.py
+
+docs-check *args:
+    @python3 scripts/repo_hygiene.py docs {{ args }}
+
+license-check *args:
+    @python3 scripts/repo_hygiene.py license {{ args }}
+
+secrets-check *args:
+    @python3 scripts/repo_hygiene.py secrets {{ args }}
+
+dep-licenses *args:
+    @python3 scripts/repo_hygiene.py dep-licenses {{ args }}
+
+ide-trace *args:
+    @python3 scripts/ide_trace.py {{ args }}
+
+ide-trace-test:
+    @python3 wom7web/project/scripts/tests/test_ide_trace.py
+
+discovery *args:
+    @python3 scripts/discovery.py {{ args }}
+
+discovery-test:
+    @python3 wom7web/project/scripts/tests/test_discovery.py
+
+# ── Tool & MCP Governance (T112 / T154 / T247 / T419) ────────────────────────
+tools *args:
+    @python3 scripts/tools_check.py {{ args }}
+
+tools-check *args:
+    @python3 scripts/tools_check.py {{ args }}
+
+tools-upgrade *args:
+    @python3 scripts/tools_upgrade.py {{ args }}
+
+tools-weekly *args:
+    @python3 scripts/tools_check.py --outdated --cache && python3 scripts/tools_upgrade.py --apply {{ args }}
+
+toolchain-chain-test:
+    @python3 wom7web/project/scripts/tests/test_toolchain_chain.py
+
+mcp-declared-test:
+    @python3 wom7web/project/scripts/tests/test_mcp_declared.py
+
+mcp-health *args:
+    @python3 scripts/mcp_health.py {{ args }}
+
+# ── Estate Test Suites & Hook Runners (T160 / T375 / T419) ───────────────────
+test:
+    @python3 scripts/run_suites.py --tier offline
+
+test-all:
+    @python3 scripts/run_suites.py --tier all
+
+suites-drift *args:
+    @python3 scripts/run_suites.py --drift {{ args }}
+
+run-suites-test:
+    @python3 wom7web/project/scripts/tests/test_run_suites.py
+
+prepush-status *args:
+    @python3 scripts/prepush_runner.py status {{ args }}
+
+prepush-reset *args:
+    @python3 scripts/prepush_runner.py reset {{ args }}
+
+prepush-run *args:
+    @python3 scripts/prepush_runner.py {{ args }}
+
+prepush-test:
+    @python3 wom7web/project/scripts/tests/test_prepush_runner.py
+
+
 

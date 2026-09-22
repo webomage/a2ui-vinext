@@ -134,8 +134,8 @@ def repo_facts(rel: str) -> dict | None:
 def gate_codes() -> dict:
     """Exit codes for the hygiene gates, from ONE process (the suite costs ~5.5s)."""
     r = subprocess.run(
-        [sys.executable, "project/scripts/repo_hygiene.py", "all", "--json"],
-        cwd=WEB_ROOT, capture_output=True, text=True)
+        [sys.executable, str(MONO_ROOT / "scripts" / "repo_hygiene.py"), "all", "--json"],
+        cwd=MONO_ROOT, capture_output=True, text=True)
     try:
         report = json.loads(r.stdout)
     except Exception:  # noqa: BLE001
