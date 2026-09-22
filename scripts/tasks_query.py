@@ -35,6 +35,7 @@ import socket
 import subprocess
 import sys
 import unicodedata
+from collections import Counter, defaultdict
 from datetime import date, datetime
 from pathlib import Path
 
@@ -117,10 +118,18 @@ def frontmatter(path: Path) -> dict:
         if not m:
             continue
         key, raw = m.group(1), m.group(2).strip()
-        if raw[:1] in ("\"", "'"):
-            q = raw[0]
-            closing = raw.find(q, 1)
-            value = raw[1:closing] if closing > 0 else raw[1:]
+        if raw.startswith('"') and raw.endswith('"') and len(raw) >= 2:
+            value = raw[1:-1].replace('\\"', '"')
+        elif raw.startswith("'") and raw.endswith("'") and len(raw) >= 2:
+            value = raw[1:-1].replace("\\'", "'")
+        elif raw[:1] in ("\"", "'"):
+            m_q = re.match(r"^(['\"])(.*?)(?<!\\)\1(?:\s+#.*)?$", raw)
+            if m_q:
+                value = m_q.group(2).replace('\\"', '"') if m_q.group(1) == '"' else m_q.group(2).replace("\\'", "'")
+            else:
+                q = raw[0]
+                closing = raw.find(q, 1)
+                value = raw[1:closing] if closing > 0 else raw[1:]
         else:
             value = re.split(r"\s+#", raw, maxsplit=1)[0].strip()
         out[key] = value
@@ -264,6 +273,7 @@ def load(today: date | None = None) -> list[dict]:
             # ROADMAP §13) instead of silently merging it away.
             "epic": (fm.get("epic", "") or "").strip('"'),
             "area": fm.get("area", ""),
+            "queue": fm.get("queue", ""),
             "tags": [t for t in re.findall(r"[\w-]+", fm.get("tags", "")) if t],
             "created": created,
             "rowless": rowless,
@@ -844,10 +854,11 @@ def main() -> int:
     # ask for, so it was routinely read as the whole picture.
     ap.add_argument("mode", nargs="?", default="board",
                     choices=["board", "hot", "list", "blocked", "stats", "md", "sdlc", "sdlc-md",
-                             "unspecified", "overview", "plan", "epic", "current", "next", "wip", "tree"])
+                             "unspecified", "overview", "plan", "epic", "current", "next", "wip", "tree", "area"])
     ap.add_argument("-n", type=int, default=10)
     ap.add_argument("--priority", help="filter: P0/P1/P2/P3")
     ap.add_argument("--status", help="filter: in-progress/queued/blocked/paused")
+    ap.add_argument("--area", help="filter to a specific area (e.g. 'tools', 'sdlc')")
     ap.add_argument("--parts", action="store_true", help="show the score breakdown per row")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--check", action="store_true",
@@ -899,6 +910,9 @@ def main() -> int:
 
     if args.mode == "overview":
         return cmd_overview(tickets, args.n)
+
+    if args.mode == "area":
+        return cmd_area(tickets, area_filter=args.area)
 
     if args.mode in ("plan", "epic", "current"):
         return cmd_plan(tickets, check=args.check, plan=active_plan)
@@ -1017,7 +1031,8 @@ def _load_slug_to_roadmap() -> dict[str, str]:
         return _SLUG_TO_ROADMAP
     _SLUG_TO_ROADMAP = {}
     try:
-        rm = (WEB_ROOT / "ROADMAP.md").read_text()
+        rm_path = WORKSPACE_ROOT / "ROADMAP.md" if (WORKSPACE_ROOT / "ROADMAP.md").is_file() else WEB_ROOT / "ROADMAP.md"
+        rm = rm_path.read_text()
         for m in re.finditer(r"(?:##|\*\*)\s*(\d+(?:\.\d+)?)\.?\s*.*?(?:\n[>\s*]*)?(?:\*\*Epic slug:\*\*\s*[`\"]([a-z0-9-]+)[`\"])", rm, re.I):
             sec, slug = m.group(1), m.group(2).lower()
             _SLUG_TO_ROADMAP[slug] = f"ROADMAP §{sec}"
@@ -1206,7 +1221,8 @@ def load_plan(epic: str | None = None,
             roadmap_slugs: set[str] = set()
             if re.fullmatch(r"\d+(\.\d+)?", clean_q):
                 try:
-                    rm = (WEB_ROOT / "ROADMAP.md").read_text()
+                    rm_path = WORKSPACE_ROOT / "ROADMAP.md" if (WORKSPACE_ROOT / "ROADMAP.md").is_file() else WEB_ROOT / "ROADMAP.md"
+                    rm = rm_path.read_text()
                     for m in re.finditer(r"(?:##|\*\*)\s*(\d+(?:\.\d+)?)\.?\s*.*?(?:\n[>\s*]*)?(?:\*\*Epic slug:\*\*\s*[`\"]([a-z0-9-]+)[`\"])", rm, re.I):
                         sec, slug = m.group(1), m.group(2).lower()
                         if sec == clean_q or sec.startswith(clean_q + "."):
@@ -1636,6 +1652,92 @@ def cmd_overview(tickets: list[dict], top: int) -> int:
         total = sum(t.get("ac_total", 0) for t in ts)
         print(f"  {len(ts):>3} · {_bar(done, total)} · {area:<10} {epic:<16} "
               f"{' '.join(t['id'] for t in sorted(ts, key=lambda t: -t['score']))}")
+    return 0
+
+
+def cmd_area(tickets: list[dict], area_filter: str | None = None) -> int:
+    """Render open tickets grouped by functional area, with summary metrics and per-area tables."""
+    prio_rank = {"P0": 0, "P1": 1, "P2": 2, "P3": 3, "": 4}
+    status_rank = {"in-progress": 0, "queued": 1, "blocked": 2, "paused": 3}
+
+    by_area: dict[str, list[dict]] = defaultdict(list)
+    for t in tickets:
+        a = t.get("area") or "unassigned"
+        by_area[a].append(t)
+
+    if area_filter:
+        if area_filter not in by_area:
+            print(f"❌ area {area_filter!r} not found in queue.", file=sys.stderr)
+            print(f"Available areas: {', '.join(sorted(by_area.keys()))}", file=sys.stderr)
+            return 1
+        target_areas = [area_filter]
+    else:
+        target_areas = sorted(by_area.keys(), key=lambda a: (
+            -sum(1 for t in by_area[a] if t["open"]),
+            -len(by_area[a]),
+            a
+        ))
+
+    total_open = sum(1 for t in tickets if t["open"])
+    total_wip = sum(1 for t in tickets if t["open"] and t["status"] == "in-progress")
+    total_done = sum(1 for t in tickets if not t["open"])
+    total_all = len(tickets)
+
+    out: list[str] = []
+    out.append(f"▶ TASK REGISTRY — GROUPED BY AREA\n")
+    out.append(f"  Total Tickets: {total_all} · Open: {total_open} ({total_wip} in progress / WIP) · "
+               f"Done: {total_done} ({(total_done/total_all)*100:.1f}%)\n")
+
+    out.append("### Area Breakdown Summary\n")
+    out.append("| Area | Open | WIP | Done | Total | % Complete |")
+    out.append("|---|---|---|---|---|---|")
+    for a in target_areas:
+        tlist = by_area[a]
+        op = sum(1 for t in tlist if t["open"])
+        wip = sum(1 for t in tlist if t["open"] and t["status"] == "in-progress")
+        dn = sum(1 for t in tlist if not t["open"])
+        tot = len(tlist)
+        pct = (dn / tot * 100) if tot > 0 else 0
+        out.append(f"| **`{a}`** | {op} | {wip} | {dn} | {tot} | {pct:.0f}% |")
+
+    out.append("\n---\n")
+
+    for a in target_areas:
+        tlist = by_area[a]
+        open_t = [t for t in tlist if t["open"]]
+        done_cnt = sum(1 for t in tlist if not t["open"])
+        wip_cnt = sum(1 for t in open_t if t["status"] == "in-progress")
+
+        out.append(f"### Area: `{a}`\n")
+        out.append(f"*{len(open_t)} open ({wip_cnt} in-progress) · {done_cnt} done · {len(tlist)} total*\n")
+
+        if not open_t:
+            out.append("*(no open tickets in this area)*\n")
+            continue
+
+        open_t.sort(key=lambda t: (
+            status_rank.get(t["status"], 9),
+            prio_rank.get(t["priority"] or "", 9),
+            -t.get("score", 0),
+            num(t["id"])
+        ))
+
+        out.append("| ID | Issue | Prio | Status | Title | Queue | AC | Epic |")
+        out.append("|---|---|---|---|---|---|---|---|")
+        for t in open_t:
+            d, tot = ac_progress(t["id"])
+            ac_str = f"{d}/{tot}" if tot > 0 else "—"
+            q = t.get("queue") or ""
+            q_str = f"`{q}`" if q else "—"
+            ep = (t.get("epic") or "—").replace("|", "\\|").strip()
+            title_clean = t["title"].replace("\n", " ").replace("|", "\\|").strip()
+            out.append(
+                f"| {_ticket_link(t)} | {_issue_link(t)} | `{t['priority'] or '—'}` | "
+                f"`{t['status']}` | {_md_trunc(title_clean, 52)} | {q_str} | {ac_str} | {ep} |"
+            )
+        out.append("")
+
+    emit("\n".join(out))
     return 0
 
 
