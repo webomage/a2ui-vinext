@@ -733,21 +733,22 @@ def _issue_link(t: dict) -> str:
 
 def markdown_hot(rows: list[dict]) -> str:
     """Compact markdown for embedding in STATE.md's managed block."""
-    out = ["| # | Ticket | Issue | Prio | Status | Score | Title |",
-           "|---|---|---|---|---|---|---|"]
+    out = ["| # | Ticket | Issue | Prio | Status | Area | Score | Title |",
+           "|---|---|---|---|---|---|---|---|"]
     for i, t in enumerate(rows, 1):
         flags = ("  ⚠️ **no TASKS.md row**" if t["rowless"] else "") + (" 📄 live spec" if t["spec"] else "")
         title_w = max(24, 88 - _vis_width(flags))
+        area = t.get("area") or "—"
         out.append(
             f"| {i} | {_ticket_link(t)} | {_issue_link(t)} | {t['priority'] or '—'} | "
-            f"{t['status']} | {t['score']} | {_md_trunc(t['title'], title_w)}{flags} |")
+            f"{t['status']} | {area} | {t['score']} | {_md_trunc(t['title'], title_w)}{flags} |")
     return "\n".join(out)
 
 
 def markdown_sdlc(rows: list[dict]) -> str:
     """The 'what is closest to done' table — the complement to markdown_hot."""
-    out = ["| # | Ticket | Issue | Prio | Status | ACs | Done | Blocked by | Title |",
-           "|---|---|---|---|---|---|---|---|---|"]
+    out = ["| # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |",
+           "|---|---|---|---|---|---|---|---|---|---|"]
     at_100 = []
     for i, t in enumerate(rows, 1):
         bar = "█" * round(t["ac_pct"] / 10) + "░" * (10 - round(t["ac_pct"] / 10))
@@ -774,9 +775,10 @@ def markdown_sdlc(rows: list[dict]) -> str:
         if t["ac_total"] and t["ac_done"] == t["ac_total"] and t["status"] != "done":
             flag = " ⚠️ 100% — awaiting deploy/archive, NOT stale"
             at_100.append(t["id"])
+        area = t.get("area") or "—"
         out.append(
             f"| {i} | {_ticket_link(t)} | {_issue_link(t)} | {t['priority'] or '—'} | "
-            f"{t['status']}{flag} | {t['ac_done']}/{t['ac_total']} | `{bar}` {t['ac_pct']}% | "
+            f"{t['status']}{flag} | {area} | {t['ac_done']}/{t['ac_total']} | `{bar}` {t['ac_pct']}% | "
             f"{dep_s} | {_md_trunc(t['title'], 60)} |")
     if at_100:
         out.append("")
@@ -1303,8 +1305,8 @@ def plan_summary(tickets: list[dict], plan: dict | None = None) -> str:
     p_rm = plan.get('roadmap', '')
     hdr = f"▶ EPIC — {p_name}" + (f" · {p_rm}" if p_rm and p_rm not in p_name else "")
     out = [hdr,
-           "| Stage | Ticket | Issue | Prio | Status | ACs | Done | Title |",
-           "|---|---|---|---|---|---|---|---|"]
+           "| Stage | Ticket | Issue | Prio | Status | Area | ACs | Done | Title |",
+           "|---|---|---|---|---|---|---|---|---|"]
     exits = []
     for st in plan["stages"]:
         ids = st.get("tickets") or []
@@ -1329,18 +1331,19 @@ def plan_summary(tickets: list[dict], plan: dict | None = None) -> str:
             if tk is None:
                 # Named in the plan, absent from the queue. A row, never a silent omission:
                 # dropping it shrinks the stage's denominator and flatters it.
-                out.append(f"| {cell} | \u2753 {tid} | \u2014 | \u2014 | **NOT FOUND** | \u2014 | \u2014 | "
+                out.append(f"| {cell} | \u2753 {tid} | \u2014 | \u2014 | **NOT FOUND** | \u2014 | \u2014 | \u2014 | "
                            f"declared in the plan, no such ticket |")
                 continue
             a, b = ac_progress(tid)
             tpct = int(round(100 * a / b)) if b else 0
             bar = "\u2588" * round(tpct / 10) + "\u2591" * (10 - round(tpct / 10))
             acs = f"{a}/{b}" if b else "\u2014"
+            area = tk.get("area") or "—"
             out.append(
                 f"| {cell} | {_ticket_link(tk)} | {_issue_link(tk)} | {tk['priority'] or '\u2014'} | "
-                f"{tk['status']} | {acs} | `{bar}` {tpct}% | {_md_trunc(tk['title'], 52)} |")
+                f"{tk['status']} | {area} | {acs} | `{bar}` {tpct}% | {_md_trunc(tk['title'], 52)} |")
         if not ids:
-            out.append(f"| {head} | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | no tickets declared |")
+            out.append(f"| {head} | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | \u2014 | no tickets declared |")
         if st.get("exit"):
             exits.append(f"  \u00b7 **{st.get('id')}** \u2014 {st['exit']}")
             em = st.get("exit_met") or {}

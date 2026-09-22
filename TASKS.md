@@ -215,6 +215,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T416](.tasks/T416.md) | **P2** | **Add Area Column to HOT, SDLC, and EPIC Tasks Tables** | tooling | openspec/changes/2026-09-21-tasks-tables-area-column | ✅ **done** |
 | [T415](.tasks/T415.md) | **P1** | **Embed Area-Grouped Tasks Renderer into tasks_query and w0m-tasks Skill** | tooling, skills | openspec/changes/2026-09-21-tasks-area-view | ✅ **done** |
 | [T413](.tasks/T413.md) · [#413](https://github.com/casualuser/webomage.com/issues/413) | **P1** | 🆕 **Surface build hints in build log analyzer and automate hint remediation** | web | — | ✅ **done** |
 | [T412](.tasks/T412.md) | **P1** | 🆕 **Elevate Global Governance, Task Queue, and Policy Tooling to Root @wom Workspace** | tooling, web, api | — | ✅ **done** |
