@@ -528,7 +528,7 @@
       "_comment": "ONE producer. `just version` prints it; the justfile variable is the same expression evaluated once per invocation, which is what the deploy recipes interpolate. Any other site that constructs a version string is a second format waiting to happen — version-check finds them.",
       "recipe": "just version",
       "expression": "date +%Y.%m.%d-%s",
-      "declared_at": "wom7api/justfile (deploy_version, symlinked into wom7web)",
+      "declared_at": "justfile (deploy_version, workspace root, wom7web, wom7api)",
       "consumers": [
         "deploy-functions",
         "deploy-web",
@@ -709,7 +709,7 @@
   },
   "deploy_logs": {
     "_comment": "OWNER DECISION 2026-08-14: deploy transcripts rotate MONTHLY. They are gitignored working artefacts — one full deploy is ~170 KB, so an unrotated directory becomes the thing nobody opens. Rotation buckets by the month in the transcript's OWN NAME (the versioning.artifact_naming schema), not by mtime: a copied or restored file keeps its identity, and mtime does not.",
-    "dir": "wom7api/deploy-logs",
+    "dir": "deploy-logs",
     "rotate": "monthly",
     "keep_months": 1,
     "keep_months_reason": "OWNER 2026-08-14: ONE month. A transcript's job is to explain the deploy you just did or the one that just broke — both are days old, not months. Older ones are reconstructable from the `deploy_log` table and the CHANGELOG, which are versioned; these are 170 KB gitignored working files. ⚠️ Pruning DELETES, and the recipe names every file it removes rather than reporting a count, because a silent delete and a no-op look identical."

@@ -4,6 +4,12 @@
 
 set dotenv-load := false
 
+# Deployment Version & Parameters (T131 / T421)
+project_ref := "pqbbjgeapylcengbuvee"
+deploy_version := `date +%Y.%m.%d-%s`
+deploy_at := `date -u +%Y-%m-%dT%H:%M:%SZ`
+deploy_commit := `git rev-parse --short HEAD`
+
 default:
     @just --justfile wom7web/justfile default
 
@@ -299,6 +305,208 @@ sdlc-deploy *args:
 sdlc-archive *args:
     @just --justfile wom7web/justfile sdlc-archive {{ args }}
 
+# ── Deployment Machinery & Elevation (T131 / T161 / T421) ─────────────────────
+# One producer for the estate's release-version schema (T131 AC1).
+version:
+    @echo "{{ deploy_version }}"
+
+# `_confirm <step>` prompts on /dev/tty and ABORTS the recipe on anything but "yes".
+#
+# 🔑 Why here and not in the harness `ask` permission tier: `ask` DOES NOT GATE. Probed
+# 2026-08-02 (T161 AC3) and re-probed 2026-08-10 — both times a rule in `ask` ran with no
+# prompt, while the same shape in `deny` was withheld instantly. Shipping `ask` rules would
+# be a gate that reads as protection and withholds nothing.
+#
+# What makes this one real: it reads /dev/tty, which an agent shell here cannot even OPEN
+# ("device not configured", measured 2026-08-10) while a human terminal always can. So it is
+# not a rule an agent is trusted to respect — it is one an agent cannot answer. No override
+# env var exists, deliberately; an escape hatch is the hole.
+#
+# Consent: confirming a ROOT (`deploy`, `deploy-all`) covers the steps it chains for 45 min
+# (`ttl_seconds: 2700`), bound to the git HEAD it was granted at. Steps in `always_confirm`
+# (`db-reset`, `db-backup`, `storage-backup`, `db-psql`, `rotate`, `sync-env`,
+# `sync-wom7api-secrets`, `crawler-deploy`) re-prompt ANYWAY.
+# 🔴 `db-migrate` is NOT among them — it rides the `deploy-all` consent. That was an owner
+# decision on 2026-08-16, recorded in `confirm-policy.json -> _notes.one_yes_is_the_decision`:
+# the owner was offered the chance to put it back and declined. Re-adding it reverses a decision
+# rather than fixing a bug, and `test_confirm_step.py` fails and says so. This comment claimed the
+# opposite for 34 days (T407, [[AgDR-0024]]) — every behavioural probe stayed green throughout,
+# because what had rotted was the description, not the gate.
+# Policy is DATA: project/confirm-policy.json. Unrecognised step => confirm (fail closed).
+_confirm step:
+    @python3 wom7web/project/scripts/confirm_step.py {{ step }}
+
+# Red probes for the confirmation gate (T161 AC3, extended by T407). 30 cases: it must withhold
+# from an automated caller, refuse a piped "yes", fail CLOSED on an unrecognised step, honour a
+# granted root for chained steps, and — since T407 — assert that every surface DESCRIBING this
+# gate still matches `confirm-policy.json`, in both directions, with an unreadable surface failing
+# as UNMEASURABLE rather than passing on zero bytes.
+confirm-test:
+    @python3 wom7web/project/scripts/tests/test_confirm_step.py
+
+# Build all web workspaces and stamp release metadata
+build:
+    @infisical run --env=beta --silent -- pnpm --filter web --filter cp --filter join --filter job --filter demo build
+    @python3 wom7web/project/scripts/stamp_build.py \
+        --version "{{ deploy_version }}" --at "{{ deploy_at }}" --commit "{{ deploy_commit }}"
+
+_assert-provisioned app:
+    @infisical run --env=beta --silent -- python3 wom7web/project/scripts/build_provisioning_gate.py --app {{ app }}
+
+# Deploy apps/web (webomage.com)
+deploy-web: (_confirm "deploy-web")
+    @echo "Building and deploying apps/web to Cloudflare Workers (Version: {{ deploy_version }})..."
+    @echo "📸 Updating static snapshots..."
+    @infisical run --env=beta -- node wom7web/apps/web/scripts/snapshot-settings.mjs || true
+    @infisical run --env=beta -- node wom7web/apps/web/scripts/snapshot-blueprints.mjs || true
+    @infisical run --env=beta -- node wom7web/apps/web/scripts/snapshot-knowledge.mjs || true
+    @infisical run --env=beta --silent -- pnpm --filter web build
+    @just _assert-provisioned web
+    @echo "🔍 Building pagefind search index..."
+    @cd wom7web/apps/web && infisical run --env=beta --silent -- pnpm run build:search
+    @cd wom7web/apps/web/dist/server && infisical run --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+
+# Deploy apps/join (join.webomage.com)
+deploy-join: (_confirm "deploy-join")
+    @echo "Building and deploying apps/join to Cloudflare Workers (Version: {{ deploy_version }})..."
+    @infisical run --env=beta --silent -- pnpm --filter join build
+    @just _assert-provisioned join
+    @cd wom7web/apps/join/dist/server && infisical run --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+
+# Deploy apps/job (job.webomage.com)
+deploy-job: (_confirm "deploy-job")
+    @echo "Building and deploying apps/job to Cloudflare Workers (Version: {{ deploy_version }})..."
+    @infisical run --env=beta --silent -- pnpm --filter job build
+    @just _assert-provisioned job
+    @cd wom7web/apps/job/dist/server && infisical run --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+
+# Deploy apps/demo (demo.webomage.com — T79 demo showcase) to Cloudflare Workers
+deploy-demo: (_confirm "deploy-demo")
+    @echo "Building and deploying apps/demo to Cloudflare Workers (Version: {{ deploy_version }})..."
+    @infisical run --env=beta --silent -- pnpm --filter demo build
+    @cd wom7web/apps/demo/dist/server && infisical run --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+
+# Deploy apps/cp (cp.w0m.xyz)
+deploy-cp: (_confirm "deploy-cp")
+    @echo "Building and deploying apps/cp to Cloudflare Workers (Version: {{ deploy_version }})..."
+    @infisical run --env=beta --silent -- pnpm --filter cp build
+    @just _assert-provisioned cp
+    @cd wom7web/apps/cp/dist/server && infisical run --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+
+# Deploy wom7func to Cloudflare
+deploy-workers:
+    @echo "Deploying wom7func to Cloudflare Workflows (Version: {{ deploy_version }})..."
+    @cd wom7func && infisical run --env=beta --silent -- pnpm exec wrangler deploy --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+
+# Deploy all functions in parallel using Supabase CLI
+deploy-functions:
+    @echo "Deploying all functions to project {{ project_ref }} in parallel (Version: {{ deploy_version }})..."
+    @infisical run --env=beta -- sh -c 'supabase secrets set DEPLOY_VERSION="{{ deploy_version }}" DEPLOY_AT="{{ deploy_at }}" DEPLOY_COMMIT="{{ deploy_commit }}" --project-ref {{ project_ref }} > /dev/null 2>&1'
+    @cd wom7api && infisical run --env=beta -- supabase functions deploy --use-api -j 5 --project-ref {{ project_ref }}
+
+# Deploy API capability layer
+deploy-api: (_confirm "deploy-api") check-auth check-warp supabase-redeploy-all check-supabase
+
+# Pre-deploy security gate & infrastructure checks
+check-infisical:
+    @echo "🔑 Checking Infisical session..."
+    @if ! infisical run --env=beta --silent -- true </dev/null >/dev/null 2>&1; then \
+        echo "❌ Infisical session invalid/expired — every deploy step that injects secrets will fail."; \
+        echo "   Fix: run 'infisical login' (browser), confirm the active account is aleksei@webomage.com, then re-run."; \
+        exit 1; \
+    fi
+    @echo "✅ Infisical authenticated."
+
+check-guardrails:
+    @echo "🛡  Pre-deploy security gate (secrets + test-admin + connection-strings)..."
+    @cd wom7api && pre-commit run gitleaks --all-files
+    @cd wom7web && pre-commit run gitleaks --all-files
+    @cd wom7web && pre-commit run guard-test-admin --all-files
+    @echo "🔑 Inline-credential connection-string scan (gitleaks gap — T32)..."
+    @cd wom7api && if git --no-pager grep -nEI '(postgres|postgresql|mysql|mongodb|redis|amqp)://[A-Za-z0-9._%+-]+:[A-Za-z0-9._%+~!-]{6,}@' -- ':!*.md'; then echo "❌ inline credential in tracked files — remove + rotate (see T32)"; exit 1; fi
+    @cd wom7web && if git --no-pager grep -nEI '(postgres|postgresql|mysql|mongodb|redis|amqp)://[A-Za-z0-9._%+-]+:[A-Za-z0-9._%+~!-]{6,}@' -- ':!*.md'; then echo "❌ inline credential in tracked files — remove + rotate (see T32)"; exit 1; fi
+    @echo "✅ security gate passed"
+
+check-warp:
+    @just --justfile wom7api/justfile check-warp
+
+check-auth:
+    @just --justfile wom7api/justfile check-auth
+
+check-supabase:
+    @just --justfile wom7api/justfile check-supabase
+
+supabase-redeploy-all:
+    @just --justfile wom7api/justfile supabase-redeploy-all
+
+db-migrate *args:
+    @just --justfile wom7api/justfile db-migrate {{ args }}
+
+goldens *args:
+    @just --justfile wom7api/justfile goldens {{ args }}
+
+smoke-live *args:
+    @just --justfile wom7api/justfile smoke-live {{ args }}
+
+_assert-clean-tree:
+    @dirty="$(cd wom7web && git status --porcelain -- apps/web/src/config apps/web/.generated 2>/dev/null)"; \
+        if [ -n "$dirty" ]; then echo "❌ Deploy dirtied tracked files:"; echo "$dirty"; exit 1; fi; \
+        echo "✅ Deploy left no tracked snapshot/version files dirty."
+
+_log-deploy:
+    @infisical run --env=beta -- python3 scripts/log_deploy.py release "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)"
+
+changelog:
+    @infisical run --env=beta -- python3 scripts/gen_changelog.py
+
+changelog-drift *args:
+    @python3 wom7web/project/scripts/changelog_drift.py {{ args }}
+
+changelog-drift-test:
+    @python3 wom7web/project/scripts/tests/test_changelog_drift.py
+
+deploy:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -n "${W0M_DEPLOY_LOGGED:-}" ]; then
+      exec just _deploy-chain
+    fi
+    exec env W0M_DEPLOY_LOGGED=1 python3 wom7web/project/scripts/deploy_logged.py _deploy-chain
+
+_deploy-chain: (_confirm "deploy") check-infisical check-guardrails test goldens deploy-api deploy-web deploy-cp deploy-join deploy-job deploy-demo smoke-live _assert-clean-tree _log-deploy
+
+deploy-all:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -n "${W0M_DEPLOY_LOGGED:-}" ]; then
+      exec just _deploy-all-chain
+    fi
+    exec env W0M_DEPLOY_LOGGED=1 python3 wom7web/project/scripts/deploy_logged.py _deploy-all-chain
+
+_deploy-all-chain: (_confirm "deploy-all") check-warp check-infisical db-migrate deploy _post-deploy-knowledge
+
+_post-deploy-knowledge:
+    -@just knowledge-light
+
+deploy-logged *args:
+    @python3 wom7web/project/scripts/deploy_logged.py {{ args }}
+
+deploy-logged-test:
+    @python3 wom7web/project/scripts/tests/test_deploy_logged.py
+
+deploy-logs-rotate *args:
+    @python3 wom7web/project/scripts/deploy_logs_rotate.py {{ args }}
+
+deploy-logs-rotate-test:
+    @python3 wom7web/project/scripts/tests/test_deploy_logs_rotate.py
+
+deploy-in-flight-test:
+    @python3 wom7web/project/scripts/tests/test_deploy_in_flight.py
+
+deploy-elevation-test:
+    @python3 scripts/tests/test_deploy_elevation.py
+
+
 # ── State Surface (T145 / T412) ──────────────────────────────────────────────
 state-check *args:
     @python3 scripts/state_doctor.py --check {{ args }}
@@ -515,6 +723,9 @@ test:
 
 test-all:
     @python3 scripts/run_suites.py --tier all
+
+typecheck *args:
+    @just --justfile wom7web/justfile typecheck {{ args }}
 
 suites-drift *args:
     @python3 scripts/run_suites.py --drift {{ args }}

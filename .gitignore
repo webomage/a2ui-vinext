@@ -70,3 +70,9 @@ ${input:db_path}
 project/.tools-outdated.json
 project/.tools-weekly-status.json
 
+# ── deploy logs (T421) ────────────────────────────────────────────────────────
+/deploy-logs/**
+!/deploy-logs/
+!/deploy-logs/.gitkeep
+
+
