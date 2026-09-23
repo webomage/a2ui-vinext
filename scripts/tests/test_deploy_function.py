@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -58,6 +59,16 @@ class DeployFunctionTest(unittest.TestCase):
     def test_root_recipe_is_confirm_gated(self):
         text = (ROOT / "justfile").read_text()
         self.assertIn('deploy-function +names: (_confirm "deploy-function")', text)
+
+    def test_root_justfile_exports_db_migrations_for_config_toml(self):
+        # config.toml's env(W0M_DB_MIGRATIONS) has no default; unset = ProjectConfigParseError on
+        # every supabase command. The first real `just deploy-function` died on exactly this.
+        text = (ROOT / "justfile").read_text()
+        self.assertIn("export W0M_DB_MIGRATIONS := env_var_or_default('W0M_DB_MIGRATIONS', 'true')", text)
+        r = subprocess.run(["just", "--justfile", str(ROOT / "justfile"), "--evaluate", "W0M_DB_MIGRATIONS"],
+                           capture_output=True, text=True,
+                           env={k: v for k, v in os.environ.items() if k != "W0M_DB_MIGRATIONS"})
+        self.assertEqual(r.stdout.strip(), "true", r.stderr)
 
 
 class _GlyphResult(unittest.TextTestResult):

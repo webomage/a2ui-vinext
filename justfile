@@ -13,6 +13,11 @@ infisical_project_id := "87a1718d-17c6-4c5e-b0c1-f8bb2fd9d13c"
 deploy_version := `date +%Y.%m.%d-%s`
 deploy_at := `date -u +%Y-%m-%dT%H:%M:%SZ`
 deploy_commit := `git rev-parse --short HEAD`
+# wom7api/supabase/config.toml reads `env(W0M_DB_MIGRATIONS)`, which has no default: unset means
+# EVERY `supabase` command fails with ProjectConfigParseError (T248). Recipes here that call the CLI
+# directly (`deploy-function`, `deploy-functions`) need the same export wom7api/justfile carries;
+# without it the first `just deploy-function` failed (T431).
+export W0M_DB_MIGRATIONS := env_var_or_default('W0M_DB_MIGRATIONS', 'true')
 
 default:
     @just --justfile wom7web/justfile default
