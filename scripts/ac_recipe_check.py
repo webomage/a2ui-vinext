@@ -74,6 +74,18 @@ ACKNOWLEDGED: dict[tuple[str, str], str] = {
         "skill-check` -> `node scripts/verify_skills.mjs` -> \"56 managed skill(s) match the "
         "lockfile - 0 unmanaged, 0 drift.\" A true, checked citation this gate's scope cannot reach."
     ),
+    ("T198", "deploy-client-api"): (
+        "true when ticked: one of the 25 per-function recipes T431 (2026-09-23) replaced with "
+        "`just deploy-function client-api`. The AC records what ran then, not a gate that should exist now."
+    ),
+    ("T246", "deploy-agent-consultant"): (
+        "true when ticked: a per-function recipe T431 replaced with `just deploy-function "
+        "agent-consultant`. The AC records that the deploy prompted, which the new recipe also does."
+    ),
+    ("T249", "deploy-agent-consultant"): (
+        "true when ticked: a per-function recipe T431 replaced with `just deploy-function "
+        "agent-consultant`. Historical citation of the deploy step, not a missing gate."
+    ),
 }
 
 
