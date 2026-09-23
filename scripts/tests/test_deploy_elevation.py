@@ -156,5 +156,15 @@ class TestDeployElevation(unittest.TestCase):
             )
 
 
+    def test_root_pnpm_builds_run_inside_wom7web(self):
+        """Root `pnpm --filter` builds must `cd wom7web` first (T431): from @wom, PATH's pnpm runs
+        outside the workspace and the app scripts cannot see wom7web/node_modules/.bin (astro)."""
+        body = (ROOT / "justfile").read_text(encoding="utf-8")
+        lines = [ln for ln in body.splitlines() if "pnpm --filter" in ln and not ln.lstrip().startswith("#")]
+        self.assertGreaterEqual(len(lines), 6, "expected the build + 5 deploy-<app> build lines")
+        for ln in lines:
+            self.assertRegex(ln, r"^\s+@?cd wom7web && ", f"root pnpm build not run from wom7web: {ln.strip()}")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -356,9 +356,13 @@ _confirm step:
 confirm-test:
     @python3 wom7web/project/scripts/tests/test_confirm_step.py
 
+# Every `pnpm --filter <app> build` below runs from `wom7web`, never from @wom. @wom's package.json
+# has no `packageManager` pin and is not the pnpm workspace, so from here PATH's pnpm (12.x) ran the
+# build without the workspace root's node_modules/.bin, and the first root `deploy-web` failed with
+# `astro: command not found` (T431, 2026-09-23). Guarded by `just deploy-elevation-test`.
 # Build all web workspaces and stamp release metadata
 build:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web --filter cp --filter join --filter job --filter demo build
+    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web --filter cp --filter join --filter job --filter demo build
     @python3 wom7web/project/scripts/stamp_build.py \
         --version "{{ deploy_version }}" --at "{{ deploy_at }}" --commit "{{ deploy_commit }}"
 
@@ -372,7 +376,7 @@ deploy-web: (_confirm "deploy-web")
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/apps/web/scripts/snapshot-settings.mjs || true
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/apps/web/scripts/snapshot-blueprints.mjs || true
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/apps/web/scripts/snapshot-knowledge.mjs || true
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web build
+    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web build
     @just _assert-provisioned web
     @echo "🔍 Building pagefind search index..."
     @cd wom7web/apps/web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run build:search
@@ -381,27 +385,27 @@ deploy-web: (_confirm "deploy-web")
 # Deploy apps/join (join.webomage.com)
 deploy-join: (_confirm "deploy-join")
     @echo "Building and deploying apps/join to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter join build
+    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter join build
     @just _assert-provisioned join
     @cd wom7web/apps/join/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/job (job.webomage.com)
 deploy-job: (_confirm "deploy-job")
     @echo "Building and deploying apps/job to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter job build
+    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter job build
     @just _assert-provisioned job
     @cd wom7web/apps/job/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/demo (demo.webomage.com — T79 demo showcase) to Cloudflare Workers
 deploy-demo: (_confirm "deploy-demo")
     @echo "Building and deploying apps/demo to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter demo build
+    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter demo build
     @cd wom7web/apps/demo/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/cp (cp.w0m.xyz)
 deploy-cp: (_confirm "deploy-cp")
     @echo "Building and deploying apps/cp to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter cp build
+    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter cp build
     @just _assert-provisioned cp
     @cd wom7web/apps/cp/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
