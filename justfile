@@ -113,6 +113,9 @@ ds-check *args:
 ds-check-test:
     @python3 wom7web/project/scripts/tests/test_ds_check.py
 
+ds-react-free-test:
+    @python3 -m unittest scripts/tests/test_design_system_react_free.py
+
 
 
 # ── Estate Search (T406) ─────────────────────────────────────────────────────
