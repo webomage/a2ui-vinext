@@ -412,6 +412,17 @@ deploy-functions:
     @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- supabase functions deploy --use-api -j 5 --project-ref {{ project_ref }}
 
 # Deploy API capability layer
+# T431: deploy NAMED edge function(s): the per-function top-level helper, replacing 25 copies in
+# wom7api/justfile. Validates every name against wom7api/supabase/functions/ before deploying anything;
+# JWT posture comes from supabase/config.toml, as for the bulk deploy. `just deploy-function-list`
+# prints the names. It does not restamp DEPLOY_VERSION: a partial redeploy is not a release.
+deploy-function +names: (_confirm "deploy-function")
+    @python3 scripts/deploy_function.py {{ names }} --project-ref {{ project_ref }} --infisical-project-id {{ infisical_project_id }}
+
+# Names `deploy-function` accepts (read-only, no confirmation).
+deploy-function-list:
+    @python3 scripts/deploy_function.py --list --project-ref {{ project_ref }} --infisical-project-id {{ infisical_project_id }}
+
 deploy-api: (_confirm "deploy-api") check-auth check-warp supabase-redeploy-all check-supabase
 
 # Pre-deploy security gate & infrastructure checks
