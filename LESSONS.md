@@ -880,6 +880,12 @@ Embedding `projectId`, `projectTitle`, `projectRoleId`, `projectRoleName`, and `
 ⇒ **Embed hierarchical resource scope directly within the signed role token payload, and keep resource-scoped hat switches context-local to the active portal.**
 ⭐ **The tell:** Introducing disjoint cookies (`sb-active-role` and `sb-active-project`) that can drift out of sync on partial failure or reset.
 
+### EMBEDDED DOCUMENT STYLING IN WORKSPACE INTERFACES REQUIRES ROOT CONTAINER SCOPING
+**2026-09-23 (T165, CP Resume Studio).** Integrating production branding CSS templates (`ats-plain`, `classic`, `modern`, etc.) into an interactive CP admin dashboard component caused document-level selectors (`body`, `h1`, `a`, typography) to bleed into the global admin interface, distorting navigation and page layouts.
+
+⇒ **Scope all document stylesheet rules under an explicit container class (`.resume-sheet.template-*`), and confine document-wide pagination rules (`@page`, `@media print`) strictly inside print media queries.**
+⭐ **The tell:** Importing document stylesheets into an interactive workspace island without an enclosing container class namespace.
+
 ---
 
 ## 7. Performance & Edge Integration
