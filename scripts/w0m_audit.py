@@ -184,7 +184,7 @@ def check_drift(scope_diff=None):
     # spec-drift gate (hard-fails on completed-not-archived / done-ticket-active drift).
     # --scope-diff <ref> scopes it to what a push touches (pre-existing backlog stays
     # advisory) — the pre-push hook passes origin/<branch> so it matches historic behavior.
-    sd_cmd = [sys.executable, "project/scripts/spec_drift_gate.py"]
+    sd_cmd = [sys.executable, str(MONO_ROOT / "scripts" / "spec_drift_gate.py")]
     if scope_diff:
         sd_cmd += ["--scope-diff", scope_diff]
     sd = subprocess.run(sd_cmd, cwd=WEB_ROOT, capture_output=True, text=True)
