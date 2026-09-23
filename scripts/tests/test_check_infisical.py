@@ -109,5 +109,21 @@ class RootJustfileProjectIdTest(unittest.TestCase):
         self.assertEqual(text.count("infisical_project_id :="), 1)
 
 
+class _GlyphResult(unittest.TextTestResult):
+    """One ✅/❌ line per test, so run_suites.count_checks() can count this suite (T224 ratchet)."""
+
+    def addSuccess(self, test):
+        super().addSuccess(test)
+        print(f"✅ {test._testMethodName}")
+
+    def addFailure(self, test, err):
+        super().addFailure(test, err)
+        print(f"❌ {test._testMethodName}")
+
+    def addError(self, test, err):
+        super().addError(test, err)
+        print(f"❌ {test._testMethodName} (error)")
+
+
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    unittest.main(testRunner=unittest.TextTestRunner(resultclass=_GlyphResult, verbosity=0))

@@ -219,6 +219,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T430](.tasks/T430.md) · [#430](https://github.com/casualuser/webomage.com/issues/430) | **P0** | **Repair the T411/T414/T418/T419 elevation fallout that turned 8 deploy-blocking suites red** | tooling, web, skills | — | ✅ **done** |
 | [T429](.tasks/T429.md) · [#429](https://github.com/casualuser/webomage.com/issues/429) | **P1** | **check-infisical names the real failure cause; root justfile passes an explicit Infisical project id** | tooling, api, web | — | ✅ **done** |
 | [T422](.tasks/T422.md) | **P1** | 🆕 **Design System React Spec Elimination & Token SSOT Consolidation (Post-T420 Phase 2)** | web, tooling | openspec/changes/2026-09-23-design-system-react-elimination-and-tokens-ssot | ✅ **done** |
 | [T421](.tasks/T421.md) | **P1** | 🆕 **Elevate Deployment Machinery, Scripts, Recipes, and Logs to Workspace Root (Phase 4)** | tooling, api, web | openspec/changes/2026-09-23-deploy-machinery-root-elevation | ✅ **done** |
