@@ -6,6 +6,10 @@ set dotenv-load := false
 
 # Deployment Version & Parameters (T131 / T421)
 project_ref := "pqbbjgeapylcengbuvee"
+# Infisical project (workspace) id, the ONE source for every `infisical run` below (T429). It is an
+# identifier, not a credential, and equals wom7api/.infisical.json `workspaceId`. Explicit, because
+# these recipes run from @wom, which has no .infisical.json link (the T421 elevation broke that silently).
+infisical_project_id := "87a1718d-17c6-4c5e-b0c1-f8bb2fd9d13c"
 deploy_version := `date +%Y.%m.%d-%s`
 deploy_at := `date -u +%Y-%m-%dT%H:%M:%SZ`
 deploy_commit := `git rev-parse --short HEAD`
@@ -349,76 +353,70 @@ confirm-test:
 
 # Build all web workspaces and stamp release metadata
 build:
-    @infisical run --env=beta --silent -- pnpm --filter web --filter cp --filter join --filter job --filter demo build
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web --filter cp --filter join --filter job --filter demo build
     @python3 wom7web/project/scripts/stamp_build.py \
         --version "{{ deploy_version }}" --at "{{ deploy_at }}" --commit "{{ deploy_commit }}"
 
 _assert-provisioned app:
-    @infisical run --env=beta --silent -- python3 wom7web/project/scripts/build_provisioning_gate.py --app {{ app }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7web/project/scripts/build_provisioning_gate.py --app {{ app }}
 
 # Deploy apps/web (webomage.com)
 deploy-web: (_confirm "deploy-web")
     @echo "Building and deploying apps/web to Cloudflare Workers (Version: {{ deploy_version }})..."
     @echo "📸 Updating static snapshots..."
-    @infisical run --env=beta -- node wom7web/apps/web/scripts/snapshot-settings.mjs || true
-    @infisical run --env=beta -- node wom7web/apps/web/scripts/snapshot-blueprints.mjs || true
-    @infisical run --env=beta -- node wom7web/apps/web/scripts/snapshot-knowledge.mjs || true
-    @infisical run --env=beta --silent -- pnpm --filter web build
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/apps/web/scripts/snapshot-settings.mjs || true
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/apps/web/scripts/snapshot-blueprints.mjs || true
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/apps/web/scripts/snapshot-knowledge.mjs || true
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web build
     @just _assert-provisioned web
     @echo "🔍 Building pagefind search index..."
-    @cd wom7web/apps/web && infisical run --env=beta --silent -- pnpm run build:search
-    @cd wom7web/apps/web/dist/server && infisical run --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd wom7web/apps/web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run build:search
+    @cd wom7web/apps/web/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/join (join.webomage.com)
 deploy-join: (_confirm "deploy-join")
     @echo "Building and deploying apps/join to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @infisical run --env=beta --silent -- pnpm --filter join build
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter join build
     @just _assert-provisioned join
-    @cd wom7web/apps/join/dist/server && infisical run --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd wom7web/apps/join/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/job (job.webomage.com)
 deploy-job: (_confirm "deploy-job")
     @echo "Building and deploying apps/job to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @infisical run --env=beta --silent -- pnpm --filter job build
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter job build
     @just _assert-provisioned job
-    @cd wom7web/apps/job/dist/server && infisical run --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd wom7web/apps/job/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/demo (demo.webomage.com — T79 demo showcase) to Cloudflare Workers
 deploy-demo: (_confirm "deploy-demo")
     @echo "Building and deploying apps/demo to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @infisical run --env=beta --silent -- pnpm --filter demo build
-    @cd wom7web/apps/demo/dist/server && infisical run --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter demo build
+    @cd wom7web/apps/demo/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/cp (cp.w0m.xyz)
 deploy-cp: (_confirm "deploy-cp")
     @echo "Building and deploying apps/cp to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @infisical run --env=beta --silent -- pnpm --filter cp build
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter cp build
     @just _assert-provisioned cp
-    @cd wom7web/apps/cp/dist/server && infisical run --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd wom7web/apps/cp/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy wom7func to Cloudflare
 deploy-workers:
     @echo "Deploying wom7func to Cloudflare Workflows (Version: {{ deploy_version }})..."
-    @cd wom7func && infisical run --env=beta --silent -- pnpm exec wrangler deploy --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd wom7func && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec wrangler deploy --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy all functions in parallel using Supabase CLI
 deploy-functions:
     @echo "Deploying all functions to project {{ project_ref }} in parallel (Version: {{ deploy_version }})..."
-    @infisical run --env=beta -- sh -c 'supabase secrets set DEPLOY_VERSION="{{ deploy_version }}" DEPLOY_AT="{{ deploy_at }}" DEPLOY_COMMIT="{{ deploy_commit }}" --project-ref {{ project_ref }} > /dev/null 2>&1'
-    @cd wom7api && infisical run --env=beta -- supabase functions deploy --use-api -j 5 --project-ref {{ project_ref }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'supabase secrets set DEPLOY_VERSION="{{ deploy_version }}" DEPLOY_AT="{{ deploy_at }}" DEPLOY_COMMIT="{{ deploy_commit }}" --project-ref {{ project_ref }} > /dev/null 2>&1'
+    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- supabase functions deploy --use-api -j 5 --project-ref {{ project_ref }}
 
 # Deploy API capability layer
 deploy-api: (_confirm "deploy-api") check-auth check-warp supabase-redeploy-all check-supabase
 
 # Pre-deploy security gate & infrastructure checks
 check-infisical:
-    @echo "🔑 Checking Infisical session..."
-    @if ! infisical run --env=beta --silent -- true </dev/null >/dev/null 2>&1; then \
-        echo "❌ Infisical session invalid/expired — every deploy step that injects secrets will fail."; \
-        echo "   Fix: run 'infisical login' (browser), confirm the active account is aleksei@webomage.com, then re-run."; \
-        exit 1; \
-    fi
-    @echo "✅ Infisical authenticated."
+    @python3 scripts/check_infisical.py --project-id {{ infisical_project_id }}
 
 check-guardrails:
     @echo "🛡  Pre-deploy security gate (secrets + test-admin + connection-strings)..."
@@ -457,10 +455,10 @@ _assert-clean-tree:
         echo "✅ Deploy left no tracked snapshot/version files dirty."
 
 _log-deploy:
-    @infisical run --env=beta -- python3 scripts/log_deploy.py release "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)"
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py release "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)"
 
 changelog:
-    @infisical run --env=beta -- python3 scripts/gen_changelog.py
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/gen_changelog.py
 
 changelog-drift *args:
     @python3 wom7web/project/scripts/changelog_drift.py {{ args }}

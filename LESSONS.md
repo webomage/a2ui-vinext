@@ -1056,3 +1056,11 @@ assert condition_met()
 
 
 
+
+### A CHECK THAT SWALLOWS THE CLI'S ERROR WILL NAME THE WRONG CAUSE
+**2026-09-23 (T429 / `check-infisical` after the T421 deploy elevation).** `just deploy-all` stopped with *"Infisical session invalid/expired"* while the session was fine: run from `wom7api`, the same probe injected 105 secrets. T421 had moved the deploy recipes into `@wom/justfile`, which runs from `@wom`, and `@wom` has no `.infisical.json` project link. The CLI said exactly that (*"Please either run infisical init … or pass in project id with --projectId flag"*), but the recipe ran it with `>/dev/null 2>&1` and mapped **every** non-zero exit to "expired". The owner re-logged in for nothing, and a hand-copied `.infisical.json` was the only thing that unblocked the deploy.
+
+⇒ **A pre-flight check must classify the failure from what the tool actually said, and print that line:**
+- Capture stderr (never stdout of a secrets command), and match it to *named* causes (no project link / wrong project id / expired session). Anything unrecognised prints the first stderr line as **"not classified"**. Never default to the most familiar cause.
+- When recipes move to a new cwd (an elevation), their **implicit per-directory config** (`.infisical.json`, `.env`, tool links) doesn't move with them. Make it explicit: the root justfile now passes `--projectId={{ infisical_project_id }}` from one variable at all 22 call sites, and a test asserts none is missing.
+⭐ **The tell:** a check's error message tells you to redo something you just did successfully (re-login, re-auth), and the underlying command's own output was redirected to `/dev/null`.
