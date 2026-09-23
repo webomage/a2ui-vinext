@@ -536,7 +536,13 @@ Running read-only diagnostic commands like `deploy_logged.py version-check` or `
 `supabase/functions/_shared/tool-manifest.ts` was a symlink pointing across estate repositories to `wom7web`. When using the Supabase Management API deployment (`supabase functions deploy --use-api`), the CLI packaging step ignores any symlinks targeting files outside the function project's source root, dropping them from the deployed bundle.
 
 ⇒ **Edge functions in `wom7api/supabase/functions/_shared/` must be standalone modules contained within the repository root, never cross-repo symlinks to sibling workspaces.**
-⭐ **The tell:** Supabase deployment logs emitting `WARN: Skipping import path outside source root` right before a module resolution failure.
+### OPENSPEC CAPABILITY SPECS REQUIRE EXPLICIT DELTA HEADERS (## ADDED/MODIFIED/REMOVED), NEVER GENERIC ## REQUIREMENTS
+**2026-09-23 (T422).** `npx openspec validate <change>` rejected a spec with `[ERROR] No delta sections found. Add headers such as "## ADDED Requirements" or move non-delta notes outside specs/`.
+
+An author wrote `## Requirements` in a change's capability spec. While human-readable, OpenSpec's AST parser classifies requirements solely by delta headers (`## ADDED Requirements`, `## MODIFIED Requirements`, `## REMOVED Requirements`, `## RENAMED Requirements`). Omitting the delta classifier causes the change to register zero deltas and fails pre-push gates (`w0m-audit`).
+
+⇒ **Always use explicit delta headings (`## ADDED Requirements`, `## MODIFIED Requirements`) in OpenSpec capability files under `specs/<capability>/spec.md`.**
+⭐ **The tell:** `openspec validate` failing with `No delta sections found` or `Change must have at least one delta` despite well-formed `### Requirement:` and `#### Scenario:` blocks.
 
 ## 4. Dependencies and config
 
