@@ -100,6 +100,14 @@ sdlc-trace *args:
 sdlc-trace-test:
     @python3 wom7web/project/scripts/tests/test_sdlc_trace.py
 
+# ── Design System & Shipping Code Reconciliation (T420) ──────────────────────
+ds-check *args:
+    @python3 scripts/ds_check.py {{ args }}
+
+ds-check-test:
+    @python3 wom7web/project/scripts/tests/test_ds_check.py
+
+
 
 # ── Estate Search (T406) ─────────────────────────────────────────────────────
 # Bounded multi-repo search with LC_ALL=C and --no-pager. Never silently empty.
