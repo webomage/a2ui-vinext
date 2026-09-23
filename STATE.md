@@ -15,11 +15,11 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
-| 2 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
-| 3 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 84 | Indeed & X-Team Integrations 📄 live spec |
-| 4 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 83 | Full-observability logging strategy 📄 live spec |
-| 5 | [T165](/Users/proto/Projects/@self/@wom/.tasks/T165.md) | [#165](https://github.com/webomage/wom7board/issues/165) | P1 | queued | product | 82 | Member Resume/CV Engine & Web Tool — import/export, role/tech targeted gene 📄 live spec |
+| 1 | [T165](/Users/proto/Projects/@self/@wom/.tasks/T165.md) | [#165](https://github.com/webomage/wom7board/issues/165) | P1 | in-progress | product | 107 | Member Resume/CV Engine & Web Tool — import/export, role/tech targeted gene 📄 live spec |
+| 2 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
+| 3 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 4 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 84 | Indeed & X-Team Integrations 📄 live spec |
+| 5 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 83 | Full-observability logging strategy 📄 live spec |
 | 6 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 80 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
 | 7 | [T279](/Users/proto/Projects/@self/@wom/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 79 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
 | 8 | [T336](/Users/proto/Projects/@self/@wom/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 76 | Public free security audit lead magnet & client registration gate 📄 live spec |
@@ -41,7 +41,7 @@
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
-| 2 | [T165](/Users/proto/Projects/@self/@wom/.tasks/T165.md) | [#165](https://github.com/webomage/wom7board/issues/165) | P1 | queued | product | 3/8 | `████░░░░░░` 38% | — | Member Resume/CV Engine & Web Tool — import/export, role/tec |
+| 2 | [T165](/Users/proto/Projects/@self/@wom/.tasks/T165.md) | [#165](https://github.com/webomage/wom7board/issues/165) | P1 | in-progress | product | 3/8 | `████░░░░░░` 38% | — | Member Resume/CV Engine & Web Tool — import/export, role/tec |
 | 3 | [T287](/Users/proto/Projects/@self/@wom/.tasks/T287.md) | [#287](https://github.com/webomage/wom7board/issues/287) | P2 | queued | schemas | 5/7 | `███████░░░` 71% | — | Repos are a first-class entity — `projects.github_repo_url`  |
 | 4 | [T16](/Users/proto/Projects/@self/@wom/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
 | 5 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
@@ -60,8 +60,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **11** | 1 | `85f1407e` |
-| `wom7api` | `beta` | **6** | 0 | `56ea7ab` |
+| `wom7web` | `beta` | **3** | 2 | `fe034a2a` |
+| `wom7api` | `beta` | 0 | 1 | `a025489` |
 | `wom7func` | `beta` | 0 | 0 | `ecf30db` |
 | `wom7skills` | `beta` | 0 | 0 | `decd181` |
 | `wom7ext` | `beta` | 0 | 0 | `14b9f62` |
@@ -71,7 +71,7 @@
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
 **Tickets:** 186 open · 421 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T290","T29","T63","T43","T165","T214","T279","T336","T337","T365"],"repos":{"wom7api":{"branch":"beta","dirty":6,"has_upstream":true,"head":"56ea7ab","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"decd181","unpushed":0},"wom7web":{"branch":"beta","dirty":11,"has_upstream":true,"head":"85f1407e","unpushed":1}},"tickets":{"open":186,"rowless_open":[],"rows":421}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T165","T290","T29","T63","T43","T214","T279","T336","T337","T365"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"a025489","unpushed":1},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"decd181","unpushed":0},"wom7web":{"branch":"beta","dirty":3,"has_upstream":true,"head":"fe034a2a","unpushed":2}},"tickets":{"open":186,"rowless_open":[],"rows":421}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
