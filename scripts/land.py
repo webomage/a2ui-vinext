@@ -86,7 +86,16 @@ class LandLock:
 
     def __init__(self, repo_root: Path, timeout_sec: int = 0):
         self.repo_root = repo_root
-        self.lock_dir = repo_root / ".git"
+        git_path = repo_root / ".git"
+        if git_path.is_file():
+            res = subprocess.run(["git", "rev-parse", "--git-common-dir"], cwd=repo_root, capture_output=True, text=True)
+            if res.returncode == 0 and res.stdout.strip():
+                common_dir = Path(res.stdout.strip())
+                self.lock_dir = common_dir if common_dir.is_absolute() else (repo_root / common_dir).resolve()
+            else:
+                self.lock_dir = repo_root
+        else:
+            self.lock_dir = git_path
         self.lock_path = self.lock_dir / "w0m-land.lock"
         self.timeout_sec = timeout_sec
         self.acquired = False
@@ -292,6 +301,11 @@ def land_root(
     render_script = repo_root / "scripts" / "tasks_render.py"
     if render_script.exists():
         subprocess.run([sys.executable, str(render_script)], cwd=repo_root, capture_output=True)
+
+    # Regenerate STATE.md if state_doctor is present (T428 AC2)
+    state_script = repo_root / "scripts" / "state_doctor.py"
+    if state_script.exists():
+        subprocess.run([sys.executable, str(state_script), "--write"], cwd=repo_root, capture_output=True)
 
     # Selective staging: only stage declared paths (AC4)
     staged_paths = []

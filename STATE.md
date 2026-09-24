@@ -18,13 +18,13 @@
 | 1 | [T435](/Users/proto/Projects/@self/@wom/.tasks/T435.md) | [#435](https://github.com/webomage/wom7board/issues/435) | P0 | in-progress | security | 140 | The deploy/migrate confirmation gate is forgeable by any agent that holds a 📄 live spec |
 | 2 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
 | 3 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
-| 4 | [T428](/Users/proto/Projects/@self/@wom/.tasks/T428.md) | [#428](https://github.com/webomage/wom7board/issues/428) | P1 | in-progress | sdlc | 85 | DECISION: move session handoffs from STATE.md into ticket Status notes and generate PICK |
-| 5 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 84 | Indeed & X-Team Integrations 📄 live spec |
-| 6 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 83 | Full-observability logging strategy 📄 live spec |
-| 7 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 80 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
-| 8 | [T279](/Users/proto/Projects/@self/@wom/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 79 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
-| 9 | [T336](/Users/proto/Projects/@self/@wom/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 76 | Public free security audit lead magnet & client registration gate 📄 live spec |
-| 10 | [T337](/Users/proto/Projects/@self/@wom/.tasks/T337.md) | [#337](https://github.com/webomage/wom7board/issues/337) | P1 | queued | tools | 76 | Advanced code & infrastructure audit runner with ephemeral air-gapped sandb 📄 live spec |
+| 4 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 84 | Indeed & X-Team Integrations 📄 live spec |
+| 5 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 83 | Full-observability logging strategy 📄 live spec |
+| 6 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 80 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
+| 7 | [T279](/Users/proto/Projects/@self/@wom/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 79 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
+| 8 | [T336](/Users/proto/Projects/@self/@wom/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 76 | Public free security audit lead magnet & client registration gate 📄 live spec |
+| 9 | [T337](/Users/proto/Projects/@self/@wom/.tasks/T337.md) | [#337](https://github.com/webomage/wom7board/issues/337) | P1 | queued | tools | 76 | Advanced code & infrastructure audit runner with ephemeral air-gapped sandb 📄 live spec |
+| 10 | [T365](/Users/proto/Projects/@self/@wom/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 76 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
 
 ### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 194 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **194** are
+> ⚠️ **0 of 196 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **196** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -41,12 +41,12 @@
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | [T435](/Users/proto/Projects/@self/@wom/.tasks/T435.md) | [#435](https://github.com/webomage/wom7board/issues/435) | P0 | in-progress | security | 7/8 | `█████████░` 88% | — | The deploy/migrate confirmation gate is forgeable by any age |
-| 2 | [T428](/Users/proto/Projects/@self/@wom/.tasks/T428.md) | [#428](https://github.com/webomage/wom7board/issues/428) | P1 | in-progress | sdlc | 4/6 | `███████░░░` 67% | — | DECISION: move session handoffs from STATE.md into ticket St |
-| 3 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
-| 4 | [T287](/Users/proto/Projects/@self/@wom/.tasks/T287.md) | [#287](https://github.com/webomage/wom7board/issues/287) | P2 | queued | schemas | 5/7 | `███████░░░` 71% | — | Repos are a first-class entity — `projects.github_repo_url`  |
-| 5 | [T16](/Users/proto/Projects/@self/@wom/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
-| 6 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
-| 7 | [T153](/Users/proto/Projects/@self/@wom/.tasks/T153.md) | [#153](https://github.com/webomage/wom7board/issues/153) | P1 | in-progress | sdlc | 1/8 | `█░░░░░░░░░` 12% | 🟠 [T111](/Users/proto/Projects/@self/@wom/.tasks/T111.md) (from ACs) | ZeroClaw as a managed w0m runtime — omlx-backed local agent, |
+| 2 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
+| 3 | [T287](/Users/proto/Projects/@self/@wom/.tasks/T287.md) | [#287](https://github.com/webomage/wom7board/issues/287) | P2 | queued | schemas | 5/7 | `███████░░░` 71% | — | Repos are a first-class entity — `projects.github_repo_url`  |
+| 4 | [T16](/Users/proto/Projects/@self/@wom/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
+| 5 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
+| 6 | [T153](/Users/proto/Projects/@self/@wom/.tasks/T153.md) | [#153](https://github.com/webomage/wom7board/issues/153) | P1 | in-progress | sdlc | 1/8 | `█░░░░░░░░░` 12% | 🟠 [T111](/Users/proto/Projects/@self/@wom/.tasks/T111.md) (from ACs) | ZeroClaw as a managed w0m runtime — omlx-backed local agent, |
+| 7 | [T437](/Users/proto/Projects/@self/@wom/.tasks/T437.md) | [#437](https://github.com/webomage/wom7board/issues/437) | P3 | in-progress | tools | 3/5 | `██████░░░░` 60% | — | WebTorrent Desktop without Rosetta: webomage fork shipping n |
 | 8 | [T265](/Users/proto/Projects/@self/@wom/.tasks/T265.md) | [#265](https://github.com/webomage/wom7board/issues/265) | P2 | queued | sdlc | 4/9 | `████░░░░░░` 44% | — | Define and pilot a HALF-MANAGED project tier — skills, tools |
 | 9 | [T219](/Users/proto/Projects/@self/@wom/.tasks/T219.md) | [#219](https://github.com/webomage/wom7board/issues/219) | P2 | queued | infra | 2/5 | `████░░░░░░` 40% | — | wom7ext ↔ ZeroClaw realignment — mcp-b is already vestigial  |
 | 10 | [T301](/Users/proto/Projects/@self/@wom/.tasks/T301.md) | [#301](https://github.com/webomage/wom7board/issues/301) | P2 | in-progress | tools | 2/5 | `████░░░░░░` 40% | — | Five of six policy schemas are decorative: written, declared |
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **6** | 0 | `21cdd5b0` |
+| `wom7web` | `beta` | 0 | 3 | `27c379d7` |
 | `wom7api` | `beta` | 0 | 0 | `3c82a76` |
 | `wom7func` | `beta` | 0 | 0 | `ecf30db` |
-| `wom7skills` | `beta` | 0 | 0 | `a3367fa` |
+| `wom7skills` | `beta` | 0 | 1 | `be55a51` |
 | `wom7ext` | `beta` | 0 | 0 | `14b9f62` |
 | `wom7sec` | `beta` | 0 | 0 | `9b85831` |
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 194 open · 435 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 196 open · 438 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T435","T290","T29","T428","T63","T43","T214","T279","T336","T337"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"3c82a76","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"a3367fa","unpushed":0},"wom7web":{"branch":"beta","dirty":6,"has_upstream":true,"head":"21cdd5b0","unpushed":0}},"tickets":{"open":194,"rowless_open":[],"rows":435}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T435","T290","T29","T63","T43","T214","T279","T336","T337","T365"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"3c82a76","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"be55a51","unpushed":1},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"27c379d7","unpushed":3}},"tickets":{"open":196,"rowless_open":[],"rows":438}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -123,44 +123,41 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-09-24 (LATEST) — **T211 (ticket diagram co-location & zero-width browser viewer), T431 (deploy-all regressions / run 7), T428 (crash-safety adopt) & T426 completed; T432 & T433 research tickets opened; offline tier 100% green; next: Typed-Decision System One capability (Jev/Kev/Laya providers, router research: Switchboard vs SystemOneHarness, awesome-jev deep dive, upstream Laya adapter) / T407 / T290.**
+## ⭐ PICK UP HERE — 2026-09-24 (generated) — in-flight tickets & session handoffs
 
-**What this session completed:**
+> **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
+> Each session records its handoff into its active ticket's `## Status notes`.
+> Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-1. **Ticket Architecture Diagram Co-location, GitHub Sync & Zero-Width Browser Viewer (T211 completed, `fb4cb17`)**:
-   - **T211 recycled & closed**: Recycled closed duplicate ticket T211, authored OpenSpec proposal in `openspec/changes/2026-09-24-ticket-diagram-colocation-and-sync/` with DoD check clean.
-   - **Sibling Diagram Auto-Discovery**: Added `ticket_diagrams(ticket_id)` to `scripts/sync_github.py` scanning `.tasks/T{id}*.mmd` and projecting into GitHub Issue bodies in collapsible `<details open><summary>📊 {Title}</summary>` blocks with native GitHub Mermaid fences.
-   - **Byte-Identical Hash Stability (AC2)**: Proved zero index churn (`skipped=421`, zero unwanted GitHub API calls) for tickets without diagrams.
-   - **Zero-Width-Limit Browser Viewer (AC4, AC6)**: Created `scripts/diagram_view.py` and top-level `just diagram [target]` recipe, compiling standalone dark-mode HTML (`/tmp/w0m-diagram-preview.html`) with SVG pan/zoom (wheel zoom, mouse drag, keyboard shortcuts, multi-diagram tabs). Tested via 7/7 test suite `scripts/tests/test_diagram_view.py` (`just diagram-test`).
-   - **Quality Gates Verified**: `just sync-tickets-test` (59/59 passed), `just diagram-test` (7/7 passed), `just ticket-schema-check` (0 errors), `just ticket-audit T211` (✅ 4/4 agree, 6/6 ACs confirmed), `just state-check` (passed).
-   - **Estate Commits**: Root monorepo `fb4cb17`, `43f216a`, `e233cc6`; `wom7web` `7e69e374`, `e96c592e`.
+#### In-flight tickets (10):
 
-2. **Deploy-all regressions & session preflight fixes (`030a7f6` committed across estate)**:
-   - **T431 (Run 7 deploy-all regressions)**: Fixed seed-cv bundle timeout, dead imports, page-test, `/cdn` prefix handling, and deploy_version inheritance across nested `just`.
-   - **T428 & T426**: AC1 decided (adopt crash-safety), AC4–AC6 built; T426 AC5 removal half done.
-   - **Session-start orientation (`just state-brief`)**: Updated `scripts/state_doctor.py` to display in-progress tickets with their newest status note followed by the active pickup block. Claude runs it via SessionStart hook; AGENTS.md mandates for all agents.
-   - **Estate quality gates**: Added `scripts/reports_ticket_check.py` and `scripts/justfile_calls_check.py` to ensure report ticket parity and internal justfile call resolution.
-   - **Estate commits held on `beta`**: Monorepo root `030a7f6`, `wom7web` `f6961348`, `wom7api` `9b6fcbe`, `wom7skills` `901f359`.
+- **T16** — Verify & archive built-but-unarchived changes
+  - **2026-08-23** (32d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
+- **T153** — ZeroClaw as a managed w0m runtime — omlx-backed local agent, bidirectional w0m↔zeroclaw, tracked install config, and sandboxed client-project audits
+  - **2026-09-17** (7d ago): Start T153: ZeroClaw managed runtime & ecosystem integration
+- **T234** — Trial ai-memory as the recall layer — and find out how much of auto-memory is a duplicate register
+  - **2026-09-05** (19d ago): relocated verbatim from the TASKS.md board row (T228 AC5b — the ticket is the source, the board a projection; row exceeded the 4,096 B per-row bound, project/tasks_bounds.py).
+- **T257** — Retire the six emoji-to-parser couplings — the half of \"no emoji in logs\" that is a migration, not a cleanup
+  - **2026-08-25** (30d ago): 🔬 the script_output detector matches the WORD, not the CONTEXT, and it cost a
+- **T263** — ai-intake-service-requests
+  - **2026-08-23** (32d ago): 📌 RENAMED T16c → T263 on  (T242 AC3) — re-id'd to the next free sequential id.
+- **T290** — Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own invoice paid, and nothing reconciles invoices against Stripe
+  - **2026-09-12** (12d ago): owner began connecting Stripe (test-mode keys stored in beta), and split the
+- **T301** — Five of six policy schemas are decorative: written, declared, and loaded by nothing
+  - ⚠️ NO status note recorded where this stopped
+- **T308** — Own the ~/Projects estate inventory audit — reclaim safe disk space in w0m-governed repos and correct the audit's own governance measurement trap
+  - ⚠️ NO status note recorded where this stopped
+- **T435** — The deploy/migrate confirmation gate is forgeable by any agent that holds a terminal — refuse agent ancestry and gate every deploy-shaped recipe
+  - **2026-09-24** (today): Created and started (owner: "do"). P0: a live db-migrate was self-confirmed by agy on
+- **T437** — WebTorrent Desktop without Rosetta: webomage fork shipping native Apple Silicon builds, upstream arm64 PR, Rust (librqbit) WebTorrent path
+  - **2026-09-24** (today): Created and started (owner: "open the ticket and fork it under webomage"). arm64 build proven in a
 
-3. **Research & Tickets Filed**:
-   - **T432** (P2): Delivery & DevEx measurement — DORA 5-metric cockpit, Agent-DevEx signals, DX Core 4 scorecard, SPACE charter.
-   - **T433** (P2): Bug-bounty programme — w0m disclosure posture (`security.txt`, safe harbor, diodb) and human-gated hunting pilot.
+#### Completed today (4):
 
-4. **TODO / Next Work — Typed-Decision Capability & System One Architecture**:
-   - **Core Concept**: Bounded decision layer (typed question → choice/score/bool with confidence) replacing slow/costly generative LLM calls at bounded call sites.
-   - **Providers & Topology**:
-     - **Jev**: Hosted SaaS by TypeSafe (native System One HTTP API).
-     - **Kev** (`jaredpalmer/kev`): Open-source (Qwen3.5 0.8B/4B/9B, Apache-2.0, 255 commits) running on Mac (MLX) or self-hosted GPU on Modal (trainable on internal labels, reachable from edge workers). Native System One HTTP API.
-     - **Laya** (`laya-mlx`): Native Apple Silicon MLX inference (~7–14ms latency). Requires thin System One HTTP adapter.
-   - **Harness & Router Research**:
-     - **Switchboard** (`ruban-24/switchboard`): Open-source CLI proxy for coding agents (Claude Code / Codex), routing tasks to models/reasoning efforts via System One (Jev today; Laya/Kev coming soon). Focus is developer agent routing.
-     - **SystemOneHarness** (`HarnessRouter/SystemOneHarness`): Product kit / agent runtime harness for executing interactive live product loops (e.g. browser apps / games). Differentiated from developer CLI proxy routers.
-     - **Awesome-Jev** (`yibie/awesome-jev`): Deep dive into 300+ public implementations across classification, verification/guardrails (`jev-guard`, `pi-verdict`), code review (`diffjury`, `snifftest`), and agent routing (`jev-router`, `jcm-router`).
-   - **Concrete Next Actions**:
-     - **Ticket**: Open ticket for "typed-decision capability: System One contract; Jev, Kev and Laya providers; the Laya adapter as an upstream contribution".
-     - **Codebase Inventory**: Scan w0m estate for bounded decision call sites (routing, agent tool guardrails, rubric grading, ticket classification).
-     - **Upstream Contribution**: Build thin System One adapter for `laya-mlx` and contribute upstream (forked under `webomage` org into `wom7pr/` with `casualuser@gmail.com` as committer to establish dual brand + developer connection; tracked via `w0m-prs`).
-     - **Pilot Call Site**: Implement single-client abstraction + provider registry (`base_url` routing) and benchmark on one pilot call site before broad rollout.
+- **T211** — Co-locate ticket architecture diagrams (.mmd) with real-time sync to GitHub Issues and zero-width-limit browser viewer (T211 complete: ticket architecture diagrams co-located and synced to GH, zero-width browser viewer live)
+- **T425** — just land / land root — the local merge queue and single committer to beta (archived via w0m-sdlc-archive; openspec change archived; 12/12 unit tests green; status -> done.)
+- **T428** — DECISION: move session handoffs from STATE.md into ticket Status notes and generate PICK UP HERE (completed AC2 and AC3. scripts/state_doctor.py synthesizes ⭐ PICK UP HERE dynamically from ticket Status notes with #### subheading levels; canonical skills w0m-state-save and w0m-state-load updated, version stamped, and synced across estate; scripts/land.py regenerates STATE.md on landing and resolves common git dir in worktrees; concurrency test LandRootConcurrencyTest in scripts/tests/test_land.py proves two parallel sessions land handoffs without merge conflict. All 6 ACs verified green. Status -> done.)
+- **T431** — Top-level deploy helpers: one gated `just deploy-function <name…>` replaces 25 per-function recipes (Run 7 (deploy-2026.09.24-1790227320.log, HEAD b7036ab8). Every service shipped and)
 
 ## 3. Other open threads (in TASKS.md)
 

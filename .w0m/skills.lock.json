@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-09-24T06:45:57.880Z",
+  "generatedAt": "2026-09-24T21:05:56.821Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -71,7 +71,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-archive",
-      "integrity": "sha256-131a360714d8254d729fa2d39be1f6c2ae8f1cbaa7f40fd45ac86c29294b18b6"
+      "integrity": "sha256-04bfc42d05c5b40dd51b617d4d4c5deabbd50ad603a057ab2c29a2d4a09e19bd"
     },
     "w0m-sdlc-build": {
       "provider": "w0m-native",
@@ -92,14 +92,14 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-new",
-      "integrity": "sha256-25ebcc0ee5fb7e27b8ae8817f206515aab8c5d3a92a112facd76552af0bba3bd"
+      "integrity": "sha256-6b38a4254607b82e99c86d85b101f3a1c75edb6dd99bb75836886594a7cf08ef"
     },
     "w0m-sdlc-research": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-research",
-      "integrity": "sha256-58cc884c9b2b8cc09a82f09bfd97f5f32cbf8fdbb2366004d5709c4b9a585f0a"
+      "integrity": "sha256-bfda587cbf36c4417f96ca938c6a51b313bb3a415f2db81d9ae9d678d78accc0"
     },
     "w0m-sdlc-review": {
       "provider": "w0m-native",
@@ -127,7 +127,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-start",
-      "integrity": "sha256-6b8ba2abf941feaa1dea7986c1b5838ffdc663441c6d071dfcfef66fea889111"
+      "integrity": "sha256-a7d2721fa83f126ec6b01e228f69fd96576d080fcbec929b2679a13058451703"
     },
     "w0m-sdlc-verify": {
       "provider": "w0m-native",
@@ -141,21 +141,21 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-state-load",
-      "integrity": "sha256-b34c404d0892c4bfa03681da514f976a5401f703ac9940371a5d62afd5d3fc4f"
+      "integrity": "sha256-ae114601fd5e8c853849e28c3bfb3c94aa71df3a2e0c9b1a4eb5f32d10d2c99d"
     },
     "w0m-state-save": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-state-save",
-      "integrity": "sha256-8be090187cb9db7c25d1abe3d382a96a3345c29158005782841eb71a04a72dfb"
+      "integrity": "sha256-31ee524de9eb6de3fb2d5485a069251a914922ae9f76c74e36953dcf64ff16df"
     },
     "w0m-tasks": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-tasks",
-      "integrity": "sha256-d6f7f8cf3958ff23f6991c4892cabbc79cc3b38fb70ec9610192f638fb99ced7"
+      "integrity": "sha256-0521d11dd68251e8fd5f7904f7da9dcc80439c1826855348d7af7a1b080e56c5"
     },
     "w0m-tdd": {
       "provider": "w0m-native",

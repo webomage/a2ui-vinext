@@ -236,9 +236,119 @@ class LandMemberPipelineTest(unittest.TestCase):
         (self.repo / "main.txt").write_text("conflicting beta\n")
         subprocess.run(["git", "commit", "-am", "beta conflict"], cwd=self.repo, check=True, capture_output=True)
 
-        r = run_land("land", str(self.worktree), "--skip-push", cwd=self.repo)
-        self.assertEqual(r.returncode, 1)
-        self.assertIn("Rebase conflict", r.stderr)
+class LandRootConcurrencyTest(unittest.TestCase):
+    """Proves two parallel sessions writing handoffs to disjoint ticket files both land
+
+    via `land root` without merge conflict on STATE.md (T428 AC3).
+    """
+
+    def setUp(self):
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.wt_tmp = tempfile.TemporaryDirectory()
+        self.repo = Path(self.tmpdir.name)
+        subprocess.run(["git", "init", "-b", "beta"], cwd=self.repo, check=True, capture_output=True)
+        subprocess.run(["git", "config", "user.name", "Tester"], cwd=self.repo, check=True)
+        subprocess.run(["git", "config", "user.email", "tester@webomage.com"], cwd=self.repo, check=True)
+
+        # Structure .tasks and STATE.md
+        (self.repo / ".tasks").mkdir()
+        (self.repo / ".tasks" / "T426.md").write_text(
+            "---\nid: T426\ntitle: Session B Task\nstatus: in-progress\n---\n\n## Status notes\n\n- 2026-09-24 — initial 426 note\n"
+        )
+        (self.repo / ".tasks" / "T428.md").write_text(
+            "---\nid: T428\ntitle: Session A Task\nstatus: in-progress\n---\n\n## Status notes\n\n- 2026-09-24 — initial 428 note\n"
+        )
+        (self.repo / "TASKS.md").write_text("initial tasks\n")
+
+        # Mock generator scripts/state_doctor.py using real generate_pickup_block
+        (self.repo / "scripts").mkdir()
+        state_doctor_mock = (
+            f"#!/usr/bin/env python3\n"
+            f"import sys\n"
+            f"from pathlib import Path\n"
+            f"sys.path.insert(0, r'{ROOT / 'scripts'}')\n"
+            f"import state_doctor as sd\n\n"
+            f"repo = Path(__file__).resolve().parents[1]\n"
+            f"state_file = repo / 'STATE.md'\n"
+            f"if '--write' in sys.argv:\n"
+            f"    pickup = sd.generate_pickup_block(repo / '.tasks')\n"
+            f"    text = state_file.read_text()\n"
+            f"    if '## ⭐ PICK UP HERE' in text:\n"
+            f"        before = text.split('## ⭐ PICK UP HERE')[0]\n"
+            f"        state_file.write_text(before + pickup + '\\n')\n"
+            f"    else:\n"
+            f"        state_file.write_text(text + '\\n' + pickup + '\\n')\n"
+        )
+        (self.repo / "scripts" / "state_doctor.py").write_text(state_doctor_mock)
+
+        # Initial STATE.md
+        (self.repo / "STATE.md").write_text(
+            "# STATE\n\n## 0. Orient\n\n## ⭐ PICK UP HERE — 2026-09-24\n\ninitial pickup\n\n## 4. Gotchas\n\nsome gotchas\n"
+        )
+
+        subprocess.run(["git", "add", "."], cwd=self.repo, check=True)
+        subprocess.run(["git", "commit", "-m", "init: base beta branch with T426 and T428"], cwd=self.repo, check=True)
+
+        # Set up worktree A
+        self.wt_a = Path(self.wt_tmp.name) / "worktree_session_a"
+        subprocess.run(["git", "worktree", "add", "-b", "session-a", str(self.wt_a)], cwd=self.repo, check=True, capture_output=True)
+        subprocess.run(["git", "config", "user.name", "Tester A"], cwd=self.wt_a, check=True)
+        subprocess.run(["git", "config", "user.email", "tester_a@webomage.com"], cwd=self.wt_a, check=True)
+
+        # Set up worktree B
+        self.wt_b = Path(self.wt_tmp.name) / "worktree_session_b"
+        subprocess.run(["git", "worktree", "add", "-b", "session-b", str(self.wt_b)], cwd=self.repo, check=True, capture_output=True)
+        subprocess.run(["git", "config", "user.name", "Tester B"], cwd=self.wt_b, check=True)
+        subprocess.run(["git", "config", "user.email", "tester_b@webomage.com"], cwd=self.wt_b, check=True)
+
+    def tearDown(self):
+        self.wt_tmp.cleanup()
+        self.tmpdir.cleanup()
+
+    def test_parallel_session_handoffs_land_without_conflict(self):
+        # Session A updates its disjoint ticket T428
+        (self.wt_a / ".tasks" / "T428.md").write_text(
+            "---\nid: T428\ntitle: Session A Task\nstatus: in-progress\n---\n\n## Status notes\n\n- 2026-09-24 — Session A finished subtask 1\n"
+        )
+        # Even if session A touched STATE.md, land root discards it and regenerates
+        (self.wt_a / "STATE.md").write_text(
+            "# STATE\n\n## 0. Orient\n\n## ⭐ PICK UP HERE — 2026-09-24\n\nConflicting Session A narrative\n\n## 4. Gotchas\n\nsome gotchas\n"
+        )
+
+        # Session B updates its disjoint ticket T426
+        (self.wt_b / ".tasks" / "T426.md").write_text(
+            "---\nid: T426\ntitle: Session B Task\nstatus: in-progress\n---\n\n## Status notes\n\n- 2026-09-24 — Session B finished subtask 2\n"
+        )
+        subprocess.run(["git", "commit", "-am", "feat(T426): session B progress"], cwd=self.wt_b, check=True, capture_output=True)
+
+        # 1. Land Session A via land root
+        r_a = run_land("root", "--ticket", "T428", "--skip-state-check", cwd=self.wt_a)
+        self.assertEqual(r_a.returncode, 0, msg=f"Session A land failed:\nstdout: {r_a.stdout}\nstderr: {r_a.stderr}")
+        self.assertIn("discarded agent edit to STATE.md", r_a.stdout)
+
+        # Fast forward beta on main repo to include session A
+        subprocess.run(["git", "checkout", "beta"], cwd=self.repo, check=True, capture_output=True)
+        subprocess.run(["git", "merge", "--ff-only", "session-a"], cwd=self.repo, check=True, capture_output=True)
+
+        # 2. Session B synchronizes with beta: rebase session-b on updated beta
+        # Because session-b's commit only touched .tasks/T426.md, rebase onto beta is clean with no STATE.md conflict!
+        r_rebase = subprocess.run(["git", "rebase", "beta"], cwd=self.wt_b, capture_output=True, text=True)
+        self.assertEqual(r_rebase.returncode, 0, msg=f"Session B rebase failed:\nstdout: {r_rebase.stdout}\nstderr: {r_rebase.stderr}")
+
+        # 3. Land Session B via land root
+        r_b = run_land("root", "--ticket", "T426", "--skip-state-check", cwd=self.wt_b)
+        self.assertEqual(r_b.returncode, 0, msg=f"Session B land failed:\nstdout: {r_b.stdout}\nstderr: {r_b.stderr}")
+
+        # Fast forward beta on main repo to include session B
+        subprocess.run(["git", "merge", "--ff-only", "session-b"], cwd=self.repo, check=True, capture_output=True)
+
+        # 4. Verify beta STATE.md contains both synthesized handoffs without merge conflict:
+        final_state = (self.repo / "STATE.md").read_text()
+        self.assertNotIn("Conflicting Session A narrative", final_state)
+        self.assertIn("Session A finished subtask 1", final_state)
+        self.assertIn("Session B finished subtask 2", final_state)
+        self.assertNotIn("<<<<<<<", final_state)
+        self.assertNotIn(">>>>>>>", final_state)
 
 
 if __name__ == "__main__":

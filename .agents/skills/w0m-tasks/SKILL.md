@@ -2,7 +2,7 @@
 name: w0m-tasks
 description: Show and triage the ranked w0m ticket queue — HOT (what can be started) and SDLC (closest to done). Use when the user asks about the ticket queue, what to work on next, project tasks, or triage. Passes arguments through to `just tasks`.
 metadata:
-  version: "2026.09.07-1788832835"
+  version: "2026.09.22-1790054019"
 ---
 
 # /w0m:tasks — the w0m ticket queue
@@ -22,6 +22,7 @@ just tasks $ARGUMENTS
 - **`next`**: Shows the single most actionable next ticket and prints the exact pickup command (`just sdlc-start <id>`).
 - **`wip`**: Lists all currently active `in-progress` tickets with AC progress bars, priority, and blocker links, sorted by completion.
 - **`tree [--ticket <id>]`**: Visualises the dependency tree for a ticket (defaults to current context / active branch), showing what blocks it and what it unblocks.
+- **`area [--area <name>]`**: Renders the task registry grouped by functional **Area** (theme). Includes an overall Area Breakdown Summary table (Open, WIP, Done, Total, % Complete) and formatted markdown tables for each area (`product`, `sdlc`, `tools`, `infra`, `security`, `ai`, `knowledge`, `schemas`, `data`, `skills`, `mcp`, `sec`) with ticket links, GitHub issue links, priority, status, queue, AC progress, and epic. **Do NOT post this by default** — the default invocation (`just tasks`) outputs only the `hot` and `sdlc` boards. Only render the area tables when the `area` option or subcommand is explicitly requested.
 
 ### Epic & Milestone Boards
 
@@ -44,13 +45,10 @@ rows into ranges, do not summarise "5–10 are all P1", and do not drop the Issu
 width. The owner has already had to correct exactly that once.
 
 🔴 **Keep the ticket path ABSOLUTE, exactly as the tool prints it** —
-`/Users/…/@wom/wom7web/project/tickets/T2.md`. Do not "tidy" it into a relative link.
+`/Users/…/@wom/.tasks/T2.md`. Do not "tidy" it into an outdated relative link.
 
-The session's working directory is the **`@wom` umbrella**, not `wom7web`, so the tempting
-shortening to `project/tickets/T2.md` resolves to nothing and every ticket link in the answer is
-dead. That happened on 2026-08-16 and the owner had to report it. If a relative form is wanted, the
-only correct one is **`wom7web/project/tickets/T2.md`** — verify it resolves from the cwd before
-using it, rather than assuming which repo is the root.
+The session's working directory is the **`@wom` umbrella**, so tickets resolve canonically at
+`.tasks/T2.md`. Verify it resolves from the cwd before using it.
 
 **Then say what the boards mean**, briefly. Useful things to look for:
 

@@ -7,7 +7,7 @@ description: >
 metadata:
   author: w0m
   namespace: w0m
-  version: "2026.09.24-1790232259"
+  version: "2026.09.24-1790282807"
 ---
 
 # w0m-state-load — the pickup gate
@@ -28,16 +28,18 @@ So the rule of this skill is blunt:
 
 ## Step 1 — read for intent only
 
-Run **`just state-brief`** from the estate root. It prints, in 0.2s, the two things to read for
-intent: the **in-flight tickets** (every `in-progress` ticket and its newest status note — where a
-session that was cut off stopped, [[T428]]) and the current **⭐ PICK UP HERE** block. Then read
-the root `STATE.md` (it moved out of `wom7web/` under [[T421]]) for the rest, taking only these:
+Run **`just state-brief`** from the estate root. It reads live in-flight ticket notes from `.tasks/T*.md`
+and prints the synthesized **⭐ PICK UP HERE** block (0.2s):
+- **in-flight tickets**: every `in-progress` ticket and its newest status note — the single source of
+  truth for where each session stopped ([[T428]]).
+- **completed today**: tickets closed today.
 
-- the **⭐ PICK UP HERE** paragraph — what the last session believed was next, and why
+Then read the root `STATE.md` (it moved out of `wom7web/` under [[T421]]) only for standing editorial context:
 - **Gotchas the next agent MUST know** — the expensive lessons
 - **Owner actions** — what is waiting on the human
 
-Do not yet accept a single number, count, gate result, or branch state from it.
+Do not look for handwritten narrative session paragraphs in `STATE.md` — they live in ticket Status notes.
+Do not yet accept a single number, count, gate result, or branch state from the file.
 
 ### Read the file. Do NOT read the archive.
 

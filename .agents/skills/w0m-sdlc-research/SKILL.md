@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: research
-  version: "2026.09.15-1789449781"
+  version: "2026.09.19-1789879847"
 ---
 
 # w0m-sdlc-research — the deep grounding gate
@@ -31,6 +31,11 @@ assumptions). Output is a verdict backed by evidence, never an opinion.
 > beyond recognition, or is *planned* rather than existing, which changes what this ticket is).
 > Record either in the Grounding Report. The tool never rewrites a path: a confidently wrong
 > auto-correction is worse than a stale one, so propose the fix and let the human confirm.
+>
+> **Ticket reality audit (T211).** Run `just ticket-audit <id>` (`w0m-ticket-audit`) to mechanically
+> cross-check the four tracking surfaces (`ticket.md`, `TASKS.md`, `project/tickets.json`, GitHub issue)
+> and classify each AC into confirmed (✅), contradicted (🔴), stale (⚠️), or unmeasurable (❔). If surfaces
+> disagree or ACs are contradicted by codebase reality, resolve or flag them before proceeding.
 
 Read `.w0m/sdlc.json` (walk up from cwd; if none, check one level down into child repos). Use
 `tickets`, `specs`, `repos`, `codegraph`, `secrets.run`, `tech_debt`, `vcs`.
@@ -72,11 +77,20 @@ Run all that apply; record what each *actually* shows with a citation:
 - **Stack drift (T130).** If the ticket touches a stack's tools/build, run `just discovery` and note
   any drift (used-not-declared / declared-not-used) in the Grounding Report. → Does
   `project/stacks-policy.json` still match what the stack actually uses?
+- **UI/UX surface & design system (MANDATORY for tickets with UI/UX changes).**
+  Trigger condition: ticket `repos` includes `web` or `cp`, tags include `ui`/`ux`/`frontend`/`cp`/`design`, or the ticket touches `.astro`, `.svelte`, `.css`, `packages/ui`, or `apps/*`.
+  **Enforce and launch UI skills:**
+  - **`webomage-design`** (`wom7web/design-system/`): Check canonical tokens (`tokens/*.css` — slate-950 canvas, `#38bdf8` primary, glassmorphic white 3–5% fill + white/10 hairline border, Inter font), guidelines, and existing component specifications (`packages/ui` and `design-system/components/`). Reusing existing tokens and components is mandatory; ad-hoc hex codes and un-mastered inline utilities are strictly prohibited.
+  - **`steve-jobs`**: Critique product UX, simplicity, visual hierarchy, ergonomics, and touch targets. Challenge unnecessary forms, buttons, or navigation friction.
+  - **`modern-web-guidance`**: Audit against modern browser APIs, responsive layouts, View Transitions, container queries, `:has()`, accessible dialogs/popovers, and modern frontend best practices.
+  - **`a11y-debugging`**: Check semantic HTML, ARIA landmarks and attributes, keyboard focus order, contrast compliance, and touch target sizing.
+  Output concrete UI findings, component reuse candidates, and token citations directly into the Grounding Report.
 
 ## Step 3 — Produce the Grounding Report (the gate's deliverable)
 - **Validity** — real & needed? or **already-done / obsolete / duplicate** of T##? (cite the evidence)
 - **Accuracy** — every claim in the ticket that does NOT match reality (the drift), with file:line/commit.
 - **Prior art** — what already exists to reuse (don't rebuild it).
+- **UI/UX & Design System alignment** (mandatory if UI-touching) — cited `design-system/` tokens, `@webomage/ui` components to reuse, `steve-jobs` simplicity critique, `modern-web-guidance` patterns, and `a11y-debugging` accessibility constraints.
 - **Dependencies & conflicts** — blockers, overlapping tickets, contradicting specs.
 - **Scope** — over/under-scoped; missing or non-observable acceptance criteria.
 - **Decided debt** — `TECH-DEBT.md` / `tech_debt` rows this ticket **duplicates**, **pays down**

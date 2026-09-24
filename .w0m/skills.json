@@ -55,7 +55,7 @@
     "w0m-sdlc-archive": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.20-1789931366"
+      "observed_version": "2026.09.24-1790250554"
     },
     "w0m-sdlc-build": {
       "provider": "w0m-native",
@@ -70,12 +70,12 @@
     "w0m-sdlc-new": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.20-1789931366"
+      "observed_version": "2026.09.24-1790250554"
     },
     "w0m-sdlc-research": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.15-1789449781"
+      "observed_version": "2026.09.19-1789879847"
     },
     "w0m-sdlc-review": {
       "provider": "w0m-native",
@@ -95,7 +95,7 @@
     "w0m-sdlc-start": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.22-1790054019"
+      "observed_version": "2026.09.24-1790250554"
     },
     "w0m-sdlc-verify": {
       "provider": "w0m-native",
@@ -105,17 +105,17 @@
     "w0m-state-load": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.24-1790232259"
+      "observed_version": "2026.09.24-1790282807"
     },
     "w0m-state-save": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.24-1790232259"
+      "observed_version": "2026.09.24-1790282807"
     },
     "w0m-tasks": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.07-1788832835"
+      "observed_version": "2026.09.22-1790054019"
     },
     "w0m-tdd": {
       "provider": "w0m-native",
