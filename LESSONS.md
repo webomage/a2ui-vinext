@@ -861,6 +861,14 @@ Synchronizing engineering state into a duplicate database task tree creates dual
 ⇒ **Deconstruct monolithic tracker boards into individual per-ticket files (`.tasks/T##.md`) as the exclusive Source of Truth, treating `TASKS.md` as a purely rendered view (`just tasks-render`). Scope pre-push validation to the branch diff (`--scope-diff`), and orchestrate multi-repo worktrees (`just worktree-agent <id> [subrepos]`) so every agent operates in an isolated physical tree across root and child repos.**
 ⭐ **The tell:** Agents failing pre-push hooks due to uncommitted draft files left by another agent, or merge conflicts on tracking files (`TASKS.md`) when concurrent PRs touch unrelated code.
 
+### LOCAL MERGE QUEUE (BATCH SIZE 1) PREVENTS MULTI-AGENT COLLISION ON SHARED BRANCHES WITHOUT PRS
+**2026-09-24 (T425).** With 2–3 autonomous coding agents operating in dedicated physical worktrees, committing directly to `beta` in the shared main checkout causes push races, non-fast-forward rejections, and accidental cross-ticket staging when agents use `git add -A`.
+
+A local merge queue of batch size 1 (`scripts/land.py` via `just land <worktree>` and `just land root --ticket T<id>`) eliminates this by enforcing single-committer serialization via an exclusive `.git/w0m-land.lock`. The landing agent rebases its branch onto `beta` inside its own worktree, runs the pre-push quality gates there, and fast-forwards `beta` in the main checkout with `--ff-only`. Root landing stages only explicit ticket artifacts, discards agent edits to generated tracker views (`TASKS.md`, `STATE.md`) in favor of deterministic regeneration, and blocks ticket-ID races against `beta`.
+
+⇒ **Serialize multi-agent integration to `beta` through a local merge queue (`just land`); agents rebase and verify locally in worktrees, and root commits stage only unit paths without `git add -A`.**
+⭐ **The tell:** Frequent `--ff-only` merge rejections, uncommitted files from other agents swept into root commits, or merge conflicts on rendered tracker views.
+
 ---
 
 
