@@ -39,7 +39,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T436](.tasks/T436.md) · [#436](https://github.com/casualuser/webomage.com/issues/436) | **P1** | 🆕 **Public-safe automated CHANGELOG: Conventional Commits, ticket synthesis & disclosure guardrail gate** | tooling, web | — | ⚪ **queued** |
 | [T426](.tasks/T426.md) · [#426](https://github.com/casualuser/webomage.com/issues/426) | **P1** | 🆕 **Parallel-agents pilot (2 agent kinds via Orca), then enforce land-only main checkouts and make it the default** | tooling, web | — | ⚪ **queued** |
 | [T402](project/tickets/T402.md) · [#402](https://github.com/webomage/wom7board/issues/402) | **P1** | 🆕 **Port governance: enumerate estate ports, resolve port 8788 conflict, and allocate dedicated client project range** 🆕 filed 2026-09-18 per owner directive. Codify port registry in `project/ports-policy.json`, relocate `wom7func` dev to port `8790` (freeing `8788` for local Headroom proxy), allocate dedicated client port range (`4400`–`4499`), and add `just ports-check`. **5 ACs.** | tooling, web, func, infra | platform-health-tooling; [[T321]], [[T393]], [[T130]] | ⚪ queued 2026-09-18 |
 | [T401](project/tickets/T401.md) · [#401](https://github.com/webomage/wom7board/issues/401) | **P1** | 🆕 **Client Delivery Stabilization: Pre-release verification checklist and release gate orchestration** 🆕 filed 2026-09-18. Establish an end-to-end client delivery stabilization gate. Unifies quality checks, security audits, and version validation into a single automated pre-release verification protocol before client feature rollouts. **5 ACs.** | sdlc, web, api, tooling | release-versioning-healthchecks; [[T390]], [[T391]], [[T394]] | ⚪ queued 2026-09-18 |
@@ -223,6 +222,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T436](.tasks/T436.md) · [#436](https://github.com/casualuser/webomage.com/issues/436) | **P1** | 🆕 **Public-safe automated CHANGELOG: Conventional Commits, ticket synthesis & disclosure guardrail gate** | tooling, web | — | ✅ **done** |
 | [T435](.tasks/T435.md) | **P0** | **The deploy/migrate confirmation gate is forgeable by any agent that holds a terminal — refuse agent ancestry and gate every deploy-shaped recipe** | tooling, web, api | openspec/changes/2026-09-24-confirm-gate-agent-refusal | ✅ **done** |
 | [T431](.tasks/T431.md) · [#431](https://github.com/casualuser/webomage.com/issues/431) | **P1** | **Top-level deploy helpers: one gated `just deploy-function <name…>` replaces 25 per-function recipes** | tooling, api, web | — | ✅ **done** |
 | [T430](.tasks/T430.md) · [#430](https://github.com/casualuser/webomage.com/issues/430) | **P0** | **Repair the T411/T414/T418/T419 elevation fallout that turned 8 deploy-blocking suites red** | tooling, web, skills | — | ✅ **done** |

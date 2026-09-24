@@ -54,3 +54,11 @@ repos:
         files: ^(\.tasks/T\d+\.md|TASKS\.md|scripts/tasks_query\.py)$
         pass_filenames: false
         stages: [pre-commit]
+
+      - id: changelog-check
+        name: Public disclosure guardrail check on CHANGELOG.md
+        entry: python3 scripts/changelog_check.py --path CHANGELOG.md
+        language: system
+        files: ^CHANGELOG\.md$
+        pass_filenames: false
+        stages: [pre-commit]

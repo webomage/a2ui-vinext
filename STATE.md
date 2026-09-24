@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 195 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **195** are
+> ⚠️ **0 of 194 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **194** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -60,7 +60,7 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | 0 | 1 | `93e96308` |
+| `wom7web` | `beta` | 0 | 1 | `7f0ae7f1` |
 | `wom7api` | `beta` | 0 | 0 | `3c82a76` |
 | `wom7func` | `beta` | 0 | 0 | `ecf30db` |
 | `wom7skills` | `beta` | 0 | 0 | `be55a51` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 195 open · 438 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 194 open · 438 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T290","T29","T63","T43","T214","T279","T336","T337","T365","T366"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"3c82a76","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"be55a51","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"93e96308","unpushed":1}},"tickets":{"open":195,"rowless_open":[],"rows":438}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T290","T29","T63","T43","T214","T279","T336","T337","T365","T366"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"3c82a76","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"be55a51","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"7f0ae7f1","unpushed":1}},"tickets":{"open":194,"rowless_open":[],"rows":438}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -150,13 +150,14 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T437** — WebTorrent Desktop without Rosetta: webomage fork shipping native Apple Silicon builds, upstream arm64 PR, Rust (librqbit) WebTorrent path
   - **2026-09-24** (today): Created and started (owner: "open the ticket and fork it under webomage"). arm64 build proven in a
 
-#### Completed today (5):
+#### Completed today (6):
 
 - **T211** — Co-locate ticket architecture diagrams (.mmd) with real-time sync to GitHub Issues and zero-width-limit browser viewer (T211 complete: ticket architecture diagrams co-located and synced to GH, zero-width browser viewer live)
 - **T425** — just land / land root — the local merge queue and single committer to beta (archived via w0m-sdlc-archive; openspec change archived; 12/12 unit tests green; status -> done.)
 - **T428** — DECISION: move session handoffs from STATE.md into ticket Status notes and generate PICK UP HERE (completed AC2 and AC3. scripts/state_doctor.py synthesizes ⭐ PICK UP HERE dynamically from ticket Status notes with #### subheading levels; canonical skills w0m-state-save and w0m-state-load updated, version stamped, and synced across estate; scripts/land.py regenerates STATE.md on landing and resolves common git dir in worktrees; concurrency test LandRootConcurrencyTest in scripts/tests/test_land.py proves two parallel sessions land handoffs without merge conflict. All 6 ACs verified green. Status -> done.)
 - **T431** — Top-level deploy helpers: one gated `just deploy-function <name…>` replaces 25 per-function recipes (Run 7 (deploy-2026.09.24-1790227320.log, HEAD b7036ab8). Every service shipped and)
 - **T435** — The deploy/migrate confirmation gate is forgeable by any agent that holds a terminal — refuse agent ancestry and gate every deploy-shaped recipe (Created and started (owner: "do"). P0: a live db-migrate was self-confirmed by agy on)
+- **T436** — Public-safe automated CHANGELOG: Conventional Commits, ticket synthesis & disclosure guardrail gate (Start T436 (w0m-sdlc-start). Claimed state verified; 0/6 ACs. Upgrading scripts/gen_changelog.py for commit range extraction, Conventional Commits synthesis, PII/actor redaction, sensitive tag filtering, and adding offline verification gate just changelog-check with unit test coverage. Proceeding to w0m-sdlc-spec.)
 
 ## 3. Other open threads (in TASKS.md)
 

@@ -526,6 +526,13 @@ changelog-drift *args:
 changelog-drift-test:
     @python3 wom7web/project/scripts/tests/test_changelog_drift.py
 
+changelog-check *args:
+    @python3 scripts/changelog_check.py {{ args }}
+
+changelog-test:
+    @python3 scripts/tests/test_changelog_check.py
+    @python3 scripts/tests/test_gen_changelog.py
+
 deploy:
     #!/usr/bin/env bash
     set -euo pipefail
