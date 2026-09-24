@@ -1,175 +1,182 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-09-15T23:01:48.873Z",
+  "generatedAt": "2026-09-24T06:45:57.880Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
       "source": "addyosmani/agent-skills",
       "resolved": "unknown",
       "scope": "project",
-      "path": ".claude/skills/doubt-driven-development",
+      "path": ".agents/skills/doubt-driven-development",
       "integrity": "sha256-13a65ed0dc71e5351f061105f67625523a323c2d4f1e7c3fa7525b10895e947c"
     },
     "fact-checker": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/fact-checker",
+      "path": ".agents/skills/fact-checker",
       "integrity": "sha256-4cf971381b9dea8cec5ea090568a7b032bfe388eff8dcc10256c715f9850657e"
     },
     "feynman": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/feynman",
+      "path": ".agents/skills/feynman",
       "integrity": "sha256-a6b8b44b8fb2c12ef7fddab397e5e8d6e7f57be4a1494287e1ff24276f83803c"
     },
     "socrates": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/socrates",
+      "path": ".agents/skills/socrates",
       "integrity": "sha256-6f9a19303230964fab6fbcf22c334ff3c363ff030b81e87dec41ab02a079cfed"
     },
     "torvalds": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/torvalds",
+      "path": ".agents/skills/torvalds",
       "integrity": "sha256-96c6c2c06adf5201960ef96b27b2080fe7f0eaef25bf91c43f16b6bc12f67a83"
     },
     "w0m": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m",
-      "integrity": "sha256-2509907690ba4950bc494c0ba993cd962fd60a5895727cb4b002217fdfdff3a0"
+      "path": ".agents/skills/w0m",
+      "integrity": "sha256-d98b0c245073d85cd038b549e23a0eec3738501ef3e4ccc77ab74fcff2afbee9"
     },
     "w0m-handoff": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-handoff",
+      "path": ".agents/skills/w0m-handoff",
       "integrity": "sha256-8042f486294cbeed2d95b8a368859827e084c3ee618607b2663d1793697007b1"
     },
     "w0m-lessons": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-lessons",
+      "path": ".agents/skills/w0m-lessons",
       "integrity": "sha256-6a6ca7e43f98e539540ce69f26a7a782df792b3e1f3012938fb0c857049dace7"
     },
     "w0m-mcp-builder": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-mcp-builder",
+      "path": ".agents/skills/w0m-mcp-builder",
       "integrity": "sha256-52c2bc24592706d1f9335ecc23eea682f8006175bfcb34205e9494330417e0b2"
     },
     "w0m-sdlc-archive": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-sdlc-archive",
-      "integrity": "sha256-669cba9d7a6793c9e6e5d8ab0bb082dd1ed20266ef330cebeb1c33dc24212915"
+      "path": ".agents/skills/w0m-sdlc-archive",
+      "integrity": "sha256-131a360714d8254d729fa2d39be1f6c2ae8f1cbaa7f40fd45ac86c29294b18b6"
     },
     "w0m-sdlc-build": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-sdlc-build",
+      "path": ".agents/skills/w0m-sdlc-build",
       "integrity": "sha256-ce01bd83f72ef2b2cb254146427f72a985d27df17c29e9fccb2d4c3861fac4ca"
     },
     "w0m-sdlc-deploy": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-sdlc-deploy",
+      "path": ".agents/skills/w0m-sdlc-deploy",
       "integrity": "sha256-8069def942ab4b137eef0373cec85dffa1df307b60b34fe2b6e1880d8a7fb81a"
     },
     "w0m-sdlc-new": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-sdlc-new",
-      "integrity": "sha256-54763b661c3791a8e99f149232fdab17504e1f4ac5a52a004d8e6166890e6a4d"
+      "path": ".agents/skills/w0m-sdlc-new",
+      "integrity": "sha256-25ebcc0ee5fb7e27b8ae8817f206515aab8c5d3a92a112facd76552af0bba3bd"
     },
     "w0m-sdlc-research": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-sdlc-research",
+      "path": ".agents/skills/w0m-sdlc-research",
       "integrity": "sha256-58cc884c9b2b8cc09a82f09bfd97f5f32cbf8fdbb2366004d5709c4b9a585f0a"
     },
     "w0m-sdlc-review": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-sdlc-review",
+      "path": ".agents/skills/w0m-sdlc-review",
       "integrity": "sha256-b4316e4976ffe24e2dc2d6abd759292c258bcdfd402285f82a624df6b43d1dc9"
     },
     "w0m-sdlc-security": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-sdlc-security",
+      "path": ".agents/skills/w0m-sdlc-security",
       "integrity": "sha256-28096de171b1b8664087398e505bb6157e0ba27cf972e965434f25e0d2825809"
     },
     "w0m-sdlc-spec": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-sdlc-spec",
+      "path": ".agents/skills/w0m-sdlc-spec",
       "integrity": "sha256-47b2d492bd6fc1e29ea21234b72ad4391bb25da927a5cc88682382289455ec1b"
     },
     "w0m-sdlc-start": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-sdlc-start",
-      "integrity": "sha256-5859fee8f9922d04851b9e13e57c84e617f4fffb966f7dafbc10a89497911667"
+      "path": ".agents/skills/w0m-sdlc-start",
+      "integrity": "sha256-6b8ba2abf941feaa1dea7986c1b5838ffdc663441c6d071dfcfef66fea889111"
     },
     "w0m-sdlc-verify": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-sdlc-verify",
+      "path": ".agents/skills/w0m-sdlc-verify",
       "integrity": "sha256-b70346be06ac80b8af6add9ce4860c92286fd487e330cf2f2a5347885b8cef4e"
     },
     "w0m-state-load": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-state-load",
-      "integrity": "sha256-b1e1213aaaed7578ce7b52c13755201b95a2c2193cb5d7fb5cccd48f2599e1c4"
+      "path": ".agents/skills/w0m-state-load",
+      "integrity": "sha256-b34c404d0892c4bfa03681da514f976a5401f703ac9940371a5d62afd5d3fc4f"
     },
     "w0m-state-save": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-state-save",
-      "integrity": "sha256-b7f3ed8b6ab002cae2237ca9e0a7edd80aaa532647022daafd3dbdfd8f339a2f"
+      "path": ".agents/skills/w0m-state-save",
+      "integrity": "sha256-8be090187cb9db7c25d1abe3d382a96a3345c29158005782841eb71a04a72dfb"
     },
     "w0m-tasks": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-tasks",
+      "path": ".agents/skills/w0m-tasks",
       "integrity": "sha256-d6f7f8cf3958ff23f6991c4892cabbc79cc3b38fb70ec9610192f638fb99ced7"
     },
     "w0m-tdd": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-tdd",
+      "path": ".agents/skills/w0m-tdd",
       "integrity": "sha256-a3a83c5fb8e945007a6be5f46157b8f9d4a41bf4e1a95c38e82ddb06c843c30a"
     },
     "w0m-prs": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
-      "path": ".claude/skills/w0m-prs",
-      "integrity": "sha256-5a048fab88685b86e695662cf9b48315920b5a0ae0a8f4f1503408b7e59501fd"
+      "path": ".agents/skills/w0m-prs",
+      "integrity": "sha256-e71d712656f2303b8769a9339607697926b6fa350315aad3c59fe6255953d695"
+    },
+    "w0m-ticket-audit": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/w0m-ticket-audit",
+      "integrity": "sha256-a285d2b6ecb360f6f49252d77128786ff64420b4c94c77768c00cfdbe9bec0b0"
     }
   }
 }

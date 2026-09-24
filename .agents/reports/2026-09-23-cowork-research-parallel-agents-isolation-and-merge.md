@@ -6,6 +6,7 @@
 > to [the accepted plan](2026-09-23-parallel-agents-isolation-and-merge-proposal.md).
 > **Superseded by that plan** wherever they differ. The plan's §1 grades each claim against the live
 > docs and the estate. This file is a record, not instructions.
+> **Tickets:** the plan became T423–T428 (T428 owns the session-handoff part).
 
 ## Problem
 Workflow agents share one working tree, so concurrent Edit/Write calls clobber each other. One agent's

@@ -10,7 +10,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: new
-  version: "2026.09.18-1789790110"
+  version: "2026.09.20-1789931366"
 ---
 
 # w0m-sdlc-new — the task-creation gate

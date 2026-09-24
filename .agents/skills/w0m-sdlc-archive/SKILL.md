@@ -9,7 +9,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: archive
-  version: "2026.08.18-1787069807"
+  version: "2026.09.20-1789931366"
 ---
 
 # w0m-sdlc-archive — the close + lessons gate

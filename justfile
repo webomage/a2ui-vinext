@@ -10,8 +10,15 @@ project_ref := "pqbbjgeapylcengbuvee"
 # identifier, not a credential, and equals wom7api/.infisical.json `workspaceId`. Explicit, because
 # these recipes run from @wom, which has no .infisical.json link (the T421 elevation broke that silently).
 infisical_project_id := "87a1718d-17c6-4c5e-b0c1-f8bb2fd9d13c"
-deploy_version := `date +%Y.%m.%d-%s`
-deploy_at := `date -u +%Y-%m-%dT%H:%M:%SZ`
+# ONE version per release, across nested `just` processes. A backtick runs once per `just` PROCESS, and
+# the chain spawns several (`supabase-redeploy-all` → wom7api → back here for `deploy-functions`), so each
+# re-ran `date`: run 7 (2026-09-24) stamped the edge functions 11 minutes after the apps, and the transcript
+# was named after a version `deploy_log` never recorded. The outermost invocation mints it and EXPORTS it;
+# every nested one inherits. Unset = a fresh standalone run, which correctly mints its own.
+export W0M_DEPLOY_VERSION := env_var_or_default('W0M_DEPLOY_VERSION', `date +%Y.%m.%d-%s`)
+export W0M_DEPLOY_AT := env_var_or_default('W0M_DEPLOY_AT', `date -u +%Y-%m-%dT%H:%M:%SZ`)
+deploy_version := W0M_DEPLOY_VERSION
+deploy_at := W0M_DEPLOY_AT
 deploy_commit := `git rev-parse --short HEAD`
 # wom7api/supabase/config.toml reads `env(W0M_DB_MIGRATIONS)`, which has no default: unset means
 # EVERY `supabase` command fails with ProjectConfigParseError (T248). Recipes here that call the CLI
@@ -129,8 +136,11 @@ ds-react-free-test:
 
 # ── Estate Search (T406) ─────────────────────────────────────────────────────
 # Bounded multi-repo search with LC_ALL=C and --no-pager. Never silently empty.
+# Positional, not `{{ args }}`: interpolation re-splits the pattern through the shell, so
+# `just search "a|b"` ran `b` as a command instead of searching for an alternation.
+[positional-arguments]
 search *args:
-    @python3 scripts/estate_search.py {{ args }}
+    @python3 scripts/estate_search.py "$@"
 
 search-test:
     @python3 -m pytest wom7web/project/scripts/tests/test_estate_search.py -q
@@ -507,7 +517,22 @@ deploy-all:
 _deploy-all-chain: (_confirm "deploy-all") check-warp check-infisical db-migrate deploy _post-deploy-knowledge
 
 _post-deploy-knowledge:
-    -@just knowledge-light
+    -@just --justfile wom7api/justfile knowledge-light
+
+# Every bare `just <recipe>` in a recipe body must name a recipe that justfile defines — the
+# `-`-prefixed call above named one that only wom7api has, silently, from T421 to T431 run 7.
+justfile-calls-check *args:
+    @python3 scripts/justfile_calls_check.py {{ args }}
+
+justfile-calls-check-test:
+    @python3 -m pytest scripts/tests/test_justfile_calls_check.py -q -p no:cacheprovider
+
+# Every `.agents/reports/` file cites an existing ticket — the ticket is the one source of work state (T428).
+reports-ticket-check *args:
+    @python3 scripts/reports_ticket_check.py {{ args }}
+
+reports-ticket-check-test:
+    @python3 -m pytest scripts/tests/test_reports_ticket_check.py -q -p no:cacheprovider
 
 deploy-logged *args:
     @python3 wom7web/project/scripts/deploy_logged.py {{ args }}
@@ -537,6 +562,10 @@ state-save *args:
 
 state-rotate *args:
     @python3 scripts/state_doctor.py --rotate {{ args }}
+
+# Session-start read: the current ⭐ PICK UP HERE block only (recorded intent, not measured facts).
+state-brief:
+    @python3 scripts/state_doctor.py --brief
 
 state-doctor-test:
     @python3 wom7web/project/scripts/tests/test_state_doctor.py

@@ -2,7 +2,7 @@
 name: w0m-ticket-audit
 description: Audit a w0m ticket's recorded state — status, acceptance criteria, claims in its body — against current reality instead of trusting its checkboxes. Trigger when asked to review/audit a ticket, verify whether a ticket is "really" done, reconcile a ticket's claims against the codebase or live infra, or explain why a ticket looks stale/contradictory. Read-only: it produces evidence, it never edits the ticket, TASKS.md, or flips status.
 metadata:
-  version: "2026.09.19-1789854184"
+  version: "2026.09.22-1790054019"
 ---
 
 # w0m-ticket-audit — verify a ticket against reality, not its own checkboxes
@@ -16,7 +16,7 @@ session can independently complete without the foreground session noticing.
 
 ```bash
 TICKET=T196   # substitute the requested id
-cat /Users/proto/Projects/@self/@wom/wom7web/project/tickets/${TICKET}.md
+cat /Users/proto/Projects/@self/@wom/.tasks/${TICKET}.md
 ```
 
 Read the full frontmatter (`status`, `x_ac_done`, `x_ac_total`, `x_ac_pct`, `x_blocked_by`,
@@ -30,12 +30,12 @@ between them is itself a finding — report it before doing anything else, the w
 in-progress/done split was found by diffing exactly these surfaces:
 
 ```bash
-cd /Users/proto/Projects/@self/@wom/wom7web
+cd /Users/proto/Projects/@self/@wom
 grep -n "${TICKET}\b" TASKS.md
 gh issue view <gh_issue-from-frontmatter> --repo webomage/wom7board
-python3 -c "import json; d=json.load(open('project/tickets.json')); print(d.get('${TICKET}'))"
-git log -3 -- project/tickets/${TICKET}.md
-git status --short project/tickets/${TICKET}.md TASKS.md   # staged-but-uncommitted flips hide here
+python3 -c "import json; d=json.load(open('wom7web/project/tickets.json')); print(d.get('${TICKET}'))"
+git log -3 -- .tasks/${TICKET}.md
+git status --short .tasks/${TICKET}.md TASKS.md   # staged-but-uncommitted flips hide here
 ```
 
 Report any mismatch (status, AC count, priority) between frontmatter / `TASKS.md` / GitHub issue /

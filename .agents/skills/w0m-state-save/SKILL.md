@@ -1,14 +1,14 @@
 ---
 name: w0m-state-save
 description: >
-  Write the session handoff into wom7web/STATE.md before ending a session or archiving a ticket.
+  Write the session handoff into the estate-root STATE.md before ending a session or archiving a ticket.
   Regenerates the mechanical managed block via `just state-save`, then interviews for the
   EDITORIAL sections only — pickup block, gotchas, owner actions. Trigger on "save state",
   "write the handoff", "end of session", or from w0m-sdlc-archive step 6.
 metadata:
   author: w0m
   namespace: w0m
-  version: "2026.08.07-1786133956"
+  version: "2026.09.24-1790232259"
 ---
 
 # w0m-state-save — write the handoff
@@ -63,7 +63,7 @@ quietly degrade the file — **it blocks your push**, and the fix it names is th
 numbers, the prose around them may contradict them. Check the diff:
 
 ```bash
-cd ../wom7web && git diff STATE.md
+git diff STATE.md    # from the estate root
 ```
 
 Then walk the editorial sections and fix what the new numbers just falsified:

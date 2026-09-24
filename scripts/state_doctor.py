@@ -21,6 +21,7 @@ MODE CONTRACT (AC1)
     --render   print the managed block to stdout; write nothing
     --check    compare the recorded block against reality; exit 1 on MATERIAL drift
     --write    regenerate the block in place (what `just state-save` calls)
+    --brief    print the current ⭐ PICK UP HERE block (what the SessionStart hook calls)
 
 WHY `--check` DOES NOT REWRITE (owner decision, 2026-07-26)
     Verify-only. A hook that mutates a tracked file mid-commit has to re-stage it and can fight the
@@ -991,6 +992,90 @@ def write() -> None:
     STATE_MD.write_text(text)
 
 
+_NOTE_DATE = re.compile(r"(\d{4}-\d{2}-\d{2})")
+
+
+def in_flight(tickets_dir: Path) -> list[dict]:
+    """Every `in-progress` ticket with its newest dated status note (T428).
+
+    WHY. The pickup block is written when a session ENDS, so a session cut off by quota or a crash
+    leaves none. The ticket it was working on is the one place such a session can have written as
+    it went, so the brief lists those tickets and when each last said anything. A ticket with NO
+    note is listed as such — omitting it would read as "nothing in flight".
+    """
+    out = []
+    for path in sorted(tickets_dir.glob("T*.md"), key=lambda p: int(re.sub(r"\D", "", p.stem) or 0)):
+        text = path.read_text()
+        m = re.search(r"^status:\s*(\S+)", text[:600], re.M)
+        if not m or m.group(1).strip().strip('"') != "in-progress":
+            continue
+        notes = text.split("\n## Status notes", 1)[1] if "\n## Status notes" in text else ""
+        best: tuple[str, str] | None = None
+        for line in notes.split("\n"):
+            d = _NOTE_DATE.search(line)
+            if line.startswith("- ") and d and (best is None or d.group(1) >= best[0]):
+                best = (d.group(1), line)
+        out.append({"id": path.stem, "date": best[0] if best else None,
+                    "note": best[1] if best else None})
+    return out
+
+
+def _render_in_flight(items: list[dict]) -> str:
+    from datetime import date
+    if not items:
+        return "▶ In flight: no ticket is `in-progress`."
+    lines = [f"▶ In flight — {len(items)} `in-progress` ticket(s). A session cut off mid-work leaves "
+             f"its trace in its ticket, not in the pickup block:"]
+    for it in items:
+        if not it["date"]:
+            lines.append(f"  {it['id']:6} NO status note — nothing records where this stopped")
+            continue
+        age = (date.today() - date.fromisoformat(it["date"])).days
+        text = re.sub(r"[*`]", "", it["note"][2:])
+        text = _NOTE_DATE.sub("", text, count=1).strip(" —-:")
+        lines.append(f"  {it['id']:6} {it['date']} ({age}d) {text[:100]}")
+    return "\n".join(lines)
+
+
+def brief() -> tuple[bool, str]:
+    """The session-start read: in-flight tickets, then the CURRENT ⭐ PICK UP HERE block.
+
+    WHY ONLY THE PICKUP BLOCK. It is the one section that carries INTENT — what the last session
+    believed was next. The managed block is numbers, and `w0m-state-load`'s rule is that numbers are
+    re-derived, never read; preflight already re-derives the repo facts on the same hook. The rest
+    of the file is dated history, and `AGENTS.md`'s routing table says not to orient from it.
+
+    WHY IT READS AND NEVER MEASURES. `--render` takes ~12s; a SessionStart hook that costs seconds
+    gets removed (T147 AC1). So this is a file read, labelled as recorded rather than current.
+
+    Returns (ok, text). Not ok = no readable pickup block, and the text says which way it failed —
+    an empty brief printed as success would tell the next session "nothing is in flight".
+    """
+    if not STATE_MD.exists():
+        return False, f"❌ STATE brief: {STATE_MD} does not exist — no handoff to read"
+    text = STATE_MD.read_text()
+    lines = text.split("\n")
+    current = [s for s in sections(text)
+               if PICKUP_RE.match(s["heading"]) and "(was)" not in s["heading"]]
+    tickets = STATE_MD.parent / ".tasks"
+    flight = _render_in_flight(in_flight(tickets)) if tickets.is_dir() else (
+        f"❌ In flight: {tickets} not found — cannot list in-progress tickets")
+    if not current:
+        return False, (f"❌ STATE brief: no current ⭐ PICK UP HERE block in {STATE_MD.name} — "
+                       "the last session left no handoff; run `just state-check` before assuming "
+                       f"nothing is in flight\n\n{flight}")
+    # Newest by DATE, not position — the same rule rotation uses, so the brief and the rotation
+    # can never disagree about which block is live.
+    pick = max(current, key=lambda s: _date_of(s["heading"]))
+    body = "\n".join(lines[pick["hstart"]:pick["end"]]).rstrip()
+    head = (f"▶ STATE.md handoff — RECORDED, not measured. Read for intent; re-derive every "
+            f"number (`just state-check`, `just tasks`). Full pickup gate: `w0m-state-load`.")
+    if len(current) > 1:
+        head += (f"\n [WARN] {len(current)} current pickup blocks — showing the newest; "
+                 f"`just state-rotate` retires the rest")
+    return True, f"{head}\n\n{flight}\n\n{body}"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="STATE.md managed-block tool (T145)")
     mode = ap.add_mutually_exclusive_group(required=True)
@@ -999,8 +1084,14 @@ def main() -> int:
     mode.add_argument("--write", action="store_true", help="regenerate the block in place")
     mode.add_argument("--rotate", action="store_true",
                       help="move superseded history to the archive (T174); idempotent")
+    mode.add_argument("--brief", action="store_true",
+                      help="print the current PICK UP HERE block for session start; write nothing")
     args = ap.parse_args()
 
+    if args.brief:
+        ok, out = brief()
+        print(out)
+        return 0 if ok else 1
     if args.render:
         print(render(measure()))
         return 0

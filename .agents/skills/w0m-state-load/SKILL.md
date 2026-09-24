@@ -1,13 +1,13 @@
 ---
 name: w0m-state-load
 description: >
-  Pick up a w0m session. Reads wom7web/STATE.md for INTENT, then RE-RUNS every measurement it
+  Pick up a w0m session. Reads the estate-root STATE.md for INTENT, then RE-RUNS every measurement it
   records instead of trusting them, and reports where the file and reality disagree. Trigger at
   the start of any session on the w0m estate, or on "where were we", "pick up", "load state".
 metadata:
   author: w0m
   namespace: w0m
-  version: "2026.09.07-1788827126"
+  version: "2026.09.24-1790232259"
 ---
 
 # w0m-state-load — the pickup gate
@@ -28,7 +28,10 @@ So the rule of this skill is blunt:
 
 ## Step 1 — read for intent only
 
-Read `wom7web/STATE.md`, and take from it only these:
+Run **`just state-brief`** from the estate root. It prints, in 0.2s, the two things to read for
+intent: the **in-flight tickets** (every `in-progress` ticket and its newest status note — where a
+session that was cut off stopped, [[T428]]) and the current **⭐ PICK UP HERE** block. Then read
+the root `STATE.md` (it moved out of `wom7web/` under [[T421]]) for the rest, taking only these:
 
 - the **⭐ PICK UP HERE** paragraph — what the last session believed was next, and why
 - **Gotchas the next agent MUST know** — the expensive lessons
@@ -43,7 +46,7 @@ and gated at pre-push. Before that it was **4,141 lines / ~83k tokens**, of whic
 history**, and this skill's instruction to *"read `wom7web/STATE.md`"* was therefore an instruction
 to spend 83k tokens before doing any work. It no longer is. Keep it that way:
 
-- **Superseded history lives in `wom7web/project/state-archive/`**, indexed by the generated
+- **Superseded history lives in `project/state-archive/`** (estate root), indexed by the generated
   **🗄️ Archived history** table at the bottom of `STATE.md`. **Do not read those files as part of
   orientation** — there are 56 of them and they total ~300 KB. The index exists so you can see that
   history *exists*, not so you can load it.
@@ -80,8 +83,8 @@ The hot list in the payload is a snapshot; this is current. If a ticket the pick
 starting on it because the file said so.
 
 ```bash
-cd ../wom7api && just test     # what is actually green right now
-git -C ../wom7web status --short && git -C ../wom7api status --short
+cd wom7api && just test       # what is actually green right now (from the estate root)
+git status --short && git -C wom7web status --short && git -C wom7api status --short
 ```
 
 Uncommitted work in a repo means a previous session ended mid-flight. Read that diff **before**

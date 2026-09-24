@@ -11,6 +11,17 @@ This is the top-level workspace root (`@wom`) containing the 7 estate repositori
 - `wom7skills`: Canonical w0m Agent Skills source and sync tooling.
 - `wom7mlx`: Apple MLX inference subsystem (in `wom7mlx/wom7mlx`).
 
+## Session start — every agent, before any work
+
+1. **`just preflight --fast`** (~1.5s) — MCP, graph currency, repo state, toolchain.
+2. **`just state-brief`** — the current ⭐ PICK UP HERE block of `STATE.md`: what the last session
+   believed was next. It is **recorded intent, not measured fact** — re-derive any number it cites
+   (`just state-check`, `just tasks`) before acting on it. Do not read the rest of `STATE.md` or its
+   archive to orient. The full pickup gate is the `w0m-state-load` skill.
+
+Claude Code runs both automatically (SessionStart hook in `.claude/settings.local.json`). Every other
+agent — Antigravity, Codex, opencode, Gemini — has no such hook here and must run them itself.
+
 ## Non-negotiables
 
 - **Never `--no-verify`.** Hooks are the gate; fix the finding instead.

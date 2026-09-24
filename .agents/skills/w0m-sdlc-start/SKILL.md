@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: start
-  version: "2026.09.19-1789879847"
+  version: "2026.09.22-1790054019"
 ---
 
 # w0m-sdlc-start — the ticket kickoff gate
@@ -33,7 +33,7 @@ in the config are relative to the config's own repo, resolved through `root`/`re
 `tech_debt`, `conventions`, `lifecycle`. Full schema: the sibling `.w0m/README.md`.
 
 If **no config is found**, don't guess silently: tell the user, assume conventional defaults
-(`tickets.source:"files"`, `board:"TASKS.md"`, `dir:"project/tickets"`, `specs.system:"none"`,
+(`tickets.source:"files"`, `board:"TASKS.md"`, `dir:".tasks"`, `specs.system:"none"`,
 single repo `.`), and offer to scaffold a `.w0m/` from the template. Everything below is written
 against the config; `w0m`'s own values (in this repo's `.w0m/sdlc.json`) are the worked example.
 

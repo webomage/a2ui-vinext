@@ -3,7 +3,7 @@ name: w0m
 description: >
   The Grand Orchestrator and entrypoint for the w0m ecosystem. Trigger when starting a new task, making architectural decisions, or needing guidance. Manages access to the deployed w0m-sdlc-* lifecycle gates (new/research/start/spec/build/review/security/verify/deploy/archive) and to whichever optional persona skills a project has declared in its .w0m/skills.json.
 metadata:
-  version: "2026.08.17-1786980540"
+  version: "2026.09.24-1790232259"
 ---
 
 # w0m: Ecosystem Orchestrator
@@ -60,6 +60,12 @@ When invoked:
    `commands.preflight`, say so once and continue rather than substituting a command of your own.
    ⚠️ It cannot see whether an MCP server is connected to the **running session** — that is a
    harness fact. Confirm the tools exist before routing through one.
+0b. **Ticket first, checkpoint as you go (T428).** Work state has one home: the ticket. Before
+   research or a report, make sure a ticket exists (`w0m-sdlc-new`) — a report in
+   `.agents/reports/` must cite it (`just reports-ticket-check` fails otherwise). At each gate or
+   milestone, append one dated line to the ticket's `## Status notes` and commit it **then**, not at
+   the end: a session cut off by quota keeps everything up to its last checkpoint, and the next
+   session's `just state-brief` shows it under *In flight*.
 1. **Analyze the Request**: Understand what the user wants to achieve.
 2. **Select the Skills**: Determine which combination of the skills listed above is required to complete the task successfully.
 3. **Formulate a Strategy**: Present a step-by-step plan to the user, explicitly stating which skills will be triggered at each phase. Wait for their approval before proceeding to invoke the first skill in your sequence.
