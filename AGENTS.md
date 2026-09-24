@@ -32,7 +32,7 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 - **The database is managed by migrations. No exceptions.** Applied with `just db-migrate`.
 - **Secrets reach a command only by process injection** — `infisical run --env=<env> --silent -- <cmd>`. Do not add a `.env` dependency.
 - **No `Co-Authored-By` / attribution trailers** in commits. Conventional Commits, referencing the ticket.
-- **`STATE.md` blocked your push? Run `just state-save`, commit, push.** Pre-push `state-check` compares STATE.md's mechanical block against reality.
+- **`STATE.md` blocked your push? `just land` regenerates it.** Pre-push `state-check` compares STATE.md's mechanical block against reality.
 - **Zero silent fallbacks, clean cutovers over shims, zero shadow symlinks (AgDR-0025).** Fail fast and fail closed (`docs/ANTI-PATTERNS.md`). Multi-path fallback search ladders and backward-compatibility shims are strictly prohibited. 100% of callers must be updated atomically when a path or contract changes.
 - **Visual & architectural reports via Artifacts (anti-terminal-overflow).** Complex architectural reports, broad system audits, and wide Mermaid (`.mmd`) diagrams must NEVER be dumped as raw multiline markdown in terminal chat (which causes terminal width overflow / ASCII diagram fallback warnings). Output them as Antigravity **artifacts** (`UserFacing: true`), preserve a permanent copy in `.agents/reports/` (mirrored to `wom7web/docs/reports/` when relevant), and present only concise summaries with clickable links in terminal responses.
 

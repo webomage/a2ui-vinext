@@ -59,6 +59,25 @@ diagram *args:
 diagram-test:
     @python3 scripts/tests/test_diagram_view.py
 
+# ── Local Merge Queue & Committer (T425) ──────────────────────────────────────
+[positional-arguments]
+land *args:
+    @python3 scripts/land.py "$@"
+
+[positional-arguments]
+land-root *args:
+    @python3 scripts/land.py root "$@"
+
+[positional-arguments]
+land-check *args:
+    @python3 scripts/land.py check "$@"
+
+land-status *args:
+    @python3 scripts/land.py status {{ args }}
+
+land-test:
+    @python3 scripts/tests/test_land.py
+
 dod-check *args:
     @python3 scripts/dod_check.py {{ args }}
 

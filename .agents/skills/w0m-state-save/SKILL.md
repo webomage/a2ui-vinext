@@ -8,7 +8,7 @@ description: >
 metadata:
   author: w0m
   namespace: w0m
-  version: "2026.09.24-1790232259"
+  version: "2026.09.24-1790250554"
 ---
 
 # w0m-state-save — write the handoff
@@ -27,7 +27,7 @@ completely different means. Confusing them is the failure this skill exists to p
 just state-save
 ```
 
-That is the whole of the mechanical half. **Do not hand-edit anything between the markers** — the
+That is the whole of the mechanical half. Note: `just land` regenerates this block automatically during landing (T425). **Do not hand-edit anything between the markers** — the
 block carries a `W0M-STATE-DATA` JSON payload (gate exit codes, the hot list, per-repo
 branch/dirty/unpushed, ticket counts) which `just state-check` re-derives and compares at every
 push. A hand-edited value there does not become true; it becomes a lie the gate then has to catch.

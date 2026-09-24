@@ -10,7 +10,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: new
-  version: "2026.09.20-1789931366"
+  version: "2026.09.24-1790250554"
 ---
 
 # w0m-sdlc-new — the task-creation gate
@@ -41,9 +41,9 @@ Read `.w0m/sdlc.json` (walk up from cwd; if none, check one level down into chil
      - **duplicate / merge** → fold into the existing ticket instead; don't create a second.
      - **revise** → apply its edits (right-size scope, fix claims, add prior-art + dependency links).
      - **proceed** → continue.
-5. **Finalize (same commit).** Write the ticket to `{tickets.dir}/{pattern}`. Run `just tasks-render` to
-   refresh the board view deterministically (never hand-edit `TASKS.md` to avoid multi-agent merge conflicts),
-   and — if github-mirrored — run `tickets.sync`. Commit ticket (+ board if rendered), id referenced (`chore(T##): create`).
+5. **Finalize (same commit).** Write the ticket to `{tickets.dir}/{pattern}`. Do not edit `TASKS.md` —
+   `just land` regenerates it deterministically from `.tasks/` (T425). If github-mirrored, run
+   `tickets.sync`. Commit ticket, id referenced (`chore(T##): create`).
 
 ## Conventions
 From config `conventions`: conventional commits w/ id, never skip hooks, no coauthor trailer, tool

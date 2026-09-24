@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: start
-  version: "2026.09.22-1790054019"
+  version: "2026.09.24-1790250554"
 ---
 
 # w0m-sdlc-start — the ticket kickoff gate
@@ -135,8 +135,7 @@ start work on a ticket that shouldn't be started. Otherwise carry its report int
 ## Step 5 — Update tracking (only after the user confirms the brief)
 - Set the ticket status → in-progress in `{tickets.dir}/{pattern}`.
   Update ticket frontmatter (`status: in-progress`) and status notes.
-  Optionally run `just tasks-render` to compile the board deterministically from tickets
-  (never hand-edit `TASKS.md` to prevent multi-agent merge conflicts).
+  Do not edit or manually render `TASKS.md` — `just land` regenerates it deterministically from `.tasks/` (T425).
   If github-mirrored, reflect it (re-run `tickets.sync`; ticket markdown is the source).
 - Commit the ticket update with the id in the message per `conventions` (e.g.
   `chore(T37): start — status → in-progress`). Then hand off to the recommended next gate.
