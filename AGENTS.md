@@ -35,6 +35,13 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 - **`STATE.md` blocked your push? `just land` regenerates it.** Pre-push `state-check` compares STATE.md's mechanical block against reality.
 - **Zero silent fallbacks, clean cutovers over shims, zero shadow symlinks (AgDR-0025).** Fail fast and fail closed (`docs/ANTI-PATTERNS.md`). Multi-path fallback search ladders and backward-compatibility shims are strictly prohibited. 100% of callers must be updated atomically when a path or contract changes.
 - **Visual & architectural reports via Artifacts (anti-terminal-overflow).** Complex architectural reports, broad system audits, and wide Mermaid (`.mmd`) diagrams must NEVER be dumped as raw multiline markdown in terminal chat (which causes terminal width overflow / ASCII diagram fallback warnings). Output them as Antigravity **artifacts** (`UserFacing: true`), preserve a permanent copy in `.agents/reports/` (mirrored to `wom7web/docs/reports/` when relevant), and present only concise summaries with clickable links in terminal responses.
+- **Close a ticket's open questions with a weighted decision; split big leftovers into a dependent ticket** (owner, 2026-09-24).
+  At the end of a ticket, list each remaining question with a recommended answer and its weight (cost, risk, what it
+  unblocks), so the owner can settle them in one reply. Leftover scope that is a different kind of work (research
+  vs shipping) or has its own dependencies becomes a **new ticket**: `Split from: [[T…]]` in its Links, `blocked_by:`
+  when there is an order, and the original AC reads `[x] … split into [[T…]]` so the original can close. Example:
+  T437 (arm64 WebTorrent fork) shipped; its Rust/WASM path became T438. Money, accounts and public posts stay
+  owner-only; this speeds up deciding, it does not replace asking.
 
 ## Fast Project Info & Indexed Data References
 
