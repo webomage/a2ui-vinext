@@ -593,6 +593,17 @@ recalled, not measured.
 ⇒ **`get`/`list` and `delete` are not symmetric on secret type — check `--help` on the mutating subcommand before trusting that a passing read implies the write will target the same object.** A 404 from a delete/write command right after a successful read is a strong signal of a default-flag mismatch, not that the object vanished between the two calls.
 ⭐ **The tell:** `infisical secrets get NAME` succeeds, `infisical secrets delete NAME` 404s with "Secret not found" using the identical name/env — add `--type=shared` before assuming the secret was already gone.
 
+### ⛔ A TERMINAL CHECK IS NOT A HUMAN CHECK — VERIFY PROCESS ANCESTRY AND HUMAN PRESENCE
+**2026-09-24, T435.** The deploy/migrate confirmation gate was self-confirmed by an AI agent (agy) holding a pseudo-terminal on 2026-09-17 (`run_command just db-migrate` followed by `manage_task send_input "yes\n"`), applying live migrations to production database.
+
+Checking `stdin.isatty()` or opening `/dev/tty` only proves an interactive terminal stream exists, which modern agent harnesses (like Antigravity or `script -q /dev/null`) allocate natively.
+
+⇒ **Gate mutating operations against process ancestry, agent environment markers, and OS-level human presence.**
+- Walk the process ancestry up to PID 1 / launchd and inspect environment variables (`CLAUDECODE`, `AI_AGENT`). If an agent binary or harness is present, fail closed (`REFUSED-AGENT`).
+- If ancestry cannot be read, fail closed (`REFUSED-UNMEASURABLE`).
+- A typed "yes" at a terminal must be backed by OS-level human verification (macOS `LocalAuthentication` Touch ID / password dialog) so even a detached terminal cannot spoof human intent.
+⭐ **The tell:** A security gate that relies on `isatty()` or prompt typing as proof that the caller is human. An agent with execution privileges can always allocate a pty.
+
 ---
 
 ## 5. Records
