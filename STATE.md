@@ -146,7 +146,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
    - **T432** (P2): Delivery & DevEx measurement — DORA 5-metric cockpit, Agent-DevEx signals, DX Core 4 scorecard, SPACE charter.
    - **T433** (P2): Bug-bounty programme — w0m disclosure posture (`security.txt`, safe harbor, diodb) and human-gated hunting pilot.
 
-3. **TODO / Next Work — Typed-Decision Capability & System One Architecture**:
+4. **TODO / Next Work — Typed-Decision Capability & System One Architecture**:
    - **Core Concept**: Bounded decision layer (typed question → choice/score/bool with confidence) replacing slow/costly generative LLM calls at bounded call sites.
    - **Providers & Topology**:
      - **Jev**: Hosted SaaS by TypeSafe (native System One HTTP API).
