@@ -1,0 +1,58 @@
+%% Bug-bounty participation pipeline + w0m own disclosure posture (2026-09-23)
+%% Companion to 2026-09-23-t433-research-bug-bounty-participation-and-listings.md
+flowchart TD
+    subgraph P0["Phase 0 — w0m's own posture"]
+        ST["security.txt<br/>RFC 9116 on all apps"]
+        POL["Estate SECURITY policy<br/>+ dioterms full safe harbor"]
+        DIO["List in diodb"]
+        VDP{"H1 Essential VDP?<br/>owner decision"}
+        ST --> POL --> DIO --> VDP
+    end
+
+    subgraph FEEDS["Catalog feeds (licensed)"]
+        BTD["bounty-targets-data<br/>MIT · scopes"]
+        DIODB["diodb<br/>CC0 · safe_harbor"]
+        CHAOS["Chaos list<br/>MIT list only"]
+    end
+
+    subgraph INTAKE["wom7sec intake (read-only)"]
+        JOIN["Join + filter:<br/>paid · full safe harbor ·<br/>stack match"]
+        SHORT["Ranked shortlist<br/>JSONL"]
+        JOIN --> SHORT
+    end
+
+    BTD --> JOIN
+    DIODB --> JOIN
+    CHAOS -.-> JOIN
+
+    subgraph HUNT["Human-gated hunt"]
+        ENROL["Human enrols in program<br/>H1 / Intigriti"]
+        SCOPE["Scope re-checked via<br/>platform API at test time"]
+        AGENT["Agents assist:<br/>recon · hypotheses<br/>rate-limited, headers set"]
+        REPRO{"Human reproduces<br/>by hand?"}
+        DROP["Discard<br/>never submit scanner output"]
+        SUBMIT["Human writes + submits<br/>impact · repro · severity"]
+        ENROL --> SCOPE --> AGENT --> REPRO
+        REPRO -- no --> DROP
+        REPRO -- yes --> SUBMIT
+    end
+
+    SHORT --> ENROL
+
+    subgraph REVIEW["Pilot governance"]
+        LEDGER["Ledger: hours · valid ratio ·<br/>payouts · wom7sec gains"]
+        GATE{"Valid ratio<br/>≥ 50% of last 10?"}
+        PAUSE["Pause programme"]
+        GONOGO["8-week go / no-go<br/>→ H1 Business Account?"]
+        LEDGER --> GATE
+        GATE -- no --> PAUSE
+        GATE -- yes --> GONOGO
+    end
+
+    SUBMIT --> LEDGER
+    DROP --> LEDGER
+
+    CLIENT["Client assets"]:::banned
+    CLIENT -. "never a bounty target —<br/>separate contracted engagement" .-> HUNT
+
+    classDef banned fill:#fdd,stroke:#c00,color:#600

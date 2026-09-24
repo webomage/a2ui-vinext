@@ -1,0 +1,71 @@
+%% DORA / SPACE / DevEx → w0m measurement model (2026-09-23)
+%% Companion to 2026-09-23-t432-research-dora-space-devex-for-w0m.md
+flowchart TD
+    subgraph FW["Frameworks"]
+        DORA["DORA · 5 metrics<br/>throughput + instability"]
+        DEVEX["DevEx<br/>feedback · cognitive load · flow"]
+        SPACE["SPACE<br/>≥3 dimensions · ≥1 perceptual"]
+        CORE4["DX Core 4<br/>speed · effectiveness ·<br/>quality · impact"]
+    end
+
+    subgraph SRC["w0m data sources"]
+        DLOG["deploy_log<br/>service · commit · deployed_at"]
+        GIT["git history<br/>commit times"]
+        TASKS[".tasks/ frontmatter<br/>ticket lifecycle"]
+        HOOKS["hook + gate logs<br/>preflight · state-check"]
+        PULSE["Owner pulse<br/>3 questions · weekly"]
+    end
+
+    subgraph GAPS["Gaps to close first"]
+        G1["deploy_log.outcome<br/>+ trigger + incident_ref<br/>(migration, human applies)"]
+        G2["Incident record<br/>detected · recovered · cause"]
+        G3["Verify every deploy path<br/>writes deploy_log"]
+    end
+
+    subgraph OUT["Metrics produced"]
+        THRU["Throughput:<br/>deploy freq · lead time ·<br/>recovery time"]
+        INST["Instability:<br/>change fail rate ·<br/>rework rate"]
+        ADX["Agent DevEx:<br/>hook time · gate fails ·<br/>permission prompts"]
+        SAT["Satisfaction:<br/>pulse trend"]
+    end
+
+    CHARTER["SPACE measurement charter (AgDR)<br/>no activity targets ·<br/>unmeasurable is its own state"]
+
+    DORA --> DLOG
+    DORA --> GIT
+    DEVEX --> HOOKS
+    DEVEX --> PULSE
+    SPACE --> CHARTER
+    CORE4 --> CHARTER
+
+    G3 --> DLOG
+    DLOG --> THRU
+    GIT --> THRU
+    G1 --> INST
+    G2 --> THRU
+    G2 --> INST
+    TASKS --> THRU
+    HOOKS --> ADX
+    PULSE --> SAT
+
+    TOOL["just dora → JSONL<br/>→ Tinybird (T43) → CP panel"]
+    THRU --> TOOL
+    INST --> TOOL
+    ADX --> TOOL
+    SAT --> TOOL
+    CHARTER -. governs .-> TOOL
+
+    subgraph USE["Uses"]
+        COCKPIT["Internal delivery cockpit"]
+        AICAP["DORA AI Capabilities<br/>self-assessment"]
+        OFFER["Client offering:<br/>Delivery & DevEx Baseline<br/>2–4 weeks"]
+    end
+
+    TOOL --> COCKPIT
+    TOOL --> OFFER
+    AICAP --> OFFER
+
+    ACT["Commit / PR / token counts"]:::banned
+    ACT -. "context only —<br/>never a target" .-> CHARTER
+
+    classDef banned fill:#fdd,stroke:#c00,color:#600
