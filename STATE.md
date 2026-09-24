@@ -151,7 +151,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
    - **Concrete Next Actions**:
      - **Ticket**: Open ticket for "typed-decision capability: System One contract; Jev, Kev and Laya providers; the Laya adapter as an upstream contribution".
      - **Codebase Inventory**: Scan w0m estate for bounded decision call sites (routing, agent tool guardrails, rubric grading, ticket classification).
-     - **Upstream Contribution**: Build thin System One adapter for `laya-mlx` and contribute upstream (forked under official Org account into `wom7pr/`, tracked via `w0m-prs`).
+     - **Upstream Contribution**: Build thin System One adapter for `laya-mlx` and contribute upstream (forked under `webomage` org into `wom7pr/` with `casualuser@gmail.com` as committer to establish dual brand + developer connection; tracked via `w0m-prs`).
      - **Pilot Call Site**: Implement single-client abstraction + provider registry (`base_url` routing) and benchmark on one pilot call site before broad rollout.
 
 ## 3. Other open threads (in TASKS.md)
