@@ -59,7 +59,6 @@ REGISTERS = {
 GENERATED_FILES = {
     "TASKS.md",
     "STATE.md",
-    "CHANGELOG.md",
 }
 
 POLICY_AND_TOOLING_PREFIXES = [
@@ -68,6 +67,7 @@ POLICY_AND_TOOLING_PREFIXES = [
     "justfile",
     ".agents/rules/",
     ".pre-commit-config.yaml",
+    "CHANGELOG.md",
 ]
 
 
