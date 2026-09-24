@@ -58,9 +58,12 @@ IGNORE_PATHS = re.compile(r"^(https?:|node_modules/|package\.json$)")
 GLYPH_TO_STATUS = {
     "⚪": "queued",
     "🟡": "in-progress",
+    "🟢": "in-progress",
     "✅": "done",
     "🔴": "blocked",
-    "💤": "archived",
+    "🔵": "blocked",
+    "💤": "paused",
+    "⏸️": "paused",
 }
 
 
@@ -145,6 +148,10 @@ def load_tasks_entry(ticket_id: str) -> dict[str, Any]:
                         status = "done"
                     elif "queued" in status_cell.lower():
                         status = "queued"
+                    elif "paused" in status_cell.lower() or "frozen" in status_cell.lower():
+                        status = "paused"
+                    elif "blocked" in status_cell.lower():
+                        status = "blocked"
 
                 # Extract AC count mentioned in row
                 m_ac = re.search(r"(\d+)\s*ACs?", raw_body, re.IGNORECASE)
