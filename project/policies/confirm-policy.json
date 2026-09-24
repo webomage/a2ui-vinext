@@ -1,6 +1,6 @@
 {
   "_comment": "T161 AC3 — the confirmation layer for mutating recipes. POLICY IS DATA: the step lists live here, not in confirm_step.py, so adding a deploy target is a reviewed edit to this file rather than a code change. Read docs/DEPLOY-CONFIRM.md before editing.",
-  "_why_not_the_harness": "The obvious place for this is the harness `ask` permission tier. It does not work: `ask` was probed on 2026-08-02 (T161 AC3) and RE-PROBED on 2026-08-10 — both times the command ran with NO prompt. `ask` is a silent allow under this permission mode, so shipping it would be a gate that reads as protection and withholds nothing. This layer prompts on /dev/tty instead, which an agent shell cannot open at all.",
+  "_why_not_the_harness": "The obvious place for this is the harness `ask` permission tier. It does not work: `ask` was probed on 2026-08-02 (T161 AC3) and RE-PROBED on 2026-08-10 — both times the command ran with NO prompt. `ask` is a silent allow under this permission mode, so shipping it would be a gate that reads as protection and withholds nothing. This layer prompts at a real terminal instead — and since T435 (2026-09-24) it first refuses any agent session outright and then asks macOS to verify the device owner, because a terminal alone was answered by an agent (agy, live db-migrate, 2026-09-17).",
   "ttl_seconds": 2700,
   "roots": {
     "deploy": [
@@ -22,7 +22,7 @@
       "deploy-functions",
       "ensure-cv-bucket",
       "upload-cv",
-      "deploy-worker"
+      "deploy-workers"
     ],
     "deploy-all": [
       "check-warp",
@@ -47,7 +47,13 @@
       "deploy-functions",
       "ensure-cv-bucket",
       "upload-cv",
-      "deploy-worker"
+      "deploy-workers"
+    ],
+    "supabase-redeploy-all": [
+      "sync-secrets",
+      "ensure-cv-bucket",
+      "deploy-functions",
+      "upload-cv"
     ]
   },
   "always_confirm": [
@@ -87,12 +93,24 @@
     "deploy-functions": "Deploys all Supabase edge functions (parallel, --use-api).",
     "ensure-cv-bucket": "Creates the CV storage bucket if absent. No-op when it exists.",
     "upload-cv": "Uploads the CV artefact to the storage bucket.",
-    "deploy-worker": "Deploys the Cloudflare Worker.",
-    "deploy-function": "Deploys the NAMED Supabase edge function(s) to production (`just deploy-function <name> …`, T431). Replaced 26 per-function recipes."
+    "deploy-function": "Deploys the NAMED Supabase edge function(s) to production (`just deploy-function <name> …`, T431). Replaced 26 per-function recipes.",
+    "deploy-workers": "Deploys wom7func (Cloudflare Workflows) with wrangler.",
+    "deploy-infra-tf": "terraform apply -auto-approve on the Cloudflare stack (DNS, R2, zone settings). No plan review.",
+    "cf-apply": "terraform apply -auto-approve on the Cloudflare stack. No plan review.",
+    "supabase-settings-apply": "terraform apply on the live Supabase project settings.",
+    "azure-jumphost-apply": "terraform apply -auto-approve on the Azure jumphost.",
+    "sync-api-secrets": "Writes the API Worker's production secrets (wrangler secret put).",
+    "sync-cf-secrets": "Writes the web app Worker's production secrets (wrangler secret put).",
+    "sync-cfworkers-secrets": "Writes the wom7func Worker's production secrets (wrangler secret put).",
+    "sync-cp-secrets": "Writes the CP Worker's production secrets (wrangler secret put).",
+    "sync-demo-secrets": "Writes the demo Worker's production secrets (wrangler secret put).",
+    "sync-job-secrets": "Writes the job Worker's production secrets (wrangler secret put).",
+    "sync-join-secrets": "Writes the join Worker's production secrets (wrangler secret put)."
   },
   "_notes": {
     "coverage_matches_the_chain": "2026-08-16: test, goldens and smoke-live were added to the deploy chain (T224/T222) without being declared here, so the 'one yes covers N chained step(s)' count under-reported. A step in the chain but absent from this list would prompt separately the moment it grew a _confirm.",
     "ttl_sized_to_the_real_chain": "2026-08-16: raised 900s → 2700s (45 min). 900s was set when the chain was shorter, and it had become the reason `deploy-all` re-asked for EVERY app: consent expired partway and each later step prompted again. Measured on the successful run — the wrangler phase alone spans ~4.5 min (09:13:2 → 09:17:4), and it is preceded by `test` (~180s), `goldens` (~45s), six Astro builds and the Supabase edge-function deploy; T224/T222 added the first two. ⚠️ The TTL is a real protection — consent is bound to time so a stale yes cannot authorise tomorrow's deploy — so this is sized to one full run with headroom, NOT removed. If the chain grows again, measure and resize rather than reaching for a number that never expires.",
-    "one_yes_is_the_decision": "SETTLED — owner, 2026-08-16, reaffirmed AFTER the real cause was found: 'one yes from human should be enough here.' `deploy-all` takes a single confirmation covering all 23 chained steps, db-migrate and sync-secrets included. ⚠️ Context a future reader needs, because it changes how to treat this: the first version of this decision was proposed while chasing the WRONG cause — the per-app re-prompts turned out to be the confirm-step probe suite deleting the live consent file, not the policy. That was fixed separately (W0M_CONFIRM_CONSENT). The owner was then offered the chance to put db-migrate and sync-secrets back and declined. So this is a considered choice, not a workaround left behind — do NOT 'restore' them as a fix for something else. What one yes authorises: an irreversible live schema write, and a secret-set push to Supabase (overwrite, not delete). Standalone `just db-migrate` still prompts; db-reset, db-backup, db-psql, rotate, sync-env, sync-wom7api-secrets and crawler-deploy remain in always_confirm."
+    "one_yes_is_the_decision": "SETTLED — owner, 2026-08-16, reaffirmed AFTER the real cause was found: 'one yes from human should be enough here.' `deploy-all` takes a single confirmation covering all 23 chained steps, db-migrate and sync-secrets included. ⚠️ Context a future reader needs, because it changes how to treat this: the first version of this decision was proposed while chasing the WRONG cause — the per-app re-prompts turned out to be the confirm-step probe suite deleting the live consent file, not the policy. That was fixed separately (W0M_CONFIRM_CONSENT). The owner was then offered the chance to put db-migrate and sync-secrets back and declined. So this is a considered choice, not a workaround left behind — do NOT 'restore' them as a fix for something else. What one yes authorises: an irreversible live schema write, and a secret-set push to Supabase (overwrite, not delete). Standalone `just db-migrate` still prompts; db-reset, db-backup, db-psql, rotate, sync-env, sync-wom7api-secrets and crawler-deploy remain in always_confirm.",
+    "agent_refusal_and_touch_id": "T435, 2026-09-24. Every step is refused, before any rule below, when an agent harness is in the gate's process ancestry or an agent environment marker is set, and a confirmed prompt is followed by the macOS device-owner dialog (Touch ID). Why: agy held a pty, saw the db-migrate prompt and sent the answer itself on 2026-09-17. Adding a mutating recipe means wiring `_confirm` AND describing it here; `just confirm-test` enumerates every justfile and fails on a deploy-shaped recipe without the gate."
   }
 }

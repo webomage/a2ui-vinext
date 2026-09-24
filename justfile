@@ -358,17 +358,19 @@ sdlc-archive *args:
 version:
     @echo "{{ deploy_version }}"
 
-# `_confirm <step>` prompts on /dev/tty and ABORTS the recipe on anything but "yes".
+# `_confirm <step>` asks a human and ABORTS the recipe on anything but a confirmed yes.
 #
 # 🔑 Why here and not in the harness `ask` permission tier: `ask` DOES NOT GATE. Probed
 # 2026-08-02 (T161 AC3) and re-probed 2026-08-10 — both times a rule in `ask` ran with no
 # prompt, while the same shape in `deny` was withheld instantly. Shipping `ask` rules would
 # be a gate that reads as protection and withholds nothing.
 #
-# What makes this one real: it reads /dev/tty, which an agent shell here cannot even OPEN
-# ("device not configured", measured 2026-08-10) while a human terminal always can. So it is
-# not a rule an agent is trusted to respect — it is one an agent cannot answer. No override
-# env var exists, deliberately; an escape hatch is the hole.
+# What makes this one real — three layers (T435, 2026-09-24): (1) an agent session is refused
+# outright, by process ancestry (`claude`, `agy`, `codex`, IDE language servers …) or agent env
+# markers, before any prompt or consent; (2) the `yes` is read only from a real terminal, never a
+# pipe; (3) macOS then verifies the device owner (Touch ID / password / Watch). A terminal alone
+# was NOT enough: agy held a pty, saw the db-migrate prompt and answered it itself on 2026-09-17.
+# No override env var exists, deliberately; an escape hatch is the hole.
 #
 # Consent: confirming a ROOT (`deploy`, `deploy-all`) covers the steps it chains for 45 min
 # (`ttl_seconds: 2700`), bound to the git HEAD it was granted at. Steps in `always_confirm`
@@ -384,9 +386,11 @@ version:
 _confirm step:
     @python3 wom7web/project/scripts/confirm_step.py {{ step }}
 
-# Red probes for the confirmation gate (T161 AC3, extended by T407). 30 cases: it must withhold
-# from an automated caller, refuse a piped "yes", fail CLOSED on an unrecognised step, honour a
-# granted root for chained steps, and — since T407 — assert that every surface DESCRIBING this
+# Red probes for the confirmation gate (T161 AC3, extended by T407 and T435). 57 cases: it must
+# withhold from an automated caller, refuse a piped "yes", refuse an agent session even with a pty
+# and a live consent, refuse when the Touch ID dialog is not confirmed, find every deploy-shaped
+# recipe without `_confirm`, fail CLOSED on an unrecognised step, honour a granted root for chained
+# steps, and — since T407 — assert that every surface DESCRIBING this
 # gate still matches `confirm-policy.json`, in both directions, with an unreadable surface failing
 # as UNMEASURABLE rather than passing on zero bytes.
 confirm-test:
@@ -446,12 +450,12 @@ deploy-cp: (_confirm "deploy-cp")
     @cd wom7web/apps/cp/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy wom7func to Cloudflare
-deploy-workers:
+deploy-workers: (_confirm "deploy-workers")
     @echo "Deploying wom7func to Cloudflare Workflows (Version: {{ deploy_version }})..."
     @cd wom7func && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec wrangler deploy --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy all functions in parallel using Supabase CLI
-deploy-functions:
+deploy-functions: (_confirm "deploy-functions")
     @echo "Deploying all functions to project {{ project_ref }} in parallel (Version: {{ deploy_version }})..."
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'supabase secrets set DEPLOY_VERSION="{{ deploy_version }}" DEPLOY_AT="{{ deploy_at }}" DEPLOY_COMMIT="{{ deploy_commit }}" --project-ref {{ project_ref }} > /dev/null 2>&1'
     @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- supabase functions deploy --use-api -j 5 --project-ref {{ project_ref }}
