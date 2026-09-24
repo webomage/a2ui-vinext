@@ -1,7 +1,7 @@
 # T211 Architecture Report — Ticket Diagram Co-location, GitHub Sync & Zero-Width Browser Viewer
 
 **Ticket**: [`.tasks/T211.md`](file:///Users/proto/Projects/@self/@wom/.tasks/T211.md) · **Status**: `done` (6/6 ACs verified) · **Reality Audit**: ✅ 4/4 agree  
-**Spec**: [`wom7web/openspec/changes/2026-09-24-ticket-diagram-colocation-and-sync`](file:///Users/proto/Projects/@self/@wom/wom7web/openspec/changes/2026-09-24-ticket-diagram-colocation-and-sync/proposal.md)  
+**Spec**: [`wom7web/openspec/changes/archive/2026-09-24-ticket-diagram-colocation-and-sync`](file:///Users/proto/Projects/@self/@wom/wom7web/openspec/changes/archive/2026-09-24-ticket-diagram-colocation-and-sync/proposal.md)  
 **Commits**: Root monorepo `fb4cb17`, `wom7web` `7e69e374` & `e96c592e`
 
 ---
