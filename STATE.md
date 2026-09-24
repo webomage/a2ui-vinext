@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 194 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **194** are
+> ⚠️ **0 of 193 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **193** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -60,7 +60,7 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | 0 | 2 | `f6961348` |
+| `wom7web` | `beta` | 0 | 4 | `7e69e374` |
 | `wom7api` | `beta` | 0 | 3 | `9b6fcbe` |
 | `wom7func` | `beta` | 0 | 0 | `ecf30db` |
 | `wom7skills` | `beta` | 0 | 1 | `901f359` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 194 open · 433 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 193 open · 433 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T290","T29","T63","T43","T214","T279","T336","T337","T365","T366"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b6fcbe","unpushed":3},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"901f359","unpushed":1},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"f6961348","unpushed":2}},"tickets":{"open":194,"rowless_open":[],"rows":433}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T290","T29","T63","T43","T214","T279","T336","T337","T365","T366"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b6fcbe","unpushed":3},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"901f359","unpushed":1},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"7e69e374","unpushed":4}},"tickets":{"open":193,"rowless_open":[],"rows":433}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -123,18 +123,26 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-09-24 (LATEST) — **T431 (deploy-all regressions / run 7), T428 (crash-safety adopt) & T426 completed; T432 & T433 research tickets opened; offline tier 100% green; next: Typed-Decision System One capability (Jev/Kev/Laya providers, router research: Switchboard vs SystemOneHarness, awesome-jev deep dive, upstream Laya adapter) / T407 / T290.**
+## ⭐ PICK UP HERE — 2026-09-24 (LATEST) — **T211 (ticket diagram co-location & zero-width browser viewer), T431 (deploy-all regressions / run 7), T428 (crash-safety adopt) & T426 completed; T432 & T433 research tickets opened; offline tier 100% green; next: Typed-Decision System One capability (Jev/Kev/Laya providers, router research: Switchboard vs SystemOneHarness, awesome-jev deep dive, upstream Laya adapter) / T407 / T290.**
 
 **What this session completed:**
 
-1. **Deploy-all regressions & session preflight fixes (`030a7f6` committed across estate)**:
+1. **Ticket Architecture Diagram Co-location, GitHub Sync & Zero-Width Browser Viewer (T211 completed, `fb4cb17`)**:
+   - **T211 recycled & closed**: Recycled closed duplicate ticket T211, authored OpenSpec proposal in `openspec/changes/2026-09-24-ticket-diagram-colocation-and-sync/` with DoD check clean.
+   - **Sibling Diagram Auto-Discovery**: Added `ticket_diagrams(ticket_id)` to `scripts/sync_github.py` scanning `.tasks/T{id}*.mmd` and projecting into GitHub Issue bodies in collapsible `<details open><summary>📊 {Title}</summary>` blocks with native GitHub Mermaid fences.
+   - **Byte-Identical Hash Stability (AC2)**: Proved zero index churn (`skipped=421`, zero unwanted GitHub API calls) for tickets without diagrams.
+   - **Zero-Width-Limit Browser Viewer (AC4, AC6)**: Created `scripts/diagram_view.py` and top-level `just diagram [target]` recipe, compiling standalone dark-mode HTML (`/tmp/w0m-diagram-preview.html`) with SVG pan/zoom (wheel zoom, mouse drag, keyboard shortcuts, multi-diagram tabs). Tested via 7/7 test suite `scripts/tests/test_diagram_view.py` (`just diagram-test`).
+   - **Quality Gates Verified**: `just sync-tickets-test` (59/59 passed), `just diagram-test` (7/7 passed), `just ticket-schema-check` (0 errors), `just ticket-audit T211` (✅ 4/4 agree, 6/6 ACs confirmed), `just state-check` (passed).
+   - **Estate Commits**: Root monorepo `fb4cb17`, `43f216a`, `e233cc6`; `wom7web` `7e69e374`, `e96c592e`.
+
+2. **Deploy-all regressions & session preflight fixes (`030a7f6` committed across estate)**:
    - **T431 (Run 7 deploy-all regressions)**: Fixed seed-cv bundle timeout, dead imports, page-test, `/cdn` prefix handling, and deploy_version inheritance across nested `just`.
    - **T428 & T426**: AC1 decided (adopt crash-safety), AC4–AC6 built; T426 AC5 removal half done.
    - **Session-start orientation (`just state-brief`)**: Updated `scripts/state_doctor.py` to display in-progress tickets with their newest status note followed by the active pickup block. Claude runs it via SessionStart hook; AGENTS.md mandates for all agents.
    - **Estate quality gates**: Added `scripts/reports_ticket_check.py` and `scripts/justfile_calls_check.py` to ensure report ticket parity and internal justfile call resolution.
    - **Estate commits held on `beta`**: Monorepo root `030a7f6`, `wom7web` `f6961348`, `wom7api` `9b6fcbe`, `wom7skills` `901f359`.
 
-2. **Research & Tickets Filed**:
+3. **Research & Tickets Filed**:
    - **T432** (P2): Delivery & DevEx measurement — DORA 5-metric cockpit, Agent-DevEx signals, DX Core 4 scorecard, SPACE charter.
    - **T433** (P2): Bug-bounty programme — w0m disclosure posture (`security.txt`, safe harbor, diodb) and human-gated hunting pilot.
 
