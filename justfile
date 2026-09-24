@@ -52,6 +52,13 @@ sync-tickets *args:
 sync-tickets-test:
     @python3 wom7web/project/scripts/tests/test_ticket_sync.py
 
+[positional-arguments]
+diagram *args:
+    @python3 scripts/diagram_view.py "$@"
+
+diagram-test:
+    @python3 scripts/tests/test_diagram_view.py
+
 dod-check *args:
     @python3 scripts/dod_check.py {{ args }}
 

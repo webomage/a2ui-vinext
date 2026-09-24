@@ -1,0 +1,49 @@
+flowchart TD
+  subgraph Local [Local Estate Source of Truth]
+    T[".tasks/T211.md<br/>(Ticket Spec & ACs)"]
+    D1[".tasks/T211.mmd<br/>(Primary Arch Diagram)"]
+    D2[".tasks/T211-arch.mmd<br/>(Sub-System Flow)"]
+    T ~~~ D1
+    T ~~~ D2
+  end
+
+  subgraph SyncEngine [GitHub Sync Engine]
+    SG["scripts/sync_github.py<br/>(just sync-tickets)"]
+    Disc["ticket_diagrams(ticket_id)<br/>Sibling Auto-Discovery"]
+    Hash["projection_hash()<br/>SHA-256 Stability Gate"]
+    Body["build_body()<br/>Collapsible &lt;details&gt; Fences"]
+    
+    SG --> Disc
+    Disc --> Body
+    Body --> Hash
+  end
+
+  subgraph BrowserViewer [Zero-Width Browser Viewer]
+    DV["scripts/diagram_view.py<br/>(just diagram &lt;T##&gt;)"]
+    HTML["/tmp/w0m-diagram-preview.html<br/>(Slate-950 Dark Theme)"]
+    PanZoom["Interactive SVG Pan/Zoom<br/>(Wheel, Drag, Controls, Tabs)"]
+    
+    DV --> HTML
+    HTML --> PanZoom
+  end
+
+  subgraph Remote [GitHub Remote Mirror]
+    GH["GitHub Issues<br/>(webomage/wom7board)"]
+    SVG["Native SVG Mermaid Renderer<br/>(Zero Column Limit)"]
+    
+    GH --> SVG
+  end
+
+  Local --> SG
+  Local --> DV
+  Hash -->|"Only if hash changes (AC2)"| GH
+  PanZoom -->|"Default macOS Browser"| User([Developer / Agent Inspection])
+  SVG -->|"Web Browser / Team"| Team([Team Collaboration])
+
+  classDef box fill:#0f172a,stroke:#1e293b,stroke-width:1px,color:#f8fafc;
+  classDef accent fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#38bdf8;
+  classDef actor fill:#020617,stroke:#94a3b8,stroke-dasharray: 4 4,color:#f8fafc;
+
+  class T,D1,D2,SG,Disc,Hash,Body,DV,HTML,PanZoom,GH,SVG box;
+  class Local,SyncEngine,BrowserViewer,Remote accent;
+  class User,Team actor;

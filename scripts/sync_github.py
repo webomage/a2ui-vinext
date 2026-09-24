@@ -256,6 +256,47 @@ def ticket_meta(ticket_id: str) -> dict:
             "truncated": len(raw) > 4000}
 
 
+def ticket_diagrams(ticket_id: str) -> list[tuple[str, str]]:
+    """Discover all sibling `.tasks/T{id}*.mmd` files for a ticket (T211 AC1).
+
+    Returns a list of (title, raw_mermaid_content) sorted by filename.
+    Matches:
+      - T211.mmd -> title: "Architecture Diagram"
+      - T211-arch-flow.mmd -> title: "Arch Flow"
+      - T211_state_machine.mmd -> title: "State Machine"
+    """
+    if not TICKETS_DIR.is_dir():
+        return []
+    pat = re.compile(rf"^{re.escape(ticket_id)}(?:[-_](.+))?\.mmd$")
+    diagrams = []
+    def sort_key(p: pathlib.Path) -> tuple[int, str]:
+        if p.name == f"{ticket_id}.mmd":
+            return (0, "")
+        return (1, p.name)
+
+    for f in sorted(TICKETS_DIR.glob(f"{ticket_id}*.mmd"), key=sort_key):
+        m = pat.match(f.name)
+        if not m:
+            continue
+        suffix = m.group(1)
+        if suffix:
+            title = suffix.replace("-", " ").replace("_", " ").strip().title()
+        else:
+            title = "Architecture Diagram"
+        try:
+            content = f.read_text(encoding="utf-8").strip()
+            # If the file accidentally includes a markdown ```mermaid code fence, unwrap it
+            if content.startswith("```"):
+                content = re.sub(r"^```(?:mermaid)?\s*", "", content)
+                content = re.sub(r"\s*```$", "", content)
+                content = content.strip()
+            if content:
+                diagrams.append((title, content))
+        except OSError:
+            continue
+    return diagrams
+
+
 def build_body(ticket: dict, summary: str, meta: dict | None = None) -> str:
     """T228 AC7 — the body must DECLARE that it is a partial projection.
 
@@ -275,7 +316,7 @@ def build_body(ticket: dict, summary: str, meta: dict | None = None) -> str:
     ac = (f"**{done}/{total} acceptance criteria** — not shown here" if total
           else "no acceptance criteria recorded")
     cut = "\n\n> ⚠️ **Summary truncated at 4,000 characters.**" if m.get("truncated") else ""
-    return (f'> ⚠️ **PARTIAL PROJECTION — not the ticket.** This issue carries the `## Summary` '
+    base = (f'> ⚠️ **PARTIAL PROJECTION — not the ticket.** This issue carries the `## Summary` '
             f'section only. {ac}; status notes, decisions and history live in the source file.\n'
             f'> **Source of truth:** [`.tasks/{tid}.md`]'
             f'({REPO_BLOB}/.tasks/{tid}.md) — edit there and re-run the sync; '
@@ -284,6 +325,16 @@ def build_body(ticket: dict, summary: str, meta: dict | None = None) -> str:
             f'**Epic:** {ticket.get("epic") or "—"} · **Spec:** {ticket.get("spec") or "—"}\n'
             f'**Status:** {ticket.get("status")} · **Priority:** {ticket.get("priority") or "—"} '
             f'· **Repos:** {", ".join(ticket.get("repos", [])) or "—"}')
+
+    diagrams = ticket_diagrams(tid)
+    if not diagrams:
+        return base
+
+    blocks = [
+        f"<details open><summary>📊 {title}</summary>\n\n```mermaid\n{content}\n```\n</details>"
+        for title, content in diagrams
+    ]
+    return f"{base}\n\n---\n### Architecture Diagrams\n\n" + "\n\n".join(blocks)
 
 
 def projection_of(ticket: dict, summary: str) -> dict:
