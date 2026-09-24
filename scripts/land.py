@@ -97,6 +97,10 @@ class LandLock:
         try:
             os.kill(pid, 0)
             return True
+        except PermissionError:
+            return True
+        except ProcessLookupError:
+            return False
         except OSError:
             return False
 
@@ -301,7 +305,7 @@ def land_root(
         # Stage reports for this ticket
         reports_dir = repo_root / ".agents" / "reports"
         if reports_dir.exists():
-            for rep in reports_dir.glob(f"*t{clean_id}*"):
+            for rep in reports_dir.glob(f"*[tT]{clean_id}*"):
                 run_git(["add", str(rep)], cwd=repo_root)
                 staged_paths.append(str(rep.relative_to(repo_root)))
 
@@ -388,6 +392,12 @@ def land_member_worktree(
         return 1
 
     log_land(repo_root, f"landing branch '{branch}' from {target_path}")
+
+    # Auto-detect ticket ID from branch name if not explicitly passed
+    if not ticket_id:
+        m = re.search(r"\b[tT](\d+)\b", branch) or re.search(r"[tT](\d+)", branch)
+        if m:
+            ticket_id = f"T{m.group(1)}"
 
     # 2. Fetch latest beta if remote exists
     remotes = run_git(["remote"], cwd=repo_root).stdout.splitlines()
