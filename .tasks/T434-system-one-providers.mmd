@@ -1,0 +1,27 @@
+flowchart LR
+  subgraph callers["Call sites (bounded questions)"]
+    tooling["SDLC tooling<br/>type_backfill · ticket-dups · ticket-audit"]
+    hooks["pre-commit / pre-push gates"]
+    edge["Edge sites<br/>guardrails · chat-core · job-scorer"]
+  end
+
+  client["System One client<br/>+ provider registry (base_url)"]
+
+  tooling --> client
+  hooks --> client
+  edge -. "blocked until AgDR (T36 AC2)" .-> client
+
+  subgraph providers["Providers — POST /v1/systemone"]
+    jev["Jev<br/>TypeSafe hosted"]
+    kevm["Kev on Mac<br/>MLX"]
+    kevg["Kev on Modal<br/>GPU, HTTPS"]
+    laya["Laya adapter<br/>thin HTTP over laya.predict<br/>(upstream PR)"]
+  end
+
+  client --> jev
+  client --> kevm
+  client --> kevg
+  client --> laya
+  laya --> layalib["laya-mlx library<br/>Apple Silicon only"]
+
+  client -- "provider down" --> unm["UNMEASURABLE<br/>no silent fallback"]
