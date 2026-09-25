@@ -60,8 +60,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | 0 | 1 | `7c470cda` |
-| `wom7api` | `beta` | 0 | 2 | `1e221e6` |
+| `wom7web` | `beta` | 0 | 5 | `f5b279a5` |
+| `wom7api` | `beta` | 0 | 4 | `a673be5` |
 | `wom7func` | `beta` | 0 | 0 | `ecf30db` |
 | `wom7skills` | `beta` | 0 | 0 | `be55a51` |
 | `wom7ext` | `beta` | 0 | 0 | `14b9f62` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 198 open · 444 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 198 open · 445 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T444","T100","T439","T290","T29","T63","T43","T214","T279","T336"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"1e221e6","unpushed":2},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"be55a51","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"7c470cda","unpushed":1}},"tickets":{"open":198,"rowless_open":[],"rows":444}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T444","T100","T439","T290","T29","T63","T43","T214","T279","T336"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"a673be5","unpushed":4},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"be55a51","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"f5b279a5","unpushed":5}},"tickets":{"open":198,"rowless_open":[],"rows":445}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -150,9 +150,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T439** — CP information architecture — one shell with a Me / Org / Admin context switcher, capability-grown menus, and DS layout components
   - **2026-09-24** (today): Created and started (owner: "concentrate on reworking UI for CP"). Brainstorm decisions 1-4 above
 
-#### Completed today (8):
+#### Completed today (10):
 
 - **T211** — Co-locate ticket architecture diagrams (.mmd) with real-time sync to GitHub Issues and zero-width-limit browser viewer (T211 complete: ticket architecture diagrams co-located and synced to GH, zero-width browser viewer live)
+- **T422** — Design System React Spec Elimination & Token SSOT Consolidation (Post-T420 Phase 2) (Correction: AC4's parity gate did not exist until today. The archived spec ticked)
 - **T425** — just land / land root — the local merge queue and single committer to beta (archived via w0m-sdlc-archive; openspec change archived; 12/12 unit tests green; status -> done.)
 - **T428** — DECISION: move session handoffs from STATE.md into ticket Status notes and generate PICK UP HERE (completed AC2 and AC3. scripts/state_doctor.py synthesizes ⭐ PICK UP HERE dynamically from ticket Status notes with #### subheading levels; canonical skills w0m-state-save and w0m-state-load updated, version stamped, and synced across estate; scripts/land.py regenerates STATE.md on landing and resolves common git dir in worktrees; concurrency test LandRootConcurrencyTest in scripts/tests/test_land.py proves two parallel sessions land handoffs without merge conflict. All 6 ACs verified green. Status -> done.)
 - **T431** — Top-level deploy helpers: one gated `just deploy-function <name…>` replaces 25 per-function recipes (Run 7 (deploy-2026.09.24-1790227320.log, HEAD b7036ab8). Every service shipped and)
@@ -160,6 +161,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T436** — Public-safe automated CHANGELOG: Conventional Commits, ticket synthesis & disclosure guardrail gate (Start T436 (w0m-sdlc-start). Claimed state verified; 0/6 ACs. Upgrading scripts/gen_changelog.py for commit range extraction, Conventional Commits synthesis, PII/actor redaction, sensitive tag filtering, and adding offline verification gate just changelog-check with unit test coverage. Proceeding to w0m-sdlc-spec.)
 - **T440** — Move Aleksei's casualuser-era work onto the person profile — 95 contracts, 1,782 proposals, Upwork rooms and tokens — and show it as Me → Work history (Migrations applied live and verified (AC1, AC3); API endpoints & unit tests green (AC4); host_org_id dual attribution applied (AC5); principal model recorded (AC6). All 6/6 ACs satisfied.)
 - **T443** — Craft foundational unit slots for co-founders Aleksei (CO & CTO) and Elena (CEO & CFO) (Created ticket T443 per owner direction. Investigated live units and squads in DB.)
+- **T445** — Adjust co-founder C-unit roles: Aleksei (CEO & CTO) and Elena (CFO & COO) (Created ticket T445 per owner direction to adjust C-unit roles.)
 
 ## 3. Other open threads (in TASKS.md)
 
