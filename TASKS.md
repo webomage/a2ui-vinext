@@ -18,7 +18,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T440](.tasks/T440.md) | **P0** | **Move Aleksei's casualuser-era work onto the person profile — 95 contracts, 1,782 proposals, Upwork rooms and tokens — and show it as Me → Work history** | api, web | — | 🟡 **in-progress** |
 | [T100](project/tickets/T100.md) · [#126](https://github.com/casualuser/webomage.com/issues/126) | **P0** | **L1 identity gaps — 2FA UI + dormant login providers** — TOTP MFA is **enabled project-wide** (`mfa_totp_enroll/verify = true`, 10 factors) but has **no enrolment UI anywhere**, and `github` + `linkedin_oidc` are enabled as login providers yet **offered in no sign-in UI** (only Google is wired, `apps/{web,cp}/src/pages/api/auth/google.ts`). Either expose them (2FA enrolment + management in CP account settings; provider buttons where clients/members sign in) or disable to shrink attack surface. Owner ask 2026-07-20: "enable google auth and 2fa for clients". | web(cp, web), api | [CONNECTOR-MAP.md](docs/CONNECTOR-MAP.md) §5 findings 4–5; ties [[auth-hardening-plan-2026-07-18]] | ⚪ **queued** |
 | [T442](.tasks/T442.md) | **P1** | 🆕 **Connector framework — one OAuth connect flow for every service, MCP-first transport with API/App fallback per provider, tokens encrypted at rest** | api, web | — | ⚪ **queued** |
 | [T441](.tasks/T441.md) | **P1** | 🆕 **Upwork for every member — connect from Me, one sync engine for estate and member accounts, and CP UI for status, history and control** | api, web | — | ⚪ **queued** |
@@ -226,6 +225,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T440](.tasks/T440.md) | **P0** | **Move Aleksei's casualuser-era work onto the person profile — 95 contracts, 1,782 proposals, Upwork rooms and tokens — and show it as Me → Work history** | api, web | — | ✅ **done** |
 | [T436](.tasks/T436.md) · [#436](https://github.com/casualuser/webomage.com/issues/436) | **P1** | 🆕 **Public-safe automated CHANGELOG: Conventional Commits, ticket synthesis & disclosure guardrail gate** | tooling, web | — | ✅ **done** |
 | [T435](.tasks/T435.md) | **P0** | **The deploy/migrate confirmation gate is forgeable by any agent that holds a terminal — refuse agent ancestry and gate every deploy-shaped recipe** | tooling, web, api | openspec/changes/2026-09-24-confirm-gate-agent-refusal | ✅ **done** |
 | [T431](.tasks/T431.md) · [#431](https://github.com/casualuser/webomage.com/issues/431) | **P1** | **Top-level deploy helpers: one gated `just deploy-function <name…>` replaces 25 per-function recipes** | tooling, api, web | — | ✅ **done** |
