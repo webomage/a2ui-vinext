@@ -42,7 +42,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T450](.tasks/T450.md) | **P1** | **The admin-client ratchet cannot see `staffAdminClient` — six files import the RLS-bypassing client under that name** | web | null | ⚪ **open** |
 | [T447](.tasks/T447.md) | **P1** | **Process the _in tray: each item shows whether it became a spec, a ticket or code, or is still new** | root, web | null | ⚪ **open** |
 | [T446](.tasks/T446.md) | **P1** | **Estate file hygiene: every tracked file has a home, an owner and a reason, enforced** | root, web, api, ext, func, sec, skills, mlx | null | ⚪ **open** |
 | [T426](.tasks/T426.md) · [#426](https://github.com/casualuser/webomage.com/issues/426) | **P1** | 🆕 **Parallel-agents pilot (2 agent kinds via Orca), then enforce land-only main checkouts and make it the default** | tooling, web | — | ⚪ **queued** |
@@ -228,6 +227,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T452](.tasks/T452.md) · [#452](https://github.com/casualuser/webomage.com/issues/452) | **P1** | **One fixed site background (Warp), deprecate other scenes, remove DB queries on SSR, and simplify Slide Management UI** | web | 2026-09-25-t452-fixed-warp-background | ✅ **done** |
+| [T450](.tasks/T450.md) | **P1** | **The admin-client ratchet cannot see `staffAdminClient` — six files import the RLS-bypassing client under that name** | web | null | ✅ **done** |
 | [T449](.tasks/T449.md) · [#449](https://github.com/casualuser/webomage.com/issues/449) | **P1** | **Local full-stack development environment with *.w0m.local wildcard domains and SSL/TLS proxy** | root, web, func | 2026-09-25-t449-local-dev-ssl-stack | ✅ **done** |
 | [T445](.tasks/T445.md) | **P0** | 🆕 **Adjust co-founder C-unit roles: Aleksei (CEO & CTO) and Elena (CFO & COO)** | api, web | openspec/changes/2026-09-24-founder-roles-adjustment | ✅ **done** |
 | [T444](.tasks/T444.md) | **P0** | 🆕 **Configurable public website external links via Admin CP w0m Core Settings** | api, web | openspec/changes/2026-09-24-configurable-public-external-links | ✅ **done** |
