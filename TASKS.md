@@ -42,6 +42,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T454](.tasks/T454.md) | **P1** | 🆕 **MFA for non-admin accounts — sign-in challenge in every app for members and clients who enrol a factor** | web | — | ⚪ **queued** |
 | [T453](.tasks/T453.md) | **P1** | 🆕 **One access foundation for every web app — shared middleware, one route-policy model, and API routes gated by policy instead of per-file checks** | web, ext | — | ⚪ **queued** |
 | [T447](.tasks/T447.md) | **P1** | **Process the _in tray: each item shows whether it became a spec, a ticket or code, or is still new** | root, web | null | ⚪ **open** |
 | [T446](.tasks/T446.md) | **P1** | **Estate file hygiene: every tracked file has a home, an owner and a reason, enforced** | root, web, api, ext, func, sec, skills, mlx | null | ⚪ **open** |
