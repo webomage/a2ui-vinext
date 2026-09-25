@@ -279,11 +279,11 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 > **Epic slug:** `security-rbac-hardening`
 * **Goal**: Rectify critical vulnerabilities and structural gaps identified in the 2026-07-14 audit.
 * **Scope**:
-  1. **Active Hat RLS Enforcement (R1)**: Implement Supabase custom access-token hook to project `user_active_role` into JWT claims, making RLS policies acting-role aware (`auth.acting_role()`).
-  2. **Role Storage Unification (R2)**: Unify role storage into `public.user_roles` and sync to `app_metadata.role` via triggers to prevent privilege drift.
-  3. **Supabase Postgres Password Rotation (T32)**: Rotate the superuser database password in Supabase and run `git filter-repo` to scrub history.
-  4. **Tailwind v4 Purge Fix (T38)**: Prevent utility class purges from shared `@webomage/ui` components by adding `@source` directories.
-  5. **Burn Down 29 Deno Compiler Errors (T40)**: Fix type errors across edge functions to ensure type safety.
+  1. **Active Hat RLS Enforcement (R1)**: Implement Supabase custom access-token hook to project `user_active_role` into JWT claims, making RLS policies acting-role aware (`auth.acting_role()`). [✅ Live in DB].
+  2. **Role Storage Unification (R2)**: Unify role storage into `public.user_roles` and sync to `app_metadata.role` via triggers to prevent privilege drift. [✅ Live in DB].
+  3. **Supabase Postgres Password Rotation (T32)**: Rotate the superuser database password in Supabase and run `git filter-repo` to scrub history. [✅ Rotated live 2026-07-14; history purge rides with T17].
+  4. **Tailwind v4 Purge Fix (T38)**: Prevent utility class purges from shared `@webomage/ui` components by adding `@source` directories. [✅ Done].
+  5. **Burn Down 29 Deno Compiler Errors (T40)**: Fix type errors across edge functions to ensure type safety. [✅ Done].
   6. **The authorization core, batched ([[T200]], added 2026-08-11)**: the 2026-08-10/11 surveys measured
      all **115 tables** and found **15 live authorization defects** plus **four ungoverned layers**.
      The work is batched because the four tickets share the same tables, the same missing
@@ -296,8 +296,9 @@ These are pending tasks recovered from past Antigravity sessions that need to be
      model addresses two.** Current state: `docs/backend/RBAC-MAP.md` + `docs/backend/SCHEMA-MAP.md`
      (generated from `project/authz-probe/`, so they are current rather than dated).
   7. **Parent Batch Closeout & Governance Modernization (T200 / T199, updated 2026-09-17)**:
-      Parent batch [[T200]] is **100% DONE & ARCHIVED** (core children [[T198]], [[T102]], [[T117]], and [[T202]] fully closed;
-      Stage 0 & Stage 1 exits met). For remaining governance child [[T199]], architecture is modernized per owner direction:
+      Parent batch [[T200]] and child governance batch [[T199]] are **100% DONE & ARCHIVED** (core children
+      [[T198]], [[T102]], [[T117]], [[T202]], and [[T199]] 12/12 ACs fully closed; Stage 0 & Stage 1 exits met).
+      Governance architecture modernized:
       - **Telemetrics:** `log-event` retired; Microsoft Clarity (`@microsoft/clarity` v1.0.2) + Tinybird SDK handle client/funnel telemetry.
       - **Connectors:** Legacy webhooks (`stripe-webhook`, `platform-webhook-gateway`) deprecated in favor of per-profile connections (`public.social_integrations`, [[T210]]) and system services (`svc_*` roles, [[T206]]).
       - **Handshake Protocol:** Brittle local file deny-lists superseded by **Agentic Handshakes (a2h, a2a, h2a)** followed by clean [[T117]] 4-axis RBAC role resolution.
@@ -306,6 +307,37 @@ These are pending tasks recovered from past Antigravity sessions that need to be
       (T138/T139, both schema-integrity), while the RBAC work was spread across §10, §13, §13.2, §14
       and §16 — so no ranking could see it as one thing. The section the work belonged in was nearly
       empty. It did not need a new epic; it needed this one to be used.
+  9. **Active Execution Plan & Remeasurement (44/55 Done, remeasured 2026-09-25)**:
+      Following T200/T199, all remaining open tickets in `security-rbac-hardening` were audited against live reality (git history, Supabase Auth config, API keys, DB counts, and code). **44 of 55 tickets in the epic are DONE.**
+      
+      🔴 **Two Priority-Altering Findings (2026-09-25):**
+      - **T18 (Leaked `sb_secret_` never rotated — RAISE P2 → P0):** The key that shipped in `wom7ext`'s history and builds (Dec 2025 – Jun 2026) matches the live project secret key, verified via Management API key `hash` comparison (`base64url(sha256)`) without revealing the key. Created 2025-11-29; matches vault `SUPABASE_SERVICE_ROLE_KEY`. Any old extension build bypasses RLS, overlapping the June 2026 malware incident window. Requires urgent owner P0 rotation, vault update, and consumer redeploy.
+      - **T17 (".env.bak holds only dead values" is FALSE):** 10 of 19 keys in `.env.bak` still match live Infisical vault values (`ADMIN_PASSWORD`, `HATCHET_CLIENT_TOKEN`, `MEMBER_PASSWORD`, `PUBLIC_HONEYCOMB_API_KEY`). `ADMIN_EMAIL` (`casualuser`) has a live password hash. Live values must be rotated before executing the `git filter-repo` history scrub; scrubbing first merely hides active secrets.
+      
+      **Stage-by-Stage Measured Status (11 open tickets):**
+      - **Stage 0 — Confirmed-Live Exposure [100% DONE, 3/3 tickets, 16/16 ACs, Exits Met 2026-09-19]:**
+        - [[T196]] (done, 5/5): Telegram bot token & Hatchet token rotated; quarantine removed; `just host-surface` secrets gate delivered.
+        - [[T201]] (done, 6/6): Cleartext `DEBUG_BYPASS_KEY` removed; frontend & backend cut over to Cloudflare Turnstile; `HCAPTCHA_SECRET` purged.
+        - [[T329]] (done, 5/5): Atomic client actor binding in `authz_probe_suite.py` prevents cross-tenant pairing; 18/18 live and 20/20 offline red probes passing.
+      - **Stage 1 — RLS & Authz Enforcement Residue [100% DONE, 4/4 tickets, 21/21 ACs, Exits Met 2026-09-20]:**
+        - [[T381]] (done, 4/4): Admin authorization enforced in `lead-api`; dead `isAdmin` pruned from `guild-api`; 16 red probes.
+        - [[T382]] (done, 5/5): `withServiceRole` least-privilege transaction switcher adopted across edge functions with companion migration.
+        - [[T327]] (done, 7/7): CP staff business pages migrated to `adminClient()`/`userClient()`; ambiguous re-export in `apps/cp/src/lib/supabase.ts` removed; baseline ratcheted 17 → 13 in `project/authz-admin-client-baseline.json` via enforcing `just authz-admin-client --enforce`; `just authz-probe` 18/18 green.
+        - [[T208]] (done, 5/5): Phantom `user_profiles` relation eliminated from `handlers.ts` and `linkedin-data-erasure.ts`; native `auth.identities` adopted; `just callsite-drift --enforce` reports GHOST: 0 across all 612 call sites.
+      - **Stage 2 — Identity & MFA Surface [IN PROGRESS, 1/2 tickets, 50%, 7/14 ACs]:**
+        - [[T53]] (done, 7/7): Delivered OAuth identities panel, TOTP MFA enrollment and `/mfa/challenge` route, and SHA-256 hashed `personal_access_tokens` schema with owner RLS.
+        - [[T100]] (queued, 0/7, P0): Live counts: 0 enrolled factors (ticket's "10 factors" is the `mfa_max_enrolled_factors` limit); identities: email:21, google:4, github:0, linkedin:0. 🔴 AC7 blocked: `security_manual_linking_enabled = false`. Middleware catch (`middleware.ts:391`) fails open for admin on non-admin domain. Plan: enable manual linking, fix fail-open catch, split non-admin MFA into separate ticket.
+      - **Stage 3 — Posture Composition & Remaining Hygiene [IN PROGRESS, 1/5 tickets, 31%, 9/29 ACs]:**
+        - [[T233]] (done, 8/8): Unified `just audit` host and platform families (macOS host controls, loopback postgres assertion, startup surface ratchet, TCC fail-closed check, 19/19 red probes, daily launchd schedule).
+        - [[T213]] (queued, 0/8, P2): Hardcoded job-board literals in `wom7api/src/utils/job-sources/`, none in vault; internal duplication with `src/lib/job-boards.ts`; Reed credential dead (403); ast-grep rule missing.
+        - [[T52]] (queued, 0/3, P2): `password_hibp_enabled = false`, `password_min_length = 6`, free tier. Plan: add app-side HIBP range API in signup/password handlers + min length 8+.
+        - [[T139]] (queued, 0/5, P2): Still 0 generated columns and 0 materialized views in `public`. Eligible for closure under AC1 ('no workload justifies it').
+        - [[T244]] (queued, 1/5, P3): `CF_RUNTIME_API_TOKEN` invalid; sync recipe in `wom7api/justfile:264` targets `wom7func`. Second reader `scripts/ai-eval.ts:16` uses prohibited `||` fallback.
+      - **Deferred Decisions & Scope Guards:**
+        - [[T31]] (paused, 1/4): No `test-admin@webomage.com`, `ADMIN_EMAIL` casualuser. Pre-commit hook already enforces AC4 guard (tick AC4).
+        - [[T32]] (paused, 3/4): DB password rotated; history purge (AC2) in 9 commits on `origin/beta`, rides with T17.
+        - [[T19]] (queued, 0/1): 1 row in `leads` table created 2026-07-12; delete row and close.
+        - [[T396]] (queued, 0/5): Nonexistent `just security-check` in AC5 satisfied by T233 `just audit`; narrow to client-facing surfaces.
 * **Type**: Spec → Migration → Build. **Priority**: P0.
 
 
