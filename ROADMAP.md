@@ -307,14 +307,14 @@ These are pending tasks recovered from past Antigravity sessions that need to be
       (T138/T139, both schema-integrity), while the RBAC work was spread across §10, §13, §13.2, §14
       and §16 — so no ranking could see it as one thing. The section the work belonged in was nearly
       empty. It did not need a new epic; it needed this one to be used.
-  9. **Active Execution Plan & Remeasurement (44/55 Done, remeasured 2026-09-25)**:
-      Following T200/T199, all remaining open tickets in `security-rbac-hardening` were audited against live reality (git history, Supabase Auth config, API keys, DB counts, and code). **44 of 55 tickets in the epic are DONE.**
+  9. **Active Execution Plan & Remeasurement (47/55 Done, updated 2026-09-25)**:
+      Following T200/T199 and the 2026-09-25 credential rotation, **47 of 55 tickets in the epic are DONE (85%)**.
       
-      🔴 **Two Priority-Altering Findings (2026-09-25):**
-      - **T18 (Leaked `sb_secret_` never rotated — RAISE P2 → P0):** The key that shipped in `wom7ext`'s history and builds (Dec 2025 – Jun 2026) matches the live project secret key, verified via Management API key `hash` comparison (`base64url(sha256)`) without revealing the key. Created 2025-11-29; matches vault `SUPABASE_SERVICE_ROLE_KEY`. Any old extension build bypasses RLS, overlapping the June 2026 malware incident window. Requires urgent owner P0 rotation, vault update, and consumer redeploy.
+      🟢 **Critical Vulnerability Remediated (2026-09-25):**
+      - **[[T18]] (Leaked `sb_secret_` rotated & resolved — 100% DONE, 3/3 ACs):** The legacy service role key that shipped in `wom7ext` (created 2025-11-29) was rotated in Supabase Cloud Dashboard. Old key verified dead (HTTP 401). New key installed into Infisical (`beta` and `dev` environments, HTTP 200) and propagated to consumers. Edge functions tested and verified live (`jobs-list` returning HTTP 200).
       - **T17 (".env.bak holds only dead values" is FALSE):** 10 of 19 keys in `.env.bak` still match live Infisical vault values (`ADMIN_PASSWORD`, `HATCHET_CLIENT_TOKEN`, `MEMBER_PASSWORD`, `PUBLIC_HONEYCOMB_API_KEY`). `ADMIN_EMAIL` (`casualuser`) has a live password hash. Live values must be rotated before executing the `git filter-repo` history scrub; scrubbing first merely hides active secrets.
       
-      **Stage-by-Stage Measured Status (11 open tickets):**
+      **Stage-by-Stage Measured Status (8 remaining open tickets):**
       - **Stage 0 — Confirmed-Live Exposure [100% DONE, 3/3 tickets, 16/16 ACs, Exits Met 2026-09-19]:**
         - [[T196]] (done, 5/5): Telegram bot token & Hatchet token rotated; quarantine removed; `just host-surface` secrets gate delivered.
         - [[T201]] (done, 6/6): Cleartext `DEBUG_BYPASS_KEY` removed; frontend & backend cut over to Cloudflare Turnstile; `HCAPTCHA_SECRET` purged.
@@ -327,16 +327,16 @@ These are pending tasks recovered from past Antigravity sessions that need to be
       - **Stage 2 — Identity & MFA Surface [IN PROGRESS, 1/2 tickets, 50%, 7/14 ACs]:**
         - [[T53]] (done, 7/7): Delivered OAuth identities panel, TOTP MFA enrollment and `/mfa/challenge` route, and SHA-256 hashed `personal_access_tokens` schema with owner RLS.
         - [[T100]] (queued, 0/7, P0): Live counts: 0 enrolled factors (ticket's "10 factors" is the `mfa_max_enrolled_factors` limit); identities: email:21, google:4, github:0, linkedin:0. 🔴 AC7 blocked: `security_manual_linking_enabled = false`. Middleware catch (`middleware.ts:391`) fails open for admin on non-admin domain. Plan: enable manual linking, fix fail-open catch, split non-admin MFA into separate ticket.
-      - **Stage 3 — Posture Composition & Remaining Hygiene [IN PROGRESS, 1/5 tickets, 31%, 9/29 ACs]:**
+      - **Stage 3 — Posture Composition & Remaining Hygiene [IN PROGRESS, 2/5 tickets, 48%, 14/29 ACs]:**
         - [[T233]] (done, 8/8): Unified `just audit` host and platform families (macOS host controls, loopback postgres assertion, startup surface ratchet, TCC fail-closed check, 19/19 red probes, daily launchd schedule).
+        - [[T139]] (done, 5/5): Evaluated and closed under AC1 (rejected with evidence: 0 generated columns and 0 materialized views; plain B-tree functional indexes from T138 suffice; avoids staleness contracts and RLS-bypass risks).
         - [[T213]] (queued, 0/8, P2): Hardcoded job-board literals in `wom7api/src/utils/job-sources/`, none in vault; internal duplication with `src/lib/job-boards.ts`; Reed credential dead (403); ast-grep rule missing.
         - [[T52]] (queued, 0/3, P2): `password_hibp_enabled = false`, `password_min_length = 6`, free tier. Plan: add app-side HIBP range API in signup/password handlers + min length 8+.
-        - [[T139]] (queued, 0/5, P2): Still 0 generated columns and 0 materialized views in `public`. Eligible for closure under AC1 ('no workload justifies it').
         - [[T244]] (queued, 1/5, P3): `CF_RUNTIME_API_TOKEN` invalid; sync recipe in `wom7api/justfile:264` targets `wom7func`. Second reader `scripts/ai-eval.ts:16` uses prohibited `||` fallback.
       - **Deferred Decisions & Scope Guards:**
-        - [[T31]] (paused, 1/4): No `test-admin@webomage.com`, `ADMIN_EMAIL` casualuser. Pre-commit hook already enforces AC4 guard (tick AC4).
+        - [[T19]] (done, 1/1): Synthetic test lead `jordan@acme-test.io` deleted from `leads` table via API (HTTP 204).
+        - [[T31]] (paused, 2/4): AC4 ticked (verified active as pre-commit hook `guard-test-admin`). AC2/AC3 remain owner infra actions.
         - [[T32]] (paused, 3/4): DB password rotated; history purge (AC2) in 9 commits on `origin/beta`, rides with T17.
-        - [[T19]] (queued, 0/1): 1 row in `leads` table created 2026-07-12; delete row and close.
         - [[T396]] (queued, 0/5): Nonexistent `just security-check` in AC5 satisfied by T233 `just audit`; narrow to client-facing surfaces.
 * **Type**: Spec → Migration → Build. **Priority**: P0.
 
