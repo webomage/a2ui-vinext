@@ -981,6 +981,14 @@ Node/browser modules that import bundler-specific utilities or Node globals fail
 - Subproject tools like `mypy` running inside member repos must resolve root-level Python scripts via explicit config (`mypy_path = ../scripts` in `mypy.ini`) rather than relying on local symlinks.
 ⭐ **The tell:** A tool searching multiple legacy locations sequentially, or `git diff` / `grep` finding two identical files under different directory paths because a symlink was left in place "for backward compatibility".
 
+### STATIC DESIGN CHOICES BELONG IN CODE, NEVER IN RUNTIME SSR DATABASE QUERIES
+**2026-09-25 (T452 / Fixed Warp Background).** Root layouts across `web` and `cp` queried `site_settings` and `slide_config` via Supabase SSR on every page request just to resolve a background animation scene and palette. Because the owner decided Warp is the sole canonical background, querying the database and Cloudflare KV on every initial render added unnecessary SSR latency, database connection pressure, theme flash on slow connections, and fragile client-server state synchronization.
+
+⇒ **Hardcode settled, canonical visual constants (`ACTIVE_BACKGROUND`) directly into shared packages (`@webomage/lib/background`) and eliminate runtime database queries from root SSR layouts.**
+- Mark obsolete scenes and modes as `@deprecated` and disable them in administrative management UIs without deleting legacy code or preview routes.
+- Guard layout render paths with automated unit test AST/text scans (`background.spec.ts`) asserting that layout templates and manager components never import database clients or invoke `getPublicSettings()`.
+⭐ **The tell:** A root layout (`Layout.astro`) performing an `await` database query on every page load to retrieve visual configuration (theme, background, colors) that is actually an invariant product choice.
+
 ---
 
 ## 8. Open Source & External PRs
