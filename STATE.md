@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 196 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **196** are
+> ⚠️ **0 of 197 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **197** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -41,7 +41,7 @@
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
-| 2 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | queued | product | 0/7 | `░░░░░░░░░░` 0% | — | L1 identity gaps — 2FA UI + dormant login providers |
+| 2 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | in-progress | product | 0/7 | `░░░░░░░░░░` 0% | — | L1 identity gaps — 2FA UI + dormant login providers |
 | 3 | [T287](/Users/proto/Projects/@self/@wom/.tasks/T287.md) | [#287](https://github.com/webomage/wom7board/issues/287) | P2 | queued | schemas | 5/7 | `███████░░░` 71% | — | Repos are a first-class entity — `projects.github_repo_url`  |
 | 4 | [T16](/Users/proto/Projects/@self/@wom/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
 | 5 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
@@ -60,7 +60,7 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **3** | 0 | `abd7a809` |
+| `wom7web` | `beta` | 0 | 1 | `a241163b` |
 | `wom7api` | `beta` | 0 | 0 | `f7fa067` |
 | `wom7func` | `beta` | 0 | 0 | `ecf30db` |
 | `wom7skills` | `beta` | 0 | 0 | `be55a51` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 196 open · 447 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 197 open · 448 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T290","T29","T63","T43","T214","T279","T336","T337"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"f7fa067","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"be55a51","unpushed":0},"wom7web":{"branch":"beta","dirty":3,"has_upstream":true,"head":"abd7a809","unpushed":0}},"tickets":{"open":196,"rowless_open":[],"rows":447}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T290","T29","T63","T43","T214","T279","T336","T337"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"f7fa067","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"be55a51","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"a241163b","unpushed":1}},"tickets":{"open":197,"rowless_open":[],"rows":448}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -129,10 +129,12 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-#### In-flight tickets (9):
+#### In-flight tickets (10):
 
 - **T16** — Verify & archive built-but-unarchived changes
   - **2026-08-23** (33d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
+- **T100** — L1 identity gaps — 2FA UI + dormant login providers
+  - **2026-09-25** (today): Progress (started, spec 2026-09-25-t100-identity-gaps-and-mfa)
 - **T153** — ZeroClaw as a managed w0m runtime — omlx-backed local agent, bidirectional w0m↔zeroclaw, tracked install config, and sandboxed client-project audits
   - **2026-09-17** (8d ago): Start T153: ZeroClaw managed runtime & ecosystem integration
 - **T234** — Trial ai-memory as the recall layer — and find out how much of auto-memory is a duplicate register
