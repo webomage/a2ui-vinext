@@ -43,6 +43,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T455](.tasks/T455.md) | **P1** | 🆕 **Participating open-source projects & PRs inventory for member profiles (read-only) and webomage/casualuser fork lifecycle management** | web, tooling, skills | wom7skills/docs/proposals/w0m_cp_member_participating_projects_and_prs_proposal.md | ⚪ **queued** |
 | [T454](.tasks/T454.md) | **P1** | 🆕 **MFA for non-admin accounts — sign-in challenge in every app for members and clients who enrol a factor** | web | — | ⚪ **queued** |
 | [T447](.tasks/T447.md) | **P1** | **Process the _in tray: each item shows whether it became a spec, a ticket or code, or is still new** | root, web | null | ⚪ **open** |
 | [T446](.tasks/T446.md) | **P1** | **Estate file hygiene: every tracked file has a home, an owner and a reason, enforced** | root, web, api, ext, func, sec, skills, mlx | null | ⚪ **open** |
@@ -228,6 +229,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T456](.tasks/T456.md) · [#456](https://github.com/casualuser/webomage.com/issues/456) | **P1** | **Unified Headroom service management via Homebrew services and just helpers** | tooling, web | wom7skills/docs/proposals/w0m_headroom_service_and_just_helpers_proposal.md | ✅ **done** |
 | [T452](.tasks/T452.md) · [#452](https://github.com/casualuser/webomage.com/issues/452) | **P1** | **One fixed site background (Warp), deprecate other scenes, remove DB queries on SSR, and simplify Slide Management UI** | web | 2026-09-25-t452-fixed-warp-background | ✅ **done** |
 | [T450](.tasks/T450.md) | **P1** | **The admin-client ratchet cannot see `staffAdminClient` — six files import the RLS-bypassing client under that name** | web | null | ✅ **done** |
 | [T449](.tasks/T449.md) · [#449](https://github.com/casualuser/webomage.com/issues/449) | **P1** | **Local full-stack development environment with *.w0m.local wildcard domains and SSL/TLS proxy** | root, web, func | 2026-09-25-t449-local-dev-ssl-stack | ✅ **done** |

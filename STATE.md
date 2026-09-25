@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 200 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **200** are
+> ⚠️ **0 of 201 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **201** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | 0 | 4 | `316d3aff` |
-| `wom7api` | `beta` | 0 | 1 | `b666bf4` |
+| `wom7web` | `beta` | 0 | 1 | `dee57d76` |
+| `wom7api` | `beta` | **1** | 0 | `b666bf4` |
 | `wom7func` | `beta` | 0 | 0 | `d577124` |
-| `wom7skills` | `beta` | 0 | 0 | `be55a51` |
+| `wom7skills` | `beta` | 0 | 2 | `5103a8e` |
 | `wom7ext` | `beta` | 0 | 0 | `14b9f62` |
 | `wom7sec` | `beta` | 0 | 0 | `9b85831` |
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 200 open · 454 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 201 open · 456 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T290","T29","T63","T453","T43","T214","T279","T336"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"b666bf4","unpushed":1},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"be55a51","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"316d3aff","unpushed":4}},"tickets":{"open":200,"rowless_open":[],"rows":454}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T290","T29","T63","T453","T43","T214","T279","T336"],"repos":{"wom7api":{"branch":"beta","dirty":1,"has_upstream":true,"head":"b666bf4","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"5103a8e","unpushed":2},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"dee57d76","unpushed":1}},"tickets":{"open":201,"rowless_open":[],"rows":456}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -154,7 +154,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T453** — One access foundation for every web app — shared middleware, one route-policy model, and API routes gated by policy instead of per-file checks
   - **2026-09-25** (today): Filed from the owner's direction with the measurements above. Not started; the owner decides
 
-#### Completed today (6):
+#### Completed today (7):
 
 - **T18** — Credential rotation remainder (RESOLVED & CLOSED (3/3 ACs): Owner rotated sb_secret_ in Supabase Cloud Dashboard. Old key verified dead (HTTP 401). New key installed into Infisical (beta and dev environments, returning HTTP 200) and propagated to consumers. Edge functions tested and verified live (jobs-list returning HTTP 200).)
 - **T19** — Decide on parallel session's test lead jordan@acme-test.io (RESOLVED & CLOSED (1/1 ACs): Row da559859-fa12-4908-9d3a-59bd5c86108a (jordan@acme-test.io) deleted from leads table via Supabase API (HTTP 204). Verified 0 matching rows remaining.)
@@ -162,6 +162,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T449** — Local full-stack development environment with *.w0m.local wildcard domains and SSL/TLS proxy (Ticket completed: Caddyfile.local configured, mkcert wildcard certificates installed in macOS System keychain, wom7func relocated to port 8790 (resolving T402 conflict with headroom-local), all 5 Astro apps configured with server.allowedHosts for Vite 6, auth domain & cookie scoping updated for .w0m.local and .w0m.local, Supabase Auth allowlist updated via API, and all 8 HTTPS endpoints verified responding HTTP 200 with valid SSL.)
 - **T450** — The admin-client ratchet cannot see `staffAdminClient` — six files import the RLS-bypassing client under that name (Done, 3/3. Detector (authz_admin_client_triage.py) now derives the client names from)
 - **T452** — One fixed site background (Warp), deprecate other scenes, remove DB queries on SSR, and simplify Slide Management UI (Full typecheck passed (392 files, 0 errors). OpenSpec change -t452-fixed-warp-background validated (145/145 passing).)
+- **T456** — Unified Headroom service management via Homebrew services and just helpers (Completed: Unified Headroom management shipped)
 
 ## 3. Other open threads (in TASKS.md)
 

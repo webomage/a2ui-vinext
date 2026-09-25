@@ -720,6 +720,31 @@ omlx-stop:
 omlx-restart:
     @just --justfile wom7web/justfile omlx-restart
 
+# ── Headroom Proxy Service Lifecycle (T456) ──────────────────────────────────
+headroom-status *args:
+    @just --justfile wom7web/justfile headroom-status {{ args }}
+
+
+headroom-start:
+    @just --justfile wom7web/justfile headroom-start
+
+headroom-stop:
+    @just --justfile wom7web/justfile headroom-stop
+
+headroom-restart:
+    @just --justfile wom7web/justfile headroom-restart
+
+headroom-logs *args:
+    @just --justfile wom7web/justfile headroom-logs {{ args }}
+
+headroom-service-test:
+    @just --justfile wom7web/justfile headroom-service-test
+
+headroom-bootstrap-status *args:
+    @just --justfile wom7web/justfile headroom-bootstrap-status {{ args }}
+
+
+
 # ── Version Management (T391 / T414) ─────────────────────────────────────────
 version-sync *args:
     @python3 scripts/sync_manifest_versions.py {{ args }}
