@@ -1,0 +1,45 @@
+{
+	admin localhost:2019
+	http_port 80
+	https_port 443
+}
+
+(tls_config) {
+	tls "{$HOME}/.w0m/certs/w0m.local.pem" "{$HOME}/.w0m/certs/w0m.local-key.pem"
+}
+
+# Web (marketing & main site) - :4321
+https://w0m.local, https://web.w0m.local, https://web.localhost {
+	import tls_config
+	reverse_proxy localhost:4321
+}
+
+# Job portal - :4322
+https://job.w0m.local, https://job.localhost {
+	import tls_config
+	reverse_proxy localhost:4322
+}
+
+# Join / onboarding portal - :4323
+https://join.w0m.local, https://join.localhost {
+	import tls_config
+	reverse_proxy localhost:4323
+}
+
+# Demo app - :4324
+https://demo.w0m.local, https://demo.localhost {
+	import tls_config
+	reverse_proxy localhost:4324
+}
+
+# Control Panel & Admin - :4325
+https://cp.w0m.local, https://admin.w0m.local, https://cp.localhost, https://admin.localhost {
+	import tls_config
+	reverse_proxy localhost:4325
+}
+
+# Edge Worker (wom7func) - :8790
+https://func.w0m.local, https://api.w0m.local, https://func.localhost, https://api.localhost {
+	import tls_config
+	reverse_proxy localhost:8790
+}

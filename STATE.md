@@ -15,16 +15,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | queued | product | 108 | L1 identity gaps — 2FA UI + dormant login providers |
+| 1 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | in-progress | product | 148 | L1 identity gaps — 2FA UI + dormant login providers 📄 live spec |
 | 2 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 100 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
 | 3 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
 | 4 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
 | 5 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
-| 6 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 83 | Full-observability logging strategy 📄 live spec |
-| 7 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 81 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
-| 8 | [T279](/Users/proto/Projects/@self/@wom/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 79 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
-| 9 | [T336](/Users/proto/Projects/@self/@wom/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 77 | Public free security audit lead magnet & client registration gate 📄 live spec |
-| 10 | [T337](/Users/proto/Projects/@self/@wom/.tasks/T337.md) | [#337](https://github.com/webomage/wom7board/issues/337) | P1 | queued | tools | 77 | Advanced code & infrastructure audit runner with ephemeral air-gapped sandb 📄 live spec |
+| 6 | [T449](/Users/proto/Projects/@self/@wom/.tasks/T449.md) | [#449](https://github.com/webomage/wom7board/issues/449) | P1 | completed | platform | 85 | Local full-stack development environment with *.w0m  ⚠️ **no TASKS.md row** 📄 live spec |
+| 7 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 83 | Full-observability logging strategy 📄 live spec |
+| 8 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 81 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
+| 9 | [T279](/Users/proto/Projects/@self/@wom/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 79 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
+| 10 | [T336](/Users/proto/Projects/@self/@wom/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 77 | Public free security audit lead magnet & client registration gate 📄 live spec |
 
 ### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,24 +32,26 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 197 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **197** are
+> ⚠️ **0 of 198 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **198** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
-| 2 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | in-progress | product | 0/7 | `░░░░░░░░░░` 0% | — | L1 identity gaps — 2FA UI + dormant login providers |
-| 3 | [T287](/Users/proto/Projects/@self/@wom/.tasks/T287.md) | [#287](https://github.com/webomage/wom7board/issues/287) | P2 | queued | schemas | 5/7 | `███████░░░` 71% | — | Repos are a first-class entity — `projects.github_repo_url`  |
-| 4 | [T16](/Users/proto/Projects/@self/@wom/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
-| 5 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
-| 6 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 2/12 | `██░░░░░░░░` 17% | — | CP information architecture — one shell with a Me / Org / Ad |
-| 7 | [T153](/Users/proto/Projects/@self/@wom/.tasks/T153.md) | [#153](https://github.com/webomage/wom7board/issues/153) | P1 | in-progress | sdlc | 1/8 | `█░░░░░░░░░` 12% | 🟠 [T111](/Users/proto/Projects/@self/@wom/.tasks/T111.md) (from ACs) | ZeroClaw as a managed w0m runtime — omlx-backed local agent, |
-| 8 | [T265](/Users/proto/Projects/@self/@wom/.tasks/T265.md) | [#265](https://github.com/webomage/wom7board/issues/265) | P2 | queued | sdlc | 4/9 | `████░░░░░░` 44% | — | Define and pilot a HALF-MANAGED project tier — skills, tools |
-| 9 | [T219](/Users/proto/Projects/@self/@wom/.tasks/T219.md) | [#219](https://github.com/webomage/wom7board/issues/219) | P2 | queued | infra | 2/5 | `████░░░░░░` 40% | — | wom7ext ↔ ZeroClaw realignment — mcp-b is already vestigial  |
-| 10 | [T301](/Users/proto/Projects/@self/@wom/.tasks/T301.md) | [#301](https://github.com/webomage/wom7board/issues/301) | P2 | in-progress | tools | 2/5 | `████░░░░░░` 40% | — | Five of six policy schemas are decorative: written, declared |
+| 1 | [T449](/Users/proto/Projects/@self/@wom/.tasks/T449.md) | [#449](https://github.com/webomage/wom7board/issues/449) | P1 | completed ⚠️ 100% — awaiting deploy/archive, NOT stale | platform | 6/6 | `██████████` 100% | — | Local full-stack development environment with *.w0m.local wi |
+| 2 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
+| 3 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | in-progress | product | 0/7 | `░░░░░░░░░░` 0% | — | L1 identity gaps — 2FA UI + dormant login providers |
+| 4 | [T287](/Users/proto/Projects/@self/@wom/.tasks/T287.md) | [#287](https://github.com/webomage/wom7board/issues/287) | P2 | queued | schemas | 5/7 | `███████░░░` 71% | — | Repos are a first-class entity — `projects.github_repo_url`  |
+| 5 | [T16](/Users/proto/Projects/@self/@wom/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
+| 6 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
+| 7 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 2/12 | `██░░░░░░░░` 17% | — | CP information architecture — one shell with a Me / Org / Ad |
+| 8 | [T153](/Users/proto/Projects/@self/@wom/.tasks/T153.md) | [#153](https://github.com/webomage/wom7board/issues/153) | P1 | in-progress | sdlc | 1/8 | `█░░░░░░░░░` 12% | 🟠 [T111](/Users/proto/Projects/@self/@wom/.tasks/T111.md) (from ACs) | ZeroClaw as a managed w0m runtime — omlx-backed local agent, |
+| 9 | [T265](/Users/proto/Projects/@self/@wom/.tasks/T265.md) | [#265](https://github.com/webomage/wom7board/issues/265) | P2 | queued | sdlc | 4/9 | `████░░░░░░` 44% | — | Define and pilot a HALF-MANAGED project tier — skills, tools |
+| 10 | [T219](/Users/proto/Projects/@self/@wom/.tasks/T219.md) | [#219](https://github.com/webomage/wom7board/issues/219) | P2 | queued | infra | 2/5 | `████░░░░░░` 40% | — | wom7ext ↔ ZeroClaw realignment — mcp-b is already vestigial  |
+
+  ⚠️  1 row(s) at 100% with a non-done status: T449. Every acceptance criterion is met — what remains is the DEPLOY and ARCHIVE gates, so the record is accurate, not stale. Confirm against the live site before reading it either way.
 
 ### 📍 MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +62,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | 0 | 1 | `a241163b` |
-| `wom7api` | `beta` | 0 | 0 | `f7fa067` |
-| `wom7func` | `beta` | 0 | 0 | `ecf30db` |
+| `wom7web` | `beta` | **12** | 0 | `ea8dd9a8` |
+| `wom7api` | `beta` | **1** | 0 | `f7fa067` |
+| `wom7func` | `beta` | **2** | 0 | `ecf30db` |
 | `wom7skills` | `beta` | 0 | 0 | `be55a51` |
 | `wom7ext` | `beta` | 0 | 0 | `14b9f62` |
 | `wom7sec` | `beta` | 0 | 0 | `9b85831` |
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 197 open · 448 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 198 open · 448 TASKS.md rows · **1 OPEN ticket(s) with no row:** T449
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T290","T29","T63","T43","T214","T279","T336","T337"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"f7fa067","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"be55a51","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"a241163b","unpushed":1}},"tickets":{"open":197,"rowless_open":[],"rows":448}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T290","T29","T63","T449","T43","T214","T279","T336"],"repos":{"wom7api":{"branch":"beta","dirty":1,"has_upstream":true,"head":"f7fa067","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":2,"has_upstream":true,"head":"ecf30db","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"be55a51","unpushed":0},"wom7web":{"branch":"beta","dirty":12,"has_upstream":true,"head":"ea8dd9a8","unpushed":0}},"tickets":{"open":198,"rowless_open":["T449"],"rows":448}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.

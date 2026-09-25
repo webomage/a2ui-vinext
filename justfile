@@ -832,5 +832,18 @@ prepush-run *args:
 prepush-test:
     @python3 wom7web/project/scripts/tests/test_prepush_runner.py
 
+# ── Local Development Stack (T449) ──────────────────────────────────────────
+# Check local /etc/hosts for *.w0m.local development domains
+hosts-check:
+    @python3 scripts/hosts_check.py
+
+# Stop all local development servers (web, workers, and caddy reverse proxy)
+stop-dev:
+    @just --justfile wom7api/justfile stop-dev
+
+# Start the full local estate stack with *.w0m.local SSL reverse proxy (T449)
+dev-stack:
+    @just --justfile wom7api/justfile dev-stack
+
 
 
