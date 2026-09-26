@@ -85,3 +85,38 @@ the owner's model makes that unnecessary — **everything is an org**, a person 
 
 **Suggested sequence:** R1 → R2 → C4 re-planned on "side, not type" → R5 → R3 → R4 → R6. R2 and R5 are small enough
 to run inside C4; R3, R4, R6 are their own tickets (split from T439 per the owner's split rule).
+
+---
+
+## 6. Revision 2 — owner corrections (2026-09-25, same day)
+
+**Owner:** existing AgDRs are correct and are to be used. **`w0m` = the platform and the admin scope. `webomage` = the
+org of aleksei@webomage.com, which is both client and contractor.** A registered user who does not create an org still
+gets one, silently: the minimum solo-person org.
+
+### 6.1 The picture under these corrections
+
+| Entity | Is | Today (measured) | Target |
+|---|---|---|---|
+| `w0m` org | platform operator: admin, system, (talent?) | `host`, units `admin,delivery,system,talent`, 8 delivery hats | platform only; delivery leaves |
+| `webomage` org | Aleksei's company; contractor on every project today, and its own client | `client`, 1 unit, 0 hats, has a `clients` row | contractor + client; holds the delivery hats |
+| projects (7) | contractor org ↔ client org | all `host_org_id = w0m` | `host_org_id = webomage`; the w0m ecosystem project `host = client = webomage` |
+| contracts (98) | Aleksei's Upwork history | all `host_org_id = w0m`; client linked for 4, free-text for 94 (78 distinct names) | host `webomage`; each client an org |
+| people (28 users) | each under an org | 24 profiles with no org unit, 4 on `w0m.system` | everyone has at least a personal org |
+| signup | creates the person | `handle_new_user` trigger creates the profile, no org | also creates the solo org |
+
+### 6.2 Where the accepted AgDRs disagree with each other or with the corrections
+
+- **AgDR-0019 supersedes 0013, 0014, 0017** (its frontmatter), but those three still read `accepted` with no
+  `superseded_by`. And 0019 does not restate 0014's rule, so whether **hat resolution is exclusive** (only the worn
+  hat counts) is formally undecided.
+- **AgDR-0020 office keys are `<realm>.<area>.<role>` with realm = org** (`w0m.tech.lead`, `<client>.tech.lead`), so
+  the delivery offices named `w0m.tech.*` would become `webomage.tech.*`, and each org gets its own office rows.
+- **AgDR-0015 realms are `system.* / w0m.* / client.*`.** A `client.*` realm (live: office `client.member`) contradicts
+  "a client is just an org" (0019 §3) and per-org realms (0020).
+- **AgDR-0019 §2 anchors a person to exactly one `<org>.<unit>`** (`profiles.org_unit_id`, examples
+  `w0m.talent.recruits`). With a personal org for everyone, the anchor and the talent-network membership compete.
+- **AgDR-0018: the `@webomage.com` email gate** guards admin. `webomage.com` is now a customer org's domain, while the
+  platform is `w0m`.
+- **T439 C3 shipped on the old reading:** staff pages live at `/o/w0m/…`, the host-only gate keys on `org_type = 'host'`,
+  and migration `20260925210000` shows admins every host org as "Platform admin".
