@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.09.26-1790452856
+_First deployed: 2026-09-26 20:16:07.581789+00_
+
+### Features
+- **tasks**: implement orca obsidian ofm engine (T464) ([T464](file:///.tasks/T464.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `323a155` | 2026-09-26 20:16:07.581789+00 |
+
 ## 2026.09.26-1790438594
 _First deployed: 2026-09-26 16:18:14.097698+00_
 
