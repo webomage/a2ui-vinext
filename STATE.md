@@ -17,7 +17,7 @@
 |---|---|---|---|---|---|---|---|
 | 1 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | in-progress | product | 148 | L1 identity gaps — 2FA UI + dormant login providers 📄 live spec |
 | 2 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 100 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
-| 3 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | — | P1 | in-progress | security | 100 | Org and contract-relation model — w0m platform, webomage operator company,  📄 live spec |
+| 3 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | — | P1 | in-progress | security | 100 | Org and engagement model — w0m platform and root, webomage operator company 📄 live spec |
 | 4 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
 | 5 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
 | 6 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 204 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **204** are
+> ⚠️ **0 of 205 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **205** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -44,10 +44,10 @@
 | 2 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
 | 3 | [T287](/Users/proto/Projects/@self/@wom/.tasks/T287.md) | [#287](https://github.com/webomage/wom7board/issues/287) | P2 | queued | schemas | 5/7 | `███████░░░` 71% | — | Repos are a first-class entity — `projects.github_repo_url`  |
 | 4 | [T16](/Users/proto/Projects/@self/@wom/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
-| 5 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
-| 6 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 2/12 | `██░░░░░░░░` 17% | — | CP information architecture — one shell with a Me / Org / Ad |
-| 7 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | — | P1 | in-progress | security | 1/7 | `█░░░░░░░░░` 14% | — | One access foundation for every web app — shared middleware, |
-| 8 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | — | P1 | in-progress | security | 1/7 | `█░░░░░░░░░` 14% | — | Org and contract-relation model — w0m platform, webomage ope |
+| 5 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | — | P1 | in-progress | security | 2/7 | `███░░░░░░░` 29% | — | Org and engagement model — w0m platform and root, webomage o |
+| 6 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
+| 7 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 2/12 | `██░░░░░░░░` 17% | — | CP information architecture — one shell with a Me / Org / Ad |
+| 8 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | — | P1 | in-progress | security | 1/7 | `█░░░░░░░░░` 14% | — | One access foundation for every web app — shared middleware, |
 | 9 | [T153](/Users/proto/Projects/@self/@wom/.tasks/T153.md) | [#153](https://github.com/webomage/wom7board/issues/153) | P1 | in-progress | sdlc | 1/8 | `█░░░░░░░░░` 12% | 🟠 [T111](/Users/proto/Projects/@self/@wom/.tasks/T111.md) (from ACs) | ZeroClaw as a managed w0m runtime — omlx-backed local agent, |
 | 10 | [T265](/Users/proto/Projects/@self/@wom/.tasks/T265.md) | [#265](https://github.com/webomage/wom7board/issues/265) | P2 | queued | sdlc | 4/9 | `████░░░░░░` 44% | — | Define and pilot a HALF-MANAGED project tier — skills, tools |
 
@@ -60,7 +60,7 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **1** | 5 | `e82f3550` |
+| `wom7web` | `beta` | **23** | 6 | `85eddc98` |
 | `wom7api` | `beta` | 0 | 0 | `c721581` |
 | `wom7func` | `beta` | 0 | 0 | `d577124` |
 | `wom7skills` | `beta` | 0 | 0 | `5103a8e` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 204 open · 459 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 205 open · 460 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T458","T290","T29","T63","T453","T43","T214","T279"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"c721581","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"5103a8e","unpushed":0},"wom7web":{"branch":"beta","dirty":1,"has_upstream":true,"head":"e82f3550","unpushed":5}},"tickets":{"open":204,"rowless_open":[],"rows":459}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T458","T290","T29","T63","T453","T43","T214","T279"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"c721581","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"5103a8e","unpushed":0},"wom7web":{"branch":"beta","dirty":23,"has_upstream":true,"head":"85eddc98","unpushed":6}},"tickets":{"open":205,"rowless_open":[],"rows":460}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -152,14 +152,14 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T439** — CP information architecture — one shell with a Me / Org / Admin context switcher, capability-grown menus, and DS layout components
   - **2026-09-26** (today): Model change, [[T458]] ([[AgDR-0027]] / [[AgDR-0028]], proposed). w0m is the platform only; the business org is webomage, contractor and client of its own contract. C3 (shipped) put staff pages at /o/w0m/… and gated them on org_type = 'host': both move to /o/webomage/… and a contractor-side gate (T458 task 3.1); migration 20260925210000 (admins see host orgs) is replaced. C4 is on hold and re-planned after T458's migrations S1–S6: D1 (render by org type) is wrong, D3 (drop hats) is withdrawn, D2 and D5 stand.
 - **T453** — One access foundation for every web app — shared middleware, one route-policy model, and API routes gated by policy instead of per-file checks
-  - **2026-09-26** (today): Model change, [[T458]]. "Retire hats" means retire the Axis-1 class switcher (admin/member/client cookie, sb-active-role); the worn hat stays, as a relation hat (<contractor>.<contract>.<client>.<role>, one worn at a time, [[AgDR-0028]] Q8). Admin API gating (AC3) will read the platform root / w0m.admin slot instead of a worn class (AgDR-0028 Q12).
-- **T458** — Org and contract-relation model — w0m platform, webomage operator company, silent personal orgs, <contractor>.<contract>.<client> relations with three minimum hats
+  - **2026-09-26** (today): Model change, [[T458]]. "Retire hats" means retire the Axis-1 class switcher (admin/member/client cookie, sb-active-role); the worn hat stays, as an engagement hat (<contractor>.<engagement>.<client>.<role>, one worn at a time, [[AgDR-0028]] Q8). Admin API gating (AC3) will read the platform root / w0m.admin slot instead of a worn class (AgDR-0028 Q12).
+- **T458** — Org and engagement model — w0m platform and root, webomage operator company, default home orgs, engagements <contractor>.<engagement>.<client> with minimum hats
   - **2026-09-26** (today): Started. AC1 done: AgDRs, AgDR bookkeeping, OpenSpec change (proposal, design with the S0–S9 plan,
 
 #### Completed today (2):
 
-- **T354** — Org federation & actor-identity layer — align admin+system, org2org, and a2a/a2org/org2a on one mechanism (Related, [[T458]]. With a home org for every person ([[AgDR-0027]] decision 4), actor_manifest's owner_kind 'profile' | 'client' | 'org' can reduce to org (plus profile only for agents), and org_trust_edges sit beside, not instead of, contract relations ([[AgDR-0028]]). Design-only; no change needed until its build.)
-- **T356** — Multi-tenant org scoping for the staffing/delivery model — w0m becomes one tenant, not a hardcoded special case (Superseded in part, [[T458]]. AC5's worked example put Aleksei's contractor and client hats inside tenant w0m. The owner's model ([[AgDR-0027]] / [[AgDR-0028]]): w0m is the platform only; the tenant doing the work is the company webomage, contractor and client of webomage.<contract>.webomage. The tenancy root (orgs) stands; org_type becomes platform | company | personal.)
+- **T354** — Org federation & actor-identity layer — align admin+system, org2org, and a2a/a2org/org2a on one mechanism (Related, [[T458]]. With a home org for every person ([[AgDR-0027]] decision 4), actor_manifest's owner_kind 'profile' | 'client' | 'org' can reduce to org (plus profile only for agents), and org_trust_edges sit beside, not instead of, engagements ([[AgDR-0028]]). Design-only; no change needed until its build.)
+- **T356** — Multi-tenant org scoping for the staffing/delivery model — w0m becomes one tenant, not a hardcoded special case (Superseded in part, [[T458]]. AC5's worked example put Aleksei's contractor and client hats inside tenant w0m. The owner's model ([[AgDR-0027]] / [[AgDR-0028]]): w0m is the platform only; the tenant doing the work is the company webomage, contractor and client of webomage.eg-<id>.webomage. The tenancy root (orgs) stands; org_type becomes platform | company | personal.)
 
 ## 3. Other open threads (in TASKS.md)
 
