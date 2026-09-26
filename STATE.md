@@ -17,14 +17,14 @@
 |---|---|---|---|---|---|---|---|
 | 1 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | in-progress | product | 148 | L1 identity gaps — 2FA UI + dormant login providers 📄 live spec |
 | 2 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 100 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
-| 3 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
-| 4 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
-| 5 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
-| 6 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | — | P1 | in-progress | security | 85 | One access foundation for every web app — shared middleware, one route-policy model, and |
-| 7 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 83 | Full-observability logging strategy 📄 live spec |
-| 8 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 81 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
-| 9 | [T279](/Users/proto/Projects/@self/@wom/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 79 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
-| 10 | [T336](/Users/proto/Projects/@self/@wom/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 77 | Public free security audit lead magnet & client registration gate 📄 live spec |
+| 3 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | — | P1 | in-progress | security | 100 | Org and contract-relation model — w0m platform, webomage operator company,  📄 live spec |
+| 4 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
+| 5 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 6 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
+| 7 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | — | P1 | in-progress | security | 85 | One access foundation for every web app — shared middleware, one route-policy model, and |
+| 8 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 83 | Full-observability logging strategy 📄 live spec |
+| 9 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 81 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
+| 10 | [T279](/Users/proto/Projects/@self/@wom/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 79 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
 
 ### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 202 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **202** are
+> ⚠️ **0 of 203 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **203** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -47,9 +47,9 @@
 | 5 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
 | 6 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 2/12 | `██░░░░░░░░` 17% | — | CP information architecture — one shell with a Me / Org / Ad |
 | 7 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | — | P1 | in-progress | security | 1/7 | `█░░░░░░░░░` 14% | — | One access foundation for every web app — shared middleware, |
-| 8 | [T153](/Users/proto/Projects/@self/@wom/.tasks/T153.md) | [#153](https://github.com/webomage/wom7board/issues/153) | P1 | in-progress | sdlc | 1/8 | `█░░░░░░░░░` 12% | 🟠 [T111](/Users/proto/Projects/@self/@wom/.tasks/T111.md) (from ACs) | ZeroClaw as a managed w0m runtime — omlx-backed local agent, |
-| 9 | [T265](/Users/proto/Projects/@self/@wom/.tasks/T265.md) | [#265](https://github.com/webomage/wom7board/issues/265) | P2 | queued | sdlc | 4/9 | `████░░░░░░` 44% | — | Define and pilot a HALF-MANAGED project tier — skills, tools |
-| 10 | [T219](/Users/proto/Projects/@self/@wom/.tasks/T219.md) | [#219](https://github.com/webomage/wom7board/issues/219) | P2 | queued | infra | 2/5 | `████░░░░░░` 40% | — | wom7ext ↔ ZeroClaw realignment — mcp-b is already vestigial  |
+| 8 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | — | P1 | in-progress | security | 1/7 | `█░░░░░░░░░` 14% | — | Org and contract-relation model — w0m platform, webomage ope |
+| 9 | [T153](/Users/proto/Projects/@self/@wom/.tasks/T153.md) | [#153](https://github.com/webomage/wom7board/issues/153) | P1 | in-progress | sdlc | 1/8 | `█░░░░░░░░░` 12% | 🟠 [T111](/Users/proto/Projects/@self/@wom/.tasks/T111.md) (from ACs) | ZeroClaw as a managed w0m runtime — omlx-backed local agent, |
+| 10 | [T265](/Users/proto/Projects/@self/@wom/.tasks/T265.md) | [#265](https://github.com/webomage/wom7board/issues/265) | P2 | queued | sdlc | 4/9 | `████░░░░░░` 44% | — | Define and pilot a HALF-MANAGED project tier — skills, tools |
 
 ### 📍 MECHANICAL STATE — generated, never hand-edited
 
@@ -60,7 +60,7 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | 0 | 3 | `6d228a8c` |
+| `wom7web` | `beta` | 0 | 1 | `88010648` |
 | `wom7api` | `beta` | 0 | 0 | `c721581` |
 | `wom7func` | `beta` | 0 | 0 | `d577124` |
 | `wom7skills` | `beta` | 0 | 0 | `5103a8e` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 202 open · 457 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 203 open · 458 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T290","T29","T63","T453","T43","T214","T279","T336"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"c721581","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"5103a8e","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"6d228a8c","unpushed":3}},"tickets":{"open":202,"rowless_open":[],"rows":457}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T458","T290","T29","T63","T453","T43","T214","T279"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"c721581","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"5103a8e","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"88010648","unpushed":1}},"tickets":{"open":203,"rowless_open":[],"rows":458}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -123,46 +123,43 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-09-25 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-09-26 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-#### In-flight tickets (11):
+#### In-flight tickets (12):
 
 - **T16** — Verify & archive built-but-unarchived changes
-  - **2026-08-23** (33d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
+  - **2026-08-23** (34d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
 - **T100** — L1 identity gaps — 2FA UI + dormant login providers
-  - **2026-09-25** (today): Progress (started, spec 2026-09-25-t100-identity-gaps-and-mfa)
+  - **2026-09-26** (today): Model change, [[T458]]. casualuser@gmail.com becomes a secondary credential (linked Google identity) of aleksei@webomage.com, not a second auth user ([[AgDR-0027]] decision 5, AgDR-0028 Q13). The link needs the casualuser auth user deleted first; ADMIN_EMAIL (Gauge) then moves to a non-real test admin. AC8's admin MFA context will follow the platform root / w0m.admin slot when Axis-1 classes retire.
 - **T153** — ZeroClaw as a managed w0m runtime — omlx-backed local agent, bidirectional w0m↔zeroclaw, tracked install config, and sandboxed client-project audits
-  - **2026-09-17** (8d ago): Start T153: ZeroClaw managed runtime & ecosystem integration
+  - **2026-09-17** (9d ago): Start T153: ZeroClaw managed runtime & ecosystem integration
 - **T234** — Trial ai-memory as the recall layer — and find out how much of auto-memory is a duplicate register
-  - **2026-09-05** (20d ago): relocated verbatim from the TASKS.md board row (T228 AC5b — the ticket is the source, the board a projection; row exceeded the 4,096 B per-row bound, project/tasks_bounds.py).
+  - **2026-09-05** (21d ago): relocated verbatim from the TASKS.md board row (T228 AC5b — the ticket is the source, the board a projection; row exceeded the 4,096 B per-row bound, project/tasks_bounds.py).
 - **T257** — Retire the six emoji-to-parser couplings — the half of \"no emoji in logs\" that is a migration, not a cleanup
-  - **2026-08-25** (31d ago): 🔬 the script_output detector matches the WORD, not the CONTEXT, and it cost a
+  - **2026-08-25** (32d ago): 🔬 the script_output detector matches the WORD, not the CONTEXT, and it cost a
 - **T263** — ai-intake-service-requests
-  - **2026-08-23** (33d ago): 📌 RENAMED T16c → T263 on  (T242 AC3) — re-id'd to the next free sequential id.
+  - **2026-08-23** (34d ago): 📌 RENAMED T16c → T263 on  (T242 AC3) — re-id'd to the next free sequential id.
 - **T290** — Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own invoice paid, and nothing reconciles invoices against Stripe
-  - **2026-09-12** (13d ago): owner began connecting Stripe (test-mode keys stored in beta), and split the
+  - **2026-09-12** (14d ago): owner began connecting Stripe (test-mode keys stored in beta), and split the
 - **T301** — Five of six policy schemas are decorative: written, declared, and loaded by nothing
   - ⚠️ NO status note recorded where this stopped
 - **T308** — Own the ~/Projects estate inventory audit — reclaim safe disk space in w0m-governed repos and correct the audit's own governance measurement trap
   - ⚠️ NO status note recorded where this stopped
 - **T439** — CP information architecture — one shell with a Me / Org / Admin context switcher, capability-grown menus, and DS layout components
-  - **2026-09-25** (today): Plan B done (context engine), migration awaiting the owner. One nav definition per context
+  - **2026-09-26** (today): Model change, [[T458]] ([[AgDR-0027]] / [[AgDR-0028]], proposed). w0m is the platform only; the business org is webomage, contractor and client of its own contract. C3 (shipped) put staff pages at /o/w0m/… and gated them on org_type = 'host': both move to /o/webomage/… and a contractor-side gate (T458 task 3.1); migration 20260925210000 (admins see host orgs) is replaced. C4 is on hold and re-planned after T458's migrations S1–S6: D1 (render by org type) is wrong, D3 (drop hats) is withdrawn, D2 and D5 stand.
 - **T453** — One access foundation for every web app — shared middleware, one route-policy model, and API routes gated by policy instead of per-file checks
-  - **2026-09-25** (today): Filed from the owner's direction with the measurements above. Not started; the owner decides
+  - **2026-09-26** (today): Model change, [[T458]]. "Retire hats" means retire the Axis-1 class switcher (admin/member/client cookie, sb-active-role); the worn hat stays, as a relation hat (<contractor>.<contract>.<client>.<role>, one worn at a time, [[AgDR-0028]] Q8). Admin API gating (AC3) will read the platform root / w0m.admin slot instead of a worn class (AgDR-0028 Q12).
+- **T458** — Org and contract-relation model — w0m platform, webomage operator company, silent personal orgs, <contractor>.<contract>.<client> relations with three minimum hats
+  - **2026-09-26** (today): Started. AC1 done: AgDRs, AgDR bookkeeping, OpenSpec change (proposal, design with the S0–S9 plan,
 
-#### Completed today (7):
+#### Completed today (2):
 
-- **T18** — Credential rotation remainder (RESOLVED & CLOSED (3/3 ACs): Owner rotated sb_secret_ in Supabase Cloud Dashboard. Old key verified dead (HTTP 401). New key installed into Infisical (beta and dev environments, returning HTTP 200) and propagated to consumers. Edge functions tested and verified live (jobs-list returning HTTP 200).)
-- **T19** — Decide on parallel session's test lead jordan@acme-test.io (RESOLVED & CLOSED (1/1 ACs): Row da559859-fa12-4908-9d3a-59bd5c86108a (jordan@acme-test.io) deleted from leads table via Supabase API (HTTP 204). Verified 0 matching rows remaining.)
-- **T139** — Evaluate generated columns and materialized views for derived identifier lookups (RESOLVED & CLOSED (5/5 ACs): Closed under AC1 as rejected-with-evidence. Re-measured 0 generated columns and 0 materialized views in public. Plain functional B-tree indexes from T138 fully satisfy current identifier lookup patterns. Adopting generated columns or materialized views would introduce unnecessary schema overhead, staleness contracts, and RLS-bypass security risks.)
-- **T449** — Local full-stack development environment with *.w0m.local wildcard domains and SSL/TLS proxy (Ticket completed: Caddyfile.local configured, mkcert wildcard certificates installed in macOS System keychain, wom7func relocated to port 8790 (resolving T402 conflict with headroom-local), all 5 Astro apps configured with server.allowedHosts for Vite 6, auth domain & cookie scoping updated for .w0m.local and .w0m.local, Supabase Auth allowlist updated via API, and all 8 HTTPS endpoints verified responding HTTP 200 with valid SSL.)
-- **T450** — The admin-client ratchet cannot see `staffAdminClient` — six files import the RLS-bypassing client under that name (Done, 3/3. Detector (authz_admin_client_triage.py) now derives the client names from)
-- **T452** — One fixed site background (Warp), deprecate other scenes, remove DB queries on SSR, and simplify Slide Management UI (Full typecheck passed (392 files, 0 errors). OpenSpec change -t452-fixed-warp-background validated (145/145 passing).)
-- **T456** — Unified Headroom service management via Homebrew services and just helpers (Completed: Unified Headroom management shipped)
+- **T354** — Org federation & actor-identity layer — align admin+system, org2org, and a2a/a2org/org2a on one mechanism (Related, [[T458]]. With a home org for every person ([[AgDR-0027]] decision 4), actor_manifest's owner_kind 'profile' | 'client' | 'org' can reduce to org (plus profile only for agents), and org_trust_edges sit beside, not instead of, contract relations ([[AgDR-0028]]). Design-only; no change needed until its build.)
+- **T356** — Multi-tenant org scoping for the staffing/delivery model — w0m becomes one tenant, not a hardcoded special case (Superseded in part, [[T458]]. AC5's worked example put Aleksei's contractor and client hats inside tenant w0m. The owner's model ([[AgDR-0027]] / [[AgDR-0028]]): w0m is the platform only; the tenant doing the work is the company webomage, contractor and client of webomage.<contract>.webomage. The tenancy root (orgs) stands; org_type becomes platform | company | personal.)
 
 ## 3. Other open threads (in TASKS.md)
 
