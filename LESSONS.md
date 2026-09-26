@@ -1091,3 +1091,20 @@ assert condition_met()
 - Capture stderr (never stdout of a secrets command), and match it to *named* causes (no project link / wrong project id / expired session). Anything unrecognised prints the first stderr line as **"not classified"**. Never default to the most familiar cause.
 - When recipes move to a new cwd (an elevation), their **implicit per-directory config** (`.infisical.json`, `.env`, tool links) doesn't move with them. Make it explicit: the root justfile now passes `--projectId={{ infisical_project_id }}` from one variable at all 22 call sites, and a test asserts none is missing.
 ⭐ **The tell:** a check's error message tells you to redo something you just did successfully (re-login, re-auth), and the underlying command's own output was redirected to `/dev/null`.
+
+### USE EXPLICIT RELATIVE MARKDOWN LINKS OVER BARE WIKILINKS FOR SLUGGED AND CROSS-DIRECTORY REFERENCES
+**2026-09-26, T458 / Orca Markdown Navigation.** Bare wikilinks `[[AgDR-0027]]`, `[[AgDR-0028]]`, and `[[T458]]` in `TERMINOLOGY-MAP.md` rendered as dead text or unresolved grey-dashed links in Orca.
+
+Authors wrote bare wikilinks (`[[AgDR-0027]]`, `[[T458]]`) expecting Orca/Obsidian to magically resolve them. However:
+1. Decision records on disk carry descriptive slugs: `docs/decisions/AgDR-0027-platform-companies-persons-and-operator-gate.md`. Without an exact filename match (`AgDR-0027.md`) or frontmatter `aliases: [AgDR-0027]`, Orca marks bare `[[AgDR-0027]]` as an unresolved link.
+2. Tasks live in `.tasks/` (a hidden dot-directory), which desktop editors often ignore or lag in indexing for newly-created tickets (`T458.md`).
+3. External viewers (GitHub, Quartz docs, CP Astro webview) do not support Obsidian wikilinks at all and render them as raw unclickable text.
+Meanwhile, adjacent standard Markdown links (`[WORKFLOW-COVERAGE.md](WORKFLOW-COVERAGE.md)`) in the same file rendered as bright blue, solid, 100% clickable links across all tools.
+
+⇒ **Always use explicit relative Markdown links `[label](relative/path.md)` for decisions, tickets, and cross-directory documentation:**
+- Decisions: `[AgDR-0027](../decisions/AgDR-0027-platform-companies-persons-and-operator-gate.md)`
+- Tickets: `[T458](../../.tasks/T458.md)`
+- If wikilinks are used within an Obsidian vault, the target file must explicitly declare the ID in its frontmatter `aliases: [AgDR-0027]`, or use piped full slugs: `[[AgDR-0027-platform-companies-persons-and-operator-gate|AgDR-0027]]`.
+- Standard relative Markdown links are the only format that works universally across Orca, Obsidian, VS Code, GitHub, and Quartz with zero reliance on background cache indexing.
+⭐ **The tell:** A link written as `[[ID]]` where the file on disk has a slug suffix (`ID-title.md`), or links into hidden directories (`.tasks/`), rendering with grey dotted/dashed underlines in Orca/Obsidian or raw brackets on GitHub.
+

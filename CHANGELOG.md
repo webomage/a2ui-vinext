@@ -2,6 +2,27 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.09.26-1790438594
+_First deployed: 2026-09-26 16:18:14.097698+00_
+
+### Features
+- **T452**: resolve one fixed background, simplify slide UI, and update records ([T452](file:///.tasks/T452.md))
+- **T449**: orchestrate full local stack with *.w0m.local SSL proxy and host validation ([T449](file:///.tasks/T449.md))
+- **T436**: public-safe automated changelog generation and disclosure guardrail gate ([T436](file:///.tasks/T436.md))
+- **sdlc**: synthesize PICK UP HERE from ticket Status notes and add concurrency test (T428) ([T428](file:///.tasks/T428.md))
+- **T425**: implement just land local merge queue and single committer to beta ([T425](file:///.tasks/T425.md))
+- **T211**: ticket diagram co-location, GitHub sync, and zero-width browser viewer ([T211](file:///.tasks/T211.md))
+
+### Fixes
+- **T435**: wire _confirm into deploy-workers/deploy-functions, describe new steps, record the agent rule-enforcement audit ([T435](file:///.tasks/T435.md))
+- **T425**: handle PermissionError in is_pid_alive, case-insensitive report glob, auto-ticket detect ([T425](file:///.tasks/T425.md))
+- **tickets**: resolve schema lint errors in T190, T240, T354, T396, T418 ([T190](file:///.tasks/T190.md), [T240](file:///.tasks/T240.md), [T354](file:///.tasks/T354.md), [T396](file:///.tasks/T396.md), [T418](file:///.tasks/T418.md))
+- **T431,T428,T426**: state-brief + in-flight tickets at session start; three silent deploy-all regressions ([T431](file:///.tasks/T431.md), [T428](file:///.tasks/T428.md), [T426](file:///.tasks/T426.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `6600586` | 2026-09-26 16:18:14.097698+00 |
+
 ## 2026.09.24-1790226662
 _First deployed: 2026-09-24 05:25:26.816412+00_
 
