@@ -10,7 +10,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: spec
-  version: "2026.08.25-1787670695"
+  version: "2026.09.27-1790539585"
 ---
 
 # w0m-sdlc-spec — the design gate
@@ -37,7 +37,12 @@ short design note in the ticket body instead of a formal spec — say so and pro
 4. **Validate.** Invoke `specs.verify_skill` (e.g. `openspec-verify-change`) — the spec must be
    internally coherent and, where code already exists, flag spec↔code drift. Do not leave the gate
    with verify failing.
-5. **The ticket's Definition of Done must be its OWN — run `just dod-check --ticket <id>`.**
+5. **Single Source of Truth (SSOT) Audit (`schema-critique`).**
+   Before freezing the design, audit all proposed data models, API routes, and state machines:
+   ensure every column, table, route, and axis answers exactly ONE real-world question with zero
+   duplicate mechanisms answering the same question (no dual SSOT). Settle any open design
+   tradeoffs with a weighted decision matrix (cost, risk, unblocks, recommendation).
+6. **The ticket's Definition of Done must be its OWN — run `just dod-check --ticket <id>`.**
    🔴 This gate is where a DoD is written, and it is the only gate where that is cheap. A DoD
    authored later is composed by reading the outcome and is met by construction.
    The check refuses three states and each means something different:

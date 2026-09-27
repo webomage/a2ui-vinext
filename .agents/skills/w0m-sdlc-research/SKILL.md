@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: research
-  version: "2026.09.19-1789879847"
+  version: "2026.09.27-1790539585"
 ---
 
 # w0m-sdlc-research — the deep grounding gate
@@ -77,6 +77,8 @@ Run all that apply; record what each *actually* shows with a citation:
 - **Stack drift (T130).** If the ticket touches a stack's tools/build, run `just discovery` and note
   any drift (used-not-declared / declared-not-used) in the Grounding Report. → Does
   `project/stacks-policy.json` still match what the stack actually uses?
+- **Triangulated SSOT & Multi-sided verification (`fact-checker`, `socrates` / `/grill-me`, `torvalds`).**
+  Enforce adversarial rigor: cross-validate facts across the 5 surfaces (*Docs vs Specs vs Code vs Tests vs Live Infra*) using `fact-checker` to disprove stale assumptions. Apply Socratic questioning (`socrates` / `/grill-me`) to expose boundary conditions and missing edge cases. Apply ruthless pragmatism (`torvalds`) to eliminate bloat and unnecessary abstractions before any spec is drafted.
 - **UI/UX surface & design system (MANDATORY for tickets with UI/UX changes).**
   Trigger condition: ticket `repos` includes `web` or `cp`, tags include `ui`/`ux`/`frontend`/`cp`/`design`, or the ticket touches `.astro`, `.svelte`, `.css`, `packages/ui`, or `apps/*`.
   **Enforce and launch UI skills:**
@@ -89,6 +91,7 @@ Run all that apply; record what each *actually* shows with a citation:
 ## Step 3 — Produce the Grounding Report (the gate's deliverable)
 - **Validity** — real & needed? or **already-done / obsolete / duplicate** of T##? (cite the evidence)
 - **Accuracy** — every claim in the ticket that does NOT match reality (the drift), with file:line/commit.
+- **SSOT Reality & Boundary Findings** — 5-surface fact-check results (`fact-checker`), edge cases identified via Socratic questioning, and bloat/complexity warnings.
 - **Prior art** — what already exists to reuse (don't rebuild it).
 - **UI/UX & Design System alignment** (mandatory if UI-touching) — cited `design-system/` tokens, `@webomage/ui` components to reuse, `steve-jobs` simplicity critique, `modern-web-guidance` patterns, and `a11y-debugging` accessibility constraints.
 - **Dependencies & conflicts** — blockers, overlapping tickets, contradicting specs.

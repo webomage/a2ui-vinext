@@ -75,7 +75,7 @@
     "w0m-sdlc-research": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.19-1789879847"
+      "observed_version": "2026.09.27-1790539585"
     },
     "w0m-sdlc-review": {
       "provider": "w0m-native",
@@ -90,7 +90,7 @@
     "w0m-sdlc-spec": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.08.25-1787670695"
+      "observed_version": "2026.09.27-1790539585"
     },
     "w0m-sdlc-start": {
       "provider": "w0m-native",

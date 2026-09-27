@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-09-24T21:05:56.821Z",
+  "generatedAt": "2026-09-27T21:28:06.768Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -99,7 +99,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-research",
-      "integrity": "sha256-bfda587cbf36c4417f96ca938c6a51b313bb3a415f2db81d9ae9d678d78accc0"
+      "integrity": "sha256-de9a3100558504e3df833b85d4d9deb631b379ca0a086f7760f68309c332e1ce"
     },
     "w0m-sdlc-review": {
       "provider": "w0m-native",
@@ -120,7 +120,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-spec",
-      "integrity": "sha256-47b2d492bd6fc1e29ea21234b72ad4391bb25da927a5cc88682382289455ec1b"
+      "integrity": "sha256-ad5ad9af58a473dda51a1e56cddac2782cd2a1d15ccb25b09374a7545f327ea9"
     },
     "w0m-sdlc-start": {
       "provider": "w0m-native",
