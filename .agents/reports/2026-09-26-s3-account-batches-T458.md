@@ -81,8 +81,8 @@ Repoint those specs to the new non-real test accounts, then delete.
 
 ## Applied
 
-- 2026-09-26: batches **1, 1b, 2** applied by the owner. Verified live: 12 accounts left (the 9 kept, the 2 legacy demo
-  accounts of batch 3 and the 2 test-dependent accounts of batch 4 (8 kept + 4 pending = 12), no orphans, all org gates green.
+- 2026-09-26: batches **1, 1b, 2** applied by the owner. Verified live: 12 accounts left = 8 kept (the Keep table,
+  counting both demo personas and `casualuser@`) + 2 of batch 3 + 2 of batch 4; no orphans; all org gates green.
 
 ## Tooling (built 2026-09-26)
 
