@@ -47,7 +47,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T465](.tasks/T465.md) | **P1** | 🆕 **Mandatory step-up MFA (TOTP / Touch ID / AAL2) for manager-level actions and responsibilities** | web, api | openspec/changes/2026-09-26-manager-mfa-step-up | ⚪ **queued** |
 | [T457](.tasks/T457.md) | **P1** | 🆕 **Inline service-role clients escape the admin-client ratchet — 13 files build `createClient(url, serviceKey)` by hand** | web | — | ⚪ **queued** |
 | [T455](.tasks/T455.md) | **P1** | 🆕 **Participating open-source projects & PRs inventory for member profiles (read-only) and webomage/casualuser fork lifecycle management** | web, tooling, skills | wom7skills/docs/proposals/w0m_cp_member_participating_projects_and_prs_proposal.md | ⚪ **queued** |
 | [T454](.tasks/T454.md) | **P1** | 🆕 **MFA for non-admin accounts — sign-in challenge in every app for members and clients who enrol a factor** | web | — | ⚪ **queued** |
@@ -238,6 +237,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T465](.tasks/T465.md) | **P1** | 🆕 **Mandatory step-up MFA (TOTP / Touch ID / AAL2) for manager-level actions and responsibilities** | web, api | openspec/changes/2026-09-26-manager-mfa-step-up | ✅ **done** |
 | [T464](.tasks/T464.md) | **P1** | 🆕 **Orca Obsidian-Flavored Markdown engine: slug-prefix & frontmatter alias resolution, dot-directory indexing, and callout banners** | tooling, web | openspec/changes/2026-09-26-orca-obsidian-ofm-engine | ✅ **done** |
 | [T456](.tasks/T456.md) · [#456](https://github.com/casualuser/webomage.com/issues/456) | **P1** | **Unified Headroom service management via Homebrew services and just helpers** | tooling, web | wom7skills/docs/proposals/w0m_headroom_service_and_just_helpers_proposal.md | ✅ **done** |
 | [T452](.tasks/T452.md) · [#452](https://github.com/casualuser/webomage.com/issues/452) | **P1** | **One fixed site background (Warp), deprecate other scenes, remove DB queries on SSR, and simplify Slide Management UI** | web | 2026-09-25-t452-fixed-warp-background | ✅ **done** |
