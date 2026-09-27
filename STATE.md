@@ -18,13 +18,13 @@
 | 1 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | in-progress | product | 149 | L1 identity gaps — 2FA UI + dormant login providers 📄 live spec |
 | 2 | [T463](/Users/proto/Projects/@self/@wom/.tasks/T463.md) | — | P0 | in-progress | security | 125 | P0: admin MFA is a page guard only — an AAL1 admin token passes every admin policy in th |
 | 3 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 100 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
-| 4 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | — | P1 | in-progress | security | 100 | Org and engagement model — w0m platform and root, webomage operator company 📄 live spec |
-| 5 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
-| 6 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
-| 7 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
-| 8 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | — | P1 | in-progress | security | 85 | One access foundation for every web app — shared middleware, one route-policy model, and |
-| 9 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 84 | Full-observability logging strategy 📄 live spec |
-| 10 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 81 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
+| 4 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
+| 5 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 6 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
+| 7 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | — | P1 | in-progress | security | 85 | One access foundation for every web app — shared middleware, one route-policy model, and |
+| 8 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 84 | Full-observability logging strategy 📄 live spec |
+| 9 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 81 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
+| 10 | [T279](/Users/proto/Projects/@self/@wom/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 79 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
 
 ### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -45,7 +45,7 @@
 | 3 | [T463](/Users/proto/Projects/@self/@wom/.tasks/T463.md) | — | P0 | in-progress | security | 0/5 | `░░░░░░░░░░` 0% | — | P0: admin MFA is a page guard only — an AAL1 admin token pas |
 | 4 | [T287](/Users/proto/Projects/@self/@wom/.tasks/T287.md) | [#287](https://github.com/webomage/wom7board/issues/287) | P2 | queued | schemas | 5/7 | `███████░░░` 71% | — | Repos are a first-class entity — `projects.github_repo_url`  |
 | 5 | [T16](/Users/proto/Projects/@self/@wom/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
-| 6 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | — | P1 | in-progress | security | 2/7 | `███░░░░░░░` 29% | — | Org and engagement model — w0m platform and root, webomage o |
+| 6 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | — | P1 | in-progress | security | 2/7 | `███░░░░░░░` 29% | 🔴 [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | Org and engagement model — w0m platform and root, webomage o |
 | 7 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
 | 8 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 2/12 | `██░░░░░░░░` 17% | — | CP information architecture — one shell with a Me / Org / Ad |
 | 9 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | — | P1 | in-progress | security | 1/7 | `█░░░░░░░░░` 14% | — | One access foundation for every web app — shared middleware, |
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **6** | 0 | `7962e420` |
-| `wom7api` | `beta` | 0 | 0 | `a53e255` |
+| `wom7web` | `beta` | **13** | 0 | `cc44c9ac` |
+| `wom7api` | `beta` | **1** | 0 | `372c9fe` |
 | `wom7func` | `beta` | 0 | 0 | `d577124` |
-| `wom7skills` | `beta` | 0 | 0 | `5103a8e` |
+| `wom7skills` | `beta` | **3** | 0 | `5103a8e` |
 | `wom7ext` | `beta` | 0 | 0 | `14b9f62` |
 | `wom7sec` | `beta` | 0 | 0 | `9b85831` |
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 210 open · 467 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 210 open · 468 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T463","T439","T458","T290","T29","T63","T453","T43","T214"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"a53e255","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"5103a8e","unpushed":0},"wom7web":{"branch":"beta","dirty":6,"has_upstream":true,"head":"7962e420","unpushed":0}},"tickets":{"open":210,"rowless_open":[],"rows":467}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T463","T439","T290","T29","T63","T453","T43","T214","T279"],"repos":{"wom7api":{"branch":"beta","dirty":1,"has_upstream":true,"head":"372c9fe","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":3,"has_upstream":true,"head":"5103a8e","unpushed":0},"wom7web":{"branch":"beta","dirty":13,"has_upstream":true,"head":"cc44c9ac","unpushed":0}},"tickets":{"open":210,"rowless_open":[],"rows":468}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -158,9 +158,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T463** — P0: admin MFA is a page guard only — an AAL1 admin token passes every admin policy in the database
   - **2026-09-26** (1d ago): Filed from the owner's screencast. Migration, edge changes, recipe and probe updates written. Proved on
 
-#### Completed today (1):
+#### Completed today (2):
 
 - **T465** — Mandatory step-up MFA (TOTP / Touch ID / AAL2) for manager-level actions and responsibilities (Done, verified live. Migration 20260926210000 in the ledger (applied with a deploy); just manager-aal-verify 16/16 live (manager at AAL1 refused, AAL2 keeps it), -test 7/7; admin MFA still 16/16 (just admin-aal-verify), since this migration replaced T463's restrictive user_roles policy with one covering admin and manager. All 6 ACs ticked. OpenSpec change archived as 2026-09-27-2026-09-26-manager-mfa-step-up (spec mfa-manager created). Closed by the T458 session because the unarchived 13/13 change blocked every wom7web push (spec-drift gate).)
+- **T467** — Blueprint-driven project creation: tech chips sets, commercial archetypes, and automated derivation of hats, skills, and MCP bundles (Shipped blueprint-driven project creation matrix. Defined 5 commercial archetypes in src/data/project-archetypes.json with TypeScript types and derivation engine deriveProjectConfiguration in apps/cp/src/lib/project-archetypes.ts. Integrated 4-step creation flow into ProjectManager.svelte with interactive chips set and real-time derivation preview. Created apps/cp/src/pages/api/project/index.ts endpoint handling project creation and metadata derivation. Registered offline test suite project-archetypes-test (53 checks + vitest) in test-suites.json, wom7api/justfile, and root justfile. OpenSpec change 2026-09-27-blueprint-project-creation-matrix validated clean (openspec validate).)
 
 ## 3. Other open threads (in TASKS.md)
 

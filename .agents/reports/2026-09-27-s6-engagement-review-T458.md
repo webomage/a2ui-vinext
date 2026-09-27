@@ -65,6 +65,18 @@ Automation" (2025-11-11), Scribely "AWS Audio Description Automation" (2026-01-2
 - `seed-demo` creates the demo project with `client_id` but no `client_org_id`, so `/o/demo` would not list it as the
   client's project. Small fix, bundled with S6.
 
+## Owner answers (2026-09-27)
+
+- **Q1–Q3:** yes (person-named clients → companies named after them; `DELETED` → one `upwork-deleted-client`;
+  `Renowned Marketing LLC` = Kayse's org).
+- **Q4:** Featherglass ← Upwork 40963804 "Server Dev Ops Consulting and Admin" (client **Jim Nista**; our copy says
+  "Ben Israel"); Meetocean.ai ← Upwork 40441858 "Python Engineer - AI Voice Assistant in Healthcare. Individuals Only"
+  (client **Vadym Ustymenko**; our copy says "Healthcare"). Both copies carry the wrong client.
+- **Q5, Q6:** yes (demo fixture out of history; a `w0m` platform project row).
+- **New direction:** Upwork is a separate synced layer, not hard-wired into our contracts, projects and engagements;
+  work-history entries may map to Upwork contracts synced to the profile. Recorded as [[AgDR-0029]] (proposed), work in
+  [[T468]]; S6 now waits on T468 so its engagements link to mirror contracts instead of copying them.
+
 ## Questions (weighted)
 
 | # | Question | Recommendation | Weight |
