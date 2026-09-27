@@ -40,6 +40,9 @@ tasks-render *args:
 agent-concurrency-test:
     @python3 wom7web/project/scripts/tests/test_agent_concurrency.py
 
+project-archetypes-test:
+    @python3 wom7web/project/scripts/tests/test_project_archetypes.py
+
 ticket-audit *args:
     @python3 scripts/ticket_audit.py {{ args }}
 

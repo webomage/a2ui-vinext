@@ -25,6 +25,11 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 ## Non-negotiables
 
 - **Never `--no-verify`.** Hooks are the gate; fix the finding instead.
+- **Collaborative worktree safety & zero blanket git discards.**
+  The working tree is a **shared concurrent workspace** used simultaneously by human developers, Claude Code, Antigravity, and background agents (T235).
+  - **NEVER execute blanket destructive git commands** (`git checkout -- .`, `git reset --hard`, `git clean -f`, or blanket restores). Any revert must be strictly surgical and file-scoped (`git checkout -- <file>`) after inspecting `git diff <file>`.
+  - **NEVER run repository-wide formatters** (`pre-commit run --all-files`, full-tree `oxfmt`/`prettier`) on a dirty or shared tree. Pre-commit hooks must run only on staged files (`pre-commit run`).
+  - **Orient before modifying:** At session pickup or before staging, inspect `git status` to distinguish your active ticket's changes from uncommitted work of other agents or human developers. Never overwrite, stage, or discard another contributor's in-flight files.
 - **Never run `just db-migrate`, deployment commands (`just deploy`, `just deploy-all`, `deploy-*`), or external PR creation commands directly from an agent shell.**
   Live database migrations, production deploys, and external PR creation are **strictly gated by the human-confirmation gate** (`docs/DEPLOY-CONFIRM.md`, T161 AC3, owner direction 2026-08-10, 2026-09-26). The gate refuses any agent session outright (process ancestry + agent env markers, T435), then needs a real terminal and the device owner's Touch ID. Holding a terminal does not make an agent a human: agy answered a live `db-migrate` prompt through its own pty on 2026-09-17, which is why. **Agents must NEVER attempt to execute `just db-migrate`, `just deploy`, `just deploy-all`, or open external PRs (`gh pr create`, etc.) directly — prepare all code, migrations, tests, PR proposals, and verification checks, and explicitly request the human developer to run them.**
 - **Graph before grep.** `just ask "<symbols>"` is the default first action for *where is X / who calls it / what depends on this* — not Grep.
@@ -34,6 +39,13 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 - **No `Co-Authored-By` / attribution trailers** in commits. Conventional Commits, referencing the ticket.
 - **`STATE.md` blocked your push? `just land` regenerates it.** Pre-push `state-check` compares STATE.md's mechanical block against reality.
 - **Zero silent fallbacks, clean cutovers over shims, zero shadow symlinks (AgDR-0025).** Fail fast and fail closed (`docs/ANTI-PATTERNS.md`). Multi-path fallback search ladders and backward-compatibility shims are strictly prohibited. 100% of callers must be updated atomically when a path or contract changes.
+- **Triangulated Single Source of Truth (SSOT) & Multi-Sided Verification.**
+  Every fact, data schema, contract, and convention must have exactly **ONE canonical source of truth** across the estate. Dual SSOTs, parallel unsynchronized cookies/tokens, and duplicate state mechanisms are strictly prohibited.
+  Before declaring or updating an SSOT, run the **Triangulated SSOT Protocol**:
+  1. **Reality Grounding (`fact-checker`)**: Cross-validate claims across the 5 surfaces: *Docs vs Specs vs Code vs Tests vs Live Infra*. Code is the truth for *what is*; specs are the truth for *what should be*. Never accept ungrounded assertions.
+  2. **Adversarial Interrogation (`socrates` / `/grill-me` / `torvalds`)**: Subject requirements to Socratic questioning and fresh-context adversarial review. Interrogate boundary conditions, missing edge cases, and challenge bloat or unnecessary abstractions before writing code.
+  3. **Structural Single-Responsibility (`schema-critique`)**: Audit that every table, column, route, and axis answers exactly ONE real-world question with zero duplicate mechanisms answering the same question.
+  4. **Weighted Decision Convergence**: Settle all contested tradeoffs or remaining architectural forks with a weighted decision matrix (cost, risk, unblocks, recommendation) rather than silent guesswork.
 - **Visual & architectural reports via Artifacts (anti-terminal-overflow).** Complex architectural reports, broad system audits, and wide Mermaid (`.mmd`) diagrams must NEVER be dumped as raw multiline markdown in terminal chat (which causes terminal width overflow / ASCII diagram fallback warnings). Output them as Antigravity **artifacts** (`UserFacing: true`), preserve a permanent copy in `.agents/reports/` (mirrored to `wom7web/docs/reports/` when relevant), and present only concise summaries with clickable links in terminal responses.
 - **Close a ticket's open questions with a weighted decision; split big leftovers into a dependent ticket** (owner, 2026-09-24).
   At the end of a ticket, list each remaining question with a recommended answer and its weight (cost, risk, what it

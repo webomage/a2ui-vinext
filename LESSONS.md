@@ -151,6 +151,18 @@ A migration added `CREATE POLICY "device_sessions_select_anon" ON public.device_
 
 ## 2. Instruments
 
+### ⛔ NEVER RUN BLANKET GIT RESETS, CHECKOUTS, OR WHOLE-TREE FORMATTERS IN A SHARED WORKTREE
+**2026-09-27, T467. Multi-agent and human concurrent worktree safety.**
+
+Running `pre-commit run --all-files` invoked the `oxfmt` hook across the entire monorepo, dirtying hundreds of untargeted files with automated formatting diffs. Attempting to back out of the cascade via `git reset HEAD && git checkout -- .` destroyed in-flight, uncommitted additions in `apps/cp/src/components/admin/ProjectManager.svelte` and `project/test-suites.json`. In a collaborative engineering workspace simultaneously inhabited by human developers, Claude Code, Antigravity, and background agents, blanket resets operate under a false single-tenant assumption and destroy uncommitted concurrent work without trace.
+
+⇒ **All git discard, revert, and formatting operations in a shared worktree MUST be strictly surgical and file-scoped.**
+- **Never execute blanket discards:** `git checkout -- .`, `git reset --hard`, or `git clean -f` at repo root are strictly prohibited.
+- **Never run repo-wide automated formatters:** Do not run `pre-commit run --all-files` or full-tree formatting on a dirty or shared tree. Pre-commit hooks must run only on staged files (`pre-commit run`).
+- **Audit before touching:** Run `git diff <file>` to verify ownership before touching or reverting any file in a dirty working tree.
+- **Collaborative respect (T235):** Just as an agent must never commit another's in-flight work, it must never discard another's in-flight work.
+⭐ **The tell:** Reaching for `git checkout -- .` or `git reset` to undo a tool-induced cascade (such as a linter/formatter). If a tool dirties files you did not touch, unstage or revert only the exact files the tool modified, never the entire tree.
+
 ### A SEARCH THAT LOOKED AT NOTHING ANSWERS EXACTLY LIKE ONE THAT LOOKED EVERYWHERE
 **2026-09-20, T406.** `rg` at the estate root: **64 hits, 0.06s**. The same pattern, per repo:
 **5,268**.

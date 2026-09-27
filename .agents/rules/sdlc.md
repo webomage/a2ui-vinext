@@ -18,6 +18,9 @@ If the task maps to a ticket (`T##` in `wom7web/TASKS.md`), run it through the S
 **`TECH-DEBT.md`** (decided debt; delete rows the ticket pays down) · `openspec/` ·
 `docs/KNOWLEDGE-GRAPH.md` / `just ask "<q>"` for code questions before grep.
 
+**Triangulated SSOT mandatory for specs & research:**
+Before finalizing a spec or design, enforce the Triangulated SSOT Protocol: ground claims across the 5 surfaces (`fact-checker`), interrogate boundary conditions (`socrates` / `/grill-me`), audit single-responsibility (`schema-critique`), and settle open questions with weighted decisions.
+
 **Update the tracking surfaces in the SAME commit as the work.** A stale T-row misleads the next
 agent — this has happened; T89 sat at "started, poller wired" through a session that finished it.
 
