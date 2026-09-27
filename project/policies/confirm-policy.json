@@ -64,7 +64,8 @@
     "rotate",
     "sync-env",
     "sync-wom7api-secrets",
-    "crawler-deploy"
+    "crawler-deploy",
+    "s3-delete-apply"
   ],
   "_always_confirm_why": "These re-prompt EVEN INSIDE an agreed root — the owner's carve-out of 2026-08-10: 'have option to confirm only specific steps like migrations'. ⚠️ THE EXEMPLAR IN THAT SENTENCE IS NO LONGER IN THIS LIST. `db-migrate` was moved into `roots.deploy-all` on 2026-08-16 by the decision recorded below in `_notes.one_yes_is_the_decision` — read it before editing either list, because re-adding `db-migrate` here reverses an owner decision rather than fixing a bug, and `project/scripts/tests/test_confirm_step.py` will fail and say so. This note and that one contradicted each other for 34 days (T407, AgDR-0024); they are now worded to be read together.",
   "steps": {
@@ -105,7 +106,8 @@
     "sync-cp-secrets": "Writes the CP Worker's production secrets (wrangler secret put).",
     "sync-demo-secrets": "Writes the demo Worker's production secrets (wrangler secret put).",
     "sync-job-secrets": "Writes the job Worker's production secrets (wrangler secret put).",
-    "sync-join-secrets": "Writes the join Worker's production secrets (wrangler secret put)."
+    "sync-join-secrets": "Writes the join Worker's production secrets (wrangler secret put).",
+    "s3-delete-apply": "🔴 DESTRUCTIVE — T458 S3: permanently delete one approved batch of fixture accounts or test orgs (auth users, profiles, roles; or a client row and its org)."
   },
   "_notes": {
     "coverage_matches_the_chain": "2026-08-16: test, goldens and smoke-live were added to the deploy chain (T224/T222) without being declared here, so the 'one yes covers N chained step(s)' count under-reported. A step in the chain but absent from this list would prompt separately the moment it grew a _confirm.",

@@ -38,6 +38,19 @@ NULL, so deleting only the user would leave an orphan profile) → the auth user
 identities, sessions, factors). Risk: none found. **Root cause to fix alongside:** Gauge specs create timestamped
 `gauge-test-*` / `test_role_client_*` accounts on the live database and never remove them; they will come back.
 
+## Batch 1b — 6 SQL-inserted `@test.com` fixtures (added after a correction)
+
+**The first inventory missed these:** their `auth.users.created_at` is NULL, which nulled the whole report line, so
+the report said 22 accounts when there are 28. Found when the deletion tool counted `auth.users`. All six were inserted
+by SQL: unconfirmed, no login identity, never signed in; 4 are the fixture profiles homed on `w0m.system`.
+
+| Account | Owns |
+|---|---|
+| `2f095384-…@test.com` | profile, `recruit` role |
+| `34e07931-…@test.com`, `909c364c-…@test.com`, `f632ef99-…@test.com` | profile, `member` role |
+| `ea14077e-…@test.com` | profile |
+| `fd78cf56-…@test.com` | profile, `member` role, **a GLOBAL `interview.conduct` grant** (removed with the profile) |
+
 ## Batch 2 — `merge-test-client` (org + client row)
 
 Created 2026-07-06; 0 projects, 0 contracts, 0 invoices, 0 leads, 0 users, 0 hats; 2 `synced_vacancies` rows (they
@@ -65,6 +78,18 @@ these two.
 | `jane@webomage.com` | never (2026-03-11) | candidate details in `specs/web/admin_interviews.spec` |
 
 Repoint those specs to the new non-real test accounts, then delete.
+
+## Tooling (built 2026-09-26)
+
+- `just s3-delete <batch>`: dry run. Executes the batch's real deletes in one transaction, prints each count, rolls
+  back. Re-measures every account first; any dependent outside the batch's allowed set refuses the whole batch.
+- `just s3-delete-apply <batch>`: the same transaction committed, behind the Touch ID gate on every call
+  (`always_confirm`). Owner-run only.
+- Live dry runs 2026-09-26: **1** OK (10 users, 10 profiles, 5 roles); **1b** OK (6 users, 6 profiles, 5 roles, the
+  grant by cascade); **2** OK (1 client, 1 org); **3** refused, precondition (demo not relinked yet); **4** refused,
+  test code still names both emails.
+- Batch 3 path: deploy the `seed-demo` fix (it now inserts the demo client under the existing `demo` org id), run
+  `just seed-demo`, then `just s3-delete 3`.
 
 ## The four non-real test accounts (T439 AC10), to create first
 
