@@ -60,9 +60,9 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **47** | 0 | `abeca12c` |
+| `wom7web` | `beta` | **47** | 0 | `82df97fb` |
 | `wom7api` | `beta` | 0 | 0 | `a097157` |
-| `wom7func` | `beta` | 0 | 0 | `d577124` |
+| `wom7func` | `beta` | 0 | 0 | `28c5784` |
 | `wom7skills` | `beta` | 0 | 0 | `fd3a232` |
 | `wom7ext` | `beta` | 0 | 0 | `14b9f62` |
 | `wom7sec` | `beta` | 0 | 0 | `9b85831` |
@@ -71,7 +71,7 @@
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
 **Tickets:** 216 open · 484 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T439","T290","T29","T63","T453","T468","T476","T478","T481","T482"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"a097157","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"fd3a232","unpushed":0},"wom7web":{"branch":"beta","dirty":47,"has_upstream":true,"head":"abeca12c","unpushed":0}},"tickets":{"open":216,"rowless_open":[],"rows":484}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T439","T290","T29","T63","T453","T468","T476","T478","T481","T482"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"a097157","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"28c5784","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"fd3a232","unpushed":0},"wom7web":{"branch":"beta","dirty":47,"has_upstream":true,"head":"82df97fb","unpushed":0}},"tickets":{"open":216,"rowless_open":[],"rows":484}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -166,12 +166,13 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T482** — SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction mining, and skill optimization for wom7skills
   - **2026-09-28** (today): Researched architecture and integration pathways; drafted ticket T482.
 
-#### Completed today (4):
+#### Completed today (5):
 
 - **T100** — L1 identity gaps — 2FA UI + dormant login providers (Quality Gates: 100% test passes across vitest auth suite, just typecheck clean (0 errors, 0 warnings across all 5 apps), OpenSpec change archived to openspec/changes/archive/-2026-09-25-t100-identity-gaps-and-mfa.)
 - **T463** — P0: admin MFA is a page guard only — an AAL1 admin token passes every admin policy in the database (Verified & Closed (100% ACs, 5/5). Live database verified with just admin-aal-verify passing 16/16 checks (AAL1 refused for all admin functions/tables, AAL2 retains full rights). Edge functions deployed and verified in release 2026.09.28-1790582373 (deno-test 18/18 test suites, 185 passed). Offline judge self-tests (admin-aal-verify-test 7/7, manager-aal-verify-test 7/7) and live manager-aal-verify (16/16) all green. T439 context rbac verify passed 19/19. Open question Q1 split into [[T479]].)
 - **T473** — Deploy from tagged releases in an isolated worktree by default; local working-tree deploy only on explicit force (D1–D4 built (owner: yes). App registry project/policies/release-apps.json (api, web, cp, join, job, demo; db tracked). Fingerprint = sha256 of the git content ids of each app's inputs at the release commit (from just version-stamped releases; the release tool never mints versions — the T131 version gate caught that). _deploy-chain now deploys only the apps in W0M_RELEASE_APPS (skip loop tested for changed / nothing / local); just deploy --all forces. Each deployed release is committed to the umbrella as releases/<version>.json (only that path). /api/health adds app_version (2 tests). release.py 21/21 probes; typecheck clean. Also archived the other session's completed changes (T469/T470/T472/T474) on the owner's go-ahead: each was blocking every push.)
 - **T474** — Unstructured CV and resume document vault in CP Resume Studio: view, download, upload, and import of Aleksei's canonical copies (Status value completed set to done (ticket vocabulary). OpenSpec change archived by the T473 session to unblock pushes (spec-drift gate), on the owner's go-ahead; not yet verified live — ships with the next release deploy.)
+- **T485** — Align workerd runtime binary versions across estate and refresh worker types (Identified workerd runtime binary version split across estate. wom7web and wom7api resolved 1.20260811.1, while wom7func resolved two versions (1.20260616.1 via miniflare 4 and 1.20260811.1 via wrangler), with worker types generated against 1.20260504.1. Added workerd: 1.20260811.1 override in wom7func/package.json, updated undici and ip-address security overrides, converged lockfile to a single workerd version, regenerated worker-configuration.d.ts with workerd 1.20260811.1, and verified all 6 test files / 38 tests pass. Pre-commit hooks passed cleanly. Spec archived.)
 
 ## 3. Other open threads (in TASKS.md)
 
