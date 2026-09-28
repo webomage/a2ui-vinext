@@ -18,7 +18,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T484](.tasks/T484.md) · [#484](https://github.com/casualuser/webomage.com/issues/484) | **P1** | **Fix contract promotion to CV and integrate personal resume library and CV script functions into CP Resume Studio** | web, api | openspec/changes/2026-09-28-resume-studio-integration/proposal.md | 🟡 **in-progress** |
 | [T482](.tasks/T482.md) | **P1** | 🆕 **SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction mining, and skill optimization for wom7skills** | skills, api, tooling | — | 🟡 **in-progress** |
 | [T481](.tasks/T481.md) | **P1** | **One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it** | web, api | — | 🟡 **in-progress** |
 | [T478](.tasks/T478.md) | **P1** | **Local full regression: a current local schema, a provisioned test team with client hats, then triage and fix** | web, api | — | 🟡 **in-progress** |
@@ -245,6 +244,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T484](.tasks/T484.md) · [#484](https://github.com/casualuser/webomage.com/issues/484) | **P1** | **Fix contract promotion to CV and integrate personal resume library and CV script functions into CP Resume Studio** | web, api | openspec/changes/2026-09-28-resume-studio-integration/proposal.md | ✅ **done** |
 | [T483](.tasks/T483.md) · [#483](https://github.com/casualuser/webomage.com/issues/483) | **P1** | **Purge Hostinger MCP configurations, background processes, schemas, and estate residue** | root | — | ✅ **done** |
 | [T474](.tasks/T474.md) | **P1** | 🆕 **Unstructured CV and resume document vault in CP Resume Studio: view, download, upload, and import of Aleksei's canonical copies** | web, api | openspec/changes/2026-09-27-unstructured-cv-document-vault | ✅ **done** |
 | [T473](.tasks/T473.md) | **P1** | **Deploy from tagged releases in an isolated worktree by default; local working-tree deploy only on explicit force** | web, api | — | ✅ **done** |
