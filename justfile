@@ -423,34 +423,34 @@ deploy-web: (_confirm "deploy-web")
     @just _assert-provisioned web
     @echo "🔍 Building pagefind search index..."
     @cd wom7web/apps/web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run build:search
-    @cd wom7web/apps/web/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd wom7web/apps/web/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_WEB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/join (join.webomage.com)
 deploy-join: (_confirm "deploy-join")
     @echo "Building and deploying apps/join to Cloudflare Workers (Version: {{ deploy_version }})..."
     @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter join build
     @just _assert-provisioned join
-    @cd wom7web/apps/join/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd wom7web/apps/join/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOIN:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/job (job.webomage.com)
 deploy-job: (_confirm "deploy-job")
     @echo "Building and deploying apps/job to Cloudflare Workers (Version: {{ deploy_version }})..."
     @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter job build
     @just _assert-provisioned job
-    @cd wom7web/apps/job/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd wom7web/apps/job/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/demo (demo.webomage.com — T79 demo showcase) to Cloudflare Workers
 deploy-demo: (_confirm "deploy-demo")
     @echo "Building and deploying apps/demo to Cloudflare Workers (Version: {{ deploy_version }})..."
     @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter demo build
-    @cd wom7web/apps/demo/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd wom7web/apps/demo/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_DEMO:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy apps/cp (cp.w0m.xyz)
 deploy-cp: (_confirm "deploy-cp")
     @echo "Building and deploying apps/cp to Cloudflare Workers (Version: {{ deploy_version }})..."
     @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter cp build
     @just _assert-provisioned cp
-    @cd wom7web/apps/cp/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd wom7web/apps/cp/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_CP:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
 
 # Deploy wom7func to Cloudflare
 deploy-workers: (_confirm "deploy-workers")
@@ -557,7 +557,25 @@ deploy-local:
     @python3 wom7web/project/scripts/release.py local-warning
     @env W0M_DEPLOY_LOCAL=1 just deploy
 
-_deploy-chain: (_confirm "deploy") check-infisical check-guardrails test goldens deploy-api deploy-web deploy-cp deploy-join deploy-job deploy-demo smoke-live _assert-clean-tree _log-deploy
+_deploy-chain: (_confirm "deploy") check-infisical check-guardrails test goldens
+    @just _deploy-apps
+    @just smoke-live
+    @just _assert-clean-tree
+    @just _log-deploy
+
+# T473 D2: deploy each app, in the order the chain always used. W0M_RELEASE_APPS (set by a release deploy) lists the
+# apps whose fingerprint changed since the last deployed release; the others are skipped and keep serving their
+# previous version. Unset (a local deploy) = every app. `just deploy --all` sets the full list.
+_deploy-apps:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for app in api web cp join job demo; do
+      if [ -n "${W0M_RELEASE_APPS+x}" ] && ! printf ' %s ' ${W0M_RELEASE_APPS} | grep -q " ${app} "; then
+        echo "⏭  ${app}: unchanged since the last deployed release — skipped (T473)"
+        continue
+      fi
+      just deploy-${app}
+    done
 
 deploy-all:
     #!/usr/bin/env bash

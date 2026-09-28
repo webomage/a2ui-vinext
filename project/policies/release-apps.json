@@ -1,0 +1,39 @@
+{
+  "_comment": "T473 D2/D3 (owner, 2026-09-27) — the deployable apps and what each one is BUILT FROM. An app's fingerprint is the git content ids of its inputs at the release commit; an app whose fingerprint equals the last DEPLOYED release's is skipped (`just deploy --all` forces every app). Inputs are paths in the app's repo; `@umbrella:<path>` is a path in the workspace repo. The umbrella justfile is an input of every app on purpose: a change to how apps deploy redeploys them (slower, never wrong). A declared input that does not exist is an error, so this file cannot silently drift from the tree.",
+  "apps": {
+    "api": {
+      "repo": "wom7api",
+      "deploy": "deploy-api",
+      "inputs": ["supabase/functions", "@umbrella:justfile"]
+    },
+    "web": {
+      "repo": "wom7web",
+      "deploy": "deploy-web",
+      "inputs": ["apps/web", "packages", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "tsconfig.json", "turbo.json", "@umbrella:justfile"]
+    },
+    "cp": {
+      "repo": "wom7web",
+      "deploy": "deploy-cp",
+      "inputs": ["apps/cp", "packages", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "tsconfig.json", "turbo.json", "@umbrella:justfile"]
+    },
+    "join": {
+      "repo": "wom7web",
+      "deploy": "deploy-join",
+      "inputs": ["apps/join", "packages", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "tsconfig.json", "turbo.json", "@umbrella:justfile"]
+    },
+    "job": {
+      "repo": "wom7web",
+      "deploy": "deploy-job",
+      "inputs": ["apps/job", "packages", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "tsconfig.json", "turbo.json", "@umbrella:justfile"]
+    },
+    "demo": {
+      "repo": "wom7web",
+      "deploy": "deploy-demo",
+      "inputs": ["apps/demo", "packages", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "tsconfig.json", "turbo.json", "@umbrella:justfile"]
+    }
+  },
+  "tracked_not_deployed": {
+    "_comment": "Recorded in every release manifest so a release shows what changed, but not skipped or selected: `db-migrate` applies whatever is pending, and applies nothing when nothing is.",
+    "db": {"repo": "wom7api", "inputs": ["supabase/migrations"]}
+  }
+}
