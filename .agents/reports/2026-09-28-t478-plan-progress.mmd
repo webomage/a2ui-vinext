@@ -1,44 +1,42 @@
 flowchart TD
-  subgraph Shipped ["Shipped in Release 2026.09.28-1790582373"]
-    T473["T473: Isolated Worktree Deploy (5/5 ACs)"]
-    T474["T474: CP Resume Studio Vault (4/4 ACs)"]
-    T476_part["T476: /me/account Founder Isolation (2/5 ACs)"]
+  subgraph CompletedDone ["Completed & Closed Today"]
+    T463["T463: Admin MFA DB Policy (5/5 ACs) ✅"]
+    T100["T100: L1 Identity Gaps & MFA UI (9/9 ACs) ✅"]
+    T473["T473: Isolated Worktree Deploy (5/5 ACs) ✅"]
+    T474["T474: CP Resume Studio Vault (4/4 ACs) ✅"]
   end
 
   subgraph CanonicalPlan ["Active Strategic Plan: Security & RBAC Hardening (ROADMAP §19)"]
     direction TB
     S0["Stage 0: Live Exposure Remediation (100% AC - Exit Met)"]
     S1["Stage 1: RLS/Authz Enforcement Residue (100% AC - Blocking)"]
-    S2["Stage 2: Identity & MFA Surface (62% AC - T53 done, T100 WIP)"]
+    S2["Stage 2: Identity & MFA Surface (100% AC - T53 done, T100 done) ✅"]
     S3["Stage 3: Posture Composition & Hygiene (48% AC - T233/T139 done)"]
     S0 --> S1 --> S2 --> S3
   end
 
   subgraph CurrentWIP ["Current In-Flight Engineering Scope"]
     direction TB
-    T478["T478: Local Regression & Test Team (0/7 ACs)<br/>AC1 Replay 78 Migrations | AC2 Local Team Provisioning"]
-    T476["T476: Non-Founder Identity Verification (2/5 ACs)<br/>Awaiting test accounts for client/member testing"]
-    T463["T463: Admin MFA DB Policy (0/5 ACs)<br/>AAL2 enforcement for admin/manager in user_roles"]
+    T478["T478: Local Regression & Test Team (1/7 ACs)<br/>Mailpit client & live guard delivered | E2E stabilization"]
+    T439["T439: CP Information Architecture (2/12 ACs)<br/>Me/Org/Admin switcher (Top HOT item)"]
+    T476["T476: /me/account Identity Verification (2/5 ACs)<br/>Founder leak plugged; awaiting test accounts"]
     T468["T468: Upwork Synced Source Layer (1/7 ACs)<br/>Mirror schema & source links"]
     T458["T458: Org & Engagement Model (2/7 ACs)<br/>S4 Homes built, awaiting S3 apply & Upwork mirror"]
-    T439["T439: CP Information Architecture (2/12 ACs)<br/>Me/Org/Admin switcher (paused for T458)"]
     T477["T477: Pre-Push Gate Speedup (1/3 ACs)<br/>Parallelize checks & skip node_modules"]
   end
 
   %% Inter-ticket and Plan Dependencies
-  T478 -.->|"Provisions local non-founder test accounts (AC2)"| T476
-  T478 -.->|"Validates 193 specs & local DB schema (AC3/AC4)"| T463
+  T478 -.->|"Provisions local test personas & Mailpit auth"| T476
   T468 -.->|"Unblocks S3/S4 migration apply"| T458
   T458 -.->|"Unblocks Org Context IA switcher"| T439
-  T463 -.->|"Feeds into Admin MFA gate"| S2
-  Shipped -.->|"Deployed baseline"| CurrentWIP
+  CompletedDone -.->|"Hardened baseline"| CurrentWIP
 
   classDef shipped fill:#064e3b,stroke:#059669,stroke-width:1px,color:#ecfdf5;
   classDef plan fill:#1e1b4b,stroke:#6366f1,stroke-width:1px,color:#e0e7ff;
   classDef wip fill:#0f172a,stroke:#38bdf8,stroke-width:1px,color:#f8fafc;
-  classDef critical fill:#450a0a,stroke:#f43f5e,stroke-width:2px,color:#ffe4e6;
+  classDef stageDone fill:#047857,stroke:#10b981,stroke-width:2px,color:#ecfdf5;
 
-  class T473,T474,T476_part shipped;
-  class S0,S1,S2,S3 plan;
-  class T478,T476,T468,T458,T439,T477 wip;
-  class T463 critical;
+  class T463,T100,T473,T474 shipped;
+  class S0,S1,S3 plan;
+  class S2 stageDone;
+  class T478,T439,T476,T468,T458,T477 wip;
