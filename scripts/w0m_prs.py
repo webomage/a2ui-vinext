@@ -628,6 +628,12 @@ def resolve_forks_dir(specified: Optional[str] = None) -> Optional[Path]:
         candidate = workspace_root / name
         if candidate.exists():
             return candidate
+    # Fallback to host estate root if running in a release worktree (~/.w0m/releases/...)
+    host_estate = Path.home() / "Projects" / "@self" / "@wom"
+    for name in ("wom7pr", "wom7open"):
+        candidate = host_estate / name
+        if candidate.exists():
+            return candidate
     return None
 
 
