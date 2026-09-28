@@ -1,0 +1,31 @@
+# ── w0m gitleaks config (workspace root) ──────────────────────────────────────
+title = "w0m root gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+  '''^releases/.*\.json$''',
+]
+
+[[rules]]
+id = "wom-db-password-in-prose"
+description = "DB/superuser password value quoted right after a password keyword (docs/prose/config)"
+regex = '''(?i)\b(?:password|passwd|pwd|db[_ \t-]?pass(?:word)?|super ?user (?:pw|password))\b[ \t]{0,4}[:=]?[ \t]{0,4}[`'"]([A-Za-z0-9][A-Za-z0-9_@#%^&*+.=/-]{9,63})[`'"]'''
+secretGroup = 1
+entropy = 3.0
+keywords = ["password", "passwd", "pwd", "superuser"]
+
+[[rules]]
+id = "wom-postgres-uri-inline-password"
+description = "postgres/postgresql connection string with an inline password"
+regex = '''(?i)postgres(?:ql)?://[^:@/\s]+:([^@/\s]{6,})@'''
+secretGroup = 1
+keywords = ["postgres"]
+
+[[rules]]
+id = "wom-supabase-management-pat"
+description = "Supabase management/access token (sbp_ personal access token)"
+regex = '''\bsbp_[a-f0-9]{40}\b'''
+keywords = ["sbp_"]

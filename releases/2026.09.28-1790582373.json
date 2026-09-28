@@ -1,0 +1,77 @@
+{
+  "version": "2026.09.28-1790582373",
+  "branch": "beta",
+  "repos": {
+    ".": "5994f4f3f8b4054a626a69c2cfaa724376dad60f",
+    "wom7api": "763891808d51d41855c34c2ce25f92af2bbb0560",
+    "wom7ava": "220bb8d4984d07bbddc14dc3b1cf0adfc7a6f942",
+    "wom7clips": "5e591abe40d83ca7404ace9ff280145097d10512",
+    "wom7ext": "14b9f62e5d17173f900d19dead487a1420b933c9",
+    "wom7func": "d57712445ada26a9a38f4adaaaeb036bd0099112",
+    "wom7mlx/wom7mlx": "d55402ec3297ad975f323eff4f31a3a2c968c465",
+    "wom7sec": "9b858317309c5ffcf3545541fdae3c8def503e25",
+    "wom7skills": "d501827b11f46705971cb8906c8d809d95bd569d",
+    "wom7web": "6286a0484a300211f302023ba446829554728cec"
+  },
+  "apps": {
+    "api": {
+      "fingerprint": "e1ce1f7a2648bea936cc14b4366697532327aa3c5ee68851341ec997effeea96",
+      "deployable": true,
+      "deploy": "deploy-api",
+      "changed": true,
+      "previous": null
+    },
+    "web": {
+      "fingerprint": "b3354fd74085dbd3d3915db91a2d0a966dd7ef6ef62ad1d81690dc0e687cdcb4",
+      "deployable": true,
+      "deploy": "deploy-web",
+      "changed": true,
+      "previous": null
+    },
+    "cp": {
+      "fingerprint": "d49cc39609402e2f9847a19207333d06155184bd0077995f1099a829e7ff4293",
+      "deployable": true,
+      "deploy": "deploy-cp",
+      "changed": true,
+      "previous": null
+    },
+    "join": {
+      "fingerprint": "40256a1b360fa11065719c3e7e6d6bab10c479f443aab9b2e4cdd16a242981eb",
+      "deployable": true,
+      "deploy": "deploy-join",
+      "changed": true,
+      "previous": null
+    },
+    "job": {
+      "fingerprint": "f021e570875c8ea6b413b41d5533f0cc7cf1a76167acd2cfb341b0832f4c0961",
+      "deployable": true,
+      "deploy": "deploy-job",
+      "changed": true,
+      "previous": null
+    },
+    "demo": {
+      "fingerprint": "4999753ce011a7821cca401a972211978a5668ce05c4233f1a97b5a0e1afc37e",
+      "deployable": true,
+      "deploy": "deploy-demo",
+      "changed": true,
+      "previous": null
+    },
+    "db": {
+      "fingerprint": "8044d16664a4c4e35382fd6af95223f2f7636e0206b48f0c14f44871678584d2",
+      "deployable": false,
+      "deploy": null,
+      "changed": true,
+      "previous": null
+    }
+  },
+  "previous_release": null,
+  "deployed": true,
+  "deployed_apps": [
+    "api",
+    "web",
+    "cp",
+    "join",
+    "job",
+    "demo"
+  ]
+}
