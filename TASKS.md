@@ -19,7 +19,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T481](.tasks/T481.md) | **P1** | **One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it** | web, api | — | 🟡 **in-progress** |
-| [T480](.tasks/T480.md) | **P2** | **Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel** | web, api | — | ⚪ **queued** |
 | [T478](.tasks/T478.md) | **P1** | **Local full regression: a current local schema, a provisioned test team with client hats, then triage and fix** | web, api | — | 🟡 **in-progress** |
 | [T476](.tasks/T476.md) | **P1** | **/me/account: stop leaking the founder's data, link identities by server PKCE, then merge the two identity sections** | web | — | 🟡 **in-progress** |
 | [T468](.tasks/T468.md) | **P1** | 🆕 **Upwork as a synced source layer: mirror schema, source links, work-history mapping, move the copied rows out of our tables** | web, api | — | 🟡 **in-progress** |
@@ -51,6 +50,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T482](.tasks/T482.md) | **P1** | 🆕 **SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction mining, and skill optimization for wom7skills** | skills, api, tooling | — | ⚪ **queued** |
 | [T475](.tasks/T475.md) | **P1** | 🆕 **Biometric hardware anchor for @wom/kyc and compliance profiles** | web, api | — | ⚪ **queued** |
 | [T457](.tasks/T457.md) | **P1** | 🆕 **Inline service-role clients escape the admin-client ratchet — 13 files build `createClient(url, serviceKey)` by hand** | web | — | ⚪ **queued** |
 | [T455](.tasks/T455.md) | **P1** | 🆕 **Participating open-source projects & PRs inventory for member profiles (read-only) and webomage/casualuser fork lifecycle management** | web, tooling, skills | wom7skills/docs/proposals/w0m_cp_member_participating_projects_and_prs_proposal.md | ⚪ **queued** |
@@ -127,6 +127,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T26](project/tickets/T26.md) · [#29](https://github.com/casualuser/webomage.com/issues/29) | **P1** | **Package discovery via awesome-repositories MCP** — connect `https://awesome-repositories.com/api/mcp` (HTTP transport, OAuth 2.1 auto-discovery via `/.well-known/oauth-protected-resource`, **read-only**; tools: `search_repositories`, `search_metadata_tags`, `get_repository`, `list_curated_searches`, `list_repository_docs`) as a standing MCP tool for finding vetted OSS packages; evaluate + document when to use it in the SDLC. | tooling | ROADMAP §13.5 | ⚪ **queued** |
 | [T25](project/tickets/T25.md) · [#28](https://github.com/casualuser/webomage.com/issues/28) | **P1** | **Knowledge-graph engine research** — evaluate the engine behind the estate's graphs. Recovered to the board 2026-08-02 after being rowless. Overlaps the codegraph/graphify split already live ([[T151]]); verify it is not already answered before starting. | web | `project/tickets/T25.md`; ties [[T151]] | ⚪ **queued** — recovered 2026-08-02 |
 | [T24](project/tickets/T24.md) · [#27](https://github.com/casualuser/webomage.com/issues/27) | **P1** | **Skills expansion — import + survey** — add [`kepano/obsidian-skills`](https://github.com/kepano/obsidian-skills) (Agent-Skills spec: Obsidian markdown/wikilinks, Bases, JSON Canvas, Obsidian CLI, clean web-content extraction) into `wom7skills`; survey top skills on [skills.sh](https://skills.sh) and decide per skill: **import/connect** vs **master & craft ourselves**; produce a skills catalog (what we use, what we build). | web(skills) | ROADMAP §13.3; §6 | ⚪ **queued** |
+| [T480](.tasks/T480.md) | **P2** | **Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel** | web, api | — | ⚪ **queued** |
 | [T479](.tasks/T479.md) · [#479](https://github.com/casualuser/webomage.com/issues/479) | **P2** | 🆕 **HttpOnly island token hardening — CP pages replace raw access tokens with cookie-authenticated /api/* proxies** | web | — | ⚪ **queued** |
 | [T462](.tasks/T462.md) | **P2** | 🆕 **Research: ground Architect Mode in the indexed knowledge (documents, blueprints, diagrams) — review the 2026-09-26 agent-embedding audit** | web, api, func | — | ⚪ **queued** |
 | [T460](.tasks/T460.md) | **P2** | 🆕 **Research: one training engagement with several trainees from several personal orgs (group training)** | web, api | — | ⚪ **queued** |

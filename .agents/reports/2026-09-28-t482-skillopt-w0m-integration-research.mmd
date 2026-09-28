@@ -1,0 +1,44 @@
+%% Ticket: T482
+%% Browser view: just diagram .agents/reports/2026-09-28-t482-skillopt-w0m-integration-research.mmd
+flowchart TD
+  subgraph DailyOps ["Daily Multi-Agent Sessions"]
+    CC["Claude Code (~/.claude/projects/...)"]
+    AGY["Google Antigravity (brain/transcript.jsonl)"]
+    OC["OpenCode (.opencode/...)"]
+  end
+
+  subgraph SkillOptSleep ["SkillOpt-Sleep Pipeline (just sleep)"]
+    direction TB
+    H["1. Harvest Transcripts<br/>Local session reader with secret redaction"]
+    M["2. Mine Recurring Tasks & Friction<br/>Identifies gate failures & user corrections"]
+    R["3. Offline Replay & Reflection<br/>Local MLX / ZeroClaw or Claude backend"]
+    G["4. Held-Out Validation Gate<br/>gate_no_regression: true"]
+    H --> M --> R --> G
+  end
+
+  subgraph StagingReview ["Human-in-the-Loop Review Surface"]
+    P["Staged Proposal (.agents/reports/sleep/)<br/>report.md | best_skill.md | proposed_lessons.md"]
+    Adopt{"Human Review & Adopt Gate<br/>skillopt-sleep adopt"}
+    P --> Adopt
+  end
+
+  subgraph CanonicalEstate ["w0m Canonical Repositories"]
+    WS["wom7skills / .agents/skills/<br/>SKILL.md & prompt parameters"]
+    LM["LESSONS.md<br/>Earned operational rules"]
+    SM["STATE.md<br/>Handoff & session context"]
+  end
+
+  DailyOps -->|"Session logs & turn trajectories"| H
+  G -->|"Candidate text patches"| P
+  Adopt -->|"just skill reconcile"| WS
+  Adopt -->|"Appends earned rules"| LM
+
+  classDef ops fill:#1e1b4b,stroke:#6366f1,stroke-width:1px,color:#e0e7ff;
+  classDef pipeline fill:#0f172a,stroke:#38bdf8,stroke-width:1px,color:#f8fafc;
+  classDef review fill:#451a03,stroke:#f59e0b,stroke-width:1px,color:#fef3c7;
+  classDef estate fill:#064e3b,stroke:#059669,stroke-width:1px,color:#ecfdf5;
+
+  class CC,AGY,OC ops;
+  class H,M,R,G pipeline;
+  class P,Adopt review;
+  class WS,LM,SM estate;
