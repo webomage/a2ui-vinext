@@ -23,8 +23,8 @@
 | 6 | [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | [#468](https://github.com/webomage/wom7board/issues/468) | P1 | in-progress | data | 85 | Upwork as a synced source layer: mirror schema, source links, work-history mapping, move |
 | 7 | [T476](/Users/proto/Projects/@self/@wom/.tasks/T476.md) | [#476](https://github.com/webomage/wom7board/issues/476) | P1 | in-progress | security | 85 | /me/account: stop leaking the founder's data, link identities by server PKCE, then merge |
 | 8 | [T478](/Users/proto/Projects/@self/@wom/.tasks/T478.md) | [#478](https://github.com/webomage/wom7board/issues/478) | P1 | in-progress | sdlc | 85 | Local full regression: a current local schema, a provisioned test team with client hats, |
-| 9 | [T481](/Users/proto/Projects/@self/@wom/.tasks/T481.md) | — | P1 | in-progress | sdlc | 85 | One persistent isolated STABLE worktree: full local regression runs there, releases cut  |
-| 10 | [T482](/Users/proto/Projects/@self/@wom/.tasks/T482.md) | — | P1 | in-progress | skills | 85 | SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction min |
+| 9 | [T481](/Users/proto/Projects/@self/@wom/.tasks/T481.md) | [#481](https://github.com/webomage/wom7board/issues/481) | P1 | in-progress | sdlc | 85 | One persistent isolated STABLE worktree: full local regression runs there, releases cut  |
+| 10 | [T482](/Users/proto/Projects/@self/@wom/.tasks/T482.md) | [#482](https://github.com/webomage/wom7board/issues/482) | P1 | in-progress | skills | 85 | SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction min |
 
 ### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -60,8 +60,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **47** | 0 | `8c213ead` |
-| `wom7api` | `beta` | 0 | 0 | `002381c` |
+| `wom7web` | `beta` | **47** | 0 | `65e44e09` |
+| `wom7api` | `beta` | 0 | 0 | `1109a35` |
 | `wom7func` | `beta` | 0 | 0 | `d577124` |
 | `wom7skills` | `beta` | 0 | 0 | `fd3a232` |
 | `wom7ext` | `beta` | 0 | 0 | `14b9f62` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 216 open · 482 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 216 open · 484 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T439","T290","T29","T63","T453","T468","T476","T478","T481","T482"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"002381c","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"fd3a232","unpushed":0},"wom7web":{"branch":"beta","dirty":47,"has_upstream":true,"head":"8c213ead","unpushed":0}},"tickets":{"open":216,"rowless_open":[],"rows":482}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T439","T290","T29","T63","T453","T468","T476","T478","T481","T482"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"1109a35","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"fd3a232","unpushed":0},"wom7web":{"branch":"beta","dirty":47,"has_upstream":true,"head":"65e44e09","unpushed":0}},"tickets":{"open":216,"rowless_open":[],"rows":484}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
