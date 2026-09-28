@@ -18,6 +18,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T482](.tasks/T482.md) | **P1** | 🆕 **SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction mining, and skill optimization for wom7skills** | skills, api, tooling | — | 🟡 **in-progress** |
 | [T481](.tasks/T481.md) | **P1** | **One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it** | web, api | — | 🟡 **in-progress** |
 | [T478](.tasks/T478.md) | **P1** | **Local full regression: a current local schema, a provisioned test team with client hats, then triage and fix** | web, api | — | 🟡 **in-progress** |
 | [T476](.tasks/T476.md) | **P1** | **/me/account: stop leaking the founder's data, link identities by server PKCE, then merge the two identity sections** | web | — | 🟡 **in-progress** |
@@ -50,7 +51,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T482](.tasks/T482.md) | **P1** | 🆕 **SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction mining, and skill optimization for wom7skills** | skills, api, tooling | — | ⚪ **queued** |
 | [T475](.tasks/T475.md) | **P1** | 🆕 **Biometric hardware anchor for @wom/kyc and compliance profiles** | web, api | — | ⚪ **queued** |
 | [T457](.tasks/T457.md) | **P1** | 🆕 **Inline service-role clients escape the admin-client ratchet — 13 files build `createClient(url, serviceKey)` by hand** | web | — | ⚪ **queued** |
 | [T455](.tasks/T455.md) | **P1** | 🆕 **Participating open-source projects & PRs inventory for member profiles (read-only) and webomage/casualuser fork lifecycle management** | web, tooling, skills | wom7skills/docs/proposals/w0m_cp_member_participating_projects_and_prs_proposal.md | ⚪ **queued** |
