@@ -2,6 +2,22 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.09.28-1790582373
+_First deployed: 2026-09-28 08:13:26.876266+00_
+
+### Features
+- **T477**: stop emoji/license scans walking node_modules; file pre-push parallel ticket ([T477](file:///.tasks/T477.md))
+- **T471**: complete cross-device confirmation gate and sync queue ([T471](file:///.tasks/T471.md))
+- **T473**: deploy chain skips unchanged apps (W0M_RELEASE_APPS), per-app APP_VERSION, release-apps registry; T474 closed ([T473](file:///.tasks/T473.md), [T474](file:///.tasks/T474.md))
+- **T473**: just deploy / deploy-all ship a tagged release from an isolated worktree by default; deploy-local / deploy-all-local force the working tree; release-* recipes; T469/T470/T472 closed (their session's completion notes included, status values fixed) ([T473](file:///.tasks/T473.md), [T469](file:///.tasks/T469.md), [T470](file:///.tasks/T470.md), [T472](file:///.tasks/T472.md))
+
+### Fixes
+- **T473**: update emoji ratchet baseline, ignore _ext symlink, and fallback forks dir ([T473](file:///.tasks/T473.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `5994f4f` | 2026-09-28 08:13:26.876266+00 |
+
 ## 2026.09.27-1790522929
 _First deployed: 2026-09-27 15:46:17.416789+00_
 

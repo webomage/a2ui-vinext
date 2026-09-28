@@ -615,6 +615,9 @@ release-verify version:
 release-deploy version mode="deploy":
     @python3 wom7web/project/scripts/release.py deploy {{ version }} {{ mode }}
 
+release-publish version:
+    @python3 wom7web/project/scripts/release.py publish {{ version }}
+
 release-list:
     @python3 wom7web/project/scripts/release.py list
 
