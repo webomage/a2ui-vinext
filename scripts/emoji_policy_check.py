@@ -34,7 +34,9 @@ Run it as `just emoji-check`.
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import json
+import os
 import re
 import subprocess
 import sys
@@ -115,6 +117,29 @@ def _ignored(paths: list[Path]) -> set[Path]:
     return ignored
 
 
+def _pruned_glob(pattern: str, skip: set[str]):
+    """`ESTATE.glob(pattern)` for a `<prefix>/**/<name-glob>` pattern, never entering a `skip` dir.
+
+    T477: `ESTATE.glob("*/**/*.md")` walked every `node_modules` in the estate and only then
+    dropped what it found there -- 28s of a push, 221s under pre-push contention. Every path under
+    an excluded component is discarded by `authored()` anyway, so not descending into one yields
+    exactly the same list. Symlinks match `Path.glob` too: followed where `<prefix>` matches one
+    (`@wom/.agents`), not followed inside `**` -- the equivalence was measured file-for-file.
+    """
+    prefix, sep, name = pattern.partition("/**/")
+    if not sep or "/" in name:
+        raise ValueError(f"_pruned_glob: {pattern!r} is not a '<prefix>/**/<name-glob>' pattern")
+    for top in ESTATE.glob(prefix):
+        if not top.is_dir() or any(s in top.relative_to(ESTATE).parts for s in skip):
+            continue
+        for dirpath, dirnames, filenames in os.walk(top):
+            dirnames[:] = [d for d in dirnames if d not in skip]
+            base = Path(dirpath)
+            for entry in (*dirnames, *filenames):
+                if fnmatch.fnmatchcase(entry, name):
+                    yield base / entry
+
+
 def authored(pol: dict, pattern: str):
     """Every authored file matching `pattern` -- generated, vendored and IGNORED trees excluded.
 
@@ -131,7 +156,7 @@ def authored(pol: dict, pattern: str):
     skip = set(pol["exclude_paths"])
     candidates = [
         p
-        for p in ESTATE.glob(pattern)
+        for p in _pruned_glob(pattern, skip)
         # `wom7ext/extension/export.md` is a DIRECTORY named .md
         if not any(s in p.parts for s in skip) and p.is_file()
     ]

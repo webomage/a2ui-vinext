@@ -215,15 +215,18 @@ def discover_manifests(repo: Path, markers: list[str]) -> list[dict]:
     asking the filesystem what is on disk, is the same lesson as resolving the git boundary
     before measuring anything.
     """
-    tracked = {
-        line for line in tracked_files(repo) if Path(line).name == "package.json"
-    }
+    # T477: iterate git's list, not `repo.rglob` — the walk entered every `node_modules` only to
+    # discard it here, 30s of a push. A tracked manifest deleted from the worktree is skipped,
+    # as the walk never found it either.
+    tracked = sorted(
+        repo / line for line in tracked_files(repo) if Path(line).name == "package.json"
+    )
     out: list[dict] = []
-    for manifest in sorted(repo.rglob("package.json")):
+    for manifest in tracked:
         rel = manifest.relative_to(repo)
         if any(part in SKIP_DIRS for part in rel.parts):
             continue
-        if str(rel) not in tracked:
+        if not os.path.lexists(manifest):
             continue
         entry: dict = {
             "rel": str(rel),
