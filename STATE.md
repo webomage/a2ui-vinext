@@ -18,13 +18,13 @@
 | 1 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | in-progress | product | 149 | L1 identity gaps — 2FA UI + dormant login providers 📄 live spec |
 | 2 | [T463](/Users/proto/Projects/@self/@wom/.tasks/T463.md) | — | P0 | in-progress | security | 125 | P0: admin MFA is a page guard only — an AAL1 admin token passes every admin policy in th |
 | 3 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 100 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
-| 4 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
-| 5 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
-| 6 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
-| 7 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | — | P1 | in-progress | security | 85 | One access foundation for every web app — shared middleware, one route-policy model, and |
-| 8 | [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | — | P1 | in-progress | data | 85 | Upwork as a synced source layer: mirror schema, source links, work-history mapping, move |
-| 9 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 84 | Full-observability logging strategy 📄 live spec |
-| 10 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 81 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
+| 4 | [T474](/Users/proto/Projects/@self/@wom/.tasks/T474.md) | — | P1 | in-progress | product | 100 | Unstructured CV and resume document vault in CP Resume Studio: view, downlo 📄 live spec |
+| 5 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
+| 6 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 7 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
+| 8 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | — | P1 | in-progress | security | 85 | One access foundation for every web app — shared middleware, one route-policy model, and |
+| 9 | [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | — | P1 | in-progress | data | 85 | Upwork as a synced source layer: mirror schema, source links, work-history mapping, move |
+| 10 | [T473](/Users/proto/Projects/@self/@wom/.tasks/T473.md) | — | P1 | in-progress | infra | 85 | Deploy from tagged releases in an isolated worktree by default; local working-tree deplo |
 
 ### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 210 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **210** are
+> ⚠️ **0 of 213 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **213** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -60,8 +60,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **4** | 1 | `890e616e` |
-| `wom7api` | `beta` | **2** | 1 | `07ef6ea` |
+| `wom7web` | `beta` | **15** | 5 | `dc9f0775` |
+| `wom7api` | `beta` | 0 | 1 | `83d458c` |
 | `wom7func` | `beta` | 0 | 0 | `d577124` |
 | `wom7skills` | `beta` | 0 | 0 | `07c064b` |
 | `wom7ext` | `beta` | 0 | 0 | `14b9f62` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 210 open · 468 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 213 open · 474 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T463","T439","T290","T29","T63","T453","T468","T43","T214"],"repos":{"wom7api":{"branch":"beta","dirty":2,"has_upstream":true,"head":"07ef6ea","unpushed":1},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"07c064b","unpushed":0},"wom7web":{"branch":"beta","dirty":4,"has_upstream":true,"head":"890e616e","unpushed":1}},"tickets":{"open":210,"rowless_open":[],"rows":468}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T463","T439","T474","T290","T29","T63","T453","T468","T473"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"83d458c","unpushed":1},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"07c064b","unpushed":0},"wom7web":{"branch":"beta","dirty":15,"has_upstream":true,"head":"dc9f0775","unpushed":5}},"tickets":{"open":213,"rowless_open":[],"rows":474}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -129,7 +129,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-#### In-flight tickets (14):
+#### In-flight tickets (16):
 
 - **T16** — Verify & archive built-but-unarchived changes
   - **2026-08-23** (35d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
@@ -159,11 +159,18 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
   - **2026-09-26** (1d ago): Filed from the owner's screencast. Migration, edge changes, recipe and probe updates written. Proved on
 - **T468** — Upwork as a synced source layer: mirror schema, source links, work-history mapping, move the copied rows out of our tables
   - **2026-09-27** (today): Filed on the owner's direction with the measured context. Not started; waiting on Q1–Q5.
+- **T473** — Deploy from tagged releases in an isolated worktree by default; local working-tree deploy only on explicit force
+  - **2026-09-27** (today): Built: wom7web/project/scripts/release.py (cut, worktree, verify, deploy, ship, publish, list, prune,
+- **T474** — Unstructured CV and resume document vault in CP Resume Studio: view, download, upload, and import of Aleksei's canonical copies
+  - ⚠️ NO status note recorded where this stopped
 
-#### Completed today (2):
+#### Completed today (5):
 
 - **T465** — Mandatory step-up MFA (TOTP / Touch ID / AAL2) for manager-level actions and responsibilities (Done, verified live. Migration 20260926210000 in the ledger (applied with a deploy); just manager-aal-verify 16/16 live (manager at AAL1 refused, AAL2 keeps it), -test 7/7; admin MFA still 16/16 (just admin-aal-verify), since this migration replaced T463's restrictive user_roles policy with one covering admin and manager. All 6 ACs ticked. OpenSpec change archived as 2026-09-27-2026-09-26-manager-mfa-step-up (spec mfa-manager created). Closed by the T458 session because the unarchived 13/13 change blocked every wom7web push (spec-drift gate).)
 - **T467** — Blueprint-driven project creation: tech chips sets, commercial archetypes, and automated derivation of hats, skills, and MCP bundles (Shipped blueprint-driven project creation matrix. Defined 5 commercial archetypes in src/data/project-archetypes.json with TypeScript types and derivation engine deriveProjectConfiguration in apps/cp/src/lib/project-archetypes.ts. Integrated 4-step creation flow into ProjectManager.svelte with interactive chips set and real-time derivation preview. Created apps/cp/src/pages/api/project/index.ts endpoint handling project creation and metadata derivation. Registered offline test suite project-archetypes-test (53 checks + vitest) in test-suites.json, wom7api/justfile, and root justfile. OpenSpec change 2026-09-27-blueprint-project-creation-matrix validated clean (openspec validate).)
+- **T469** — Auth widget suppression during MFA challenge: hide user menu, hats, and apps until TOTP is verified (Status value completed is not in the ticket vocabulary; set to done. OpenSpec change archived by the T458/T473 session to unblock pushes (spec-drift gate), on the owner's go-ahead; not yet verified live — it ships with the next release deploy.)
+- **T470** — Restore co-founder photos and executive titles on /team: Option A template mapping and Option B public database view (Status value completed is not in the ticket vocabulary; set to done. OpenSpec change archived by the T458/T473 session to unblock pushes (spec-drift gate), on the owner's go-ahead; not yet verified live — it ships with the next release deploy.)
+- **T472** — Stale sb-access-token cookie desync: client-side Svelte components receive expired 1h JWT while middleware refreshes chunked cookie (Status value completed is not in the ticket vocabulary; set to done. OpenSpec change archived by the T458/T473 session to unblock pushes (spec-drift gate), on the owner's go-ahead; not yet verified live — it ships with the next release deploy.)
 
 ## 3. Other open threads (in TASKS.md)
 

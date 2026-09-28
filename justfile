@@ -536,28 +536,76 @@ changelog-test:
     @python3 scripts/tests/test_changelog_check.py
     @python3 scripts/tests/test_gen_changelog.py
 
+# T473 (owner, 2026-09-27): the DEFAULT deploy ships a release, never a working tree. It tags origin/beta of every
+# estate repo as release/<version>, checks that out detached under ~/.w0m/releases/<version>/w0m, deploys FROM there
+# and publishes the tags only if the deploy succeeds. The main checkouts may be dirty at any moment (people and agents
+# work in them at once); a release cannot see that. Inside the release worktree W0M_RELEASE_WORKTREE=1 is set and this
+# recipe runs the chain itself. Forcing a deploy of the local working tree is explicit: `just deploy-local`.
 deploy:
     #!/usr/bin/env bash
     set -euo pipefail
+    if [ -z "${W0M_RELEASE_WORKTREE:-}" ] && [ -z "${W0M_DEPLOY_LOCAL:-}" ]; then
+      exec python3 wom7web/project/scripts/release.py ship deploy
+    fi
     if [ -n "${W0M_DEPLOY_LOGGED:-}" ]; then
       exec just _deploy-chain
     fi
     exec env W0M_DEPLOY_LOGGED=1 python3 wom7web/project/scripts/deploy_logged.py _deploy-chain
+
+# T473 — FORCE: deploy the local working tree as it is (uncommitted edits of anyone included). Not the default.
+deploy-local:
+    @python3 wom7web/project/scripts/release.py local-warning
+    @env W0M_DEPLOY_LOCAL=1 just deploy
 
 _deploy-chain: (_confirm "deploy") check-infisical check-guardrails test goldens deploy-api deploy-web deploy-cp deploy-join deploy-job deploy-demo smoke-live _assert-clean-tree _log-deploy
 
 deploy-all:
     #!/usr/bin/env bash
     set -euo pipefail
+    if [ -z "${W0M_RELEASE_WORKTREE:-}" ] && [ -z "${W0M_DEPLOY_LOCAL:-}" ]; then
+      exec python3 wom7web/project/scripts/release.py ship deploy-all
+    fi
     if [ -n "${W0M_DEPLOY_LOGGED:-}" ]; then
       exec just _deploy-all-chain
     fi
     exec env W0M_DEPLOY_LOGGED=1 python3 wom7web/project/scripts/deploy_logged.py _deploy-all-chain
 
+# T473 — FORCE: deploy-all from the local working tree. Not the default.
+deploy-all-local:
+    @python3 wom7web/project/scripts/release.py local-warning
+    @env W0M_DEPLOY_LOCAL=1 just deploy-all
+
+# T473 — release helpers. `release-cut` + `release-worktree` + `release-deploy` is what `just deploy` does in one go;
+# use them to inspect a release before deploying it, or to retry a failed one without cutting a new version.
+release-cut *args:
+    @python3 wom7web/project/scripts/release.py cut {{ args }}
+
+release-worktree version:
+    @python3 wom7web/project/scripts/release.py worktree {{ version }}
+
+release-verify version:
+    @python3 wom7web/project/scripts/release.py verify {{ version }}
+
+release-deploy version mode="deploy":
+    @python3 wom7web/project/scripts/release.py deploy {{ version }} {{ mode }}
+
+release-list:
+    @python3 wom7web/project/scripts/release.py list
+
+release-prune keep="3":
+    @python3 wom7web/project/scripts/release.py prune {{ keep }}
+
+release-test:
+    @python3 wom7web/project/scripts/release.py --test
+
 _deploy-all-chain: (_confirm "deploy-all") check-warp check-infisical db-migrate deploy _post-deploy-knowledge
 
 _post-deploy-knowledge:
-    -@just --justfile wom7api/justfile knowledge-light
+    #!/usr/bin/env bash
+    # A release worktree is a throwaway snapshot: indexing it would register its paths in the code graphs. The
+    # main estate refreshes its own knowledge (`just --justfile wom7api/justfile knowledge-light`).
+    if [ -n "${W0M_RELEASE_WORKTREE:-}" ]; then echo "knowledge refresh skipped in a release worktree (T473)"; exit 0; fi
+    just --justfile wom7api/justfile knowledge-light || true
 
 # Every bare `just <recipe>` in a recipe body must name a recipe that justfile defines — the
 # `-`-prefixed call above named one that only wom7api has, silently, from T421 to T431 run 7.
