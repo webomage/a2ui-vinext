@@ -15,16 +15,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | in-progress | product | 149 | L1 identity gaps — 2FA UI + dormant login providers 📄 live spec |
-| 2 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 100 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
-| 3 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
-| 4 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
-| 5 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
-| 6 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | [#453](https://github.com/webomage/wom7board/issues/453) | P1 | in-progress | security | 85 | One access foundation for every web app — shared middleware, one route-policy model, and |
-| 7 | [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | [#468](https://github.com/webomage/wom7board/issues/468) | P1 | in-progress | data | 85 | Upwork as a synced source layer: mirror schema, source links, work-history mapping, move |
-| 8 | [T476](/Users/proto/Projects/@self/@wom/.tasks/T476.md) | [#476](https://github.com/webomage/wom7board/issues/476) | P1 | in-progress | security | 85 | /me/account: stop leaking the founder's data, link identities by server PKCE, then merge |
-| 9 | [T478](/Users/proto/Projects/@self/@wom/.tasks/T478.md) | [#478](https://github.com/webomage/wom7board/issues/478) | P1 | in-progress | sdlc | 85 | Local full regression: a current local schema, a provisioned test team with client hats, |
-| 10 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 84 | Full-observability logging strategy 📄 live spec |
+| 1 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 100 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
+| 2 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 89 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
+| 3 | [T29](/Users/proto/Projects/@self/@wom/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 4 | [T63](/Users/proto/Projects/@self/@wom/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
+| 5 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | [#453](https://github.com/webomage/wom7board/issues/453) | P1 | in-progress | security | 85 | One access foundation for every web app — shared middleware, one route-policy model, and |
+| 6 | [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | [#468](https://github.com/webomage/wom7board/issues/468) | P1 | in-progress | data | 85 | Upwork as a synced source layer: mirror schema, source links, work-history mapping, move |
+| 7 | [T476](/Users/proto/Projects/@self/@wom/.tasks/T476.md) | [#476](https://github.com/webomage/wom7board/issues/476) | P1 | in-progress | security | 85 | /me/account: stop leaking the founder's data, link identities by server PKCE, then merge |
+| 8 | [T478](/Users/proto/Projects/@self/@wom/.tasks/T478.md) | [#478](https://github.com/webomage/wom7board/issues/478) | P1 | in-progress | sdlc | 85 | Local full regression: a current local schema, a provisioned test team with client hats, |
+| 9 | [T43](/Users/proto/Projects/@self/@wom/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 84 | Full-observability logging strategy 📄 live spec |
+| 10 | [T214](/Users/proto/Projects/@self/@wom/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 81 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
 
 ### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,24 +32,24 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 214 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **214** are
+> ⚠️ **0 of 213 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **213** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T100](/Users/proto/Projects/@self/@wom/.tasks/T100.md) | [#100](https://github.com/webomage/wom7board/issues/100) | P0 | in-progress | product | 7/9 | `████████░░` 78% | — | L1 identity gaps — 2FA UI + dormant login providers |
-| 2 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
-| 3 | [T476](/Users/proto/Projects/@self/@wom/.tasks/T476.md) | [#476](https://github.com/webomage/wom7board/issues/476) | P1 | in-progress | security | 2/5 | `████░░░░░░` 40% | — | /me/account: stop leaking the founder's data, link identitie |
-| 4 | [T287](/Users/proto/Projects/@self/@wom/.tasks/T287.md) | [#287](https://github.com/webomage/wom7board/issues/287) | P2 | queued | schemas | 5/7 | `███████░░░` 71% | — | Repos are a first-class entity — `projects.github_repo_url`  |
-| 5 | [T16](/Users/proto/Projects/@self/@wom/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
-| 6 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | [#458](https://github.com/webomage/wom7board/issues/458) | P1 | in-progress | security | 2/7 | `███░░░░░░░` 29% | 🔴 [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | Org and engagement model — w0m platform and root, webomage o |
-| 7 | [T478](/Users/proto/Projects/@self/@wom/.tasks/T478.md) | [#478](https://github.com/webomage/wom7board/issues/478) | P1 | in-progress | sdlc | 2/7 | `███░░░░░░░` 29% | — | Local full regression: a current local schema, a provisioned |
-| 8 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
-| 9 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 2/12 | `██░░░░░░░░` 17% | — | CP information architecture — one shell with a Me / Org / Ad |
-| 10 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | [#453](https://github.com/webomage/wom7board/issues/453) | P1 | in-progress | security | 1/7 | `█░░░░░░░░░` 14% | — | One access foundation for every web app — shared middleware, |
+| 1 | [T290](/Users/proto/Projects/@self/@wom/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
+| 2 | [T476](/Users/proto/Projects/@self/@wom/.tasks/T476.md) | [#476](https://github.com/webomage/wom7board/issues/476) | P1 | in-progress | security | 2/5 | `████░░░░░░` 40% | — | /me/account: stop leaking the founder's data, link identitie |
+| 3 | [T287](/Users/proto/Projects/@self/@wom/.tasks/T287.md) | [#287](https://github.com/webomage/wom7board/issues/287) | P2 | queued | schemas | 5/7 | `███████░░░` 71% | — | Repos are a first-class entity — `projects.github_repo_url`  |
+| 4 | [T16](/Users/proto/Projects/@self/@wom/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
+| 5 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | [#458](https://github.com/webomage/wom7board/issues/458) | P1 | in-progress | security | 2/7 | `███░░░░░░░` 29% | 🔴 [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | Org and engagement model — w0m platform and root, webomage o |
+| 6 | [T478](/Users/proto/Projects/@self/@wom/.tasks/T478.md) | [#478](https://github.com/webomage/wom7board/issues/478) | P1 | in-progress | sdlc | 2/7 | `███░░░░░░░` 29% | — | Local full regression: a current local schema, a provisioned |
+| 7 | [T237](/Users/proto/Projects/@self/@wom/.tasks/T237.md) | [#237](https://github.com/webomage/wom7board/issues/237) | P1 | queued | sdlc | 2/8 | `██░░░░░░░░` 25% | — | 190 specs validate clean and 4 authorization tests pass for  |
+| 8 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 2/12 | `██░░░░░░░░` 17% | — | CP information architecture — one shell with a Me / Org / Ad |
+| 9 | [T453](/Users/proto/Projects/@self/@wom/.tasks/T453.md) | [#453](https://github.com/webomage/wom7board/issues/453) | P1 | in-progress | security | 1/7 | `█░░░░░░░░░` 14% | — | One access foundation for every web app — shared middleware, |
+| 10 | [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | [#468](https://github.com/webomage/wom7board/issues/468) | P1 | in-progress | data | 1/7 | `█░░░░░░░░░` 14% | — | Upwork as a synced source layer: mirror schema, source links |
 
 ### 📍 MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **28** | 1 | `79046aac` |
-| `wom7api` | `beta` | **1** | 3 | `be77b24` |
+| `wom7web` | `beta` | **13** | 7 | `e316bda2` |
+| `wom7api` | `beta` | 0 | 5 | `002381c` |
 | `wom7func` | `beta` | 0 | 0 | `d577124` |
-| `wom7skills` | `beta` | **2** | 0 | `d501827` |
+| `wom7skills` | `beta` | 0 | 1 | `fd3a232` |
 | `wom7ext` | `beta` | 0 | 0 | `14b9f62` |
 | `wom7sec` | `beta` | 0 | 0 | `9b85831` |
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 214 open · 479 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 213 open · 479 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T100","T439","T290","T29","T63","T453","T468","T476","T478","T43"],"repos":{"wom7api":{"branch":"beta","dirty":1,"has_upstream":true,"head":"be77b24","unpushed":3},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":2,"has_upstream":true,"head":"d501827","unpushed":0},"wom7web":{"branch":"beta","dirty":28,"has_upstream":true,"head":"79046aac","unpushed":1}},"tickets":{"open":214,"rowless_open":[],"rows":479}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T439","T290","T29","T63","T453","T468","T476","T478","T43","T214"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"002381c","unpushed":5},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"14b9f62","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d577124","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"fd3a232","unpushed":1},"wom7web":{"branch":"beta","dirty":13,"has_upstream":true,"head":"e316bda2","unpushed":7}},"tickets":{"open":213,"rowless_open":[],"rows":479}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -129,12 +129,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-#### In-flight tickets (16):
+#### In-flight tickets (15):
 
 - **T16** — Verify & archive built-but-unarchived changes
   - **2026-08-23** (36d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
-- **T100** — L1 identity gaps — 2FA UI + dormant login providers
-  - **2026-09-28** (today): AC3, AC4, AC5, AC6 done; AC9 UI & API delivered (7/9 ACs, 78%).
 - **T153** — ZeroClaw as a managed w0m runtime — omlx-backed local agent, bidirectional w0m↔zeroclaw, tracked install config, and sandboxed client-project audits
   - **2026-09-17** (11d ago): Start T153: ZeroClaw managed runtime & ecosystem integration
 - **T234** — Trial ai-memory as the recall layer — and find out how much of auto-memory is a duplicate register
@@ -162,10 +160,11 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T477** — Pre-push: stop the slow scans walking node_modules, then run independent gates in parallel
   - ⚠️ NO status note recorded where this stopped
 - **T478** — Local full regression: a current local schema, a provisioned test team with client hats, then triage and fix
-  - **2026-09-28** (today): Run 1 (148 local specs, edge functions served): 271/435 scenarios passed, 164
+  - **2026-09-28** (today): 🔴 Run 2: 237/435; and the local runs WROTE TO LIVE. 31 of run 2's 34 new failures
 
-#### Completed today (3):
+#### Completed today (4):
 
+- **T100** — L1 identity gaps — 2FA UI + dormant login providers (Quality Gates: 100% test passes across vitest auth suite, just typecheck clean (0 errors, 0 warnings across all 5 apps), OpenSpec change archived to openspec/changes/archive/-2026-09-25-t100-identity-gaps-and-mfa.)
 - **T463** — P0: admin MFA is a page guard only — an AAL1 admin token passes every admin policy in the database (Verified & Closed (100% ACs, 5/5). Live database verified with just admin-aal-verify passing 16/16 checks (AAL1 refused for all admin functions/tables, AAL2 retains full rights). Edge functions deployed and verified in release 2026.09.28-1790582373 (deno-test 18/18 test suites, 185 passed). Offline judge self-tests (admin-aal-verify-test 7/7, manager-aal-verify-test 7/7) and live manager-aal-verify (16/16) all green. T439 context rbac verify passed 19/19. Open question Q1 split into [[T479]].)
 - **T473** — Deploy from tagged releases in an isolated worktree by default; local working-tree deploy only on explicit force (D1–D4 built (owner: yes). App registry project/policies/release-apps.json (api, web, cp, join, job, demo; db tracked). Fingerprint = sha256 of the git content ids of each app's inputs at the release commit (from just version-stamped releases; the release tool never mints versions — the T131 version gate caught that). _deploy-chain now deploys only the apps in W0M_RELEASE_APPS (skip loop tested for changed / nothing / local); just deploy --all forces. Each deployed release is committed to the umbrella as releases/<version>.json (only that path). /api/health adds app_version (2 tests). release.py 21/21 probes; typecheck clean. Also archived the other session's completed changes (T469/T470/T472/T474) on the owner's go-ahead: each was blocking every push.)
 - **T474** — Unstructured CV and resume document vault in CP Resume Studio: view, download, upload, and import of Aleksei's canonical copies (Status value completed set to done (ticket vocabulary). OpenSpec change archived by the T473 session to unblock pushes (spec-drift gate), on the owner's go-ahead; not yet verified live — ships with the next release deploy.)

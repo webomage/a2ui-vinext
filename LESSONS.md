@@ -556,6 +556,22 @@ An author wrote `## Requirements` in a change's capability spec. While human-rea
 ⇒ **Always use explicit delta headings (`## ADDED Requirements`, `## MODIFIED Requirements`) in OpenSpec capability files under `specs/<capability>/spec.md`.**
 ⭐ **The tell:** `openspec validate` failing with `No delta sections found` or `Change must have at least one delta` despite well-formed `### Requirement:` and `#### Scenario:` blocks.
 
+### HOSTED SUPABASE CLOUD RESTRICTS SECONDARY MFA TO TOTP — WEBAUTHN IS PRIMARY (PASSKEYS) ONLY
+**2026-09-28 (T100).** Calling the Supabase Management API (`PATCH /v1/projects/<ref>/config/auth`) with `mfa_web_authn_enroll_enabled: true` was rejected with `HTTP 422: Enabling of MFA with WebAuthn not currently supported`.
+
+While `@supabase/auth-js` has client-side methods for WebAuthn factor enrollment (`factorType: "webauthn"`), hosted Supabase Cloud supports WebAuthn exclusively for passwordless Passkeys (primary sign-in) and not as a secondary AAL2 MFA factor.
+
+⇒ **On Supabase Cloud, MFA (AAL2) requires TOTP. Passkeys replace password sign-in (AAL1), but cannot satisfy AAL2 challenge gates.** If designing MFA enrollment UI, ensure TOTP is the active secondary factor and clearly message the provider limitation to users.
+⭐ **The tell:** A 422 Unprocessable Entity error when attempting to enable WebAuthn MFA in Supabase project auth config.
+
+### SUPABASE MFA ENROLLMENT REQUIRES UNIQUE FACTOR FRIENDLY NAMES PER USER
+**2026-09-28 (T100).** Enrolling a second TOTP authenticator crashed with `400 Bad Request: A factor with the friendly name 'My Authenticator App' for this user already exists`.
+
+A static friendly name (e.g. `'Authenticator App'`) works for the first factor, but Supabase Auth enforces uniqueness per user across all enrolled factors. Attempting to enroll a backup authenticator or a second device with the same label fails at the API.
+
+⇒ **Dynamically assign distinct friendly names when enrolling factors.** Inspect currently enrolled factors and append an incrementing index (e.g. `getNextFriendlyName(factors, "Authenticator App")` -> `"Authenticator App 2"`).
+⭐ **The tell:** An authenticator enrollment flow failing with `400: A factor with the friendly name ... already exists` as soon as a user tries to enroll a second device.
+
 ## 4. Dependencies and config
 
 ### ⛔ VERIFY EVERY CREDENTIAL KEY NAME AGAINST THE STORE — NEVER TRANSCRIBE FROM MEMORY
