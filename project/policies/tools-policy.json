@@ -71,7 +71,7 @@
     },
     "gcloud": {
       "min": "500.0.0",
-      "known_good": "585.0.0",
+      "known_good": "586.0.0",
       "required": false,
       "source": "gcloud",
       "auto": "major",
@@ -116,7 +116,7 @@
     },
     "infisical": {
       "min": "0.40.0",
-      "known_good": "0.43.133",
+      "known_good": "0.43.137",
       "required": true,
       "source": "brew",
       "auto": "patch",

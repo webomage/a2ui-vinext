@@ -1,8 +1,8 @@
 ---
 name: w0m-tasks
-description: Show and triage the ranked w0m ticket queue — HOT (what can be started) and SDLC (closest to done). Use when the user asks about the ticket queue, what to work on next, project tasks, or triage. Passes arguments through to `just tasks`.
+description: Show and triage the ranked w0m ticket queue, active epics, and plan progress — HOT (what can be started), SDLC (closest to done), and PLAN (current progressing scope with linked Mermaid diagrams). Trigger when the user asks "how about current plan progress?", "plan progress", "what to work on next", "project tasks", "ticket queue", or "triage". Passes arguments through to `just tasks`.
 metadata:
-  version: "2026.09.22-1790054019"
+  version: "2026.09.28-1790589022"
 ---
 
 # /w0m:tasks — the w0m ticket queue
@@ -34,8 +34,25 @@ The third board in `tasks` output is **`EPIC`** (callable standalone via `just t
 
 ⚠️ **Report the AC percentages as progress, never as stage completion** — every stage carries a written `exit`, and the blocking stage's is a probe result. Ticking a checkbox is a claim; running the probe is evidence. A stage showing 100% with an unmet `exit` is not done, and saying otherwise is the failure this estate keeps shipping. It exits **1** when the plan names a ticket that does not exist — that is plan↔queue drift, not a rounding note, and it must be surfaced rather than skipped.
 
-**`overview`** answers what the two rankings structurally cannot — not *which ticket next* but **what this queue is about**. Groups the open set by **area/theme**, by **ROADMAP §** (rolled up: `§13`, `§13.2` and `§13 — … (child of T149)` are one section written three ways), by **tag**, and into **bundles** — same area *and* same section, i.e. work worth doing together because the context is paid for once. Reach for it when triaging or planning, not when picking the next ticket.
 ⚠️ Every block prints its own denominator, and the gaps are the point: **39 of 119 tickets carry no epic**, 27 have no acceptance criteria, and 113 of 153 tags appear exactly once. Read those numbers before trusting any grouping — a roll-up over 80 of 119 tickets is not the roadmap.
+
+### Plan Progress Reporting ("plan progress" / "how about current plan progress?")
+
+When the user asks "how about current plan progress?", "plan progress", or requests a strategic progress review:
+1. **Triangulate the 3 Progress Planes**:
+   - **Recently Shipped**: What landed in the latest release deployment (e.g. `releases/*.json`, deploy log, verified live health endpoints).
+   - **Canonical Strategic Plan**: The active milestone declared in `.w0m/sdlc.json -> current_plan` (queried via `just tasks current` or `just tasks plan`), showing stage completion and exit verdicts.
+   - **Current In-Flight Engineering Scope**: Active `in-progress` tickets (queried via `just tasks wip`) and immediate cross-ticket unblockers.
+2. **Generate the Artifact & Linked `.mmd` Diagram**:
+   - Write a permanent report to `.agents/reports/YYYY-MM-DD-t{id}-plan-progress.md` (citing the active primary ticket like `T478`).
+   - Write the companion diagram to `.agents/reports/YYYY-MM-DD-t{id}-plan-progress.mmd` with full topology across the three planes.
+   - Validate the Mermaid diagram with `node wom7skills/skills/mmd-validate/validate.mjs <file.mmd>` to ensure clean parsing.
+   - In Antigravity sessions, emit a user-facing Artifact (`UserFacing: true`) containing the Markdown report with interactive SVG Mermaid graphics.
+3. **Anti-Terminal-Overflow Presentation**:
+   - Render a structured, concise summary in terminal/chat (Shipped, Canonical Plan, In-Flight Critical Path, Dependencies).
+   - Link directly to the generated `.md` report and companion `.mmd` diagram.
+   - Provide the zero-width browser viewer command: `just diagram <path.mmd>`.
+   - Never paste raw multiline Mermaid fences directly into terminal chat.
 
 ## Presenting the result
 
