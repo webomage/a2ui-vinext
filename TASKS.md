@@ -49,6 +49,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T475](.tasks/T475.md) | **P1** | 🆕 **Biometric hardware anchor for @wom/kyc and compliance profiles** | web, api | — | ⚪ **queued** |
 | [T457](.tasks/T457.md) | **P1** | 🆕 **Inline service-role clients escape the admin-client ratchet — 13 files build `createClient(url, serviceKey)` by hand** | web | — | ⚪ **queued** |
 | [T455](.tasks/T455.md) | **P1** | 🆕 **Participating open-source projects & PRs inventory for member profiles (read-only) and webomage/casualuser fork lifecycle management** | web, tooling, skills | wom7skills/docs/proposals/w0m_cp_member_participating_projects_and_prs_proposal.md | ⚪ **queued** |
 | [T454](.tasks/T454.md) | **P1** | 🆕 **MFA for non-admin accounts — sign-in challenge in every app for members and clients who enrol a factor** | web | — | ⚪ **queued** |
