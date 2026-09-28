@@ -18,6 +18,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T484](.tasks/T484.md) · [#484](https://github.com/casualuser/webomage.com/issues/484) | **P1** | **Fix contract promotion to CV and integrate personal resume library and CV script functions into CP Resume Studio** | web, api | openspec/changes/2026-09-28-resume-studio-integration/proposal.md | 🟡 **in-progress** |
 | [T482](.tasks/T482.md) | **P1** | 🆕 **SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction mining, and skill optimization for wom7skills** | skills, api, tooling | — | 🟡 **in-progress** |
 | [T481](.tasks/T481.md) | **P1** | **One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it** | web, api | — | 🟡 **in-progress** |
 | [T478](.tasks/T478.md) | **P1** | **Local full regression: a current local schema, a provisioned test team with client hats, then triage and fix** | web, api | — | 🟡 **in-progress** |
