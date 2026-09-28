@@ -18,6 +18,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T481](.tasks/T481.md) | **P1** | **One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it** | web, api | — | 🟡 **in-progress** |
 | [T480](.tasks/T480.md) | **P2** | **Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel** | web, api | — | ⚪ **queued** |
 | [T478](.tasks/T478.md) | **P1** | **Local full regression: a current local schema, a provisioned test team with client hats, then triage and fix** | web, api | — | 🟡 **in-progress** |
 | [T476](.tasks/T476.md) | **P1** | **/me/account: stop leaking the founder's data, link identities by server PKCE, then merge the two identity sections** | web | — | 🟡 **in-progress** |
