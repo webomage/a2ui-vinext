@@ -244,6 +244,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T483](.tasks/T483.md) · [#483](https://github.com/casualuser/webomage.com/issues/483) | **P1** | **Purge Hostinger MCP configurations, background processes, schemas, and estate residue** | root | — | ✅ **done** |
 | [T474](.tasks/T474.md) | **P1** | 🆕 **Unstructured CV and resume document vault in CP Resume Studio: view, download, upload, and import of Aleksei's canonical copies** | web, api | openspec/changes/2026-09-27-unstructured-cv-document-vault | ✅ **done** |
 | [T473](.tasks/T473.md) | **P1** | **Deploy from tagged releases in an isolated worktree by default; local working-tree deploy only on explicit force** | web, api | — | ✅ **done** |
 | [T472](.tasks/T472.md) | **P1** | **Stale sb-access-token cookie desync: client-side Svelte components receive expired 1h JWT while middleware refreshes chunked cookie** | web | openspec/changes/2026-09-27-stale-access-token-cookie-sync | ✅ **done** |

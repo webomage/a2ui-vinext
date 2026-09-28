@@ -367,42 +367,6 @@
         "scope": "session",
         "purpose": "browser automation for the verify gate (real logged-in Chrome)"
       },
-      "hostinger-domains": {
-        "enabled": false,
-        "transport": "remote",
-        "scope": "global",
-        "purpose": "domain registration/transfer/WHOIS for webomage.com — DECOMMISSIONED / DISABLED (Project 1945 paused)"
-      },
-      "hostinger-dns": {
-        "enabled": false,
-        "transport": "remote",
-        "scope": "global",
-        "purpose": "DNS records/snapshots (records wrangler/Terraform do not own) — DECOMMISSIONED / DISABLED (Project 1945 paused)"
-      },
-      "hostinger-hosting": {
-        "enabled": false,
-        "transport": "remote",
-        "scope": "global",
-        "purpose": "hosting/website/cron/db-remote management — DECOMMISSIONED / DISABLED (Project 1945 paused)"
-      },
-      "hostinger-billing": {
-        "enabled": false,
-        "transport": "remote",
-        "scope": "global",
-        "purpose": "subscriptions/catalog/payment methods (read-mostly) — DECOMMISSIONED / DISABLED (Project 1945 paused)"
-      },
-      "hostinger-reach": {
-        "enabled": false,
-        "transport": "remote",
-        "scope": "global",
-        "purpose": "contacts/segments (email reach) — DECOMMISSIONED / DISABLED (Project 1945 paused)"
-      },
-      "hostinger-wordpress": {
-        "enabled": false,
-        "transport": "remote",
-        "scope": "global",
-        "purpose": "WordPress management — configured but not used by any w0m stack — DECOMMISSIONED / DISABLED (Project 1945 paused)"
-      },
       "upwork": {
         "enabled": true,
         "transport": "remote",
