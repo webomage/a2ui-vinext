@@ -76,4 +76,9 @@ project/.tools-weekly-status.json
 !/deploy-logs/
 !/deploy-logs/.gitkeep
 
+# ── SkillOpt sleep staging and cache (T482) ──────────────────────────────────
+/.skillopt-sleep/
+/.agents/reports/sleep/
+
+
 

@@ -716,6 +716,13 @@ skills-audit-tools *args:
 skills-chips *args:
     @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" chips {{ args }}
 
+# ── SkillOpt Self-Evolution & Nightly Sleep Loop (T482) ──────────────────────
+sleep *args:
+    @python3 scripts/sleep_harness.py {{ args }}
+
+sleep-test *args:
+    @python3 -m pytest scripts/tests/test_sleep_cli.py -q {{ args }}
+
 
 # ── Tart Virtual Machine Sandboxes ──────────────────────────────────────────
 # VM management shortcuts for local sandboxes (macOS, Ubuntu, BridgeRoad)
