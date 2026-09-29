@@ -2,6 +2,22 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.09.29-1790670292
+_First deployed: 2026-09-29 08:39:04.031412+00_
+
+### Features
+- **skills**: multi-agent transcript harvester, validation gate, and sleep harness (T482) ([T482](file:///.tasks/T482.md))
+- **sdlc**: configure release e2e_gate, add stable Justfile recipes, and complete T481 (T481) ([T481](file:///.tasks/T481.md))
+
+### Fixes
+- **policy**: add resumes-upload-live step to confirm-policy and save plan progress report
+- **T473**: deploy-functions verifies every function updated and retries only the stale ones ([T473](file:///.tasks/T473.md))
+- **T473**: repair the gates that failed release 2026.09.28-1790648128 ([T473](file:///.tasks/T473.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `405659f` | 2026-09-29 08:39:04.031412+00 |
+
 ## 2026.09.28-1790639135
 _First deployed: 2026-09-29 00:00:11.544929+00_
 
