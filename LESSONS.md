@@ -462,6 +462,60 @@ Catching the exception and returning an empty list of apps holding high-privileg
 ⇒ **When a system-level audit query cannot read protected state due to OS permissions or sandboxing, fail closed to `NOT MEASURED` (or exit 2 / error), never to empty results or `PASS`.** Always explicitly surface why the dimension could not be evaluated and what entitlement is missing, adhering strictly to T96 AC3 ("a check that did not run is not a check that passed").
 ⭐ **The tell:** An exception handler around a sensitive inspection command returning `[]` or `status: PASS` with detail "0 findings".
 
+### ⛔ A GATE SCOPED TO "PUSHES THAT TOUCH X" IS BLIND TO A CHANGE APPLIED FROM ANOTHER REPO — ADD A SCHEDULED FULL RUN
+**2026-09-29, T497.** The authorization probes run on a push only when it touches `supabase/migrations/|authz-|policies`. T465's
+migration re-created four admin/manager policies as *possession* tests on 2026-09-26 21:00, and the probes were **RED with 98
+violations for three days** (an admin who narrowed to the member hat read every contract again) because every push in between was a
+wom7web push that touched none of those paths, and a migration lives in wom7api. The last full run before the regression was 09-26
+09:16. It surfaced only when an unrelated push happened to carry an `authz-` path.
+
+⇒ **A path-scoped gate needs a second trigger that does not depend on the path:** a scheduled full run (the daily audit already
+exists) or a run on the *applied* migration. Scoping saves 49 s per push; it must not convert "checked on every change" into "checked
+when someone happens to touch the right file".
+⭐ **The tell:** a gate whose trigger is a file-path filter, over a surface (the live database) that other repos and other people
+change. Ask "when did this last run in full?": if the answer is a date, not "today", the scope is hiding drift.
+
+### ⛔ WHEN A MIGRATION REWRITES A FAMILY OF POLICIES, COPY THE PATTERN THAT WAS RIGHT — AND PROBE EVERY MEMBER, NOT ONE
+**2026-09-29, T497.** T465 rewrote five policies in one file. `client_milestones` was written as
+`wom_jwt_is_aal2() and wom_acting_in('admin','manager')` (the WORN hat, correct); `contracts`, `projects` (x2) and `project_roles`
+were written as `is_admin() or exists(user_roles ... role in (...))` (possession, which T198 D2 had already removed, and which
+defeats the hat because policies are OR-ed). Only `contracts` had a probe, so three of the four regressions were silent. The
+template for the fix was one file away, in the same migration.
+
+⇒ **Rewriting N sibling objects: diff the N against each other before commit, and probe all N.** A probe on one member proves that
+member only.
+⭐ **The tell:** a migration that touches several tables' policies and a probe suite that names one of them.
+
+### ⛔ A "MY DATA" PAGE MUST FILTER ON THE CALLER'S OWN PROFILE — RLS ALONE LISTS EVERYONE'S TO AN ADMIN
+**2026-09-29, T493.** `/me/upwork/proposals` read `proposals` through the user session, and the `proposals_member_own` policy looked
+sufficient. Run as `w0m@` (an admin) the same query returned all **1,782** of another person's proposals, because admin policies are
+OR-ed in. A page that trusts RLS to mean "mine" is correct for a member and wrong for the one user most likely to look.
+
+⇒ **Filter `profile_id = <caller's profile>` explicitly on every `/me` data query, fail closed when there is no profile, and test it
+with the ADMIN identity, not the member's.** `me-pages-own-rows.test.ts` fails if a `.from()` on those pages lacks the filter.
+⭐ **The tell:** a member-facing query verified only by signing in as a member.
+
+### ⛔ A PROBE'S EXCEPTIONS BELONG IN A DECLARED FILE THE PROBE READS — AND THE DECLARATION NEEDS ITS OWN GUARDS
+**2026-09-29, T497 (G3).** `G3-views-security-invoker` went RED on `public.public_team_members` (T470), a *deliberate* definer view
+(an invoker view would empty the public roster once T198 dropped anonymous SELECT on `team_members`). The probe could not express a
+deliberate exception, and its own message named a different view. The fix is `project/authz-public-views.jsonc`: the probe reads it
+(no second copy, the F1 lesson), `G3b` fails when a declared view is gone (a list of things that used to be true), `G3c` fails when a
+declared view exposes an email-, phone-, token- or secret-shaped column, because a definer view is closed only by its column list.
+
+⇒ **An allowlist without a stale-entry check and a content check is a hole with a paper trail.**
+⭐ **The tell:** an exception added by editing the probe's SQL, or by deleting the probe.
+
+### A RATCHET THAT COUNTS ONE SPELLING OF A THING MISSES THE OTHERS — DETECT THE THING, PROBE EACH SPELLING
+**2026-09-29, T457.** The admin-client ratchet counted importers of the shared singleton and reported 11. The same RLS-bypassing client
+was also built inline (`createClient(url, serviceKey)`, 11 files), through the sanctioned factory (`adminClient()`, 21 calls), and
+behind silent fallbacks (`serviceKey && …`, 6 sites in 4 files), none of which the ratchet saw. Its own first version then had a bug:
+`\bSERVICE_ROLE_KEY\b` does not match inside `SUPABASE_SERVICE_ROLE_KEY`, because `_` is a word character. The red probe caught it.
+
+⇒ **Name each construction shape as its own counted set with its own limit, and give every spelling a fixture that must fire.** A
+detector that "found nothing" on a spelling it was never shown is silent, not clean.
+⭐ **The tell:** a count that fell to zero after a refactor that only renamed a variable. And any `\b` around an identifier that can sit
+inside a longer one.
+
 ## 3. Deploys and platforms
 
 ### ⛔ SERVE `.svg` WITH `<img>`, NEVER ASTRO'S `<Image>`
@@ -663,6 +717,41 @@ A line that says it is history ("was named X until 2026-08") is counted as a vis
 ⭐ **The tell:** a rename ticket whose acceptance criteria say "folder renamed" and "docs updated" but none says
 `just name-refs <old> --gate` exits 0. Two more: a grep of *one* file type, and any default value that embeds a hostname.
 Use `just name-refs <old>` before, `--gate` after; `--files` lists every line, `--outside` scans the machine.
+
+### ⛔ NEVER COPY A SECRET YOU HAVE SEEN INTO A FILE — TEST FIXTURES USE SYNTHETIC VALUES OF THE SAME FORMAT
+**2026-09-29, T213.** Reading the job sources printed three live credentials into a tool result. When I wrote red-probe fixtures for
+the new ast-grep rules I reproduced them as the "must flag" cases, and gitleaks and semgrep blocked the commit (correctly). Nothing was
+committed, but the values had by then been in a transcript and a scratch file. The rule is not "the scanner will catch it": it caught
+this one because the values matched known formats.
+
+⇒ **Mask at print time** (`sed -E "s/(['\"])[A-Za-z0-9_-]{16,}\1/\1<MASKED>\1/"`), **write fixtures from a format, never from a value,** and
+treat any secret that appeared in output as compromised, so the rotation is the fix, not the deletion. A JWT-shaped fixture is
+assembled from pieces so no source line matches the detector.
+⭐ **The tell:** a fixture or comment whose "example" was copied from a file you had just read.
+
+### A DEFAULT THAT NAMES A CREDENTIAL IS THE CREDENTIAL — `env.X || 'value'` MAKES A MISSING SECRET INVISIBLE
+**2026-09-29, T213.** `process.env.JOOBLE_API_KEY || '<real key>'` (x3) meant rotating or injecting the secret changed nothing, the
+key sat in git with no known owner (so it could not be rotated in an incident), and when one died (Reed answered 403) the source
+returned `[]` and reported a healthy empty run. Measured after the fix: none of the four secrets existed in the vault, so the worker had
+been running on the literals as its configuration. A `'placeholder-key'` fallback in the Upwork helper did the same to the service key.
+
+⇒ **Read the injected env with no default and throw naming the variable at first use; a non-2xx from a provider THROWS, it never returns
+empty.** Two ast-grep rules now hold the shape (name-keyed and literal-shape-keyed); gitleaks cannot, because it matches known formats and
+these are provider-specific.
+⭐ **The tell:** a source whose failure path is `return []`, and an env read with a string on its right-hand side.
+
+### AN AUTH ROUTE MUST NEVER LOG THE REQUEST HEADERS — THEY ARE THE SESSION
+**2026-09-29, T52.** Both `update-password` routes logged the whole header map on every password change, which wrote the access and
+refresh token cookies to the logs. It sat there as "debug logging moved to top". A guard test now scans every auth route in every app
+for the shape (red-probed), and the explanatory comment that quoted the shape tripped it, which is the guard working.
+⭐ **The tell:** `console.log(..., request.headers)` anywhere under `pages/api/auth/`.
+
+### A FAILED `terraform apply` IS NOT A FAILED CHANGE — READ THE LIVE VALUE BEFORE RETRYING
+**2026-09-29, T52.** `supabase-settings-apply` failed with "unhealthy service realtime": Supabase restarts auth on a settings change and
+the provider's health wait timed out. The right next move was to read the live value (still 6), the health of every service (all
+healthy) and a fresh plan (still exactly one change), then retry. Retrying blind risks doubling a change; assuming it applied risks
+recording something false.
+⭐ **The tell:** an error that arrives *after* "Modifying...". Verify state, then repeat the idempotent step.
 
 ---
 

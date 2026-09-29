@@ -341,6 +341,16 @@ These are pending tasks recovered from past Antigravity sessions that need to be
         - [[T31]] (paused, 2/4): AC4 ticked (verified active as pre-commit hook `guard-test-admin`). AC2/AC3 remain owner infra actions.
         - [[T32]] (paused, 3/4): DB password rotated; history purge (AC2) in 9 commits on `origin/beta`, rides with T17.
         - [[T396]] (queued, 0/5): Nonexistent `just security-check` in AC5 satisfied by T233 `just audit`; narrow to client-facing surfaces.
+  10. **Remeasured 2026-09-29 (supersedes the 2026-09-25 counts above; those stay as the record of that day):**
+      - **Stages 0, 1, 2 are fully done** (T100 closed 9/9, T53 7/7; the 09-25 line listing T100 as queued is out of date).
+        Stage 3: T233 and T139 done; **T52 2/3**, **T213 5/8**, T244 1/5, all raised to P0 on 2026-09-29 with T396, T468 and T457.
+      - **T457 DONE** (3/3): the admin-client ratchet now counts inline, factory and fallback constructions (0 fallbacks, 1 registered
+        inline). **T453 DONE** (7/7): default-deny for undeclared `/api/*`, shared capability model. **T335 DONE**: validated plan setter.
+      - 🔴 **T497 (new, P0): a regression found by the authz probes** — T465 re-introduced possession-based admin/manager policies on
+        contracts, projects and project_roles (RED for three days, 98 violations); fixed by migration `20260929150000`, probes 20/20.
+        Open: probes for the other tables, and a scheduled full probe run (see LESSONS "A gate scoped to pushes that touch X").
+      - **Owner-blocked in this section:** T213 AC3/AC5 (provision + rotate the job-source keys, none exist in the vault today),
+        T52 AC3 (where the documentation lives), T17/T32 (history rewrite), T31 (owner infra), T244 AC1 (what `CF_RUNTIME_API_TOKEN` was for).
 * **Type**: Spec → Migration → Build. **Priority**: P0.
 
 
