@@ -627,6 +627,13 @@ release-prune keep="3":
 release-test:
     @python3 wom7web/project/scripts/release.py --test
 
+# T481 — Persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it
+stable-sync *args:
+    @python3 wom7web/project/scripts/release.py stable-sync {{ args }}
+
+e2e-stable *args:
+    @python3 wom7web/project/scripts/release.py e2e-stable {{ args }}
+
 _deploy-all-chain: (_confirm "deploy-all") check-warp check-infisical db-migrate deploy _post-deploy-knowledge
 
 _post-deploy-knowledge:

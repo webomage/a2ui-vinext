@@ -45,6 +45,9 @@
       "prefer_positional_commands": true
     }
   },
+  "release": {
+    "e2e_gate": "record"
+  },
   "repos": {
     "web": "wom7web",
     "api": "wom7api",
@@ -535,7 +538,8 @@
       "wom7api/scripts/backup_freshness.py": "T229 AC2 / T231 AC4 — a FALSE POSITIVE with two halves, both stated because neither alone justifies the exemption. (1) The `%Y%m%d%H%M%S` is a strptime PARSE of `backup_<stamp>.sql` / `storage_<stamp>/` names, i.e. reading a date this file did not create — dating backup artefacts IS this file's job, matching the `db_backup.py` precedent. (2) The word that actually tripped the gate is `signature_version=\"s3v4\"`, boto3's S3 CONFIG KEYWORD. \\u26a0\\ufe0f This estate's own rule is *exempt when the stamp is the file's job; REWORD when the match is an accident* — and the match here IS an accident, but it cannot be reworded: it is a third-party API parameter name, not our prose. That is the only reason this is an exemption rather than a rename. \\ud83d\\udd34 If a future version of this file constructs a version string, this exemption is wrong and should be removed rather than widened.",
       "wom7web/project/scripts/upwork_mcp_sync.py": "T155 — TWO non-release uses, both verified rather than waved through. (1) Line 73 `clientInfo: {name, version: \"1.0\"}` is the MCP INITIALIZE HANDSHAKE — the protocol's own field for a client identifying itself to the Upwork server. It is the version of this SYNC CLIENT as the remote sees it, not of any w0m release, and MCP fixes the field name. (2) Lines 439/447 `synced_at: %Y-%m-%dT%H:%M:%SZ` is an ISO timestamp recording WHEN a record was pulled, stored in the JSONL row. Neither is a release identifier; neither reconstructs the release expression. ⚠️ This file first tripped version-check on 2026-08-19 when `git add -A` swept it into an unrelated commit — the gate catching it there is why that mistake was noticed at all, so the exemption is narrowed to this PATH and not widened to the pattern.",
       "wom7web/project/scripts/prepush_runner.py": "T375 — ISO-8601 timestamps (datetime.now(timezone.utc).isoformat()) recorded in checkpoint JSON to track step execution timestamps and durations. The word 'version' appears incidentally in the registered gate list citing the 'version-check' gate (T131). It is a diagnostic execution stamp, not a release identifier or artefact name.",
-      "wom7web/project/scripts/sync_manifest_versions.py": "T391 — synchronizes governed workspace and sub-app package.json manifests with the canonical release version format emitted by `just version`. It propagates the declared producer's output; it does not define a competing release format."
+      "wom7web/project/scripts/sync_manifest_versions.py": "T391 — synchronizes governed workspace and sub-app package.json manifests with the canonical release version format emitted by `just version`. It propagates the declared producer's output; it does not define a competing release format.",
+      "wom7web/project/scripts/release.py": "T481 — uses datetime.now() for persistent lock timestamps (~/.w0m/stable/.lock) and e2e test recording (~/.w0m/stable/e2e-result.json); release versions strictly come from declared producer (just version)."
     },
     "artifact_naming": {
       "_comment": "OWNER DECISION 2026-08-14: the release format is ALSO the standard timestamp-versioned schema for generated ARTEFACT FILENAMES, not just releases. One schema, one producer, so an artefact can be lined up against a release without translating between formats. First adopter: deploy transcripts (`deploy-<version>.log`).",
