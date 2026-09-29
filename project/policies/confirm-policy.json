@@ -109,7 +109,8 @@
     "sync-job-secrets": "Writes the job Worker's production secrets (wrangler secret put).",
     "sync-join-secrets": "Writes the join Worker's production secrets (wrangler secret put).",
     "s3-delete-apply": "🔴 DESTRUCTIVE — T458 S3: permanently delete one approved batch of fixture accounts or test orgs (auth users, profiles, roles; or a client row and its org).",
-    "s5-merge-apply": "🔴 DESTRUCTIVE — T458 S5: delete the casualuser@gmail.com login after moving its audit rows to aleksei@ (identities, sessions and factors of that login go with it)."
+    "s5-merge-apply": "🔴 DESTRUCTIVE — T458 S5: delete the casualuser@gmail.com login after moving its audit rows to aleksei@ (identities, sessions and factors of that login go with it).",
+    "resumes-upload-live": "Upload the 17 non-public CVs and candidate resumes to the live private Supabase storage bucket."
   },
   "_notes": {
     "coverage_matches_the_chain": "2026-08-16: test, goldens and smoke-live were added to the deploy chain (T224/T222) without being declared here, so the 'one yes covers N chained step(s)' count under-reported. A step in the chain but absent from this list would prompt separately the moment it grew a _confirm.",

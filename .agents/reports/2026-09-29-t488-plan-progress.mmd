@@ -1,0 +1,34 @@
+flowchart TD
+  subgraph Plane1["1. Recently Shipped & Closed"]
+    T482["T482: SkillOpt Harvester & Validation Gate<br/><i>(Harvester, MLX backend, 6 friction rules in LESSONS.md)</i>"]
+    T488["T488: Resume Studio, Private CV & Contact Guard<br/><i>(Signed links, private bucket, email validation, captcha bypass closed)</i>"]
+    T478["T478: Local Stack E2E & Live-Guard<br/><i>(Full regression run, live isolation guard)</i>"]
+    T482 --> T488
+  end
+
+  subgraph Plane2["2. Canonical Strategic Plan (ROADMAP §19 — Security & RBAC)"]
+    S0["Stage 0: Live Exposure Fixes<br/>✅ 100% (16/16 ACs)"]
+    S1["Stage 1: RLS & Authz Residue<br/>✅ 100% (21/21 ACs)"]
+    S2["Stage 2: Identity & MFA Surface<br/>✅ 100% (16/16 ACs)"]
+    S3["Stage 3: Posture Composition & Hygiene<br/>🔄 48% (14/29 ACs)"]
+
+    S0 --> S1 --> S2 --> S3
+    S3 -.-> T213["T213: Job-board source fail-closed"]
+    S3 -.-> T52["T52: Compromised password checks"]
+    S3 -.-> T244["T244: Revoked Cloudflare token hygiene"]
+  end
+
+  subgraph Plane3["3. In-Flight Critical Path & Next Work"]
+    T489["T489: Live Test-Team Provisioning<br/><i>(Owner Touch ID confirm-gate)</i>"]
+    T476["T476: /me/account Identity Unification<br/><i>(Merge ConnectedServices into social_integrations)</i>"]
+    T486["T486: Stale Gauge Spec Alignment<br/><i>(151 failures triaged, align stale UI / test IDs)</i>"]
+    T439["T439: CP Shell IA & Context Switcher<br/><i>(#1 on HOT board, Me/Org/Admin navigation)</i>"]
+    T290["T290: Stage-4 Money / Payment Sim<br/><i>(Invoice payment simulation & client hats)</i>"]
+    T468["T468: Upwork Synced Source Layer<br/><i>(Mirror schema, work-history mapping)</i>"]
+
+    T488 -. Split .-> T489
+    T488 -. Unblocks .-> T476
+    T489 -. Live verify .-> T476
+    T478 -. Split .-> T486
+    T468 -. Blocks .-> T476
+  end
