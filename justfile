@@ -587,6 +587,16 @@ cp-feature-index-test:
 cp-feature-index-check:
     @just --justfile wom7web/justfile cp-feature-index-check
 
+# T244 — secret flow gate (see wom7api/justfile).
+secret-flow-check *args:
+    @just --justfile wom7web/justfile secret-flow-check {{ args }}
+
+secret-flow-check-test:
+    @just --justfile wom7web/justfile secret-flow-check-test
+
+secret-flow-check-enforce:
+    @just --justfile wom7web/justfile secret-flow-check-enforce
+
 # T335 — validated setter for `.w0m/sdlc.json -> current_plan` (see wom7api/justfile).
 plan-set *args:
     @python3 scripts/plan_set.py {{ args }}
