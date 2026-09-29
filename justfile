@@ -256,6 +256,10 @@ npx-audit-test:
 authz-admin-client *args:
     @just --justfile wom7web/justfile authz-admin-client {{ args }}
 
+# T453 AC7 — cross-app route-policy check. Forwards to wom7api/justfile, where the recipe lives.
+route-policy-check:
+    @just --justfile wom7web/justfile route-policy-check
+
 authz-admin-client-test:
     @just --justfile wom7web/justfile authz-admin-client-test
 
