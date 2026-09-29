@@ -469,7 +469,12 @@ deploy-workers: (_confirm "deploy-workers")
 deploy-functions: (_confirm "deploy-functions")
     @echo "Deploying all functions to project {{ project_ref }} in parallel (Version: {{ deploy_version }})..."
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'supabase secrets set DEPLOY_VERSION="{{ deploy_version }}" DEPLOY_AT="{{ deploy_at }}" DEPLOY_COMMIT="{{ deploy_commit }}" --project-ref {{ project_ref }} > /dev/null 2>&1'
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- supabase functions deploy --use-api -j 5 --project-ref {{ project_ref }}
+    # Bulk deploy, then VERIFY each function updated and retry only the stale ones (scripts/deploy_functions.py).
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/deploy_functions.py --project-ref {{ project_ref }}
+
+# Offline probes for the deploy-functions staleness/retry logic.
+deploy-functions-test:
+    @python3 scripts/deploy_functions.py --self-test
 
 # Deploy API capability layer
 # T431: deploy NAMED edge function(s): the per-function top-level helper, replacing 25 copies in
