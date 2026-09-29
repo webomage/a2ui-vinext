@@ -577,6 +577,16 @@ name-refs *args:
 name-refs-test:
     @python3 scripts/tests/test_name_refs.py
 
+# CP feature index (see wom7api/justfile).
+cp-feature-index *args:
+    @just --justfile wom7web/justfile cp-feature-index {{ args }}
+
+cp-feature-index-test:
+    @just --justfile wom7web/justfile cp-feature-index-test
+
+cp-feature-index-check:
+    @just --justfile wom7web/justfile cp-feature-index-check
+
 # T335 — validated setter for `.w0m/sdlc.json -> current_plan` (see wom7api/justfile).
 plan-set *args:
     @python3 scripts/plan_set.py {{ args }}
