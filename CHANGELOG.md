@@ -2,6 +2,17 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.09.28-1790639135
+_First deployed: 2026-09-29 00:00:11.544929+00_
+
+### Features
+- **infra**: purge Hostinger MCP configurations and residue (T483) ([T483](file:///.tasks/T483.md))
+- **T482**: implement w0m sleep harness, multi-agent harvester, and tests (#482) ([T482](file:///.tasks/T482.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `fd0184e` | 2026-09-29 00:00:11.544929+00 |
+
 ## 2026.09.28-1790582373
 _First deployed: 2026-09-28 08:13:26.876266+00_
 

@@ -33,19 +33,15 @@ def fetch_rows_from_db(db_url: str, limit: int = 500) -> list[str]:
         f"SELECT deployed_at, version, service, COALESCE(commit,''), COALESCE(actor,'') "
         f"FROM public.deploy_log ORDER BY deployed_at DESC LIMIT {limit}"
     )
-    try:
-        res = subprocess.run(
-            ["psql", db_url, "-At", "-F", "\t", "-c", sql],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            timeout=10,
-        )
-        if res.returncode == 0:
-            return res.stdout.splitlines()
-    except Exception:
-        pass
-    return []
+    # Fail closed: an unreachable database is an ERROR, never "no deploys". This used to swallow every failure into
+    # `[]`, which the caller rendered as an empty changelog and wrote over the real one (T430's incident, again).
+    res = subprocess.run(
+        ["psql", db_url, "-At", "-F", "\t", "-c", sql],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=60, check=False,
+    )
+    if res.returncode != 0:
+        raise SystemExit(f"gen_changelog: reading deploy_log failed (psql exit {res.returncode}): {res.stderr.strip()[:300]}")
+    return res.stdout.splitlines()
 
 
 def sanitize_text(text: str) -> str:
@@ -217,22 +213,25 @@ def main() -> int:
     parser.add_argument("--out", default="CHANGELOG.md", help="Output changelog path")
     parser.add_argument("--root", default=".", help="Workspace root directory")
     parser.add_argument("--limit", type=int, default=500, help="DB query row limit")
+    parser.add_argument("--stdin", action="store_true", help="read tab-separated deploy_log rows from stdin instead of the database")
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
     tasks_dir = root / ".tasks"
     out_path = Path(args.out)
 
+    # 🔴 stdin is read ONLY on `--stdin`. It used to be read whenever stdin was not a terminal — which is every agent,
+    # CI and subprocess shell — so a plain `just changelog` there read zero rows and overwrote CHANGELOG.md with an
+    # empty document (measured 2026-09-28: 445 lines deleted, "Wrote CHANGELOG.md (0 version(s))").
     lines: list[str] = []
-    if not sys.stdin.isatty():
+    if args.stdin:
         lines = [line.rstrip("\n") for line in sys.stdin]
     else:
         db_url = os.environ.get("DATABASE_URL")
-        if db_url:
-            lines = fetch_rows_from_db(db_url, limit=args.limit)
-        else:
-            print("DATABASE_URL not set and nothing on stdin", file=sys.stderr)
+        if not db_url:
+            print("DATABASE_URL not set (run via `just changelog`, or pass --stdin with rows)", file=sys.stderr)
             return 1
+        lines = fetch_rows_from_db(db_url, limit=args.limit)
 
     groups: OrderedDict[str, dict] = OrderedDict()
     for line in lines:
@@ -246,6 +245,11 @@ def main() -> int:
         actor = parts[4] if len(parts) > 4 else ""
         g = groups.setdefault(version, {"first_seen": deployed_at, "rows": []})
         g["rows"].append((service, commit, actor, deployed_at))
+
+    if not groups:
+        print("gen_changelog: 0 deploy versions in the input — refusing to overwrite "
+              f"{out_path} with an empty changelog. Nothing written.", file=sys.stderr)
+        return 1
 
     version_list = list(groups.items())
 

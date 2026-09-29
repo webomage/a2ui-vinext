@@ -14,6 +14,7 @@ Default mode PROPOSES and changes nothing. `--apply` moves only rows that are cl
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import pathlib
 import re
@@ -151,7 +152,7 @@ def main() -> int:
     ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
 
     kept = [l for l in lines if not (ROW.match(l) and row_id(l) in moving)]
-    stamp = json.loads(DISPOSITION.read_text()).get("rotated_on", "undated")
+    stamp = (json.loads(DISPOSITION.read_text()).get("rotated_on") if DISPOSITION.exists() else None) or datetime.date.today().isoformat()
     chunk = [f"\n## Rotated {stamp} — {len(cleared)} row(s)\n"] + [r for r, _ in cleared]
     prior = ARCHIVE.read_text(encoding="utf-8") if ARCHIVE.exists() else (
         "# TASKS.md archive\n\nRows rotated out of `TASKS.md` by `just tasks-rotate --apply`, "
