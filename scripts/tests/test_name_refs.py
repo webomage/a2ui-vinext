@@ -50,6 +50,7 @@ class Classify(unittest.TestCase):
     def test_a_line_that_says_it_is_history_is_a_visible_note_not_a_live_hit(self):
         self.assertEqual(cls("src/index.ts", f"// was named {OLD} until 2026-08-01"), "note")
         self.assertEqual(cls("README.md", f"formerly {OLD}"), "note")
+        self.assertEqual(cls("ROADMAP.md", f"Slug renamed `{OLD}` -> `new`"), "note")
         # ...but the same file with a CURRENT claim stays live
         self.assertEqual(cls("src/index.ts", f"// WORKERS_WEBHOOK_URL points at {OLD}"), "code")
 

@@ -119,6 +119,9 @@ explains the decommission and is declared as an allowed exception with that reas
 ## 10. Client Conversion Funnel, Blueprint Proposals & Unified Contracts
 
 > **Epic slug:** `client-conversion-contracts`
+
+> 🔀 **2026-09-29: this section's OPEN client-facing tickets moved to §34 "Client Beta"** (owner: organize as the Client Beta epic):
+> T101, T5, T3, T204, T272, T284, T288, T285, T217, T263, T279, T280, T338, T287, T292. Done tickets and [[T6]] stay here.
 * **Decision (2026-07-11)**: a successful public-AI-consultant conversation must **end with a guided, successful client registration** — the visitor leaves with a CP account and their request visible, not just a lead row.
 * **Scope** (OpenSpec change [`2026-07-11-client-conversion-and-contracts`](wom7web/openspec/changes/2026-07-11-client-conversion-and-contracts/)):
   1. **Client self-registration + shared CP access**: chat-guided signup after intake submit (magic-link, idempotent, `client` role auto-provisioned, `leads.converted_user_id`); clients and team share ONE CP app with role-scoped nav + a client portal home (requests, proposals, contracts, project/adventure progress). Extends the invite-only path from `2026-07-02-client-engagement-and-lead-pipeline`.
@@ -634,28 +637,41 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Type**: Program. **Effort**: L. **Priority**: P1 (internal-facing).
 
 
-## 34. Client Beta — Money & Stripe Reconciliation (P1, added 2026-09-12)
+## 34. Client Beta — Client Delivery, Contracts & Money (P1, added 2026-09-12, broadened 2026-09-29)
 
-> **Epic slug:** `client-beta-stripe`
+> **Epic slug:** `client-beta`
 
-> 🔀 **Split out of §33 "Client Alfa", owner decision 2026-09-12.** Was Alfa's Stage 4 ("Money").
-> Real Stripe reconciliation is a different kind of risk than the funnel/tenancy program — it
-> touches actual client charges rather than access control — so it now progresses and is
-> prioritised as its own program rather than as a stage gated behind Alfa's numbering. **Alfa
-> remains the estate's tracked `current_plan`; Beta is not (yet) tracked as one** — the owner's
-> call, recorded rather than inferred.
+> 🔀 **Split out of §33 "Client Alfa", owner decision 2026-09-12** (was Alfa's Stage 4, "Money"), and **broadened 2026-09-29,
+> owner: "organize this as the Client Beta epic"** to hold ALL open client-facing delivery work: the money stream below plus the
+> client-facing tickets that sat in §10 (contract model, client visibility, managed-client onboarding).
+> Slug renamed `client-beta-stripe` -> `client-beta`; every ticket moved by hand, none by rule.
+> **Alfa remains the estate's tracked `current_plan`; Beta is not (yet) tracked as one** — the owner's call, recorded rather than
+> inferred. Switching is one command: `just plan-set 34 --reason "…"`.
+> ⚠️ **Not moved:** Alfa's own 4 open tickets ([[T282]], [[T364]], [[T344]], [[T357]]) stay in §33. Moving them would make Alfa read
+> complete by reclassification, which is a green that was not earned. §10 keeps its 6 done tickets and [[T6]] (not client-facing).
 
-* Invoices → `stripe-checkout` is **already live from the client UI**
+**Workstreams** (a proposed order, not a decision — the owner confirms; each ticket keeps its own ACs):
+
+| # | Workstream | Tickets | Gate / precondition |
+|---|---|---|---|
+| B1 | **Money & Stripe** | [[T290]] (reconciliation; `simulate_payment` already out of production), [[T351]] (Mexican rails), [[T373]] done | **Owner:** connect Stripe (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` in `beta`) — T290 AC0 |
+| B2 | **Contracts & registry** | [[T101]] contract model -> [[T5]] unified contracts registry -> [[T3]] shared client/team CP; [[T204]] `projects` split (paused) | none; T101 first |
+| B3 | **What a client sees** | [[T272]] services + costs, [[T284]] knowledge hubs, [[T288]] case-study publishing, [[T285]] message threads, [[T217]] discovery interview, [[T263]] AI intake | T272 touches credential display: read its security ACs first |
+| B4 | **Managed-client onboarding & repos** | [[T279]] (Maksim: servicios777, personaje0), [[T280]] SDLC/tenancy scoping, [[T338]] repo-link field, [[T287]] repos as entities, [[T292]] GitLab/Bitbucket/self-hosted | **Owner:** account onboarding is owner-only |
+
+* Invoices -> `stripe-checkout` is **already live from the client UI**
   (`apps/cp/src/components/client/InvoiceList.svelte:29`); what is missing is reconciliation
   against real Stripe activity and keeping `simulate_payment` out of the production path.
-* [[T290]] is this section's ticket. Its own AC0 documents the standing business precondition:
+* [[T290]] is the money stream's ticket. Its own AC0 documents the standing business precondition:
   reconciliation (AC3–AC5) cannot be built until an owner connects a Stripe account and sets
   `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET` in `beta` — a reconciler built against an absent
   account would compare an empty set to an empty set and report success forever. That connection
   began 2026-09-12; AC0 tracks whether it is complete.
-* **Exit criterion:** invoices reconcile against real Stripe activity, and `simulate_payment` is
+* **Exit criterion (money, unchanged):** invoices reconcile against real Stripe activity, and `simulate_payment` is
   out of the production path (✅ already true, verified on the deployed function — see T290 AC1/AC2).
-* **Type**: Build → Audit. **Effort**: M. **Priority**: P1. **TASKS**: T290.
+* **Proposed epic exit (owner to confirm):** a managed client can sign in, see their own project, contract, services and
+  costs, and pay an invoice that reconciles against Stripe — with none of it visible to another tenant.
+* **Type**: Build → Audit. **Effort**: L. **Priority**: P1. **TASKS**: T290, T351, T101, T5, T3, T272, T284, T288, T285, T217, T263, T279, T280, T338, T287, T292, T204.
 
 
 ## 35. Apple Virtualization & MicroVM Sandboxes (P1, added 2026-09-18)

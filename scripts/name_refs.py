@@ -59,7 +59,7 @@ ENV_NAME = re.compile(r"\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b")
 URLISH = re.compile(r"(_URL|_HOST|_ENDPOINT|_DOMAIN|_ORIGIN|_BASE_URL|WEBHOOK_URL)$")
 # A line that states it is talking about the past. Deliberately narrow, and its count is always printed.
 HISTORICAL = re.compile(
-    r"(formerly|was named|were named|renamed (?:from|to)|until \d{4}-\d{2}|since \d{4}-\d{2}-\d{2}|then named|"
+    r"(formerly|was named|were named|\brenamed\b|until \d{4}-\d{2}|since \d{4}-\d{2}-\d{2}|then named|"
     r"decommission|superseded|retired|no longer exist|used to be|migrated from|stale|dir no longer)", re.I)
 
 
