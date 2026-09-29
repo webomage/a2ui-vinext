@@ -1136,3 +1136,37 @@ Meanwhile, adjacent standard Markdown links (`[WORKFLOW-COVERAGE.md](WORKFLOW-CO
 - Standard relative Markdown links are the only format that works universally across Orca, Obsidian, VS Code, GitHub, and Quartz with zero reliance on background cache indexing.
 ⭐ **The tell:** A link written as `[[ID]]` where the file on disk has a slug suffix (`ID-title.md`), or links into hidden directories (`.tasks/`), rendering with grey dotted/dashed underlines in Orca/Obsidian or raw brackets on GitHub.
 
+
+
+## Auto-Mined Lessons — 2026-09-29 (T482)
+
+### [SDLC Toolchain] Pre-commit gate rejection
+- **Problem**: Agent executed commits that failed pre-commit quality hooks.
+- **Lesson =>**: Always run pre-commit on staged files before committing, and fix violations organically rather than using --no-verify.
+- ⭐ **The Tell**: Pre-commit hook exiting non-zero on staged git commits.
+
+### [Human Confirmation Gate] Agent attempted gated deploy or live migration
+- **Problem**: Agent attempted to directly execute deployment or migration gated by human Touch ID confirmation.
+- **Lesson =>**: Agents must prepare code, verification checks, and explicitly prompt the human developer to run deploys.
+- ⭐ **The Tell**: Agent command blocked by deploy-confirm gate or Touch ID requirement.
+
+### [Command Registry] Invalid or missing justfile recipe call
+- **Problem**: Agent attempted to invoke an undeclared just recipe.
+- **Lesson =>**: Inspect `just --list` before running recipes to verify available command contracts across repos.
+- ⭐ **The Tell**: just exiting with 'recipe failed' or 'does not contain recipe'.
+
+### [Records & Governance] Untracked report artifact without ticket citation
+- **Problem**: Report authored in `.agents/reports/` without citing an active ticket in filename or header.
+- **Lesson =>**: Every report must cite an existing ticket ID (e.g. `YYYY-MM-DD-t###-...`) in filename and first 12 lines (T428).
+- ⭐ **The Tell**: `just reports-ticket-check` reporting un-cited reports.
+
+### [State Tracking] STATE.md drift against active ticket queue
+- **Problem**: Manual or stale edits produced drift in STATE.md's mechanical block.
+- **Lesson =>**: Always regenerate STATE.md using `just state-save` (or `just land`), never hand-edit the mechanical block.
+- ⭐ **The Tell**: `just state-check` failing on pre-push.
+
+### [Collaborative Worktree Safety] Blanket destructive git command attempted
+- **Problem**: Agent attempted blanket reset or clean on a shared working tree.
+- **Lesson =>**: Collaborative worktrees are shared with other agents and humans; never run blanket git restores or resets, use surgical file-scoped git adds and reverts.
+- ⭐ **The Tell**: Blanket git reset/clean in terminal history.
+
