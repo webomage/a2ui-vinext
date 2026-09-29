@@ -562,6 +562,16 @@ changelog-test:
     @python3 scripts/tests/test_changelog_check.py
     @python3 scripts/tests/test_gen_changelog.py
 
+# T335 — validated setter for `.w0m/sdlc.json -> current_plan` (see wom7api/justfile).
+plan-set *args:
+    @python3 scripts/plan_set.py {{ args }}
+
+plan-set-test:
+    @python3 scripts/tests/test_plan_set.py
+
+plan-set-check:
+    @python3 scripts/plan_set.py --check
+
 # T473 (owner, 2026-09-27): the DEFAULT deploy ships a release, never a working tree. It tags origin/beta of every
 # estate repo as release/<version>, checks that out detached under ~/.w0m/releases/<version>/w0m, deploys FROM there
 # and publishes the tags only if the deploy succeeds. The main checkouts may be dirty at any moment (people and agents

@@ -912,6 +912,18 @@ def main() -> int:
         return cmd_area(tickets, area_filter=args.area)
 
     if args.mode in ("plan", "epic", "current"):
+        # T335 AC3: the DECLARED current_plan must still resolve to a ROADMAP section and match its plan-set stamp.
+        # Dynamic plans (--epic/--tickets/--tag/--plan) are projections, not the declared value, so they are exempt.
+        declared = not (args.epic or args.tickets or args.tag or args.plan)
+        if args.check and declared:
+            import plan_set
+            drift = plan_set.verify_plan(
+                json.loads((WORKSPACE_ROOT / ".w0m" / "sdlc.json").read_text(encoding="utf-8")),
+                plan_set.read_epics(WORKSPACE_ROOT / "ROADMAP.md"))
+            if drift:
+                for d in drift:
+                    print(f"\u274c {d}", file=sys.stderr)
+                return 1
         return cmd_plan(tickets, check=args.check, plan=active_plan)
 
     if args.mode == "stats":
