@@ -632,6 +632,38 @@ Checking `stdin.isatty()` or opening `/dev/tty` only proves an interactive termi
 - A typed "yes" at a terminal must be backed by OS-level human verification (macOS `LocalAuthentication` Touch ID / password dialog) so even a detached terminal cannot spoof human intent.
 ⭐ **The tell:** A security gate that relies on `isatty()` or prompt typing as proof that the caller is human. An agent with execution privileges can always allocate a pty.
 
+### ⛔ A NAME LIVES IN ELEVEN PLACES — INVENTORY THEM BY CLASS BEFORE A RENAME AND PROVE ZERO LIVE ONES AFTER
+**2026-09-29, T453 follow-up.** `wom7cfworkers` -> `wom7func` was recorded as *"renamed completely"* on 2026-09-18. Eleven days
+later `just name-refs wom7cfworkers` found **603 hits in 11 repos, 144 of them live**: a health check whose default host
+(`os.environ.get("WORKERS_URL", "https://wom7cfworkers.…workers.dev")`) now answers **404**, three `../wom7cfworkers/CLAUDE.md`
+pointers to a file that moved, a deploy step (`cd wom7cfworkers`), the architecture docs, 38 spec lines, and the policy JSON.
+A rename is done when the name is gone from every **live** surface, not when the folder moved.
+
+⇒ **Where to look, in this order — the class decides how you change it:**
+1. **Code** — imports, path deps (`../../wom7func/src/index`), type imports across repos. The compiler finds these; do not stop here.
+2. **Env-var DEFAULTS** — `environ.get("X", "https://old-name…")`, `process.env.X || "…old…"`. A hard-coded copy of the name that
+   survives every secret update. Different from the env var's *name* and from its *value*.
+3. **Env-var VALUES** — a secret holding a URL of the renamed thing (`WORKERS_WEBHOOK_URL`). Not greppable: Supabase secrets expose
+   SHA-256 digests, Cloudflare secrets are write-only (verify behaviourally), Infisical prints plaintext (never list it).
+   `name-refs` prints the URL-shaped env names read near a hit as the candidate list.
+4. **Config** — `wrangler.jsonc` `name` (this IS the deployed script name and its `workers.dev` host), justfile recipes, hooks,
+   `.graphifyignore`, `stacks-policy.json`, `sdlc.json → repos`, editor `*.code-workspace`.
+5. **Specs** — openspec live changes and Gauge `.spec` files. Archived ones are history: leave them.
+6. **Docs** — current-state prose, ASCII/Mermaid diagrams (re-pad a box after renaming), setup commands (`cd <dir>`).
+7. **Paths and symlinks** — the folder, and tracked symlinks whose *target* holds the name (`wom7func/justfile -> ../wom7api/justfile`).
+8. **Remotes** — `git remote -v` in every clone and worktree, the GitHub repo name.
+9. **Generated files** — `DECISIONS.md`, `TASKS.md`, graph indexes. Regenerate; never hand-edit. (A rename that shifts lines
+   also shifts every `file:line` anchor in `DECISIONS.md` — see the umbrella `decisions-index-fresh` hook.)
+10. **Live infra** — the Cloudflare script, its routes, cron triggers and bound Workflows; Infisical paths.
+11. **Machine config outside the repos** — `~/.claude.json` MCP args, launchd plists, shell rc (`name-refs --outside` lists paths only).
+
+**Do not rewrite** tickets, LESSONS, STATE, ADRs, archived specs or migrations: they describe the past and a migration is immutable.
+A line that says it is history ("was named X until 2026-08") is counted as a visible `note`, not a live hit.
+
+⭐ **The tell:** a rename ticket whose acceptance criteria say "folder renamed" and "docs updated" but none says
+`just name-refs <old> --gate` exits 0. Two more: a grep of *one* file type, and any default value that embeds a hostname.
+Use `just name-refs <old>` before, `--gate` after; `--files` lists every line, `--outside` scans the machine.
+
 ---
 
 ## 5. Records

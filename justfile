@@ -569,6 +569,14 @@ changelog-test:
     @python3 scripts/tests/test_changelog_check.py
     @python3 scripts/tests/test_gen_changelog.py
 
+# Where does a NAME live? Inventory by surface class across every estate repo; `--gate` fails while a LIVE reference
+# remains (history/records may keep it). Run before AND after renaming a repo, worker, service or env var.
+name-refs *args:
+    @python3 scripts/name_refs.py {{ args }}
+
+name-refs-test:
+    @python3 scripts/tests/test_name_refs.py
+
 # T335 — validated setter for `.w0m/sdlc.json -> current_plan` (see wom7api/justfile).
 plan-set *args:
     @python3 scripts/plan_set.py {{ args }}
