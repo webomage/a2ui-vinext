@@ -519,6 +519,15 @@ supabase-redeploy-all:
 db-migrate *args:
     @just --justfile wom7api/justfile db-migrate {{ args }}
 
+# T488 — Resume Studio documents into the PRIVATE `resumes` bucket. Forwards to wom7api/justfile, where the recipes live.
+resumes-upload:
+    @just --justfile wom7api/justfile resumes-upload
+
+# T488 — same for the HOSTED project + removes the old CV from the PUBLIC bucket. Confirm-gated in wom7api/justfile
+# (Touch ID; refused from any agent session), so run it yourself in a plain terminal.
+resumes-upload-live:
+    @just --justfile wom7api/justfile resumes-upload-live
+
 goldens *args:
     @just --justfile wom7api/justfile goldens {{ args }}
 
