@@ -18,7 +18,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T482](.tasks/T482.md) | **P1** | 🆕 **SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction mining, and skill optimization for wom7skills** | skills, api, tooling | — | 🟡 **in-progress** |
+| [T482](.tasks/T482.md) | **P1** | 🆕 **SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction mining, and skill optimization for wom7skills** | skills, api, tooling | openspec/changes/2026-09-28-t482-skillopt-sleep-integration | ✅ **done** |
 | [T476](.tasks/T476.md) | **P1** | **/me/account: stop leaking the founder's data, link identities by server PKCE, then merge the two identity sections** | web | — | 🟡 **in-progress** |
 | [T468](.tasks/T468.md) | **P1** | 🆕 **Upwork as a synced source layer: mirror schema, source links, work-history mapping, move the copied rows out of our tables** | web, api | — | 🟡 **in-progress** |
 | [T466](.tasks/T466.md) | **P1** | 🆕 **User-guide stories: stable ids, a Gauge UI spec per story, a Jam walkthrough per story, and a coverage gate** | web | — | ⚪ **queued** |
