@@ -55,6 +55,21 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      # T335 follow-up. `docs/DECISIONS.md` lives in wom7web but is GENERATED from files that live HERE (.tasks/,
+      # .w0m/sdlc.json, TECH-DEBT.md, ROADMAP.md, the confirm policy). wom7web's own hook cannot see a commit in this
+      # repo (T430), so adding 6 lines to sdlc.json shifted every later `file:line` anchor, went in green, and failed the
+      # next deploy on `decisions-index-fresh`. CHECK-ONLY on purpose: the index belongs to another repo, so this hook
+      # cannot stage it, and silently rewriting a file in a sibling checkout from a commit hook is worse than saying so.
+      # 🔴 The `files:` filter MIRRORS the ESTATE-based entries of decisions_index.py SOURCES, and
+      # wom7web's test_decisions_index.py asserts it still does.
+      - id: decisions-index-fresh
+        name: decisions index (wom7web/docs/DECISIONS.md) is current
+        entry: python3 wom7web/project/scripts/decisions_index.py --check
+        language: system
+        files: ^(\.tasks/T\d+\.md|\.w0m/sdlc\.json|TECH-DEBT\.md|ROADMAP\.md|project/policies/confirm-policy\.json)$
+        pass_filenames: false
+        stages: [pre-commit]
+
       - id: changelog-check
         name: Public disclosure guardrail check on CHANGELOG.md
         entry: python3 scripts/changelog_check.py --path CHANGELOG.md
