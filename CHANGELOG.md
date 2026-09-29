@@ -2,6 +2,22 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.09.29-1790702495
+_First deployed: 2026-09-29 17:35:45.634417+00_
+
+### Features
+- **T430**: umbrella pre-commit hook fails when a commit leaves wom7web/docs/DECISIONS.md stale ([T430](file:///.tasks/T430.md))
+- **T453**: root route-policy-live forwarders; probe baseline note ([T453](file:///.tasks/T453.md))
+- **T335**: validated current_plan setter (plan-set), hand-edit gate in tasks plan --check; stamp §19 plan ([T335](file:///.tasks/T335.md))
+- **T453**: steps 1-4 done (AC1, AC2, AC5, AC7); root route-policy-check forwarder ([T453](file:///.tasks/T453.md))
+
+### Fixes
+- **T488**: root forwarders for resumes-upload[-live]; upload skips rows already stored without a source ([T488](file:///.tasks/T488.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `c987e9c` | 2026-09-29 17:35:45.634417+00 |
+
 ## 2026.09.29-1790670292
 _First deployed: 2026-09-29 08:39:04.031412+00_
 
