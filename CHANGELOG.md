@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.09.30-1790784566
+_First deployed: 2026-09-30 16:24:50.142404+00_
+
+### Fixes
+- **T503**: deploy gates run before db-migrate, prepush ratchet tier and pre-flight, ticket AC check at commit, lesson ([T503](file:///.tasks/T503.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `de8addc` | 2026-09-30 16:24:50.142404+00 |
+
 ## 2026.09.29-1790727494
 _First deployed: 2026-09-30 00:34:12.207499+00_
 
