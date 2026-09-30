@@ -2,6 +2,18 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.09.29-1790727494
+_First deployed: 2026-09-30 00:34:12.207499+00_
+
+### Features
+- root cp-feature-index forwarders
+- **client-beta**: organize client-facing work as the Client Beta epic (§34), 18 tickets moved; name-refs history heuristic
+- name-refs inventory + gate, and the rename lesson (11 surfaces)
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `65dd993` | 2026-09-30 00:34:12.207499+00 |
+
 ## 2026.09.29-1790702495
 _First deployed: 2026-09-29 17:35:45.634417+00_
 
