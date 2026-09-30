@@ -18,6 +18,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 🔴 **queued** |
 | [T503](.tasks/T503.md) | **P0** | **Deploy flow: gates run before the schema write, and the fast ratchets run where the change is made, not at deploy time** | web, api | — | 🟡 **in-progress** |
 | [T497](.tasks/T497.md) | **P0** | **T465 re-introduced possession-based admin/manager policies on contracts, projects and project_roles: an admin who narrows to the member hat reads and writes them again** | api, web | — | 🟡 **in-progress** |
 | [T468](.tasks/T468.md) | **P0** | 🆕 **Upwork as a synced source layer: mirror schema, source links, work-history mapping, move the copied rows out of our tables** | web, api | — | 🟡 **in-progress** |
