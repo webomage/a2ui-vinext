@@ -2,6 +2,13 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.09.30-1790800772
+_First deployed: 2026-09-30 20:56:39.839019+00_
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `bccac94` | 2026-09-30 20:56:39.839019+00 |
+
 ## 2026.09.30-1790787699
 _First deployed: 2026-09-30 17:26:01.367963+00_
 
