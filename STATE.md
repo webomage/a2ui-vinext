@@ -60,8 +60,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **5** | 0 | `7da86b95` |
-| `wom7api` | `beta` | **1** | 0 | `1809e04` |
+| `wom7web` | `beta` | 0 | 0 | `d484c6d6` |
+| `wom7api` | `beta` | 0 | 0 | `25a47bd` |
 | `wom7func` | `beta` | 0 | 0 | `7f20bb8` |
 | `wom7skills` | `beta` | 0 | 0 | `fd3a232` |
 | `wom7ext` | `beta` | 0 | 0 | `89ed566` |
@@ -71,7 +71,7 @@
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
 **Tickets:** 228 open · 503 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T497","T503","T52","T213","T244","T396","T439","T481","T498"],"repos":{"wom7api":{"branch":"beta","dirty":1,"has_upstream":true,"head":"1809e04","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"89ed566","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"7f20bb8","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"fd3a232","unpushed":0},"wom7web":{"branch":"beta","dirty":5,"has_upstream":true,"head":"7da86b95","unpushed":0}},"tickets":{"open":228,"rowless_open":[],"rows":503}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T497","T503","T52","T213","T244","T396","T439","T481","T498"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"25a47bd","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"89ed566","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"7f20bb8","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"fd3a232","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d484c6d6","unpushed":0}},"tickets":{"open":228,"rowless_open":[],"rows":503}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -168,7 +168,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T499** — Resume Studio keeps highlights and tags in the database only: edit in Studio, parse raw uploads into highlights, save exports as files in the member's vault; retire the JSON seed
   - **2026-09-30** (today): AC3 moved to [[T501]]; AC5 and AC6 done (above). Still open: AC2 and AC4 are built and tested but prove nothing live until the owner applies migration 20260929220000 and deploys CP.
 - **T503** — Deploy flow: gates run before the schema write, and the fast ratchets run where the change is made, not at deploy time
-  - ⚠️ NO status note recorded where this stopped
+  - **2026-09-30** (today): The four ratchets that failed on  fail at git push (or commit, for tickets), in about a second.
 
 ## 3. Other open threads (in TASKS.md)
 
