@@ -657,11 +657,16 @@ _deploy-ship:
 _deploy-apps:
     #!/usr/bin/env bash
     set -euo pipefail
-    for app in api web cp join job demo; do
+    apps=(api web cp join job demo)
+    total=${#apps[@]}
+    idx=0
+    for app in "${apps[@]}"; do
+      idx=$((idx + 1))
       if [ -n "${W0M_RELEASE_APPS+x}" ] && ! printf ' %s ' ${W0M_RELEASE_APPS} | grep -q " ${app} "; then
-        echo "⏭  ${app}: unchanged since the last deployed release — skipped (T473)"
+        python3 scripts/progress.py --step "$idx" --total "$total" --label "⏭  ${app}: unchanged — skipped (T473)" || true
         continue
       fi
+      python3 scripts/progress.py --step "$idx" --total "$total" --label "Deploying ${app}" || true
       just deploy-${app}
     done
 
