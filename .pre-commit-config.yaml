@@ -47,6 +47,17 @@ repos:
       # (46 tickets, measured 2026-09-23). Stages ONLY what it rewrote (`--porcelain` + `xargs -r`),
       # never other tickets a person left unstaged. The filter mirrors the generator's inputs in THIS
       # repo; the script itself still lives in wom7web.
+      # T503 — a TICKED acceptance criterion may not cite a `just` recipe that does not exist (T255). It failed a deploy on 2026-09-30 because a ticket edit
+      # in THIS repo (which has no pre-push hook) named a recipe the same session had deleted; the gate then ran for the first time inside the deploy.
+      # Under half a second, no secrets, no network.
+      - id: ac-recipe-check
+        name: a ticked AC may not cite a recipe that does not exist (T255)
+        entry: python3 scripts/ac_recipe_check.py
+        language: system
+        files: ^\.tasks/T\d+\.md$
+        pass_filenames: false
+        stages: [pre-commit]
+
       - id: tickets-frontmatter
         name: Refresh ticket frontmatter (derived x_* fields)
         entry: sh -c 'python3 wom7web/project/scripts/tickets_frontmatter_sync.py --porcelain | xargs -r git add'

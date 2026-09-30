@@ -628,7 +628,24 @@ deploy-local:
     @python3 wom7web/project/scripts/release.py local-warning
     @env W0M_DEPLOY_LOCAL=1 just deploy
 
-_deploy-chain: (_confirm "deploy") check-infisical check-guardrails test goldens
+# T503 (2026-09-30). The chain used to be `check-warp check-infisical db-migrate deploy`, and the test gate sat INSIDE `deploy`: the schema was written to
+# the live database BEFORE any test ran, so a red gate arrived after an irreversible change (two migrations applied, then five blocking suites failed, on
+# 2026-09-30; the same shape on 2026-09-29). Now the chain is three parts, in this order, for both `deploy` and `deploy-all`:
+#   _deploy-preflight  the cheap deterministic ratchets, BEFORE the confirmation prompt (a red one costs no Touch ID, no release cut, no 8-minute suite)
+#   _deploy-gates      every check that can fail: infisical, guardrails, the whole offline suite tier, goldens. Writes NOTHING live.
+#   _deploy-ship       what changes live state: db-migrate (deploy-all only), the app deploys, the smoke test, the clean-tree assertion, the deploy log
+# `scripts/tests/test_deploy_chain_order.py` pins the order from the real recipe graph and red-probes the old one.
+_deploy-chain: _deploy-preflight (_confirm "deploy") _deploy-gates _deploy-ship
+
+# The fast tier of the suite registry (`"prepush": true`) plus the STATE.md drift gate: everything that is deterministic, offline and takes seconds.
+# Pre-push runs the same set (wom7web/.husky/pre-push), so a red ratchet is normally found where the change is made, not at deploy time.
+_deploy-preflight:
+    @python3 scripts/run_suites.py --prepush
+    @just state-check
+
+_deploy-gates: check-infisical check-guardrails test goldens
+
+_deploy-ship:
     @just _deploy-apps
     @just smoke-live
     @just _assert-clean-tree
@@ -697,7 +714,7 @@ stable-sync *args:
 e2e-stable *args:
     @python3 wom7web/project/scripts/release.py e2e-stable {{ args }}
 
-_deploy-all-chain: (_confirm "deploy-all") check-warp check-infisical db-migrate deploy _post-deploy-knowledge
+_deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp check-infisical _deploy-gates db-migrate _deploy-ship _post-deploy-knowledge
 
 _post-deploy-knowledge:
     #!/usr/bin/env bash
@@ -989,6 +1006,10 @@ mcp-health *args:
 # ── Estate Test Suites & Hook Runners (T160 / T375 / T419) ───────────────────
 test:
     @python3 scripts/run_suites.py --tier offline
+
+# T503 — the fast tier only (`"prepush": true` suites): what pre-push and the deploy pre-flight run.
+test-prepush:
+    @python3 scripts/run_suites.py --prepush
 
 test-all:
     @python3 scripts/run_suites.py --tier all

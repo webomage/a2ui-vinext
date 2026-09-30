@@ -18,6 +18,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T503](.tasks/T503.md) | **P0** | **Deploy flow: gates run before the schema write, and the fast ratchets run where the change is made, not at deploy time** | web, api | — | 🟡 **in-progress** |
 | [T497](.tasks/T497.md) | **P0** | **T465 re-introduced possession-based admin/manager policies on contracts, projects and project_roles: an admin who narrows to the member hat reads and writes them again** | api, web | — | 🟡 **in-progress** |
 | [T468](.tasks/T468.md) | **P0** | 🆕 **Upwork as a synced source layer: mirror schema, source links, work-history mapping, move the copied rows out of our tables** | web, api | — | 🟡 **in-progress** |
 | [T396](project/tickets/T396.md) · [#396](https://github.com/webomage/wom7board/issues/396) | **P0** | 🆕 **Client Delivery Readiness: End-to-end client functions security and authz audit** 🆕 filed 2026-09-18. Audit and verify the end-to-end authorization floor for client-facing capabilities (client CP, onboarding, guest portals, and API routes). Ensures active-hat enforcement, tenant isolation, and prevents unauthenticated data leakage across all client functions. **5 ACs.** | sec, api, web | security-rbac-hardening; [[T381]], [[T382]], [[T39]] | ⚪ queued 2026-09-18 |

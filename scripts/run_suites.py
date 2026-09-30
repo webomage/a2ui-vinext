@@ -327,10 +327,36 @@ def drift(suites: list[dict]) -> dict[str, str]:
     return out
 
 
+def select_suites(suites: list[dict], tier: str, prepush: bool = False) -> list[dict]:
+    """Which suites a run covers. `prepush` selects by the registry's `"prepush": true` flag and by nothing else (T503)."""
+    if prepush:
+        return [s for s in suites if s.get("prepush") is True]
+    return [s for s in suites if tier == "all" or s.get("tier", "offline") == tier]
+
+
+def prepush_problems(suites: list[dict]) -> list[str]:
+    """A suite may only carry `prepush` if it can really gate a push: a real boolean, offline, and blocking. Returned as sentences; empty = fine."""
+    out = []
+    for s in suites:
+        if "prepush" not in s:
+            continue
+        n = s.get("name", "?")
+        if not isinstance(s["prepush"], bool):
+            out.append(f"{n}: `prepush` must be true or false, not {s['prepush']!r}")
+        elif s["prepush"]:
+            if s.get("tier", "offline") != "offline":
+                out.append(f"{n}: a prepush suite must be tier offline (a live suite cannot run on every push)")
+            if not s.get("blocking", True):
+                out.append(f"{n}: a prepush suite must be blocking (an advisory suite cannot gate a push)")
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Run the declared test/check suites (T160)")
     ap.add_argument("--tier", default="offline", choices=["offline", "live", "all"])
     ap.add_argument("--drift", action="store_true", help="only report registry drift")
+    ap.add_argument("--prepush", action="store_true",
+                    help="run only the suites flagged \"prepush\": true (fast, deterministic ratchets; used by pre-push and the deploy pre-flight)")
     args = ap.parse_args()
 
     suites = load_registry()
@@ -354,12 +380,19 @@ def main() -> int:
         print("  ✅ every recipe that behaves like a suite is declared")
         return 0
 
-    picked = [s for s in suites if args.tier == "all" or s.get("tier", "offline") == args.tier]
+    problems = prepush_problems(suites)
+    if problems:
+        print("❌ run-suites: the registry's prepush flags are invalid:")
+        for pr in problems:
+            print(f"   · {pr}")
+        return 1
+    picked = select_suites(suites, args.tier, args.prepush)
+    label = "prepush" if args.prepush else f"tier={args.tier}"
     if not picked:
-        print(f"❌ run-suites: no suites in tier '{args.tier}'")
+        print(f"❌ run-suites: no suites in {label}")
         return 1
 
-    print(f"▶ suites — tier={args.tier} · {len(picked)} declared\n")
+    print(f"▶ suites — {label} · {len(picked)} declared\n")
     results, total = [], 0
     for s in picked:
         r = run(s)
@@ -397,20 +430,21 @@ def main() -> int:
     # colour) that were each wrong, because none of them was the environment that produced the
     # output. A tool that reports "I could not read this" owes you the thing it could not read.
     # Reading the dumps took minutes and fixed 4 of the 6 unreadable suites at once.
-    dump_dir = WEB / "reports" / "suites"
-    try:
-        dump_dir.mkdir(parents=True, exist_ok=True)
-        for old_log in dump_dir.glob("*.log"):
-            old_log.unlink()          # this run's evidence, not an archaeology pile
-        for r in results:
-            body = r.get("raw", "") or "<no output captured>"
-            header = (f"# suite: {r['name']}  recipe: {r['recipe']}  status: {r['status']}  "
-                      f"exit: {r['rc']}  checks: {r['checks']}\n"
-                      f"# tier: {r.get('tier', 'offline')}  blocking: {r.get('blocking', True)}\n"
-                      + "# " + "-" * 70 + "\n")
-            (dump_dir / f"{r['name']}.log").write_text(header + body)
-    except OSError:
-        pass
+    if not args.prepush:
+        dump_dir = WEB / "reports" / "suites"
+        try:
+            dump_dir.mkdir(parents=True, exist_ok=True)
+            for old_log in dump_dir.glob("*.log"):
+                old_log.unlink()          # this run's evidence, not an archaeology pile
+            for r in results:
+                body = r.get("raw", "") or "<no output captured>"
+                header = (f"# suite: {r['name']}  recipe: {r['recipe']}  status: {r['status']}  "
+                          f"exit: {r['rc']}  checks: {r['checks']}\n"
+                          f"# tier: {r.get('tier', 'offline')}  blocking: {r.get('blocking', True)}\n"
+                          + "# " + "-" * 70 + "\n")
+                (dump_dir / f"{r['name']}.log").write_text(header + body)
+        except OSError:
+            pass
     ceiling_path = WEB / "project" / "suite-uncounted-baseline.json"
     ceiling = None
     if ceiling_path.exists():
@@ -429,7 +463,8 @@ def main() -> int:
         print(f" [UNKNOWN] {len(uncounted)} suite(s) passed with an UNREADABLE check count: {names}")
         print("     Their output uses a dialect this counter does not know, so 'ran 500 checks'")
         print("     and 'ran none' look identical — and the total above excludes them.")
-    print(f" [FILE] raw output of all {len(results)} suite(s): reports/suites/*.log")
+    if not args.prepush:
+        print(f" [FILE] raw output of all {len(results)} suite(s): reports/suites/*.log")
     if ceiling is not None and len(uncounted) > ceiling:
         # ⚠️ ADVISORY, not blocking — and this cost a deploy to learn.
         #

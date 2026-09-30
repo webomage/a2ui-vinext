@@ -626,6 +626,17 @@ A static friendly name (e.g. `'Authenticator App'`) works for the first factor, 
 ⇒ **Dynamically assign distinct friendly names when enrolling factors.** Inspect currently enrolled factors and append an incrementing index (e.g. `getNextFriendlyName(factors, "Authenticator App")` -> `"Authenticator App 2"`).
 ⭐ **The tell:** An authenticator enrollment flow failing with `400: A factor with the friendly name ... already exists` as soon as a user tries to enroll a second device.
 
+### ⛔ A GATE THAT CAN FAIL ONLY AFTER THE IRREVERSIBLE STEP IS A REPORT, NOT A GATE
+
+**2026-09-30, T503.** `_deploy-all-chain` was `db-migrate`, then `deploy`, and the test gate lived INSIDE `deploy`. Two migrations were applied to the live database and then five blocking suites failed, leaving the schema ahead of the code. The same shape had happened the day before. The gates were not even in the chain's dependency graph (they hid in a recipe body), so nothing about the recipe list said the order was wrong.
+
+⇒ **Every check that can fail runs before the first step that changes live state, and the order is pinned by a test that reads the real recipe graph (`just --dump`), with a red probe that feeds it the old order.**
+- **Split by effect, not by name:** `_deploy-gates` writes nothing live; `_deploy-ship` does. A test asserts no mutator is a dependency of the gate recipe.
+- **A fast check belongs where the change is made.** Four of the five failures were ratchets that take under a second and only ran inside an 8-minute gate, after a release cut and a Touch ID. A registry flag (`"prepush": true`) puts them in pre-push and in a pre-flight that runs BEFORE the confirmation prompt; the flag is validated (offline, blocking) and the tier is capped so it stays fast.
+- **A repo with no pre-push hook has its cheap gates at pre-commit.** The umbrella's ticket edit was checked for the first time inside the deploy.
+- **A hook and its registry must agree in BOTH directions.** Four steps were in the hook but not registered (so never checkpointed) and the checker only looked one way.
+⭐ **The tell:** a deploy log where `db-migrate` appears above the first `test` line, or where the failing suite is one you could have run in a second.
+
 ## 4. Dependencies and config
 
 ### ⛔ VERIFY EVERY CREDENTIAL KEY NAME AGAINST THE STORE — NEVER TRANSCRIBE FROM MEMORY
