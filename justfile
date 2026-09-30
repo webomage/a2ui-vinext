@@ -312,6 +312,9 @@ do recipe *args:
 ask *args:
     @just --justfile wom7web/justfile ask {{ args }}
 
+graph-global *args:
+    @just --justfile wom7web/justfile graph-global {{ args }}
+
 crg-serve *args:
     @just --justfile wom7web/justfile crg-serve {{ args }}
 
