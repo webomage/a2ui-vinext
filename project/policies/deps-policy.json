@@ -53,7 +53,9 @@
     "vitest": ">=4.1.11",
     "@vitest/mocker": ">=4.1.11",
     "smol-toml": ">=1.7.1",
-    "markdown-it": ">=14.3.1 <15"
+    "markdown-it": ">=14.3.1 <15",
+    "dompurify": ">=3.4.16",
+    "@grpc/grpc-js": ">=1.14.5"
   },
   "exceptions": {
     "_comment": "Intentional per-repo divergences — NOT drift. Documented so --check never flags them and nobody 'fixes' them by mistake.",
