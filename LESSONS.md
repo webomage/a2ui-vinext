@@ -515,6 +515,14 @@ behind silent fallbacks (`serviceKey && …`, 6 sites in 4 files), none of which
 detector that "found nothing" on a spelling it was never shown is silent, not clean.
 ⭐ **The tell:** a count that fell to zero after a refactor that only renamed a variable. And any `\b` around an identifier that can sit
 inside a longer one.
+ 
+### ⛔ GAUGE STEP MODULES EVALUATE EAGERLY AT STARTUP — WRAP ENV READS & CLIENT INIT IN LAZY GETTERS
+**2026-09-30, T507.** Running `gauge validate specs/web/goldens.spec` or running local visual smoke tests threw `Error: [urls] SUPABASE_URL / PUBLIC_SUPABASE_URL is not set` and crashed before running any test step.
+
+Gauge ts-node loads and compiles *every* `.ts` step definition file in `tests/` upon startup regardless of which `.spec` was specified. Evaluating `supabaseBase()` or initializing client SDKs at top-level module scope causes innocent, decoupled test suites (like visual golden image audits) to fail whenever Supabase environment variables are absent.
+
+⇒ **All environment-dependent endpoints, URLs, and external client factories inside test step files MUST be encapsulated in lazy getters or inside step hooks, never evaluated at module top level.**
+⭐ **The tell:** A test suite crashing with missing environment variables for a service that the spec under test never uses.
 
 ## 3. Deploys and platforms
 
@@ -638,6 +646,15 @@ A static friendly name (e.g. `'Authenticator App'`) works for the first factor, 
 ⭐ **The tell:** a deploy log where `db-migrate` appears above the first `test` line, or where the failing suite is one you could have run in a second.
 
 ## 4. Dependencies and config
+
+### ⛔ ASSET URLS IN SHARED GLOBAL CSS FORCE BUNDLER RESOLUTION ACROSS ALL CONSUMING APPS
+**2026-09-30, T507.** Vite emitted build warnings in `apps/join`, `apps/job`, and `apps/demo` attempting to resolve `/assets/info-1-web.webp` through `/assets/info-4-web.webp`.
+
+When background slideshow scenes were deprecated in `packages/lib/src/background.ts` under T452, `--bg-slide-1..4` CSS variables with `url('/assets/...')` were left inside `apps/web/src/styles/global.css` and `apps/cp/src/styles/global.css`. Because other monorepo apps imported those shared global stylesheets, Vite's asset bundler attempted to resolve those root-relative paths within each consumer app at build time, failing and emitting warnings.
+
+⇒ **Deprecating or removing visual assets requires removing their CSS custom property declarations from shared global styles atomically, rather than leaving orphan `url(...)` references or copying dummy assets into consumer apps.**
+⭐ **The tell:** Consuming monorepo apps emitting Vite asset resolution warnings for assets that only a deprecated or separate app feature referenced.
+
 
 ### ⛔ VERIFY EVERY CREDENTIAL KEY NAME AGAINST THE STORE — NEVER TRANSCRIBE FROM MEMORY
 **2026-08-14, T134.** Of eleven key names written from knowledge of the services, **six were wrong**.
