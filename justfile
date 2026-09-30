@@ -539,6 +539,10 @@ resumes-upload:
 resumes-upload-live:
     @just --justfile wom7api/justfile resumes-upload-live
 
+# T488 — offline tests for resumes_upload unpublish and error handling
+resumes-upload-test:
+    @just --justfile wom7api/justfile resumes-upload-test
+
 goldens *args:
     @just --justfile wom7api/justfile goldens {{ args }}
 
