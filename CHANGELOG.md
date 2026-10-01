@@ -2,6 +2,17 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.01-1790882082
+_First deployed: 2026-10-01 19:32:36.158393+00_
+
+### Features
+- **profile**: declarative profile connection policy and resolver integration (T366) ([T366](file:///.tasks/T366.md))
+- **specs**: regex fix for table params in spec reality check; progress T237 and T458 ([T237](file:///.tasks/T237.md), [T458](file:///.tasks/T458.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `71b5ec7` | 2026-10-01 19:32:36.158393+00 |
+
 ## 2026.10.01-1790865449
 _First deployed: 2026-10-01 14:50:35.118397+00_
 
