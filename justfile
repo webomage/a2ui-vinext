@@ -713,7 +713,7 @@ release-publish version:
 release-list:
     @python3 wom7web/project/scripts/release.py list
 
-release-prune keep="3":
+release-prune keep="":
     @python3 wom7web/project/scripts/release.py prune {{ keep }}
 
 release-test:

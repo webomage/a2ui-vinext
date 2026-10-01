@@ -47,7 +47,8 @@
   },
   "release": {
     "e2e_gate": "record",
-    "e2e_before_deploy": false
+    "e2e_before_deploy": false,
+    "keep_worktrees": 5
   },
   "repos": {
     "web": "wom7web",
