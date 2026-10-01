@@ -729,3 +729,15 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Exit criterion:** all seven tickets at 100% of their own acceptance criteria, each live proof recorded in the ticket's status notes with the measured result. There is no single probe for this; each ticket closes on its own criteria, and a ticked box is a claim, not evidence.
 * **Type**: Product → Web. **Effort**: L. **Priority**: P1. **TASKS**: T493, T476, T439, T498, T499, T501, T505.
 
+## 39. Roots Epic (P0, added 2026-10-01)
+
+> **Epic slug:** `roots-epic`
+
+* The foundational platform, identity, tenancy, developer credential, repository governance, and test verification roots of the estate. Brings the core architecture into alignment with reality and closes open authz, isolation, and vacuous testing gaps.
+* **Stage 1, identity, tenant isolation & active-hat closure:** [[T396]] (P0, client delivery readiness: active-hat validation live verification and audit closure), [[T458]] (P1, org and engagement model: finish S0-S5 live reconciliation, living docs, S6 engagements backfill after T468, relation-hat follow-up, S8/S9 split tickets), [[T461]] (P1, hat management in the CP: PM and root assignment, custom hats and mixes, collections with fallback rules).
+* **Stage 2, developer profile & project governance isolation:** [[T366]] (P1, per-developer credential isolation: workspace-scoped routing for Infisical, Jam, Git, preventing host cross-contamination), [[T299]] (P1, replace role enum with base role plus per-service switches in clients-policy.json).
+* **Stage 3, test & verification truth:** [[T237]] (P1, revalidate spec corpus against reality: eliminate candidate login stub, resolve the 4 triple-vacuous auth specs and 10 mute scenarios, point E2E harness to sandbox).
+* **Order and dependencies:** Stage 1 first (T396 is immediate P0; T458 unblocks T461), Stage 2 second, Stage 3 third.
+* **Exit criterion:** All six tickets verified against live code, authz probes green, zero host credential leakage, and spec corpus executing reliably against sandbox without vacuous passes.
+* **Type**: Architecture → Platform. **Effort**: XL. **Priority**: P0. **TASKS**: T396, T458, T461, T366, T299, T237.
+
