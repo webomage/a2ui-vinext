@@ -59,6 +59,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T532](.tasks/T532.md) | **P1** | 🆕 **E2E local sandbox execution environment and full corpus verification run** | web | — | 🟡 **in-progress** |
 | [T531](.tasks/T531.md) | **P1** | 🆕 **Per-agent workspace sets: parallel agents stop sharing one working tree, one index and one set of generated files** | tooling | — | ⚪ **queued** |
 | [T530](.tasks/T530.md) | **P1** | 🆕 **Org model S9: retire Axis-1 account classes and network.member, unify CP context switcher on engagement hats and root admin** | web, api | — | ⚪ **queued** |
 | [T529](.tasks/T529.md) | **P1** | 🆕 **Org model S8: retire public.clients and client_users; company details keyed by org, client hats on engagements** | api, web | — | ⚪ **queued** |
