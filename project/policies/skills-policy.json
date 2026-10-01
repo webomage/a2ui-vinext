@@ -25,6 +25,14 @@
     "w0m:webapp-testing": {
       "sandboxed": false,
       "reason": "Ships `scripts/with_server.py`, whose entire job is to start this project's OWN dev servers on real ports, wait for them, run a command against them and clean up. Sandboxing it would defeat its purpose — it exists to exercise this repo on this host. ⚠️ Recorded after READING the file: the first draft of this override named a script that does not exist (`scripts/with-dev-server.sh`), which is precisely the unverified-claim shape this catalogue is meant to expose."
+    },
+    "w0m:mmd-validate": {
+      "sandboxed": false,
+      "reason": "Declared false because it IS false: `just mmd-validate` and the pre-commit hook run the skill's shipped `validate.mjs` with `node` on the host. Read 2026-09-30: it only parses diagrams (mermaid over a jsdom DOM shim), with no network call, no child process and no file write. A pen would break the hook for no security gain. Owner direction 2026-10-01: it becomes a portable w0m skills tool for clients (T521). Revisit if its shipped code ever does more than read files."
+    },
+    "artemio:mmd-validate": {
+      "sandboxed": false,
+      "reason": "Declared false because it IS false: the client recipe `lint-mmd` runs w0m's canonical `mmd-validate/validate.mjs` with `node` on the host, by an absolute path into the wom7skills checkout (not the vendored copy). The skill only parses diagrams and writes nothing (read 2026-09-30). The absolute path is a finding for the owner to repair in the client repo, which this policy does not touch (T521 AC8)."
     }
   }
 }
