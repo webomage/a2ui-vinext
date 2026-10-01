@@ -1141,6 +1141,14 @@ The repo already bounds some overrides (`undici <8`, `js-yaml <5`, `nanoid <6`);
 ⇒ **A `>=` override with no upper bound picks the newest major, not the fix. Bound it to the line you are patching (`>=5.9.3 <6`), and after editing check that the lockfile diff is only the intended package and that the lockfile's `overrides:` block shows your rule; a rule that does not appear there is not in force.**
 ⭐ **The tell:** a security fix whose lockfile diff shows a major version jump, or an override edit that leaves `pnpm-lock.yaml` unchanged.
 
+### A SCOPED GATE CAN STOP BEING ABLE TO SEE ITS OWN INPUTS WHEN THE FILES MOVE REPOS
+**2026-10-01 (T527).** `state-check` failed at the deploy preflight because two tickets I created had no row on the rendered board (`TASKS.md`). Three repos had just been pushed without complaint. The pre-push step runs `state-check` only when the push range touches `STATE.md`, `TASKS.md` or
+`.tasks/`, looked for in wom7web's range; those files moved to the root repo, so in wom7web the condition can never be true, and the root repo has no such step. The gate was declared, green and unreachable. Separately, I created tickets and never re-rendered the board, because
+nothing in the ticket path does it.
+
+⇒ **A hook that skips unless certain files changed must be tested against the repo it actually reads: if none of its trigger paths exist there, it is a dead branch that prints "skipped" forever. After creating or retitling a ticket run `just tasks-render`, then `just state-save`, before pushing.**
+⭐ **The tell:** a gate that has only ever printed "untouched in push range", or a deploy preflight failing on a fact every push had passed.
+
 ## 6. UI/UX & Interactions
 
 ### CARD DRAG-AND-DROP CONTAINERS REQUIRE FLOATING HIGH-CONTRAST HANDLES OVER MEDIA HEADERS
