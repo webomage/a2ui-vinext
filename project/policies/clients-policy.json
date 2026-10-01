@@ -157,8 +157,8 @@
         "gh_account": "Shinagawa-monkey",
         "gh_config_dir": "~/.config/gh-elena"
       },
-      "enabled": true,
-      "tier_reason": "Elena Shatalova's engagement; all four repos belong to the third-party HPECid org and the real work happens inside a running Tart VM. NO w0m contract exists and none will be placed — T265 AC8 forbids writing to the project or inside its VM, so creating a .w0m/ here would itself be the write we refuse. Declared so it is VISIBLE with its reason rather than absent, because the registry states an absent project is never inventoried and an invisible category is indistinguishable from an oversight.",
+      "enabled": false,
+      "tier_reason": "COMPLETED 2026-09-30 (owner): the engagement is finished and its Tart VM was wiped, so there is no guest to inventory. Kept declared but DISABLED, so the history stays visible and the inventory no longer measures a VM that does not exist. Earlier reason: Elena Shatalova's engagement; all four repos belong to the third-party HPECid org and the real work happens inside a running Tart VM. NO w0m contract exists and none will be placed — T265 AC8 forbids writing to the project or inside its VM, so creating a .w0m/ here would itself be the write we refuse. Declared so it is VISIBLE with its reason rather than absent, because the registry states an absent project is never inventoried and an invisible category is indistinguishable from an oversight.",
       "note": "T265 AC3 — declared 2026-09-02 WITHOUT a contract (no canonical_repo). 🔬 Corrects this ticket's own premise: T265 recorded 'Evercred is not a git repo', true of the 17 GB parent but it holds FOUR nested repos, so the workspace shape fits and the 'stated skip' AC3 anticipated was not needed. ⚠️ No estate gate reaches inside the VM where the work actually happens."
     },
     {
@@ -355,6 +355,18 @@
         "supabase_limits": {
           "status": "out",
           "reason": "Estate-only and provably so: wom7api/scripts/supabase_limits.py reads it from a HARDCODED wom7web path, so a client's declaration could not be read even if written."
+        },
+        "milestones": {
+          "status": "out",
+          "reason": "Ticketing does not apply to this tier: no T-ids, no GitHub mirroring, so there is no milestone list to declare. Same boundary as `tickets` and `board`."
+        },
+        "release": {
+          "status": "out",
+          "reason": "The estate release cutter (release.py, e2e_gate record) is not run for a half-managed project: we neither build nor deploy it. Same boundary as `ci_deploy` and `deploy_logs`."
+        },
+        "lessons_surface": {
+          "status": "out",
+          "reason": "The LESSONS.md earned-rules register is the estate's own (queried by `just lessons`); nothing in this tier reads or requires it from the project."
         }
       },
       "non_contract_surfaces": {
