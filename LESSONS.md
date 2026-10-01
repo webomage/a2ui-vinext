@@ -1149,6 +1149,13 @@ nothing in the ticket path does it.
 ⇒ **A hook that skips unless certain files changed must be tested against the repo it actually reads: if none of its trigger paths exist there, it is a dead branch that prints "skipped" forever. After creating or retitling a ticket run `just tasks-render`, then `just state-save`, before pushing.**
 ⭐ **The tell:** a gate that has only ever printed "untouched in push range", or a deploy preflight failing on a fact every push had passed.
 
+### A MUTATION RUN LEAVES THE MUTATED CODE IN `__pycache__`: CLEAR IT BEFORE TRUSTING A DIFFERENT RUNNER
+**2026-10-01 (T481).** I proved a test by breaking the script under test 11 times and restoring the file. The restore was byte-identical, but one test then failed under pytest while it passed under `python3` and `unittest`. The cause was a stale `.pyc` of a mutated version, still newer than the restored
+source's recorded stamp. Deleting `project/scripts/__pycache__/push_cadence_check*.pyc` made it pass. I then cleared the bytecode of every other module I had mutated that day (`release`, `cp_feature_index`, `sync_epic_vocabulary`) and re-ran their tests from a clean cache: all green. A first mutation harness also left the file broken when one anchor did not match, because the restore was not in a `finally`.
+
+⇒ **After any mutation run: restore the file inside a `finally`, delete the module's `__pycache__` entries, and re-run the tests under a SECOND runner (pytest if you used unittest, or `python3 -B`). A green result from the same process that did the mutating proves less than one from a clean start.**
+⭐ **The tell:** a test that passes under one runner and fails under another right after a mutation session, with the source file identical to the good copy.
+
 ## 6. UI/UX & Interactions
 
 ### CARD DRAG-AND-DROP CONTAINERS REQUIRE FLOATING HIGH-CONTRAST HANDLES OVER MEDIA HEADERS

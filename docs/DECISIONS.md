@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**352 recorded decision(s)** — 31 structured (AgDR), 321 in place across 159 file(s).
+**353 recorded decision(s)** — 31 structured (AgDR), 322 in place across 160 file(s).
 
 ## Structured records (AgDR)
 
@@ -61,6 +61,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-10-01 | [`.tasks/T513.md:95`](../.tasks/T513.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 a right-hand drawer; Q2 the browser's built-in PDF viewer on the signed URL (still to be |
 | 2026-10-01 | [`.tasks/T514.md:94`](../.tasks/T514.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 both sources, vCard first; Q2 deterministic extraction first, a model only for the |
 | 2026-10-01 | [`.tasks/T524.md:27`](../.tasks/T524.md) | Owner, 2026-10-01: "can we make Supabase grant every new table and view to authenticated only by default?" , then "let's do safe access tweaks proposed for Supabase defaults, and check if we can somehow report or propose this to |
+| 2026-10-01 | [`.tasks/T531.md:28`](../.tasks/T531.md) | Owner, 2026-10-01: "can we somehow make shared worktree comfortable for simultaneous mindful edits by different agents? ... what we can do for commits and pushes go success while worktree is dirty with changes already?" Answer, after measuring one day of two a |
 | 2026-10-01 | [`.w0m/sdlc.json:612`](../.w0m/sdlc.json) | comment": "Set by just plan-set (owner 2026-10-01: gather the member-area and resume/profile tickets into one Hero Epic and work it in order). The stages below are NOT the tool's status projection: they are the owner's two groups in the owner's order, so a st |
 | 2026-10-01 | [`.w0m/sdlc.json:615`](../.w0m/sdlc.json) | "reason": "Owner 2026-10-01: gather the member-area and resume/profile tickets into one Hero Epic and work it in order", |
 | 2026-09-30 | [`.tasks/T434.md:143`](../.tasks/T434.md) | and the decision-model hosting spike (owner, 2026-09-30). Resume Studio ([[T501]]) needs bounded questions answered per highlight ("does this bullet show DevOps work?", seniority, language, is-this-a-bullet). The 206 curated bullets in wom7web/project/data/cv/ |
