@@ -601,9 +601,10 @@
           "T498",
           "T499",
           "T501",
-          "T505"
+          "T505",
+          "T533"
         ],
-        "exit": "Each ticket closes on its own acceptance criteria, in the order listed. T498: the owner steps (apply the migration, approve the tags, run the live load, open /me/profile). T499: a member's highlight edits persist in profile_cv_facts and another member cannot read or change them; 'Save variant' stores a real file in the member's vault, proven live. T501: CF usage metering and a per-member quota, and the w0m-personnel persona and function, each proven live. T505: KYC reads profile_contact and profile_identity, and CURP and RFC move off gamification.compliance_profiles; both are marked as T349's personal half and T349 is now done, so re-scope them before building.",
+        "exit": "Each ticket closes on its own acceptance criteria, in the order listed. T498: the owner steps (apply the migration, approve the tags, run the live load, open /me/profile). T499: a member's highlight edits persist in profile_cv_facts and another member cannot read or change them; 'Save variant' stores a real file in the member's vault, proven live. T501: CF usage metering and a per-member quota, and the w0m-personnel persona and function, each proven live. T505: KYC reads profile_contact and profile_identity, and CURP and RFC move off gamification.compliance_profiles; both are marked as T349's personal half and T349 is now done, so re-scope them before building. T533 (added 2026-10-01 by the owner's direction): the Upwork linked knowledge store, whose last criterion is proofs in Resume Studio: AC1 the source probe run by the owner, AC2 a validated spec, AC3 the screening answers in the database (1,894 pairs over 725 proposals), AC4 links, AC5 complete messages, AC6 the owner-scoped evidence layer, AC7 hybrid search, AC8 proofs in Studio, AC9 the Me pages.",
         "exit_checks": [],
         "_not_yet_checked": "No `just` recipe checks these conditions yet, so per `_exit_check_rule` they are UNCHECKED, not passed. A ticked acceptance criterion is a claim; the live proofs below are evidence only once recorded in the ticket's status notes with the measured result.",
         "_exit_met_comment": "Not yet met."

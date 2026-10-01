@@ -73,6 +73,23 @@ Size estimate for the evidence layer: about 1,500 to 3,000 passages of roughly 2
 
 1. **Can the Upwork MCP return the job description, budget and skills?** Recommend an owner-run introspection (`just upwork-schema-probe`, to be written), read-only, run with the owner's token. Weight: decides whether "project details" can be had at all; cheap.
 2. **How are Hired proposals tied to contracts?** Recommend the offer key if the MCP can fetch an offer, with the title match as a labelled fallback. Weight: 67 of 73 Hired proposals today.
-3. **Why are 40 of 55 rooms empty?** Recommend a sync defect check before any design on messages: the room query needs a `StoryFilter` (memory note `upwork-graphql-contract`), and `graphql()` swallows errors, so an empty room may be a silent failure, not an empty conversation. Weight: high; it is the first thing to fix.
+3. **Why are 40 of 55 rooms empty?** Traced (section 8): not the old `StoryFilter` bug, which is fixed and now throws. The 40 were all created on 2026-07-20 and retried for 61 days of successful runs without gaining a message, so they are probably empty at Upwork; unproven until the feed is alive again.
 4. **Reuse the dormant vectorize triggers, or replace them?** Recommend replace, with an owner-scoped evidence table (section 5). Weight: avoids private text in a shared table.
 5. **Embedding model and cost.** Not measured: the model behind `/ai/embed`, its dimension, and its price. Recommend measuring on 100 passages before committing to 1024 dimensions and to reprocessing 1.2 million tokens.
+
+## 8. Update: the sync itself has been dead since 2026-09-19
+
+Found while tracing the empty rooms; filed as [[T535]]. Measured read-only from `admin_activity_logs` and token metadata (no token text read).
+
+| Fact | Value |
+|---|---|
+| Runs per day until 2026-09-19 | 48 successes (41 that day) |
+| Failures since 2026-09-19 20:00 UTC | **582 in a row**, one every 30 minutes, to 2026-10-01 22:30 |
+| The one failure message | "Could not authenticate any Upwork connection contexts. Check auth tokens." (no cause recorded) |
+| Newest stored access token | expired 2026-09-20 02:30 UTC, 11.8 days ago; row last updated 2026-09-19 |
+| What the last good runs synced | contracts 95, rooms 50, **proposals 0, messages 0** |
+| Any alert or freshness gate | none: the T155 gate checks coverage, not age |
+
+Consequences for this research: (a) a live sync cannot be tested until it is revived, which needs the owner's re-authorization if the refresh token is dead; (b) the local MCP harvest (`upwork_harvest_proposals.py`) uses a separate OAuth session and is the only path that carried the screening answers, so the backfill of the 725 archived proposals does not depend on the poller; (c) the poller reads only new items on its proposal leg, so even a revived poller would not backfill answers by itself.
+
+Message fetch details: `roomStories` carries the `StoryFilter` fix and throws on schema errors; the poller fetches messages for at most 10 rooms per run, retries rooms that hold none, and wraps the entire room loop in one `try`, so one failing room stops all rooms after it. `direction` is never set.
