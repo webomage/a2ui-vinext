@@ -98,7 +98,7 @@ def main() -> int:
                 continue
             body = allb[fn]
             ok = verifies(body)
-            rx = re.compile("^" + re.sub(r"<[^>]+>", '"[^"]*"',
+            rx = re.compile("^" + re.sub(r"<[^>]+>", r'("[^"]*"|<[^>]+>|[^ ]+)',
                             re.escape(name).replace("\\<", "<").replace("\\>", ">")) + "$", re.I)
             registry.append((rx, ok))
             inner = "\n".join(body.splitlines()[1:-1]).strip()
