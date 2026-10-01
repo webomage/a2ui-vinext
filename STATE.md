@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 251 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **251** are
+> ⚠️ **0 of 250 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **250** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -62,8 +62,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | 0 | 2 | `b0278d0e` |
-| `wom7api` | `beta` | 0 | 1 | `db76e89` |
+| `wom7web` | `beta` | 0 | 3 | `6db6f2bd` |
+| `wom7api` | `beta` | 0 | 1 | `90437c7` |
 | `wom7func` | `beta` | 0 | 0 | `35a7415` |
 | `wom7skills` | `beta` | 0 | 0 | `72d4248` |
 | `wom7ext` | `beta` | 0 | 0 | `57b3e6b` |
@@ -71,9 +71,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 251 open · 531 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 250 open · 531 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T396","T468","T503","T52","T213","T244","T439","T481","T498","T504"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"db76e89","unpushed":1},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72d4248","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"b0278d0e","unpushed":2}},"tickets":{"open":251,"rowless_open":[],"rows":531}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T396","T468","T503","T52","T213","T244","T439","T481","T498","T504"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"90437c7","unpushed":1},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72d4248","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"6db6f2bd","unpushed":3}},"tickets":{"open":250,"rowless_open":[],"rows":531}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -131,7 +131,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-#### In-flight tickets (21):
+#### In-flight tickets (22):
 
 - **T16** — Verify & archive built-but-unarchived changes
   - **2026-08-23** (39d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
@@ -139,6 +139,8 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
   - **2026-09-17** (14d ago): Start T153: ZeroClaw managed runtime & ecosystem integration
 - **T234** — Trial ai-memory as the recall layer — and find out how much of auto-memory is a duplicate register
   - **2026-09-05** (26d ago): relocated verbatim from the TASKS.md board row (T228 AC5b — the ticket is the source, the board a projection; row exceeded the 4,096 B per-row bound, project/tasks_bounds.py).
+- **T237** — 190 specs validate clean and 4 authorization tests pass for the wrong reason — revalidate the corpus against reality
+  - **2026-10-01** (today): (progress) — AC1, AC2, AC3, AC4 resolved and verified
 - **T257** — Retire the six emoji-to-parser couplings — the half of \"no emoji in logs\" that is a migration, not a cleanup
   - **2026-08-25** (37d ago): 🔬 the script_output detector matches the WORD, not the CONTEXT, and it cost a
 - **T263** — ai-intake-service-requests
@@ -154,7 +156,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T439** — CP information architecture — one shell with a Me / Org / Admin context switcher, capability-grown menus, and DS layout components
   - **2026-10-01** (today): Hero Epic check: the 6 open criteria are all C4, and C4 is blocked, not skipped. Open: AC4 and AC5 (the client-org context, then the cutover that deletes ClientLayout, /client/, switch-role and the banner), AC6 (Gauge specs per context and role), AC7 and AC10
 - **T458** — Org and engagement model — w0m platform and root, webomage operator company, default home orgs, engagements <contractor>.<engagement>.<client> with minimum hats
-  - **2026-09-27** (4d ago): S4 built, awaiting S3 batches 3/4 and the owner's apply. Migration 20260927010000_t458_s4_homes.sql: homes via profiles.org_unit_id (root and secondary credentials none; aleksei@/elena@ webomage.team; client-linked person → their company's team; demo personas demo.team; the rest a personal org); new-person trigger on profiles (covers signup and profile claims); operator gate (webomage home needs @webomage.com; w0m unit slot needs webomage.team; project hats untouched until S7); personal orgs and their units readable only by their member and the root (found: orgs/org_units were readable by every signed-in user, which would have published every member's name). Refuses while the batch 3/4 accounts exist (decision 11). Proved on scratch Postgres with the post-S3 people: homes as intended, eva sees no personal org, the applicant sees only theirs, new signup + -2 clash, both gates refuse a gmail person and allow Elena's slot and project hats. just org-homes-verify live 5/8 (pre-S4, expected); -test 9/9. Not done here: the owner slot (needs the generic office catalogue, S8) and 'a personal org with engagements cannot be deleted' (needs engagements, S6).
+  - **2026-10-01** (today): (verified) — AC3 verified across living docs: TERMINOLOGY-MAP.md §7, RBAC-PROJECT-ROLES-PIVOT.md §9.2/§10, AUTH-RBAC.md, RBAC-MAP.md, multi-role-user-stories.md, and CP IA plans (2026-09-24-cp-context-shell-ia) all strictly point to AgDR-0027 and AgDR-0028. Contradiction review clean; openspec validate 2026-09-25-org-engagement-model passes strict. AC3 marked done; T458 at 5/7 (71%), blocked on T468 Upwork sync layer for S6.
 - **T468** — Upwork as a synced source layer: mirror schema, source links, work-history mapping, move the copied rows out of our tables
   - **2026-09-29** (2d ago): (recap, correcting a stale line) — Q1-Q5 were ALREADY answered (owner, 2026-09-27: yes to all; AC1 ticked; AgDR-0029 accepted). An earlier session summary here said the ticket was "waiting on Q1-Q5"; that was wrong. Phase A is live (mirror schema and source_links applied, 0 rows in every mirror table). Phase B built, not yet deployed: _shared/upwork-mirror.ts (pure mappers + UpworkMirror writer) and upwork-poller now ALSO writes the mirror after each legacy write. Additive by design: the legacy path is unchanged, nothing reads the mirror, and a mirror failure never fails the sync, but it is never silent (mirror_write_failed log, and mirrorWrites / mirrorFailures / mirrorErrors in the SYNC_UPWORK_SUCCESS row).
 - **T476** — /me/account: stop leaking the founder's data, link identities by server PKCE, then merge the two identity sections
@@ -162,7 +164,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T477** — Pre-push: stop the slow scans walking node_modules, then run independent gates in parallel
   - **2026-09-29** (2d ago): AC1 done and measured; AC2/AC3 not started. emoji_policy_check._pruned_glob and
 - **T481** — One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it
-  - **2026-10-01** (today): Retention changed again (owner): 5 worktrees at most IN TOTAL, success or not, with at least one successful among them; prune moved to BEFORE the cut only. Supersedes the 2026-09-30 rule above
+  - **2026-10-01** (today): (later) — Deploy 2026.10.01-1790875829 stopped at the test gate; cause was my own test. The blocking py-test suite failed 2 of 290: test_push_cadence_check.py (added for the stable-worktree fix) inherited W0M_RELEASE_WORKTREE=1, which just deploy exports to every suite. Nothing was published and nothing changed live (the chain stops before the database step; release record and tags absent). Reproduced locally by setting the variable; fixed by clearing it in the test and adding a case for the flag; 12 tests pass with the flag on and off under unittest and pytest, 2 mutations caught. Lesson recorded. The same run showed [UNKNOWN] 13 suite(s) passed with an UNREADABLE check count; it also appears in the stable run, so it predates this deploy and is advisory. Worktrees on disk were 5 of 5 after the cut, as the rule intends. Also measured (read-only): the pnpm "Ignored build scripts" warning has no measured impact (report .agents/reports/2026-10-01-t481-pnpm-ignored-builds-impact.md); allowing the scripts adds no measurable install time (timings in that report).
 - **T493** — Move the personal and business features out of admin CP into the member profile (Me) — admin CP stays as the reference until confirmed
   - **2026-10-01** (today): (later) — AC3 decided (owner "go", taking the recommended answers). 8 views kept in the org console (org Overview, Knowledge hub, Money Proposals and Contracts, Billing and plans, Projects, Milestones, Invoices); Blueprints and the CV generator are approved to move to Me, built under [[T525]] (they stay
 - **T498** — Resume Studio writes real resumes: curated per-employer highlights with role and tech tags, so each version accents different positions
@@ -176,9 +178,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T510** — Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card
   - **2026-10-01** (today): U3 BUILT (not yet deployed): Profile settings, atomic set-primary, parse-resume fix, team card. Test first each time; every behaviour was then broken on purpose and a named test had to go red.
 
-#### Completed today (2):
+#### Completed today (3):
 
 - **T77** — Reconcile the openspec spec-drift backlog (DONE. All 5 active orphan changes audited, documented, and archived. scripts/spec_drift_gate.py elevated with structured recommendations and orphan-change graduated to HARD blocking gate. All test suites passing 100% green.)
+- **T366** — Per-developer-profile connection and credential isolation: workspace-scoped routing for Infisical, Jam, Git, and third-party platform credentials (T366 completed: Developer profile connection registry & credential isolation operational (6/6 ACs, 100%))
 - **T392** — Make AgDR an estate-wide decision-record standard, not wom7web-only (All 5 ACs verified: AgDR elevated to root, index generator widened, 8 repos wired, trace tests passing)
 
 ## 3. Other open threads (in TASKS.md)
