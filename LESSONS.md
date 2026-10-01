@@ -1125,6 +1125,14 @@ placement that never went over the cap was a prune BEFORE the cut that reserves 
 through the rule, not by argument.**
 ⭐ **The tell:** a retention or quota rule whose cleanup lives in the success path of the thing it limits.
 
+### AN OWNER DECISION COMES WITH ITS CONTEXT: ABOUT THREE LINES OF WHY, NOT A BARE QUESTION
+**2026-10-01 (T493, Hero Epic).** I ended a research step with three one-line "decisions I need" (re-scope an acceptance criterion, split a ticket, make a sync fail closed). Each was clear to me and opaque to the owner: what the rows were, what the choice would
+change and what it would cost were all in my head and in the ticket, not in the question. The owner asked for more detail on that list and on every later one, and not to be asked twice.
+
+⇒ **Every question for the owner carries a short paragraph, about three lines: what the thing is in plain words, what the data or code showed, what each answer changes and costs. Then the recommended answer first, with its weight (cost, risk, what it unblocks). Put the
+context in the first message, so no clarifying round is needed. A bare one-liner that the owner must open a ticket to understand is not a question yet.**
+⭐ **The tell:** a numbered list of decisions where an item cannot be understood without opening the ticket, or where the owner's reply is "what does this mean".
+
 ## 6. UI/UX & Interactions
 
 ### CARD DRAG-AND-DROP CONTAINERS REQUIRE FLOATING HIGH-CONTRAST HANDLES OVER MEDIA HEADERS
