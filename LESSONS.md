@@ -1156,6 +1156,13 @@ source's recorded stamp. Deleting `project/scripts/__pycache__/push_cadence_chec
 ⇒ **After any mutation run: restore the file inside a `finally`, delete the module's `__pycache__` entries, and re-run the tests under a SECOND runner (pytest if you used unittest, or `python3 -B`). A green result from the same process that did the mutating proves less than one from a clean start.**
 ⭐ **The tell:** a test that passes under one runner and fails under another right after a mutation session, with the source file identical to the good copy.
 
+### A TEST THAT READS THE ENVIRONMENT MUST SET IT, NOT INHERIT IT: THE DEPLOY RUNS EVERY SUITE WITH ITS OWN VARIABLES
+**2026-10-01 (T481).** I fixed `push-cadence` so the stable worktree counted as a detached mirror, with 11 tests. Hand runs, pytest and the stable run of the whole blocking tier all passed, and the next deploy stopped at the blocking `py-test` suite on exactly two of them. `just deploy` exports `W0M_RELEASE_WORKTREE=1` to everything it runs, and the code under test reads that variable; my tests patched
+the environment with `clear=False`, so they inherited the flag, saw "release worktree" where they expected "stable worktree" or "unknown", and failed. They passed everywhere except the one place that mattered. The stable run could not show it because stable does not set the flag.
+
+⇒ **A test of code that reads an environment variable sets that variable to the exact state it is testing, removing it when it should be absent (`patch.dict(..., clear=True)` over a copy without it). After writing one, run the suite with the deploy's variables set (`W0M_RELEASE_WORKTREE=1`) as well as unset, under both runners. Mutation-test the clearing itself: the break "flag not cleared" must fail under the flag.**
+⭐ **The tell:** a suite that is green by hand, in pytest and in stable, and red only inside the deploy's test gate; or a test that patches `os.environ` without `clear=True` for a variable the code branches on.
+
 ## 6. UI/UX & Interactions
 
 ### CARD DRAG-AND-DROP CONTAINERS REQUIRE FLOATING HIGH-CONTRAST HANDLES OVER MEDIA HEADERS
