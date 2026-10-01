@@ -29,3 +29,11 @@ id = "wom-supabase-management-pat"
 description = "Supabase management/access token (sbp_ personal access token)"
 regex = '''\bsbp_[a-f0-9]{40}\b'''
 keywords = ["sbp_"]
+
+[[rules]]
+id = "wom-tinybird-token"
+description = "Tinybird authentication or admin token (p.ey...)"
+# Tinybird tokens are prefixed JWTs: `p.ey` + base64 URL-safe payload and signature (>=50 chars).
+# T515 AC5: caught rule gap in gitleaks default rules and estate configs.
+regex = '''\bp\.ey[A-Za-z0-9_\-\.]{50,}\b'''
+keywords = ["p.ey"]
