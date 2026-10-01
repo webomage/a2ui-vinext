@@ -647,6 +647,14 @@ A static friendly name (e.g. `'Authenticator App'`) works for the first factor, 
 
 ## 4. Dependencies and config
 
+### ⛔ TOOLCHAIN CONFIG SHARED ACROSS RUNNERS MUST NOT SILENTLY COUPLE — ZERO WARNING TOLERANCE
+**2026-10-01, T520.** `pnpm` workspace settings in `.npmrc` (`enable-pre-post-scripts=true`, `verify-deps-before-run=true`) caused `npm` / `npx` to emit deprecation warnings: *"Unknown project config... This will stop working in the next major version of npm."*
+
+When configuration files are shared across tooling ecosystems (`.npmrc` parsed by both `pnpm` and `npm`), a legitimate option added for one tool creates an unknown configuration warning in another. In `npm@11+`, unknown configs graduate from warnings to fatal errors (exit 1), causing a small, legitimate change in one place to break secondary tool invocations in a fragile, delayed way.
+
+⇒ **Enforce single canonical execution runners (`pnpm exec` / `pnpm dlx` over `npx`) and never dismiss toolchain warnings as 'tool chatter'. Treat warnings as early smoke signals of latent fragility: identify, audit, and eliminate them before upstream tool upgrades turn warnings into catastrophic breaks.**
+⭐ **The tell:** A command emitting 'Unknown config' or 'This will stop working in the next major version' that passes today but creates delayed breakage for other tools sharing that config.
+
 ### ⛔ ASSET URLS IN SHARED GLOBAL CSS FORCE BUNDLER RESOLUTION ACROSS ALL CONSUMING APPS
 **2026-09-30, T507.** Vite emitted build warnings in `apps/join`, `apps/job`, and `apps/demo` attempting to resolve `/assets/info-1-web.webp` through `/assets/info-4-web.webp`.
 
