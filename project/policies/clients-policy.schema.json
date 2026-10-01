@@ -7,7 +7,9 @@
   "required": [
     "project",
     "contract_file",
-    "projects"
+    "projects",
+    "services",
+    "roles"
   ],
   "additionalProperties": false,
   "properties": {
@@ -85,6 +87,31 @@
           "vcs": {
             "$ref": "#/definitions/vcs"
           },
+          "services": {
+            "type": "object",
+            "description": "T299 AC3 — Per-project service switches overriding role defaults. Each override MUST explicitly declare 'enabled' and a 'reason' (minLength: 20).",
+            "propertyNames": {
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "enabled",
+                "reason"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 20,
+                  "description": "Why this service is overridden for this specific project (min 20 chars). An unexplained override degrades into an unexaminable exception."
+                }
+              }
+            }
+          },
           "identity": {
             "$ref": "#/definitions/identity"
           },
@@ -105,7 +132,11 @@
               "properties": {
                 "role": {
                   "not": {
-                    "const": "half-managed"
+                    "enum": [
+                      "half-managed",
+                      "self-managed",
+                      "on-prem"
+                    ]
                   }
                 }
               }
@@ -120,7 +151,10 @@
             "if": {
               "properties": {
                 "role": {
-                  "const": "half-managed"
+                  "enum": [
+                    "half-managed",
+                    "self-managed"
+                  ]
                 }
               },
               "required": [
@@ -140,7 +174,10 @@
               ],
               "properties": {
                 "role": {
-                  "const": "half-managed"
+                  "enum": [
+                    "half-managed",
+                    "self-managed"
+                  ]
                 }
               },
               "not": {
@@ -214,6 +251,79 @@
       "additionalProperties": {
         "$ref": "#/definitions/tier"
       }
+    },
+    "services": {
+      "type": "object",
+      "description": "T299 AC3 — Capability families and services w0m provides. Service names form the canonical vocabulary for role defaults and per-project switches.",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "name",
+          "description"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10
+          }
+        }
+      }
+    },
+    "roles": {
+      "type": "object",
+      "description": "T299 AC2 — Canonical governance roles supplying default service switches. Every role must decide every declared service.",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "#/definitions/role"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "description",
+          "services"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 10
+          },
+          "services": {
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": {
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "enabled",
+                "reason"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 5,
+                  "description": "Why this service is enabled or disabled by default for this role."
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -243,11 +353,15 @@
     },
     "role": {
       "enum": [
+        "w0m",
+        "managed",
+        "self-managed",
+        "on-prem",
         "estate",
         "client",
         "half-managed"
       ],
-      "description": "estate \u2014 the project whose .w0m/sdlc.json IS the contract; exactly one required. client \u2014 a fully managed project: every governance surface applies. half-managed (T265) \u2014 skills, tools and the SDLC workflow apply, but NOT ticketing: no T-ids, no GitHub mirroring, no ticket sync. The tier exists because the registry states 'a project absent from this file is never inventoried' \u2014 absent means INVISIBLE, and an invisible category is indistinguishable from an oversight. That is how BridgeRoad got filed as an import. A half-managed project is therefore declared and visible, with its reason, rather than left out."
+      "description": "w0m (formerly estate, T299 AC1) — the core estate workspace whose .w0m/sdlc.json IS the contract; exactly one required. managed (formerly client, T299 AC2) — fully managed project: full w0m governance, ticketing, and delivery pipeline. self-managed (formerly half-managed, T299 AC7) — external client-governed project: skills, tools, and SDLC apply; ticketing, deploys, and write access do not. on-prem — client project hosted on on-premise hardware."
     },
     "vcs": {
       "type": "object",
@@ -375,7 +489,10 @@
               ],
               "properties": {
                 "role": {
-                  "const": "half-managed"
+                  "enum": [
+                    "half-managed",
+                    "self-managed"
+                  ]
                 }
               }
             }
@@ -385,16 +502,9 @@
       "then": {
         "required": [
           "tiers"
-        ],
-        "properties": {
-          "tiers": {
-            "required": [
-              "half-managed"
-            ]
-          }
-        }
+        ]
       },
-      "_comment": "If any project claims the half-managed tier, the tier must be defined. Otherwise a project can sit in a tier whose obligations are written nowhere."
+      "_comment": "If any project claims the half-managed or self-managed tier, the tier must be defined. Otherwise a project can sit in a tier whose obligations are written nowhere."
     }
   ]
 }
