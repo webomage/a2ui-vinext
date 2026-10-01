@@ -1163,6 +1163,12 @@ the environment with `clear=False`, so they inherited the flag, saw "release wor
 ⇒ **A test of code that reads an environment variable sets that variable to the exact state it is testing, removing it when it should be absent (`patch.dict(..., clear=True)` over a copy without it). After writing one, run the suite with the deploy's variables set (`W0M_RELEASE_WORKTREE=1`) as well as unset, under both runners. Mutation-test the clearing itself: the break "flag not cleared" must fail under the flag.**
 ⭐ **The tell:** a suite that is green by hand, in pytest and in stable, and red only inside the deploy's test gate; or a test that patches `os.environ` without `clear=True` for a variable the code branches on.
 
+### A DERIVED FILE GENERATED IN A SCRATCH COPY CARRIES THE COPY'S PATHS: GREP FOR THE SCRATCH ROOT BEFORE COMMITTING IT
+**2026-10-01 (Hero Epic).** To keep another agent's uncommitted edits out of `STATE.md`, I regenerated it in a scratch view (`git archive HEAD` plus my files) and copied the result back. The generator writes absolute ticket links from the root it discovers, which in the view was my scratchpad, so the committed file held 20 links into `/private/tmp/claude-503/...`. It was pushed once and committed again before I saw it. Nothing caught it: the view's own `state-check` passed (links resolve there), the live `state-check` does not compare link paths, and the hooks do not look at them. It surfaced only because the diff of the next regeneration showed the old lines starting with `/private/tmp`. The ticket list is exactly the surface the owner reads, and dead absolute links in it were reported once before (2026-08-16).
+
+⇒ **After generating any file in a scratch copy, grep it for the scratch root before staging, and check that every link it contains resolves in the real tree. A check that passes inside the copy proves the copy.**
+⭐ **The tell:** a generated file whose diff shows a path prefix changing wholesale, or a derived file produced anywhere other than the checkout it will live in.
+
 ## 6. UI/UX & Interactions
 
 ### CARD DRAG-AND-DROP CONTAINERS REQUIRE FLOATING HIGH-CONTRAST HANDLES OVER MEDIA HEADERS
