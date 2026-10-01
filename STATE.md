@@ -60,8 +60,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **1** | 0 | `35c0e7b0` |
-| `wom7api` | `beta` | 0 | 0 | `100a23f` |
+| `wom7web` | `beta` | **5** | 0 | `73955c76` |
+| `wom7api` | `beta` | **3** | 0 | `100a23f` |
 | `wom7func` | `beta` | 0 | 0 | `35a7415` |
 | `wom7skills` | `beta` | 0 | 0 | `72d4248` |
 | `wom7ext` | `beta` | 0 | 0 | `57b3e6b` |
@@ -71,7 +71,7 @@
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
 **Tickets:** 243 open · 520 TASKS.md rows · **3 OPEN ticket(s) with no row:** T521, T522, T523
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T503","T52","T213","T244","T396","T439","T481","T498","T504"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"100a23f","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72d4248","unpushed":0},"wom7web":{"branch":"beta","dirty":1,"has_upstream":true,"head":"35c0e7b0","unpushed":0}},"tickets":{"open":243,"rowless_open":["T521","T522","T523"],"rows":520}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T503","T52","T213","T244","T396","T439","T481","T498","T504"],"repos":{"wom7api":{"branch":"beta","dirty":3,"has_upstream":true,"head":"100a23f","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72d4248","unpushed":0},"wom7web":{"branch":"beta","dirty":5,"has_upstream":true,"head":"73955c76","unpushed":0}},"tickets":{"open":243,"rowless_open":["T521","T522","T523"],"rows":520}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -170,7 +170,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T505** — Personal information model: one contact record (shared by Resume Studio and KYC) and a separate, locked identity record for KYC
   - **2026-09-30** (1d ago): owner confirmed both points: employer order defaults to classic date order (end date first, then start date; current positions on top), with "by relevance" as an option; and every basic fact about a person is stored in the profile so KYC can verify it later. Built: order in synthesis (11 tests) and the By date / By relevance control; profile_identity. Both migrations (20260930130000, 20260930140000) APPLIED live by the owner with just db-migrate; authz probes X11-X14 (contact) and X16-X19 (identity) are GREEN live (38/40 total GREEN); X15 and X20 RED as expected until first member save; owner is currently reviewing Profile and Resume Studio with live data.
 - **T510** — Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card
-  - **2026-10-01** (today): Owner confirmed the Start Brief; SPEC GATE done; status now in-progress. Decisions (answered 2026-10-01): switches go in a new owner-only table profile_public_settings, not on profiles;
+  - **2026-10-01** (today): BUILD U1 (database) done and proven on a scratch restore; NOT applied live (owner-run just db-migrate). Landed: migration wom7api/supabase/migrations/20261001060000_t510_resume_publication.sql
 
 #### Completed today (2):
 
