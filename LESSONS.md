@@ -1085,6 +1085,33 @@ second probe also crashed instead of failing, so a regression would have shown a
 is a case nobody wrote. Make the break fail a probe, not crash the run.**
 ⭐ **The tell:** a deleting rule whose probes were only ever run against the correct code, or a probe count that rose without any break being tried.
 
+### EDITING A GATE SCRIPT MEANS RUNNING EVERY TEST THAT READS IT, NOT THE ONE NAMED AFTER IT
+**2026-10-01 (T510).** Adding probes to `authz_probe_suite.py`, I ran its own test file, `test_authz_probe_suite.py`, and it was green. A second test, `test_authz_public_views.py`, also reads that file as text and
+asserts that no declared view name appears in it ("two authorities, the bucket-list failure", T199 AC1). My probe X25 named `public_team_members`, so that test failed. Every commit hook and every push passed, because the pre-push
+tier is a handful of one-second ratchets and `py-test` (about 2.5 minutes) is not in it. The first sign was the deploy itself, six minutes into its test tier. The probe was also redundant: G3c already scans every declared view
+for email and `resume_url` columns, so the fix was to delete mine, not to patch it.
+
+⇒ **Before committing a change to a script, list the tests that name it (`git grep -l <file> -- project/scripts/tests`) and run all of them. A green test file named after the script is not evidence that the script is safe to change.**
+⇒ **Before adding a check, look for the guard that already owns that question.** A second, narrower copy is the thing the estate's SSOT tests exist to refuse.
+⭐ **The tell:** a test file you did not open that opens the file you just edited; or a new check whose subject (a view, a table, a list) already has a declaration file somewhere.
+
+### A RELEASE SEES ONLY WHAT IS PUSHED, AND "ALL REPOS PUSHED" MUST BE COUNTED FROM THE MANIFEST, NOT FROM MEMORY
+**2026-10-01 (T510 / T392).** A deploy failed its blocking `decisions` suite because `wom7ava` and `wom7clips` each held one local commit that had never been pushed. The suite passed in the working checkout, where the line existed, and
+failed in the release worktree, which is cut from `origin/beta` of every repo in the release manifest. I had just reported "all three repos pushed" after checking the three repos I was working in; the manifest lists ten. The release
+worktree did exactly its job: it refused to let a local-only change count as tested. The mistake was mine, in how I counted.
+
+⇒ **Check push state by iterating the repo list the release itself uses (`manifest.json`, or `estate_repos()`), and print the count checked. Never report "everything is pushed" from a list you typed.**
+⇒ **A test that passes in the checkout and fails in the release worktree is a finding about unpushed or untracked state first, and a flaky test last.**
+⭐ **The tell:** a suite green locally and red in `~/.w0m/releases/<v>/w0m`; or a status report naming fewer repos than the manifest.
+
+### THE DEPLOY'S TEST TIER IS THE ONLY GATE THAT RUNS EVERYTHING: RUN ITS BLOCKING SUITES IN `stable` BEFORE YOU START A DEPLOY
+**2026-10-01 (T481 / T510).** The pre-flight inside `deploy-all` (`--prepush`, `state-check`) passed, and only the `test` gate, minutes later, ran the 215 suites, of which `py-test` and `decisions` are blocking. Nothing about the failure
+was related to the database: the chain runs `test` before `db-migrate`, and neither failing suite touches the database. Moving the migration earlier or later changes nothing about suites that never read it.
+
+⇒ **After pushing and before a deploy, sync `stable` (a mirror of `origin/beta`) and run the blocking suites there (`py-test`, `decisions-test`, `suites-drift`). It costs about three minutes and costs no Touch ID, no release cut and no worktree.**
+⇒ **Do not "fix" a test failure by reordering the deploy chain. Find which suite is blocking (`blocking` in `test-suites.json`) and why; the transcript names it.**
+⭐ **The tell:** "2 blocking suite(s) failed" in a deploy that had already passed its pre-flight, or a question like "is it because the database is migrated later" about a suite that does not query the database.
+
 ---
 
 
