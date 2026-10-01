@@ -1133,6 +1133,14 @@ change and what it would cost were all in my head and in the ticket, not in the 
 context in the first message, so no clarifying round is needed. A bare one-liner that the owner must open a ticket to understand is not a question yet.**
 ⭐ **The tell:** a numbered list of decisions where an item cannot be understood without opening the ticket, or where the owner's reply is "what does this mean".
 
+### A DEPENDENCY OVERRIDE NEEDS AN UPPER BOUND, AND THE FIX GOES IN THE FILE PNPM ACTUALLY READS
+**2026-10-01 (Hero Epic, wom7web).** The commit hook (osv-scanner) blocked every commit on `devalue@5.9.2` (7 advisories, fixed in 5.9.3). The fix is a pnpm override, so I added `devalue@<5.9.3: ">=5.9.3"` to `pnpm-workspace.yaml`, where the other devalue rules live, and the
+lockfile did not change: the rules that take effect are `pnpm.overrides` in `package.json`, and the lockfile's own override list is the proof. Raising that line to a plain `">=5.9.3"` then resolved `devalue@6.0.2`, a new major with a Node 22.17 engine floor, under Astro and Svelte.
+The repo already bounds some overrides (`undici <8`, `js-yaml <5`, `nanoid <6`); this one had not been.
+
+⇒ **A `>=` override with no upper bound picks the newest major, not the fix. Bound it to the line you are patching (`>=5.9.3 <6`), and after editing check that the lockfile diff is only the intended package and that the lockfile's `overrides:` block shows your rule; a rule that does not appear there is not in force.**
+⭐ **The tell:** a security fix whose lockfile diff shows a major version jump, or an override edit that leaves `pnpm-lock.yaml` unchanged.
+
 ## 6. UI/UX & Interactions
 
 ### CARD DRAG-AND-DROP CONTAINERS REQUIRE FLOATING HIGH-CONTRAST HANDLES OVER MEDIA HEADERS
