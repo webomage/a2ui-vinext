@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**353 recorded decision(s)** — 31 structured (AgDR), 322 in place across 160 file(s).
+**356 recorded decision(s)** — 31 structured (AgDR), 325 in place across 163 file(s).
 
 ## Structured records (AgDR)
 
@@ -61,7 +61,10 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-10-01 | [`.tasks/T513.md:95`](../.tasks/T513.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 a right-hand drawer; Q2 the browser's built-in PDF viewer on the signed URL (still to be |
 | 2026-10-01 | [`.tasks/T514.md:94`](../.tasks/T514.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 both sources, vCard first; Q2 deterministic extraction first, a model only for the |
 | 2026-10-01 | [`.tasks/T524.md:28`](../.tasks/T524.md) | Owner, 2026-10-01: "can we make Supabase grant every new table and view to authenticated only by default?" , then "let's do safe access tweaks proposed for Supabase defaults, and check if we can somehow report or propose this to |
+| 2026-10-01 | [`.tasks/T525.md:56`](../.tasks/T525.md) | - 2026-10-01 (owner decision) — The two moves are cancelled. CV generator: preserved for now, until it is clear whether to replace it with something or implement it; kept-in-org in project/cp-view-dispositions.json . Blueprints: in general available for manage |
 | 2026-10-01 | [`.tasks/T531.md:28`](../.tasks/T531.md) | Owner, 2026-10-01: "can we somehow make shared worktree comfortable for simultaneous mindful edits by different agents? ... what we can do for commits and pushes go success while worktree is dirty with changes already?" Answer, after measuring one day of two a |
+| 2026-10-01 | [`.tasks/T533.md:28`](../.tasks/T533.md) | Owner, 2026-10-01: the most valuable part of a proposal is the extra answers submitted with the project details; messages, proposals and contracts must be linked to each other and all synced; find the best storage in our own stack; later process it all with AI |
+| 2026-10-01 | [`.tasks/T534.md:28`](../.tasks/T534.md) | Owner, 2026-10-01: blueprints are in general managed by the admin only; provisioning a blueprint, with selected technologies and the tech chips activated, belongs in the flow of engagement setup. Research it, then spec it. This replaces the idea (T525) of movi |
 | 2026-10-01 | [`.w0m/sdlc.json:612`](../.w0m/sdlc.json) | comment": "Set by just plan-set (owner 2026-10-01: gather the member-area and resume/profile tickets into one Hero Epic and work it in order). The stages below are NOT the tool's status projection: they are the owner's two groups in the owner's order, so a st |
 | 2026-10-01 | [`.w0m/sdlc.json:615`](../.w0m/sdlc.json) | "reason": "Owner 2026-10-01: gather the member-area and resume/profile tickets into one Hero Epic and work it in order", |
 | 2026-09-30 | [`.tasks/T434.md:143`](../.tasks/T434.md) | and the decision-model hosting spike (owner, 2026-09-30). Resume Studio ([[T501]]) needs bounded questions answered per highlight ("does this bullet show DevOps work?", seniority, language, is-this-a-bullet). The 206 curated bullets in wom7web/project/data/cv/ |
@@ -76,7 +79,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-09-29 | [`.tasks/T491.md:28`](../.tasks/T491.md) | Owner 2026-09-29: consider renaming wom7func again ( wom7fn / wom7edge ), choosing the suffix from its content and from the |
 | 2026-09-29 | [`.tasks/T492.md:28`](../.tasks/T492.md) | Owner 2026-09-29: decouple and organise the top level away from wom7web and wom7api — tests, plain files and the rest. |
 | 2026-09-29 | [`.tasks/T493.md:28`](../.tasks/T493.md) | Owner 2026-09-29: transition every admin-CP view and function that is not w0m-internal management into the member profile, keep |
-| 2026-09-29 | [`.tasks/T493.md:79`](../.tasks/T493.md) | ial, and say so when there is none (owner 2026-09-29: "for |
+| 2026-09-29 | [`.tasks/T493.md:81`](../.tasks/T493.md) | ial, and say so when there is none (owner 2026-09-29: "for |
 | 2026-09-29 | [`.tasks/T498.md:48`](../.tasks/T498.md) | 20260929210000 applied live by the owner 2026-09-29; measured live: ledger row present, RLS on, one SELECT policy for authenticated keyed on current profile id() , ACL authenticated=r , anon has no privilege, 0 rows. just authz-probe : 25/25 GREEN, but no pro |
 | 2026-09-29 | [`.tasks/T498.md:90`](../.tasks/T498.md) | - 2026-09-29: owner decision, option (a): the JSON file is a ONE-TIME seed for the live load; highlights and tags then live only in profile cv facts , edited in Studio, with raw uploads and exported resumes as files in the member's vault. Everything after the |
 | 2026-09-29 | [`.tasks/T499.md:28`](../.tasks/T499.md) | Split from [[T498]] (owner, 2026-09-29: "we should not use local .json file any more for users highlighted tags and store only resulting exported resumes as files in user's vault and also uploaded raw resumes for parsing/processing"; option (a) chosen: one-tim |
@@ -406,7 +409,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`.tasks/T362.md:30`](../.tasks/T362.md) | ctly contradicts a recorded, explicit owner decision. Per the wom-principal-identity-model |
 | [`.tasks/T407.md:88`](../.tasks/T407.md) | remains available as an owner call and is not closed by this ticket. |
 | [`.tasks/T435.md:56`](../.tasks/T435.md) | t human (e.g. a Touch ID prompt) — AC8, owner decision. |
-| [`.tasks/T493.md:131`](../.tasks/T493.md) | may be retirable: that is an owner call, not made here. |
+| [`.tasks/T493.md:133`](../.tasks/T493.md) | may be retirable: that is an owner call, not made here. |
 | [`.tasks/T518.md:3`](../.tasks/T518.md) | : "Group C, seven scripts waiting on an owner decision: the news pipeline, tracks, the crawler smoke test, internal-docs indexing, Upwork backfill" |
 | [`TECH-DEBT.md:65`](../TECH-DEBT.md) | r decision) |
 | [`wom7web/project/data/cv/resolutions.json:2`](../wom7web/project/data/cv/resolutions.json) | " comment": "T165 task 2.6 — owner rulings that permanently clear a reported conflict. This file is the ONLY way a conflict stops being reported: the importer never decides. Key format is <entity ::<field , exactly as printed by just cv-import . Adding a key h |

@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 248 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **248** are
+> ⚠️ **0 of 250 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **250** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -49,7 +49,7 @@
 | 7 | [T501](/Users/proto/Projects/@self/@wom/.tasks/T501.md) | [#501](https://github.com/webomage/wom7board/issues/501) | P1 | queued | ai | 7/8 | `█████████░` 88% | — | w0m-personnel: a Resume Studio assistant that parses uploads |
 | 8 | [T476](/Users/proto/Projects/@self/@wom/.tasks/T476.md) | [#476](https://github.com/webomage/wom7board/issues/476) | P1 | in-progress | security | 4/5 | `████████░░` 80% | — | /me/account: stop leaking the founder's data, link identitie |
 | 9 | [T481](/Users/proto/Projects/@self/@wom/.tasks/T481.md) | [#481](https://github.com/webomage/wom7board/issues/481) | P1 | in-progress | sdlc | 7/9 | `████████░░` 78% | — | One persistent isolated STABLE worktree: full local regressi |
-| 10 | [T458](/Users/proto/Projects/@self/@wom/.tasks/T458.md) | [#458](https://github.com/webomage/wom7board/issues/458) | P1 | in-progress | security | 5/7 | `███████░░░` 71% | 🔴 [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | Org and engagement model — w0m platform and root, webomage o |
+| 10 | [T493](/Users/proto/Projects/@self/@wom/.tasks/T493.md) | [#493](https://github.com/webomage/wom7board/issues/493) | P1 | in-progress | product | 6/8 | `████████░░` 75% | — | Move the personal and business features out of admin CP into |
 
   ⚠️  1 row(s) at 100% with a non-done status: T505. Every acceptance criterion is met — what remains is the DEPLOY and ARCHIVE gates, so the record is accurate, not stale. Confirm against the live site before reading it either way.
 
@@ -62,8 +62,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **2** | 4 | `5e725029` |
-| `wom7api` | `beta` | 0 | 0 | `90437c7` |
+| `wom7web` | `beta` | **5** | 5 | `bdef78ab` |
+| `wom7api` | `beta` | **1** | 0 | `90437c7` |
 | `wom7func` | `beta` | 0 | 0 | `35a7415` |
 | `wom7skills` | `beta` | 0 | 0 | `72d4248` |
 | `wom7ext` | `beta` | 0 | 0 | `57b3e6b` |
@@ -71,9 +71,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 248 open · 532 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 250 open · 534 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T503","T52","T213","T244","T439","T481","T498","T504","T510"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"90437c7","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72d4248","unpushed":0},"wom7web":{"branch":"beta","dirty":2,"has_upstream":true,"head":"5e725029","unpushed":4}},"tickets":{"open":248,"rowless_open":[],"rows":532}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T503","T52","T213","T244","T439","T481","T498","T504","T510"],"repos":{"wom7api":{"branch":"beta","dirty":1,"has_upstream":true,"head":"90437c7","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72d4248","unpushed":0},"wom7web":{"branch":"beta","dirty":5,"has_upstream":true,"head":"bdef78ab","unpushed":5}},"tickets":{"open":250,"rowless_open":[],"rows":534}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -162,7 +162,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T481** — One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it
   - **2026-10-01** (today): (later) — Deploy 2026.10.01-1790875829 stopped at the test gate; cause was my own test. The blocking py-test suite failed 2 of 290: test_push_cadence_check.py (added for the stable-worktree fix) inherited W0M_RELEASE_WORKTREE=1, which just deploy exports to every suite. Nothing was published and nothing changed live (the chain stops before the database step; release record and tags absent). Reproduced locally by setting the variable; fixed by clearing it in the test and adding a case for the flag; 12 tests pass with the flag on and off under unittest and pytest, 2 mutations caught. Lesson recorded. The same run showed [UNKNOWN] 13 suite(s) passed with an UNREADABLE check count; it also appears in the stable run, so it predates this deploy and is advisory. Worktrees on disk were 5 of 5 after the cut, as the rule intends. Also measured (read-only): the pnpm "Ignored build scripts" warning has no measured impact (report .agents/reports/2026-10-01-t481-pnpm-ignored-builds-impact.md); allowing the scripts adds no measurable install time (timings in that report).
 - **T493** — Move the personal and business features out of admin CP into the member profile (Me) — admin CP stays as the reference until confirmed
-  - **2026-10-01** (today): (post-deploy, release 2026.10.01-1790882082, api web cp join job demo) — AC5 verified and ticked. Anonymous live checks (a normal User-Agent is needed: Cloudflare answers Python's default one with error 1010, which looked like a 403 from the app): both apps serve the new version; /api/sync/vault answers 401 on web and cp; /api/sync/upwork-mcp 401; /me/profile redirects to login. Not provable without a session: the 409 not connected gate and the vault ownership refusal (the unit tests cover both). Still the owner's: AC1 (/me/todos as aleksei@), AC2 (/me/upwork/), AC4 (define "proven facts"; the two approved moves are T525).
+  - **2026-10-01** (today): (owner screenshots, 15:07 to 15:09) — AC1 verified; AC2 partly. /me/todos matches (above). /me/upwork/proposals renders with status tabs and a cover letter, and /me/upwork/messages lists "55" conversations (as expected: 55 rooms). A defect of mine, found from the screenshot and fixed: the tab counts summed to exactly 1,000 (Archived 439, Accepted 266, Withdrawn 119, Activated 103, Hired 73) while the database holds 1,782 (Archived 969, Declined 213 with no tab at all). The tabs were counted from a select ... limit(2000), and one Supabase response is silently capped at 1,000 rows. Now readAll reads every page and fails closed on any error; 21 new tests written first, 12 mutations caught, including the original page. Still open for AC2: open one room and see its thread (not in the screenshots), and the check that an admin who is not the owner sees none of these rows. The page shows a cover letter but not the screening answers: they were never written to the database (725 proposals have them in the local archive); that is [[T533]].
 - **T498** — Resume Studio writes real resumes: curated per-employer highlights with role and tech tags, so each version accents different positions
   - **2026-10-01** (today): Hero Epic check (read-only, live): AC8's first two owner steps are already done. profile_cv_facts holds 29 rows on the owner's profile and nothing on any other, so the migration is applied and the live load ran.
 - **T499** — Resume Studio keeps highlights and tags in the database only: edit in Studio, parse raw uploads into highlights, save exports as files in the member's vault; retire the JSON seed
