@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 231 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **231** are
+> ⚠️ **0 of 243 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **243** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -60,8 +60,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **2** | 0 | `fda7cbd8` |
-| `wom7api` | `beta` | 0 | 0 | `eb1d038` |
+| `wom7web` | `beta` | **1** | 0 | `6f333dbe` |
+| `wom7api` | `beta` | 0 | 0 | `00cccce` |
 | `wom7func` | `beta` | 0 | 0 | `7f20bb8` |
 | `wom7skills` | `beta` | 0 | 0 | `e9fe6e7` |
 | `wom7ext` | `beta` | 0 | 0 | `89ed566` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `d55402e` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 231 open · 507 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 243 open · 507 TASKS.md rows · **12 OPEN ticket(s) with no row:** T508, T509, T510, T511, T512, T513, T514, T515, T516, T517, T518, T519
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T497","T503","T52","T213","T244","T396","T439","T481","T498"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"eb1d038","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"89ed566","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"7f20bb8","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"e9fe6e7","unpushed":0},"wom7web":{"branch":"beta","dirty":2,"has_upstream":true,"head":"fda7cbd8","unpushed":0}},"tickets":{"open":231,"rowless_open":[],"rows":507}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T497","T503","T52","T213","T244","T396","T439","T481","T498"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"00cccce","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"89ed566","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"7f20bb8","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d55402e","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"9b85831","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"e9fe6e7","unpushed":0},"wom7web":{"branch":"beta","dirty":1,"has_upstream":true,"head":"6f333dbe","unpushed":0}},"tickets":{"open":243,"rowless_open":["T508","T509","T510","T511","T512","T513","T514","T515","T516","T517","T518","T519"],"rows":507}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -172,8 +172,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T505** — Personal information model: one contact record (shared by Resume Studio and KYC) and a separate, locked identity record for KYC
   - **2026-09-30** (today): owner confirmed both points: employer order defaults to classic date order (end date first, then start date; current positions on top), with "by relevance" as an option; and every basic fact about a person is stored in the profile so KYC can verify it later. Built: order in synthesis (11 tests) and the By date / By relevance control; profile_identity. Both migrations (20260930130000, 20260930140000) APPLIED live by the owner with just db-migrate; authz probes X11-X14 (contact) and X16-X19 (identity) are GREEN live (38/40 total GREEN); X15 and X20 RED as expected until first member save; owner is currently reviewing Profile and Resume Studio with live data.
 
-#### Completed today (1):
+#### Completed today (3):
 
+- **T414** — Elevate Central Registers (LESSONS, STATE, TECH-DEBT, ROADMAP, docs) and Estate Tooling to Workspace Root (Leftovers of the elevation fixed (commits a66f4fc root, a682d91d wom7web, 2c23246 wom7api). Measured, not assumed)
+- **T488** — T478 leftovers: signed URLs for uploaded resumes, the public CV decision, live test-team provisioning (Deploy chain blocked by suites-drift, fixed. The resumes-upload-test forwarder recipe (root justfile,)
 - **T507** — Deploy observability & hygiene: progress bars, build warnings audit & logging, and test runner lazy init ((today): Completed and verified all 5 acceptance criteria for T507.)
 
 ## 3. Other open threads (in TASKS.md)
