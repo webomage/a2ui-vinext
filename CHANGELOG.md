@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.09.30-1790816882
+_First deployed: 2026-10-01 01:23:05.149902+00_
+
+### Fixes
+- **T414**: disable completed evercred, classify release, milestones and lessons_surface for half-managed, fix sync_github generator path ([T414](file:///.tasks/T414.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `c3fb64f` | 2026-10-01 01:23:05.149902+00 |
+
 ## 2026.09.30-1790800772
 _First deployed: 2026-09-30 20:56:39.839019+00_
 
