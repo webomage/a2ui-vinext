@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://webomage.com/schemas/profiles-policy.schema.json",
+  "title": "w0m developer profile connection policy (T366)",
+  "description": "Validates project/profiles-policy.json — the declarative mapping from developer profile personas to isolated credentials across Infisical, Jam, Git, and Upwork.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "project",
+    "profiles"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "_comment": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string",
+      "const": "w0m"
+    },
+    "profiles": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-z0-9_-]+$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/profile"
+      }
+    }
+  },
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "required": [
+        "name",
+        "email",
+        "infisical",
+        "jam",
+        "git",
+        "upwork"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "email": {
+          "type": "string",
+          "minLength": 3
+        },
+        "role_matches": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Names or roles matching this profile in .w0m/sdlc.json -> roles.developer"
+        },
+        "infisical": {
+          "$ref": "#/$defs/infisical"
+        },
+        "jam": {
+          "$ref": "#/$defs/jam"
+        },
+        "git": {
+          "$ref": "#/$defs/git"
+        },
+        "upwork": {
+          "$ref": "#/$defs/upwork"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "infisical": {
+      "type": "object",
+      "required": [
+        "user_email"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "user_email": {
+          "type": "string",
+          "minLength": 3
+        },
+        "project_id": {
+          "type": "string"
+        },
+        "token_env": {
+          "type": "string",
+          "description": "Environment variable holding scoped machine or profile token"
+        },
+        "config_dir": {
+          "type": "string",
+          "description": "Isolated config directory override (e.g. ~/.config/w0m/profiles/<slug>/infisical)"
+        }
+      }
+    },
+    "jam": {
+      "type": "object",
+      "required": [
+        "team_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "team_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "api_key_env": {
+          "type": "string",
+          "description": "Environment variable providing the scoped Jam API key"
+        },
+        "config_file": {
+          "type": "string",
+          "description": "Profile-specific Jam credentials configuration path"
+        }
+      }
+    },
+    "git": {
+      "type": "object",
+      "required": [
+        "user_name",
+        "user_email"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "user_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "user_email": {
+          "type": "string",
+          "minLength": 3
+        },
+        "ssh_key": {
+          "type": "string"
+        },
+        "signing_key": {
+          "type": "string"
+        },
+        "gh_account": {
+          "type": "string"
+        },
+        "gh_config_dir": {
+          "type": "string"
+        }
+      }
+    },
+    "upwork": {
+      "type": "object",
+      "required": [
+        "connection_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "member_id": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

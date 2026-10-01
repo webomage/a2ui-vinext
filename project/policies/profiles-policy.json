@@ -1,0 +1,102 @@
+{
+  "$schema": "./profiles-policy.schema.json",
+  "_comment": "T366 — Declarative developer profile credential and connection policy. Maps developer personas to isolated credentials across Infisical, Jam, Git, and Upwork. Resolved dynamically by workspace .w0m/sdlc.json -> roles.developer with fail-closed security.",
+  "project": "w0m",
+  "profiles": {
+    "elena": {
+      "name": "Elena Shatalova",
+      "email": "elenashatalova.it@gmail.com",
+      "role_matches": [
+        "Elena Shatalova",
+        "elena",
+        "Shinagawa-monkey"
+      ],
+      "infisical": {
+        "user_email": "elenashatalova.it@gmail.com",
+        "project_id": "proj_bridgeroad_elena",
+        "token_env": "INFISICAL_TOKEN_ELENA",
+        "config_dir": "~/.config/w0m/profiles/elena/infisical"
+      },
+      "jam": {
+        "team_id": "bridgeroad",
+        "api_key_env": "JAM_API_KEY_ELENA",
+        "config_file": "~/.config/w0m/profiles/elena/jam/credentials.json"
+      },
+      "git": {
+        "user_name": "Elena Shatalova",
+        "user_email": "elenashatalova.it@gmail.com",
+        "ssh_key": "~/.ssh/id_ed25519_bridgeroad",
+        "gh_account": "Shinagawa-monkey",
+        "gh_config_dir": "~/.config/gh-elena"
+      },
+      "upwork": {
+        "connection_id": "conn_upwork_elena",
+        "member_id": "~01upwork_elena_shatalova"
+      },
+      "note": "Elena Shatalova — developer and manager persona for client engagements (BridgeRoad, Evercred)."
+    },
+    "aleksei": {
+      "name": "Aleksei Tcelishchev",
+      "email": "aleksei@webomage.com",
+      "role_matches": [
+        "Aleksei Tcelishchev",
+        "aleksei",
+        "w0m"
+      ],
+      "infisical": {
+        "user_email": "aleksei@webomage.com",
+        "project_id": "proj_webomage_core",
+        "token_env": "INFISICAL_TOKEN_ALEKSEI",
+        "config_dir": "~/.config/w0m/profiles/aleksei/infisical"
+      },
+      "jam": {
+        "team_id": "webomage",
+        "api_key_env": "JAM_API_KEY_ALEKSEI",
+        "config_file": "~/.config/w0m/profiles/aleksei/jam/credentials.json"
+      },
+      "git": {
+        "user_name": "Aleksei Tcelishchev",
+        "user_email": "aleksei@webomage.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "upwork": {
+        "connection_id": "conn_upwork_aleksei",
+        "member_id": "~01upwork_aleksei_tcelishchev"
+      },
+      "note": "Aleksei Tcelishchev — Webomage founder and primary operator profile."
+    },
+    "casualuser": {
+      "name": "Aleksei Tcelishchev",
+      "email": "casualuser@gmail.com",
+      "role_matches": [
+        "casualuser",
+        "casualuser@gmail.com"
+      ],
+      "infisical": {
+        "user_email": "casualuser@gmail.com",
+        "project_id": "proj_personal_casualuser",
+        "token_env": "INFISICAL_TOKEN_CASUALUSER",
+        "config_dir": "~/.config/w0m/profiles/casualuser/infisical"
+      },
+      "jam": {
+        "team_id": "webomage",
+        "api_key_env": "JAM_API_KEY_CASUALUSER",
+        "config_file": "~/.config/w0m/profiles/casualuser/jam/credentials.json"
+      },
+      "git": {
+        "user_name": "Aleksei Tcelishchev",
+        "user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "upwork": {
+        "connection_id": "conn_upwork_casualuser",
+        "member_id": "~01upwork_casualuser"
+      },
+      "note": "Casualuser — personal identity for standalone and direct delivery client projects."
+    }
+  }
+}

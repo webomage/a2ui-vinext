@@ -43,6 +43,27 @@ agent-concurrency-test:
 project-archetypes-test:
     @python3 wom7web/project/scripts/tests/test_project_archetypes.py
 
+profile-resolve *args:
+    @python3 wom7web/project/scripts/profile_resolver.py resolve {{ args }}
+
+profile-env *args:
+    @python3 wom7web/project/scripts/profile_resolver.py env {{ args }}
+
+profile-run *args:
+    @python3 wom7web/project/scripts/profile_resolver.py run {{ args }}
+
+profile-infisical slug *args:
+    @python3 wom7web/project/scripts/profile_resolver.py infisical {{ slug }} {{ args }}
+
+profile-jam slug *args:
+    @python3 wom7web/project/scripts/profile_resolver.py jam {{ slug }} {{ args }}
+
+profile-inject-vm slug vm *args:
+    @python3 wom7web/project/scripts/profile_resolver.py inject-vm {{ slug }} {{ vm }} {{ args }}
+
+profile-resolver-test:
+    @python3 wom7web/project/scripts/tests/test_profile_resolver.py
+
 ticket-audit *args:
     @python3 scripts/ticket_audit.py {{ args }}
 
