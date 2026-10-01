@@ -2,6 +2,23 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.01-1790853122
+_First deployed: 2026-10-01 11:29:05.373807+00_
+
+### Features
+- **T521,T523**: record mmd-validate sandbox decision (catalogue test 13/18 to 15/18), add golden-run browser errors ticket, record live vault and stable-sync results ([T521](file:///.tasks/T521.md), [T523](file:///.tasks/T523.md))
+- **T77**: elevate spec_drift_gate with structured recommendations and graduate orphan-change to HARD gate ([T77](file:///.tasks/T77.md))
+- **sdlc**: elevate decisions and lessons registers to workspace root (T392) ([T392](file:///.tasks/T392.md))
+- **T481**: release worktree retention: keep 5 newest plus newest deployed; declare keep_worktrees in sdlc.json ([T481](file:///.tasks/T481.md))
+- **T481**: declare release.e2e_before_deploy (off); infisical auto-update ceiling patch to minor; T509 stale deploy-rule note ([T481](file:///.tasks/T481.md), [T509](file:///.tasks/T509.md))
+
+### Fixes
+- **security**: add wom-tinybird-token rule and track T515 progress ([T515](file:///.tasks/T515.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `52bee57` | 2026-10-01 11:29:05.373807+00 |
+
 ## 2026.09.30-1790816882
 _First deployed: 2026-10-01 01:23:05.149902+00_
 

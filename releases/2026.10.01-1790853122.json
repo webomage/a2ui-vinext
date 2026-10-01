@@ -1,0 +1,81 @@
+{
+  "version": "2026.10.01-1790853122",
+  "branch": "beta",
+  "repos": {
+    ".": "52bee57e81c296198204becce1f3424fff842ede",
+    "wom7api": "8119ad5d3eb15273955975e7c6840847c5ccc070",
+    "wom7ava": "3386b586c5961bc1864d6a561691b3a9190fa533",
+    "wom7clips": "5ce2a5ac2137d371cbf9154ccb85cc2f72d49d20",
+    "wom7ext": "57b3e6b2790106720a885d68f42c7c6dde50940a",
+    "wom7func": "35a74157fe034f12b708b352787a480933a7cdbb",
+    "wom7mlx/wom7mlx": "ae254efce2a13ec3352527438ec18f9806115b42",
+    "wom7sec": "293f59cd291c4c11da7193475b3c664af89284e2",
+    "wom7skills": "72d42487bdb3ab22abe7582e87598396a63b2c8e",
+    "wom7web": "d223817946ff113ff8e66490aa3b6a2868441644"
+  },
+  "apps": {
+    "api": {
+      "fingerprint": "7d154265f614adb9b08194986cc53ad67a7b1d93e27df4e077e9171adb12da0d",
+      "deployable": true,
+      "deploy": "deploy-api",
+      "changed": true,
+      "previous": "1e3bdbee9ccc8f00f7cbef66567d08ab4887039a1e9cb31365164e54b80cd726"
+    },
+    "web": {
+      "fingerprint": "0194111da8a29facfcfee6555e7167b6c13268816d1514f85bba920ec1715fa4",
+      "deployable": true,
+      "deploy": "deploy-web",
+      "changed": true,
+      "previous": "dd7b0f9811ce84a39731160fbd4623684f5f0b67ffeac9ff6ed17ef6dd8cf130"
+    },
+    "cp": {
+      "fingerprint": "cb47c244b244de4581ab7db1bfcae3c70f0d78ef9f0c81cde408b3b98ff5a6a4",
+      "deployable": true,
+      "deploy": "deploy-cp",
+      "changed": true,
+      "previous": "326f789a47fb81b803ee730007e49640d1f302b03679e4eba66af41cb107e729"
+    },
+    "join": {
+      "fingerprint": "1280fccefb7e36de377128304425f9f5f25bf60a953fd206a6e844e89d3fd76c",
+      "deployable": true,
+      "deploy": "deploy-join",
+      "changed": true,
+      "previous": "9a0c16c0b1fab0e146bfb12ac7f916c0f725d50b2458544adfd1a63b93110137"
+    },
+    "job": {
+      "fingerprint": "0130061301bdde8f482c497c4465cc5b9c956c49d4537e59fb72648f15e5cf87",
+      "deployable": true,
+      "deploy": "deploy-job",
+      "changed": true,
+      "previous": "0f6a91b9570486ad48e71dc4c4b3645e3a86a65f85e7f6d460837815efced67b"
+    },
+    "demo": {
+      "fingerprint": "60edf09154f6e24807ddf0d357a4f725bee4c19d95021f5169dc4b456b91091a",
+      "deployable": true,
+      "deploy": "deploy-demo",
+      "changed": true,
+      "previous": "14dc23ee1bb2a71ca1ff450becb8b200a54d686a5e85596fe0a5b3854e76f9ab"
+    },
+    "db": {
+      "fingerprint": "39f854c5920bcf8442ea9d81de89bb8f1098be6fafce80612aadd9caf02c426d",
+      "deployable": false,
+      "deploy": null,
+      "changed": true,
+      "previous": "8351dc76c8798be51d7eba988219970bdf48f8c04de0971d0b52c6ab9f3abe60"
+    }
+  },
+  "previous_release": "2026.09.30-1790816882",
+  "deployed": true,
+  "deployed_apps": [
+    "api",
+    "web",
+    "cp",
+    "join",
+    "job",
+    "demo"
+  ],
+  "e2e": {
+    "tested": false,
+    "reason": "no e2e result found in stable"
+  }
+}
