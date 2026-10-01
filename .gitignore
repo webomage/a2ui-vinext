@@ -80,5 +80,9 @@ project/.tools-weekly-status.json
 /.skillopt-sleep/
 /.agents/reports/sleep/
 
+# ── Tinybird CLI local config/sessions ────────────────────────────────────────
+.tinyb
+.tinybird/
+
 
 
