@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 244 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **244** are
+> ⚠️ **0 of 246 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **246** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -46,10 +46,10 @@
 | 4 | [T244](/Users/proto/Projects/@self/@wom/.tasks/T244.md) | [#244](https://github.com/webomage/wom7board/issues/244) | P0 | queued | security | 3/5 | `██████░░░░` 60% | — | A revoked Cloudflare token is stored, synced to production,  |
 | 5 | [T396](/Users/proto/Projects/@self/@wom/.tasks/T396.md) | [#396](https://github.com/webomage/wom7board/issues/396) | P0 | queued | security | 3/5 | `██████░░░░` 60% | — | Client Delivery Readiness: End-to-end client functions secur |
 | 6 | [T498](/Users/proto/Projects/@self/@wom/.tasks/T498.md) | [#498](https://github.com/webomage/wom7board/issues/498) | P1 | in-progress | product | 7/8 | `█████████░` 88% | — | Resume Studio writes real resumes: curated per-employer high |
-| 7 | [T505](/Users/proto/Projects/@self/@wom/.tasks/T505.md) | [#505](https://github.com/webomage/wom7board/issues/505) | P1 | in-progress | product | 9/11 | `████████░░` 82% | — | Personal information model: one contact record (shared by Re |
-| 8 | [T476](/Users/proto/Projects/@self/@wom/.tasks/T476.md) | [#476](https://github.com/webomage/wom7board/issues/476) | P1 | in-progress | security | 4/5 | `████████░░` 80% | — | /me/account: stop leaking the founder's data, link identitie |
-| 9 | [T481](/Users/proto/Projects/@self/@wom/.tasks/T481.md) | [#481](https://github.com/webomage/wom7board/issues/481) | P1 | in-progress | sdlc | 7/9 | `████████░░` 78% | — | One persistent isolated STABLE worktree: full local regressi |
-| 10 | [T501](/Users/proto/Projects/@self/@wom/.tasks/T501.md) | [#501](https://github.com/webomage/wom7board/issues/501) | P1 | queued | ai | 6/8 | `████████░░` 75% | — | w0m-personnel: a Resume Studio assistant that parses uploads |
+| 7 | [T501](/Users/proto/Projects/@self/@wom/.tasks/T501.md) | [#501](https://github.com/webomage/wom7board/issues/501) | P1 | queued | ai | 7/8 | `█████████░` 88% | — | w0m-personnel: a Resume Studio assistant that parses uploads |
+| 8 | [T505](/Users/proto/Projects/@self/@wom/.tasks/T505.md) | [#505](https://github.com/webomage/wom7board/issues/505) | P1 | in-progress | product | 9/11 | `████████░░` 82% | — | Personal information model: one contact record (shared by Re |
+| 9 | [T476](/Users/proto/Projects/@self/@wom/.tasks/T476.md) | [#476](https://github.com/webomage/wom7board/issues/476) | P1 | in-progress | security | 4/5 | `████████░░` 80% | — | /me/account: stop leaking the founder's data, link identitie |
+| 10 | [T481](/Users/proto/Projects/@self/@wom/.tasks/T481.md) | [#481](https://github.com/webomage/wom7board/issues/481) | P1 | in-progress | sdlc | 7/9 | `████████░░` 78% | — | One persistent isolated STABLE worktree: full local regressi |
 
 ### 📍 MECHANICAL STATE — generated, never hand-edited
 
@@ -60,8 +60,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | 0 | 0 | `d2238179` |
-| `wom7api` | `beta` | 0 | 0 | `8119ad5` |
+| `wom7web` | `beta` | **2** | 0 | `0d358ac0` |
+| `wom7api` | `beta` | 0 | 0 | `c7900f0` |
 | `wom7func` | `beta` | 0 | 0 | `35a7415` |
 | `wom7skills` | `beta` | 0 | 0 | `72d4248` |
 | `wom7ext` | `beta` | 0 | 0 | `57b3e6b` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 244 open · 520 TASKS.md rows · **4 OPEN ticket(s) with no row:** T521, T522, T523, T524
+**Tickets:** 246 open · 526 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T503","T52","T213","T244","T396","T439","T481","T498","T504"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"8119ad5","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72d4248","unpushed":0},"wom7web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d2238179","unpushed":0}},"tickets":{"open":244,"rowless_open":["T521","T522","T523","T524"],"rows":520}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T503","T52","T213","T244","T396","T439","T481","T498","T504"],"repos":{"wom7api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"c7900f0","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72d4248","unpushed":0},"wom7web":{"branch":"beta","dirty":2,"has_upstream":true,"head":"0d358ac0","unpushed":0}},"tickets":{"open":246,"rowless_open":[],"rows":526}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -148,29 +148,29 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T308** — Own the ~/Projects estate inventory audit — reclaim safe disk space in w0m-governed repos and correct the audit's own governance measurement trap
   - ⚠️ NO status note recorded where this stopped
 - **T439** — CP information architecture — one shell with a Me / Org / Admin context switcher, capability-grown menus, and DS layout components
-  - **2026-09-29** (2d ago): AC1, AC8, AC9, AC12 audited, verified and marked done (6 of 12 ACs closed, 50%).
+  - **2026-10-01** (today): Hero Epic check: the 6 open criteria are all C4, and C4 is blocked, not skipped. Open: AC4 and AC5 (the client-org context, then the cutover that deletes ClientLayout, /client/, switch-role and the banner), AC6 (Gauge specs per context and role), AC7 and AC10
 - **T458** — Org and engagement model — w0m platform and root, webomage operator company, default home orgs, engagements <contractor>.<engagement>.<client> with minimum hats
   - **2026-09-27** (4d ago): S4 built, awaiting S3 batches 3/4 and the owner's apply. Migration 20260927010000_t458_s4_homes.sql: homes via profiles.org_unit_id (root and secondary credentials none; aleksei@/elena@ webomage.team; client-linked person → their company's team; demo personas demo.team; the rest a personal org); new-person trigger on profiles (covers signup and profile claims); operator gate (webomage home needs @webomage.com; w0m unit slot needs webomage.team; project hats untouched until S7); personal orgs and their units readable only by their member and the root (found: orgs/org_units were readable by every signed-in user, which would have published every member's name). Refuses while the batch 3/4 accounts exist (decision 11). Proved on scratch Postgres with the post-S3 people: homes as intended, eva sees no personal org, the applicant sees only theirs, new signup + -2 clash, both gates refuse a gmail person and allow Elena's slot and project hats. just org-homes-verify live 5/8 (pre-S4, expected); -test 9/9. Not done here: the owner slot (needs the generic office catalogue, S8) and 'a personal org with engagements cannot be deleted' (needs engagements, S6).
 - **T468** — Upwork as a synced source layer: mirror schema, source links, work-history mapping, move the copied rows out of our tables
   - **2026-09-29** (2d ago): (recap, correcting a stale line) — Q1-Q5 were ALREADY answered (owner, 2026-09-27: yes to all; AC1 ticked; AgDR-0029 accepted). An earlier session summary here said the ticket was "waiting on Q1-Q5"; that was wrong. Phase A is live (mirror schema and source_links applied, 0 rows in every mirror table). Phase B built, not yet deployed: _shared/upwork-mirror.ts (pure mappers + UpworkMirror writer) and upwork-poller now ALSO writes the mirror after each legacy write. Additive by design: the legacy path is unchanged, nothing reads the mirror, and a mirror failure never fails the sync, but it is never silent (mirror_write_failed log, and mirrorWrites / mirrorFailures / mirrorErrors in the SYNC_UPWORK_SUCCESS row).
 - **T476** — /me/account: stop leaking the founder's data, link identities by server PKCE, then merge the two identity sections
-  - **2026-09-29** (2d ago): AC4 completed. Created migration 20260929110000_t476_social_integrations_service_handles.sql
+  - **2026-10-01** (today): Hero Epic check: nothing here an agent can build or prove. AC3 needs two things only a person can do: the interactive Google link round trip (no #access_token in the URL, the new identity listed) and a signed-in NON-founder
 - **T477** — Pre-push: stop the slow scans walking node_modules, then run independent gates in parallel
   - **2026-09-29** (2d ago): AC1 done and measured; AC2/AC3 not started. emoji_policy_check._pruned_glob and
 - **T481** — One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it
-  - **2026-09-30** (1d ago): Owner: keep the last 5 release worktrees and at least one successful; clean the rest; automate. Built
+  - **2026-10-01** (today): Retention changed again (owner): 5 worktrees at most IN TOTAL, success or not, with at least one successful among them; prune moved to BEFORE the cut only. Supersedes the 2026-09-30 rule above
 - **T493** — Move the personal and business features out of admin CP into the member profile (Me) — admin CP stays as the reference until confirmed
-  - **2026-09-29** (2d ago): (deployed, release 2026.09.29-1790727494) — Verified without a session: /me/todos, /me/upwork/proposals, /me/upwork/messages
+  - **2026-10-01** (today): (later) — AC3 decided (owner "go", taking the recommended answers). 8 views kept in the org console (org Overview, Knowledge hub, Money Proposals and Contracts, Billing and plans, Projects, Milestones, Invoices); Blueprints and the CV generator are approved to move to Me, built under [[T525]] (they stay
 - **T498** — Resume Studio writes real resumes: curated per-employer highlights with role and tech tags, so each version accents different positions
-  - **2026-09-29** (2d ago): owner decision, option (a): the JSON file is a ONE-TIME seed for the live load; highlights and tags then live only in profile_cv_facts, edited in Studio, with raw uploads and exported resumes as files in the member's vault. Everything after the live load is [[T499]].
+  - **2026-10-01** (today): Hero Epic check (read-only, live): AC8's first two owner steps are already done. profile_cv_facts holds 29 rows on the owner's profile and nothing on any other, so the migration is applied and the live load ran.
 - **T499** — Resume Studio keeps highlights and tags in the database only: edit in Studio, parse raw uploads into highlights, save exports as files in the member's vault; retire the JSON seed
-  - **2026-09-30** (1d ago): AC3 moved to [[T501]]; AC5 and AC6 done (above). Migration 20260929220000 APPLIED live by owner with just db-migrate. Still open: AC2 and AC4 are built and tested, awaiting CP deploy and live verification in Studio.
+  - **2026-10-01** (today): Hero Epic check (read-only, live). Both T499 migrations are in the ledger (20260929220000). AC2, database half proven live: authenticated holds UPDATE on the highlights column ONLY, anon holds nothing, and the UPDATE policy's USING and WITH CHECK are both
 - **T503** — Deploy flow: gates run before the schema write, and the fast ratchets run where the change is made, not at deploy time
   - **2026-09-30** (1d ago): The four ratchets that failed on  fail at git push (or commit, for tickets), in about a second.
 - **T505** — Personal information model: one contact record (shared by Resume Studio and KYC) and a separate, locked identity record for KYC
-  - **2026-09-30** (1d ago): owner confirmed both points: employer order defaults to classic date order (end date first, then start date; current positions on top), with "by relevance" as an option; and every basic fact about a person is stored in the profile so KYC can verify it later. Built: order in synthesis (11 tests) and the By date / By relevance control; profile_identity. Both migrations (20260930130000, 20260930140000) APPLIED live by the owner with just db-migrate; authz probes X11-X14 (contact) and X16-X19 (identity) are GREEN live (38/40 total GREEN); X15 and X20 RED as expected until first member save; owner is currently reviewing Profile and Resume Studio with live data.
+  - **2026-10-01** (today): Hero Epic check: AC7 and AC11 point at work nobody owns. Both say "owned by the T349 personal half", but [[T349]] closed 7 of 7 on the BUSINESS half; its own note calls the member half "a rubber stamp, not a real check", and no open ticket carries the personal half
 - **T510** — Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card
-  - **2026-10-01** (today): U1 + U2 DEPLOYED: release 2026.10.01-1790853122 (api, web, cp, join, job, demo), chain exit 0, record commit 7ac5095. This is the second attempt; the first (2026.10.01-1790851585, not published) failed at the test gate for the two reasons
+  - **2026-10-01** (today): U3 BUILT (not yet deployed): Profile settings, atomic set-primary, parse-resume fix, team card. Test first each time; every behaviour was then broken on purpose and a named test had to go red.
 
 #### Completed today (2):
 
