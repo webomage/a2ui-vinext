@@ -1065,6 +1065,26 @@ A local merge queue of batch size 1 (`scripts/land.py` via `just land <worktree>
 ⇒ **Serialize multi-agent integration to `beta` through a local merge queue (`just land`); agents rebase and verify locally in worktrees, and root commits stage only unit paths without `git add -A`.**
 ⭐ **The tell:** Frequent `--ff-only` merge rejections, uncommitted files from other agents swept into root commits, or merge conflicts on rendered tracker views.
 
+### A COUNT OF DIRECTORIES IS NOT A MEASUREMENT OF WHAT THEY HOLD
+**2026-09-30 (T481).** A report said 30 release worktrees were using about 90 GB and the disk was at risk. The 30 was a count of entries in
+`~/.w0m/releases`, and the 3 GB was the size of ONE old worktree, multiplied. Measured properly afterwards, `releases` was 0.00 GB: all 30 entries
+were manifest-only and none had a worktree (`git worktree list` and `du` of the whole set say so in seconds). The claim reached the owner,
+changed what was proposed (a cleanup, a retention rule sized against a full disk), and was only corrected later.
+
+⇒ **Before stating a size, a count or a cost about a set, measure the set itself (`du` of the whole directory, a listing that shows each entry is
+the thing you named). Never multiply one sample by a count.**
+⭐ **The tell:** a figure built as `N x one_example`, or a number of directories reported as if it were the number of the large objects inside them.
+
+### A PROBE THAT SURVIVES A DELIBERATE BREAK IS A MISSING PROBE
+**2026-09-30 (T481).** The retention rule for release worktrees deletes things, so each probe was checked by breaking the rule on purpose, one branch
+at a time. Four of five breaks turned named probes red. The fifth ("the deployed release that is kept need not still have a worktree") left all 60
+probes green: the suite passed with a wrong rule. It was found only because the break was run, and a new probe now closes it. A first version of a
+second probe also crashed instead of failing, so a regression would have shown as an error with no named case.
+
+⇒ **After writing probes for any rule that deletes or refuses, break each branch of the rule in turn and require a NAMED probe to go red. A survivor
+is a case nobody wrote. Make the break fail a probe, not crash the run.**
+⭐ **The tell:** a deleting rule whose probes were only ever run against the correct code, or a probe count that rose without any break being tried.
+
 ---
 
 
