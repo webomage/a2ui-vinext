@@ -12,8 +12,11 @@ Drift classes:
   HARD  completed-not-archived  — a change whose tasks are 100% checked but still under changes/.
   HARD  done-ticket-active-spec — a ticket with status:done whose `spec:` points to an ACTIVE
         (un-archived) change. This is the "spec-only change that was actually built" bug.
-  WARN  orphan-change           — an active change no ticket references.
+  HARD  orphan-change           — an active change no ticket references. All active changes must
+        have an owning ticket in .tasks/T*.md (graduated 2026-10-01, T77).
   WARN  structural              — a change missing proposal.md or tasks.md.
+  INFO  in-flight-multi-ticket  — a change with multiple owning tickets, some done, some open.
+        Normal progressive delivery; do NOT archive.
 
 Modes:
   (default / --all)        Audit every active change. Exit 1 on any HARD drift. Used by
@@ -151,48 +154,84 @@ def main(argv):
                 return True
         return False
 
-    hard, warn, advisory = [], [], []
+    hard: list[tuple[str, str | None]] = []
+    advisory: list[tuple[str, str | None]] = []
+    warn: list[tuple[str, str | None]] = []
+    info: list[str] = []
+
     for name in active_changes():
         d = os.path.join(CHANGES, name)
         done, total = task_ratio(d)
         refs = by_spec.get(name, [])
         scoped = in_scope(name)
 
-        findings = []
+        findings: list[tuple[str, str, str | None]] = []
         if total > 0 and done == total:
-            findings.append(("HARD", f"change `{name}` is 100% complete ({done}/{total}) but not archived — archive it"))
+            findings.append(("HARD", f"change `{name}` is 100% complete ({done}/{total}) but not archived — archive it",
+                             f"openspec archive {name} --yes"))
         for level, msg in ownership_verdict(name, refs, done, total):
-            findings.append((level, msg))
-        if not os.path.isfile(os.path.join(d, "proposal.md")) or not os.path.isfile(os.path.join(d, "tasks.md")):
-            findings.append(("WARN", f"change `{name}` missing proposal.md or tasks.md"))
-        if not refs:
-            findings.append(("WARN", f"change `{name}` has no owning ticket (orphan; tasks {done}/{total})"))
-
-        for level, msg in findings:
             if level == "HARD":
-                (hard if scoped else advisory).append(msg)
+                findings.append(("HARD", msg, f"Archive change `{name}` or reopen/update ticket status in .tasks/"))
+            elif "partially closed, not drift; do NOT archive" in msg:
+                # Normal in-flight multi-ticket delivery: classify as INFO rather than confusing WARN
+                findings.append(("INFO", msg, None))
             else:
-                warn.append(msg)
+                findings.append((level, msg, None))
+        if not os.path.isfile(os.path.join(d, "proposal.md")) or not os.path.isfile(os.path.join(d, "tasks.md")):
+            findings.append(("WARN", f"change `{name}` missing proposal.md or tasks.md",
+                             f"Ensure proposal.md and tasks.md exist under openspec/changes/{name}/, or remove directory"))
+        if not refs:
+            # Graduated to HARD (2026-10-01, T77): every active change must have an owning ticket in .tasks/T*.md
+            findings.append(("HARD", f"change `{name}` has no owning ticket (orphan; tasks {done}/{total})",
+                             f"Assign an owning ticket in .tasks/T*.md (spec: openspec/changes/{name}) or archive via 'openspec archive {name} --skip-specs'"))
+
+        for level, msg, rec in findings:
+            if level == "HARD":
+                (hard if scoped else advisory).append((msg, rec))
+            elif level == "INFO":
+                info.append(msg)
+            else:
+                warn.append((msg, rec))
 
     print(f"spec-drift-gate: {len(active_changes())} active changes, "
           f"{sum(len(v) for v in by_spec.values())} spec-linked tickets"
           + (f" (scoped to diff vs {scope_base})" if scope_base else " (full audit)"))
-    for m in warn:
-        print(f" [WARN] {m}")
-    for m in advisory:
-        print(f"  • (pre-existing, not blocking this push) {m}")
-    for m in hard:
-        print(f"  ❌ {m}")
+
+    if info:
+        print("\n── In-Flight Multi-Ticket Changes (Normal In-Progress State) ────")
+        for m in info:
+            print(f" [INFO] {m}")
+
+    if warn:
+        print("\n── Actionable Warnings & Recommendations ───────────────────────")
+        for m, rec in warn:
+            print(f" [WARN] {m}")
+            if rec:
+                print(f"        ↳ Recommendation: {rec}")
+
+    if advisory:
+        print("\n── Advisory Pre-Existing Drift (Not Blocking This Push) ────────")
+        for m, rec in advisory:
+            print(f"  • {m}")
+            if rec:
+                print(f"    ↳ Remedy: {rec}")
 
     if hard:
-        print(f"spec-drift-gate FAILED ({len(hard)} blocking drift) — archive the change "
-              f"(openspec-archive-change / w0m-sdlc-archive) or fix the ticket status.")
+        print("\n── Critical Blocking Drift ────────────────────────────────────")
+        for m, rec in hard:
+            print(f"  ❌ {m}")
+            if rec:
+                print(f"     ↳ Remedy: {rec}")
+
+    if hard:
+        print(f"\nspec-drift-gate FAILED ({len(hard)} blocking drift) — archive the change "
+              f"(openspec archive / w0m-sdlc-archive) or fix the ticket status.")
         return 1
     if advisory:
-        print(f"spec-drift-gate OK for this push; {len(advisory)} pre-existing drift item(s) remain "
+        print(f"\nspec-drift-gate OK for this push; {len(advisory)} pre-existing drift item(s) remain "
               f"— run `just spec-drift` to see them all.")
     else:
-        print("spec-drift-gate OK")
+        print("\nspec-drift-gate OK")
     return 0
 
 
