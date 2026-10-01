@@ -170,7 +170,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T505** — Personal information model: one contact record (shared by Resume Studio and KYC) and a separate, locked identity record for KYC
   - **2026-09-30** (1d ago): owner confirmed both points: employer order defaults to classic date order (end date first, then start date; current positions on top), with "by relevance" as an option; and every basic fact about a person is stored in the profile so KYC can verify it later. Built: order in synthesis (11 tests) and the By date / By relevance control; profile_identity. Both migrations (20260930130000, 20260930140000) APPLIED live by the owner with just db-migrate; authz probes X11-X14 (contact) and X16-X19 (identity) are GREEN live (38/40 total GREEN); X15 and X20 RED as expected until first member save; owner is currently reviewing Profile and Resume Studio with live data.
 - **T510** — Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card
-  - **2026-10-01** (today): FIRST DEPLOY ATTEMPT AFTER U2 FAILED AT THE TEST GATE (release 2026.10.01-1790851585, not published, nothing live changed: the chain stops at test, before db-migrate). Two blocking suites failed; both
+  - **2026-10-01** (today): U1 + U2 DEPLOYED: release 2026.10.01-1790853122 (api, web, cp, join, job, demo), chain exit 0, record commit 7ac5095. This is the second attempt; the first (2026.10.01-1790851585, not published) failed at the test gate for the two reasons
 
 #### Completed today (2):
 
