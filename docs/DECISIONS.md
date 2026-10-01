@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**349 recorded decision(s)** — 31 structured (AgDR), 318 in place across 158 file(s).
+**350 recorded decision(s)** — 31 structured (AgDR), 319 in place across 159 file(s).
 
 ## Structured records (AgDR)
 
@@ -60,6 +60,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-10-01 | [`.tasks/T512.md:82`](../.tasks/T512.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 measure first whether a wom7web session sees the root's skills; Q2 run the aggregate |
 | 2026-10-01 | [`.tasks/T513.md:95`](../.tasks/T513.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 a right-hand drawer; Q2 the browser's built-in PDF viewer on the signed URL (still to be |
 | 2026-10-01 | [`.tasks/T514.md:94`](../.tasks/T514.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 both sources, vCard first; Q2 deterministic extraction first, a model only for the |
+| 2026-10-01 | [`.tasks/T524.md:27`](../.tasks/T524.md) | Owner, 2026-10-01: "can we make Supabase grant every new table and view to authenticated only by default?" , then "let's do safe access tweaks proposed for Supabase defaults, and check if we can somehow report or propose this to |
 | 2026-09-30 | [`.tasks/T434.md:143`](../.tasks/T434.md) | and the decision-model hosting spike (owner, 2026-09-30). Resume Studio ([[T501]]) needs bounded questions answered per highlight ("does this bullet show DevOps work?", seniority, language, is-this-a-bullet). The 206 curated bullets in wom7web/project/data/cv/ |
 | 2026-09-30 | [`.tasks/T499.md:43`](../.tasks/T499.md) | - [x] AC3 — split into [[T501]] (owner, 2026-09-30: the assistant does the parsing). Built there: w0m-personnel parse returns grounded PROPOSALS, Studio's Extract highlights shows them with tick boxes, and only ticked ones are inserted (component tests). |
 | 2026-09-30 | [`.tasks/T501.md:28`](../.tasks/T501.md) | Split from [[T499]] AC3 (owner, 2026-09-30: enhance the members' AI bot to help parse and rewrite positions and other texts in Resume Studio; agents are w0m- prefixed; name w0m-personnel , spelling to confirm). Replaces T499's earlier "rule-based parser first" |
