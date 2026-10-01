@@ -197,7 +197,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-08-21 | [`.tasks/T333.md:47`](../.tasks/T333.md) | - [[T239]] (owner, 2026-08-21, independently): settles epic = cross-repo functional |
 | 2026-08-21 | [`.tasks/T333.md:144`](../.tasks/T333.md) | project") and [[T239]] (owner, 2026-08-21, "epic = cross-repo capability, milestone = temporal |
 | 2026-08-20 | [`.tasks/T228.md:495`](../.tasks/T228.md) | - [x] AC5b-i — ✅ DECIDED 2026-08-20 — the P0 – P3 labels STAY, and the reason is now measured |
-| 2026-08-20 | [`.tasks/T237.md:165`](../.tasks/T237.md) | ⏸️ PAUSED by owner 2026-08-20 — the re-run is theirs to start. The local stack is left up and |
+| 2026-08-20 | [`.tasks/T237.md:158`](../.tasks/T237.md) | ⏸️ PAUSED by owner 2026-08-20 — the re-run is theirs to start. The local stack is left up and |
 | 2026-08-20 | [`.tasks/T239.md:26`](../.tasks/T239.md) | Owner 2026-08-20: "let's actually check what GH have for prios, labels, etc to look if we should |
 | 2026-08-20 | [`.tasks/T239.md:392`](../.tasks/T239.md) | the only one that drifted. Owner 2026-08-20: "check what GH have for prios, labels, etc … align our tickets schema against GH schemas." Measured after [[T228]] put Status/Priority/Area/Epic on the board: 187 tickets carry an epic in 72 distinct spellings, col |
 | 2026-08-20 | [`.tasks/T242.md:26`](../.tasks/T242.md) | Owner 2026-08-20, after establishing that a personal account cannot be converted to an |
