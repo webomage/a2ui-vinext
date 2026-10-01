@@ -119,9 +119,9 @@
       "known_good": "0.43.137",
       "required": true,
       "source": "brew",
-      "auto": "patch",
+      "auto": "minor",
       "smoke": "infisical run --env=beta --silent -- printenv PUBLIC_SUPABASE_URL",
-      "note": "PROD-GATING but auto:patch — patch bumps auto-apply IF the smoke (real `infisical run` secret injection) passes; minor/major stay manual. Widen to `minor` only deliberately."
+      "note": "PROD-GATING, auto:minor — owner decision 2026-09-30: patch AND minor bumps auto-apply IF the smoke (real `infisical run` secret injection) passes; major stays manual. ⚠️ infisical is 0.x, where a minor bump (0.43 to 0.44) is the one that may break something, and the smoke covers `run` (the vast majority of calls) but not the `--projectId` path the deploy chain uses: after any minor bump run `just check-infisical`. A failed smoke holds the bump (known_good is not promoted)."
     },
     "jq": {
       "min": "1.6",

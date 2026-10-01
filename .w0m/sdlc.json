@@ -46,7 +46,8 @@
     }
   },
   "release": {
-    "e2e_gate": "record"
+    "e2e_gate": "record",
+    "e2e_before_deploy": false
   },
   "repos": {
     "web": "wom7web",
