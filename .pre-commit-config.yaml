@@ -74,10 +74,10 @@ repos:
       # 🔴 The `files:` filter MIRRORS the ESTATE-based entries of decisions_index.py SOURCES, and
       # wom7web's test_decisions_index.py asserts it still does.
       - id: decisions-index-fresh
-        name: decisions index (wom7web/docs/DECISIONS.md) is current
-        entry: python3 wom7web/project/scripts/decisions_index.py --check
+        name: decisions index (docs/DECISIONS.md) is current
+        entry: python3 scripts/decisions_index.py --check
         language: system
-        files: ^(\.tasks/T\d+\.md|\.w0m/sdlc\.json|TECH-DEBT\.md|ROADMAP\.md|project/policies/confirm-policy\.json)$
+        files: ^(\.tasks/T\d+\.md|\.w0m/sdlc\.json|TECH-DEBT\.md|ROADMAP\.md|project/policies/confirm-policy\.json|docs/decisions/AgDR-.*\.md)$
         pass_filenames: false
         stages: [pre-commit]
 

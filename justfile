@@ -791,7 +791,17 @@ lessons *args:
     @python3 scripts/lessons_query.py {{ args }}
 
 lessons-test:
-    @python3 wom7web/project/scripts/tests/test_lessons_query.py
+    @python3 scripts/tests/test_lessons_query.py
+
+# ── Decisions Register (T232 / T392 / T414) ──────────────────────────────────
+decisions *args:
+    @python3 scripts/decisions_index.py {{ args }}
+
+decisions-check:
+    @python3 scripts/decisions_index.py --check
+
+decisions-test:
+    @python3 scripts/tests/test_decisions_index.py
 
 # ── Skills Platform (Level 1 & Level 2) ──────────────────────────────────────
 skills-sync *args:

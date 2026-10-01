@@ -38,6 +38,7 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 - **Secrets reach a command only by process injection** — `infisical run --env=<env> --silent -- <cmd>`. Do not add a `.env` dependency.
 - **No `Co-Authored-By` / attribution trailers** in commits. Conventional Commits, referencing the ticket.
 - **`STATE.md` blocked your push? `just land` regenerates it.** Pre-push `state-check` compares STATE.md's mechanical block against reality.
+- **Architectural Decisions (AgDR) — estate standard (T392).** All architectural and design decisions across every repo are recorded in [AgDR format](project/templates/decision.md) in [`docs/decisions/`](docs/decisions/) and indexed in [`docs/DECISIONS.md`](docs/DECISIONS.md) (`just decisions`). Never invent splinter registers.
 - **Zero silent fallbacks, clean cutovers over shims, zero shadow symlinks (AgDR-0025).** Fail fast and fail closed (`docs/ANTI-PATTERNS.md`). Multi-path fallback search ladders and backward-compatibility shims are strictly prohibited. 100% of callers must be updated atomically when a path or contract changes.
 - **Triangulated Single Source of Truth (SSOT) & Multi-Sided Verification.**
   Every fact, data schema, contract, and convention must have exactly **ONE canonical source of truth** across the estate. Dual SSOTs, parallel unsynchronized cookies/tokens, and duplicate state mechanisms are strictly prohibited.
