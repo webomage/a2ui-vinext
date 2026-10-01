@@ -1115,6 +1115,16 @@ was related to the database: the chain runs `test` before `db-migrate`, and neit
 ---
 
 
+### A CLEANUP THAT RUNS AFTER A STEP CANNOT HOLD A CAP ON THAT STEP
+**2026-10-01 (T481).** The release-worktree rule was "keep 5 and the newest successful one", pruned in two places: before the cut and after a successful deploy. The owner meant "5 in total".
+Running every sequence of success, failure and interrupted deploy through the rule showed it held up to 6 (1,024 of 4,608 outcome sequences went over 5), and that a prune placed only after the
+deploy is worse than it looks: a failure returns before it and an interrupt never reaches it, so each such run adds a worktree that nothing removes (7 after seven interruptions). The only
+placement that never went over the cap was a prune BEFORE the cut that reserves the place for the new release.
+
+⇒ **A cap on something a step adds is enforced before that step, reserving its place, never after it. Decide the placement by running every outcome sequence (success, failure, interrupt)
+through the rule, not by argument.**
+⭐ **The tell:** a retention or quota rule whose cleanup lives in the success path of the thing it limits.
+
 ## 6. UI/UX & Interactions
 
 ### CARD DRAG-AND-DROP CONTAINERS REQUIRE FLOATING HIGH-CONTRAST HANDLES OVER MEDIA HEADERS
