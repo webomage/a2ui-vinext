@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**351 recorded decision(s)** — 31 structured (AgDR), 320 in place across 159 file(s).
+**352 recorded decision(s)** — 31 structured (AgDR), 321 in place across 159 file(s).
 
 ## Structured records (AgDR)
 
@@ -75,7 +75,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-09-29 | [`.tasks/T491.md:28`](../.tasks/T491.md) | Owner 2026-09-29: consider renaming wom7func again ( wom7fn / wom7edge ), choosing the suffix from its content and from the |
 | 2026-09-29 | [`.tasks/T492.md:28`](../.tasks/T492.md) | Owner 2026-09-29: decouple and organise the top level away from wom7web and wom7api — tests, plain files and the rest. |
 | 2026-09-29 | [`.tasks/T493.md:28`](../.tasks/T493.md) | Owner 2026-09-29: transition every admin-CP view and function that is not w0m-internal management into the member profile, keep |
-| 2026-09-29 | [`.tasks/T493.md:74`](../.tasks/T493.md) | ial, and say so when there is none (owner 2026-09-29: "for |
+| 2026-09-29 | [`.tasks/T493.md:78`](../.tasks/T493.md) | ial, and say so when there is none (owner 2026-09-29: "for |
 | 2026-09-29 | [`.tasks/T498.md:48`](../.tasks/T498.md) | 20260929210000 applied live by the owner 2026-09-29; measured live: ledger row present, RLS on, one SELECT policy for authenticated keyed on current profile id() , ACL authenticated=r , anon has no privilege, 0 rows. just authz-probe : 25/25 GREEN, but no pro |
 | 2026-09-29 | [`.tasks/T498.md:90`](../.tasks/T498.md) | - 2026-09-29: owner decision, option (a): the JSON file is a ONE-TIME seed for the live load; highlights and tags then live only in profile cv facts , edited in Studio, with raw uploads and exported resumes as files in the member's vault. Everything after the |
 | 2026-09-29 | [`.tasks/T499.md:28`](../.tasks/T499.md) | Split from [[T498]] (owner, 2026-09-29: "we should not use local .json file any more for users highlighted tags and store only resulting exported resumes as files in user's vault and also uploaded raw resumes for parsing/processing"; option (a) chosen: one-tim |
@@ -405,6 +405,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`.tasks/T362.md:30`](../.tasks/T362.md) | ctly contradicts a recorded, explicit owner decision. Per the wom-principal-identity-model |
 | [`.tasks/T407.md:88`](../.tasks/T407.md) | remains available as an owner call and is not closed by this ticket. |
 | [`.tasks/T435.md:56`](../.tasks/T435.md) | t human (e.g. a Touch ID prompt) — AC8, owner decision. |
+| [`.tasks/T493.md:130`](../.tasks/T493.md) | may be retirable: that is an owner call, not made here. |
 | [`.tasks/T518.md:3`](../.tasks/T518.md) | : "Group C, seven scripts waiting on an owner decision: the news pipeline, tracks, the crawler smoke test, internal-docs indexing, Upwork backfill" |
 | [`TECH-DEBT.md:65`](../TECH-DEBT.md) | r decision) |
 | [`wom7web/project/data/cv/resolutions.json:2`](../wom7web/project/data/cv/resolutions.json) | " comment": "T165 task 2.6 — owner rulings that permanently clear a reported conflict. This file is the ONLY way a conflict stops being reported: the importer never decides. Key format is <entity ::<field , exactly as printed by just cv-import . Adding a key h |
