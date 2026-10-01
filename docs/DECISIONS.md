@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**350 recorded decision(s)** — 31 structured (AgDR), 319 in place across 159 file(s).
+**351 recorded decision(s)** — 31 structured (AgDR), 320 in place across 159 file(s).
 
 ## Structured records (AgDR)
 
@@ -61,6 +61,8 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-10-01 | [`.tasks/T513.md:95`](../.tasks/T513.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 a right-hand drawer; Q2 the browser's built-in PDF viewer on the signed URL (still to be |
 | 2026-10-01 | [`.tasks/T514.md:94`](../.tasks/T514.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 both sources, vCard first; Q2 deterministic extraction first, a model only for the |
 | 2026-10-01 | [`.tasks/T524.md:27`](../.tasks/T524.md) | Owner, 2026-10-01: "can we make Supabase grant every new table and view to authenticated only by default?" , then "let's do safe access tweaks proposed for Supabase defaults, and check if we can somehow report or propose this to |
+| 2026-10-01 | [`.w0m/sdlc.json:612`](../.w0m/sdlc.json) | comment": "Set by just plan-set (owner 2026-10-01: gather the member-area and resume/profile tickets into one Hero Epic and work it in order). The stages below are NOT the tool's status projection: they are the owner's two groups in the owner's order, so a st |
+| 2026-10-01 | [`.w0m/sdlc.json:615`](../.w0m/sdlc.json) | "reason": "Owner 2026-10-01: gather the member-area and resume/profile tickets into one Hero Epic and work it in order", |
 | 2026-09-30 | [`.tasks/T434.md:143`](../.tasks/T434.md) | and the decision-model hosting spike (owner, 2026-09-30). Resume Studio ([[T501]]) needs bounded questions answered per highlight ("does this bullet show DevOps work?", seniority, language, is-this-a-bullet). The 206 curated bullets in wom7web/project/data/cv/ |
 | 2026-09-30 | [`.tasks/T499.md:43`](../.tasks/T499.md) | - [x] AC3 — split into [[T501]] (owner, 2026-09-30: the assistant does the parsing). Built there: w0m-personnel parse returns grounded PROPOSALS, Studio's Extract highlights shows them with tick boxes, and only ticked ones are inserted (component tests). |
 | 2026-09-30 | [`.tasks/T501.md:28`](../.tasks/T501.md) | Split from [[T499]] AC3 (owner, 2026-09-30: enhance the members' AI bot to help parse and rewrite positions and other texts in Resume Studio; agents are w0m- prefixed; name w0m-personnel , spelling to confirm). Replaces T499's earlier "rule-based parser first" |
@@ -222,8 +224,8 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-08-18 | [`docs/decisions/AgDR-0006-agents-md-is-the-control-plane.md:1`](../docs/decisions/AgDR-0006-agents-md-is-the-control-plane.md) | In the context of an estate that must behave identically under Claude, Gemini and opencode, facing CLAUDE.md in 7 repos and GEMINI.md in none, we decided to make AGENTS.md the single source that the per-agent files POINT at, to achieve one set of rules three agents read, accepting an indirection that only works while the pointers resolve. |
 | 2026-08-17 | [`.tasks/T147.md:172`](../.tasks/T147.md) | ✅ OWNER DECISION 2026-08-17: user scope gets its own manifest + lock. Built: |
 | 2026-08-17 | [`.tasks/T508.md:46`](../.tasks/T508.md) | nsumer selection (T127, T149, T232, owner decision 2026-08-17 at |
-| 2026-08-17 | [`.w0m/sdlc.json:655`](../.w0m/sdlc.json) | " comment": "T147 AC2+AC4, owner decision 2026-08-17. TWO governance roots, not one. The project manifest (wom7web/.w0m/skills.json) governs .claude/skills; the USER manifest (~/.claude/.w0m/skills.json) governs ~/.claude/skills, which held 15 skills no manife |
-| 2026-08-17 | [`.w0m/sdlc.json:667`](../.w0m/sdlc.json) | he 15 user-scope skills are still UNDECIDED as of 2026-08-17. Their provenance is not locally resolvable — no Cloudflare plugin is installed (plugins live in ~/.claude/plugins/cache with their own registry), so these are loose, directly-placed directories. Ado |
+| 2026-08-17 | [`.w0m/sdlc.json:621`](../.w0m/sdlc.json) | " comment": "T147 AC2+AC4, owner decision 2026-08-17. TWO governance roots, not one. The project manifest (wom7web/.w0m/skills.json) governs .claude/skills; the USER manifest (~/.claude/.w0m/skills.json) governs ~/.claude/skills, which held 15 skills no manife |
+| 2026-08-17 | [`.w0m/sdlc.json:633`](../.w0m/sdlc.json) | he 15 user-scope skills are still UNDECIDED as of 2026-08-17. Their provenance is not locally resolvable — no Cloudflare plugin is installed (plugins live in ~/.claude/plugins/cache with their own registry), so these are loose, directly-placed directories. Ado |
 | 2026-08-16 | [`.tasks/T194.md:298`](../.tasks/T194.md) | 2026-08-16 — 🔴 blocked on an owner decision, not on work |
 | 2026-08-16 | [`.tasks/T222.md:309`](../.tasks/T222.md) | T artifact — SPLIT OUT as [[T227]] (owner decision 2026-08-16: "let's separate |
 | 2026-08-16 | [`.tasks/T224.md:263`](../.tasks/T224.md) | 2026-08-16 — OWNER DECISION: one yes covers deploy-all , db-migrate included |
@@ -240,7 +242,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-08-14 | [`.tasks/T210.md:234`](../.tasks/T210.md) | - 2026-08-14 — OWNER DECISION: deploy transcripts rotate MONTHLY ( .w0m/sdlc.json → |
 | 2026-08-14 | [`.tasks/T210.md:245`](../.tasks/T210.md) | - 2026-08-14 — OWNER DECISION: YYYY.MM.DD-<unixtimestamp is now the standard timestamp-versioned |
 | 2026-08-14 | [`.w0m/sdlc.json:547`](../.w0m/sdlc.json) | " comment": "OWNER DECISION 2026-08-14: the release format is ALSO the standard timestamp-versioned schema for generated ARTEFACT FILENAMES, not just releases. One schema, one producer, so an artefact can be lined up against a release without translating betwe |
-| 2026-08-14 | [`.w0m/sdlc.json:687`](../.w0m/sdlc.json) | " comment": "OWNER DECISION 2026-08-14: deploy transcripts rotate MONTHLY. They are gitignored working artefacts — one full deploy is ~170 KB, so an unrotated directory becomes the thing nobody opens. Rotation buckets by the month in the transcript's OWN NAME |
+| 2026-08-14 | [`.w0m/sdlc.json:653`](../.w0m/sdlc.json) | " comment": "OWNER DECISION 2026-08-14: deploy transcripts rotate MONTHLY. They are gitignored working artefacts — one full deploy is ~170 KB, so an unrotated directory becomes the thing nobody opens. Rotation buckets by the month in the transcript's OWN NAME |
 | 2026-08-13 | [`.tasks/T134.md:125`](../.tasks/T134.md) | d, and one AC's scope was CHANGED by owner decision |
 | 2026-08-13 | [`.tasks/T194.md:175`](../.tasks/T194.md) | 🔴 OWNER DECISION 2026-08-13: re-point, not delete — and it is BLOCKED as specified |
 | 2026-08-13 | [`.tasks/T194.md:253`](../.tasks/T194.md) | estigated, premise revised — awaiting owner decision on deleting 2 unreferenced endpoints |
@@ -404,7 +406,6 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`.tasks/T407.md:88`](../.tasks/T407.md) | remains available as an owner call and is not closed by this ticket. |
 | [`.tasks/T435.md:56`](../.tasks/T435.md) | t human (e.g. a Touch ID prompt) — AC8, owner decision. |
 | [`.tasks/T518.md:3`](../.tasks/T518.md) | : "Group C, seven scripts waiting on an owner decision: the news pipeline, tracks, the crawler smoke test, internal-docs indexing, Upwork backfill" |
-| [`.w0m/sdlc.json:583`](../.w0m/sdlc.json) | ow because the remaining work is an owner call, not engineering that an agent can advance: T17 (purge .env.bak from git history — a repo-wide history rewrite affecting every clone, needs owner sign-off before anyone force-pushes rewritten history) · T18 (pause |
 | [`TECH-DEBT.md:65`](../TECH-DEBT.md) | r decision) |
 | [`wom7web/project/data/cv/resolutions.json:2`](../wom7web/project/data/cv/resolutions.json) | " comment": "T165 task 2.6 — owner rulings that permanently clear a reported conflict. This file is the ONLY way a conflict stops being reported: the importer never decides. Key format is <entity ::<field , exactly as printed by just cv-import . Adding a key h |
 | [`wom7web/project/data/cv/resolutions.json:10`](../wom7web/project/data/cv/resolutions.json) | "decidedOn": "YYYY-MM-DD (absolute, never relative)" |

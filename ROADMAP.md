@@ -718,3 +718,14 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Exit criterion:** `just forks-check` integrated into pre-push gates and CP Developer Forks & PRs interface operational in staging/production.
 * **Type**: Tooling → Web. **Effort**: M. **Priority**: P1. **TASKS**: T377, T378, T369, T345.
 
+## 38. Hero Epic (P1, added 2026-10-01)
+
+> **Epic slug:** `hero-epic`
+
+* One target, worked in a stated order: finish the member-facing area and the resume and profile work that is already most of the way built, and prove each piece live. Everything in it is already underway, so the epic adds no new scope; it gathers seven tickets that sat under four different epics (`session-followups`, `security-rbac-hardening`, `design-system-unification`, `profile-cv-studio`) so one plan can track them.
+* **Stage 1, member area:** [[T493]] (move the personal and business features from the admin CP into the member profile), [[T476]] (`/me/account`: link a second Google account, verified live), [[T439]] (CP information architecture: one shell, context routes, one nav source, gates and golden baselines).
+* **Stage 2, resume and profile:** [[T498]] (Resume Studio curated highlights: the owner steps), [[T499]] (highlights and tags in the database: Studio editing and the saved-variant live proof), [[T501]] (the `w0m-personnel` assistant: usage metering and quota live), [[T505]] (contact and identity record: KYC reads it, CURP and RFC move onto it).
+* **Order is the owner's:** stage 1 before stage 2, and within a stage in the order listed. A step that only the owner can run (applying a migration, a live proof, a decision) is named in its ticket and does not stop the next buildable step.
+* **Exit criterion:** all seven tickets at 100% of their own acceptance criteria, each live proof recorded in the ticket's status notes with the measured result. There is no single probe for this; each ticket closes on its own criteria, and a ticked box is a claim, not evidence.
+* **Type**: Product → Web. **Effort**: L. **Priority**: P1. **TASKS**: T493, T476, T439, T498, T499, T501, T505.
+

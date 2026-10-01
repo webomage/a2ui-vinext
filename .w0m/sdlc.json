@@ -575,81 +575,47 @@
     "session_hook": "SessionStart in the estate-root .claude/settings.local.json, calling the script directly by absolute path rather than via `just`: the session's project dir is the estate root, which has no justfile, and `just` startup would cost ~0.5s of a 2s budget. Same single implementation either way."
   },
   "current_plan": {
-    "_comment": "THE ONE THING THE ESTATE IS TRYING TO FINISH RIGHT NOW — called `plan`, NOT `program`: T203 is already titled 'PARENT PROGRAM', and `epic:`/`batch` are both taken too (a ticket frontmatter field, and T200's rule that a batch's members share a surface). Two things called 'program' is the ambiguity this estate normally hunts — owner ask 2026-08-17: 'set it for now as Clients first step we planned'. The two ranked boards answer 'what next?' and 'what is nearly done?', and neither can answer 'are we getting closer to the thing we decided to ship' — a queue of 155+ tickets has no opinion about which of them is the plan. This block is that opinion, declared once and read by BOTH `just tasks` and the HTML dashboard so they cannot drift into two different answers. 🔴 It is a POINTER, not a second copy of the plan: the stages and their reasoning live in ROADMAP §19 / the linked tickets, and only ticket ids live here. Duplicating the prose would create exactly the second source of truth §32 exists to forbid. ⚠️ A stage is NOT complete because its tickets are ticked — every stage below carries a MEASURED exit criterion, because ticking an AC is a claim and a probe is evidence.",
-    "_swap_comment": "🔁 CONTINUED (not swapped) 2026-09-18. The prior plan target, 'Authorization Core', was a narrow sub-batch of ROADMAP §19 (T200's batch + T206/T205 + Ring-2) and was declared fully exhausted 2026-09-18 — all 12 of its tickets are `status: done` at 100% AC. §19 itself ('Security, RBAC & Platform Hardening') is much larger and has accumulated tickets continuously since 2026-07-14: of 57 tickets tagged `epic: security-rbac-hardening`, 20 remain open. Owner decision 2026-09-18: stay on §19 rather than pick a different section, and — before naming stages — review all 20 open tickets against LIVE reality rather than trusting frontmatter. That review is recorded below and drove the stage design; it found no ticket whose status/pct was internally wrong, but did find: (a) T196's two flagged secrets (`TELEGRAM_BOT_TOKEN`, `HATCHET_CLIENT_TOKEN`) are STILL live 2026-09-18 (`getMe`→200, JWT exp 2126) despite the leaking plist itself being quarantined since 2026-08-10 — containment happened, rotation did not, and T244 AC5's unrelated 2026-08-21 fix synced a DIFFERENT concern (getting the token into Infisical) without rotating the value, so it does not close T196 AC1; (b) T201's `DEBUG_BYPASS_KEY` (`wom7api/supabase/functions/contact-submit/index.ts:22`) and hardcoded hCaptcha site keys are still live in source, PLUS one hCaptcha file (`apps/web/src/components/ChatApp.svelte`) not in the ticket's own enumeration; (c) T329's claimed bug is real and still present — `authz_probe_suite.py build()` resolves `client_uid`/`client_org`/`admin_uid` via three independent uncorrelated `LIMIT 1` subqueries, so the probe suite can silently pair a client user with the WRONG org; (d) T208's `user_profiles` ghost callers are still exactly as filed — `just callsite-drift` (re-run 2026-09-18) reports GHOST: 2 at the same two call sites; (e) T327 is a genuine, real scope gap left by the ALREADY-DONE T202, not a duplicate or a data error — T202 removed the RLS-bypassing shared client from SSR pages, T327 (filed later, 2026-09-07) found 33 OTHER importers of the same client still in CP staff pages, none authorising themselves; (f) T396 (filed TODAY, 2026-09-18) heavily overlaps T233's 'one security posture' composition ask and already-done T198/T202/T206 ground, and its AC5 names `just security-check`, which is NOT a real recipe — flagged for narrowing, not staged as-is; (g) T17/T18/T19/T31 are genuinely owner-decision-blocked, not assignable engineering work, and are deliberately left OUT of the staged tickets below rather than padding a stage with work no agent can advance. Authorization Core's full stage history is preserved in git (`git log -- .w0m/sdlc.json`), not deleted.",
-    "name": "Security & RBAC Hardening",
-    "roadmap": "ROADMAP.md §19",
+    "name": "Hero Epic",
+    "roadmap": "ROADMAP.md §38",
     "active_stage": "stage-1",
-    "_deferred_owner_decision": "Open in this epic but excluded from the staged tickets below because the remaining work is an owner call, not engineering that an agent can advance: T17 (purge .env.bak from git history — a repo-wide history rewrite affecting every clone, needs owner sign-off before anyone force-pushes rewritten history) · T18 (paused, its one AC literally reads 'TODO: define acceptance criteria' — cannot be worked until the owner scopes it) · T19 (P3, one-line decision: keep or delete a synthetic `jordan@acme-test.io` row in `leads`) · T31 (paused, remaining 3 of 4 AC are owner/infra work tied to T22, not engineering). Re-admit any of these to a stage once the owner has made the call it's waiting on.",
-    "_needs_narrowing": "T396 ('Client Delivery Readiness: end-to-end client functions security and authz audit', filed 2026-09-18, 0/5 AC) overlaps T233 AC1's 'one security posture command' ask and re-covers ground T198/T202/T206 already closed (tenant isolation, active-hat enforcement). Its AC5 cites `just security-check`, which does not exist as a recipe — an unticked AC naming a gate it intends to build is a plan per T255's own rule, not a violation, but it should be built as the SAME composition T233 AC1 asks for, not a second one. Recommend narrowing T396 to the client-surface ground T233/T381/T382 don't cover (guest portals, onboarding invite flows) before staging it, or folding its distinct ACs into T233. Left OUT of the stages below pending that owner/agent decision.",
     "stages": [
       {
-        "id": "stage-0",
-        "name": "Confirmed-live exposure — close what is measurably still open",
-        "blocking": false,
-        "tickets": [
-          "T196",
-          "T201",
-          "T329"
-        ],
-        "exit": "Each ticket closes on its own acceptance criteria — no single probe covers 'rotate a secret' + 'swap a captcha vendor' + 'fix a probe script's own bug'. Named as a stage because all three share one property the review just re-confirmed: the vulnerable state is not hypothetical, it is live in production/source TODAY, unlike most of the rest of this epic which is composition or feature work.",
-        "exit_checks": [],
-        "_not_yet_checked": "No `just` recipe exists yet for any of these three claims, so per `_exit_check_rule` all of them are UNCHECKED, not passed: (1) T196 AC1 — TELEGRAM_BOT_TOKEN and HATCHET_CLIENT_TOKEN rotated (old value's sha256 digest no longer matches what `getMe`/the Hatchet JWT accept) and AC2-5's host-surface baseline gate built; (2) T201 — DEBUG_BYPASS_KEY removed from `wom7api/supabase/functions/contact-submit/index.ts`, all 7 hCaptcha files (6 the ticket names + `apps/web/src/components/ChatApp.svelte`, found this review) migrated to Turnstile; (3) T329 — `authz_probe_suite.py build()`'s three independent `LIMIT 1` subqueries replaced with one correlated query so client_uid/client_org always come from the same row. Re-verify each with a plain grep/API check before marking done; do not trust frontmatter alone.",
-        "_exit_met_comment": "MET 2026-09-19: All 3 tickets closed at 100% AC (16/16). T196 (Hatchet token revoked, quarantine cleaned, host surface gate enforced), T201 (DEBUG_BYPASS_KEY removed, Turnstile cutover complete), T329 (authz_probe atomic client actor binding live 18/18 green, 20/20 offline red probes passing)."
-      },
-      {
         "id": "stage-1",
-        "name": "RLS/authz enforcement residue — the gaps left by already-closed tickets",
+        "name": "Member area",
         "blocking": true,
         "tickets": [
-          "T381",
-          "T382",
-          "T327",
-          "T208"
+          "T493",
+          "T476",
+          "T439"
         ],
-        "exit": "Each ticket closes on its own acceptance criteria. Grouped because all four are gaps a DONE ticket left behind rather than net-new surface — T202 (done) removed the RLS-bypassing shared client from SSR pages but T327 found 33 other importers in CP staff pages; T198/T200 (done) built the admin/hat model but T381 found lead-api/guild-api not enforcing it; T208's two ghost callers are the two sites T194's drop-derived gate structurally cannot see.",
+        "exit": "Each ticket closes on its own acceptance criteria, in the order listed. T493 (7 criteria, none met): the to-dos migration applied, Upwork on /me verified live, the owner's review of the classification, approved features on /me, the 3 unattributed contracts and 3 connections attributed, and a feature index showing where every old admin view now lives. T476 (1 of 5 open): linking a second Google account from /me/account verified live after deploy. T439 (6 of 12 open): context routes, one nav source with its gate, goldens re-baselined deliberately and actually backed.",
         "exit_checks": [],
-        "_not_yet_checked": "🔴 `just callsite-drift` is DELIBERATELY NOT wired as an exit_check even though it is the ticket's own named proof (T208 AC5) — it is ADVISORY and exits 0 unconditionally regardless of findings, so `just tasks plan --check` would report this stage MET purely from the exit code while the printed body still says GHOST: 2. Re-run 2026-09-18: GHOST: 2, same two sites as filed (wom7api/src/workflows/linkedin-data-erasure.ts:77, wom7web/packages/lib/src/auth/handlers.ts:440) — T208 is NOT resolved. Wire this claim only once T208/T194 add an `--enforce` mode that actually fails on GHOST > 0. T381 (admin-hat enforcement in lead-api/guild-api) and T382 (withServiceRole adoption) have no gate at all yet. T327 AC1 asks to promote `just authz-admin-client` from advisory to `--enforce` with a downward-only baseline (33 importers today) — that flag does not exist until T327 ships it, so citing it now would be citing proof that doesn't exist (T255's own rule). Once AC1 lands, wire `just authz-admin-client --enforce` here.",
+        "_not_yet_checked": "No `just` recipe checks these conditions yet, so per `_exit_check_rule` they are UNCHECKED, not passed. A ticked acceptance criterion is a claim; the live proofs below are evidence only once recorded in the ticket's status notes with the measured result.",
         "_exit_met_comment": "Not yet met."
       },
       {
         "id": "stage-2",
-        "name": "Identity & MFA surface",
+        "name": "Resume and profile",
         "blocking": false,
         "tickets": [
-          "T53",
-          "T100"
+          "T498",
+          "T499",
+          "T501",
+          "T505"
         ],
-        "exit": "Each ticket closes on its own acceptance criteria. Sequenced deliberately: T53 builds TOTP enrollment/management and the personal-access-token surface on /profile; T100 builds the sign-in-time 2FA challenge and the dormant-OAuth-provider decision, which depends on T53's enrollment UI existing (you cannot be challenged for a factor with no way to enroll one). Do not start T100's AC1-3/AC6 ahead of T53's AC3/AC4.",
+        "exit": "Each ticket closes on its own acceptance criteria, in the order listed. T498: the owner steps (apply the migration, approve the tags, run the live load, open /me/profile). T499: a member's highlight edits persist in profile_cv_facts and another member cannot read or change them; 'Save variant' stores a real file in the member's vault, proven live. T501: CF usage metering and a per-member quota, and the w0m-personnel persona and function, each proven live. T505: KYC reads profile_contact and profile_identity, and CURP and RFC move off gamification.compliance_profiles; both are marked as T349's personal half and T349 is now done, so re-scope them before building.",
         "exit_checks": [],
-        "_not_yet_checked": "No gate exists for either ticket yet — both are net-new UI + schema + middleware work (T53: 7 AC, `personal_access_tokens` table + RLS; T100: 6 AC, AuthForm.astro challenge step + E2E test). T100 AC6 names its own E2E test as proof; wire it here once built.",
-        "_exit_met_comment": "Not yet met."
-      },
-      {
-        "id": "stage-3",
-        "name": "Posture composition & remaining hygiene",
-        "blocking": false,
-        "tickets": [
-          "T233",
-          "T213",
-          "T52",
-          "T139",
-          "T244"
-        ],
-        "exit": "T233 AC1's composed `just audit` (host + platform families, one FAIL/WARN/SKIP/PASS headline) is the centerpiece — it is also what T396's AC5 should be built against instead of a second `just security-check`, see `_needs_narrowing`. T213, T52, T139 and any remaining T244 ACs are smaller, independent hygiene items that ride along because they share no dependency worth a separate stage.",
-        "exit_checks": [],
-        "_not_yet_checked": "T233 (8 AC, composition work — none of AC1-8 has a command yet by construction, since AC1 IS the command). T213 (8 AC, job-board fail-open + credential injection). T52 — verify first whether Supabase's compromised-password check is reachable via the Management API/MCP before assuming it needs an owner to click the dashboard toggle by hand; do not guess. T139 is exploratory (evaluate generated columns/materialized views) and may resolve to 'no change' rather than a build. T244 was 4/5 AC as of this review (AC5 — the live Telegram-bot-token vault fix — already done 2026-08-21); confirm its remaining AC before folding it in.",
+        "_not_yet_checked": "No `just` recipe checks these conditions yet, so per `_exit_check_rule` they are UNCHECKED, not passed. A ticked acceptance criterion is a claim; the live proofs below are evidence only once recorded in the ticket's status notes with the measured result.",
         "_exit_met_comment": "Not yet met."
       }
     ],
-    "_exit_check_rule": "A stage's exit is MET only when every condition has a command AND every command exits 0. A condition with no command is UNCHECKED and blocks the stage from ever reporting met — deliberately, because the alternative is a stage that declares itself complete on the strength of the conditions someone happened to automate. Unchecked is not neutral; it is the reason the stage cannot be called done.",
-    "_active_stage_note": "Plan opened 2026-09-18, continuing ROADMAP §19 after 'Authorization Core' (the prior narrower target within the same section) was declared exhausted the same day. Stage-0 is `blocking: true` and is where work should start — it is the only stage where the underlying condition was independently re-verified as live, TODAY, rather than inferred from ticket frontmatter. Stages 1-3 are ordered by how much of their gap is residue from already-done work (stage-1) vs net-new build (stage-2/3), not by priority label alone — several stage-2/3 tickets carry P1 but are large net-new features, not closeable gaps. T17/T18/T19/T31 and T396 are deliberately absent from every stage; see `_deferred_owner_decision` and `_needs_narrowing` above for why, and re-admit them once their blocking decision is made rather than defaulting them into a stage to make the count look complete.",
+    "_comment": "Set by `just plan-set` (owner 2026-10-01: gather the member-area and resume/profile tickets into one Hero Epic and work it in order). The stages below are NOT the tool's status projection: they are the owner's two groups in the owner's order, so a status change cannot reorder them. Ticket ids only; the reasoning lives in ROADMAP §38.",
     "_set": {
-      "at": "2026-09-29T09:18:29Z",
-      "reason": "T335 bootstrap: stamp the existing ROADMAP §19 plan (continued 2026-09-18) so hand-edits become detectable; stages untouched",
-      "fingerprint": "6596968f12924433",
-      "adopted": true
-    }
+      "at": "2026-10-01T14:46:50Z",
+      "reason": "Owner 2026-10-01: gather the member-area and resume/profile tickets into one Hero Epic and work it in order",
+      "fingerprint": "40cc8d002a808630"
+    },
+    "_active_stage_note": "Stage-1 before stage-2, and within a stage in the order listed. A step only the owner can run (apply a migration, a live proof, a decision) is named in its ticket and does not stop the next buildable step. The plan this replaced, 'Security & RBAC Hardening' (ROADMAP §19, with 20 tickets still open, stage-0 met 2026-09-19), is kept whole in .w0m/plan-history.jsonl; its tickets stay open under §19 and nothing was closed or moved."
   },
   "skills_governance_scopes": {
     "_comment": "T147 AC2+AC4, owner decision 2026-08-17. TWO governance roots, not one. The project manifest (wom7web/.w0m/skills.json) governs .claude/skills; the USER manifest (~/.claude/.w0m/skills.json) governs ~/.claude/skills, which held 15 skills no manifest covered — real directories, no version, no integrity hash, loaded into EVERY session on this host while `check` printed '0 unmanaged' about the project tree beside them. They are governed separately rather than annexed by whichever project you happened to run from: a project manifest describes one repo, and these load everywhere. ⚠️ The user manifest is UNVERSIONED (~/.claude is not a git repo), so its decisions cannot be reviewed in a diff — accepted because the lockfile's job is DETECTION, which works unversioned; the reasoning belongs in a ticket. 🔴 Adoption is never automatic: `reconcile` with no decision flag only LISTS, and each skill is decided one at a time, because a bulk yes is indistinguishable from never having looked.",
