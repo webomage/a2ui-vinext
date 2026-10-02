@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**356 recorded decision(s)** — 31 structured (AgDR), 325 in place across 163 file(s).
+**358 recorded decision(s)** — 31 structured (AgDR), 327 in place across 164 file(s).
 
 ## Structured records (AgDR)
 
@@ -53,6 +53,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 
 | Date | Where | Decision |
 |---|---|---|
+| 2026-10-02 | [`.tasks/T539.md:56`](../.tasks/T539.md) | - Split from: [[T537]] (owner decision 2026-10-02). Supplies the live data for [[T533]] AC3 to AC5 for the owner's own account. |
 | 2026-10-01 | [`.tasks/T508.md:129`](../.tasks/T508.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): |
 | 2026-10-01 | [`.tasks/T509.md:186`](../.tasks/T509.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): |
 | 2026-10-01 | [`.tasks/T510.md:195`](../.tasks/T510.md) | are already in git history. DEFERRED (owner, 2026-10-01): wait until the estate is clean and its change tracing is stable. 18 files under private/resumes/ (and the static public set) are tracked, |
@@ -411,6 +412,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`.tasks/T435.md:56`](../.tasks/T435.md) | t human (e.g. a Touch ID prompt) — AC8, owner decision. |
 | [`.tasks/T493.md:133`](../.tasks/T493.md) | may be retirable: that is an owner call, not made here. |
 | [`.tasks/T518.md:3`](../.tasks/T518.md) | : "Group C, seven scripts waiting on an owner decision: the news pipeline, tracks, the crawler smoke test, internal-docs indexing, Upwork backfill" |
+| [`.tasks/T539.md:45`](../.tasks/T539.md) | - [ ] AC6 — Message text out of git (owner decision pending). rooms.jsonl carries real client conversations and is tracked. If the owner confirms: the message-bearing files are untracked and ignored, the loader reads from the ignored path, and history is left |
 | [`TECH-DEBT.md:65`](../TECH-DEBT.md) | r decision) |
 | [`wom7web/project/data/cv/resolutions.json:2`](../wom7web/project/data/cv/resolutions.json) | " comment": "T165 task 2.6 — owner rulings that permanently clear a reported conflict. This file is the ONLY way a conflict stops being reported: the importer never decides. Key format is <entity ::<field , exactly as printed by just cv-import . Adding a key h |
 | [`wom7web/project/data/cv/resolutions.json:10`](../wom7web/project/data/cv/resolutions.json) | "decidedOn": "YYYY-MM-DD (absolute, never relative)" |
