@@ -1428,3 +1428,10 @@ Meanwhile, adjacent standard Markdown links (`[WORKFLOW-COVERAGE.md](WORKFLOW-CO
 - **Lesson =>**: Collaborative worktrees are shared with other agents and humans; never run blanket git restores or resets, use surgical file-scoped git adds and reverts.
 - ⭐ **The Tell**: Blanket git reset/clean in terminal history.
 
+### A default argument that holds the real transport sends the real request from a test (T537, 2026-10-02)
+
+`def step(..., net: Net = _http_post)` binds the function object when the module loads. A test that patched `module._http_post` afterwards patched a name the step no longer looked up, so the test used the REAL transport and sent a real registration request to Upwork, to a third party, before the owner had given the per-step go.
+
+- Tell: a test that is supposed to use a fake fails on an assertion about the RESPONSE (here, `registered` was false) rather than erroring on a missing fake. A fake that is wired in answers exactly what it was told to.
+- Rule: bind the transport at call time (`net = net or _http_post`), and give any test file that exercises code with an outward path a module-level guard that makes the real transport raise, plus a test that proves the guard fires. Write the guard BEFORE the first test that touches a step, not after the first surprise.
+
