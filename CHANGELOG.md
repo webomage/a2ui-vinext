@@ -2,6 +2,19 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.02-1790927707
+_First deployed: 2026-10-02 08:08:00.976014+00_
+
+### Features
+- **governance**: define base roles and per-service capability switches in clients policy (T299) ([T299](file:///.tasks/T299.md))
+
+### Fixes
+- **state**: STATE.md ticket links pointed into a scratch directory; lesson on derived files generated in a scratch copy
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `7ea7aab` | 2026-10-02 08:08:00.976014+00 |
+
 ## 2026.10.01-1790882082
 _First deployed: 2026-10-01 19:32:36.158393+00_
 
