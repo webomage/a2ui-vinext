@@ -146,3 +146,24 @@ What this changes in the decision of section 9:
 - The MCP's data is GraphQL-shaped (`data.vendorProposal`, the same wrapper the API returns). The screening answers we never stored may therefore be requestable from the API poller too; untested, because the API token is dead.
 - What the MCP adds is Upwork's OAuth and tool surface, not data the API cannot return. The case for it rests on onboarding, which (a) just weakened.
 
+## 12. How the MCP sync worked "last time", 2026-10-02 (read from the repository, nothing run)
+
+It was never a server-side sync. It was the owner's laptop, using the owner's own MCP session.
+
+| Step | What | Where |
+|---|---|---|
+| 1 | `just upwork-mcp-sync` runs `project/scripts/upwork_mcp_sync.py`, which starts `pnpm dlx mcp-remote https://mcp.upwork.com/mcp` and speaks JSON-RPC to it. `mcp-remote` registers itself as a public client ("MCP CLI Proxy") with a LOOPBACK redirect (`http://localhost:23037/oauth/callback`), runs a tiny local server there to catch the authorization code, and keeps the tokens in `~/.mcp-auth/`. | the owner's machine |
+| 2 | The script reads contracts (`list_contracts search`), proposals (`list_freelancer_proposals list` and `invitations`), rooms and messages (`get_messages list_rooms`, `list_messages`), the profile (`get_profile get`) and the agency dashboard (`get_agency_dashboard check`), for the freelancer and agency contexts. | MCP |
+| 3 | It writes line-delimited files to `project/data/upwork/` (`contracts.jsonl`, `proposals.jsonl`, `rooms.jsonl`, profile JSON) and markdown notes to the vault. Last written 2026-08-19. It makes NO database call. | the repository |
+| 4 | `just upwork-harvest-proposals` (`upwork_harvest_proposals.py`) does the same for the full proposal history: `list_freelancer_proposals list` then `get`, keeping the whole response as `raw_proposal` in `proposals_archive.jsonl` (1,782 lines, last written 2026-08-19). | the repository |
+| 5 | `backfill_upwork_proposals.py` (T155, 2026-09-15) loads cover letters and tags from the archive into `public.proposals`. Nothing equivalent loads rooms or messages from the JSONL into the database. | the database |
+
+The CP button "Verify & Sync MCP" (`apps/cp/src/pages/api/sync/upwork-mcp.ts`) only calls that same Python script when the route runs under local Node. On the deployed Cloudflare runtime the call always throws, the route falls into "edge mode" and merely counts rows, and the response says no sync ran. So the button has never done a server-side sync.
+
+What reached the database: contracts and rooms from the API poller (which died on 2026-09-19), proposals from steps 4 and 5. Messages stayed at 15 rooms because the poller's room-fetch budget was 10 per run.
+
+Consequences for T537:
+1. The MCP session that worked is the loopback mechanism option 2 describes, on one laptop. "MCP sync" was proven for the owner, locally, not for members or servers.
+2. The owner's `mcp-remote` session is alive now (its token file was rewritten about 4 hours before the 2026-10-02 probe), so the laptop scripts can bring contracts, proposals, rooms and messages current today with no new sign-in.
+3. The scripts call `get_profile` and `get_agency_dashboard`, which the T537 allowlist does not list. They are reads, but the allowlist decides for server code only; whether the connector needs them is a decision, not an oversight to patch silently.
+
