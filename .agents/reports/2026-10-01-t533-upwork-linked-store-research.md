@@ -116,3 +116,21 @@ Question from the owner: the Upwork API needed a separate key per context; could
 5. Rate limits for MCP calls (unpublished).
 
 Sources: [Upwork MCP](https://www.upwork.com/ai/mcp), [Upwork GraphQL API docs](https://www.upwork.com/developer/documentation/graphql/api/docs/index.html).
+
+## 10. The probe's result, 2026-10-02 (owner run; report `2026-10-02-t533-upwork-schema-probe.md`)
+
+**Point 1 of section 9 is answered: yes.** The MCP offers 51 tools, and the poller's whole read surface exists in them:
+
+| The poller needs | MCP tool and actions |
+|---|---|
+| rooms and messages | `upwork__get_messages`: `list_rooms`, `find_room`, `search_rooms`, `list_messages`, `get_message` |
+| contracts | `upwork__list_contracts`: `list`, `get`, `search`, `timesheets`, `end_reasons`; `upwork__list_milestones` |
+| offers (the link from a proposal to a contract) | `upwork__list_offers`: `get`, `list`, `list_mine`, `get_attachments` |
+| proposals | `upwork__list_freelancer_proposals`: `get`, `list`, `invitations`, `get_room` (a proposal-to-room link) |
+| the job behind a proposal | `upwork__find_jobs` `get`: not probed yet, so unknown whether it returns description, budget and skills for an old, closed posting |
+
+**Proposal fields (5 of 5 fetched), against what we store.** The source returns `questionsAnswers[].question/answer`, `terms.chargeRate`, `terms.connectsBid`, `status.reason`, `auditDetails` dates and `marketplaceJobPosting.{id,url,content.title}`. The job posting inside a proposal carries only a title: no description, no budget, no skills. The screening answers are confirmed as the part of the response we did not store.
+
+**A cost the section 9 sketch did not have: 15 of the 51 tools write** (`send_message`, `manage_proposals send_proposal/withdraw`, `post_job`, `end_contract`, `update_profile`, `manage_milestones`, `respond_to_offer` and others). An MCP token held by a server can call them, where an API token is bounded by the scopes granted to the key. The MCP defaults write tools to `always_ask` confirmation, which protects a human session and does nothing for an unattended one. Any server-held MCP token needs the read-only tool allowlist the probe already enforces (`call_allowed`) built into the poller.
+
+**Point 4 (does the MCP token work on `api.upwork.com/graphql`): not settled.** The probe got HTTP 403 with a body that was not JSON. Measured the same day with a dummy token: the same endpoint answers HTTP 401 with a JSON body for every User-Agent tried, so the 403 is not a User-Agent block and the endpoint distinguishes the two tokens. The probe now records the body's kind, size and a masked snippet so one more run can say whether this is the API refusing a recognised token or an edge page.
