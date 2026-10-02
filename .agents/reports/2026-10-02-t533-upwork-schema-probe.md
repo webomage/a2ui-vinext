@@ -158,3 +158,5 @@ Key names and tool metadata only. No value from any response is printed. Read-on
 **inconclusive**: HTTP 403 with a body that is not GraphQL JSON, which looks like a firewall page rather than the API's own answer.
 
 HTTP status: 403. GraphQL errors: no. No token and no id is printed or stored.
+
+Body: html, 5018 bytes, starts with `<!DOCTYPE html><!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en-US"> <![`.
