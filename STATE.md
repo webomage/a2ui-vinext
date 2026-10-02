@@ -18,7 +18,7 @@
 | 1 | [T468](/Users/proto/Projects/@self/@wom/.tasks/T468.md) | [#468](https://github.com/webomage/wom7board/issues/468) | P0 | in-progress | data | 125 | Upwork as a synced source layer: mirror schema, source links, work-history mapping, move |
 | 2 | [T503](/Users/proto/Projects/@self/@wom/.tasks/T503.md) | [#503](https://github.com/webomage/wom7board/issues/503) | P0 | in-progress | sdlc | 125 | Deploy flow: gates run before the schema write, and the fast ratchets run where the chan |
 | 3 | [T52](/Users/proto/Projects/@self/@wom/.tasks/T52.md) | [#52](https://github.com/webomage/wom7board/issues/52) | P0 | queued | security | 110 | Enable compromised password checks in Supabase Auth |
-| 4 | [T213](/Users/proto/Projects/@self/@wom/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 106 | Job-board sources fail open on a dead credential, and the credentials are unmanaged lite |
+| 4 | [T213](/Users/proto/Projects/@self/@wom/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 107 | Job-board sources fail open on a dead credential, and the credentials are unmanaged lite |
 | 5 | [T244](/Users/proto/Projects/@self/@wom/.tasks/T244.md) | [#244](https://github.com/webomage/wom7board/issues/244) | P0 | queued | security | 106 | A revoked Cloudflare token is stored, synced to production, and read by nothing — three  |
 | 6 | [T439](/Users/proto/Projects/@self/@wom/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 101 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
 | 7 | [T481](/Users/proto/Projects/@self/@wom/.tasks/T481.md) | [#481](https://github.com/webomage/wom7board/issues/481) | P1 | in-progress | sdlc | 100 | One persistent isolated STABLE worktree: full local regression runs there,  📄 live spec |
@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 251 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **251** are
+> ⚠️ **0 of 253 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **253** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -62,8 +62,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `beta` | **5** | 6 | `48c11363` |
-| `wom7api` | `beta` | **1** | 0 | `90437c7` |
+| `wom7web` | `beta` | **14** | 0 | `3d75535d` |
+| `wom7api` | `beta` | **5** | 0 | `d765b63` |
 | `wom7func` | `beta` | 0 | 0 | `35a7415` |
 | `wom7skills` | `beta` | 0 | 0 | `72d4248` |
 | `wom7ext` | `beta` | 0 | 0 | `57b3e6b` |
@@ -71,9 +71,9 @@
 | `wom7mlx/wom7mlx` | `beta` | 0 | 0 | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 251 open · 535 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 253 open · 537 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T503","T52","T213","T244","T439","T481","T498","T504","T510"],"repos":{"wom7api":{"branch":"beta","dirty":1,"has_upstream":true,"head":"90437c7","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72d4248","unpushed":0},"wom7web":{"branch":"beta","dirty":5,"has_upstream":true,"head":"48c11363","unpushed":6}},"tickets":{"open":251,"rowless_open":[],"rows":535}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T503","T52","T213","T244","T439","T481","T498","T504","T510"],"repos":{"wom7api":{"branch":"beta","dirty":5,"has_upstream":true,"head":"d765b63","unpushed":0},"wom7ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":0},"wom7func":{"branch":"beta","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":0},"wom7mlx/wom7mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":0},"wom7sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":0},"wom7skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72d4248","unpushed":0},"wom7web":{"branch":"beta","dirty":14,"has_upstream":true,"head":"3d75535d","unpushed":0}},"tickets":{"open":253,"rowless_open":[],"rows":537}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -125,65 +125,58 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-10-01 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-10-02 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-#### In-flight tickets (21):
+#### In-flight tickets (22):
 
 - **T16** — Verify & archive built-but-unarchived changes
-  - **2026-08-23** (39d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
+  - **2026-08-23** (40d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
 - **T153** — ZeroClaw as a managed w0m runtime — omlx-backed local agent, bidirectional w0m↔zeroclaw, tracked install config, and sandboxed client-project audits
-  - **2026-09-17** (14d ago): Start T153: ZeroClaw managed runtime & ecosystem integration
+  - **2026-09-17** (15d ago): Start T153: ZeroClaw managed runtime & ecosystem integration
 - **T234** — Trial ai-memory as the recall layer — and find out how much of auto-memory is a duplicate register
-  - **2026-09-05** (26d ago): relocated verbatim from the TASKS.md board row (T228 AC5b — the ticket is the source, the board a projection; row exceeded the 4,096 B per-row bound, project/tasks_bounds.py).
+  - **2026-09-05** (27d ago): relocated verbatim from the TASKS.md board row (T228 AC5b — the ticket is the source, the board a projection; row exceeded the 4,096 B per-row bound, project/tasks_bounds.py).
 - **T257** — Retire the six emoji-to-parser couplings — the half of \"no emoji in logs\" that is a migration, not a cleanup
-  - **2026-08-25** (37d ago): 🔬 the script_output detector matches the WORD, not the CONTEXT, and it cost a
+  - **2026-08-25** (38d ago): 🔬 the script_output detector matches the WORD, not the CONTEXT, and it cost a
 - **T263** — ai-intake-service-requests
-  - **2026-08-23** (39d ago): 📌 RENAMED T16c → T263 on  (T242 AC3) — re-id'd to the next free sequential id.
+  - **2026-08-23** (40d ago): 📌 RENAMED T16c → T263 on  (T242 AC3) — re-id'd to the next free sequential id.
 - **T290** — Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own invoice paid, and nothing reconciles invoices against Stripe
-  - **2026-09-12** (19d ago): owner began connecting Stripe (test-mode keys stored in beta), and split the
+  - **2026-09-12** (20d ago): owner began connecting Stripe (test-mode keys stored in beta), and split the
 - **T301** — Five of six policy schemas are decorative: written, declared, and loaded by nothing
   - ⚠️ NO status note recorded where this stopped
 - **T308** — Own the ~/Projects estate inventory audit — reclaim safe disk space in w0m-governed repos and correct the audit's own governance measurement trap
   - ⚠️ NO status note recorded where this stopped
 - **T439** — CP information architecture — one shell with a Me / Org / Admin context switcher, capability-grown menus, and DS layout components
-  - **2026-10-01** (today): Hero Epic check: the 6 open criteria are all C4, and C4 is blocked, not skipped. Open: AC4 and AC5 (the client-org context, then the cutover that deletes ClientLayout, /client/, switch-role and the banner), AC6 (Gauge specs per context and role), AC7 and AC10
+  - **2026-10-01** (1d ago): Hero Epic check: the 6 open criteria are all C4, and C4 is blocked, not skipped. Open: AC4 and AC5 (the client-org context, then the cutover that deletes ClientLayout, /client/, switch-role and the banner), AC6 (Gauge specs per context and role), AC7 and AC10
 - **T458** — Org and engagement model — w0m platform and root, webomage operator company, default home orgs, engagements <contractor>.<engagement>.<client> with minimum hats
-  - **2026-10-01** (today): (verified) — AC3 verified across living docs: TERMINOLOGY-MAP.md §7, RBAC-PROJECT-ROLES-PIVOT.md §9.2/§10, AUTH-RBAC.md, RBAC-MAP.md, multi-role-user-stories.md, and CP IA plans (2026-09-24-cp-context-shell-ia) all strictly point to AgDR-0027 and AgDR-0028. Contradiction review clean; openspec validate 2026-09-25-org-engagement-model passes strict. AC3 marked done; T458 at 5/7 (71%), blocked on T468 Upwork sync layer for S6.
+  - **2026-10-01** (1d ago): (verified) — AC3 verified across living docs: TERMINOLOGY-MAP.md §7, RBAC-PROJECT-ROLES-PIVOT.md §9.2/§10, AUTH-RBAC.md, RBAC-MAP.md, multi-role-user-stories.md, and CP IA plans (2026-09-24-cp-context-shell-ia) all strictly point to AgDR-0027 and AgDR-0028. Contradiction review clean; openspec validate 2026-09-25-org-engagement-model passes strict. AC3 marked done; T458 at 5/7 (71%), blocked on T468 Upwork sync layer for S6.
 - **T468** — Upwork as a synced source layer: mirror schema, source links, work-history mapping, move the copied rows out of our tables
-  - **2026-09-29** (2d ago): (recap, correcting a stale line) — Q1-Q5 were ALREADY answered (owner, 2026-09-27: yes to all; AC1 ticked; AgDR-0029 accepted). An earlier session summary here said the ticket was "waiting on Q1-Q5"; that was wrong. Phase A is live (mirror schema and source_links applied, 0 rows in every mirror table). Phase B built, not yet deployed: _shared/upwork-mirror.ts (pure mappers + UpworkMirror writer) and upwork-poller now ALSO writes the mirror after each legacy write. Additive by design: the legacy path is unchanged, nothing reads the mirror, and a mirror failure never fails the sync, but it is never silent (mirror_write_failed log, and mirrorWrites / mirrorFailures / mirrorErrors in the SYNC_UPWORK_SUCCESS row).
+  - **2026-09-29** (3d ago): (recap, correcting a stale line) — Q1-Q5 were ALREADY answered (owner, 2026-09-27: yes to all; AC1 ticked; AgDR-0029 accepted). An earlier session summary here said the ticket was "waiting on Q1-Q5"; that was wrong. Phase A is live (mirror schema and source_links applied, 0 rows in every mirror table). Phase B built, not yet deployed: _shared/upwork-mirror.ts (pure mappers + UpworkMirror writer) and upwork-poller now ALSO writes the mirror after each legacy write. Additive by design: the legacy path is unchanged, nothing reads the mirror, and a mirror failure never fails the sync, but it is never silent (mirror_write_failed log, and mirrorWrites / mirrorFailures / mirrorErrors in the SYNC_UPWORK_SUCCESS row).
 - **T476** — /me/account: stop leaking the founder's data, link identities by server PKCE, then merge the two identity sections
-  - **2026-10-01** (today): Hero Epic check: nothing here an agent can build or prove. AC3 needs two things only a person can do: the interactive Google link round trip (no #access_token in the URL, the new identity listed) and a signed-in NON-founder
+  - **2026-10-01** (1d ago): Hero Epic check: nothing here an agent can build or prove. AC3 needs two things only a person can do: the interactive Google link round trip (no #access_token in the URL, the new identity listed) and a signed-in NON-founder
 - **T477** — Pre-push: stop the slow scans walking node_modules, then run independent gates in parallel
-  - **2026-09-29** (2d ago): AC1 done and measured; AC2/AC3 not started. emoji_policy_check._pruned_glob and
+  - **2026-09-29** (3d ago): AC1 done and measured; AC2/AC3 not started. emoji_policy_check._pruned_glob and
 - **T481** — One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it
-  - **2026-10-01** (today): (later) — Deploy 2026.10.01-1790875829 stopped at the test gate; cause was my own test. The blocking py-test suite failed 2 of 290: test_push_cadence_check.py (added for the stable-worktree fix) inherited W0M_RELEASE_WORKTREE=1, which just deploy exports to every suite. Nothing was published and nothing changed live (the chain stops before the database step; release record and tags absent). Reproduced locally by setting the variable; fixed by clearing it in the test and adding a case for the flag; 12 tests pass with the flag on and off under unittest and pytest, 2 mutations caught. Lesson recorded. The same run showed [UNKNOWN] 13 suite(s) passed with an UNREADABLE check count; it also appears in the stable run, so it predates this deploy and is advisory. Worktrees on disk were 5 of 5 after the cut, as the rule intends. Also measured (read-only): the pnpm "Ignored build scripts" warning has no measured impact (report .agents/reports/2026-10-01-t481-pnpm-ignored-builds-impact.md); allowing the scripts adds no measurable install time (timings in that report).
+  - **2026-10-01** (1d ago): (later) — Deploy 2026.10.01-1790875829 stopped at the test gate; cause was my own test. The blocking py-test suite failed 2 of 290: test_push_cadence_check.py (added for the stable-worktree fix) inherited W0M_RELEASE_WORKTREE=1, which just deploy exports to every suite. Nothing was published and nothing changed live (the chain stops before the database step; release record and tags absent). Reproduced locally by setting the variable; fixed by clearing it in the test and adding a case for the flag; 12 tests pass with the flag on and off under unittest and pytest, 2 mutations caught. Lesson recorded. The same run showed [UNKNOWN] 13 suite(s) passed with an UNREADABLE check count; it also appears in the stable run, so it predates this deploy and is advisory. Worktrees on disk were 5 of 5 after the cut, as the rule intends. Also measured (read-only): the pnpm "Ignored build scripts" warning has no measured impact (report .agents/reports/2026-10-01-t481-pnpm-ignored-builds-impact.md); allowing the scripts adds no measurable install time (timings in that report).
 - **T493** — Move the personal and business features out of admin CP into the member profile (Me) — admin CP stays as the reference until confirmed
-  - **2026-10-01** (today): (owner screenshots, 15:07 to 15:09) — AC1 verified; AC2 partly. /me/todos matches (above). /me/upwork/proposals renders with status tabs and a cover letter, and /me/upwork/messages lists "55" conversations (as expected: 55 rooms). A defect of mine, found from the screenshot and fixed: the tab counts summed to exactly 1,000 (Archived 439, Accepted 266, Withdrawn 119, Activated 103, Hired 73) while the database holds 1,782 (Archived 969, Declined 213 with no tab at all). The tabs were counted from a select ... limit(2000), and one Supabase response is silently capped at 1,000 rows. Now readAll reads every page and fails closed on any error; 21 new tests written first, 12 mutations caught, including the original page. Still open for AC2: open one room and see its thread (not in the screenshots), and the check that an admin who is not the owner sees none of these rows. The page shows a cover letter but not the screening answers: they were never written to the database (725 proposals have them in the local archive); that is [[T533]].
+  - **2026-10-01** (1d ago): (owner screenshots, 15:07 to 15:09) — AC1 verified; AC2 partly. /me/todos matches (above). /me/upwork/proposals renders with status tabs and a cover letter, and /me/upwork/messages lists "55" conversations (as expected: 55 rooms). A defect of mine, found from the screenshot and fixed: the tab counts summed to exactly 1,000 (Archived 439, Accepted 266, Withdrawn 119, Activated 103, Hired 73) while the database holds 1,782 (Archived 969, Declined 213 with no tab at all). The tabs were counted from a select ... limit(2000), and one Supabase response is silently capped at 1,000 rows. Now readAll reads every page and fails closed on any error; 21 new tests written first, 12 mutations caught, including the original page. Still open for AC2: open one room and see its thread (not in the screenshots), and the check that an admin who is not the owner sees none of these rows. The page shows a cover letter but not the screening answers: they were never written to the database (725 proposals have them in the local archive); that is [[T533]].
 - **T498** — Resume Studio writes real resumes: curated per-employer highlights with role and tech tags, so each version accents different positions
-  - **2026-10-01** (today): Hero Epic check (read-only, live): AC8's first two owner steps are already done. profile_cv_facts holds 29 rows on the owner's profile and nothing on any other, so the migration is applied and the live load ran.
+  - **2026-10-01** (1d ago): Hero Epic check (read-only, live): AC8's first two owner steps are already done. profile_cv_facts holds 29 rows on the owner's profile and nothing on any other, so the migration is applied and the live load ran.
 - **T499** — Resume Studio keeps highlights and tags in the database only: edit in Studio, parse raw uploads into highlights, save exports as files in the member's vault; retire the JSON seed
-  - **2026-10-01** (today): (post-deploy, release 2026.10.01-1790882082) — The deploy this ticket was waiting for has shipped. Read-only: the newest profile_resumes row is still from 2026-09-28, so "Save variant" (AC4) has not been used since. Owner step now unblocked: in Resume Studio edit one highlight (tag, text, excluded) and reload (AC2), then press "Save variant" once (AC4); a new row should appear whose storage_path resolves to an object in the resumes bucket.
+  - **2026-10-01** (1d ago): (post-deploy, release 2026.10.01-1790882082) — The deploy this ticket was waiting for has shipped. Read-only: the newest profile_resumes row is still from 2026-09-28, so "Save variant" (AC4) has not been used since. Owner step now unblocked: in Resume Studio edit one highlight (tag, text, excluded) and reload (AC2), then press "Save variant" once (AC4); a new row should appear whose storage_path resolves to an object in the resumes bucket.
 - **T503** — Deploy flow: gates run before the schema write, and the fast ratchets run where the change is made, not at deploy time
-  - **2026-09-30** (1d ago): The four ratchets that failed on  fail at git push (or commit, for tickets), in about a second.
+  - **2026-09-30** (2d ago): The four ratchets that failed on  fail at git push (or commit, for tickets), in about a second.
 - **T505** — Personal information model: one contact record (shared by Resume Studio and KYC) and a separate, locked identity record for KYC
-  - **2026-10-01** (today): (later) — AC7 and AC11 split into [[T528]] (owner "do", taking the recommended answer). The ticket now closes on its own work: the contact and identity records, their RLS and column grants, and the Profile controls.
+  - **2026-10-01** (1d ago): (later) — AC7 and AC11 split into [[T528]] (owner "do", taking the recommended answer). The ticket now closes on its own work: the contact and identity records, their RLS and column grants, and the Profile controls.
 - **T510** — Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card
-  - **2026-10-01** (today): (post-deploy, release 2026.10.01-1790882082) — U3 is live, and what that proves so far (anonymous and read-only). Both apps serve 2026.10.01-1790882082. cv-pdf answers 404 with Cache-Control: no-store for an unknown member and a malformed id, and 405 for POST; parse-resume and w0m-personnel answer 401 without a session. /team renders 200 with 3 LinkedIn links and 0 "Resume (PDF)" links, which is correct: profile_public_settings has 2 rows, linkedin_on = 2, resume_published = 0. Not proven, and why: the settings box and the confirm step (behind login), a 200 PDF (nobody has switched Public resume on), "Save variant" and the set-primary RPC from Studio (needs a signed-in action). Owner live proof (AC7): sign in, open /me/profile, switch Public resume on and confirm, open the published link in a private window and expect 200, switch it off and expect 404; record the codes here.
+  - **2026-10-01** (1d ago): (post-deploy, release 2026.10.01-1790882082) — U3 is live, and what that proves so far (anonymous and read-only). Both apps serve 2026.10.01-1790882082. cv-pdf answers 404 with Cache-Control: no-store for an unknown member and a malformed id, and 405 for POST; parse-resume and w0m-personnel answer 401 without a session. /team renders 200 with 3 LinkedIn links and 0 "Resume (PDF)" links, which is correct: profile_public_settings has 2 rows, linkedin_on = 2, resume_published = 0. Not proven, and why: the settings box and the confirm step (behind login), a 200 PDF (nobody has switched Public resume on), "Save variant" and the set-primary RPC from Studio (needs a signed-in action). Owner live proof (AC7): sign in, open /me/profile, switch Public resume on and confirm, open the published link in a private window and expect 200, switch it off and expect 404; record the codes here.
 - **T532** — E2E local sandbox execution environment and full corpus verification run
-  - **2026-10-01** (today): Queued: Split from [[T237]] AC7 to track safe local sandbox execution and full corpus verification run.
-
-#### Completed today (6):
-
-- **T77** — Reconcile the openspec spec-drift backlog (DONE. All 5 active orphan changes audited, documented, and archived. scripts/spec_drift_gate.py elevated with structured recommendations and orphan-change graduated to HARD blocking gate. All test suites passing 100% green.)
-- **T237** — 190 specs validate clean and 4 authorization tests pass for the wrong reason — revalidate the corpus against reality ((progress) — AC1, AC2, AC3, AC4 resolved and verified)
-- **T299** — A tier ladder cannot say \"tickets yes, deploys no\" — replace the role enum with a base role plus per-service switches (Completed T299 (8/8 ACs satisfied and verified))
-- **T366** — Per-developer-profile connection and credential isolation: workspace-scoped routing for Infisical, Jam, Git, and third-party platform credentials (T366 completed: Developer profile connection registry & credential isolation operational (6/6 ACs, 100%))
-- **T392** — Make AgDR an estate-wide decision-record standard, not wom7web-only (All 5 ACs verified: AgDR elevated to root, index generator widened, 8 repos wired, trace tests passing)
-- **T396** — Client Delivery Readiness: End-to-end client functions security and authz audit ((verified) — AC2 & AC5 verified in test & probe suite)
+  - **2026-10-01** (1d ago): Queued: Split from [[T237]] AC7 to track safe local sandbox execution and full corpus verification run.
+- **T536** — Gate Guild To-dos to w0m unit members via capability and restrict /me/todos and todos API
+  - **2026-10-02** (today): Queued: Created per owner direction to restrict Guild to-dos to w0m unit members via the capability system.
 
 ## 3. Other open threads (in TASKS.md)
 
