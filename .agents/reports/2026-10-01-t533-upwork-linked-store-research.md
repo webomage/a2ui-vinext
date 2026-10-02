@@ -93,3 +93,26 @@ Found while tracing the empty rooms; filed as [[T535]]. Measured read-only from 
 Consequences for this research: (a) a live sync cannot be tested until it is revived, which needs the owner's re-authorization if the refresh token is dead; (b) the local MCP harvest (`upwork_harvest_proposals.py`) uses a separate OAuth session and is the only path that carried the screening answers, so the backfill of the 725 archived proposals does not depend on the poller; (c) the poller reads only new items on its proposal leg, so even a revived poller would not backfill answers by itself.
 
 Message fetch details: `roomStories` carries the `StoryFilter` fix and throws on schema errors; the poller fetches messages for at most 10 rooms per run, retries rooms that hold none, and wraps the entire room loop in one `try`, so one failing room stops all rooms after it. `direction` is never set.
+
+## 9. Can the poller run as an MCP client? Measured 2026-10-02
+
+Question from the owner: the Upwork API needed a separate key per context; could a poller instead be an MCP client using each unit member's own connection?
+
+**Measured (no secrets read; key names and public metadata only):**
+
+| Fact | Evidence | Meaning |
+|---|---|---|
+| The MCP server's OAuth is Upwork's own OAuth | `https://mcp.upwork.com/.well-known/oauth-authorization-server`: `authorization_endpoint` `www.upwork.com/ab/account-security/oauth2/authorize`, `token_endpoint` `www.upwork.com/api/v3/oauth2/token` (the same endpoint `_shared/upwork.ts` refreshes against) | one identity system, not two |
+| Grants offered | `authorization_code`, `refresh_token`, `client_credentials`; PKCE `S256` only | a refresh needs no browser; `client_credentials` is unexplored |
+| Clients register themselves | `registration_endpoint` `www.upwork.com/register`; the local `mcp-remote` client is `token_endpoint_auth_method: none` (public, PKCE), `client_secret_expires_at: 0`, issued 2026-08-26 | no API key or secret to manage per context |
+| Token shape | `expires_in` 86400, `refresh_token` present | same 24 h as the API token |
+| Longevity | the registration is 37 days old and the token file was rewritten about 4 hours before this check | consistent with unattended refresh; NOT proof of refresh-token lifetime |
+
+**Not measured (each decides the design):**
+1. Whether `tools/list` exposes contracts, rooms and messages (the poller needs `roomList` and `roomStories`). The owner-run schema probe answers it.
+2. Whether a token from a client we register ourselves is accepted by `mcp.upwork.com/mcp` from a server address.
+3. Whether the refresh token rotates, and its lifetime. Rotation means one writer per grant: the laptop's `mcp-remote` and a server must never share one.
+4. Whether an MCP-issued access token is also accepted by `api.upwork.com/graphql`. If yes, the existing poller code works unchanged with a different token source.
+5. Rate limits for MCP calls (unpublished).
+
+Sources: [Upwork MCP](https://www.upwork.com/ai/mcp), [Upwork GraphQL API docs](https://www.upwork.com/developer/documentation/graphql/api/docs/index.html).
