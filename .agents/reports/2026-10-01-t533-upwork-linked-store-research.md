@@ -137,3 +137,12 @@ Sources: [Upwork MCP](https://www.upwork.com/ai/mcp), [Upwork GraphQL API docs](
 
 **Probe rerun (same day, with the body-shape recording):** the GraphQL check came back HTTP 403 with an HTML page (5,018 bytes, a Cloudflare-style template), not the API's JSON. The same Python transport with a dummy token gets a JSON 401 for every User-Agent tried, so the client is not the cause: a real MCP token is refused at the edge or gateway and a malformed one is not. Practical verdict: **the MCP token does not work on `api.upwork.com/graphql` from here**, so an MCP-sourced token cannot feed the existing poller unchanged, and a poller on the MCP would be a new client (rooms and messages are available there, see above). The API-key sign-in route stays the way to revive the current poller.
 
+## 11. Spike result (a), 2026-10-02: Upwork's MCP registration refuses an https redirect
+
+Owner ran `upwork_mcp_spike.py register` with `https://webomage.com/upwork-mcp-spike`: HTTP 400 `invalid_redirect_uri`, no client created. [n8n community report](https://community.n8n.io/t/mcp-oauth-dynamic-client-registration-fails-with-upwork-mcp/309437) and a [plugin PR](https://github.com/nvdigitalsolutions/mcp-ai-wpoos/pull/6794) report the same: loopback registers, public https does not (community reports, not an Upwork statement). The PR also reports HTTP 415 for JSON token requests, so token requests are form-encoded.
+
+What this changes in the decision of section 9:
+- A member connecting "from a profile page" through the MCP's own registration cannot use an https callback on our domain. The workable shapes are (1) a loopback redirect with the member pasting the address they land on back into w0m, (2) the existing Upwork API-Center app as the client, if the MCP accepts its tokens (untested), (3) a hosted client-metadata document, if Upwork applies a different redirect rule to it (untested), (4) Upwork allow-listing our redirect (a support request).
+- The MCP's data is GraphQL-shaped (`data.vendorProposal`, the same wrapper the API returns). The screening answers we never stored may therefore be requestable from the API poller too; untested, because the API token is dead.
+- What the MCP adds is Upwork's OAuth and tool surface, not data the API cannot return. The case for it rests on onboarding, which (a) just weakened.
+
