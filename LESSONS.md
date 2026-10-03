@@ -1456,3 +1456,11 @@ Reading: a resolution failure, not a network failure. macOS appears to refuse AA
 - Rule: do not swap in a different path and call it the same measurement. A REST read with the new-style `sb_secret_` service key answered 401 and was not resolved; it proved nothing about the database.
 - Rule: when the database is unreachable, say so with this evidence and mark any live-schema claim unverified. T539 AC2 was left half done for this reason.
 
+### A pre-push gate can be blocked by a COMMITTED state, not only by the working tree (2026-10-03)
+
+For two days a push from a clean detached checkout was the way round another agent's uncommitted draft blocking the live tree's pre-push gates. On 2026-10-03 it stopped working: the blocker was agy's finished T538 change (9/9 tasks, ticket done, never archived), which is committed, so a clean checkout carries it too and the spec-drift gate refuses.
+
+- Tell: the gate names a change or ticket that is committed, and it fails the same way from a clean checkout. The clean-checkout trick only helps when the blocker lives in the working tree.
+- Fix that worked: apply the gate's own named remedy (`openspec archive <change> --yes`) in the clean checkout, commit it, and let the real gates judge the push; then fast-forward the live checkout with `git merge --ff-only`, so nothing of another agent's can be lost. Check first that the owner's change files and ticket have been idle (here 111 and 75 minutes) and that the archive's effect is visible before it is pushed.
+- Rule: a gate that is red because of a committed state is a record that needs fixing, not a tree that needs cleaning. Do the fix in a throwaway checkout, never in the shared live tree.
+
