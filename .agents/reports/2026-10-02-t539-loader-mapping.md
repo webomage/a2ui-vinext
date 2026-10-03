@@ -2,7 +2,7 @@
 
 Sources read: the Drizzle table definitions (`wom7api/supabase/functions/_shared/database/schema.ts`), the old poller's writes (`upwork-poller/index.ts`), the T155 backfill (`wom7web/project/scripts/backfill_upwork_proposals.py`), the laptop sync (`upwork_mcp_sync.py`), and the four data files in `wom7web/project/data/upwork/` (counts and key names only; no value was printed). Live counts are the ones the health gate printed earlier today: 95 contracts, 55 rooms, 170 messages, 15 rooms holding messages, 1,782 proposals.
 
-**Not verified live, and why.** From this machine the system resolver could not look up the database host (`dig` and HTTPS to the REST endpoint both worked, so it is a local resolver problem, not an outage), and the REST service key answered 401. So the unique constraints, the id formats of the stored rows and the file-versus-database overlap are NOT checked against the live database here. They are checked by the loader's own dry run (T539 AC4), which prints the overlap before anything is written.
+**Verified live on 2026-10-03** (after the WARP reconnect fixed name resolution; read-only transaction, counts and key names only): see the last section. The first draft of this report, written on 2026-10-02, could not reach the database and said so; nothing in it was changed except where the live result differs, and those places are marked.
 
 ## What the files hold, and what they cannot give
 
@@ -75,3 +75,30 @@ BLOCKED on [[T533]] AC2, as the ticket says. For the record, what is known: `ext
 ## Verification still owed (T539 AC4)
 
 The dry run must print, from the live database: how many file ids already exist per leg, the `profile_id` values those rows carry (counts only), and how many rows would be inserted, updated or left unchanged. Only after the owner has read that does `--apply` run.
+
+## Verified live, 2026-10-03
+
+Read-only queries through the standard helper. File ids were passed into the SQL as arrays (identifiers only) and only counts came back.
+
+**Unique keys.** All four tables have a plain unique index on `(external_id, source)`, so `ON CONFLICT (external_id, source)` works. Naming drift, harmless for column-based conflicts: the live indexes on `contracts` and `proposals` are `contracts_external_id_source_key` and `proposals_external_id_source_key`, while `schema.ts` declares `contracts_ext_src_unq` and `proposals_ext_src_unq`; `platform_rooms` and `platform_messages` match.
+
+**Ids agree.** Database ids have the same shape as the file ids: contracts 8 digits, bare (no slug suffix; 0 of 95 would match by prefix), proposals 18 to 19 digits, rooms 37 characters, messages 38.
+
+**Overlap, files against the database.**
+
+| Leg | File rows | Already in the database | The loader would insert | In the database but not in the files |
+|---|---|---|---|---|
+| contracts | 95 | 95 | 0 | 0 |
+| rooms | 18 | 17 | 1 | 38 |
+| messages | 113 | 82 | 31 | 88 |
+| proposals (archive) | 1,782 | 1,782 | 0 | 0 |
+
+Every existing row carries a `profile_id`, and there is exactly one distinct profile across all Upwork rows. All 82 overlapping messages already have an `author`.
+
+**What this changes in the mapping.**
+1. **The current files are almost entirely redundant.** The loader on today's files would insert 1 room and 31 messages and change nothing else. The database is newer than the files for every table (newest `updated_at`: contracts 2026-09-25, rooms 2026-09-19, messages 2026-09-09, proposals 2026-09-16; files 2026-08-19), so newer-wins updates nothing. The loader earns its keep only after a fuller sync (T539 AC1).
+2. **One exception to newer-wins: additive keys.** The stored contract `data` holds only 5 keys (`title`, `status`, `client`, `start_date`, `end_date`); the file adds `offerId` (on 87 contracts), `deliveryModel` and `createDate`. Missing keys are added to existing rows regardless of timestamp and a key already present is never overwritten. `offerId` is the proposal-to-contract link [[T533]] AC4 needs, and it currently exists nowhere in the database.
+3. **Ownership: confirmed as a hard rule.** Contracts are `client_less` 94 and `attributed` 1 (the T493 classification). The loader must not touch `profile_id` or `attribution_state` on existing rows.
+4. **Messages.** The database messages carry `data.user` (the author's source) and `direction` is null on all 170. The 31 messages the loader would add come from the file, which has no author, so they would arrive without one.
+5. **Room links are largely already there.** Stored room `data` holds `vendorProposal` and `contractId` on all 55 rooms, and `proposal_id` is set on 46 rooms and `contract_id` on 12. The file's rooms carry neither key, so link resolution ([[T533]] AC4) comes from the database, not from the loader.
+6. **Proposals and screening answers.** 6 of 1,782 proposals are linked to a contract and none holds `questionsAnswers` in `data` (the answers live only in the archive file: 725 proposals, 1,894 pairs). That leg stays blocked on [[T533]] AC2.
