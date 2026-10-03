@@ -1446,7 +1446,9 @@ What was tested, and what each result showed:
 - A plain TCP connect to the database's IPv6 address on port 5432 succeeded. The route works.
 - `scutil --nwi` printed `No IPv6 states found`, although WARP's tunnel interface held a global IPv6 address.
 
-Reading: a resolution failure, not a network failure. macOS appears to refuse AAAA-only names while no IPv6 service is registered. That cause is consistent with all four results but not proven (one machine, one day). The candidate fix is reconnecting WARP, untested because it drops the connection the session runs on; the owner runs it.
+Reading: a resolution failure, not a network failure. macOS appears to refuse AAAA-only names while no IPv6 service is registered. That cause is consistent with all four results but not proven (one machine, one day).
+
+**Confirmed fix, 2026-10-03:** the owner reconnected WARP in their own terminal (it drops the session's own connection, so an agent cannot do it). Re-running the same probes in the same order: `getaddrinfo` now resolves the database host and `ipv6.google.com` (IPv6), `scutil --nwi` lists `en0` with `IPv4,IPv6,DNS` where it had said "No IPv6 states found", and the standard read-only helper returned the live counts (95 contracts, 55 rooms, 170 messages, identical to before the outage). Mechanism still unproven: the reconnect re-registered an IPv6 service and resolution followed.
 
 - Tell: the error says "could not translate host name" (resolution), not "connection refused" or "timed out". The HTTPS API host keeps working because it has an IPv4 record, so only database-bound tools fail, which looks like a database outage and is not one.
 - Rule: test with `getaddrinfo`, never with `dig`, which answered while the libraries every tool uses did not: `python3 -c "import socket; socket.getaddrinfo('db.<ref>.supabase.co', 5432)"`, and `scutil --nwi | grep -A1 'IPv6 network'`.
