@@ -1435,3 +1435,22 @@ Meanwhile, adjacent standard Markdown links (`[WORKFLOW-COVERAGE.md](WORKFLOW-CO
 - Tell: a test that is supposed to use a fake fails on an assertion about the RESPONSE (here, `registered` was false) rather than erroring on a missing fake. A fake that is wired in answers exactly what it was told to.
 - Rule: bind the transport at call time (`net = net or _http_post`), and give any test file that exercises code with an outward path a module-level guard that makes the real transport raise, plus a test that proves the guard fires. Write the guard BEFORE the first test that touches a step, not after the first surprise.
 
+### The database host is IPv6-only; when it "does not resolve" the route is usually fine (2026-10-03)
+
+Measured in the agent shell from 2026-10-02 17:41 to 2026-10-03 11:53 (-05:00): `psql` and Python failed with `could not translate host name "db.<ref>.supabase.co"` / `gaierror Errno 8`, so every read of the live database stopped while WARP reported Connected and healthy.
+
+What was tested, and what each result showed:
+
+- `dig`: 0 A records and 1 AAAA record. The host is IPv6-only, as the repo rules say.
+- `dig` and `dscacheutil` returned the IPv6 address, but `getaddrinfo` (Python, psql, curl) failed for it AND for any other AAAA-only name (`ipv6.google.com`), while names with an A record (the API host, `example.com`) resolved, IPv4 only.
+- A plain TCP connect to the database's IPv6 address on port 5432 succeeded. The route works.
+- `scutil --nwi` printed `No IPv6 states found`, although WARP's tunnel interface held a global IPv6 address.
+
+Reading: a resolution failure, not a network failure. macOS appears to refuse AAAA-only names while no IPv6 service is registered. That cause is consistent with all four results but not proven (one machine, one day). The candidate fix is reconnecting WARP, untested because it drops the connection the session runs on; the owner runs it.
+
+- Tell: the error says "could not translate host name" (resolution), not "connection refused" or "timed out". The HTTPS API host keeps working because it has an IPv4 record, so only database-bound tools fail, which looks like a database outage and is not one.
+- Rule: test with `getaddrinfo`, never with `dig`, which answered while the libraries every tool uses did not: `python3 -c "import socket; socket.getaddrinfo('db.<ref>.supabase.co', 5432)"`, and `scutil --nwi | grep -A1 'IPv6 network'`.
+- Rule: never "fix" it with an IPv4 endpoint or pooler (AGENTS rule; the host has no A record anyway).
+- Rule: do not swap in a different path and call it the same measurement. A REST read with the new-style `sb_secret_` service key answered 401 and was not resolved; it proved nothing about the database.
+- Rule: when the database is unreachable, say so with this evidence and mark any live-schema claim unverified. T539 AC2 was left half done for this reason.
+
