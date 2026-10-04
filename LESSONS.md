@@ -1466,3 +1466,24 @@ For two days a push from a clean detached checkout was the way round another age
 - Fix that worked: apply the gate's own named remedy (`openspec archive <change> --yes`) in the clean checkout, commit it, and let the real gates judge the push; then fast-forward the live checkout with `git merge --ff-only`, so nothing of another agent's can be lost. Check first that the owner's change files and ticket have been idle (here 111 and 75 minutes) and that the archive's effect is visible before it is pushed.
 - Rule: a gate that is red because of a committed state is a record that needs fixing, not a tree that needs cleaning. Do the fix in a throwaway checkout, never in the shared live tree.
 
+### A preflight check must ask the question the failing step asks (T542, 2026-10-03)
+
+The deploy preflight printed "IPv6 connectivity OK" and, on failure, "no IPv6, advisory only, the deploy path is IPv4", while the database host is IPv6-only and its NAME stopped resolving. The check pinged a dual-stack site (`curl -6 cloudflare.com`): a connection test where the failing step needed a name lookup. The deploy then ran 19 minutes of tests and died at `db-migrate`. Fix: `scripts/check_db_host.py` calls `socket.getaddrinfo` on the database host (what psql calls) and then a TCP connect, and `check-warp` runs it first.
+
+- Tell: a gate that mentions the same subject as the failure ("IPv6") yet passed. Read what it actually tests, not its label.
+- Rule: derive the preflight from the failing step, and watch it FAIL on the real case before trusting it. Here the resolver was broken on the machine at the time, so the new check failed on the first real run, in seconds, where the old one printed a green line on the same machine.
+- Rule: never write an "advisory only" excuse into a check's failure branch for a path you have not verified. That line was false and hid the cause.
+
+### Two agents picking "the next free id" collide, and a no-gap rule makes landing order matter (2026-10-03)
+
+While T542 was in progress another agent created T541 in the live tree. Landing T542 first left `origin/beta` with a hole at 541, which fails the blocking `org-migrate-plan-test` ("every number from 1 to max with no gap") until T541 is pushed. A renumber was required (T541 to T542), and the push order now decides whether the branch is green.
+
+- Tell: a blocking suite red on "gaps: [N]" right after a landing; `git ls-tree` of `.tasks` on origin shows N missing while another tree holds it unpushed.
+- Rule: with separate trees, take a ticket id from `origin/beta` at landing time, not from your own view, and land ticket creation before work that cites it, or land in id order. The durable fix is T531's atomic-id layer; until it exists, check `git ls-tree origin/beta .tasks` for the highest id immediately before you push.
+
+### A separate worktree must be a COMPLETE estate, or its derived files are wrong (2026-10-03)
+
+First try: a root worktree without its member repos, and the root hooks failed on broken couplings to `wom7web/...`. Second try, only `wom7web` and `wom7api` added: `docs/DECISIONS.md` regenerated one entry short (a `wom7skills` file was missing) and the freshness hook accepted it, so a wrong file would have been committed. With all nine members nested inside the root worktree (341 MB, seconds to create), the regenerated file was byte-identical to `origin/beta`.
+
+- Rule: an agent workspace is the root worktree with every member repo nested inside, built from `origin/beta`; never regenerate a derived file (`DECISIONS.md`, `TASKS.md`, `STATE.md`) in a partial layout, and compare it with `origin/beta` before committing.
+
