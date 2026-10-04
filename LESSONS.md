@@ -1497,3 +1497,10 @@ First try: a root worktree without its member repos, and the root hooks failed o
 
 - Rule: an agent workspace is the root worktree with every member repo nested inside, built from `origin/beta`; never regenerate a derived file (`DECISIONS.md`, `TASKS.md`, `STATE.md`) in a partial layout, and compare it with `origin/beta` before committing.
 
+### A suite recipe must be visible from `wom7api/`, not only from where you ran it (T531, 2026-10-04)
+
+The new `agent-tree` suite went red on the very first stable run as `MISSING` (exit 127): `scripts/run_suites.py` resolves every recipe with `just --show` from `wom7api/`, and `agent-tree-test` lived only in the root justfile. I had run it from the root, where it worked, and registered the suite on that evidence. `release-test` is root-only too and passes only because `wom7api/justfile` carries a one-line forwarder (`@just --justfile ../justfile release-test`). My own `grep "^release-test:"` found no match because that recipe is declared `release-test *args:`.
+
+- Tell: a suite reported `MISSING` with exit 127 and 0 checks and an empty log, while the recipe runs by hand.
+- Rule: after registering a suite, run `cd wom7api && just --show <recipe>` (exactly what the runner does) before landing, and run the stable tier before calling it registered. Grep for a recipe with `^name\b`, not `^name:`.
+
