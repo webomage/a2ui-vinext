@@ -722,6 +722,16 @@ Checking `stdin.isatty()` or opening `/dev/tty` only proves an interactive termi
 - A typed "yes" at a terminal must be backed by OS-level human verification (macOS `LocalAuthentication` Touch ID / password dialog) so even a detached terminal cannot spoof human intent.
 ⭐ **The tell:** A security gate that relies on `isatty()` or prompt typing as proof that the caller is human. An agent with execution privileges can always allocate a pty.
 
+### ⛔ AMBIENT ROOT CONSENT MUST NEVER SURVIVE ITS SCRIPT OR PERMIT UNINTENDED STANDALONE MUTATIONS
+**2026-10-04, T541.** After authenticating `just deploy-all` with Touch ID, running `just db-migrate` standalone in the same terminal within 45 minutes did not prompt for confirmation.
+
+When a root command (`deploy-all`) is granted consent, an ambient JSON file in `$TMPDIR` was written with a 45-minute TTL covering all 23 steps (`covered: ["db-migrate", ...]`). Rule 2 checked `step in consent["covered"]` before Rule 4 could prompt, letting subsequent, separate invocations ride the earlier authorization. Furthermore, the consent file survived after the deploy script exited.
+
+⇒ **Single-use step consumption + process teardown cleanup.**
+- Sensitive steps like `db-migrate` that may run once inside a root flow must be marked `single_use`: Rule 2 immediately consumes their authorization on disk (`consent["covered"].remove(step)`) upon pass, so a second or standalone invocation is withheld.
+- Deploy scripts (`deploy_logged.py`, `release.py`) must invoke `confirm_step.py --clear` in a `finally` block on exit, ensuring ambient consent never outlives the invoking command.
+⭐ **The tell:** A test suite that clears state manually in test setup (`clear()` before running standalone assertions). If tests only pass because setup wipes the ambient file, real users who don't manually clear the file will leak consent between commands.
+
 ### ⛔ A NAME LIVES IN ELEVEN PLACES — INVENTORY THEM BY CLASS BEFORE A RENAME AND PROVE ZERO LIVE ONES AFTER
 **2026-09-29, T453 follow-up.** `wom7cfworkers` -> `wom7func` was recorded as *"renamed completely"* on 2026-09-18. Eleven days
 later `just name-refs wom7cfworkers` found **603 hits in 11 repos, 144 of them live**: a health check whose default host
