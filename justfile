@@ -740,6 +740,24 @@ release-prune keep="":
 release-test:
     @python3 wom7web/project/scripts/release.py --test
 
+# T531 AC6 — agent trees: one COMPLETE, private copy of the estate per agent (the umbrella with every member repo nested inside), on local branch agent/<name> cut from origin/beta.
+# No pull requests and no remote branch: commit in your tree, then `agent-tree-land` fetches, rebases onto origin/beta, checks ticket ids (a collision or a gap is refused) and pushes
+# HEAD:beta, members first and the umbrella last. Never forces. See wom7web/project/scripts/agent_tree.py.
+agent-tree name:
+    @python3 wom7web/project/scripts/agent_tree.py new {{ name }}
+
+agent-tree-list:
+    @python3 wom7web/project/scripts/agent_tree.py list
+
+agent-tree-land *args:
+    @python3 wom7web/project/scripts/agent_tree.py land {{ args }}
+
+agent-tree-remove name *args:
+    @python3 wom7web/project/scripts/agent_tree.py remove {{ name }} {{ args }}
+
+agent-tree-test:
+    @python3 -m pytest wom7web/project/scripts/tests/test_agent_tree.py -q -p no:cacheprovider
+
 # T481 — Persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it
 stable-sync *args:
     @python3 wom7web/project/scripts/release.py stable-sync {{ args }}
