@@ -27,7 +27,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T542](.tasks/T542.md) | **P1** | 🆕 **Deploy preflight says 'IPv6 connectivity OK' and 'the deploy path is IPv4' while the database host is IPv6-only: a name-resolution failure surfaced only at db-migrate, after 19 minutes of tests** | api | — | ⚪ **queued** |
 | [T539](.tasks/T539.md) | **P1** | 🆕 **The owner's Upwork data reaches the database only as local files: contracts, rooms, messages and the screening answers have no loader** | web, api | — | ⚪ **queued** |
 | [T537](.tasks/T537.md) | **P1** | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 🔵 **blocked** |
-| [T536](.tasks/T536.md) | **P1** | **Gate Guild To-dos to platform unit members via capability and restrict /me/todos and todos API** | web, api | openspec/changes/2026-10-02-gate-todos-w0m-unit-capability | 🟡 **in-progress** |
 | [T535](.tasks/T535.md) | **P1** | 🆕 **The Upwork poller has failed every run since 2026-09-19 (582 in a row) and the failure row does not say why; nothing alerts on it** | api, web | — | ⚪ **queued** |
 | [T532](.tasks/T532.md) | **P1** | 🆕 **E2E local sandbox execution environment and full corpus verification run** | web | — | 🟡 **in-progress** |
 | [T510](.tasks/T510.md) | **P1** | 🆕 **Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card** | web, api | — | 🟡 **in-progress** |
@@ -286,6 +285,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 |---|------|------|-------|-----|--------|
 | [T541](.tasks/T541.md) | **P1** | 🆕 **Root deploy confirmation ambient consent leaks across runs: standalone db-migrate bypasses prompt within 45-min TTL** | web, api | — | ✅ **done** |
 | [T538](.tasks/T538.md) | **P1** | 🆕 **Scope project people/contacts to project members for regular users, allow managers and admins to see everyone** | web, api | openspec/changes/2026-10-02-project-contacts-scoping | ✅ **done** |
+| [T536](.tasks/T536.md) | **P1** | **Gate Guild To-dos to platform unit members via capability and restrict /me/todos and todos API** | web, api | openspec/changes/2026-10-02-gate-todos-w0m-unit-capability | ✅ **done** |
 | [T515](.tasks/T515.md) | **P1** | 🆕 **A Tinybird token literal is committed in wom7api/scripts/init_tinybird_schemas.py: rotate it, remove it, and make the script read it by injection** | api | — | ✅ **done** |
 | [T507](.tasks/T507.md) · [#507](https://github.com/casualuser/webomage.com/issues/507) | **P1** | **Deploy observability & hygiene: progress bars, build warnings audit & logging, and test runner lazy init** | web, api | — | ✅ **done** |
 | [T497](.tasks/T497.md) | **P0** | **T465 re-introduced possession-based admin/manager policies on contracts, projects and project_roles: an admin who narrows to the member hat reads and writes them again** | api, web | — | ✅ **done** |
