@@ -57,9 +57,15 @@ class Check(unittest.TestCase):
         r = ck.check(HOST, 5432, 5.0, resolver_fails, conn)
         self.assertEqual((r.ok, r.stage), (False, "resolve"))
         self.assertEqual(conn.calls, [])
-        self.assertIn("reconnect", r.message.lower())
+        self.assertIn("ipv6", r.message.lower())
         self.assertIn("WARP", r.message)
         self.assertIn("getaddrinfo", r.message)
+
+    def test_the_resolution_message_names_the_measured_fix_and_how_to_undo_it(self):
+        r = ck.check(HOST, 5432, 5.0, resolver_fails, Recorder())
+        for needle in ("scutil --nwi", "networksetup -setv6manual Wi-Fi fd00:0:0:1::2 64 fd00:0:0:1::1", "networksetup -setv6Automatic Wi-Fi", "hotspot"):
+            self.assertIn(needle, r.message)
+        self.assertNotIn("toggle it in the app", r.message)
 
     def test_the_resolution_message_names_what_it_is_not(self):
         r = ck.check(HOST, 5432, 5.0, resolver_fails, Recorder())
@@ -180,7 +186,8 @@ class Cli(unittest.TestCase):
         self.assertEqual(code, 1)
         text = out + err
         self.assertIn("FAIL", text)
-        self.assertIn("warp-cli", text)
+        self.assertIn("networksetup -setv6manual", text)
+        self.assertNotIn("warp-cli", text)
         self.assertIn("getaddrinfo", text)
 
     def test_a_connect_failure_exits_1_with_its_own_message(self):

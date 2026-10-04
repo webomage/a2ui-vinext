@@ -12,7 +12,7 @@ test, and when that failed printed "no IPv6 - advisory only, the deploy path is 
 This asks it: `socket.getaddrinfo(host, port)`, the call psql and Python make, then a plain TCP connect to each answer.
 
   stage resolve  the resolver gave no answer. Not a network outage: the route usually still works. Known cause on this machine: macOS stops resolving IPv6-only names while no
-                 IPv6 service is registered. Fix: reconnect WARP (`warp-cli disconnect` then `warp-cli connect`, or toggle it in the app), then re-run.
+                 IPv6 service is registered. Fix (see FIX below): a static private IPv6 address and router on Wi-Fi, a network that has IPv6, or IPv6 on the modem.
   stage connect  the name resolves but no address accepted a connection within the timeout.
 
 Output carries address FAMILIES, never an address, and never the text of an unexpected error (only its type). Any unexpected error is a failure (fail closed).
@@ -33,10 +33,15 @@ DEFAULT_RESOLVER = socket.getaddrinfo
 MAX_TIMEOUT = 60.0
 _LABEL = re.compile(r"^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$")
 
-FIX = "reconnect WARP (`warp-cli disconnect`, then `warp-cli connect`, or toggle it in the app), then re-run"
+FIX = (
+    "give Wi-Fi a static private IPv6 address AND router so macOS registers an IPv6 service (measured working 2026-10-04): "
+    "`networksetup -setv6manual Wi-Fi fd00:0:0:1::2 64 fd00:0:0:1::1`, confirm `scutil --nwi | grep en0` now lists IPv6, then re-run; "
+    "undo with `networksetup -setv6Automatic Wi-Fi`. Other options: join a network that has IPv6 (a phone hotspot), or enable IPv6 on the modem. "
+    "Reconnecting WARP does not fix it on a network without IPv6"
+)
 RESOLVE_MESSAGE = (
     "the system resolver (getaddrinfo, the call psql makes) cannot resolve {host}. This is a resolver failure, not a network outage: the route usually still works. "
-    "Known cause on this machine: macOS stops resolving IPv6-only names while no IPv6 service is registered, even though WARP says Connected (LESSONS.md, 2026-10-03). Fix: " + FIX + "."
+    "Known cause on this machine: macOS stops resolving IPv6-only names while no IPv6 service is registered, even though WARP says Connected (LESSONS.md, 2026-10-03 and 2026-10-04). Fix: " + FIX + "."
 )
 CONNECT_MESSAGE = "{host} resolves ({families}) but no address accepted a TCP connection on port {port} within {timeout:g}s. Check WARP and the network, then re-run."
 
