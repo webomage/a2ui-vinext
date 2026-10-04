@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**358 recorded decision(s)** — 31 structured (AgDR), 327 in place across 164 file(s).
+**359 recorded decision(s)** — 32 structured (AgDR), 327 in place across 164 file(s).
 
 ## Structured records (AgDR)
 
@@ -46,6 +46,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`AgDR-0029`](../docs/decisions/AgDR-0029-upwork-as-a-synced-source-layer.md) | accepted | claude-code / claude-opus-5-5 | Upwork (and any external marketplace) is a synced source layer that our records link to, never a shape copied into them<br/><sub>Upwork (and any external marketplace) is a synced source layer that our records link to, never a shape copied into them</sub> |
 | [`AgDR-0030`](../docs/decisions/AgDR-0030-cf-worker-script-namespace-separation.md) | accepted | human /  | Separate Cloudflare Worker script namespaces between wom7api and wom7func<br/><sub>In the context of having two independent edge workers in wom7api and wom7func both configured with "name": "wom7cfworkers" in wrangler.jsonc, facing silent script overwrite collisions during just depl</sub> |
 | [`AgDR-0031`](../docs/decisions/AgDR-0031-tinybird-token-revocation-and-scanner-hardening.md) | accepted | antigravity / gemini-2.5-pro | Tinybird token literal remediation, process injection, and gitleaks scanner hardening<br/><sub>In the context of a legacy admin JWT token literal committed in wom7api/scripts/inittinybirdschemas.py that went undetected by static analysis scanners, facing unrestricted administrative access to an</sub> |
+| [`AgDR-0032`](../docs/decisions/AgDR-0032-agent-trees-a-complete-private-estate-per-agent.md) | accepted | claude-code / claude-sonnet-5-5 | Agent trees: each agent works in its own complete copy of the estate on a local-only branch, landed by rebase and push, with no pull requests<br/><sub>In the context of several agents and one person editing the same working tree of a nine-repository estate that commits to a single branch (beta), facing one agent's uncommitted files reaching another </sub> |
 
 ## Recorded in place (unstructured)
 
@@ -53,6 +54,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 
 | Date | Where | Decision |
 |---|---|---|
+| 2026-10-04 | [`docs/decisions/AgDR-0032-agent-trees-a-complete-private-estate-per-agent.md:1`](../docs/decisions/AgDR-0032-agent-trees-a-complete-private-estate-per-agent.md) | In the context of several agents and one person editing the same working tree of a nine-repository estate that commits to a single branch (beta), facing one agent's uncommitted files reaching another agent's commit, hooks and push, we decided to give each agent its own complete copy of the estate (the umbrella repo with every member repo nested inside it) on a local-only branch agent/<name cut from origin/beta, landed with fetch, rebase and git push origin HEAD:beta, with no pull requests and no remote branches to achieve isolation of working state without leaving the one-branch model the owner wants, accepting that derived files and ticket ids still collide at landing and need their own guards, and that the live checkout stops being an agent's workspace. |
 | 2026-10-02 | [`.tasks/T539.md:56`](../.tasks/T539.md) | - Split from: [[T537]] (owner decision 2026-10-02). Supplies the live data for [[T533]] AC3 to AC5 for the owner's own account. |
 | 2026-10-01 | [`.tasks/T508.md:129`](../.tasks/T508.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): |
 | 2026-10-01 | [`.tasks/T509.md:186`](../.tasks/T509.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): |
