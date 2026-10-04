@@ -424,7 +424,7 @@ version:
 _confirm step:
     @python3 wom7web/project/scripts/confirm_step.py {{ step }}
 
-# Red probes for the confirmation gate (T161 AC3, extended by T407, T435, and T471). 64 cases: it must
+# Red probes for the confirmation gate (T161 AC3, extended by T407, T435, T471, and T541). 66 cases: it must
 # withhold from an automated caller, refuse a piped "yes", refuse an agent session even with a pty
 # and a live consent, refuse when the Touch ID dialog is not confirmed, find every deploy-shaped
 # recipe without `_confirm`, fail CLOSED on an unrecognised step, honour a granted root for chained
