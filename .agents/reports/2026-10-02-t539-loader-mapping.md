@@ -102,3 +102,10 @@ Every existing row carries a `profile_id`, and there is exactly one distinct pro
 4. **Messages.** The database messages carry `data.user` (the author's source) and `direction` is null on all 170. The 31 messages the loader would add come from the file, which has no author, so they would arrive without one.
 5. **Room links are largely already there.** Stored room `data` holds `vendorProposal` and `contractId` on all 55 rooms, and `proposal_id` is set on 46 rooms and `contract_id` on 12. The file's rooms carry neither key, so link resolution ([[T533]] AC4) comes from the database, not from the loader.
 6. **Proposals and screening answers.** 6 of 1,782 proposals are linked to a contract and none holds `questionsAnswers` in `data` (the answers live only in the archive file: 725 proposals, 1,894 pairs). That leg stays blocked on [[T533]] AC2.
+
+## 2026-10-05 — what changed from the mapping above
+
+- The loader (`upwork_loader.py`) implements this mapping with ONE rule changed: an existing row only GAINS information. The "newer wins by timestamp" rule is gone, because a stored room's `data` holds `vendorProposal` and `contractId` that the file does not carry, and a stored contract's status can be newer than the file's.
+- `author` now comes from the file's `from` (the sync keeps it since 2026-10-04) and `direction` from `from_my_organization` (`out` or `in`, the values the CP's `messageView` reads). Existing messages with an empty author or direction are filled; a non-empty one is never replaced.
+- Rooms: `topic` is the job name, else the room name; the room object without `recent_messages` is the `data`.
+- Proposals and screening answers remain blocked on T533 AC2.
