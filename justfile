@@ -765,6 +765,14 @@ stable-sync *args:
 e2e-stable *args:
     @python3 wom7web/project/scripts/release.py e2e-stable {{ args }}
 
+# T532 — Run E2E tests against local sandbox environment
+e2e-local *specs:
+    @cd wom7web && just e2e-local {{ specs }}
+
+# T532 — Run live-guard proof test
+live-guard-test:
+    @cd wom7web && just live-guard-test
+
 _deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp check-infisical _deploy-gates db-migrate _deploy-ship _post-deploy-knowledge
 
 _post-deploy-knowledge:
