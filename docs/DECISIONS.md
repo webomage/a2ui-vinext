@@ -414,7 +414,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`.tasks/T435.md:56`](../.tasks/T435.md) | t human (e.g. a Touch ID prompt) — AC8, owner decision. |
 | [`.tasks/T493.md:133`](../.tasks/T493.md) | may be retirable: that is an owner call, not made here. |
 | [`.tasks/T518.md:3`](../.tasks/T518.md) | : "Group C, seven scripts waiting on an owner decision: the news pipeline, tracks, the crawler smoke test, internal-docs indexing, Upwork backfill" |
-| [`.tasks/T539.md:45`](../.tasks/T539.md) | - [ ] AC6 — Message text out of git (owner decision pending). rooms.jsonl carries real client conversations and is tracked. If the owner confirms: the message-bearing files are untracked and ignored, the loader reads from the ignored path, and history is left |
+| [`.tasks/T539.md:45`](../.tasks/T539.md) | - [x] AC6 — Message text out of git (owner decision pending). rooms.jsonl carries real client conversations and is tracked. If the owner confirms: the message-bearing files are untracked and ignored, the loader reads from the ignored path, and history is left |
 | [`TECH-DEBT.md:65`](../TECH-DEBT.md) | r decision) |
 | [`wom7web/project/data/cv/resolutions.json:2`](../wom7web/project/data/cv/resolutions.json) | " comment": "T165 task 2.6 — owner rulings that permanently clear a reported conflict. This file is the ONLY way a conflict stops being reported: the importer never decides. Key format is <entity ::<field , exactly as printed by just cv-import . Adding a key h |
 | [`wom7web/project/data/cv/resolutions.json:10`](../wom7web/project/data/cv/resolutions.json) | "decidedOn": "YYYY-MM-DD (absolute, never relative)" |
