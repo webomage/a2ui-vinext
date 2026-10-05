@@ -773,6 +773,10 @@ e2e-local *specs:
 live-guard-test:
     @cd wom7web && just live-guard-test
 
+# T532 — unit tests for the E2E sandbox isolation guard
+e2e-sandbox-guard-test:
+    @cd wom7web && just e2e-sandbox-guard-test
+
 _deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp check-infisical _deploy-gates db-migrate _deploy-ship _post-deploy-knowledge
 
 _post-deploy-knowledge:
