@@ -1064,8 +1064,17 @@ tools-check *args:
 tools-upgrade *args:
     @python3 scripts/tools_upgrade.py {{ args }}
 
+# T546 — the scheduled run upgrades and smoke-tests, then PROPOSES the bumps (a machine-level state file); it never writes tools-policy.json, so the live checkout stays clean.
 tools-weekly *args:
     @python3 scripts/tools_check.py --outdated --cache && python3 scripts/tools_upgrade.py --apply {{ args }}
+
+# T546 — list the proposed known_good bumps (dry run). `--apply`, run from an agent tree (`just agent-tree <name>`), re-verifies each one (installed == proposed, >= min, smoke
+# passes) and writes known_good into that tree, ready to commit and `just agent-tree-land`. Refused outside an agent tree.
+tools-promote *args:
+    @python3 scripts/tools_upgrade.py --promote {{ args }}
+
+tools-upgrade-test:
+    @python3 scripts/tests/test_tools_upgrade.py
 
 toolchain-chain-test:
     @python3 wom7web/project/scripts/tests/test_toolchain_chain.py

@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import re
+import os
 import shlex
 import shutil
 import subprocess
@@ -130,6 +131,50 @@ CACHE = ROOT / "project" / ".tools-outdated.json"  # gitignored, per-machine; wr
 # launchd log nobody reads. Cache age therefore cannot detect a failed run — only a separate
 # outcome record can. Written by `tools_upgrade.py --apply`; gitignored, per-machine.
 STATUS = ROOT / "project" / ".tools-weekly-status.json"
+
+
+# T546 — PROPOSED `known_good` bumps. The scheduled run upgrades and smoke-tests, then RECORDS what it verified here instead of writing
+# the policy: it ran in the live checkout and never committed, so that checkout sat dirty and `git merge --ff-only` aborted. The file is
+# machine-level (outside every tree) on purpose: the weekly run happens in the live tree, the promotion in an agent tree, and both must see
+# the same state. `W0M_STATE_DIR` redirects it for tests.
+def state_dir() -> Path:
+    env = os.environ.get("W0M_STATE_DIR")
+    return Path(env) if env else Path.home() / ".w0m" / "state"
+
+
+PROPOSED = state_dir() / "tools-proposed.json"
+
+
+def load_proposals(path: Path) -> dict:
+    """The proposals, or {} when there is no file. A file that exists but cannot be read raises: an unreadable state file must not read as 'nothing proposed'."""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return {}
+    data = json.loads(text)
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: expected a JSON object of proposals")
+    return data
+
+
+def save_proposals(path: Path, proposals: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(proposals, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp.replace(path)
+
+
+def pending_proposals_line(path: Path | None = None) -> str:
+    """One line for the full check: what the weekly run verified and nobody has promoted yet. '' when there is nothing."""
+    path = PROPOSED if path is None else path
+    try:
+        props = load_proposals(path)
+    except (OSError, ValueError) as exc:
+        return f"proposed bumps: state file unreadable ({exc}) — fix or delete {path}"
+    if not props:
+        return ""
+    names = ", ".join(f"{p['tool']} {p['from']}→{p['to']}" for _k, p in sorted(props.items()))
+    return f"{len(props)} proposed known_good bump(s) awaiting promotion: {names} — `just tools-promote` (dry run), then `--apply` in an agent tree"
 
 
 def report_outdated(tools: dict, cache: bool = False) -> int:
@@ -354,7 +399,7 @@ def main() -> int:
         print(f"\n  \u26a0  {len(drift_req)} REQUIRED tool(s) on an unverified version:")
         for d in drift_req:
             print(f"    \u00b7 {d}")
-        print("     `just tools-reconcile` smoke-tests and promotes, or pin the tool back.")
+        print("     `just tools-weekly` proposes verified bumps and `just tools-promote` lands them (T546), or pin the tool back.")
     if infos:
         print("\n  drift / optional (informational):")
         for i in infos:
@@ -380,6 +425,9 @@ def main() -> int:
         verdict = "DRIFT"
     else:
         verdict = "ok"
+    pending = pending_proposals_line()
+    if pending:
+        print(f"\n  · {pending}")
     print(f"\n  {'strict: ' if strict else ''}{verdict} — "
           f"{len(rows)} tools, {len(fails)} required-problem(s), {len(warns)} warn, "
           f"{len(drift_req)} required-drift, {len(infos)} optional-drift")

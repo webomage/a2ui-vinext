@@ -15,8 +15,13 @@ only stops the code from being read as stricter than it is.
 
     brew upgrade <formula>   (source: brew)
     gcloud components update  (source: gcloud — self-updater, not brew)
-        ->  run its `smoke` command  ->  on PASS: bump known_good
-                                     ->  on FAIL: report loudly, stop, do NOT promote
+        ->  run its `smoke` command  ->  on PASS: PROPOSE the bump (T546)
+                                     ->  on FAIL: report loudly, stop, do NOT propose
+
+🔴 T546 (owner decision 2026-10-06): the scheduled run no longer writes `tools-policy.json`. It ran in the live checkout and never committed, so that
+checkout sat dirty and `git merge --ff-only` aborted. It records what it verified in a machine-level state file (`tools_check.PROPOSED`); `--promote`
+lists it and `--promote --apply` re-verifies each proposal now (installed == proposed, at least `min`, smoke passes) and writes `known_good` into THIS
+tree, only inside an agent tree (`just agent-tree <name>`), ready to commit and land. This file has exactly one policy write, inside `promote()`.
 
 `auto:none` tools (supabase/deno/aws/az/…) are NEVER touched in normal runs — a bump to a
 prod-gating or system CLI needs a human + a real deploy/hook smoke. Dry-run by default; `--apply`
@@ -30,12 +35,15 @@ via uv, codegraph via npm) are listed with their real update command instead.
 
 Usage (from wom7web/):
     python3 project/scripts/tools_upgrade.py                   # plan only (auto subset)
-    python3 project/scripts/tools_upgrade.py --apply           # upgrade the auto subset, verify, promote
+    python3 project/scripts/tools_upgrade.py --apply           # upgrade the auto subset, verify, PROPOSE (no policy write)
+    python3 project/scripts/tools_upgrade.py --promote         # list the proposals (dry run)
+    python3 project/scripts/tools_upgrade.py --promote --apply # re-verify and write known_good (agent tree only)
     python3 project/scripts/tools_upgrade.py --force           # plan incl. auto:none brew tools
     python3 project/scripts/tools_upgrade.py --apply --force   # upgrade all brew tools, smoke, promote
 """
 from __future__ import annotations
 
+import datetime
 import json
 import subprocess
 import sys
@@ -43,8 +51,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tools_check import (  # noqa: E402
-    BREW_FORMULA, STATUS, brew_latest, bump_level, gcloud_latest, installed_version,
-    report_outdated, ver_tuple,
+    BREW_FORMULA, PROPOSED, STATUS, brew_latest, bump_level, gcloud_latest, installed_version,
+    load_proposals, report_outdated, save_proposals, ver_tuple,
 )
 
 UPGRADABLE = {"brew", "gcloud"}  # sources this script knows how to upgrade in-place
@@ -60,8 +68,94 @@ def run(cmd: list[str], cwd: Path | None = None, timeout: int = 300):
     return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)
 
 
+def is_agent_tree(root: Path) -> bool:
+    """Is `root` inside an agent tree (`~/.w0m/work/<name>/w0m`)? The live checkout is the owner's and the deploy's: nothing here may dirty it."""
+    base = (Path.home() / ".w0m" / "work").resolve()
+    try:
+        Path(root).resolve().relative_to(base)
+    except ValueError:
+        return False
+    return True
+
+
+def record_proposal(proposals: dict, name: str, spec: dict, frm: str, to: str, smoke_passed: bool) -> None:
+    """One proposal per tool: a later run replaces an earlier one, so the file always says what the NEWEST verified version is."""
+    proposals[name] = {
+        "tool": name, "from": frm, "to": to, "smoke": "passed" if smoke_passed else "none",
+        "source": spec.get("source"), "proposed_at": datetime.datetime.now().isoformat(timespec="seconds"),
+    }
+
+
+def promote(policy: dict, apply: bool) -> int:
+    """Re-verify every recorded proposal NOW and, with `apply`, write the ones that hold into THIS tree's policy.
+
+    Exit 0 = nothing blocked, 1 = something stayed blocked, 2 = refused (not an agent tree, or an unreadable state file).
+    A proposal is a claim about a past moment; each one is checked again so a stale or since-broken one cannot land:
+    installed must still equal the proposed version, sit at or above `min`, and pass its smoke. A tool with no smoke is never promoted silently.
+    """
+    try:
+        proposals = load_proposals(PROPOSED)
+    except (OSError, ValueError) as exc:
+        print(f"❌ cannot read the proposals file {PROPOSED}: {exc}", file=sys.stderr)
+        return 2
+    print("▶ known_good promotion (re-verified)" + ("" if apply else " — DRY RUN, re-run with --apply in an agent tree"))
+    if not proposals:
+        print("  nothing proposed (the weekly run records smoke-verified upgrades here)")
+        return 0
+    if apply and not is_agent_tree(ROOT):
+        print(f"❌ refusing to write {POLICY} outside an agent tree: the live checkout is the owner's and the deploy's. "
+              "Run `just agent-tree <name>`, work from the tree it creates, then `just tools-promote --apply`, commit, and `just agent-tree-land`.",
+              file=sys.stderr)
+        return 2
+    tools = policy["tools"]
+    promoted, blocked = [], []
+    for name, prop in sorted(proposals.items()):
+        spec = tools.get(name)
+        frm, to = prop.get("from"), prop.get("to")
+        if spec is None:
+            blocked.append(f"{name}: no longer in tools-policy.json")
+            continue
+        cur = installed_version(name, spec.get("version_arg", "--version"), spec)
+        if cur is None:
+            blocked.append(f"{name}: not installed any more")
+        elif ver_tuple(cur) < ver_tuple(to):
+            blocked.append(f"{name}: installed {cur} is BEHIND the proposed {to} (downgrade or failed upgrade)")
+        elif cur != to:
+            blocked.append(f"{name}: proposal is stale — proposed {to} but {cur} is installed; run the weekly job again")
+        elif ver_tuple(to) < ver_tuple(spec["min"]):
+            blocked.append(f"{name}: {to} is below min {spec['min']}")
+        elif not spec.get("smoke"):
+            blocked.append(f"{name}: {frm} → {to} has NO smoke declared — verify by hand")
+        else:
+            print(f"  → {name}: {frm} → {to}, smoking `{spec['smoke']}`...")
+            sr = run(spec["smoke"].split(), cwd=WEB, timeout=180)
+            if sr.returncode != 0:
+                blocked.append(f"{name}: smoke FAILED for {to} — {(sr.stderr or sr.stdout).strip()[-160:]}")
+            else:
+                print("    \u2713 smoke ok")
+                promoted.append((name, frm, to))
+    for name, frm, to in promoted:
+        if apply:
+            tools[name]["known_good"] = to
+    if apply and promoted:
+        POLICY.write_text(json.dumps(policy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        for name, _frm, _to in promoted:
+            proposals.pop(name, None)
+        save_proposals(PROPOSED, proposals)
+    print(f"\n  {'promoted' if apply else 'would promote'}: {', '.join(f'{n} {f}→{t}' for n, f, t in promoted) or 'none'}")
+    if blocked:
+        print(f"  \u26a0 {len(blocked)} NOT promoted (they stay proposed, so they stay visible):")
+        for b in blocked:
+            print(f"    - {b}")
+    if apply and promoted:
+        print("\n  next: review the diff, `git commit -m \"chore(T112): bump tools baseline known_good\" -- project/policies/tools-policy.json`, `just agent-tree-land`.")
+    elif not apply and promoted:
+        print("\n  re-run with --apply in an agent tree to write them.")
+    return 1 if blocked else 0
+
+
 def reconcile(tools: dict, policy: dict, apply: bool) -> tuple[list[str], list[str]]:
-    """Bring `known_good` up to the INSTALLED version — but only for versions that pass their smoke.
+    """Find installed versions AHEAD of `known_good` that pass their smoke, and (with `apply`) PROPOSE them (T546: this no longer writes the policy).
 
     T247 AC3. This closes a hole that `tools-upgrade` structurally cannot: once installed is AHEAD
     of `known_good` there is nothing left to upgrade, so the upgrade path can never reconcile it and
@@ -79,6 +173,7 @@ def reconcile(tools: dict, policy: dict, apply: bool) -> tuple[list[str], list[s
     "we never checked" cannot be spelled the same way as "we checked and it passed".
     """
     promoted, blocked = [], []
+    proposals = load_proposals(PROPOSED) if apply else {}
     for name, spec in sorted(tools.items()):
         if name.startswith("_"):
             continue
@@ -105,15 +200,18 @@ def reconcile(tools: dict, policy: dict, apply: bool) -> tuple[list[str], list[s
             continue
         print(f"    \u2713 smoke ok")
         if apply:
-            spec["known_good"] = cur
+            record_proposal(proposals, name, spec, kg, cur, True)
         promoted.append(f"{name} {kg}→{cur}")
     if apply and promoted:
-        POLICY.write_text(json.dumps(policy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        save_proposals(PROPOSED, proposals)
     return promoted, blocked
 
 
 def main() -> int:
     apply = "--apply" in sys.argv
+
+    if "--promote" in sys.argv:
+        return promote(json.loads(POLICY.read_text(encoding="utf-8")), apply)
 
     # T247 AC3 — reconcile mode is its own operation, not a side effect of upgrading.
     if "--reconcile" in sys.argv:
@@ -121,9 +219,10 @@ def main() -> int:
         print("▶ known_good reconciliation (smoke-gated)"
               + ("" if apply else " — DRY RUN, re-run with --apply"))
         promoted, blocked = reconcile(policy["tools"], policy, apply)
-        print(f"\n  {'promoted' if apply else 'would promote'}: {', '.join(promoted) or 'none'}")
+        print(f"\n  {'proposed' if apply else 'would propose'}: {', '.join(promoted) or 'none'}"
+              + ("  — `just tools-promote` re-verifies and lands them" if apply and promoted else ""))
         if blocked:
-            print(f"  \u26a0 {len(blocked)} NOT promoted:")
+            print(f"  \u26a0 {len(blocked)} NOT proposed:")
             for b in blocked:
                 print(f"    - {b}")
         # Blocked entries are the finding, so they must move the exit code — otherwise this
@@ -214,6 +313,7 @@ def main() -> int:
         return 0
 
     promoted, failed, unverified = [], [], []
+    proposals = load_proposals(PROPOSED)
     for name, spec, cur, latest, lvl in plan:
         src = spec.get("source")
         if src == "gcloud":
@@ -240,7 +340,7 @@ def main() -> int:
         if smoke:
             sr = run(smoke.split(), cwd=WEB, timeout=180)
             if sr.returncode != 0:
-                print(f"    ✗ smoke FAILED (`{smoke}`) — NOT promoting known_good; review/rollback:\n{(sr.stderr or sr.stdout)[-400:]}")
+                print(f"    ✗ smoke FAILED (`{smoke}`) — NOT proposing a known_good bump; review/rollback:\n{(sr.stderr or sr.stdout)[-400:]}")
                 failed.append(name)
                 continue
             print(f"    ✓ smoke ok (`{smoke}`)")
@@ -250,14 +350,15 @@ def main() -> int:
             print(f" [WARN] no smoke defined for {name} — upgraded to {new} UNVERIFIED; verify by hand "
                   f"({spec.get('note', 'see policy note')})")
             unverified.append(f"{name}→{new}")
-        spec["known_good"] = new
-        promoted.append(f"{name} {cur}→{new}")
+        record_proposal(proposals, name, spec, spec.get("known_good", cur), new, bool(smoke))
+        promoted.append(f"{name} {spec.get('known_good', cur)}→{new}")
 
     if promoted:
-        POLICY.write_text(json.dumps(policy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"\n  promoted: {', '.join(promoted) or 'none'}")
+        save_proposals(PROPOSED, proposals)
+    print(f"\n  proposed: {', '.join(promoted) or 'none'}"
+          + ("  — `just tools-promote` re-verifies and lands them in an agent tree" if promoted else ""))
     if unverified:
-        print(f" [WARN] promoted UNVERIFIED (no smoke — verify manually): {', '.join(unverified)}")
+        print(f" [WARN] proposed UNVERIFIED (no smoke — `tools-promote` will not land these; verify by hand): {', '.join(unverified)}")
     if failed:
         print(f"  ✗ failed/held (needs review): {', '.join(failed)}")
 
@@ -275,7 +376,7 @@ def main() -> int:
             STATUS.write_text(json.dumps({
                 "ran": datetime.datetime.now().isoformat(timespec="seconds"),
                 "ok": not failed,
-                "promoted": promoted,
+                "proposed": promoted,
                 "unverified": unverified,
                 "held": failed,
             }, indent=2) + "\n", encoding="utf-8")
@@ -298,9 +399,9 @@ def main() -> int:
     if not failed:
         return 0
     if promoted or unverified:
-        print(f"  ⇒ PARTIAL: {len(promoted) + len(unverified)} promoted, {len(failed)} held (exit 2)")
+        print(f"  ⇒ PARTIAL: {len(promoted) + len(unverified)} proposed, {len(failed)} held (exit 2)")
         return 2
-    print(f"  ⇒ TOTAL FAILURE: 0 promoted, {len(failed)} held (exit 1)")
+    print(f"  ⇒ TOTAL FAILURE: 0 proposed, {len(failed)} held (exit 1)")
     return 1
 
 
