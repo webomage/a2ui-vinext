@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**359 recorded decision(s)** — 32 structured (AgDR), 327 in place across 164 file(s).
+**360 recorded decision(s)** — 32 structured (AgDR), 328 in place across 164 file(s).
 
 ## Structured records (AgDR)
 
@@ -54,6 +54,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 
 | Date | Where | Decision |
 |---|---|---|
+| 2026-10-05 | [`.tasks/T439.md:254`](../.tasks/T439.md) | ew plan and five owner decisions (D1 to D5, each with a recommendation and its weight) are in plan-c4-client-org-and-cutover.md , section 'Re-plan, 2026-10-05'. C4a needs only D1 and D2. Not verified today: the rendered pages; cp-nav-check passes (78 pages, 47 |
 | 2026-10-04 | [`docs/decisions/AgDR-0032-agent-trees-a-complete-private-estate-per-agent.md:1`](../docs/decisions/AgDR-0032-agent-trees-a-complete-private-estate-per-agent.md) | In the context of several agents and one person editing the same working tree of a nine-repository estate that commits to a single branch (beta), facing one agent's uncommitted files reaching another agent's commit, hooks and push, we decided to give each agent its own complete copy of the estate (the umbrella repo with every member repo nested inside it) on a local-only branch agent/<name cut from origin/beta, landed with fetch, rebase and git push origin HEAD:beta, with no pull requests and no remote branches to achieve isolation of working state without leaving the one-branch model the owner wants, accepting that derived files and ticket ids still collide at landing and need their own guards, and that the live checkout stops being an agent's workspace. |
 | 2026-10-02 | [`.tasks/T539.md:56`](../.tasks/T539.md) | - Split from: [[T537]] (owner decision 2026-10-02). Supplies the live data for [[T533]] AC3 to AC5 for the owner's own account. |
 | 2026-10-01 | [`.tasks/T508.md:129`](../.tasks/T508.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): |
