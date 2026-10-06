@@ -71,7 +71,7 @@
     },
     "gcloud": {
       "min": "500.0.0",
-      "known_good": "586.0.0",
+      "known_good": "587.0.0",
       "required": false,
       "source": "gcloud",
       "auto": "major",
@@ -80,7 +80,7 @@
     },
     "gh": {
       "min": "2.60.0",
-      "known_good": "2.101.0",
+      "known_good": "2.102.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -116,7 +116,7 @@
     },
     "infisical": {
       "min": "0.40.0",
-      "known_good": "0.43.137",
+      "known_good": "0.43.138",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -213,7 +213,7 @@
     },
     "semgrep": {
       "min": "1.100.0",
-      "known_good": "1.176.0",
+      "known_good": "1.179.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
