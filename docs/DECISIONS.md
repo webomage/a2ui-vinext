@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**360 recorded decision(s)** — 32 structured (AgDR), 328 in place across 164 file(s).
+**362 recorded decision(s)** — 32 structured (AgDR), 330 in place across 166 file(s).
 
 ## Structured records (AgDR)
 
@@ -54,6 +54,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 
 | Date | Where | Decision |
 |---|---|---|
+| 2026-10-06 | [`.tasks/T537.md:56`](../.tasks/T537.md) | , has its own admin arm) by owner decision 2026-10-06, for the one-team testing phase. Narrowing is one statement ( select false in the function; the authz probes follow the switch with no edit). Owner decides per table whether an admin keeps any read; profile |
 | 2026-10-05 | [`.tasks/T439.md:254`](../.tasks/T439.md) | ew plan and five owner decisions (D1 to D5, each with a recommendation and its weight) are in plan-c4-client-org-and-cutover.md , section 'Re-plan, 2026-10-05'. C4a needs only D1 and D2. Not verified today: the rendered pages; cp-nav-check passes (78 pages, 47 |
 | 2026-10-04 | [`docs/decisions/AgDR-0032-agent-trees-a-complete-private-estate-per-agent.md:1`](../docs/decisions/AgDR-0032-agent-trees-a-complete-private-estate-per-agent.md) | In the context of several agents and one person editing the same working tree of a nine-repository estate that commits to a single branch (beta), facing one agent's uncommitted files reaching another agent's commit, hooks and push, we decided to give each agent its own complete copy of the estate (the umbrella repo with every member repo nested inside it) on a local-only branch agent/<name cut from origin/beta, landed with fetch, rebase and git push origin HEAD:beta, with no pull requests and no remote branches to achieve isolation of working state without leaving the one-branch model the owner wants, accepting that derived files and ticket ids still collide at landing and need their own guards, and that the live checkout stops being an agent's workspace. |
 | 2026-10-02 | [`.tasks/T539.md:56`](../.tasks/T539.md) | - Split from: [[T537]] (owner decision 2026-10-02). Supplies the live data for [[T533]] AC3 to AC5 for the owner's own account. |
@@ -416,6 +417,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`.tasks/T493.md:133`](../.tasks/T493.md) | may be retirable: that is an owner call, not made here. |
 | [`.tasks/T518.md:3`](../.tasks/T518.md) | : "Group C, seven scripts waiting on an owner decision: the news pipeline, tracks, the crawler smoke test, internal-docs indexing, Upwork backfill" |
 | [`.tasks/T539.md:45`](../.tasks/T539.md) | - [x] AC6 — Message text out of git (owner decision pending). rooms.jsonl carries real client conversations and is tracked. If the owner confirms: the message-bearing files are untracked and ignored, the loader reads from the ignored path, and history is left |
+| [`.tasks/T545.md:40`](../.tasks/T545.md) | rrowed before the first outside user (owner decision, tracked on [[T537]] AC10). One statement in a new migration. The owner decides per table whether an admin keeps any read; profile identity is KYC data. Record the decision here and tick it on T537. |
 | [`TECH-DEBT.md:65`](../TECH-DEBT.md) | r decision) |
 | [`wom7web/project/data/cv/resolutions.json:2`](../wom7web/project/data/cv/resolutions.json) | " comment": "T165 task 2.6 — owner rulings that permanently clear a reported conflict. This file is the ONLY way a conflict stops being reported: the importer never decides. Key format is <entity ::<field , exactly as printed by just cv-import . Adding a key h |
 | [`wom7web/project/data/cv/resolutions.json:10`](../wom7web/project/data/cv/resolutions.json) | "decidedOn": "YYYY-MM-DD (absolute, never relative)" |
