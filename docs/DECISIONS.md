@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**369 recorded decision(s)** — 32 structured (AgDR), 337 in place across 171 file(s).
+**370 recorded decision(s)** — 32 structured (AgDR), 338 in place across 171 file(s).
 
 ## Structured records (AgDR)
 
@@ -54,6 +54,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 
 | Date | Where | Decision |
 |---|---|---|
+| 2026-10-07 | [`.tasks/T553.md:81`](../.tasks/T553.md) | the write path. Decided and built (owner, 2026-10-07: "let's do all this"); see the status note. Recommend definer RPCs ( wom staff hat , wom retract hat , wom compose custom hat , wom set collapse rule , wom apply collection ) that check wom can staff projec |
 | 2026-10-07 | [`.tasks/T554.md:27`](../.tasks/T554.md) | Owner, 2026-10-07 after the deploy: "we have to make it working stable with multiagent env". The deploy of release 2026.10.07-1791355037 shipped and published its tags, then failed at the last step. release.py record release wrote releases/<v .json and the reg |
 | 2026-10-06 | [`.tasks/T112.md:171`](../.tasks/T112.md) | d path (owner, 2026-10-06); automating it is not planned. |
 | 2026-10-06 | [`.tasks/T503.md:96`](../.tasks/T503.md) | ): a just deploy-dry-run that runs exactly the deploy's gate stages ( deploy-preflight , check-guardrails , test ) with no confirm, no migration and no ship, so "ready to deploy" is a measured fact; cost low (it is a recipe over existing stages, about 8 minute |

@@ -1621,3 +1621,19 @@ The new `agent-tree` suite went red on the very first stable run as `MISSING` (e
 - Tell: a suite reported `MISSING` with exit 127 and 0 checks and an empty log, while the recipe runs by hand.
 - Rule: after registering a suite, run `cd wom7api && just --show <recipe>` (exactly what the runner does) before landing, and run the stable tier before calling it registered. Grep for a recipe with `^name\b`, not `^name:`.
 
+
+### A mocked-client test can prove a rule the database will never let run (T553, 2026-10-07)
+
+- T461 shipped "Delivered & Verified, 49 tests": the unit tests mocked the Supabase client, so the QH rules passed. The routes wrote through the user session and the migration gave `authenticated` no write path, so every write was denied in production (an MFA admin could write `hat_collections`, nobody could write the other four). One Postgres session as the real role found it in minutes.
+- Tell: a feature whose tests mock the data client and whose migration adds tables has not been shown to write at all. Check `has_table_privilege` and the write policies for the role the route actually uses.
+- Rule: authority that must hold (who may assign, compose, or change a rule) belongs in the database, in a function the tables' only write path goes through, and its proof is a scratch Postgres as role `authenticated` with a mutation that removes each rule (T544 pattern). A mocked route test then pins only the contract (which function, which arguments, 403 / 400 / 500 mapping).
+
+### A plpgsql `if` condition that contains `case ... then` ends at the first `then` (T553, 2026-10-07)
+
+- `if x <> case when a then b else c end then` parses as `if x <> case when a then` and fails with "syntax error at end of input" far from the cause.
+- Rule: compute the `case` into a variable first and test the variable.
+
+### A collection written add-only can still create a rule that breaks the data (T553, 2026-10-07)
+
+- `wom_apply_collection` as the API wrote it gave every non-dev role the rule `collapses into pm`, including `pm` itself. The fallback trigger would then flip the real PM's hat to `is_fallback`. Nothing hit it because no write ever succeeded.
+- Rule: when a write path that never worked is made to work, read every default it applies as if it will now run. Add the invariant as a check constraint (`role_slug <> collapses_into`) as well as in the function.
