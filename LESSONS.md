@@ -678,6 +678,7 @@ An agent said the estate was ready after `just test-prepush` and `preflight --fa
 
 ⇒ **Before saying "ready", run, on the commit that will be cut:** `just _deploy-preflight`, `just check-guardrails`, `just test`, `just goldens`, `just check-warp`, `just check-infisical`, and `just state-check` **last**. State what only the owner's run can exercise (the Touch ID confirm, `db-migrate`, the ship, `smoke-live`). **Re-measure after any landing on `beta`**: a green result is about one commit.
 ⭐ **The tell:** a readiness claim that cites `test-prepush` or "preflight" only; "ready" said while another tree still has unlanded work.
+**Measured again after agy landed, 2026-10-07:** a duplicate migration version (above) surfaced only on the re-measurement, because another agent had landed hours after the first green. The same re-run also found an unreachable CP page from that landing and 70 tickets whose stored hot score had gone stale at midnight (`tickets-frontmatter-check` is date-dependent until T552), so a readiness claim carries its commit AND its date: re-run after any landing and after midnight.
 ⚠️ `just goldens` kills and restarts whatever is on :4321: check `lsof -iTCP:4321` first so the owner's `just redev` is not killed. A `just deploy-dry-run` that runs exactly these stages is proposed on T503.
 
 ### ⛔ A SCHEDULED JOB MUST NEVER WRITE A TRACKED FILE IN THE LIVE CHECKOUT
@@ -869,6 +870,15 @@ The `osv-scanner` pre-commit hook blocked an unrelated commit on four new adviso
 
 ⇒ **Find the dependency path (`pnpm why <pkg>`), raise the floor to the fixed version, regenerate only the lockfile, and re-scan.** Hand edits to `known_good`/`min` and override floors are supported; `--no-verify` is prohibited.
 ⭐ **The tell:** `osv-scanner` failing a commit that touched no dependency file.
+
+### ⛔ A MIGRATION VERSION IS THE LEDGER KEY: TWO AGENTS PICKING THE SAME TIMESTAMP DROP ONE MIGRATION SILENTLY
+**2026-10-07, T551 and T544.**
+
+An agent landed `20261006120000_t544_...` in the afternoon; another landed `20261006120000_t461_...` in the evening. Each was correct alone. Both readers of the migrations directory (`db_drift_check.local_migrations`, `db_migrate`) build a `version -> filename` dict, so the later-sorted file replaced the other: `just db-drift-check` listed **four** pending migrations where **five** existed, and `supabase db push` would have failed on a duplicate key in the middle of the deploy, after the Touch ID and after earlier migrations had been applied. A ledger-gated authz probe would also have switched on against a policy that had not been applied.
+
+⇒ **Anything keyed by a value two agents can pick independently needs a uniqueness check at the place it is created, offline, in the push gate.** `just migration-versions-check` is now a pre-push suite, and the full drift check refuses a collision before it reads the ledger. When it fires, renumber the file that is NOT yet applied (14 digits, a free timestamp) and update every reference.
+⭐ **The tell:** two files in `wom7api/supabase/migrations/` with one 14-digit prefix; a pending list shorter than `git log` says it should be. Tests must also exercise a collision on the REAL directory, not only a temp one, and an empty or missing directory must fail rather than pass.
+⚠️ Detection is built; prevention (a `migration-new` that takes the next free version from `origin/beta`, like the ticket-id guard in `agent-tree-land`) is T551 AC4.
 
 
 ## 5. Records

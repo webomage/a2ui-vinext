@@ -9,7 +9,7 @@ Everything below is on `origin/beta`. Nothing in the "deploy" column is live unt
 |---|---|---|
 | Migration `20261004140000` | T543 | project-manager enforcement functions (proven on a throwaway Postgres only) |
 | Migration `20261005210000` | T535 | `wom_upwork_freshness()`; the Upwork card on `/admin/sync-health` reads it |
-| Migration `20261006120000` | T544 | `profile_experience` readable by its owner or an MFA admin only (was: every signed-in account) |
+| Migration `20261006121000` | T544 | `profile_experience` readable by its owner or an MFA admin only (was: every signed-in account) |
 | Migration `20261006130000` | T545 | admin read of `profile_cv_facts`, `profile_contact`, `profile_identity`, `profile_public_settings` behind `wom_admin_reads_personal_data()` |
 | CP app: `/` home router; `/admin` widgets moved to `/admin`, `/admin/secrets`, `/admin/scrapers`, `/admin/domains`, `/admin/ai-agents`; `AdminLayout`, `ClientLayout`, `member-routes.ts` deleted; hat switcher in the shell | T439 C4a, C4b | what to look at in section 2 |
 | Authz probes X8/X13/X18/X23 replaced by switch-aware ones, X30-X35 added | T544, T545 | they switch on when the ledger lists the migrations |
