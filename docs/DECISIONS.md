@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**368 recorded decision(s)** — 32 structured (AgDR), 336 in place across 170 file(s).
+**369 recorded decision(s)** — 32 structured (AgDR), 337 in place across 171 file(s).
 
 ## Structured records (AgDR)
 
@@ -424,6 +424,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`.tasks/T518.md:3`](../.tasks/T518.md) | : "Group C, seven scripts waiting on an owner decision: the news pipeline, tracks, the crawler smoke test, internal-docs indexing, Upwork backfill" |
 | [`.tasks/T539.md:45`](../.tasks/T539.md) | - [x] AC6 — Message text out of git (owner decision pending). rooms.jsonl carries real client conversations and is tracked. If the owner confirms: the message-bearing files are untracked and ignored, the loader reads from the ignored path, and history is left |
 | [`.tasks/T545.md:40`](../.tasks/T545.md) | rrowed before the first outside user (owner decision, tracked on [[T537]] AC10). One statement in a new migration. The owner decides per table whether an admin keeps any read; profile identity is KYC data. Record the decision here and tick it on T537. |
+| [`.tasks/T553.md:67`](../.tasks/T553.md) | sed plan (AC1 stands: definer RPCs, owner decision) |
 | [`TECH-DEBT.md:65`](../TECH-DEBT.md) | r decision) |
 | [`wom7web/project/data/cv/resolutions.json:2`](../wom7web/project/data/cv/resolutions.json) | " comment": "T165 task 2.6 — owner rulings that permanently clear a reported conflict. This file is the ONLY way a conflict stops being reported: the importer never decides. Key format is <entity ::<field , exactly as printed by just cv-import . Adding a key h |
 | [`wom7web/project/data/cv/resolutions.json:10`](../wom7web/project/data/cv/resolutions.json) | "decidedOn": "YYYY-MM-DD (absolute, never relative)" |
