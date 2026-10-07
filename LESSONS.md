@@ -1637,3 +1637,11 @@ The new `agent-tree` suite went red on the very first stable run as `MISSING` (e
 
 - `wom_apply_collection` as the API wrote it gave every non-dev role the rule `collapses into pm`, including `pm` itself. The fallback trigger would then flip the real PM's hat to `is_fallback`. Nothing hit it because no write ever succeeded.
 - Rule: when a write path that never worked is made to work, read every default it applies as if it will now run. Add the invariant as a check constraint (`role_slug <> collapses_into`) as well as in the function.
+
+
+### A retired name survives in function bodies and probes, not only in data (T553, 2026-10-07)
+
+- `tpm` (the early name of the Tech Lead seat) was archived as a role and deleted as an office on 2026-09-05 (T319), yet it stayed in three definitions of `wom_role_office`, the Indie project type, the 1-click provisioner (which would have re-created the archived role), three specs and two live probes that asserted the deleted rows still existed. I then built a security rule on the premise that `tpm` was a role.
+- Tell: a dedup migration that archives rows but whose commit message names no code change. Before reasoning about a name, measure that it exists in the live catalog (`select ... from project_roles group by slug, status`).
+- Rule: retiring a name means a grep of the whole estate (code, specs, probes, functions) in the same ticket, and a probe that asserts the name is ABSENT.
+
