@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**367 recorded decision(s)** — 32 structured (AgDR), 335 in place across 169 file(s).
+**368 recorded decision(s)** — 32 structured (AgDR), 336 in place across 170 file(s).
 
 ## Structured records (AgDR)
 
@@ -54,6 +54,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 
 | Date | Where | Decision |
 |---|---|---|
+| 2026-10-07 | [`.tasks/T554.md:27`](../.tasks/T554.md) | Owner, 2026-10-07 after the deploy: "we have to make it working stable with multiagent env". The deploy of release 2026.10.07-1791355037 shipped and published its tags, then failed at the last step. release.py record release wrote releases/<v .json and the reg |
 | 2026-10-06 | [`.tasks/T112.md:171`](../.tasks/T112.md) | d path (owner, 2026-10-06); automating it is not planned. |
 | 2026-10-06 | [`.tasks/T503.md:96`](../.tasks/T503.md) | ): a just deploy-dry-run that runs exactly the deploy's gate stages ( deploy-preflight , check-guardrails , test ) with no confirm, no migration and no ship, so "ready to deploy" is a measured fact; cost low (it is a recipe over existing stages, about 8 minute |
 | 2026-10-06 | [`.tasks/T537.md:56`](../.tasks/T537.md) | , has its own admin arm) by owner decision 2026-10-06, for the one-team testing phase. Narrowing is one statement ( select false in the function; the authz probes follow the switch with no edit). Owner decides per table whether an admin keeps any read; profile |

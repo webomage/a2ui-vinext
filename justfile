@@ -740,6 +740,15 @@ release-prune keep="":
 release-test:
     @python3 wom7web/project/scripts/release.py --test
 
+# T554 — land (or re-land) a release's record on origin/beta without touching this checkout: a parked one first, else built from the release manifest. Run it when a deploy
+# printed "release record is NOT on origin/beta".
+release-record *args:
+    @python3 wom7web/project/scripts/release.py record {{ args }}
+
+# T554 — offline proof (27 checks, throwaway git repositories: a lost race is retried, a record never strands on the live checkout, records are read from origin/beta).
+release-record-test:
+    @python3 wom7web/project/scripts/tests/test_release_record.py
+
 # T531 AC6 — agent trees: one COMPLETE, private copy of the estate per agent (the umbrella with every member repo nested inside), on local branch agent/<name> cut from origin/beta.
 # No pull requests and no remote branch: commit in your tree, then `agent-tree-land` fetches, rebases onto origin/beta, checks ticket ids (a collision or a gap is refused) and pushes
 # HEAD:beta, members first and the umbrella last. Never forces. See wom7web/project/scripts/agent_tree.py.

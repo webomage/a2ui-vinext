@@ -689,6 +689,15 @@ An agent said the estate was ready after `just test-prepush` and `preflight --fa
 ⇒ **A scheduler observes and proposes; a person or an agent in an agent tree commits.** Record what a job verified in machine-level state outside every tree (`~/.w0m/state/`), and land it through a re-verifying step (`just tools-promote --apply`, refused outside an agent tree). Manual edits stay legitimate: a new advisory can force a change at any time.
 ⭐ **The tell:** a launchd/cron command whose script calls `write_text` on a path inside the repo; a live checkout that is dirty on a Monday morning.
 
+### ⛔ A TOOL THAT WRITES TO A SHARED CHECKOUT AND PUSHES ONCE IS A RACE: BUILD ON THE FETCHED TIP, RETRY, AND LEAVE THE CHECKOUT ALONE
+**2026-10-07, T554.**
+
+The deploy shipped and published its tags, then `record_release` committed `releases/<v>.json` and `CHANGELOG.md` on the owner's live checkout and ran one `git push origin beta`. Another agent had landed in the meantime, so the push was rejected (non-fast-forward), the message said "push it later" (no command existed), and the commit stayed on the live branch: ahead 1, behind 1, which also broke the owner's `git merge --ff-only` catch-up. Three siblings of the same shape: a copy of the generated changelog into the shared tree, "the newest release record" read from the working tree (invisible when it landed elsewhere), and an exit code of 0 for a step that had failed.
+
+⇒ **With more than one agent landing on `beta`, any tool that must put a commit on `origin/beta` does it the way `agent-tree-land` does: fetch, build the commit on the new tip, push, and on a non-fast-forward fetch and rebuild (bounded, with backoff); a refusal that is not a race is not retried.** For machine-generated files build the commit with plumbing (`read-tree` into a private index, `hash-object`, `write-tree`, `commit-tree`) so no working tree, index or local branch is touched and nothing can be stranded. When it cannot land, park the payload outside every tree and print the exact command that finishes it; never "push it later". Read shared facts (release records, ledgers) from `origin/beta`, not from a working tree, and make a failed step fail the exit code.
+⭐ **The tell:** a deploy or generator whose last step runs `git commit` or `git push` inside the live checkout; a message containing "push it later"; the live branch showing ahead and behind at once after a tool finished.
+⚠️ The push still runs the repository's pre-push hook; `--no-verify` stays prohibited.
+
 
 ## 4. Dependencies and config
 
