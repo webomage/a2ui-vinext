@@ -2,6 +2,26 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.07-1791355037
+_First deployed: 2026-10-07 07:03:39.188305+00_
+
+### Features
+- **T546**: tools-weekly proposes known_good bumps, tools-promote lands them from an agent tree ([T546](file:///.tasks/T546.md))
+- **T532**: root forwarder for e2e-sandbox-guard-test ([T532](file:///.tasks/T532.md))
+- **T541**: single-use step consumption, --clear action, and deploy teardown consent cleanup ([T541](file:///.tasks/T541.md))
+- **T531**: just agent-tree, agent-tree-list, agent-tree-land, agent-tree-remove; AC6 half done ([T531](file:///.tasks/T531.md))
+- **T542**: scripts/check_db_host.py: the preflight resolves the database host the way psql does; T542 filed ([T542](file:///.tasks/T542.md))
+- **T539**: split T537: the owner's laptop MCP sync gets a database loader; the per-member server connector is on hold (Upwork refuses an https redirect) ([T539](file:///.tasks/T539.md), [T537](file:///.tasks/T537.md))
+- **T537**: Upwork on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted (Hero Epic stage 2) ([T537](file:///.tasks/T537.md))
+
+### Fixes
+- **deploy**: re-render the board (T532 done, T545-T548 rows), recipes resolve for the registered tools-upgrade suite, record the deploy findings in T503 ([T532](file:///.tasks/T532.md), [T545](file:///.tasks/T545.md), [T548](file:///.tasks/T548.md), [T503](file:///.tasks/T503.md))
+- **emoji**: restore md_headings_estate baseline to 230; the 225 lowering was read from the live tree and failed the release-shaped test tier
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `16f9885` | 2026-10-07 07:03:39.188305+00 |
+
 ## 2026.10.02-1790927707
 _First deployed: 2026-10-02 08:08:00.976014+00_
 
