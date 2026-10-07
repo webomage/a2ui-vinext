@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**365 recorded decision(s)** — 32 structured (AgDR), 333 in place across 168 file(s).
+**367 recorded decision(s)** — 32 structured (AgDR), 335 in place across 169 file(s).
 
 ## Structured records (AgDR)
 
@@ -57,7 +57,9 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-10-06 | [`.tasks/T112.md:171`](../.tasks/T112.md) | d path (owner, 2026-10-06); automating it is not planned. |
 | 2026-10-06 | [`.tasks/T503.md:96`](../.tasks/T503.md) | ): a just deploy-dry-run that runs exactly the deploy's gate stages ( deploy-preflight , check-guardrails , test ) with no confirm, no migration and no ship, so "ready to deploy" is a measured fact; cost low (it is a recipe over existing stages, about 8 minute |
 | 2026-10-06 | [`.tasks/T537.md:56`](../.tasks/T537.md) | , has its own admin arm) by owner decision 2026-10-06, for the one-team testing phase. Narrowing is one statement ( select false in the function; the authz probes follow the switch with no edit). Owner decides per table whether an admin keeps any read; profile |
+| 2026-10-06 | [`.tasks/T537.md:88`](../.tasks/T537.md) | nnector does not, and needs its own owner decision (T550 D2). |
 | 2026-10-06 | [`.tasks/T546.md:46`](../.tasks/T546.md) | Manual edits stay legitimate (owner, 2026-10-06) |
+| 2026-10-06 | [`.tasks/T550.md:39`](../.tasks/T550.md) | tate inventory, three tiers and the owner decisions (done 2026-10-06; caveats listed in the report, section 7). |
 | 2026-10-05 | [`.tasks/T439.md:254`](../.tasks/T439.md) | ew plan and five owner decisions (D1 to D5, each with a recommendation and its weight) are in plan-c4-client-org-and-cutover.md , section 'Re-plan, 2026-10-05'. C4a needs only D1 and D2. Not verified today: the rendered pages; cp-nav-check passes (78 pages, 47 |
 | 2026-10-04 | [`docs/decisions/AgDR-0032-agent-trees-a-complete-private-estate-per-agent.md:1`](../docs/decisions/AgDR-0032-agent-trees-a-complete-private-estate-per-agent.md) | In the context of several agents and one person editing the same working tree of a nine-repository estate that commits to a single branch (beta), facing one agent's uncommitted files reaching another agent's commit, hooks and push, we decided to give each agent its own complete copy of the estate (the umbrella repo with every member repo nested inside it) on a local-only branch agent/<name cut from origin/beta, landed with fetch, rebase and git push origin HEAD:beta, with no pull requests and no remote branches to achieve isolation of working state without leaving the one-branch model the owner wants, accepting that derived files and ticket ids still collide at landing and need their own guards, and that the live checkout stops being an agent's workspace. |
 | 2026-10-02 | [`.tasks/T539.md:56`](../.tasks/T539.md) | - Split from: [[T537]] (owner decision 2026-10-02). Supplies the live data for [[T533]] AC3 to AC5 for the owner's own account. |

@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 260 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **260** are
+> ⚠️ **0 of 261 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **261** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -71,9 +71,9 @@
 | `wom7mlx/wom7mlx` | `agent/claude-lessons` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 260 open · 549 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 261 open · 550 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T503","T52","T213","T244","T439","T481","T498","T504","T510"],"repos":{"wom7api":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"9da8a3f","unpushed":null},"wom7ext":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":null},"wom7skills":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"cea20d48","unpushed":null}},"tickets":{"open":260,"rowless_open":[],"rows":549}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T503","T52","T213","T244","T439","T481","T498","T504","T510"],"repos":{"wom7api":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"9da8a3f","unpushed":null},"wom7ext":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"35a7415","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"293f59c","unpushed":null},"wom7skills":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/claude-lessons","dirty":0,"has_upstream":true,"head":"cea20d48","unpushed":null}},"tickets":{"open":261,"rowless_open":[],"rows":550}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -131,7 +131,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-#### In-flight tickets (23):
+#### In-flight tickets (24):
 
 - **T16** — Verify & archive built-but-unarchived changes
   - **2026-08-23** (44d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
@@ -179,6 +179,8 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
   - **2026-10-06** (today): Landed on beta, migration NOT applied. 20261006130000_t545_admin_reads_personal_data.sql plus 24 scratch-database checks (eight deliberate breaks caught). Switch: public.wom_admin_reads_personal_data() = is_admin() today. Next (owner): next just deploy-all applies it. Then (AC3, read-only): as an aal2 admin each of the four tables shows its full row count; as a plain member only their own; just authz-probe shows X8, X13, X18, X23 and X35 GREEN. X20 (profile_identity empty) stays RED until identity details are saved in Studio ([[T505]]). Before the first outside user: narrow it (one statement) and decide per table whether an admin keeps any read, profile_identity being KYC data: tracked on [[T537]] AC10 and here as AC4.
 - **T546** — The scheduled tools upgrade proposes known_good bumps; only an agent-tree promotion writes them
   - **2026-10-06** (today): Found by the deploy gate, fixed. The registry runs recipes through wom7api/justfile (wom7web/justfile is a symlink to it) and I had added tools-upgrade-test only to the root justfile, so the full test tier reported it as "recipe not found, 0 checks" (a blocking failure). Now in wom7api/justfile with tools-promote, and two new structure tests pin it: the registered recipe resolves in the justfile the registry runs, and the REAL scheduled recipe (wom7api tools-weekly, the one launchd runs) never promotes. A mutation that makes it promote is caught. The suite now prints a check line per test, so the runner counts 25 instead of "?". Also corrected the stale comments on tools-upgrade, tools-reconcile and tools-weekly ("promotes known_good").
+- **T550** — Telegram and Threads: search, message and manage bots, a measured integration plan with three tiers
+  - ⚠️ NO status note recorded where this stopped
 
 #### Completed today (3):
 
