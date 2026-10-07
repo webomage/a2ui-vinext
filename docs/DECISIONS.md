@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**364 recorded decision(s)** — 32 structured (AgDR), 332 in place across 168 file(s).
+**365 recorded decision(s)** — 32 structured (AgDR), 333 in place across 168 file(s).
 
 ## Structured records (AgDR)
 
@@ -55,6 +55,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | Date | Where | Decision |
 |---|---|---|
 | 2026-10-06 | [`.tasks/T112.md:171`](../.tasks/T112.md) | d path (owner, 2026-10-06); automating it is not planned. |
+| 2026-10-06 | [`.tasks/T503.md:96`](../.tasks/T503.md) | ): a just deploy-dry-run that runs exactly the deploy's gate stages ( deploy-preflight , check-guardrails , test ) with no confirm, no migration and no ship, so "ready to deploy" is a measured fact; cost low (it is a recipe over existing stages, about 8 minute |
 | 2026-10-06 | [`.tasks/T537.md:56`](../.tasks/T537.md) | , has its own admin arm) by owner decision 2026-10-06, for the one-team testing phase. Narrowing is one statement ( select false in the function; the authz probes follow the switch with no edit). Owner decides per table whether an admin keeps any read; profile |
 | 2026-10-06 | [`.tasks/T546.md:46`](../.tasks/T546.md) | Manual edits stay legitimate (owner, 2026-10-06) |
 | 2026-10-05 | [`.tasks/T439.md:254`](../.tasks/T439.md) | ew plan and five owner decisions (D1 to D5, each with a recommendation and its weight) are in plan-c4-client-org-and-cutover.md , section 'Re-plan, 2026-10-05'. C4a needs only D1 and D2. Not verified today: the rendered pages; cp-nav-check passes (78 pages, 47 |

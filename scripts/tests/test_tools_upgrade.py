@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import io
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -279,12 +280,24 @@ class Structure(unittest.TestCase):
         self.assertFalse(tu.is_agent_tree(Path("/Users/proto/Projects/@self/@wom")))
         self.assertFalse(tu.is_agent_tree(Path.home() / ".w0m" / "workaround" / "w0m"), "a prefix match is not a path match")
 
-    def test_the_justfile_has_the_promote_recipe_and_the_weekly_recipe_does_not_promote(self):
-        jf = (REPO / "justfile").read_text()
-        self.assertRegex(jf, r"(?m)^tools-promote \*args:\n    @python3 scripts/tools_upgrade\.py --promote \{\{ args \}\}")
-        weekly = jf[jf.index("tools-weekly *args:") :].split("\n\n")[0]
-        self.assertNotIn("--promote", weekly)
-        self.assertNotIn("update-known-good", weekly)
+    def test_the_justfiles_have_the_promote_recipe_and_no_weekly_recipe_promotes(self):
+        """The root justfile duplicates these recipes, but the LAUNCHD job runs `cd wom7api && just tools-weekly`, so the wom7api recipe is the one that must be right."""
+        for rel, forward in (("justfile", "scripts/tools_upgrade.py"), ("wom7api/justfile", "../scripts/tools_upgrade.py")):
+            jf = (REPO / rel).read_text()
+            self.assertIn(f"tools-promote *args:\n    @python3 {forward} --promote {{{{ args }}}}", jf, rel)
+            m = re.search(r"(?m)^tools-weekly[^\n]*:\n((?:[ \t]+[^\n]*\n?)+)", jf)  # the recipe definition, not a comment that names it
+            self.assertIsNotNone(m, f"{rel}: no tools-weekly recipe")
+            weekly = m.group(1)  # type: ignore[union-attr]
+            self.assertNotIn("--promote", weekly, rel)
+            self.assertNotIn("update-known-good", weekly, rel)
+            self.assertIn("--apply", weekly, rel)
+
+    def test_the_registered_suite_recipe_resolves_in_the_justfile_the_registry_runs(self):
+        """The registry lives in wom7web and runs recipes through wom7api's justfile (wom7web/justfile is a symlink to it). A recipe only in the root justfile reads as 'recipe not found', 0 checks."""
+        reg = json.loads((REPO / "wom7web" / "project" / "test-suites.json").read_text())["suites"]
+        entry = next(s for s in reg if s["name"] == "tools-upgrade")
+        jf = (REPO / "wom7api" / "justfile").read_text()
+        self.assertRegex(jf, rf"(?m)^{entry['recipe']}:\n    @python3 \.\./scripts/tests/test_tools_upgrade\.py")
 
 
 class PendingIsVisible(unittest.TestCase):
@@ -306,5 +319,21 @@ class PendingIsVisible(unittest.TestCase):
             shutil.rmtree(tmp, ignore_errors=True)
 
 
+class _Result(unittest.TextTestResult):
+    """House style (scripts/run_suites.py counts them): one ✅/❌ line per check on stdout."""
+
+    def addSuccess(self, test):  # noqa: N802
+        super().addSuccess(test)
+        print(f"  \u2705 {test.id().rsplit('.', 2)[-2]}.{test.id().rsplit('.', 1)[-1]}")
+
+    def addFailure(self, test, err):  # noqa: N802
+        super().addFailure(test, err)
+        print(f"  \u274c {test.id().rsplit('.', 2)[-2]}.{test.id().rsplit('.', 1)[-1]}")
+
+    def addError(self, test, err):  # noqa: N802
+        super().addError(test, err)
+        print(f"  \u274c {test.id().rsplit('.', 2)[-2]}.{test.id().rsplit('.', 1)[-1]}")
+
+
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    unittest.main(testRunner=unittest.TextTestRunner(resultclass=_Result, verbosity=1))
