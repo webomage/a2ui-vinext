@@ -524,6 +524,32 @@ Gauge ts-node loads and compiles *every* `.ts` step definition file in `tests/` 
 ⇒ **All environment-dependent endpoints, URLs, and external client factories inside test step files MUST be encapsulated in lazy getters or inside step hooks, never evaluated at module top level.**
 ⭐ **The tell:** A test suite crashing with missing environment variables for a service that the spec under test never uses.
 
+### ⛔ A LESSON THAT LIVES ONLY IN THIS FILE DID NOT STOP THE REPEAT: TURN IT INTO A GATE
+**2026-10-06, T546 and T549. Bit twice in three days.**
+
+The T531 lesson ("a suite recipe must be visible from `wom7api/`") was written on 2026-10-04. Two days later a different agent registered the `tools-upgrade` suite with its recipe only in the root justfile. `just suites-drift` said **"0 undeclared"** (it reads declarations, not resolution), the suite's own test passed, and the full `test` tier then reported `🚫 0 check(s) — recipe not found`, a blocking failure, at deploy time. The same suite also printed no `✅`/`❌` lines, so `run_suites.py` counted its checks as `?`.
+
+⇒ **A rule an agent has to remember is a rule the next agent will not.** When a lesson names a mechanical check ("run `cd wom7api && just --show <recipe>`"), the check belongs in the gate that already runs (here, `suites-drift` must resolve every registered recipe the way the runner does, T549), not in prose.
+⭐ **The tell:** a gate that says "0 problems" about a registry while the runner that consumes the registry says "not found". Two readers of one registry that resolve it differently.
+⚠️ Query before you write: `just lessons <topic>`. Add the recurrence to the existing entry; do not start a second one.
+
+### ⛔ A TEST THAT READS GIT STATE MUST PASS IN AN AGENT TREE, NOT ONLY IN THE LIVE CHECKOUT
+**2026-10-06, T503.**
+
+`test_tasks_render.py` asserted that ticket links match `.../blob/[^/]+/.tasks/T\d+.md`. An agent tree is on branch `agent/<name>` (AgDR-0032), so the branch segment contains a slash and the check failed, which made `py-test` (a blocking suite) red in **every** agent tree while it passed in the live root. It surfaced only when a tree ran the full suite.
+
+⇒ **Anything a test learns from `git` (branch, remote, HEAD, path under `~/.w0m/work`) must hold for the agent-tree shape**: a slash in the branch, a different root, no `node_modules`, a detached HEAD in a release worktree. Run the suite once in an agent tree before landing a change to such a test.
+⭐ **The tell:** a test green in the live checkout and red in a tree, or a regex with `[^/]+` over a branch name.
+
+### ⛔ BEFORE REPORTING A DEFECT, RE-RUN IT THE WAY THE REPO'S OWN RECIPE RUNS IT, AND RETRACT IN THE SAME MESSAGE
+**2026-10-06.**
+
+An agent ran `npx vitest run src/auth/middleware.spec.ts` from `wom7web/packages/lib`, saw "cannot find astro:middleware", and reported a pre-existing broken suite through several summaries. From the workspace root (where the repo runs it) it passes 5/5. The failure was the invocation.
+
+⇒ **Name the working directory and command with every "X is broken" claim, and reproduce it the repo's own way (`just <recipe>`, or from the root) before it leaves your hands.** If a re-run disagrees with something you already said, retract it in that message, not three messages later.
+⭐ **The tell:** an import or module-resolution error for a virtual module (`astro:*`, a workspace alias) when you are not at the root.
+
+
 ## 3. Deploys and platforms
 
 ### ⛔ SERVE `.svg` WITH `<img>`, NEVER ASTRO'S `<Image>`
@@ -644,6 +670,24 @@ A static friendly name (e.g. `'Authenticator App'`) works for the first factor, 
 - **A repo with no pre-push hook has its cheap gates at pre-commit.** The umbrella's ticket edit was checked for the first time inside the deploy.
 - **A hook and its registry must agree in BOTH directions.** Four steps were in the hook but not registered (so never checkpointed) and the checker only looked one way.
 ⭐ **The tell:** a deploy log where `db-migrate` appears above the first `test` line, or where the failing suite is one you could have run in a second.
+
+### ⛔ "READY TO DEPLOY" MEANS THE DEPLOY'S OWN STAGES PASSED ON THE COMMIT THAT WILL BE CUT, NEVER THE FAST TIER
+**2026-10-06, T503. The deploy failed, and replaying its stages found five more blockers.**
+
+An agent said the estate was ready after `just test-prepush` and `preflight --fast`. The deploy then stopped at `_deploy-preflight` because `STATE.md` was stale (a ticket had been created after `state-save`). The stages behind it had never been run together: `check-guardrails` (the inline-credential scan tripped on four test fixtures), the full `test` tier (`py-test` could not collect: `psycopg` 3 was used but undeclared; the skills suite found canonical-vs-active drift; `tasks-bounds` found a board row that disagreed with a done ticket), and `goldens`. Also, the release is cut from `origin/beta` after a fetch, never from a working tree (`release.py`), so another agent landing first changes what ships.
+
+⇒ **Before saying "ready", run, on the commit that will be cut:** `just _deploy-preflight`, `just check-guardrails`, `just test`, `just goldens`, `just check-warp`, `just check-infisical`, and `just state-check` **last**. State what only the owner's run can exercise (the Touch ID confirm, `db-migrate`, the ship, `smoke-live`). **Re-measure after any landing on `beta`**: a green result is about one commit.
+⭐ **The tell:** a readiness claim that cites `test-prepush` or "preflight" only; "ready" said while another tree still has unlanded work.
+⚠️ `just goldens` kills and restarts whatever is on :4321: check `lsof -iTCP:4321` first so the owner's `just redev` is not killed. A `just deploy-dry-run` that runs exactly these stages is proposed on T503.
+
+### ⛔ A SCHEDULED JOB MUST NEVER WRITE A TRACKED FILE IN THE LIVE CHECKOUT
+**2026-10-06, T546.**
+
+`com.w0m.tools-weekly` (launchd, Mondays) ran in the live checkout and rewrote `project/policies/tools-policy.json`, and nothing committed it. The owner's checkout sat dirty for a day, `git merge --ff-only` aborted on it, and a bump the weekly run had *held* (semgrep: "upgrade did not take") was written anyway by the reconcile step, with no smoke behind it.
+
+⇒ **A scheduler observes and proposes; a person or an agent in an agent tree commits.** Record what a job verified in machine-level state outside every tree (`~/.w0m/state/`), and land it through a re-verifying step (`just tools-promote --apply`, refused outside an agent tree). Manual edits stay legitimate: a new advisory can force a change at any time.
+⭐ **The tell:** a launchd/cron command whose script calls `write_text` on a path inside the repo; a live checkout that is dirty on a Monday morning.
+
 
 ## 4. Dependencies and config
 
@@ -800,6 +844,32 @@ recording something false.
 ⭐ **The tell:** an error that arrives *after* "Modifying...". Verify state, then repeat the idempotent step.
 
 ---
+
+### ⛔ RUN TESTS UNDER THE PROJECT'S OWN RUNNER: SYSTEM PYTHON HIDES AN UNDECLARED IMPORT
+**2026-10-06, T539.**
+
+`upwork_loader.py` and its tests import `psycopg` (v3). `wom7web/pyproject.toml` declared only `psycopg2-binary`. System `python3` has `psycopg`, so every local run passed; `uv run pytest` (the deploy's `py-test`) could not import it, and **one collection error interrupted all 984 tests**.
+
+⇒ **When a change adds an import, declare it in the project file and run the suite through the project's runner** (`uv run pytest`, `just py-test`), not the interpreter on your PATH. Re-lock (`uv lock`) in the same commit.
+⭐ **The tell:** `ModuleNotFoundError` only under `uv run`; a new `import` with no matching line in `pyproject.toml`.
+
+### ⛔ A FAKE PASSWORD INSIDE A CONNECTION-STRING LITERAL IS A LEAKED CREDENTIAL TO THE PRE-DEPLOY SCAN
+**2026-10-06, T535, T539, T532.**
+
+`check-guardrails` greps tracked files for `scheme://user:password@` with a 6+ character password (gitleaks misses connection strings, T32). Four test fixtures matched: a redaction test that builds a URL around a distinctive fake password, and two others with short literal passwords. They are fixtures, but the scan cannot know, and it runs only at deploy time, so it failed the deploy.
+
+⇒ **Keep the distinctive fake secret in a named constant and interpolate it (`f"<scheme>://user:{FAKE_PASSWORD}@host/db"`), or use a placeholder under 6 characters when the value is never asserted on.** Never weaken the regex for a fixture.
+⭐ **The tell:** a new test that builds a database URL with a password in the literal. Run `just check-guardrails` before landing a test that does.
+⚠️ The same applies to prose: this lesson's first draft quoted the fixture URLs and the secrets hook (gitleaks rule `wom-postgres-uri-inline-password`) rejected the commit. Describe such a value, never paste it, including in tickets and reports.
+
+### ⛔ A NEW ADVISORY CAN BLOCK A COMMIT YOU DID NOT CAUSE: RAISE THE FLOOR, NEVER SKIP THE HOOK
+**2026-10-06, T112.**
+
+The `osv-scanner` pre-commit hook blocked an unrelated commit on four new advisories (`sharp` 8.9, `source-map-js` 8.7, `tinypool` 9.5, all dev-tool dependencies of wrangler, vitest and oxfmt). The fix was to raise three `pnpm.overrides` floors in `wom7api/package.json` and run `pnpm install --lockfile-only`, then re-scan (`osv-scanner --lockfile=pnpm-lock.yaml`: no issues).
+
+⇒ **Find the dependency path (`pnpm why <pkg>`), raise the floor to the fixed version, regenerate only the lockfile, and re-scan.** Hand edits to `known_good`/`min` and override floors are supported; `--no-verify` is prohibited.
+⭐ **The tell:** `osv-scanner` failing a commit that touched no dependency file.
+
 
 ## 5. Records
 
@@ -1178,6 +1248,24 @@ the environment with `clear=False`, so they inherited the flag, saw "release wor
 
 ⇒ **After generating any file in a scratch copy, grep it for the scratch root before staging, and check that every link it contains resolves in the real tree. A check that passes inside the copy proves the copy.**
 ⭐ **The tell:** a generated file whose diff shows a path prefix changing wholesale, or a derived file produced anywhere other than the checkout it will live in.
+
+### ⛔ EDIT THE CANONICAL COPY OF A SKILL, NEVER THE INSTALLED ONE
+**2026-10-06, T532.**
+
+A commit added `osv-scanner.toml` to `wom7web/.agents/skills/mmd-validate/` (the **active** copy) only. The next sync saw a file present in the active copy and absent from canonical, so the skills suite failed ("canonical and active copies agree": 1 !== 0) and the lockfile's integrity hash for `mmd-validate` was stale.
+
+⇒ **Change `wom7skills/skills/<name>/`, then `pnpm version:stamp`, `pnpm skills:sync`, `just skill relock <name>` (re-stamp; `relock-all` is for a NEW skill), and commit canonical, active and the lock together.** Run `just skill check` and `pnpm skills:check` before landing.
+⭐ **The tell:** `git status` shows a file under `.agents/skills/` that is not under `wom7skills/skills/`.
+
+### ⛔ AFTER ANY TICKET CREATE OR EDIT, REGENERATE THE DERIVED FILES IN ORDER AND RUN `state-check` LAST
+**2026-10-06, T548 and T503.**
+
+Tickets T545 to T548 were committed without `just tasks-render`, so `TASKS.md` had no rows for them, and ticket T532 was `done` while its board row said `in-progress` (`tasks-bounds` treats that as a blocking "truth" finding). `STATE.md` was stale because T548 was created after `state-save`; `state-check` is the first stage of the deploy, so it was the first thing to fail. Fixing one derived file can re-stale another.
+
+⇒ **Order: create/edit tickets, `just tasks-render`, `just state-save`, `just decisions`, then `just state-check` last**, in a COMPLETE agent tree (never a partial one). A pre-commit hook rewrites ticket frontmatter (`x_*` fields): commit its changes too, or the tree is dirty and `agent-tree-land` refuses.
+⭐ **The tell:** a `.tasks/T*.md` in the diff with no `TASKS.md` change beside it.
+⚠️ `STATE.md` ticket links currently embed the generating tree's absolute path (T548).
+
 
 ## 6. UI/UX & Interactions
 
