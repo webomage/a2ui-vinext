@@ -567,6 +567,13 @@ resumes-upload-live:
 resumes-upload-test:
     @just --justfile wom7api/justfile resumes-upload-test
 
+# T529 — clients & client_users retirement verification and offline tests
+clients-retirement-verify *args:
+    @just --justfile wom7api/justfile clients-retirement-verify {{ args }}
+
+clients-retirement-verify-test:
+    @just --justfile wom7api/justfile clients-retirement-verify-test
+
 goldens *args:
     @just --justfile wom7api/justfile goldens {{ args }}
 
