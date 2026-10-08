@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T539](.tasks/T539.md) | **P1** | 🆕 **The owner's Upwork data reaches the database only as local files: contracts, rooms, messages and the screening answers have no loader** | web, api | — | ⚪ **queued** |
 | [T537](.tasks/T537.md) | **P1** | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 🔵 **blocked** |
 | [T535](.tasks/T535.md) | **P1** | 🆕 **The Upwork poller has failed every run since 2026-09-19 (582 in a row) and the failure row does not say why; nothing alerts on it** | api, web | — | ⚪ **queued** |
+| [T529](.tasks/T529.md) | **P1** | 🆕 **Org model S8: retire public.clients and client_users; company details keyed by org, client hats on engagements** | api, web | — | 🟡 **in-progress** |
 | [T510](.tasks/T510.md) | **P1** | 🆕 **Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card** | web, api | — | 🟡 **in-progress** |
 | [T505](.tasks/T505.md) | **P1** | **Personal information model: one contact record (shared by Resume Studio and KYC) and a separate, locked identity record for KYC** | web, api | — | 🟡 **in-progress** |
 | [T499](.tasks/T499.md) | **P1** | 🆕 **Resume Studio keeps highlights and tags in the database only: edit in Studio, parse raw uploads into highlights, save exports as files in the member's vault; retire the JSON seed** | web, api | — | 🟡 **in-progress** |
@@ -72,7 +73,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T533](.tasks/T533.md) | **P1** | 🆕 **Upwork linked knowledge store: proposals with their screening answers, messages and contracts linked and stored for AI search, mentions, proofs and Resume Studio** | api, web | — | ⚪ **queued** |
 | [T531](.tasks/T531.md) | **P1** | 🆕 **Per-agent workspace sets: parallel agents stop sharing one working tree, one index and one set of generated files** | tooling | — | ⚪ **queued** |
 | [T530](.tasks/T530.md) | **P1** | 🆕 **Org model S9: retire Axis-1 account classes and network.member, unify CP context switcher on engagement hats and root admin** | web, api | — | ⚪ **queued** |
-| [T529](.tasks/T529.md) | **P1** | 🆕 **Org model S8: retire public.clients and client_users; company details keyed by org, client hats on engagements** | api, web | — | ⚪ **queued** |
 | [T528](.tasks/T528.md) | **P1** | 🆕 **KYC personal half: KYC reads the member's contact and identity records, and CURP and RFC leave gamification.compliance_profiles** | web, api | — | ⚪ **queued** |
 | [T513](.tasks/T513.md) | **P1** | 🆕 **Resume Studio documents: View Markdown shows nowhere you are looking, PDFs have no preview, a 400 fires on every load, and the card buttons overflow** | web | — | ⚪ **queued** |
 | [T509](.tasks/T509.md) | **P1** | 🆕 **Root-first layout: finish the T414 move in staged units, behind a stale-path probe that checks the file a recipe, hook or profile runs actually exists** | web, api | — | ⚪ **queued** |
