@@ -1645,3 +1645,9 @@ The new `agent-tree` suite went red on the very first stable run as `MISSING` (e
 - Tell: a dedup migration that archives rows but whose commit message names no code change. Before reasoning about a name, measure that it exists in the live catalog (`select ... from project_roles group by slug, status`).
 - Rule: retiring a name means a grep of the whole estate (code, specs, probes, functions) in the same ticket, and a probe that asserts the name is ABSENT.
 
+### A filter on text another parser will read must refuse the encodings, not list the bad words (T555, 2026-10-08)
+
+- The PDF worker's first stylesheet check blocked `url(https://...)` with a regex. A CSS parser reads `u\72l(...)` as `url(` and `image-set("https://...")` fetches without `url(` at all, so a blocklist that was correct for the strings it listed was open for the ones a browser also accepts. The automated review of the pushed commit found it, not the tests, because the tests tried the spellings I had thought of.
+- Rule: for any text you pass on to a parser (CSS, HTML, a path the service role will read), allow what the use needs and refuse everything else, including the escape syntax itself. Write the bypass spellings as test rows before the fix.
+- Same review: "the caller can read the row" is not "the caller owns the row" when an admin read arm exists. Compare the row's owner to the caller's own identity.
+
