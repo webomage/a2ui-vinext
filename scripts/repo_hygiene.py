@@ -783,6 +783,10 @@ def check_dep_licenses(policy: dict) -> tuple[list[str], dict]:
                        if tier == "fail" else
                        f"rule on it in deps-policy.json -> licenses.exempt with a reason"))
     for pname in sorted(unused):
+        if ("-darwin-" in pname and sys.platform != "darwin") or \
+           ("-linux-" in pname and not sys.platform.startswith("linux")) or \
+           ("-win32-" in pname and sys.platform != "win32"):
+            continue
         why = ("is no longer a production dependency anywhere" if pname not in seen_any
                else "is still a dependency but no longer carries a licence needing an exemption")
         problems.append(f"`{pname}` is exempted in deps-policy.json but {why} — a stale exemption "

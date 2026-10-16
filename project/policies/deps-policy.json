@@ -104,8 +104,10 @@
     "exempt": {
       "_comment": "AC9 — an exemption without a reason is itself a blocking finding (mirrors T127 R3). Keyed by package name. Each reason had to answer the question the tier cannot: is this thing actually distributed?",
       "@img/sharp-libvips-darwin-arm64": "LGPL-3.0-or-later. A pre-built native libvips binary, pulled in as sharp's per-platform OPTIONAL dependency for image processing at build time. LGPL's obligation is to permit relinking of the covered library; it is consumed as an unmodified shared binary and is not redistributed by this estate — the built site ships images, not libvips. Re-rule if sharp ever moves into a shipped runtime.",
+      "@img/sharp-libvips-linux-x64": "LGPL-3.0-or-later. A pre-built native libvips binary, pulled in as sharp's per-platform OPTIONAL dependency for image processing at build time. LGPL's obligation is to permit relinking of the covered library; it is consumed as an unmodified shared binary and is not redistributed by this estate — the built site ships images, not libvips. Re-rule if sharp ever moves into a shipped runtime.",
       "lightningcss": "MPL-2.0. A Rust CSS parser/minifier invoked at BUILD time (Astro/Tailwind pull it in as a prod dep). MPL-2.0 is file-level copyleft: obligations attach to modified MPL files, and none are modified here. No lightningcss source reaches a client bundle — its OUTPUT (transformed CSS) is not a derivative under MPL-2.0.",
-      "lightningcss-darwin-arm64": "MPL-2.0. The per-platform native binary for the entry above; same reasoning, same ruling."
+      "lightningcss-darwin-arm64": "MPL-2.0. The per-platform native binary for the entry above; same reasoning, same ruling.",
+      "lightningcss-linux-x64-gnu": "MPL-2.0. The per-platform native binary for the entry above; same reasoning, same ruling."
     }
   }
 }
