@@ -88,6 +88,18 @@ def openspec_tools() -> tuple[dict[str, str], str | None]:
     stale silently — the exact failure that produced the estate's stale openspec pin.
     """
     candidates = []
+    import shutil
+    openspec_bin = shutil.which("openspec")
+    if openspec_bin:
+        try:
+            bin_path = Path(openspec_bin).resolve()
+            candidates.append(bin_path.parents[1] / "dist" / "core" / "config.js")
+            candidates.append(bin_path.parent / "dist" / "core" / "config.js")
+        except Exception:
+            pass
+    code_npm, out_npm = _sh("npm", "root", "-g")
+    if code_npm == 0 and out_npm.strip():
+        candidates.append(Path(out_npm.strip()) / "@fission-ai" / "openspec" / "dist" / "core" / "config.js")
     code, out = _sh("node", "-e",
                     "console.log(require.resolve('@fission-ai/openspec/package.json'))")
     if code == 0 and out.strip():

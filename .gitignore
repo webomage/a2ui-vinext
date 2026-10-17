@@ -84,5 +84,10 @@ project/.tools-weekly-status.json
 .tinyb
 .tinybird/
 
+# ── Infisical local project context ───────────────────────────────────────────
+.infisical.json
+.infisical.yaml
+.infisical/
+
 
 

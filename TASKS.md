@@ -69,7 +69,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T555](.tasks/T555.md) | **P1** | 🆕 **Resume Studio prints its summary, skills and contract list from nothing the app can fill: load the canonical profile content, add editors, and let a themed variant leave out whole contracts and projects** | web, api | — | ⚪ **queued** |
+| [T555](.tasks/T555.md) | **P1** | 🆕 **Resume Studio prints its summary, skills and contract list from nothing the app can fill: load the canonical profile content, add editors, and let a themed variant leave out whole contracts and projects** | web, api | — | ✅ **done** |
 | [T533](.tasks/T533.md) | **P1** | 🆕 **Upwork linked knowledge store: proposals with their screening answers, messages and contracts linked and stored for AI search, mentions, proofs and Resume Studio** | api, web | — | ⚪ **queued** |
 | [T531](.tasks/T531.md) | **P1** | 🆕 **Per-agent workspace sets: parallel agents stop sharing one working tree, one index and one set of generated files** | tooling | — | ⚪ **queued** |
 | [T530](.tasks/T530.md) | **P1** | 🆕 **Org model S9: retire Axis-1 account classes and network.member, unify CP context switcher on engagement hats and root admin** | web, api | — | ⚪ **queued** |

@@ -63,12 +63,14 @@ def check_firewall() -> Dict[str, Any]:
             detail.append("stealth mode off")
 
     except Exception as e:
+        status = NOT_MEASURED if (isinstance(e, FileNotFoundError) and sys.platform != "darwin") else FAIL
+        detail = "NOT MEASURED — socketfilterfw not available on Linux host" if status == NOT_MEASURED else f"Error running socketfilterfw: {e}"
         return {
             "name": "Firewall & Stealth",
-            "status": FAIL,
+            "status": status,
             "enabled": False,
             "stealth": False,
-            "detail": f"Error running socketfilterfw: {e}"
+            "detail": detail
         }
 
     status = PASS if (enabled and stealth) else FAIL
@@ -93,11 +95,13 @@ def check_filevault() -> Dict[str, Any]:
             "detail": proc.stdout.strip() or ("FileVault is On." if enabled else "FileVault is Off.")
         }
     except Exception as e:
+        status = NOT_MEASURED if (isinstance(e, FileNotFoundError) and sys.platform != "darwin") else FAIL
+        detail = "NOT MEASURED — fdesetup not available on Linux host" if status == NOT_MEASURED else f"Error querying fdesetup: {e}"
         return {
             "name": "FileVault",
-            "status": FAIL,
+            "status": status,
             "enabled": False,
-            "detail": f"Error querying fdesetup: {e}"
+            "detail": detail
         }
 
 
@@ -113,11 +117,13 @@ def check_sip() -> Dict[str, Any]:
             "detail": proc.stdout.strip()
         }
     except Exception as e:
+        status = NOT_MEASURED if (isinstance(e, FileNotFoundError) and sys.platform != "darwin") else FAIL
+        detail = "NOT MEASURED — csrutil not available on Linux host" if status == NOT_MEASURED else f"Error querying csrutil: {e}"
         return {
             "name": "SIP",
-            "status": FAIL,
+            "status": status,
             "enabled": False,
-            "detail": f"Error querying csrutil: {e}"
+            "detail": detail
         }
 
 
@@ -133,11 +139,13 @@ def check_gatekeeper() -> Dict[str, Any]:
             "detail": proc.stdout.strip()
         }
     except Exception as e:
+        status = NOT_MEASURED if (isinstance(e, FileNotFoundError) and sys.platform != "darwin") else FAIL
+        detail = "NOT MEASURED — spctl not available on Linux host" if status == NOT_MEASURED else f"Error querying spctl: {e}"
         return {
             "name": "Gatekeeper",
-            "status": FAIL,
+            "status": status,
             "enabled": False,
-            "detail": f"Error querying spctl: {e}"
+            "detail": detail
         }
 
 
