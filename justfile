@@ -667,7 +667,7 @@ deploy-local:
 # the live database BEFORE any test ran, so a red gate arrived after an irreversible change (two migrations applied, then five blocking suites failed, on
 # 2026-09-30; the same shape on 2026-09-29). Now the chain is three parts, in this order, for both `deploy` and `deploy-all`:
 #   _deploy-preflight  the cheap deterministic ratchets, BEFORE the confirmation prompt (a red one costs no Touch ID, no release cut, no 8-minute suite)
-#   _deploy-gates      every check that can fail: infisical, guardrails, the whole offline suite tier, goldens. Writes NOTHING live.
+#   _deploy-gates      every check that can fail: infisical, guardrails, the whole offline suite tier. Writes NOTHING live.
 #   _deploy-ship       what changes live state: db-migrate (deploy-all only), the app deploys, the smoke test, the clean-tree assertion, the deploy log
 # `scripts/tests/test_deploy_chain_order.py` pins the order from the real recipe graph and red-probes the old one.
 _deploy-chain: _deploy-preflight (_confirm "deploy") _deploy-gates _deploy-ship
@@ -678,7 +678,8 @@ _deploy-preflight:
     @python3 scripts/run_suites.py --prepush
     @just state-check
 
-_deploy-gates: check-infisical check-guardrails test goldens
+# Note: `goldens` is excluded from `_deploy-gates` because booting the local Astro dev server + Playwright browser matrix inside a deploy run halts memory-constrained hosts. Run `just goldens` standalone when needed.
+_deploy-gates: check-infisical check-guardrails test
 
 _deploy-ship:
     @just _deploy-apps

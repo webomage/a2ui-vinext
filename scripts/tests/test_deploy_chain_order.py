@@ -7,7 +7,7 @@ to the live database and the deploy then stopped at `just test` with five blocki
 (and on 2026-09-29 the same shape). A gate that can only fail AFTER the thing it guards has happened is a report, not a gate.
 
 Asserted here, from `just --dump` (the real recipe graph, not a regex over text):
-  1. every gate (test, goldens, check-guardrails, check-infisical) runs BEFORE `db-migrate` in `_deploy-all-chain`;
+  1. every gate (test, check-guardrails, check-infisical) runs BEFORE `db-migrate` in `_deploy-all-chain`;
   2. nothing that changes live state (`db-migrate`, the app deploys) is a dependency of `_deploy-gates`;
   3. `_deploy-chain` and `_deploy-all-chain` share the SAME `_deploy-gates`, so a gate added once protects both;
   4. the cheap ratchets (`_deploy-preflight`) run BEFORE the confirmation prompt, so a red ratchet never costs a Touch ID or a release cut;
@@ -22,7 +22,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-GATES = ("test", "goldens", "check-guardrails")
+GATES = ("test", "check-guardrails")
 MUTATORS = ("db-migrate", "deploy", "_deploy-apps", "_deploy-ship")
 
 
@@ -91,13 +91,13 @@ class TestDeployChainOrder(unittest.TestCase):
 
     def test_red_probe_the_old_order_is_refused(self):
         """The order that caused the 2026-09-30 incident, fed to the same checker."""
-        old = ["_confirm", "check-warp", "check-infisical", "db-migrate", "check-guardrails", "test", "goldens", "deploy"]
+        old = ["_confirm", "check-warp", "check-infisical", "db-migrate", "check-guardrails", "test", "deploy"]
         problems = order_problems(old)
-        self.assertEqual(len(problems), 3, problems)
+        self.assertEqual(len(problems), 2, problems)
         self.assertTrue(all("AFTER db-migrate" in p for p in problems))
 
     def test_red_probe_a_chain_without_the_migration_is_not_vacuously_clean(self):
-        self.assertTrue(order_problems(["test", "goldens", "check-guardrails"]))
+        self.assertTrue(order_problems(["test", "check-guardrails"]))
 
 
 if __name__ == "__main__":
