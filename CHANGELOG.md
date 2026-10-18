@@ -2,6 +2,21 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.17-1792276587
+_First deployed: 2026-10-18 00:07:10.218792+00_
+
+### Features
+- **T555**: complete Resume Studio, sync ticket frontmatter, and Linux host posture fixes ([T555](file:///.tasks/T555.md))
+- **hygiene**: exempt Linux platform binaries and ignore cross-platform unused exemptions (T135) ([T135](file:///.tasks/T135.md))
+
+### Fixes
+- **T555**: disable goldens in _deploy-gates to prevent host halt during deploy ([T555](file:///.tasks/T555.md))
+- **T555**: support Linux host estate path in w0m_prs fork resolution ([T555](file:///.tasks/T555.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `d0bf862` | 2026-10-18 00:07:10.218792+00 |
+
 ## 2026.10.07-1791355037
 _First deployed: 2026-10-07 07:03:39.188305+00_
 
