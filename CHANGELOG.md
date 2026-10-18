@@ -2,6 +2,17 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.18-1792352123
+_First deployed: 2026-10-18 19:51:22.17206+00_
+
+### Features
+- **ai**: wire Jev image processing recipes and track T558 (T558) ([T558](file:///.tasks/T558.md))
+- **tasks**: add P0 tickets T556 (Orca + Harness2) and T557 (Mobile Orca camera capture) ([T556](file:///.tasks/T556.md), [T557](file:///.tasks/T557.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `d29c259` | 2026-10-18 19:51:22.17206+00 |
+
 ## 2026.10.18-1792334573
 _First deployed: 2026-10-18 15:06:01.739134+00_
 
