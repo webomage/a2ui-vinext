@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.18-1792357477
+_First deployed: 2026-10-18 21:14:17.887988+00_
+
+### Features
+- **T555,T556,T557,T558**: complete Harness2 integration, Resume Studio print/period-expansion, and webomage org fork rule ([T555](file:///.tasks/T555.md), [T556](file:///.tasks/T556.md), [T557](file:///.tasks/T557.md), [T558](file:///.tasks/T558.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `be1ccf1` | 2026-10-18 21:14:17.887988+00 |
+
 ## 2026.10.18-1792352123
 _First deployed: 2026-10-18 19:51:22.17206+00_
 
