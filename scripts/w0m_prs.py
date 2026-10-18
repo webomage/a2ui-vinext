@@ -26,6 +26,7 @@ PRESET_REPOS = {
         "bulwarkid/virtual-fido",
         "headroomlabs-ai/headroom",
         "oraios/serena",
+        "google-research/harness2",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -37,6 +38,7 @@ PRESET_REPOS = {
         "bulwarkid/virtual-fido",
         "headroomlabs-ai/headroom",
         "oraios/serena",
+        "google-research/harness2",
     ],
 }
 
