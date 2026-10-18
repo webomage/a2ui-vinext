@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.18-1792331184
+_First deployed: 2026-10-18 14:01:37.638842+00_
+
+### Features
+- **T503**: add critical/medium/full test levels, parallel suite runner, and sync ticket frontmatter ([T503](file:///.tasks/T503.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `25f2e1e` | 2026-10-18 14:01:37.638842+00 |
+
 ## 2026.10.17-1792276587
 _First deployed: 2026-10-18 00:07:10.218792+00_
 
