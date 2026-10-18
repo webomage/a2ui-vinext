@@ -1104,7 +1104,7 @@ mcp-health *args:
 
 # ── Estate Test Suites & Hook Runners (T160 / T375 / T419) ───────────────────
 test:
-    @python3 scripts/run_suites.py --tier offline --level {{ env_var_or_default("W0M_TEST_LEVEL", "medium") }}
+    @python3 scripts/run_suites.py --tier offline --level {{ env_var_or_default("W0M_TEST_LEVEL", "critical") }}
 
 # T503 — the fast tier only (`"prepush": true` suites): what pre-push and the deploy pre-flight run.
 test-prepush:
