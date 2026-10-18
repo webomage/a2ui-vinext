@@ -16,6 +16,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+CANONICAL_FORK_ORG = "webomage"
+CANONICAL_CONTRIBUTOR = "casualuser"
+
 PRESET_REPOS = {
     "wom7pr": [
         "jundot/omlx",

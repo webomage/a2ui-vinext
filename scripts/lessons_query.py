@@ -25,6 +25,80 @@ class Lesson:
     generalisation: str
     tell: str
     line_number: int
+    cue: str = ""
+    lesson: str = ""
+    evidence: str = ""
+    confidence: str = "medium"
+
+
+def _extract_cue(tell: str, title: str) -> str:
+    """Derive Harness² 'cue' (trigger symptom) from tell line or fallback to title."""
+    if tell:
+        cleaned = re.sub(r"^[⭐\s]*(\*\*The tell:?\*\*|The tell:?)\s*", "", tell.strip(), flags=re.IGNORECASE)
+        cleaned = re.sub(r"\s+", " ", cleaned).strip()
+        if cleaned:
+            return cleaned
+    return title
+
+
+def _extract_lesson_rule(generalisation: str, title: str) -> str:
+    """Derive Harness² 'lesson' (actionable rule) from generalisation or title."""
+    if generalisation:
+        cleaned = re.sub(r"^(⇒|=>)\s*(\*\*The generalisation:?\*\*|\*\*[^*]+\*\*\s*[—-]?)*\s*", "", generalisation.strip())
+        cleaned = re.sub(r"\s+", " ", cleaned).strip()
+        if cleaned:
+            return f"{title} — {cleaned}" if title.lower() not in cleaned.lower() else cleaned
+    return title
+
+
+def _extract_evidence(date_ticket: str, body: str) -> str:
+    """Derive Harness² 'evidence' (commit/test/trajectory proof) from date_ticket + body."""
+    parts = []
+    if date_ticket:
+        parts.append(re.sub(r"^\*\*|\*\*$", "", date_ticket.strip()))
+    if body:
+        first_line = body.splitlines()[0].strip()
+        if first_line:
+            parts.append(first_line)
+    return " ".join(parts).strip()
+
+
+def _infer_confidence(date_ticket: str, body: str, generalisation: str) -> str:
+    """Infer Harness² confidence ('high' when backed by ticket/gate/test or multi-incident proof)."""
+    combined = f"{date_ticket} {body} {generalisation}"
+    if re.search(r"\bT\d+\b", combined) or re.search(
+        r"\b(gate|check|test|probe|ratchet|twice|three times)\b", combined, flags=re.IGNORECASE
+    ):
+        return "high"
+    return "medium"
+
+
+def to_harness2_experience(l: Lesson) -> dict[str, str | int]:
+    """Export a Lesson record in Harness² Experience Library schema (cue/lesson/evidence/confidence)."""
+    return {
+        "line_number": l.line_number,
+        "section": f"§{l.section_num} {l.section_name}",
+        "cue": l.cue or _extract_cue(l.tell, l.title),
+        "lesson": l.lesson or _extract_lesson_rule(l.generalisation, l.title),
+        "evidence": l.evidence or _extract_evidence(l.date_ticket, l.body),
+        "confidence": l.confidence or _infer_confidence(l.date_ticket, l.body, l.generalisation),
+    }
+
+
+def format_harness2_index(lessons: list[Lesson]) -> str:
+    """Format a compact cue-indexed summary compatible with Harness² library/INDEX.md."""
+    if not lessons:
+        return "# Experience Library Index (0 entries)\n"
+    out = [f"# Experience Library Index ({len(lessons)} entries)", ""]
+    for l in lessons:
+        exp = to_harness2_experience(l)
+        cue_short = str(exp["cue"])[:110]
+        lesson_short = str(exp["lesson"])[:130]
+        conf = exp["confidence"]
+        out.append(
+            f"- [L{l.line_number} §{l.section_num}] **Cue:** {cue_short} → **Lesson:** {lesson_short} *(confidence: {conf})*"
+        )
+    return "\n".join(out) + "\n"
 
 
 def find_workspace_root(start_path: Path | None = None) -> Path:
@@ -89,6 +163,9 @@ def parse_lessons(lessons_path: Path) -> list[Lesson]:
                 body_lines.append(stripped)
 
         clean_title = re.sub(r"^[^\w\s`'\"]+", "", current_title).strip()
+        body_str = "\n".join(body_lines)
+        gen_str = "\n".join(gen_lines)
+        tell_str = "\n".join(tell_lines)
 
         lessons.append(
             Lesson(
@@ -96,10 +173,14 @@ def parse_lessons(lessons_path: Path) -> list[Lesson]:
                 section_name=current_section_name,
                 title=clean_title,
                 date_ticket=date_ticket,
-                body="\n".join(body_lines),
-                generalisation="\n".join(gen_lines),
-                tell="\n".join(tell_lines),
+                body=body_str,
+                generalisation=gen_str,
+                tell=tell_str,
                 line_number=current_line,
+                cue=_extract_cue(tell_str, clean_title),
+                lesson=_extract_lesson_rule(gen_str, clean_title),
+                evidence=_extract_evidence(date_ticket, body_str),
+                confidence=_infer_confidence(date_ticket, body_str, gen_str),
             )
         )
         current_title = None
@@ -149,7 +230,7 @@ def filter_lessons(
         res = []
         for l in filtered:
             searchable = (
-                f"{l.title} {l.date_ticket} {l.body} {l.generalisation} {l.tell}".lower()
+                f"{l.title} {l.date_ticket} {l.body} {l.generalisation} {l.tell} {l.cue} {l.lesson}".lower()
             )
             if all(t in searchable for t in q_terms):
                 res.append(l)
@@ -180,7 +261,7 @@ def print_summary(lessons_path: Path, lessons: list[Lesson]) -> None:
     print("Recent lessons:")
     for l in lessons[-5:]:
         print(f"  • L{l.line_number}: {l.title[:65]}")
-    print("\nRun `just lessons <query>` to search rules, or `just lessons --tell` to scan tells.")
+    print("\nRun `just lessons <query>` to search rules, `just lessons --tell` to scan tells, or `just lessons --index` for Harness² cue index.")
 
 
 def print_results(results: list[Lesson], tell_only: bool = False) -> None:
@@ -191,7 +272,7 @@ def print_results(results: list[Lesson], tell_only: bool = False) -> None:
 
     print(f"Matched {len(results)} lesson(s):\n")
     for l in results:
-        print(f"[Section {l.section_num}: {l.section_name}] line {l.line_number}")
+        print(f"[Section {l.section_num}: {l.section_name}] line {l.line_number} (confidence: {l.confidence})")
         print(f"  RULE: {l.title}")
         if l.date_ticket:
             print(f"  CONTEXT: {l.date_ticket}")
@@ -210,6 +291,7 @@ def main() -> int:
     parser.add_argument("query", nargs="*", default=None, help="Search query string")
     parser.add_argument("--section", "-s", help="Filter by section number (1-7) or name")
     parser.add_argument("--tell", "-t", action="store_true", help="Print only rule and tell for fast skimming")
+    parser.add_argument("--index", "-i", action="store_true", help="Print compact Harness² cue/lesson/confidence index")
     parser.add_argument("--json", "-j", action="store_true", help="Output results in JSON format")
     parser.add_argument("--path", "-p", help="Custom path to LESSONS.md")
 
@@ -224,11 +306,15 @@ def main() -> int:
 
     lessons = parse_lessons(lessons_path)
 
-    if not query_str and not args.section and not args.tell and not args.json:
+    if not query_str and not args.section and not args.tell and not args.index and not args.json:
         print_summary(lessons_path, lessons)
         return 0
 
     results = filter_lessons(lessons, query=query_str, section=args.section)
+
+    if args.index:
+        print(format_harness2_index(results), end="")
+        return 0
 
     if args.json:
         out = [asdict(l) for l in results]
@@ -241,3 +327,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

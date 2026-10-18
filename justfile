@@ -1162,3 +1162,17 @@ jev-image *args:
 
 jev-system-one-test:
     @python3 wom7web/project/scripts/tests/test_jev_system_one.py
+
+# ── Google Research Harness² ContextTree & SurfaceSpec (T556) ───────────────
+context-tree *args:
+    @python3 wom7web/project/scripts/context_tree.py {{ args }}
+
+context-tree-test:
+    @python3 wom7web/project/scripts/tests/test_context_tree.py
+
+harness2-surface-check *args:
+    @python3 wom7web/project/scripts/harness2_surface.py {{ args }}
+
+harness2-surface-test:
+    @python3 wom7web/project/scripts/tests/test_harness2_surface.py
+

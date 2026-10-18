@@ -1658,3 +1658,10 @@ The new `agent-tree` suite went red on the very first stable run as `MISSING` (e
 - Rule: for any text you pass on to a parser (CSS, HTML, a path the service role will read), allow what the use needs and refuse everything else, including the escape syntax itself. Write the bypass spellings as test rows before the fix.
 - Same review: "the caller can read the row" is not "the caller owns the row" when an admin read arm exists. Compare the row's owner to the caller's own identity.
 
+### Open-source forks in `wom7pr/` must always target the `webomage` GitHub organization, never personal `casualuser` forks (T557, 2026-10-18)
+
+- When `gh repo fork <upstream> --org webomage` returned HTTP 403 because the fine-grained PAT had a lifetime > 366 days (`webomage` org policy), falling back to a personal `casualuser/<repo>` fork violated estate fork topology (`docs/GITHUB-ORG-MIGRATION.md`, T369/T377).
+- Tell: `git remote -v` in `wom7pr/<repo>` showing `git@github.com:casualuser/<repo>.git` instead of `git@github.com:webomage/<repo>.git`, or running `gh repo fork` without `--org webomage`.
+- Rule: every open-source fork in `wom7pr/` must live under the `webomage` organization (`git@github.com:webomage/<repo>.git`) with commits authored and GPG-signed by `casualuser` (`Aleksei Tcelishchev <casualuser@gmail.com>`). Never fall back to creating or pushing to a personal `casualuser/<repo>` fork; if `gh repo fork --org webomage` is blocked by PAT lifetime policy, surface the exact token policy error to the owner instead of switching orgs.
+
+

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import hashlib
 import json
 import os
 import subprocess
@@ -51,6 +52,13 @@ REGISTERED_STEPS: list[tuple[str, str]] = [
 
 STEP_IDS = [s[0] for s in REGISTERED_STEPS]
 STEP_NAMES = {s[0]: s[1] for s in REGISTERED_STEPS}
+
+
+def compute_runmark_digest(steps: list[tuple[str, str]] | None = None) -> str:
+    """Compute a 12-char content-addressed SHA-256 digest over registered pre-push steps (T556 AC6)."""
+    target = steps if steps is not None else REGISTERED_STEPS
+    payload = json.dumps([s[0] for s in target], separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:12]
 
 
 def get_cache_dir() -> Path:
@@ -133,6 +141,7 @@ def save_checkpoint(repo: str, commit_hash: str, data: dict) -> None:
     path = checkpoint_file_path(repo, commit_hash)
     data["repo"] = repo
     data["commit"] = commit_hash
+    data["runmark_digest"] = compute_runmark_digest()
     data["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     tmp = path.with_suffix(".tmp")
     try:
@@ -165,18 +174,74 @@ def get_resume_from(args_from: str | None = None) -> str | None:
     return None
 
 
+def why_not(
+    repo: str,
+    commit_hash: str,
+    args: argparse.Namespace | None = None,
+    step_id: str | None = None,
+) -> str:
+    """Return '' if the checkpoint/step is certified and reusable, else a 1-line invalidation reason (T556 AC6)."""
+    args_reset = getattr(args, "reset", False) if args else False
+    args_from = getattr(args, "resume_from", None) if args else None
+
+    if is_reset_requested(args_reset):
+        return "reset requested (PREPUSH_RESET or --reset)"
+
+    resume_from = get_resume_from(args_from)
+    if resume_from:
+        if step_id is None:
+            return f"forced resume from '{resume_from}' (PREPUSH_FROM or --from)"
+        target_idx = STEP_IDS.index(resume_from)
+        curr_idx = STEP_IDS.index(step_id) if step_id in STEP_IDS else 0
+        if curr_idx >= target_idx:
+            return f"forced resume at/after '{resume_from}'"
+        return ""
+
+    cp = load_checkpoint(repo, commit_hash)
+    if not cp:
+        return f"no checkpoint recorded for {repo}@{commit_hash[:8]}"
+
+    expected_digest = compute_runmark_digest()
+    recorded_digest = cp.get("runmark_digest")
+    if recorded_digest and recorded_digest != expected_digest:
+        return f"runmark config digest mismatch (checkpoint={recorded_digest} vs current={expected_digest})"
+
+    steps = cp.get("steps", {})
+    if step_id is not None:
+        st = steps.get(step_id, {})
+        st_status = st.get("status", "pending")
+        if st_status != "passed":
+            return f"step '{step_id}' status is '{st_status}'"
+        curr_idx = STEP_IDS.index(step_id) if step_id in STEP_IDS else -1
+        if curr_idx != -1:
+            for earlier in STEP_IDS[:curr_idx]:
+                e_stat = steps.get(earlier, {}).get("status", "pending")
+                if e_stat != "passed":
+                    return f"prior step '{earlier}' is '{e_stat}'"
+        return ""
+
+    if cp.get("status") != "passed":
+        failed_at = cp.get("last_failed_step")
+        if failed_at:
+            return f"checkpoint status is '{cp.get('status')}' (failed at '{failed_at}')"
+        return f"checkpoint status is '{cp.get('status', 'in_progress')}'"
+
+    for s_id in STEP_IDS:
+        s_stat = steps.get(s_id, {}).get("status", "pending")
+        if s_stat != "passed":
+            return f"step '{s_id}' is '{s_stat}'"
+
+    return ""
+
+
 def cmd_check_certified(repo: str, commit_hash: str, args: argparse.Namespace) -> int:
     """Exit 0 if all registered steps are already marked passed for this commit."""
-    if is_reset_requested(args.reset) or get_resume_from(args.resume_from):
-        return 1
-    cp = load_checkpoint(repo, commit_hash)
-    if not cp or cp.get("status") != "passed":
-        return 1
-    steps = cp.get("steps", {})
-    all_passed = all(steps.get(s_id, {}).get("status") == "passed" for s_id in STEP_IDS)
-    if all_passed:
+    reason = why_not(repo, commit_hash, args=args, step_id=None)
+    if not reason:
+        cp = load_checkpoint(repo, commit_hash)
         updated = cp.get("updated_at", "recently")
-        print(f"✅ [{repo}] Pre-push: commit {commit_hash[:8]} is already fully certified (all {len(STEP_IDS)} gates passed at {updated}). Skipping.")
+        digest = cp.get("runmark_digest", compute_runmark_digest())
+        print(f"✅ [{repo}] Pre-push: commit {commit_hash[:8]} (runmark {digest}) is already fully certified (all {len(STEP_IDS)} gates passed at {updated}). Skipping.")
         return 0
     return 1
 
@@ -185,6 +250,7 @@ def cmd_step_begin(repo: str, commit_hash: str, args: argparse.Namespace) -> int
     """Determines whether step should run (exit 0) or be skipped as cached pass (exit 1)."""
     step_id = args.step_id
     desc = args.description or STEP_NAMES.get(step_id, step_id)
+    reason = why_not(repo, commit_hash, args=args, step_id=step_id)
 
     if is_reset_requested(args.reset):
         # Clear checkpoint
@@ -214,34 +280,28 @@ def cmd_step_begin(repo: str, commit_hash: str, args: argparse.Namespace) -> int
         # At or past target: run
         cp["current_step"] = step_id
         save_checkpoint(repo, commit_hash, cp)
-        echo_header(repo, desc)
+        echo_header(repo, desc, reason)
         return 0  # RUN
 
     # Standard auto-continue behavior:
-    # If this step was marked passed previously on this same commit,
-    # and no prior registered step has failed or is pending:
-    is_step_passed = steps.get(step_id, {}).get("status") == "passed"
-    curr_idx = STEP_IDS.index(step_id) if step_id in STEP_IDS else -1
-
-    if is_step_passed and curr_idx != -1:
-        # Check that all earlier steps in registry also passed
-        earlier_all_passed = all(steps.get(s, {}).get("status") == "passed" for s in STEP_IDS[:curr_idx])
-        if earlier_all_passed:
-            dur = steps.get(step_id, {}).get("duration_s")
-            dur_str = f" ({dur:.1f}s)" if dur is not None else ""
-            print(f"  ✓ [cached pass] {desc}{dur_str}")
-            return 1  # SKIP
+    if not reason:
+        dur = steps.get(step_id, {}).get("duration_s")
+        dur_str = f" ({dur:.1f}s)" if dur is not None else ""
+        print(f"  ✓ [cached pass] {desc}{dur_str}")
+        return 1  # SKIP
 
     # Must run step
     cp["current_step"] = step_id
     cp["status"] = "in_progress"
     save_checkpoint(repo, commit_hash, cp)
-    echo_header(repo, desc)
+    echo_header(repo, desc, reason)
     return 0  # RUN
 
 
-def echo_header(repo: str, desc: str) -> None:
-    print(f"⏳ [{repo}] Pre-push: {desc}...")
+def echo_header(repo: str, desc: str, reason: str = "") -> None:
+    suffix = f" [why_not: {reason}]" if reason else ""
+    print(f"⏳ [{repo}] Pre-push: {desc}...{suffix}")
+
 
 
 def cmd_step_pass(repo: str, commit_hash: str, args: argparse.Namespace) -> int:
@@ -297,12 +357,17 @@ def cmd_status(repo: str, commit_hash: str, _args: argparse.Namespace) -> int:
     cp = load_checkpoint(repo, commit_hash)
     print(f"\n▶ Pre-push checkpoint status — repo: {repo} · commit: {commit_hash[:8]}")
     if not cp:
-        print("  No checkpoint recorded for this commit (clean / unstarted).\n")
+        print("  No checkpoint recorded for this commit (clean / unstarted).")
+        print(f"  Cache Reason   : {why_not(repo, commit_hash, args=_args)}\n")
         return 0
     status = cp.get("status", "in_progress")
     last_failed = cp.get("last_failed_step")
     updated = cp.get("updated_at", "never")
+    digest = cp.get("runmark_digest", compute_runmark_digest())
+    reason = why_not(repo, commit_hash, args=_args)
     print(f"  Overall Status : {status.upper()}")
+    print(f"  Runmark Digest : {digest}")
+    print(f"  Cache Reason   : {reason or 'certified (reusable)'}")
     if last_failed:
         print(f"  Failed At      : {last_failed}")
     print(f"  Last Update    : {updated}\n")

@@ -90,10 +90,24 @@ def test_json_output() -> None:
         data = json.loads(res.stdout)
         if not isinstance(data, list) or len(data) == 0:
             failures.append("test_json_output: expected non-empty JSON list")
-        elif "title" not in data[0] or "tell" not in data[0]:
-            failures.append("test_json_output: missing title/tell keys in parsed record")
+        else:
+            rec = data[0]
+            for key in ("title", "tell", "cue", "lesson", "evidence", "confidence"):
+                if key not in rec:
+                    failures.append(f"test_json_output: missing '{key}' key in parsed record")
     except Exception as e:
         failures.append(f"test_json_output: JSON parse error: {e}")
+
+
+def test_harness2_index() -> None:
+    res = run_tool("rls", "--index")
+    if res.returncode != 0:
+        failures.append(f"test_harness2_index: expected exit 0, got {res.returncode}: {res.stderr}")
+        return
+    if "# Experience Library Index" not in res.stdout:
+        failures.append("test_harness2_index: missing '# Experience Library Index' header")
+    if "**Cue:**" not in res.stdout or "**Lesson:**" not in res.stdout:
+        failures.append("test_harness2_index: missing '**Cue:**' or '**Lesson:**' in index output")
 
 
 def test_synthetic_fixture() -> None:
@@ -118,6 +132,12 @@ Detailed context line here.
             failures.append(f"test_synthetic_fixture: expected exit 0, got {res.returncode}")
         elif "NEVER TRUST SYNTHETIC INPUT" not in res.stdout:
             failures.append("test_synthetic_fixture: expected synthetic rule in output")
+
+        idx_res = run_tool("--path", str(temp_path), "--index")
+        if idx_res.returncode != 0:
+            failures.append(f"test_synthetic_fixture (--index): expected exit 0, got {idx_res.returncode}")
+        elif "A test with hardcoded pass values." not in idx_res.stdout or "confidence: high" not in idx_res.stdout:
+            failures.append("test_synthetic_fixture (--index): expected extracted cue and high confidence")
     finally:
         temp_path.unlink(missing_ok=True)
 
@@ -128,6 +148,7 @@ def main() -> int:
     test_section_filter()
     test_tell_only()
     test_json_output()
+    test_harness2_index()
     test_synthetic_fixture()
 
     if failures:
@@ -136,9 +157,10 @@ def main() -> int:
             print(f"  • {f}")
         return 1
 
-    print("[PASS] test_lessons_query: 6/6 tests passed.")
+    print("[PASS] test_lessons_query: 7/7 tests passed.")
     return 0
 
 
 if __name__ == "__main__":
     sys.exit(main())
+
