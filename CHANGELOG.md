@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.18-1792361625
+_First deployed: 2026-10-18 22:44:30.50859+00_
+
+### Features
+- **T555,T543**: record Resume Studio tech chips editor and /me/work assigned projects & project management ([T555](file:///.tasks/T555.md), [T543](file:///.tasks/T543.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `e588d82` | 2026-10-18 22:44:30.50859+00 |
+
 ## 2026.10.18-1792357477
 _First deployed: 2026-10-18 21:14:17.887988+00_
 
