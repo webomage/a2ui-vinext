@@ -698,6 +698,13 @@ The deploy shipped and published its tags, then `record_release` committed `rele
 ⭐ **The tell:** a deploy or generator whose last step runs `git commit` or `git push` inside the live checkout; a message containing "push it later"; the live branch showing ahead and behind at once after a tool finished.
 ⚠️ The push still runs the repository's pre-push hook; `--no-verify` stays prohibited.
 
+### A RELEASE WORKTREE HAS NO UNTRACKED HOST STATE: PROVISION GENERATED INPUTS AND RESOLVE HOST PATHS ACROSS PLATFORMS
+**2026-10-17, T503 / T555.**
+
+When `just deploy-all` cut an isolated release worktree (`~/.w0m/releases/<v>/w0m`) on the Linux host, four blocking suites failed that had passed in the agent tree: `prs` and `py-test` (`resolve_forks_dir` hardcoded the macOS host path `~/Projects/@self/@wom` when escaping a release worktree, missing `~/Projects/!self/w0m`), `mmd-validate-probe` and `ai-memory-pin` (untracked `_ext/` and `wom7skills/skills/mmd-validate/node_modules` existed only in the agent tree, not the live checkout `provision_worktree_fixtures` symlinks from), and fresh worktree builds needed `apps/web/src/.generated/*.json` and `.infisical.yaml`.
+
+⇒ **Any script that locates the main estate from a detached release worktree must check every supported host path (`~/Projects/!self/w0m` and `~/Projects/@self/@wom`) before falling back, and every gitignored fixture or generated snapshot a blocking suite or build reads must be provisioned by `release.py:provision_worktree_fixtures()` and present in the live checkout.**
+
 
 ## 4. Dependencies and config
 
