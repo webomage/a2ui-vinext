@@ -27,6 +27,7 @@ DESIGN RULES, each earned
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import json
 import os
 import re
@@ -87,6 +88,23 @@ TICK = re.compile(r"^\s*[✓✗×]\s", re.M)
 # identical count. Reader-first is satisfied by TEXT_CHECK alone.
 RATIO = re.compile(r"\((\d+)\s*/\s*\d+\)")
 MYPY = re.compile(r"Success: no issues found in (\d+) source file", re.M)
+UNITTEST = re.compile(r"^Ran\s+(\d+)\s+tests?\s+in\b", re.M)
+TAP_TEST = re.compile(r"^#\s+pass\s+(\d+)", re.M)
+UNIQUE_FILES = re.compile(r"\bunique\s+\((\d+)\s+file\(s\)\)", re.M)
+CHECKED_N = re.compile(r"^Checked\s+(\d+)\s+\w+", re.M)
+OK_COLON = re.compile(r"^(?:OK:\s|\s*All\s+\S+\s+checks\s+passed\.)", re.M)
+
+_RECIPE_CACHE: dict[Path, dict[str, str]] = {}
+
+
+def _known_recipes() -> dict[str, str]:
+    jf_path = API / "justfile"
+    if jf_path not in _RECIPE_CACHE:
+        try:
+            _RECIPE_CACHE[jf_path] = recipes(jf_path.read_text(encoding="utf-8"))
+        except OSError:
+            _RECIPE_CACHE[jf_path] = {}
+    return _RECIPE_CACHE[jf_path]
 
 
 def load_registry() -> list[dict]:
@@ -108,6 +126,8 @@ def load_registry() -> list[dict]:
 
 
 def recipe_exists(recipe: str) -> bool:
+    if recipe in _known_recipes():
+        return True
     r = subprocess.run(["just", "--show", recipe], cwd=API, capture_output=True, text=True)
     return r.returncode == 0
 
@@ -131,7 +151,8 @@ def count_checks(out: str) -> int | None:
     n = len(TICK.findall(out))          # glyphs only — text was already caught above
     if n:
         return n
-    for rx in (VITEST, VITEST_FILES, NODE_TEST, OK_N_THING, SCANNED_N, PASSED_N):
+    for rx in (VITEST, VITEST_FILES, NODE_TEST, TAP_TEST, UNITTEST, OK_N_THING, SCANNED_N,
+               UNIQUE_FILES, CHECKED_N, PASSED_N):
         m = rx.search(out)
         if m:
             return int(m.group(1))
@@ -141,6 +162,9 @@ def count_checks(out: str) -> int | None:
     m = RATIO.search(out)
     if m:
         return int(m.group(1))
+    n = len(OK_COLON.findall(out))
+    if n:
+        return n
     return None
 
 
@@ -327,11 +351,38 @@ def drift(suites: list[dict]) -> dict[str, str]:
     return out
 
 
-def select_suites(suites: list[dict], tier: str, prepush: bool = False) -> list[dict]:
+PRODUCT_SUITES = {"test-js", "deno-test", "deno-check", "py-typecheck", "cf-typecheck"}
+
+
+def _is_meta_selftest(s: dict) -> bool:
+    """True when a suite is a meta-selftest/probe of a gate script rather than a codebase gate or product test."""
+    if s.get("prepush") is True:
+        return False
+    recipe = s.get("recipe", "")
+    name = s.get("name", "")
+    if recipe in PRODUCT_SUITES:
+        return False
+    if recipe in ("py-test", "skill-test", "state-check", "tools-check", "test-all-preflight-test"):
+        return True
+    if recipe.endswith("-test") or name.endswith(("-selftest", "-probe")):
+        return True
+    body = _known_recipes().get(recipe, "")
+    return "project/scripts/tests/" in body
+
+
+def select_suites(
+    suites: list[dict], tier: str, prepush: bool = False, level: str = "full"
+) -> list[dict]:
     """Which suites a run covers. `prepush` selects by the registry's `"prepush": true` flag and by nothing else (T503)."""
-    if prepush:
+    if prepush or level == "critical":
         return [s for s in suites if s.get("prepush") is True]
-    return [s for s in suites if tier == "all" or s.get("tier", "offline") == tier]
+    by_tier = [s for s in suites if tier == "all" or s.get("tier", "offline") == tier]
+    if level == "medium":
+        return [
+            s for s in by_tier
+            if s.get("blocking", True) and not _is_meta_selftest(s)
+        ]
+    return by_tier
 
 
 def prepush_problems(suites: list[dict]) -> list[str]:
@@ -354,10 +405,17 @@ def prepush_problems(suites: list[dict]) -> list[str]:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Run the declared test/check suites (T160)")
     ap.add_argument("--tier", default="offline", choices=["offline", "live", "all"])
+    ap.add_argument("--level", default=os.environ.get("W0M_TEST_LEVEL", "full"),
+                    choices=["critical", "medium", "full"],
+                    help="test level: critical (~3s prepush), medium (~20s blocking gates + vitest + typecheck + deno), full (highest level, all declared suites)")
+    ap.add_argument("--jobs", "-j", type=int, default=int(os.environ.get("W0M_TEST_JOBS", "6")),
+                    help="parallel worker threads for suite execution")
     ap.add_argument("--drift", action="store_true", help="only report registry drift")
     ap.add_argument("--prepush", action="store_true",
                     help="run only the suites flagged \"prepush\": true (fast, deterministic ratchets; used by pre-push and the deploy pre-flight)")
     args = ap.parse_args()
+    if args.level == "critical":
+        args.prepush = True
 
     suites = load_registry()
     if args.drift:
@@ -386,25 +444,46 @@ def main() -> int:
         for pr in problems:
             print(f"   · {pr}")
         return 1
-    picked = select_suites(suites, args.tier, args.prepush)
-    label = "prepush" if args.prepush else f"tier={args.tier}"
+    picked = select_suites(suites, args.tier, args.prepush, args.level)
+    label = "prepush" if args.prepush else f"tier={args.tier} level={args.level}"
     if not picked:
         print(f"❌ run-suites: no suites in {label}")
         return 1
 
-    print(f"▶ suites — {label} · {len(picked)} declared\n")
+    print(f"▶ suites — {label} · {len(picked)} declared\n", flush=True)
     results, total = [], 0
-    for s in picked:
-        r = run(s)
+
+    def _emit(r: dict) -> None:
+        nonlocal total
         results.append(r)
         if isinstance(r["checks"], int):
             total += r["checks"]
         mark = {"pass": "✅", "FAIL": "❌", "MISSING": "🚫", "VACUOUS": "⚠️"}[r["status"]]
         n = "?" if r["checks"] is None else r["checks"]
         block = "" if r.get("blocking", True) else "  (advisory)"
-        print(f"  {mark} {r['name']:22} {str(n):>4} check(s){block}")
+        print(f"  {mark} {r['name']:22} {str(n):>4} check(s){block}", flush=True)
         if r["status"] in ("FAIL", "MISSING"):
-            print(f"       ↳ {r.get('tail') or 'recipe not found'}")
+            print(f"       ↳ {r.get('tail') or 'recipe not found'}", flush=True)
+
+    heavy = {"py-test", "test-js", "skill-test", "py-typecheck", "hygiene-check", "mmd-validate", "deno-test", "deno-check"}
+    workers = max(1, args.jobs)
+    if workers == 1 or len(picked) <= 1:
+        for s in picked:
+            _emit(run(s))
+    else:
+        has_pytest = any(s.get("recipe") == "py-test" for s in picked)
+        if has_pytest:
+            batch1 = [s for s in picked if "project/scripts/tests/" not in _known_recipes().get(s.get("recipe", ""), "")]
+            batch2 = [s for s in picked if "project/scripts/tests/" in _known_recipes().get(s.get("recipe", ""), "")]
+            batches = [b for b in (batch1, batch2) if b]
+        else:
+            batches = [picked]
+        for batch in batches:
+            ordered = sorted(batch, key=lambda s: 0 if s.get("recipe") in heavy else 1)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
+                futs = [ex.submit(run, s) for s in ordered]
+                for fut in concurrent.futures.as_completed(futs):
+                    _emit(fut.result())
 
     # ── UNCOUNTED: suites that ran and passed, but whose check count could not be read ──────
     #

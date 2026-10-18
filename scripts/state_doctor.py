@@ -196,6 +196,15 @@ def pending_mirror() -> tuple[int, int] | None:
     It is computed fresh on every run and printed, so "nobody has synced in three days" is a visible
     number rather than something discovered later on the board. Reads local files only — no network.
     """
+    cache_path = os.environ.get("W0M_STATE_FACTS_CACHE")
+    if cache_path:
+        mp = Path(f"{cache_path}.mirror.json")
+        if mp.is_file():
+            try:
+                cached = json.loads(mp.read_text(encoding="utf-8"))
+                return (cached[0], cached[1]) if cached is not None else None
+            except Exception:  # noqa: BLE001
+                pass
     idx_path = WEB_ROOT / "project" / "tickets-sync-index.json"
     if not idx_path.exists():
         return None
@@ -214,7 +223,13 @@ def pending_mirror() -> tuple[int, int] | None:
         1 for t in tickets
         if recorded.get(t["id"]) != sg.projection_hash(sg.projection_of(t, sg.summary_of(t["id"])))
     )
-    return pending, len(tickets)
+    res = (pending, len(tickets))
+    if cache_path:
+        try:
+            Path(f"{cache_path}.mirror.json").write_text(json.dumps(list(res)), encoding="utf-8")
+        except Exception:  # noqa: BLE001
+            pass
+    return res
 
 
 def hot_list(n: int = 10) -> list[dict]:
@@ -232,13 +247,22 @@ def hot_list(n: int = 10) -> list[dict]:
 
 
 def measure() -> dict:
+    import pickle  # noqa: PLC0415
+    cache_path = os.environ.get("W0M_STATE_FACTS_CACHE")
+    if cache_path:
+        cp = Path(cache_path)
+        if cp.is_file():
+            try:
+                return pickle.loads(cp.read_bytes())  # noqa: S301
+            except Exception:  # noqa: BLE001
+                pass
     repos = {}
     for rel in declared_repos():
         facts = repo_facts(rel)
         if facts is not None:
             repos[rel] = facts
     hot = hot_list()
-    return {
+    out = {
         "repos": repos,
         "gates": gate_codes(),
         "tickets": ticket_facts(),
@@ -247,6 +271,12 @@ def measure() -> dict:
         "hot": [t["id"] for t in hot],
         "_hot_detail": hot,
     }
+    if cache_path:
+        try:
+            Path(cache_path).write_bytes(pickle.dumps(out))
+        except Exception:  # noqa: BLE001
+            pass
+    return out
 
 
 # ── render ───────────────────────────────────────────────────────────────────
@@ -1226,7 +1256,7 @@ def main() -> int:
               f"{retention_cfg()['archive_dir']}")
         return 0
 
-    problems, _ = check()
+    problems, live = check()
     _report_pending_mirror()   # always reported, on the pass AND the fail path
     if problems:
         print(f"❌ state-check failed ({len(problems)} drift(s)) — STATE.md is stale:")
@@ -1239,8 +1269,8 @@ def main() -> int:
     # Name the set enumerated (T149 AC2 / section 1): a verdict without its scope cannot be
     # distinguished from a verdict over nothing.
     print(f"✅ state-check passed — STATE.md's mechanical block matches reality "
-          f"(enumerated {len(declared_repos())} repo(s), {ticket_facts().get('open', '?')} open "
-          f"ticket(s), {len(gate_codes())} gate(s))")
+          f"(enumerated {len(live.get('repos', {}))} repo(s), {live.get('tickets', {}).get('open', '?')} open "
+          f"ticket(s), {len(live.get('gates', {}))} gate(s))")
     headroom = budget_headroom(STATE_MD.read_text())
     if headroom:
         print(headroom)
