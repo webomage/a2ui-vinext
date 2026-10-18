@@ -18,6 +18,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T558](.tasks/T558.md) | **P0** | **TypeSafe System One & Jev Image Processing: fast initial classification, two-stage skill suggestion, and multimodal image/box pipeline for w0m & Orca** | web, tooling, skills | — | 🟡 **in-progress** |
 | [T557](.tasks/T557.md) | **P0** | **Mobile Orca (casualuser/orca): Add camera photo capture ('Take Photo') to attach captured photos directly into Native Chat and Terminal sessions** | tooling | — | 🟡 **in-progress** |
 | [T556](.tasks/T556.md) | **P0** | 🆕 **Adopt Google Research Harness² mechanisms across the w0m agent stack: skill trigger hygiene & always-on budget, cue-indexed lessons, file-based ContextTree subagent bundles, and content-addressed runmarks** | skills, web, tooling | — | 🔴 **queued** |
 | [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 🔴 **queued** |

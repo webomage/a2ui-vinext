@@ -1156,5 +1156,9 @@ stop-dev:
 dev-stack:
     @just --justfile wom7api/justfile dev-stack
 
+# ── TypeSafe System One & Jev Image Processing (T558 / T556 / T434) ─────────
+jev-image *args:
+    @python3 wom7web/project/scripts/jev_system_one.py {{ args }}
 
-
+jev-system-one-test:
+    @python3 wom7web/project/scripts/tests/test_jev_system_one.py
