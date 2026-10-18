@@ -554,6 +554,10 @@ supabase-redeploy-all:
 db-migrate *args:
     @just --justfile wom7api/justfile db-migrate {{ args }}
 
+# T551 AC4 — allocate the next free 14-digit migration version from origin/beta + local migrations and create wom7api/supabase/migrations/<version>_<name>.sql.
+migration-new name:
+    @python3 wom7web/project/scripts/db_drift_check.py --new "{{ name }}"
+
 # T488 — Resume Studio documents into the PRIVATE `resumes` bucket. Forwards to wom7api/justfile, where the recipes live.
 resumes-upload:
     @just --justfile wom7api/justfile resumes-upload
