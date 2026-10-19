@@ -779,9 +779,12 @@ agent-tree-remove name *args:
 agent-tree-test:
     @python3 -m pytest wom7web/project/scripts/tests/test_agent_tree.py -q -p no:cacheprovider
 
-# T481 — Persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it
+# T481 — Persistent isolated STABLE and CONFIRMED worktrees: full local regression runs in stable, stable-promote advances confirmed
 stable-sync *args:
     @python3 wom7web/project/scripts/release.py stable-sync {{ args }}
+
+stable-promote *args:
+    @python3 wom7web/project/scripts/release.py stable-promote {{ args }}
 
 e2e-stable *args:
     @python3 wom7web/project/scripts/release.py e2e-stable {{ args }}

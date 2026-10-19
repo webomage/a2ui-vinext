@@ -15,16 +15,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T468](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T468.md) | [#468](https://github.com/webomage/wom7board/issues/468) | P0 | in-progress | data | 128 | Upwork as a synced source layer: mirror schema, source links, work-history mapping, move |
-| 2 | [T213](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 109 | Job-board sources fail open on a dead credential, and the credentials are unmanaged lite |
-| 3 | [T244](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T244.md) | [#244](https://github.com/webomage/wom7board/issues/244) | P0 | queued | security | 108 | A revoked Cloudflare token is stored, synced to production, and read by nothing — three  |
-| 4 | [T439](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 103 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
-| 5 | [T481](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T481.md) | [#481](https://github.com/webomage/wom7board/issues/481) | P1 | in-progress | sdlc | 102 | One persistent isolated STABLE worktree: full local regression runs there,  📄 live spec |
-| 6 | [T504](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T504.md) | [#504](https://github.com/webomage/wom7board/issues/504) | P0 | queued | security | 102 | Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars |
-| 7 | [T510](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T510.md) | [#510](https://github.com/webomage/wom7board/issues/510) | P1 | in-progress | product | 102 | Resume vault: every resume private in the members vault; per-profile 'Publi 📄 live spec |
-| 8 | [T290](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 92 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
-| 9 | [T545](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T545.md) | — | P1 | in-progress | security | 86 | Admin reads every member's personal tables while the platform is one team, behind one sw |
-| 10 | [T29](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 1 | [T468](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T468.md) | [#468](https://github.com/webomage/wom7board/issues/468) | P0 | in-progress | data | 128 | Upwork as a synced source layer: mirror schema, source links, work-history mapping, move |
+| 2 | [T213](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 109 | Job-board sources fail open on a dead credential, and the credentials are unmanaged lite |
+| 3 | [T439](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 103 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
+| 4 | [T504](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T504.md) | [#504](https://github.com/webomage/wom7board/issues/504) | P0 | queued | security | 102 | Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars |
+| 5 | [T510](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T510.md) | [#510](https://github.com/webomage/wom7board/issues/510) | P1 | in-progress | product | 102 | Resume vault: every resume private in the members vault; per-profile 'Publi 📄 live spec |
+| 6 | [T290](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 92 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
+| 7 | [T545](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T545.md) | — | P1 | in-progress | security | 86 | Admin reads every member's personal tables while the platform is one team, behind one sw |
+| 8 | [T29](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 9 | [T43](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 85 | Full-observability logging strategy 📄 live spec |
+| 10 | [T63](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
 
 ### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,24 +32,24 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 250 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **250** are
+> ⚠️ **0 of 248 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **248** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T468](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T468.md) | [#468](https://github.com/webomage/wom7board/issues/468) | P0 | in-progress | data | 6/7 | `█████████░` 86% | — | Upwork as a synced source layer: mirror schema, source links |
-| 2 | [T213](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 5/8 | `██████░░░░` 62% | — | Job-board sources fail open on a dead credential, and the cr |
-| 3 | [T461](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T461.md) | [#461](https://github.com/webomage/wom7board/issues/461) | P1 | closed ⚠️ 100% — awaiting deploy/archive, NOT stale | security | 7/7 | `██████████` 100% | 🔴 [T458](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T458.md) | Hat management in the CP: PM and root assign hats, custom ha |
-| 4 | [T244](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T244.md) | [#244](https://github.com/webomage/wom7board/issues/244) | P0 | queued | security | 3/5 | `██████░░░░` 60% | — | A revoked Cloudflare token is stored, synced to production,  |
-| 5 | [T481](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T481.md) | [#481](https://github.com/webomage/wom7board/issues/481) | P1 | in-progress | sdlc | 7/9 | `████████░░` 78% | — | One persistent isolated STABLE worktree: full local regressi |
-| 6 | [T545](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T545.md) | — | P1 | in-progress | security | 3/4 | `████████░░` 75% | — | Admin reads every member's personal tables while the platfor |
-| 7 | [T458](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T458.md) | [#458](https://github.com/webomage/wom7board/issues/458) | P1 | in-progress | security | 5/7 | `███████░░░` 71% | 🔴 [T468](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T468.md) | Org and engagement model — w0m platform and root, webomage o |
-| 8 | [T439](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 7/12 | `██████░░░░` 58% | — | CP information architecture — one shell with a Me / Org / Ad |
-| 9 | [T290](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
-| 10 | [T535](/home/aleksei/.w0m/work/agy-upwork/w0m/.tasks/T535.md) | — | P1 | queued | data | 3/7 | `████░░░░░░` 43% | — | The Upwork poller has failed every run since 2026-09-19 (582 |
+| 1 | [T468](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T468.md) | [#468](https://github.com/webomage/wom7board/issues/468) | P0 | in-progress | data | 6/7 | `█████████░` 86% | — | Upwork as a synced source layer: mirror schema, source links |
+| 2 | [T213](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 5/8 | `██████░░░░` 62% | — | Job-board sources fail open on a dead credential, and the cr |
+| 3 | [T461](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T461.md) | [#461](https://github.com/webomage/wom7board/issues/461) | P1 | closed ⚠️ 100% — awaiting deploy/archive, NOT stale | security | 7/7 | `██████████` 100% | 🔴 [T458](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T458.md) | Hat management in the CP: PM and root assign hats, custom ha |
+| 4 | [T545](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T545.md) | — | P1 | in-progress | security | 3/4 | `████████░░` 75% | — | Admin reads every member's personal tables while the platfor |
+| 5 | [T458](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T458.md) | [#458](https://github.com/webomage/wom7board/issues/458) | P1 | in-progress | security | 5/7 | `███████░░░` 71% | 🔴 [T468](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T468.md) | Org and engagement model — w0m platform and root, webomage o |
+| 6 | [T439](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 7/12 | `██████░░░░` 58% | — | CP information architecture — one shell with a Me / Org / Ad |
+| 7 | [T290](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
+| 8 | [T535](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T535.md) | — | P1 | queued | data | 3/7 | `████░░░░░░` 43% | — | The Upwork poller has failed every run since 2026-09-19 (582 |
+| 9 | [T546](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T546.md) | — | P2 | in-progress | tooling | 3/4 | `████████░░` 75% | — | The scheduled tools upgrade proposes known_good bumps; only  |
+| 10 | [T504](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T504.md) | [#504](https://github.com/webomage/wom7board/issues/504) | P0 | queued | security | 0/6 | `░░░░░░░░░░` 0% | — | Google disabled the Gemini key as leaked; 29 credentials com |
 
   ⚠️  1 row(s) at 100% with a non-done status: T461. Every acceptance criterion is met — what remains is the DEPLOY and ARCHIVE gates, so the record is accurate, not stale. Confirm against the live site before reading it either way.
 
@@ -62,18 +62,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-upwork` | 0 | **n/a — NO UPSTREAM** | `bb548474` |
-| `wom7api` | `agent/agy-upwork` | 0 | **n/a — NO UPSTREAM** | `86108b7` |
-| `wom7func` | `agent/agy-upwork` | 0 | **n/a — NO UPSTREAM** | `4b1bbbf` |
-| `wom7skills` | `agent/agy-upwork` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
-| `wom7ext` | `agent/agy-upwork` | 0 | **n/a — NO UPSTREAM** | `57b3e6b` |
-| `wom7sec` | `agent/agy-upwork` | 0 | **n/a — NO UPSTREAM** | `be6ae19` |
-| `wom7mlx/wom7mlx` | `agent/agy-upwork` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
+| `wom7web` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `859f3440` |
+| `wom7api` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `e1021ae` |
+| `wom7func` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `5b53d78` |
+| `wom7skills` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
+| `wom7ext` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `57b3e6b` |
+| `wom7sec` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `be6ae19` |
+| `wom7mlx/wom7mlx` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 250 open · 559 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 248 open · 559 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T213","T244","T439","T481","T504","T510","T290","T545","T29"],"repos":{"wom7api":{"branch":"agent/agy-upwork","dirty":0,"has_upstream":true,"head":"86108b7","unpushed":null},"wom7ext":{"branch":"agent/agy-upwork","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/agy-upwork","dirty":0,"has_upstream":true,"head":"4b1bbbf","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-upwork","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/agy-upwork","dirty":0,"has_upstream":true,"head":"be6ae19","unpushed":null},"wom7skills":{"branch":"agent/agy-upwork","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/agy-upwork","dirty":0,"has_upstream":true,"head":"bb548474","unpushed":null}},"tickets":{"open":250,"rowless_open":[],"rows":559}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T468","T213","T439","T504","T510","T290","T545","T29","T43","T63"],"repos":{"wom7api":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"e1021ae","unpushed":null},"wom7ext":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"5b53d78","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"be6ae19","unpushed":null},"wom7skills":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"859f3440","unpushed":null}},"tickets":{"open":248,"rowless_open":[],"rows":559}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -131,7 +131,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-#### In-flight tickets (17):
+#### In-flight tickets (16):
 
 - **T16** — Verify & archive built-but-unarchived changes
   - **2026-08-23** (56d ago): 📌 RENAMED T16a → T16 on  (T242 AC3) — most entrenched of the three (12 commits reference it), so it took the clean base id rather than a fresh one.
@@ -157,8 +157,6 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
   - **2026-10-18** (today): AC6 complete (6/7, 86%): Extended GET /api/profile/contracts to return experiences (profile_experience), mirror_contracts (wom_my_upwork_contracts), and links (public.source_links where entity_kind = 'work_history'), added POST /api/profile/contracts (action: 'link' | 'unlink' calling wom_link_work_history and wom_unlink_work_history), and updated WorkHistory.svelte (/me/profile/work) with a CV Work History — Upwork Contract Links section (data-testid="work-history-links") allowing members to link and unlink profile_experience entries to synced Upwork contracts. Verified with unit and component tests in WorkHistory.test.ts and contracts.test.ts.
 - **T477** — Pre-push: stop the slow scans walking node_modules, then run independent gates in parallel
   - **2026-09-29** (19d ago): AC1 done and measured; AC2/AC3 not started. emoji_policy_check._pruned_glob and
-- **T481** — One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it
-  - **2026-10-01** (17d ago): (later) — Deploy 2026.10.01-1790875829 stopped at the test gate; cause was my own test. The blocking py-test suite failed 2 of 290: test_push_cadence_check.py (added for the stable-worktree fix) inherited W0M_RELEASE_WORKTREE=1, which just deploy exports to every suite. Nothing was published and nothing changed live (the chain stops before the database step; release record and tags absent). Reproduced locally by setting the variable; fixed by clearing it in the test and adding a case for the flag; 12 tests pass with the flag on and off under unittest and pytest, 2 mutations caught. Lesson recorded. The same run showed [UNKNOWN] 13 suite(s) passed with an UNREADABLE check count; it also appears in the stable run, so it predates this deploy and is advisory. Worktrees on disk were 5 of 5 after the cut, as the rule intends. Also measured (read-only): the pnpm "Ignored build scripts" warning has no measured impact (report .agents/reports/2026-10-01-t481-pnpm-ignored-builds-impact.md); allowing the scripts adds no measurable install time (timings in that report).
 - **T510** — Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card
   - **2026-10-01** (17d ago): (post-deploy, release 2026.10.01-1790882082) — U3 is live, and what that proves so far (anonymous and read-only). Both apps serve 2026.10.01-1790882082. cv-pdf answers 404 with Cache-Control: no-store for an unknown member and a malformed id, and 405 for POST; parse-resume and w0m-personnel answer 401 without a session. /team renders 200 with 3 LinkedIn links and 0 "Resume (PDF)" links, which is correct: profile_public_settings has 2 rows, linkedin_on = 2, resume_published = 0. Not proven, and why: the settings box and the confirm step (behind login), a 200 PDF (nobody has switched Public resume on), "Save variant" and the set-primary RPC from Studio (needs a signed-in action). Owner live proof (AC7): sign in, open /me/profile, switch Public resume on and confirm, open the published link in a private window and expect 200, switch it off and expect 404; record the codes here.
 - **T545** — Admin reads every member's personal tables while the platform is one team, behind one switch
@@ -168,8 +166,9 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T550** — Telegram and Threads: search, message and manage bots, a measured integration plan with three tiers
   - ⚠️ NO status note recorded where this stopped
 
-#### Completed today (15):
+#### Completed today (16):
 
+- **T244** — A revoked Cloudflare token is stored, synced to production, and read by nothing — three dead things holding each other up (Completed (5/5 ACs). Resolved AC1 and AC2 across wom7api, wom7func, and wom7web)
 - **T461** — Hat management in the CP: PM and root assign hats, custom hats and mixes, hat collections with fallback rules (Write path ([[T553]]) applied and verified live in production. Migration 20261007010000_t553_hat_write_path is applied in supabase_migrations.schema_migrations; just t553-hat-write-path-test passed 43/43; live rolled-back transaction as role authenticated with PM JWT claims verified wom_staff_authority = 'staff', wom_staff_hat (role_slug = 'devops'), and wom_retract_hat (ok = true), and live ACL probes X36 and X37 verified at 0 violations. All 7/7 ACs verified end-to-end.)
 - **T498** — Resume Studio writes real resumes: curated per-employer highlights with role and tech tags, so each version accents different positions (AC8 verified live and ticket closed. All 29 employers and 206 canonical highlights are loaded in public.profile_cv_facts (cv_structure_load.py --apply), and the owner opened /me/profile/resume, compared roles, and generated/saved both DevOps and AI Infrastructure variants in the Document Vault. All 8/8 ACs complete.)
 - **T499** — Resume Studio keeps highlights and tags in the database only: edit in Studio, parse raw uploads into highlights, save exports as files in the member's vault; retire the JSON seed (AC2 and AC4 verified live in Supabase and ticket closed. (1) AC2: queried public.profile_cv_facts (total_facts = 29, edited_facts = 29 with updated_at > created_at); cross-member isolation proven by probes X6–X10. (2) AC4: queried public.profile_resumes joined against storage.objects (bucket_id = 'resumes'); all 8 generated variants saved on 2026-10-18 (including a0af110a-97e4-4661-826e-7f9c5d4f0a1e -> 8d16aff5-d996-4759-80b0-39b60e3c0920/generated/1792364872708_resume-devops-public.md at 2026-10-18 23:07:53+00) have exists_in_storage = true. All 6/6 ACs complete.)
