@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.19-1792387706
+_First deployed: 2026-10-19 05:37:53.1395+00_
+
+### Features
+- **policy**: declare job_board_sources in services-policy.json (T134, T213) ([T134](file:///.tasks/T134.md), [T213](file:///.tasks/T213.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `4bbae93` | 2026-10-19 05:37:53.1395+00 |
+
 ## 2026.10.18-1792382940
 _First deployed: 2026-10-19 04:22:29.49173+00_
 
