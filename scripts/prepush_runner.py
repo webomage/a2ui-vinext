@@ -246,11 +246,24 @@ def cmd_check_certified(repo: str, commit_hash: str, args: argparse.Namespace) -
     return 1
 
 
+def format_step_bar(step_id: str, width: int = 16) -> str:
+    if step_id not in STEP_IDS:
+        return ""
+    idx = STEP_IDS.index(step_id) + 1
+    total = len(STEP_IDS)
+    pct = int((idx / total) * 100) if total > 0 else 100
+    filled_len = int(width * idx // total) if total > 0 else width
+    empty_len = max(0, width - filled_len)
+    bar = "█" * filled_len + "░" * empty_len
+    return f"[{idx:>2}/{total:<2}] [{bar}] {pct:>3}% | "
+
+
 def cmd_step_begin(repo: str, commit_hash: str, args: argparse.Namespace) -> int:
     """Determines whether step should run (exit 0) or be skipped as cached pass (exit 1)."""
     step_id = args.step_id
     desc = args.description or STEP_NAMES.get(step_id, step_id)
     reason = why_not(repo, commit_hash, args=args, step_id=step_id)
+    bar_prefix = format_step_bar(step_id)
 
     if is_reset_requested(args.reset):
         # Clear checkpoint
@@ -275,44 +288,45 @@ def cmd_step_begin(repo: str, commit_hash: str, args: argparse.Namespace) -> int
             # Step is before the forced resume target
             dur = steps.get(step_id, {}).get("duration_s")
             dur_str = f" ({dur:.1f}s)" if dur is not None else ""
-            print(f"  ✓ [cached pass] {desc}{dur_str}")
+            print(f"  {bar_prefix}✓ [cached pass] {desc}{dur_str}", flush=True)
             return 1  # SKIP
         # At or past target: run
         cp["current_step"] = step_id
         save_checkpoint(repo, commit_hash, cp)
-        echo_header(repo, desc, reason)
+        echo_header(repo, desc, reason, step_id=step_id)
         return 0  # RUN
 
     # Standard auto-continue behavior:
     if not reason:
         dur = steps.get(step_id, {}).get("duration_s")
         dur_str = f" ({dur:.1f}s)" if dur is not None else ""
-        print(f"  ✓ [cached pass] {desc}{dur_str}")
+        print(f"  {bar_prefix}✓ [cached pass] {desc}{dur_str}", flush=True)
         return 1  # SKIP
 
     # Must run step
     cp["current_step"] = step_id
     cp["status"] = "in_progress"
     save_checkpoint(repo, commit_hash, cp)
-    echo_header(repo, desc, reason)
+    echo_header(repo, desc, reason, step_id=step_id)
     return 0  # RUN
 
 
-def echo_header(repo: str, desc: str, reason: str = "") -> None:
+def echo_header(repo: str, desc: str, reason: str = "", step_id: str = "") -> None:
     suffix = f" [why_not: {reason}]" if reason else ""
-    print(f"⏳ [{repo}] Pre-push: {desc}...{suffix}")
-
+    bar_prefix = format_step_bar(step_id) if step_id else ""
+    print(f"  {bar_prefix}⏳ [{repo}] Pre-push: {desc}...{suffix}", flush=True)
 
 
 def cmd_step_pass(repo: str, commit_hash: str, args: argparse.Namespace) -> int:
     step_id = args.step_id
+    dur = float(args.duration or 0.0)
     cp = load_checkpoint(repo, commit_hash)
     if "steps" not in cp:
         cp["steps"] = {}
     cp["steps"][step_id] = {
         "status": "passed",
         "exit_code": 0,
-        "duration_s": float(args.duration or 0.0),
+        "duration_s": dur,
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     }
     cp["current_step"] = None
@@ -323,6 +337,8 @@ def cmd_step_pass(repo: str, commit_hash: str, args: argparse.Namespace) -> int:
         cp["status"] = "passed"
         cp["last_failed_step"] = None
     save_checkpoint(repo, commit_hash, cp)
+    bar_prefix = format_step_bar(step_id)
+    print(f"  {bar_prefix}✅ [{repo}] {step_id} passed ({dur:.1f}s)", flush=True)
     return 0
 
 
