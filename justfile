@@ -1183,3 +1183,22 @@ harness2-surface-check *args:
 harness2-surface-test:
     @python3 wom7web/project/scripts/tests/test_harness2_surface.py
 
+# ── Org Model S7, Secret History Audit & Resume Vault (T458 / T504 / T510) ──
+engagements-hats-verify *args:
+    @just --justfile wom7api/justfile engagements-hats-verify {{ args }}
+
+engagements-hats-verify-test:
+    @just --justfile wom7api/justfile engagements-hats-verify-test
+
+secret-history-check *args:
+    @just --justfile wom7api/justfile secret-history-check {{ args }}
+
+secret-history-check-test:
+    @just --justfile wom7api/justfile secret-history-check-test
+
+resume-vault-verify *args:
+    @just --justfile wom7api/justfile resume-vault-verify {{ args }}
+
+resume-vault-verify-test:
+    @just --justfile wom7api/justfile resume-vault-verify-test
+
