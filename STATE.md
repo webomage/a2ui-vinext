@@ -15,16 +15,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T213](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 109 | Job-board sources fail open on a dead credential, and the credentials are unmanaged lite |
-| 2 | [T439](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 103 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
-| 3 | [T458](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T458.md) | [#458](https://github.com/webomage/wom7board/issues/458) | P1 | in-progress | security | 103 | Org and engagement model — w0m platform and root, webomage operator company 📄 live spec |
-| 4 | [T504](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T504.md) | [#504](https://github.com/webomage/wom7board/issues/504) | P0 | queued | security | 102 | Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars |
-| 5 | [T510](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T510.md) | [#510](https://github.com/webomage/wom7board/issues/510) | P1 | in-progress | product | 102 | Resume vault: every resume private in the members vault; per-profile 'Publi 📄 live spec |
-| 6 | [T290](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 92 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
-| 7 | [T545](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T545.md) | — | P1 | in-progress | security | 86 | Admin reads every member's personal tables while the platform is one team, behind one sw |
-| 8 | [T29](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
-| 9 | [T43](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 85 | Full-observability logging strategy 📄 live spec |
-| 10 | [T63](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
+| 1 | [T213](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 109 | Job-board sources fail open on a dead credential, and the credentials are unmanaged lite |
+| 2 | [T439](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 103 | CP information architecture — one shell with a Me / Org / Admin context swi 📄 live spec |
+| 3 | [T458](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T458.md) | [#458](https://github.com/webomage/wom7board/issues/458) | P1 | in-progress | security | 103 | Org and engagement model — w0m platform and root, webomage operator company 📄 live spec |
+| 4 | [T504](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T504.md) | [#504](https://github.com/webomage/wom7board/issues/504) | P0 | queued | security | 102 | Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars |
+| 5 | [T510](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T510.md) | [#510](https://github.com/webomage/wom7board/issues/510) | P1 | in-progress | product | 102 | Resume vault: every resume private in the members vault; per-profile 'Publi 📄 live spec |
+| 6 | [T290](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 92 | Stage-4 Money has no ticket of its own — `simulate_payment` lets a client mark their own |
+| 7 | [T545](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T545.md) | — | P1 | in-progress | security | 86 | Admin reads every member's personal tables while the platform is one team, behind one sw |
+| 8 | [T29](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 9 | [T43](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 85 | Full-observability logging strategy 📄 live spec |
+| 10 | [T63](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
 
 ### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -40,16 +40,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T213](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 6/8 | `████████░░` 75% | — | Job-board sources fail open on a dead credential, and the cr |
-| 2 | [T545](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T545.md) | — | P1 | in-progress | security | 3/4 | `████████░░` 75% | — | Admin reads every member's personal tables while the platfor |
-| 3 | [T458](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T458.md) | [#458](https://github.com/webomage/wom7board/issues/458) | P1 | in-progress | security | 5/7 | `███████░░░` 71% | — | Org and engagement model — w0m platform and root, webomage o |
-| 4 | [T439](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 7/12 | `██████░░░░` 58% | — | CP information architecture — one shell with a Me / Org / Ad |
-| 5 | [T535](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T535.md) | — | P1 | queued | data | 4/7 | `██████░░░░` 57% | — | The Upwork poller has failed every run since 2026-09-19 (582 |
-| 6 | [T290](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
-| 7 | [T546](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T546.md) | — | P2 | in-progress | tooling | 3/4 | `████████░░` 75% | — | The scheduled tools upgrade proposes known_good bumps; only  |
-| 8 | [T504](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T504.md) | [#504](https://github.com/webomage/wom7board/issues/504) | P0 | queued | security | 0/6 | `░░░░░░░░░░` 0% | — | Google disabled the Gemini key as leaked; 29 credentials com |
-| 9 | [T16](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
-| 10 | [T510](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T510.md) | [#510](https://github.com/webomage/wom7board/issues/510) | P1 | in-progress | product | 2/14 | `█░░░░░░░░░` 14% | — | Resume vault: every resume private in the members vault; per |
+| 1 | [T213](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 6/8 | `████████░░` 75% | — | Job-board sources fail open on a dead credential, and the cr |
+| 2 | [T545](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T545.md) | — | P1 | in-progress | security | 3/4 | `████████░░` 75% | — | Admin reads every member's personal tables while the platfor |
+| 3 | [T458](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T458.md) | [#458](https://github.com/webomage/wom7board/issues/458) | P1 | in-progress | security | 5/7 | `███████░░░` 71% | — | Org and engagement model — w0m platform and root, webomage o |
+| 4 | [T439](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T439.md) | [#439](https://github.com/webomage/wom7board/issues/439) | P1 | in-progress | product | 7/12 | `██████░░░░` 58% | — | CP information architecture — one shell with a Me / Org / Ad |
+| 5 | [T535](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T535.md) | — | P1 | queued | data | 4/7 | `██████░░░░` 57% | — | The Upwork poller has failed every run since 2026-09-19 (582 |
+| 6 | [T290](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T290.md) | [#290](https://github.com/webomage/wom7board/issues/290) | P1 | in-progress | product | 3/7 | `████░░░░░░` 43% | — | Stage-4 Money has no ticket of its own — `simulate_payment`  |
+| 7 | [T546](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T546.md) | — | P2 | in-progress | tooling | 3/4 | `████████░░` 75% | — | The scheduled tools upgrade proposes known_good bumps; only  |
+| 8 | [T504](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T504.md) | [#504](https://github.com/webomage/wom7board/issues/504) | P0 | queued | security | 0/6 | `░░░░░░░░░░` 0% | — | Google disabled the Gemini key as leaked; 29 credentials com |
+| 9 | [T16](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T16.md) | [#16](https://github.com/webomage/wom7board/issues/16) | P2 | in-progress | sdlc | 2/3 | `███████░░░` 67% | — | Verify & archive built-but-unarchived changes |
+| 10 | [T510](/home/aleksei/.w0m/work/agy-clef/w0m/.tasks/T510.md) | [#510](https://github.com/webomage/wom7board/issues/510) | P1 | in-progress | product | 2/14 | `█░░░░░░░░░` 14% | — | Resume vault: every resume private in the members vault; per |
 
 ### 📍 MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `ba706c4d` |
-| `wom7api` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `d255787` |
-| `wom7func` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `180faa5` |
-| `wom7skills` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
-| `wom7ext` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `57b3e6b` |
-| `wom7sec` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `be6ae19` |
-| `wom7mlx/wom7mlx` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
+| `wom7web` | `agent/agy-clef` | 0 | **n/a — NO UPSTREAM** | `e172c3d7` |
+| `wom7api` | `agent/agy-clef` | 0 | **n/a — NO UPSTREAM** | `d255787` |
+| `wom7func` | `agent/agy-clef` | 0 | **n/a — NO UPSTREAM** | `180faa5` |
+| `wom7skills` | `agent/agy-clef` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
+| `wom7ext` | `agent/agy-clef` | 0 | **n/a — NO UPSTREAM** | `57b3e6b` |
+| `wom7sec` | `agent/agy-clef` | 0 | **n/a — NO UPSTREAM** | `be6ae19` |
+| `wom7mlx/wom7mlx` | `agent/agy-clef` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
 **Tickets:** 244 open · 559 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T213","T439","T458","T504","T510","T290","T545","T29","T43","T63"],"repos":{"wom7api":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"d255787","unpushed":null},"wom7ext":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"180faa5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"be6ae19","unpushed":null},"wom7skills":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"ba706c4d","unpushed":null}},"tickets":{"open":244,"rowless_open":[],"rows":559}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T213","T439","T458","T504","T510","T290","T545","T29","T43","T63"],"repos":{"wom7api":{"branch":"agent/agy-clef","dirty":0,"has_upstream":true,"head":"d255787","unpushed":null},"wom7ext":{"branch":"agent/agy-clef","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/agy-clef","dirty":0,"has_upstream":true,"head":"180faa5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-clef","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/agy-clef","dirty":0,"has_upstream":true,"head":"be6ae19","unpushed":null},"wom7skills":{"branch":"agent/agy-clef","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/agy-clef","dirty":0,"has_upstream":true,"head":"e172c3d7","unpushed":null}},"tickets":{"open":244,"rowless_open":[],"rows":559}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -161,6 +161,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
   - **2026-10-06** (13d ago): Found by the deploy gate, fixed. The registry runs recipes through wom7api/justfile (wom7web/justfile is a symlink to it) and I had added tools-upgrade-test only to the root justfile, so the full test tier reported it as "recipe not found, 0 checks" (a blocking failure). Now in wom7api/justfile with tools-promote, and two new structure tests pin it: the registered recipe resolves in the justfile the registry runs, and the REAL scheduled recipe (wom7api tools-weekly, the one launchd runs) never promotes. A mutation that makes it promote is caught. The suite now prints a check line per test, so the runner counts 25 instead of "?". Also corrected the stale comments on tools-upgrade, tools-reconcile and tools-weekly ("promotes known_good").
 - **T550** — Telegram and Threads: search, message and manage bots, a measured integration plan with three tiers
   - ⚠️ NO status note recorded where this stopped
+
+#### Completed today (1):
+
+- **T558** — TypeSafe System One & Jev Image Processing: fast initial classification, two-stage skill suggestion, and multimodal image/box pipeline for w0m & Orca (Added native Cloudflare Workers AI providers clef-flash (@cf/cloudflare/clef-flash) and clef (@cf/cloudflare/clef) to PROVIDER_REGISTRY and SystemOneClient in wom7web/project/scripts/jev_system_one.py (automatic assets → images data URL mapping, Cloudflare {"result": ...} envelope unwrapping, get_score(), box guard, and just jev-image probe-clef), verified with 13/13 unit tests in test_jev_system_one.py and live probe against Cloudflare Workers AI.)
 
 ## 3. Other open threads (in TASKS.md)
 
