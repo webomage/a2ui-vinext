@@ -1202,3 +1202,10 @@ resume-vault-verify *args:
 resume-vault-verify-test:
     @just --justfile wom7api/justfile resume-vault-verify-test
 
+# ── External Project Work Report Ingestion (T357) ────────────────────────────
+project-report-ingest *args:
+    @python3 wom7web/project/scripts/report_ingest.py {{ args }}
+
+project-report-ingest-test:
+    @python3 wom7web/project/scripts/tests/test_report_ingest.py -v
+

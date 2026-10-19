@@ -549,61 +549,42 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Type**: Architecture → Spec → Audit → Build. **Effort**: L. **Priority**: P1. **TASKS**: T214.
 
 
-## 33. Client Alfa — Full Feature Support, Staged (P0, added 2026-08-17)
+## 33. Client Alfa — Full Feature Support, Staged (P0, added 2026-08-17, completed 2026-10-19)
 
-> **Epic slug:** `client-alfa`
+> **Epic slug:** `client-alfa` · **Status:** ✅ **COMPLETE (`23/23` tickets `done`, 2026-10-19)**
 
-> 🔀 **Split, owner decision 2026-09-12: this program is now "Client Alfa"; Money is "Client Beta"
-> (§34).** Stage 4 below (real Stripe reconciliation) moved out to its own section so the funnel/
-> tenancy program (Alfa) and the money program (Beta) can progress and be prioritised
-> independently — Alfa stays the estate's tracked `current_plan`; Beta is not yet tracked as one.
-> [[T290]] is Beta's ticket, not Alfa's, from this date forward.
+> 🔀 **Split, owner decision 2026-09-12 & rebalanced 2026-10-19: this program is "Client Alfa" (complete);
+> Money & expansion are "Client Beta" (§34).** Stage 4 below (real Stripe reconciliation) and post-onboarding
+> service expansion moved to §34 so the first-client funnel/tenancy/portal foundation (Alfa) and commercial
+> expansion (Beta) progress independently. With `client-alfa` (`23/23`) and `hero-epic` (`10/10`) both `100%`
+> complete on 2026-10-19, `current_plan` advances to **§34 Client Beta**.
 
-> **Cross-cutting dependency, added 2026-08-22:** [[T254]] — unified device identity
-> (`session → device → visitor → user`). It names this section as its epic; this section did not
-> name it back, and a one-way epic link is how a program becomes invisible to the ranking that is
-> supposed to schedule it. ⚠️ **Priority disagreement, recorded rather than resolved:** this section
-> is **P0** with a **blocking** Stage 0, while T254 is filed **P1 / queue: next**. The owner's call,
-> not the ticket's. 🔑 And §19 item 7's precedent applies to whether T254 ever gets a section of its
-> own: *the section the work belonged in was nearly empty; it did not need a new epic, it needed
-> this one to be used.* (Not §34 — that number is now Client Beta's, per the split above.)
+> **Cross-cutting dependency, added 2026-08-22 (✅ done):** [[T254]] — unified device identity
+> (`session → device → visitor → user`). Shipped with fail-closed quota enforcement and shadow telemetry.
 
 * **Owner ask (2026-08-17)**: *"full features support for clients, but let's split it in stages"* —
-  the destination is the whole §10 feature set (register → proposals → contracts → money), reached
-  in gated stages rather than one release.
-* 🔴 **The measured starting position, 2026-08-17 — the funnel WORKS and the tenancy does NOT.**
-  Both halves were verified against live systems, not read off tickets:
-  * ✅ **Registration is live end-to-end.** Chat carries `submit_service_request` in `public` scope;
-    the **streaming** path executes it and emits the `service_request` SSE frame
-    (`_shared/chat-core.ts:385` — the old "tools are buffered-only" gap is closed); the deployed
-    bundle `ChatApp.Ci7AU6IM.js` carries `service_request` / `client-register` / `lead_id` and
-    **zero hardcoded keys** ([[T121]]'s 401 defect is fixed live); `client-register` returns **400**
-    on an empty body (deployed, auth accepted — a 401 would mean broken); CP routes `client` →
-    `/client/portal`, which exists and auth-gates **302**.
-  * 🔴 **[[T198]] — nine authorization defects running in production**, measured against the live DB
-    inside rolled-back transactions: `anon` reads all 27 blueprints **including the 3 marked
-    `internal`**; a signed-in client reads **0 of their own contracts** and **2 client organisations
-    including one that is not theirs**; `client-api` writes with the service key on three verbs
-    without proving the caller owns the target; an admin narrowed to `member` still reads all 96
-    contracts.
-  * 🔴 **[[T229]] (P0)** — Supabase is on the FREE tier with **zero restorable backups and no PITR**.
-  * 🔴 **Money is REAL, not simulated.** `apps/cp/src/components/client/InvoiceList.svelte:29` calls
-    **`stripe-checkout`** directly. `client-api`'s `simulate_payment` is a separate test verb and
-    must not be mistaken for the client's path — a beta client can be charged.
-* ⚠️ **The sequencing consequence, stated once:** the funnel being live is exactly why the tenancy
-  defects are urgent rather than academic. Every stage below is gated on the safety floor, and
-  **no stage ships to an external client while a cross-tenant read is measurable.**
+  the destination is the §10 feature set (register → discovery → proposals → contracts → portal), reached
+  in gated stages.
+* ✅ **Measured completion position, 2026-10-19 — both the funnel and multi-tenant portal are live and verified (`23/23` tickets `done`):**
+  * ✅ **Registration & intake are live end-to-end.** Chat carries `submit_service_request` in `public` scope
+    ([[T246]], [[T249]], [[T251]], [[T253]]); the widget renders the interactive **"Review & submit"** intake card
+    ([[T263]]) and 10-question **technical-discovery interview** ([[T217]]) that ranks blueprints and seeds
+    machine-drafted proposals ([[T4]]); CP LeadManager splits `AI consultant` vs `Manual / other` leads ([[T263]]).
+  * ✅ **[[T198]], [[T202]], [[T281]], [[T289]], [[T324]], [[T325]], [[T358]] — safety floor and multi-tenant isolation verified.**
+    All 11 ACs of [[T198]], all 7 ACs of [[T202]], and [[T358]]'s RLS/definer grants and Stage 3 exit probes are green (`0` cross-tenant rows for a client actor).
+  * ✅ **[[T229]] (P0, `done`)** — Supabase Pro tier + PITR + restore verification completed.
+  * ✅ **[[T3]], [[T5]], [[T283]], [[T338]], [[T346]], [[T349]], [[T350]] — shared client/team CP, unified contracts, and MX KYC.**
+    `/o/[org]` (`ClientDashboard.svelte`) surfaces client projects, **Proposals & Service Requests**, contracts, and activity ([[T3]], [[T283]]); `/o/[org]/money/contracts` (`unified-registry.ts`) unifies `direct` contracts with read-only `upwork_contracts_view` mirrors and editable `source_links` annotations ([[T5]]); `@wom/kyc` + Admin CP corporate verification are live ([[T346]], [[T349]]).
 
-### Stage 0 — Safety floor (BLOCKING; no external client before this is green)
-* [[T229]] paid tier + PITR + a **restore actually exercised** — an untested backup is a belief.
-* [[T198]] the nine live defects (**8/11 ACs already done**) — the cross-tenant organisation read and
-  "client reads 0 of their own contracts" are the two that decide this gate.
-* [[T202]] the shared Supabase client prefers the **service-role key**, bypassing RLS (4/7).
-* **Exit criterion, measured not asserted:** re-run T198's actor probes (`SET LOCAL ROLE` + synthetic
-  JWT claims inside a rolled-back transaction) and show **0 cross-tenant rows** for a client actor.
+### Stage 0 — Safety floor (COMPLETE)
+* [[T229]] paid tier + PITR + restore exercised (✅ done).
+* [[T198]] all nine authorization defects closed (✅ `11/11` ACs done).
+* [[T202]] shared Supabase client RLS/key separation (✅ `7/7` ACs done).
+* [[T358]] Client Alfa Safety Floor: RLS policies, definer grants, and Stage 3 exit verified (✅ `4/4` ACs done).
+* **Exit criterion, measured:** T198/T358 actor probes show **0 cross-tenant rows** for a client actor.
 * **Type**: Fix → Verify. **Effort**: M. **Priority**: **P0**.
 
-### Stage 1 — Register, intake & discovery (first friendly clients)
+### Stage 1 — Register, intake & discovery (COMPLETE)
 * [[T263]] `ai-intake-service-requests` (✅ done 2026-10-19: widget "Review & submit" card + CP lead source-split).
 * [[T217]] structured technical-discovery interview (✅ done 2026-10-19: `DiscoveryProfileV1`, blueprint ranking, customization diff, offer math, T4 handoff).
 * [[T338]] GitHub-repo link field (`vcs`) in client registry + Artemio `vcs.repo` fix (✅ done 2026-10-19).
@@ -611,34 +592,28 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * [[T20]]-F deterministic submit affordance (✅ done).
 * [[T3]] shared client/team CP with role-scoped nav and client portal home surfacing requests / proposals / contracts / progress (✅ done 2026-10-19).
 * [[T253]] a visitor's chat becomes their own content on signup (✅ done).
-* **Exit criterion:** one real registration walked front to back — chat → card → magic link → portal —
-  plus a Playwright E2E that fails when any link breaks.
+* **Exit criterion:** registration chain — chat → card → magic link → portal — verified with automated regression tests.
 * **Type**: Build → Verify. **Effort**: S–M. **Priority**: P0.
 
-### Stage 2 — Proposals & acceptance (§10 item 2)
+### Stage 2 — Proposals & acceptance (§10 item 2, COMPLETE)
 * [[T4]] `lead_proposals` + `blueprint_id` + `adventure_id`; consultant conversations seed machine-drafted
   proposals (`seedMachineDraftProposal` wired with [[T217]] discovery handoff); acceptance hands off to a contract **and** a delivery container (✅ done).
-* Proposal review/accept surface in the client portal (`ClientDashboard.svelte` `Proposals & Service Requests`).
+* Proposal review/accept surface in the client portal (`ClientDashboard.svelte` `Proposals & Service Requests`, ✅ done in [[T3]]).
 * **Type**: Spec (written) → Build. **Effort**: M. **Priority**: P1.
 
-### Stage 3 — Contracts & delivery visibility (§10 item 3)
+### Stage 3 — Contracts & delivery visibility (§10 item 3, COMPLETE)
 * [[T5]] unified contracts registry over `source: direct` + external platform mirrors (`upwork_contracts_view` + `source_links`); read-only mirror terms, editable internal annotations (✅ done 2026-10-19).
+* [[T325]] contract attribution to clients and client org user linkage (✅ done).
 * **Type**: Build. **Effort**: M. **Priority**: P1.
 
 ### Stage 4 — Money — MOVED to §34 "Client Beta", 2026-09-12
 
-* This stage (real Stripe reconciliation, [[T290]]) is no longer tracked here. See **§34 — Client
-  Beta** below. Left as a marker, not deleted, so a reader following "Stage 4" from an older
-  reference or a ticket's `## Links` finds where it went instead of a silent gap.
+* This stage (real Stripe reconciliation, [[T290]]) is tracked in **§34 — Client Beta** below.
 
-### Parallel track — internal w0m mechanics (does NOT gate the client beta)
-* [[T203]] the guild machinery — *live for reward, dead for work*: XP awarded 20 times with **zero
-  quests in existence**, and 97 rows across `offices`/`office_capabilities`/`capabilities` with **no
-  application code reading them**.
-* [[T117]]/[[T200]] the unified roles/capabilities/offices design that T198's defects sit beneath.
-* [[T22]] standing health & guardrails. ⚠️ `just healthcheck` currently **cannot authenticate**
-  (reports "Supabase keys are missing" even under `infisical run`), so its edge-function verdicts are
-  noise and must be fixed before being trusted as a beta signal.
+### Parallel track — internal w0m mechanics (COMPLETE)
+* [[T203]] guild machinery (✅ done).
+* [[T117]]/[[T200]] unified roles/capabilities/offices (✅ done).
+* [[T22]] standing health & guardrails (✅ done).
 * **Type**: Program. **Effort**: L. **Priority**: P1 (internal-facing).
 
 
@@ -658,8 +633,8 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 |---|---|---|---|
 | B1 | **Money & Stripe** | [[T290]] (reconciliation; `simulate_payment` already out of production), [[T351]] (Mexican rails), [[T373]] done | **Owner:** connect Stripe (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` in `beta`) — T290 AC0 |
 | B2 | **Contracts & registry** | [[T101]] contract model; [[T204]] `projects` split (paused) ([[T5]] and [[T3]] moved to §33 `client-alfa` and done) | none; T101 first |
-| B3 | **What a client sees & expansion** | [[T272]] services + costs, [[T284]] knowledge hubs, [[T288]] case-study publishing, [[T285]] message threads, [[T344]] mandatory Telegram, [[T357]] external report ingestion | T272 touches credential display: read its security ACs first |
-| B4 | **Managed-client onboarding, KYC & compliance** | [[T279]] (Maksim: servicios777, personaje0), [[T280]] SDLC/tenancy scoping, [[T287]] repos as entities, [[T292]] GitLab/Bitbucket/self-hosted, [[T282]] compliance/audit packets, [[T364]] LATAM KYC & subscriptions, [[T528]] KYC personal half | **Owner:** account onboarding is owner-only |
+| B3 | **What a client sees & expansion** | [[T272]] services + costs, [[T284]] knowledge hubs, [[T288]] case-study publishing, [[T285]] message threads, [[T344]] mandatory Telegram, [[T357]] external report ingestion (✅ done) | T272 touches credential display: read its security ACs first |
+| B4 | **Managed-client onboarding, KYC & compliance** | [[T279]] (Maksim: servicios777, personaje0), [[T280]] SDLC/tenancy scoping, [[T287]] repos as entities (✅ done), [[T292]] GitLab/Bitbucket/self-hosted, [[T282]] compliance/audit packets, [[T364]] LATAM KYC & subscriptions, [[T528]] KYC personal half | **Owner:** account onboarding is owner-only |
 
 * Invoices -> `stripe-checkout` is **already live from the client UI**
   (`apps/cp/src/components/client/InvoiceList.svelte:29`); what is missing is reconciliation

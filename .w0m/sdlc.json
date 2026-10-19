@@ -576,50 +576,63 @@
     "session_hook": "SessionStart in the estate-root .claude/settings.local.json, calling the script directly by absolute path rather than via `just`: the session's project dir is the estate root, which has no justfile, and `just` startup would cost ~0.5s of a 2s budget. Same single implementation either way."
   },
   "current_plan": {
-    "name": "Hero Epic",
-    "roadmap": "ROADMAP.md §38",
-    "active_stage": "stage-1",
+    "name": "Client Beta — Client Delivery, Contracts & Money",
+    "roadmap": "ROADMAP.md §34",
+    "active_stage": "wip",
     "stages": [
       {
-        "id": "stage-1",
-        "name": "Member area",
+        "id": "wip",
+        "name": "In Progress (Active Work)",
         "blocking": true,
         "tickets": [
-          "T493",
-          "T476",
-          "T439"
-        ],
-        "exit": "Each ticket closes on its own acceptance criteria, in the order listed. T493 (7 criteria, none met): the to-dos migration applied, Upwork on /me verified live, the owner's review of the classification, approved features on /me, the 3 unattributed contracts and 3 connections attributed, and a feature index showing where every old admin view now lives. T476 (1 of 5 open): linking a second Google account from /me/account verified live after deploy. T439 (6 of 12 open): context routes, one nav source with its gate, goldens re-baselined deliberately and actually backed.",
-        "exit_checks": [],
-        "_not_yet_checked": "No `just` recipe checks these conditions yet, so per `_exit_check_rule` they are UNCHECKED, not passed. A ticked acceptance criterion is a claim; the live proofs below are evidence only once recorded in the ticket's status notes with the measured result.",
-        "_exit_met_comment": "Not yet met."
+          "T290"
+        ]
       },
       {
-        "id": "stage-2",
-        "name": "Resume and profile",
+        "id": "queued",
+        "name": "Queued (Ready)",
         "blocking": false,
         "tickets": [
-          "T498",
-          "T499",
-          "T501",
-          "T505",
-          "T533",
-          "T535",
-          "T539"
-        ],
-        "exit": "Each ticket closes on its own acceptance criteria, in the order listed. T498: the owner steps (apply the migration, approve the tags, run the live load, open /me/profile). T499: a member's highlight edits persist in profile_cv_facts and another member cannot read or change them; 'Save variant' stores a real file in the member's vault, proven live. T501: CF usage metering and a per-member quota, and the w0m-personnel persona and function, each proven live. T505: KYC reads profile_contact and profile_identity, and CURP and RFC move off gamification.compliance_profiles; both are marked as T349's personal half and T349 is now done, so re-scope them before building. T533 (added 2026-10-01 by the owner's direction): the Upwork linked knowledge store, whose last criterion is proofs in Resume Studio: AC1 the source probe run by the owner, AC2 a validated spec, AC3 the screening answers in the database (1,894 pairs over 725 proposals), AC4 links, AC5 complete messages, AC6 the owner-scoped evidence layer, AC7 hybrid search, AC8 proofs in Studio, AC9 the Me pages. T535 (added 2026-10-01, the prerequisite of T533's live parts): the Upwork poller has failed every run since 2026-09-19 (582 in a row) with no recorded cause and no freshness alert; closes when the failure row names the cause, the freshness gate exists, and the owner has re-authorized so a run writes SYNC_UPWORK_SUCCESS. T539 (added 2026-10-02 by the owner's direction, split from T537): the owner's Upwork data reaches the database only as local files, because the laptop MCP sync that worked has no loader; closes when the files are refreshed, a tested idempotent loader has run, the room/message/contract/proposal counts are verified in the database, and the freshness gate reads the loader's own success row. The per-member server connector (T537) is on hold: Upwork refuses an https redirect on our domain.",
-        "exit_checks": [],
-        "_not_yet_checked": "No `just` recipe checks these conditions yet, so per `_exit_check_rule` they are UNCHECKED, not passed. A ticked acceptance criterion is a claim; the live proofs below are evidence only once recorded in the ticket's status notes with the measured result.",
-        "_exit_met_comment": "Not yet met."
+          "T279",
+          "T272",
+          "T280",
+          "T282",
+          "T285",
+          "T351",
+          "T364",
+          "T528",
+          "T101",
+          "T288",
+          "T292",
+          "T344",
+          "T284"
+        ]
+      },
+      {
+        "id": "blocked",
+        "name": "Blocked / Paused",
+        "blocking": false,
+        "tickets": [
+          "T204"
+        ]
+      },
+      {
+        "id": "done",
+        "name": "Completed",
+        "blocking": false,
+        "tickets": [
+          "T373",
+          "T287",
+          "T357"
+        ]
       }
     ],
-    "_comment": "Set by `just plan-set` (owner 2026-10-01: gather the member-area and resume/profile tickets into one Hero Epic and work it in order). The stages below are NOT the tool's status projection: they are the owner's two groups in the owner's order, so a status change cannot reorder them. Ticket ids only; the reasoning lives in ROADMAP §38.",
+    "_comment": "Set by `just plan-set` — Owner 2026-10-19: Client Alfa (§33, 23/23) and Hero Epic (§38, 10/10) are 100% done; advance current_plan to Client Beta (§34). Stages are a projection of the tickets whose epic rolls up to ROADMAP §34; add `exit`/`exit_checks` by hand per stage if it needs a probe.",
     "_set": {
-      "at": "2026-10-01T14:46:50Z",
-      "reason": "Owner 2026-10-01: gather the member-area and resume/profile tickets into one Hero Epic and work it in order",
-      "fingerprint": "40cc8d002a808630"
-    },
-    "_active_stage_note": "Stage-1 before stage-2, and within a stage in the order listed. A step only the owner can run (apply a migration, a live proof, a decision) is named in its ticket and does not stop the next buildable step. The plan this replaced, 'Security & RBAC Hardening' (ROADMAP §19, with 20 tickets still open, stage-0 met 2026-09-19), is kept whole in .w0m/plan-history.jsonl; its tickets stay open under §19 and nothing was closed or moved."
+      "at": "2026-10-19T17:40:24Z",
+      "reason": "Owner 2026-10-19: Client Alfa (§33, 23/23) and Hero Epic (§38, 10/10) are 100% done; advance current_plan to Client Beta (§34)",
+      "fingerprint": "3ff2b5b612feb9e4"
+    }
   },
   "skills_governance_scopes": {
     "_comment": "T147 AC2+AC4, owner decision 2026-08-17. TWO governance roots, not one. The project manifest (wom7web/.w0m/skills.json) governs .claude/skills; the USER manifest (~/.claude/.w0m/skills.json) governs ~/.claude/skills, which held 15 skills no manifest covered — real directories, no version, no integrity hash, loaded into EVERY session on this host while `check` printed '0 unmanaged' about the project tree beside them. They are governed separately rather than annexed by whichever project you happened to run from: a project manifest describes one repo, and these load everywhere. ⚠️ The user manifest is UNVERSIONED (~/.claude is not a git repo), so its decisions cannot be reviewed in a diff — accepted because the lockfile's job is DETECTION, which works unversioned; the reasoning belongs in a ticket. 🔴 Adoption is never automatic: `reconcile` with no decision flag only LISTS, and each skill is decided one at a time, because a bulk yes is indistinguishable from never having looked.",
