@@ -2,6 +2,17 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.19-1792441744
+_First deployed: 2026-10-19 20:41:47.414238+00_
+
+### Features
+- **tasks,prepush**: close T458 roots-epic, complete T510 U4.2/U5.1, and add prepush step progress bar (T458, T510, T375) ([T458](file:///.tasks/T458.md), [T510](file:///.tasks/T510.md), [T375](file:///.tasks/T375.md))
+- **sdlc**: close T357, mark ROADMAP §33 Client Alfa complete, and advance current_plan to §34 Client Beta (T357, T335) ([T357](file:///.tasks/T357.md), [T335](file:///.tasks/T335.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `e749599` | 2026-10-19 20:41:47.414238+00 |
+
 ## 2026.10.19-1792425309
 _First deployed: 2026-10-19 16:06:15.540905+00_
 
