@@ -278,6 +278,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T559](.tasks/T559.md) | **P0** | **CP Upwork Full MCP/DB Sync & Advanced Messages/Proposals Explorer UI + Auth Redirect Loop Fix** | web, api | — | ✅ **done** |
 | [T558](.tasks/T558.md) | **P0** | **TypeSafe System One & Jev Image Processing: fast initial classification, two-stage skill suggestion, and multimodal image/box pipeline for w0m & Orca** | web, tooling, skills | — | ✅ **done** |
 | [T557](.tasks/T557.md) | **P0** | **Mobile Orca (casualuser/orca): Add camera photo capture ('Take Photo') to attach captured photos directly into Native Chat and Terminal sessions** | tooling | — | ✅ **done** |
 | [T556](.tasks/T556.md) | **P0** | 🆕 **Adopt Google Research Harness² mechanisms across the w0m agent stack: skill trigger hygiene & always-on budget, cue-indexed lessons, file-based ContextTree subagent bundles, and content-addressed runmarks** | skills, web, tooling | — | ✅ **done** |
