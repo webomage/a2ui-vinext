@@ -38,10 +38,12 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T563](.tasks/T563.md) | **P1** | 🆕 **Build multi-platform Outreach & Communications Hub in job.webomage.com with AI drafting and follow-up pipeline** | web, api | — | ⚪ **queued** |
+| [T562](.tasks/T562.md) | **P1** | 🆕 **Extend wom7ext browser extension with Universal Page & Selection Clipper and multi-platform freelancer/outreach specs** | ext, api | — | ⚪ **queued** |
+| [T561](.tasks/T561.md) | **P1** | 🆕 **Build multi-platform Outreach & Clipping Vault schema, source_links integration, and outreach-clip-ingest Edge Function** | api, web | — | ⚪ **queued** |
 | [T531](.tasks/T531.md) | **P1** | 🆕 **Per-agent workspace sets: parallel agents stop sharing one working tree, one index and one set of generated files** | tooling | — | ⚪ **queued** |
 | [T530](.tasks/T530.md) | **P1** | 🆕 **Org model S9: retire Axis-1 account classes and network.member, unify CP context switcher on engagement hats and root admin** | web, api | — | ⚪ **queued** |
 | [T528](.tasks/T528.md) | **P1** | 🆕 **KYC personal half: KYC reads the member's contact and identity records, and CURP and RFC leave gamification.compliance_profiles** | web, api | — | ⚪ **queued** |
-| [T513](.tasks/T513.md) | **P1** | 🆕 **Resume Studio documents: View Markdown shows nowhere you are looking, PDFs have no preview, a 400 fires on every load, and the card buttons overflow** | web | — | ⚪ **queued** |
 | [T509](.tasks/T509.md) | **P1** | 🆕 **Root-first layout: finish the T414 move in staged units, behind a stale-path probe that checks the file a recipe, hook or profile runs actually exists** | web, api | — | ⚪ **queued** |
 | [T506](.tasks/T506.md) | **P1** | 🆕 **Security & PII cutover: AES-256-GCM token encryption, IP retention in ai_usage, and legacy cv bucket cleanup** | api, web, func | — | ⚪ **queued** |
 | [T475](.tasks/T475.md) | **P1** | 🆕 **Biometric hardware anchor for @wom/kyc and compliance profiles** | web, api | — | ⚪ **queued** |
@@ -253,6 +255,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T560](.tasks/T560.md) | **P0** | **Move Resume Studio, Upwork sync, proposals, messages, recruiting, and contract management to job.webomage.com with 301 cutovers in cp.webomage.com** | web, api | — | ✅ **done** |
 | [T559](.tasks/T559.md) | **P0** | **CP Upwork Full MCP/DB Sync & Advanced Messages/Proposals Explorer UI + Auth Redirect Loop Fix** | web, api | — | ✅ **done** |
 | [T558](.tasks/T558.md) | **P0** | **TypeSafe System One & Jev Image Processing: fast initial classification, two-stage skill suggestion, and multimodal image/box pipeline for w0m & Orca** | web, tooling, skills | — | ✅ **done** |
 | [T557](.tasks/T557.md) | **P0** | **Mobile Orca (casualuser/orca): Add camera photo capture ('Take Photo') to attach captured photos directly into Native Chat and Terminal sessions** | tooling | — | ✅ **done** |
@@ -276,6 +279,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T532](.tasks/T532.md) | **P1** | 🆕 **E2E local sandbox execution environment and full corpus verification run** | web | — | ✅ **done** |
 | [T529](.tasks/T529.md) | **P1** | 🆕 **Org model S8: retire public.clients and client_users; company details keyed by org, client hats on engagements** | api, web | — | ✅ **done** |
 | [T515](.tasks/T515.md) | **P1** | 🆕 **A Tinybird token literal is committed in wom7api/scripts/init_tinybird_schemas.py: rotate it, remove it, and make the script read it by injection** | api | — | ✅ **done** |
+| [T513](.tasks/T513.md) | **P1** | 🆕 **Resume Studio documents: View Markdown shows nowhere you are looking, PDFs have no preview, a 400 fires on every load, and the card buttons overflow** | web | — | ✅ **done** |
 | [T507](.tasks/T507.md) · [#507](https://github.com/casualuser/webomage.com/issues/507) | **P1** | **Deploy observability & hygiene: progress bars, build warnings audit & logging, and test runner lazy init** | web, api | — | ✅ **done** |
 | [T505](.tasks/T505.md) | **P1** | **Personal information model: one contact record (shared by Resume Studio and KYC) and a separate, locked identity record for KYC** | web, api | — | ✅ **done** |
 | [T503](.tasks/T503.md) | **P0** | **Deploy flow: gates run before the schema write, and the fast ratchets run where the change is made, not at deploy time** | web, api | — | ✅ **done** |

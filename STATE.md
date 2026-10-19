@@ -15,16 +15,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T213](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 109 | Job-board sources fail open on a dead credential, and the credentials are unmanaged lite |
-| 2 | [T510](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T510.md) | [#510](https://github.com/webomage/wom7board/issues/510) | P1 | in-progress | product | 102 | Resume vault: every resume private in the members vault; per-profile 'Publi 📄 live spec |
-| 3 | [T29](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
-| 4 | [T43](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 85 | Full-observability logging strategy 📄 live spec |
-| 5 | [T63](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
-| 6 | [T214](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 84 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
-| 7 | [T279](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 82 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
-| 8 | [T336](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 80 | Public free security audit lead magnet & client registration gate 📄 live spec |
-| 9 | [T337](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T337.md) | [#337](https://github.com/webomage/wom7board/issues/337) | P1 | queued | tools | 80 | Advanced code & infrastructure audit runner with ephemeral air-gapped sandb 📄 live spec |
-| 10 | [T365](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 79 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
+| 1 | [T213](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 109 | Job-board sources fail open on a dead credential, and the credentials are unmanaged lite |
+| 2 | [T510](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T510.md) | [#510](https://github.com/webomage/wom7board/issues/510) | P1 | in-progress | product | 102 | Resume vault: every resume private in the members vault; per-profile 'Publi 📄 live spec |
+| 3 | [T29](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 4 | [T43](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 85 | Full-observability logging strategy 📄 live spec |
+| 5 | [T63](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
+| 6 | [T214](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 84 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
+| 7 | [T279](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 82 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
+| 8 | [T336](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 80 | Public free security audit lead magnet & client registration gate 📄 live spec |
+| 9 | [T337](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T337.md) | [#337](https://github.com/webomage/wom7board/issues/337) | P1 | queued | tools | 80 | Advanced code & infrastructure audit runner with ephemeral air-gapped sandb 📄 live spec |
+| 10 | [T365](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 79 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,24 +32,24 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 225 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **225** are
+> ⚠️ **0 of 227 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **227** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T213](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 6/8 | `████████░░` 75% | — | Job-board sources fail open on a dead credential, and the cr |
-| 2 | [T510](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T510.md) | [#510](https://github.com/webomage/wom7board/issues/510) | P1 | in-progress | product | 13/14 | `█████████░` 93% | — | Resume vault: every resume private in the members vault; per |
-| 3 | [T537](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T537.md) | — | P1 | blocked | data | 1/10 | `█░░░░░░░░░` 10% | — | Upwork connector on the official MCP with per-member OAuth;  |
-| 4 | [T265](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T265.md) | [#265](https://github.com/webomage/wom7board/issues/265) | P2 | queued | sdlc | 4/9 | `████░░░░░░` 44% | — | Define and pilot a HALF-MANAGED project tier — skills, tools |
-| 5 | [T219](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T219.md) | [#219](https://github.com/webomage/wom7board/issues/219) | P2 | queued | infra | 2/5 | `████░░░░░░` 40% | — | wom7ext ↔ ZeroClaw realignment — mcp-b is already vestigial  |
-| 6 | [T184](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T184.md) | [#184](https://github.com/webomage/wom7board/issues/184) | P3 | queued | tools | 4/8 | `█████░░░░░` 50% | — | wom7mlx is P3 — consolidate the MLX/Rust-port work behind on |
-| 7 | [T24](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T24.md) | [#24](https://github.com/webomage/wom7board/issues/24) | P1 | queued | skills | 0/3 | `░░░░░░░░░░` 0% | — | Skills expansion — import + survey |
-| 8 | [T25](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T25.md) | [#25](https://github.com/webomage/wom7board/issues/25) | P1 | queued | knowledge | 0/3 | `░░░░░░░░░░` 0% | — | Knowledge-graph engine research |
-| 9 | [T26](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T26.md) | [#26](https://github.com/webomage/wom7board/issues/26) | P1 | queued | tools | 0/2 | `░░░░░░░░░░` 0% | — | Package discovery via awesome-repositories MCP |
-| 10 | [T29](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Project delivery via agency GitHub |
+| 1 | [T213](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T213.md) | [#213](https://github.com/webomage/wom7board/issues/213) | P0 | queued | infra | 6/8 | `████████░░` 75% | — | Job-board sources fail open on a dead credential, and the cr |
+| 2 | [T510](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T510.md) | [#510](https://github.com/webomage/wom7board/issues/510) | P1 | in-progress | product | 13/14 | `█████████░` 93% | — | Resume vault: every resume private in the members vault; per |
+| 3 | [T537](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T537.md) | — | P1 | blocked | data | 1/10 | `█░░░░░░░░░` 10% | — | Upwork connector on the official MCP with per-member OAuth;  |
+| 4 | [T265](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T265.md) | [#265](https://github.com/webomage/wom7board/issues/265) | P2 | queued | sdlc | 4/9 | `████░░░░░░` 44% | — | Define and pilot a HALF-MANAGED project tier — skills, tools |
+| 5 | [T219](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T219.md) | [#219](https://github.com/webomage/wom7board/issues/219) | P2 | queued | infra | 2/5 | `████░░░░░░` 40% | — | wom7ext ↔ ZeroClaw realignment — mcp-b is already vestigial  |
+| 6 | [T184](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T184.md) | [#184](https://github.com/webomage/wom7board/issues/184) | P3 | queued | tools | 4/8 | `█████░░░░░` 50% | — | wom7mlx is P3 — consolidate the MLX/Rust-port work behind on |
+| 7 | [T24](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T24.md) | [#24](https://github.com/webomage/wom7board/issues/24) | P1 | queued | skills | 0/3 | `░░░░░░░░░░` 0% | — | Skills expansion — import + survey |
+| 8 | [T25](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T25.md) | [#25](https://github.com/webomage/wom7board/issues/25) | P1 | queued | knowledge | 0/3 | `░░░░░░░░░░` 0% | — | Knowledge-graph engine research |
+| 9 | [T26](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T26.md) | [#26](https://github.com/webomage/wom7board/issues/26) | P1 | queued | tools | 0/2 | `░░░░░░░░░░` 0% | — | Package discovery via awesome-repositories MCP |
+| 10 | [T29](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Project delivery via agency GitHub |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `98974da6` |
-| `wom7api` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `43d2a7c` |
-| `wom7func` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `ed3ae5c` |
-| `wom7skills` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
-| `wom7ext` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `57b3e6b` |
-| `wom7sec` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `be6ae19` |
-| `wom7mlx/wom7mlx` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
+| `wom7web` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `89355149` |
+| `wom7api` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `455e3f2` |
+| `wom7func` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `180faa5` |
+| `wom7skills` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
+| `wom7ext` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `57b3e6b` |
+| `wom7sec` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `be6ae19` |
+| `wom7mlx/wom7mlx` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 225 open · 559 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 227 open · 563 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T213","T510","T29","T43","T63","T214","T279","T336","T337","T365"],"repos":{"wom7api":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"43d2a7c","unpushed":null},"wom7ext":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"ed3ae5c","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"be6ae19","unpushed":null},"wom7skills":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"98974da6","unpushed":null}},"tickets":{"open":225,"rowless_open":[],"rows":559}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T213","T510","T29","T43","T63","T214","T279","T336","T337","T365"],"repos":{"wom7api":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"455e3f2","unpushed":null},"wom7ext":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"180faa5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"be6ae19","unpushed":null},"wom7skills":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"89355149","unpushed":null}},"tickets":{"open":227,"rowless_open":[],"rows":563}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -134,7 +134,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T510** — Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card
   - **2026-10-19** (today): (U4.2 + U5.1 complete — 13/14 ACs done; only AC7 post-deploy live proof remaining)
 
-#### Completed today (17):
+#### Completed today (19):
 
 - **T3** — Shared client/team CP (Done (3/3 ACs verified, moved to client-alfa). Wired orgProposals(sb, orgId) into orgDashboard() in apps/cp/src/lib/client/org-scope.ts, passed proposals from apps/cp/src/pages/o/[org]/index.astro to ClientDashboard.svelte, and rendered the Requests & Proposals stat card and Proposals & Service Requests section (data-tour="cp-portal-proposals"). Verified by org-scope.test.ts (27/27) and shared-pages.test.ts (34/34).)
 - **T5** — Unified contracts registry (Done (3/3 ACs verified, moved to client-alfa). Added apps/cp/src/lib/contracts/unified-registry.ts merging public.contracts (direct / internal), public.upwork_contracts_view (queried via sessionClient so public.current_profile_id() resolves), and public.source_links annotations. Updated o/[org]/money/contracts/index.astro and ContractManager.svelte (including @webomage/ui Button.Root conversion). Verified by unified-registry.test.ts (3/3) and shared-pages.test.ts (34/34).)
@@ -149,10 +149,12 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T455** — Participating open-source projects & PRs inventory for member profiles (read-only) and webomage/casualuser fork lifecycle management (Done (5/5 ACs, 100%): Built wom7web/apps/cp/src/config/participating-projects.json, member API endpoint wom7web/apps/cp/src/pages/api/members/projects.ts (registered in ME_APIS in cp-routes.ts, with 15-minute TTL cache, CLI w0m_prs.py enrichment, and member CV contribution promotion/CRUD on public.profile_cv_entries), ParticipatingProjects.svelte, /me/oss (pages/me/oss.astro + NAV.me), and launch banner on /me/profile. Verified with unit and component tests (projects.test.ts, ParticipatingProjects.test.ts).)
 - **T458** — Org and engagement model — w0m platform and root, webomage operator company, default home orgs, engagements <contractor>.<engagement>.<client> with minimum hats (S7 applied live by the owner; just engagements-hats-verify 7/7 GREEN (T458 7/7 DONE).)
 - **T477** — Pre-push: stop the slow scans walking node_modules, then run independent gates in parallel (T477 closed (3/3 ACs): implemented bounded-concurrency run-typecheck (concurrency=3 across the 5 Astro apps in wom7web/package.json), flock-guarded per-step checkpointing in scripts/prepush_runner.py, and run_parallel_readonly_gates (PREPUSH_JOBS=6) in wom7web/.husky/pre-push with deterministic buffered output and serial state-check / graph-global tail steps (test_prepush_runner.py 16/16 green).)
+- **T513** — Resume Studio documents: View Markdown shows nowhere you are looking, PDFs have no preview, a 400 fires on every load, and the card buttons overflow (Implemented and verified alongside [[T560]] (AgDR-0033). Replaced the off-screen inline Markdown preview panel in wom7web/apps/cp/src/components/member/resume/ResumeStudio.svelte (now mounted at job.webomage.com/me/resume via @cp/components/member/resume/ResumeStudio.svelte) with a right-hand modal slide-over drawer (data-testid="doc-preview-drawer", role="dialog", aria-modal="true", auto-focused close button, Escape key + backdrop click to close). Added Preview PDF (data-testid="doc-preview-pdf") rendering <iframe data-testid="doc-preview-pdf-iframe"> via a 5-minute signed URL (createSignedUrl(doc.storage_path, 300)) from resumes storage bucket, safe HTML Markdown renderer (renderSafeMarkdown, escaping <script>/raw HTML tags and restricting links to https:///http:///mailto:) with Rendered / Source mode toggle (data-testid="doc-preview-mode-rendered", data-testid="doc-preview-mode-source"), wrapping card action rows (flex-wrap items-center gap-1.5 pt-2 border-t border-white/10, data-testid="doc-actions-{doc.id}"), and inline per-card / in-drawer error alerts (data-testid="doc-card-error-{doc.id}", data-testid="doc-preview-error"). The legacy public.projects query (stack 400) was already removed in [[T555]]. Verified by 14 tests in ResumeStudio Document Vault + ResumeStudio failure messages + ResumeStudio Set Primary in apps/cp/src/components/member/resume/__tests__/ResumeStudio.test.ts.)
 - **T535** — The Upwork poller has failed every run since 2026-09-19 (582 in a row) and the failure row does not say why; nothing alerts on it (T535 closed (7/7 ACs done). Per owner direction (2026-10-02, 2026-10-19) and [[T539]] completion (6/6), AC3 and AC6 (optional stopgaps for the deprecated Upwork GraphQL API poller) are marked superseded by [[T539]] (laptop MCP sync + idempotent loader), and AC7 is closed with migration 20261002100000_t535_connections_upsert_indexes.sql applied in the live ledger and verified live (EXPLAIN confirms Conflict Arbiter Indexes: connections_estate_slot_uq, 13/13 tests + 12/12 mutants in test_connections_upsert_indexes.py). Completes Hero Epic Stage 2 (7/7 tickets done).)
 - **T545** — Admin reads every member's personal tables while the platform is one team, behind one switch (T545 closed (4/4, 100%). AC1–AC3 are deployed and verified live (X8, X13, X18, X23, X35 green; per-table row counts verified across profile_cv_facts, profile_contact, profile_identity, profile_public_settings); AC4 (narrowing before outside user onboarding) is split into [[T537]] AC10 per the estate split-ticket rule.)
 - **T546** — The scheduled tools upgrade proposes known_good bumps; only an agent-tree promotion writes them (T546 closed (4/4 ACs): fixed smoke.split() FileNotFoundError('cd') crash on compound shell smoke commands in scripts/tools_upgrade.py (smoke_argv() + OSError guard, 26/26 tools-upgrade-test green) and promoted 8 smoke-verified known_good bumps via just tools-promote --apply in agent tree ant-ci.)
 - **T558** — TypeSafe System One & Jev Image Processing: fast initial classification, two-stage skill suggestion, and multimodal image/box pipeline for w0m & Orca (Added native Cloudflare Workers AI providers clef-flash (@cf/cloudflare/clef-flash) and clef (@cf/cloudflare/clef) to PROVIDER_REGISTRY and SystemOneClient in wom7web/project/scripts/jev_system_one.py (automatic assets → images data URL mapping, Cloudflare {"result": ...} envelope unwrapping, get_score(), box guard, and just jev-image probe-clef), verified with 13/13 unit tests in test_jev_system_one.py and live probe against Cloudflare Workers AI.)
+- **T560** — Move Resume Studio, Upwork sync, proposals, messages, recruiting, and contract management to job.webomage.com with 301 cutovers in cp.webomage.com (Completed and verified (AgDR-0033).)
 
 ## 3. Other open threads (in TASKS.md)
 

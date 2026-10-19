@@ -635,6 +635,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 | B2 | **Contracts & registry** | [[T101]] contract model; [[T204]] `projects` split (paused) ([[T5]] and [[T3]] moved to §33 `client-alfa` and done) | none; T101 first |
 | B3 | **What a client sees & expansion** | [[T272]] services + costs, [[T284]] knowledge hubs, [[T288]] case-study publishing, [[T285]] message threads, [[T344]] mandatory Telegram, [[T357]] external report ingestion (✅ done) | T272 touches credential display: read its security ACs first |
 | B4 | **Managed-client onboarding, KYC & compliance** | [[T279]] (Maksim: servicios777, personaje0), [[T280]] SDLC/tenancy scoping, [[T287]] repos as entities (✅ done), [[T292]] GitLab/Bitbucket/self-hosted, [[T282]] compliance/audit packets, [[T364]] LATAM KYC & subscriptions, [[T528]] KYC personal half | **Owner:** account onboarding is owner-only |
+| B5 | **Jobs Portal, Resume Studio & Outreach Vault (`AgDR-0033`)** | [[T560]] `job.webomage.com` CP shell & boundary cutover (Resume Studio, Upwork sync, proposals, messages, recruiting, contracts), [[T561]] Outreach & Clipping Vault schema + `outreach-clip-ingest`, [[T562]] `wom7ext` universal & multi-platform clipper, [[T563]] `apps/job` Outreach & Communications Hub UI | `AgDR-0033` decided 2026-10-19; T560 first |
 
 * Invoices -> `stripe-checkout` is **already live from the client UI**
   (`apps/cp/src/components/client/InvoiceList.svelte:29`); what is missing is reconciliation
@@ -648,7 +649,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
   out of the production path (✅ already true, verified on the deployed function — see T290 AC1/AC2).
 * **Proposed epic exit (owner to confirm):** a managed client can sign in, see their own project, contract, services and
   costs, and pay an invoice that reconciles against Stripe — with none of it visible to another tenant.
-* **Type**: Build → Audit. **Effort**: L. **Priority**: P1. **TASKS**: T290, T351, T101, T272, T284, T288, T285, T279, T280, T287, T292, T204, T282, T364, T344, T357, T528.
+* **Type**: Build → Audit. **Effort**: L. **Priority**: P1. **TASKS**: T290, T351, T101, T272, T284, T288, T285, T279, T280, T287, T292, T204, T282, T364, T344, T357, T528, T560, T561, T562, T563.
 
 
 ## 35. Apple Virtualization & MicroVM Sandboxes (P1, added 2026-09-18)

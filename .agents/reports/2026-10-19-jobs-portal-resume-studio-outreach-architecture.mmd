@@ -1,0 +1,48 @@
+flowchart TB
+    subgraph EXT["wom7ext (Browser Extension — Clipper & Extractor)"]
+        EXT_SPEC["Declarative Spec Engine (specs/*.json)<br/>Upwork · LinkedIn · Contra · Toptal<br/>Freelancer · Fiverr · Wellfound · X-Team · Indeed"]
+        EXT_CLIP["Universal Page & Selection Clipper<br/>(DOM -> Clean Markdown + Metadata + Thread Messages)"]
+        EXT_POP["Extension Popup & Context Menu<br/>Clip Page · Clip Selection · Clip Thread · Draft Reply"]
+    end
+
+    subgraph JOB["job.webomage.com (wom7web/apps/job — Commercial, Career & Outreach CP)"]
+        JOB_PUB["Public Job Board<br/>/ · /jobs/[id]"]
+        subgraph JOB_ME["Member Career & Outreach (/me/*)"]
+            ME_RES["Resume Studio & Vault<br/>/me/resume · /me/work"]
+            ME_SYNC["Marketplace Sync & Connectors<br/>/me/connectors (Upwork, LinkedIn, etc.)"]
+            ME_OUT["Outreach & Communications Hub<br/>/me/outreach (Threads, Clips, Follow-ups, AI Drafts)"]
+            ME_DEAL["Member Proposals & Contracts<br/>/me/proposals · /me/contracts · /me/messages"]
+        end
+        subgraph JOB_ORG["Org Commercial & Recruiting (/o/[org]/*)"]
+            ORG_CON["Commercial Contracts & Proposals<br/>/o/[org]/money/contracts · /o/[org]/money/proposals"]
+            ORG_REC["Recruiting & ATS Kanban<br/>/o/[org]/people/recruiting/*"]
+            ORG_OUT["Org Outreach & Leads<br/>/o/[org]/outreach"]
+        end
+    end
+
+    subgraph CP["cp.webomage.com (wom7web/apps/cp — Technical Project Management & Ops CP)"]
+        CP_PROJ["Technical Project Management<br/>/o/[org]/projects/* · /o/[org]/p/[project]/*<br/>(w0m internal & client engineering projects)"]
+        CP_ME["Member Delivery & Identity Core<br/>/me · /me/work · /me/oss · /me/todos<br/>/me/profile · /me/account"]
+        CP_ADM["Platform Admin (/admin/*)<br/>Infra · Billing/Stripe · Security · Users"]
+    end
+
+    subgraph API["wom7api (Supabase Postgres + Edge Functions + Storage)"]
+        EF_CLIP["outreach-clip-ingest & job-ingest & profile-ingest"]
+        EF_AI["w0m-personnel & parse-resume & cv-pdf"]
+        DB_VAULT[("Resumes Storage + profile_resumes<br/>+ profile_cv_facts + upwork_evidence_passages")]
+        DB_OUT[("Outreach & Messages Vault<br/>outreach_clips · outreach_threads · outreach_messages<br/>+ upwork.* mirror + source_links + contracts")]
+    end
+
+    EXT_SPEC --> EXT_POP
+    EXT_CLIP --> EXT_POP
+    EXT_POP -->|"Bearer JWT (Member Session)"| EF_CLIP
+    EF_CLIP --> DB_OUT
+    ME_RES <--> EF_AI
+    ME_OUT <--> EF_AI
+    EF_AI <--> DB_VAULT
+    EF_AI <--> DB_OUT
+    ME_DEAL <--> DB_OUT
+    ME_SYNC <--> DB_OUT
+    ORG_CON <--> DB_OUT
+    ORG_CON -.->|"contract_id -> Technical Delivery"| CP_PROJ
+    JOB_ME -.->|"Shared .webomage.com SSO Cookie"| CP_ME
