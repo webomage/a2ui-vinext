@@ -603,31 +603,26 @@ These are pending tasks recovered from past Antigravity sessions that need to be
   JWT claims inside a rolled-back transaction) and show **0 cross-tenant rows** for a client actor.
 * **Type**: Fix → Verify. **Effort**: M. **Priority**: **P0**.
 
-### Stage 1 — Register & see (first friendly clients)
-* [[T2]] AC4/AC5 — the chain is live but **never walked end to end**, and **no E2E spec covers
-  registration**, so nothing gates a regression on the funnel's front door.
-* [[T20]]-F deterministic submit affordance — today the funnel depends on the model choosing to fire
-  a tool; a deterministic path makes registration independent of model behaviour.
-* Client portal home: their requests and project/adventure status.
-* [[T253]] a visitor's chat becomes their own content on signup — added 2026-09-11, found by the
-  epic-completeness audit self-tagging this section with no stage naming it back. Direct sequel to
-  T2/T20/T324's registration front door: the account this stage's exit already asks for does not
-  yet keep the conversation that led to it.
+### Stage 1 — Register, intake & discovery (first friendly clients)
+* [[T263]] `ai-intake-service-requests` (✅ done 2026-10-19: widget "Review & submit" card + CP lead source-split).
+* [[T217]] structured technical-discovery interview (✅ done 2026-10-19: `DiscoveryProfileV1`, blueprint ranking, customization diff, offer math, T4 handoff).
+* [[T338]] GitHub-repo link field (`vcs`) in client registry + Artemio `vcs.repo` fix (✅ done 2026-10-19).
+* [[T2]] AC4/AC5 — registration chain (✅ done).
+* [[T20]]-F deterministic submit affordance (✅ done).
+* [[T3]] shared client/team CP with role-scoped nav and client portal home surfacing requests / proposals / contracts / progress (✅ done 2026-10-19).
+* [[T253]] a visitor's chat becomes their own content on signup (✅ done).
 * **Exit criterion:** one real registration walked front to back — chat → card → magic link → portal —
   plus a Playwright E2E that fails when any link breaks.
 * **Type**: Build → Verify. **Effort**: S–M. **Priority**: P0.
 
 ### Stage 2 — Proposals & acceptance (§10 item 2)
-* `lead_proposals` + `blueprint_id` + `adventure_id`; consultant conversations seed machine-drafted
-  proposals; acceptance hands off to a contract **and** a delivery container.
-* Proposal review/accept surface in the client portal — **absent today** (`pages/client/` holds only
-  `portal`, `milestones`, `invoices`).
+* [[T4]] `lead_proposals` + `blueprint_id` + `adventure_id`; consultant conversations seed machine-drafted
+  proposals (`seedMachineDraftProposal` wired with [[T217]] discovery handoff); acceptance hands off to a contract **and** a delivery container (✅ done).
+* Proposal review/accept surface in the client portal (`ClientDashboard.svelte` `Proposals & Service Requests`).
 * **Type**: Spec (written) → Build. **Effort**: M. **Priority**: P1.
 
 ### Stage 3 — Contracts & delivery visibility (§10 item 3)
-* Unified contracts over `source: direct` + platform mirrors; the client sees both under own-linkage
-  RBAC. Schema is already multi-source (`generic_contracts`); the **client-facing contracts surface
-  is the gap**, and Stage 0 is what makes it safe to expose.
+* [[T5]] unified contracts registry over `source: direct` + external platform mirrors (`upwork_contracts_view` + `source_links`); read-only mirror terms, editable internal annotations (✅ done 2026-10-19).
 * **Type**: Build. **Effort**: M. **Priority**: P1.
 
 ### Stage 4 — Money — MOVED to §34 "Client Beta", 2026-09-12
@@ -647,27 +642,24 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Type**: Program. **Effort**: L. **Priority**: P1 (internal-facing).
 
 
-## 34. Client Beta — Client Delivery, Contracts & Money (P1, added 2026-09-12, broadened 2026-09-29)
+## 34. Client Beta — Client Delivery, Contracts & Money (P1, added 2026-09-12, broadened 2026-09-29, rebalanced 2026-10-19)
 
 > **Epic slug:** `client-beta`
 
-> 🔀 **Split out of §33 "Client Alfa", owner decision 2026-09-12** (was Alfa's Stage 4, "Money"), and **broadened 2026-09-29,
-> owner: "organize this as the Client Beta epic"** to hold ALL open client-facing delivery work: the money stream below plus the
-> client-facing tickets that sat in §10 (contract model, client visibility, managed-client onboarding).
-> Slug renamed `client-beta-stripe` -> `client-beta`; every ticket moved by hand, none by rule.
-> **Alfa remains the estate's tracked `current_plan`; Beta is not (yet) tracked as one** — the owner's call, recorded rather than
-> inferred. Switching is one command: `just plan-set 34 --reason "…"`.
-> ⚠️ **Not moved:** Alfa's own 4 open tickets ([[T282]], [[T364]], [[T344]], [[T357]]) stay in §33. Moving them would make Alfa read
-> complete by reclassification, which is a green that was not earned. §10 keeps its 6 done tickets and [[T6]] (not client-facing).
+> 🔀 **Split out of §33 "Client Alfa", owner decision 2026-09-12** (was Alfa's Stage 4, "Money"), **broadened 2026-09-29**,
+> and **rebalanced 2026-10-19 (owner direction)**: essential first-client funnel & portal foundations ([[T263]], [[T217]], [[T338]],
+> [[T3]], [[T5]]) moved into §33 `client-alfa` and shipped to `done`, while advanced post-onboarding expansion tickets
+> ([[T282]] compliance/audit packets, [[T364]] LATAM KYC & subscription gating, [[T344]] mandatory Telegram, [[T357]] external
+> work-report ingestion, [[T528]] KYC personal half) moved from `client-alfa` into `client-beta`.
 
 **Workstreams** (a proposed order, not a decision — the owner confirms; each ticket keeps its own ACs):
 
 | # | Workstream | Tickets | Gate / precondition |
 |---|---|---|---|
 | B1 | **Money & Stripe** | [[T290]] (reconciliation; `simulate_payment` already out of production), [[T351]] (Mexican rails), [[T373]] done | **Owner:** connect Stripe (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` in `beta`) — T290 AC0 |
-| B2 | **Contracts & registry** | [[T101]] contract model -> [[T5]] unified contracts registry -> [[T3]] shared client/team CP; [[T204]] `projects` split (paused) | none; T101 first |
-| B3 | **What a client sees** | [[T272]] services + costs, [[T284]] knowledge hubs, [[T288]] case-study publishing, [[T285]] message threads, [[T217]] discovery interview, [[T263]] AI intake | T272 touches credential display: read its security ACs first |
-| B4 | **Managed-client onboarding & repos** | [[T279]] (Maksim: servicios777, personaje0), [[T280]] SDLC/tenancy scoping, [[T338]] repo-link field, [[T287]] repos as entities, [[T292]] GitLab/Bitbucket/self-hosted | **Owner:** account onboarding is owner-only |
+| B2 | **Contracts & registry** | [[T101]] contract model; [[T204]] `projects` split (paused) ([[T5]] and [[T3]] moved to §33 `client-alfa` and done) | none; T101 first |
+| B3 | **What a client sees & expansion** | [[T272]] services + costs, [[T284]] knowledge hubs, [[T288]] case-study publishing, [[T285]] message threads, [[T344]] mandatory Telegram, [[T357]] external report ingestion | T272 touches credential display: read its security ACs first |
+| B4 | **Managed-client onboarding, KYC & compliance** | [[T279]] (Maksim: servicios777, personaje0), [[T280]] SDLC/tenancy scoping, [[T287]] repos as entities, [[T292]] GitLab/Bitbucket/self-hosted, [[T282]] compliance/audit packets, [[T364]] LATAM KYC & subscriptions, [[T528]] KYC personal half | **Owner:** account onboarding is owner-only |
 
 * Invoices -> `stripe-checkout` is **already live from the client UI**
   (`apps/cp/src/components/client/InvoiceList.svelte:29`); what is missing is reconciliation
@@ -681,7 +673,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
   out of the production path (✅ already true, verified on the deployed function — see T290 AC1/AC2).
 * **Proposed epic exit (owner to confirm):** a managed client can sign in, see their own project, contract, services and
   costs, and pay an invoice that reconciles against Stripe — with none of it visible to another tenant.
-* **Type**: Build → Audit. **Effort**: L. **Priority**: P1. **TASKS**: T290, T351, T101, T5, T3, T272, T284, T288, T285, T217, T263, T279, T280, T338, T287, T292, T204.
+* **Type**: Build → Audit. **Effort**: L. **Priority**: P1. **TASKS**: T290, T351, T101, T272, T284, T288, T285, T279, T280, T287, T292, T204, T282, T364, T344, T357, T528.
 
 
 ## 35. Apple Virtualization & MicroVM Sandboxes (P1, added 2026-09-18)
