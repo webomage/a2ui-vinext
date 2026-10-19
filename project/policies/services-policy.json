@@ -198,5 +198,92 @@
       "docs": "docs/backend/CONNECTOR-RESEARCH-MATRIX.md",
       "note": "T94(b) — declared, NOT implemented. HIGH PRIORITY per owner ask 2026-09-16 (see project/tickets/T94.md Status notes). OAuth2 authorization_code, 1h access tokens, refreshable; rung 2 (read sync) on the depth ladder, no webhook, no official MCP. New Data API apps must register with Reddit by 2026-09-30 — sequence the adapter build accordingly."
     }
+  ],
+  "job_board_sources": [
+    {
+      "key": "adzuna",
+      "title": "Adzuna",
+      "auth": "api_key",
+      "credentials": [
+        "ADZUNA_APP_ID",
+        "ADZUNA_APP_KEY"
+      ],
+      "workflow": "job-aggregator",
+      "markets": ["us", "gb", "ca"],
+      "docs": "https://developer.adzuna.com/",
+      "note": "REST API search across US, UK, and Canada remote developer listings (T213). Configure ADZUNA_APP_ID and ADZUNA_APP_KEY in the Admin Panel (public.admin_secrets) or sync via Infisical."
+    },
+    {
+      "key": "jooble",
+      "title": "Jooble",
+      "auth": "api_key",
+      "credentials": [
+        "JOOBLE_API_KEY"
+      ],
+      "workflow": "job-aggregator",
+      "markets": ["global"],
+      "docs": "https://jooble.org/api/about",
+      "note": "REST API job search aggregator for remote engineering roles (T213). Configure JOOBLE_API_KEY in the Admin Panel (public.admin_secrets) or sync via Infisical."
+    },
+    {
+      "key": "remoteok",
+      "title": "RemoteOK",
+      "auth": "public_feed",
+      "credentials": [],
+      "workflow": "job-aggregator",
+      "markets": ["global"],
+      "docs": "https://remoteok.com/api",
+      "note": "Public JSON API feed — no credentials required. Can be enabled or paused per run from the Admin Panel."
+    },
+    {
+      "key": "remotive",
+      "title": "Remotive",
+      "auth": "public_feed",
+      "credentials": [],
+      "workflow": "job-aggregator",
+      "markets": ["global"],
+      "docs": "https://remotive.com/api/remote-jobs",
+      "note": "Public JSON API (software-dev, devops-sysadmin, data) — no credentials required. Can be enabled or paused from the Admin Panel."
+    },
+    {
+      "key": "hn",
+      "title": "Hacker News (Who is Hiring)",
+      "auth": "public_feed",
+      "credentials": [],
+      "workflow": "job-aggregator",
+      "markets": ["global"],
+      "docs": "https://hn.algolia.com/api",
+      "note": "Algolia HN API parser for monthly 'Ask HN: Who is hiring?' threads — no credentials required. Can be enabled or paused from the Admin Panel."
+    },
+    {
+      "key": "wwr",
+      "title": "WeWorkRemotely",
+      "auth": "public_feed",
+      "credentials": [],
+      "workflow": "job-aggregator",
+      "markets": ["global"],
+      "docs": "https://weworkremotely.com",
+      "note": "Public RSS feeds for remote programming & DevOps roles — no credentials required. Can be enabled or paused from the Admin Panel."
+    },
+    {
+      "key": "nofluffjobs",
+      "title": "NoFluffJobs",
+      "auth": "public_feed",
+      "credentials": [],
+      "workflow": "job-scanner",
+      "markets": ["eu"],
+      "docs": "https://nofluffjobs.com",
+      "note": "Public RSS feed for European remote tech listings with transparent salary ranges — no credentials required."
+    },
+    {
+      "key": "cryptojobslist",
+      "title": "CryptoJobsList",
+      "auth": "public_feed",
+      "credentials": [],
+      "workflow": "job-scanner",
+      "markets": ["global"],
+      "docs": "https://cryptojobslist.com/feed",
+      "note": "Public RSS feed for remote Web3, blockchain, and systems engineering roles — no credentials required."
+    }
   ]
 }
