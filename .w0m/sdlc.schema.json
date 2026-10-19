@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://webomage.com/schemas/sdlc.schema.json",
+  "title": "w0m estate SDLC declaration (.w0m/sdlc.json)",
+  "description": "Canonical schema for the w0m estate SDLC contract (.w0m/sdlc.json, T301 AC4). Validates all required profile keys plus estate-level governance blocks (tickets, specs, release, repos, vcs, codegraph, secrets, commands, quality_gates, tech_debt, conventions, lifecycle, state_surface, lessons_surface, toolchain, skills, stacks, ide_surfaces, mcp, iac, backups, versioning, current_plan, tasks_surface).",
+  "type": "object",
+  "required": [
+    "$schema",
+    "profile",
+    "project",
+    "root",
+    "canonical_repo",
+    "tickets",
+    "specs",
+    "release",
+    "repos",
+    "vcs",
+    "codegraph",
+    "secrets",
+    "commands",
+    "quality_gates",
+    "tech_debt",
+    "conventions",
+    "lifecycle",
+    "state_surface",
+    "lessons_surface",
+    "toolchain",
+    "skills",
+    "stacks",
+    "ide_surfaces",
+    "mcp",
+    "iac",
+    "backups",
+    "versioning",
+    "current_plan",
+    "tasks_surface"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "profile": {
+      "type": "string",
+      "enum": ["w0m", "managed"]
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canonical_repo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tickets": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "specs": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "release": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "repos": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "vcs": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "codegraph": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "secrets": {
+      "type": ["object", "string"]
+    },
+    "commands": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "quality_gates": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "tech_debt": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "conventions": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "lifecycle": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "state_surface": {
+      "type": "object",
+      "required": ["retention"],
+      "properties": {
+        "retention": {
+          "type": "object",
+          "minProperties": 1
+        }
+      }
+    },
+    "lessons_surface": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "toolchain": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "skills": {
+      "type": "object",
+      "required": ["manifest", "lockfile"]
+    },
+    "stacks": {
+      "type": ["object", "string", "array"]
+    },
+    "ide_surfaces": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "mcp": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "iac": {
+      "type": "object"
+    },
+    "backups": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "versioning": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "current_plan": {
+      "type": "object",
+      "required": ["name", "roadmap", "active_stage", "stages"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "roadmap": { "type": "string", "minLength": 1 },
+        "active_stage": { "type": "string", "minLength": 1 },
+        "stages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "tickets"]
+          }
+        }
+      }
+    },
+    "tasks_surface": {
+      "type": "object",
+      "minProperties": 1
+    }
+  }
+}

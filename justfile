@@ -325,6 +325,15 @@ debt-check *args:
 debt-check-test:
     @python3 wom7web/project/scripts/tests/test_debt_register_check.py
 
+lexicon-lint-test:
+    @python3 wom7web/project/scripts/tests/test_lexicon_lint.py
+
+schema-check *args:
+    @python3 wom7web/project/scripts/schema_check.py {{ args }}
+
+schema-check-test:
+    @python3 wom7web/project/scripts/tests/test_schema_check.py
+
 # Forwarding target for running any arbitrary wom7web recipe from workspace root
 do recipe *args:
     @just --justfile wom7web/justfile {{ recipe }} {{ args }}

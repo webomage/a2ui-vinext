@@ -108,19 +108,9 @@
         "why": "summarises a probe by its leading marker, over subprocess stdout+stderr. Reads the cross glyph and warning indicator as well as the pair."
       },
       {
-        "parser": "wom7web/project/scripts/authz_bucket_gate_test.py",
-        "reads": "🔴🟡",
-        "why": "counts findings by severity marker"
-      },
-      {
         "parser": "wom7web/project/scripts/authz_grant_gate_test.py",
         "reads": "🔴🟡",
         "why": "counts findings by severity marker"
-      },
-      {
-        "parser": "scripts/debt_register_check.py",
-        "reads": "🔻✅",
-        "why": "RESOLVED matches `^\\s*(?:<down>\\s*)?<check>\\s*\\*\\*(RESOLVED|PAID DOWN|FIXED AND DELETED)` over TECH-DEBT.md rows. The down-arrow is OPTIONAL in the pattern, so losing it degrades quietly rather than failing -- a resolved row simply stops being recognised as resolved."
       },
       {
         "parser": "scripts/state_doctor.py",

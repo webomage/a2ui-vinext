@@ -73,12 +73,9 @@ PATH = re.compile(r"`([\w./@-]+/[\w.@-]+\.(?:ts|tsx|js|mjs|py|astro|svelte|sql|j
 # "closed 2026-07-21", Vite's "resolved at runtime", "closed P0", "closed tickets", a sub-part that
 # "were resolved", and — worst — **D48's "🔴 NOT RESOLVED"**, the exact inverse of the finding.
 # A status declaration in this register opens the Debt cell and is marked: `✅ **RESOLVED …`.
-# T257 AC2 — a bracketed text marker resolves a row exactly as the glyph pair does.
-# ⚠️ The down-arrow is OPTIONAL in the glyph branch, which is why losing it degrades QUIETLY:
-# a resolved row simply stops being recognised as resolved, and a paid-down debt silently
-# reappears as live. The text branch has no such optional part.
+# T257 AC4 — glyph branch retired now that TECH-DEBT.md and test fixtures use bracketed text markers.
 RESOLVED = re.compile(
-    r"^\s*(?:(?:🔻\s*)?✅|\[(?:RESOLVED|DONE|OK)\])\s*\*\*(RESOLVED|PAID DOWN|FIXED AND DELETED)\b",
+    r"^\s*\[(?:RESOLVED|DONE|OK)\]\s*\*\*(RESOLVED|PAID DOWN|FIXED AND DELETED)\b",
     re.I)
 NOT_RESOLVED = re.compile(r"NOT\s+RESOLVED", re.I)
 
@@ -98,13 +95,13 @@ def main() -> int:
     args = ap.parse_args()
 
     if not REGISTER.is_file():
-        print(f"🔴 {REGISTER.name} not found — cannot check a register that is not there.")
+        print(f"[HIGH] {REGISTER.name} not found — cannot check a register that is not there.")
         return 1
 
     text = REGISTER.read_text(encoding="utf-8")
     rows = ROW.findall(text)
     if not rows:
-        print("🔴 EMPTY CORPUS — parsed 0 debt rows. Fix the parse; do not read this as "
+        print("[HIGH] EMPTY CORPUS — parsed 0 debt rows. Fix the parse; do not read this as "
               "'the register is clean'.")
         return 1
 
@@ -163,25 +160,25 @@ def main() -> int:
     gating = {k: v for k, v in findings.items() if k != "stale_tracking"}
     total = sum(len(v) for v in gating.values())
     informational = len(findings["stale_tracking"])
-    print(f"▶ tech-debt register ↔ reality · {len(rows)} row(s) in {REGISTER.name}\n")
+    print(f"[STEP] tech-debt register ↔ reality · {len(rows)} row(s) in {REGISTER.name}\n")
 
     labels = {
-        "duplicate": ("🔴", "DUPLICATE ID"),
-        "dead_path": ("🟠", "DEAD PATH — cites a missing file, and does NOT say it was removed"),
-        "dead_ticket": ("🔴", "DEAD TICKET — referenced ticket has no file"),
-        "stale_tracking": ("⚪", "UNOWNED — no LIVE ticket in the Tracked cell (informational: "
-                                "the column has no grammar, see the module docstring)"),
-        "resolved_not_deleted": ("🟠", "RESOLVED, NOT DELETED"),
+        "duplicate": ("[HIGH]", "DUPLICATE ID"),
+        "dead_path": ("[WARN]", "DEAD PATH — cites a missing file, and does NOT say it was removed"),
+        "dead_ticket": ("[HIGH]", "DEAD TICKET — referenced ticket has no file"),
+        "stale_tracking": ("[INFO]", "UNOWNED — no LIVE ticket in the Tracked cell (informational: "
+                                    "the column has no grammar, see the module docstring)"),
+        "resolved_not_deleted": ("[WARN]", "RESOLVED, NOT DELETED"),
     }
-    for key, (glyph, label) in labels.items():
+    for key, (marker, label) in labels.items():
         hits = findings[key]
-        print(f"  {glyph} {label}: {len(hits)}")
+        print(f"  {marker} {label}: {len(hits)}")
         for h in hits[:8]:
             print(f"       {h['id']}  {h['detail']}")
         if len(hits) > 8:
             print(f"       …and {len(hits) - 8} more")
         if not hits:
-            print("       ✅ none")
+            print("       [OK] none")
 
     print()
     if total:

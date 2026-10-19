@@ -312,7 +312,7 @@ def render(data: dict) -> str:
     body = [
         BEGIN,
         "",
-        "### 🔥 TOP 10 HOT — generated, never hand-edited",
+        "### TOP 10 HOT — generated, never hand-edited",
         "",
         "> Ranked by `just tasks hot` from **recorded ticket fields only** — priority, status, whether a",
         "> live spec exists, whether it is missing from `TASKS.md`, and age. **This is a heuristic, not",
@@ -325,7 +325,7 @@ def render(data: dict) -> str:
         "",
         hot_md,
         "",
-        "### 📐 TOP 10 SDLC — closest to DONE — generated, never hand-edited",
+        "### TOP 10 SDLC — closest to DONE — generated, never hand-edited",
         "",
         f"> Ranked by `just tasks sdlc`: **AC completion + priority**. This is the COMPLEMENT to the",
         f"> table above, not a replacement — `hot` ranks what can be **started**, this ranks what is",
@@ -339,7 +339,7 @@ def render(data: dict) -> str:
         "",
         sdlc_md,
         "",
-        "### 📍 MECHANICAL STATE — generated, never hand-edited",
+        "### MECHANICAL STATE — generated, never hand-edited",
         "",
         "> Every number below is produced by `just state-save`. **Do not edit it by hand** — the next",
         "> `just state-check` will simply overrule you. Prose outside the markers is yours; this is not.",
@@ -744,7 +744,7 @@ def archive_index(arch_dir: Path, rel: str | None = None) -> str:
         return (f"{ARCH_BEGIN}\n\n_No rotated history yet._\n\n{ARCH_END}")
     return (
         f"{ARCH_BEGIN}\n\n"
-        "## 🗄️ Archived history — generated, never hand-edited\n\n"
+        "## Archived history — generated, never hand-edited\n\n"
         f"> **{len(rows)} superseded record(s)** rotated out of this file by `just state-rotate` "
         "(T174). Content is **verbatim** — nothing was summarised or deleted, and git holds the full\n"
         "> history regardless. Read one when you need to know *why* a past decision was taken; do\n"

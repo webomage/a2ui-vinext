@@ -14,12 +14,18 @@ Standard library only. Python per w0m tool ladder.
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
+import contextlib
 import datetime
+import fcntl
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
+import time
+from collections.abc import Iterator
 from pathlib import Path
 
 REGISTERED_STEPS: list[tuple[str, str]] = [
@@ -44,10 +50,10 @@ REGISTERED_STEPS: list[tuple[str, str]] = [
     ("debt-check", "tech-debt register against reality"),
     ("drop-callers", "dropped relations callers (T194 AC5)"),
     ("emoji-check", "estate-wide emoji ratchet"),
-    ("state-check", "STATE.md freshness (T145)"),
     ("typecheck-ratchet", "join/job typecheck ratchet (T149/D6)"),
     ("hooks-check", "hook-layer conformance (T149/T150)"),
     ("version-check", "one release format, one producer (T131)"),
+    ("state-check", "STATE.md freshness (T145)"),
 ]
 
 STEP_IDS = [s[0] for s in REGISTERED_STEPS]
@@ -115,6 +121,29 @@ def checkpoint_file_path(repo: str, commit_hash: str) -> Path:
     return get_cache_dir() / f"{repo}-{commit_hash}.json"
 
 
+@contextlib.contextmanager
+def checkpoint_lock(repo: str, commit_hash: str) -> Iterator[None]:
+    """Acquire an exclusive flock around checkpoint read-modify-write for parallel gate groups (T477 AC2)."""
+    if commit_hash == "unknown":
+        yield
+        return
+    lock_path = get_cache_dir() / f"{repo}-{commit_hash}.lock"
+    try:
+        fh = lock_path.open("w", encoding="utf-8")
+    except OSError:
+        yield
+        return
+    try:
+        fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+        yield
+    finally:
+        try:
+            fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+        except OSError:
+            pass
+        fh.close()
+
+
 def load_checkpoint(repo: str, commit_hash: str) -> dict:
     if commit_hash == "unknown":
         return {}
@@ -143,7 +172,7 @@ def save_checkpoint(repo: str, commit_hash: str, data: dict) -> None:
     data["commit"] = commit_hash
     data["runmark_digest"] = compute_runmark_digest()
     data["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    tmp = path.with_suffix(".tmp")
+    tmp = path.with_suffix(f".{os.getpid()}.tmp")
     try:
         tmp.write_text(json.dumps(data, indent=2), encoding="utf-8")
         tmp.replace(path)
@@ -212,12 +241,6 @@ def why_not(
         st_status = st.get("status", "pending")
         if st_status != "passed":
             return f"step '{step_id}' status is '{st_status}'"
-        curr_idx = STEP_IDS.index(step_id) if step_id in STEP_IDS else -1
-        if curr_idx != -1:
-            for earlier in STEP_IDS[:curr_idx]:
-                e_stat = steps.get(earlier, {}).get("status", "pending")
-                if e_stat != "passed":
-                    return f"prior step '{earlier}' is '{e_stat}'"
         return ""
 
     if cp.get("status") != "passed":
@@ -262,53 +285,52 @@ def cmd_step_begin(repo: str, commit_hash: str, args: argparse.Namespace) -> int
     """Determines whether step should run (exit 0) or be skipped as cached pass (exit 1)."""
     step_id = args.step_id
     desc = args.description or STEP_NAMES.get(step_id, step_id)
-    reason = why_not(repo, commit_hash, args=args, step_id=step_id)
     bar_prefix = format_step_bar(step_id)
 
-    if is_reset_requested(args.reset):
-        # Clear checkpoint
-        cp_path = checkpoint_file_path(repo, commit_hash)
-        if cp_path.is_file():
-            try:
-                cp_path.unlink()
-            except OSError:
-                pass
-        cp = {}
-    else:
-        cp = load_checkpoint(repo, commit_hash)
+    with checkpoint_lock(repo, commit_hash):
+        reason = why_not(repo, commit_hash, args=args, step_id=step_id)
+        if is_reset_requested(args.reset) and (args.reset or step_id == STEP_IDS[0]):
+            cp_path = checkpoint_file_path(repo, commit_hash)
+            if cp_path.is_file():
+                try:
+                    cp_path.unlink()
+                except OSError:
+                    pass
+            cp = {}
+        else:
+            cp = load_checkpoint(repo, commit_hash)
 
-    resume_from = get_resume_from(args.resume_from)
-    steps = cp.get("steps", {})
+        resume_from = get_resume_from(args.resume_from)
+        steps = cp.get("steps", {})
 
-    # If an explicit resume_from is active
-    if resume_from:
-        target_idx = STEP_IDS.index(resume_from)
-        curr_idx = STEP_IDS.index(step_id) if step_id in STEP_IDS else 0
-        if curr_idx < target_idx:
-            # Step is before the forced resume target
+        # If an explicit resume_from is active
+        if resume_from:
+            target_idx = STEP_IDS.index(resume_from)
+            curr_idx = STEP_IDS.index(step_id) if step_id in STEP_IDS else 0
+            if curr_idx < target_idx:
+                dur = steps.get(step_id, {}).get("duration_s")
+                dur_str = f" ({dur:.1f}s)" if dur is not None else ""
+                print(f"  {bar_prefix}✓ [cached pass] {desc}{dur_str}", flush=True)
+                return 1  # SKIP
+            cp["current_step"] = step_id
+            save_checkpoint(repo, commit_hash, cp)
+            echo_header(repo, desc, reason, step_id=step_id)
+            return 0  # RUN
+
+        # Standard auto-continue behavior:
+        if not reason:
             dur = steps.get(step_id, {}).get("duration_s")
             dur_str = f" ({dur:.1f}s)" if dur is not None else ""
             print(f"  {bar_prefix}✓ [cached pass] {desc}{dur_str}", flush=True)
             return 1  # SKIP
-        # At or past target: run
+
+        # Must run step
         cp["current_step"] = step_id
+        if cp.get("status") != "failed":
+            cp["status"] = "in_progress"
         save_checkpoint(repo, commit_hash, cp)
         echo_header(repo, desc, reason, step_id=step_id)
         return 0  # RUN
-
-    # Standard auto-continue behavior:
-    if not reason:
-        dur = steps.get(step_id, {}).get("duration_s")
-        dur_str = f" ({dur:.1f}s)" if dur is not None else ""
-        print(f"  {bar_prefix}✓ [cached pass] {desc}{dur_str}", flush=True)
-        return 1  # SKIP
-
-    # Must run step
-    cp["current_step"] = step_id
-    cp["status"] = "in_progress"
-    save_checkpoint(repo, commit_hash, cp)
-    echo_header(repo, desc, reason, step_id=step_id)
-    return 0  # RUN
 
 
 def echo_header(repo: str, desc: str, reason: str = "", step_id: str = "") -> None:
@@ -320,23 +342,30 @@ def echo_header(repo: str, desc: str, reason: str = "", step_id: str = "") -> No
 def cmd_step_pass(repo: str, commit_hash: str, args: argparse.Namespace) -> int:
     step_id = args.step_id
     dur = float(args.duration or 0.0)
-    cp = load_checkpoint(repo, commit_hash)
-    if "steps" not in cp:
-        cp["steps"] = {}
-    cp["steps"][step_id] = {
-        "status": "passed",
-        "exit_code": 0,
-        "duration_s": dur,
-        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-    }
-    cp["current_step"] = None
+    with checkpoint_lock(repo, commit_hash):
+        cp = load_checkpoint(repo, commit_hash)
+        if "steps" not in cp:
+            cp["steps"] = {}
+        cp["steps"][step_id] = {
+            "status": "passed",
+            "exit_code": 0,
+            "duration_s": dur,
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        }
+        cp["current_step"] = None
 
-    # Check if all steps in registered set have now passed
-    all_done = all(cp["steps"].get(s, {}).get("status") == "passed" for s in STEP_IDS)
-    if all_done:
-        cp["status"] = "passed"
-        cp["last_failed_step"] = None
-    save_checkpoint(repo, commit_hash, cp)
+        all_done = all(cp["steps"].get(s, {}).get("status") == "passed" for s in STEP_IDS)
+        any_failed = any(cp["steps"].get(s, {}).get("status") == "failed" for s in STEP_IDS)
+        if all_done:
+            cp["status"] = "passed"
+            cp["last_failed_step"] = None
+        elif any_failed:
+            cp["status"] = "failed"
+            cp["last_failed_step"] = next(
+                (s for s in STEP_IDS if cp["steps"].get(s, {}).get("status") == "failed"),
+                cp.get("last_failed_step"),
+            )
+        save_checkpoint(repo, commit_hash, cp)
     bar_prefix = format_step_bar(step_id)
     print(f"  {bar_prefix}✅ [{repo}] {step_id} passed ({dur:.1f}s)", flush=True)
     return 0
@@ -345,19 +374,23 @@ def cmd_step_pass(repo: str, commit_hash: str, args: argparse.Namespace) -> int:
 def cmd_step_fail(repo: str, commit_hash: str, args: argparse.Namespace) -> int:
     step_id = args.step_id
     code = int(args.exit_code or 1)
-    cp = load_checkpoint(repo, commit_hash)
-    if "steps" not in cp:
-        cp["steps"] = {}
-    cp["steps"][step_id] = {
-        "status": "failed",
-        "exit_code": code,
-        "duration_s": float(args.duration or 0.0),
-        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-    }
-    cp["current_step"] = None
-    cp["status"] = "failed"
-    cp["last_failed_step"] = step_id
-    save_checkpoint(repo, commit_hash, cp)
+    with checkpoint_lock(repo, commit_hash):
+        cp = load_checkpoint(repo, commit_hash)
+        if "steps" not in cp:
+            cp["steps"] = {}
+        cp["steps"][step_id] = {
+            "status": "failed",
+            "exit_code": code,
+            "duration_s": float(args.duration or 0.0),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        }
+        cp["current_step"] = None
+        cp["status"] = "failed"
+        cp["last_failed_step"] = next(
+            (s for s in STEP_IDS if cp["steps"].get(s, {}).get("status") == "failed"),
+            step_id,
+        )
+        save_checkpoint(repo, commit_hash, cp)
 
     desc = STEP_NAMES.get(step_id, step_id)
     print("\n" + "─" * 74, file=sys.stderr)
@@ -366,6 +399,84 @@ def cmd_step_fail(repo: str, commit_hash: str, args: argparse.Namespace) -> int:
     print(f"   · To restart from step 1: PREPUSH_RESET=1 git push (or 'just prepush-reset')", file=sys.stderr)
     print(f"   · To resume from any step: PREPUSH_FROM=<step_id> git push", file=sys.stderr)
     print("─" * 74 + "\n", file=sys.stderr)
+    return 0
+
+
+def discover_typecheck_apps(web_root: Path) -> list[str]:
+    """Read the ordered list of apps gated by `scripts.typecheck` in `wom7web/package.json`."""
+    pkg = web_root / "package.json"
+    data = json.loads(pkg.read_text(encoding="utf-8"))
+    script = data.get("scripts", {}).get("typecheck", "")
+    apps = re.findall(r"--filter\s+(\S+)\s+exec\s+astro\s+check", script)
+    if not apps:
+        raise ValueError(f"no `--filter <app> exec astro check` entries found in {pkg}")
+    return apps
+
+
+def cmd_run_typecheck(args: argparse.Namespace) -> int:
+    """Run `astro check` across all gated apps with bounded concurrency (3-4), deterministic buffered output (T477 AC2)."""
+    if getattr(args, "web_root", None):
+        web_root = Path(args.web_root).resolve()
+    else:
+        cwd = Path.cwd().resolve()
+        web_root = (cwd / "wom7web") if (cwd / "wom7web" / "package.json").is_file() else cwd
+    concurrency = int(
+        getattr(args, "concurrency", None)
+        or os.environ.get("W0M_TYPECHECK_CONCURRENCY", "3")
+    )
+    concurrency = max(1, min(concurrency, 4))
+    try:
+        apps = discover_typecheck_apps(web_root)
+    except Exception as exc:
+        print(f"❌ typecheck: could not read gated apps from {web_root / 'package.json'}: {exc}", file=sys.stderr)
+        return 2
+
+    cmd_template = os.environ.get("W0M_TYPECHECK_CMD_TEMPLATE", "")
+
+    def _check_one(app: str) -> tuple[str, int, float, str]:
+        t0 = time.monotonic()
+        env = {
+            **os.environ,
+            "NODE_OPTIONS": os.environ.get("NODE_OPTIONS", "--max-old-space-size=8192"),
+            "ASTRO_TELEMETRY_DISABLED": "1",
+            "DO_NOT_TRACK": "1",
+        }
+        if cmd_template:
+            cmd = ["sh", "-c", cmd_template.format(app=app)]
+        else:
+            cmd = ["pnpm", "--filter", app, "exec", "astro", "check"]
+        proc = subprocess.run(cmd, cwd=web_root, capture_output=True, text=True, env=env)
+        dur = time.monotonic() - t0
+        return app, proc.returncode, dur, (proc.stdout or "") + (proc.stderr or "")
+
+    t_start = time.monotonic()
+    results_by_app: dict[str, tuple[int, float, str]] = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as pool:
+        future_map = {pool.submit(_check_one, app): app for app in apps}
+        for fut in concurrent.futures.as_completed(future_map):
+            app_name, rc, dur, out = fut.result()
+            results_by_app[app_name] = (rc, dur, out)
+
+    failed_apps: list[str] = []
+    for app in apps:
+        rc, dur, out = results_by_app[app]
+        mark = "✅" if rc == 0 else "❌"
+        print(f"  {mark} [typecheck:{app}] ({dur:.1f}s)", flush=True)
+        if out.strip():
+            print(out.rstrip(), flush=True)
+        if rc != 0:
+            failed_apps.append(app)
+
+    total_dur = time.monotonic() - t_start
+    if failed_apps:
+        print(
+            f"❌ typecheck failed ({len(failed_apps)}/{len(apps)} app(s) failed in {total_dur:.1f}s, "
+            f"concurrency={concurrency}): {', '.join(failed_apps)}",
+            file=sys.stderr,
+            flush=True,
+        )
+        return 1
+    print(f"  ✅ typecheck: all {len(apps)} apps passed in {total_dur:.1f}s (concurrency={concurrency})", flush=True)
     return 0
 
 
@@ -454,6 +565,11 @@ def main() -> int:
     p_fail.add_argument("--exit-code", type=int, default=1, help="Process exit code")
     p_fail.add_argument("--duration", type=float, default=0.0, help="Step duration in seconds")
 
+    # run-typecheck (T477 AC2)
+    p_tc = subparsers.add_parser("run-typecheck", parents=[common], help="Run astro check across gated apps with bounded concurrency")
+    p_tc.add_argument("--concurrency", type=int, default=3, help="Max concurrent astro check processes (1-4, default 3)")
+    p_tc.add_argument("--web-root", default=None, help="Path to wom7web root (defaults to cwd)")
+
     # status
     subparsers.add_parser("status", parents=[common], help="Print checkpoint status for current commit")
 
@@ -465,6 +581,9 @@ def main() -> int:
     args.repo = getattr(args, "repo", None)
     args.resume_from = getattr(args, "resume_from", None)
     args.reset = getattr(args, "reset", False)
+
+    if args.command == "run-typecheck":
+        return cmd_run_typecheck(args)
 
     commit_hash = resolve_commit(args.commit)
     repo = args.repo or resolve_repo()
@@ -488,3 +607,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

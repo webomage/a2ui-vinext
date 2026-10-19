@@ -1,0 +1,193 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://webomage.com/schemas/hygiene-policy.schema.json",
+  "title": "w0m repository hygiene policy (project/policies/hygiene-policy.json)",
+  "description": "Declarative contract for `just docs-check`, `just license-check`, and `just secrets-check` (T135 / T301 AC3). Declares the mandatory repo set, required human-facing docs and README sections, first-party and vendored license rules, and forbidden secret-handling patterns.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "project",
+    "repos",
+    "docs",
+    "licenses",
+    "secrets"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "_comment": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repos": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "role"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "role": { "type": "string", "minLength": 5 }
+        }
+      }
+    },
+    "docs": {
+      "type": "object",
+      "required": ["required_files", "readme_sections"],
+      "additionalProperties": false,
+      "properties": {
+        "_comment": { "type": "string" },
+        "required_files": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "must_match": { "type": "string", "minLength": 1 },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "readme_sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "any_heading_matching"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "any_heading_matching": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "note": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "licenses": {
+      "type": "object",
+      "required": [
+        "first_party_license",
+        "require_private",
+        "vendored_markers",
+        "vendored_notice_files",
+        "vendored_trees",
+        "vendored_exempt"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "_comment": { "type": "string" },
+        "first_party_license": { "type": "string", "const": "UNLICENSED" },
+        "require_private": { "type": "boolean", "const": true },
+        "vendored_markers": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "vendored_notice_files": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "vendored_trees": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "anyOf": [
+              { "required": ["children_of", "note"] },
+              { "required": ["path", "note"] }
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "children_of": { "type": "string", "minLength": 1 },
+              "path": { "type": "string", "minLength": 1 },
+              "provenance": { "type": "string", "minLength": 1 },
+              "first_party_provider": { "type": "string", "minLength": 1 },
+              "note": { "type": "string", "minLength": 10 }
+            }
+          }
+        },
+        "vendored_exempt": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "secrets": {
+      "type": "object",
+      "required": [
+        "manager",
+        "forbidden_patterns",
+        "scan_globs",
+        "skills_corpus"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "_comment": { "type": "string" },
+        "manager": { "type": "string", "const": "infisical" },
+        "forbidden_patterns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "regex", "note"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "regex": { "type": "string", "minLength": 1 },
+              "match_in_string": { "type": "boolean" },
+              "note": { "type": "string", "minLength": 10 }
+            }
+          }
+        },
+        "scan_globs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "_scan_globs_note": { "type": "string" },
+        "skills_corpus": {
+          "type": "object",
+          "required": [
+            "root",
+            "unit",
+            "rule",
+            "secret_signal_regex",
+            "prose_mention_regex",
+            "manager_signal_regex"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "_comment": { "type": "string" },
+            "root": { "type": "string", "minLength": 1 },
+            "unit": { "type": "string", "minLength": 1 },
+            "rule": { "type": "string", "minLength": 10 },
+            "_tier_note": { "type": "string" },
+            "_denominator_note": { "type": "string" },
+            "secret_signal_regex": { "type": "string", "minLength": 1 },
+            "prose_mention_regex": { "type": "string", "minLength": 1 },
+            "manager_signal_regex": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

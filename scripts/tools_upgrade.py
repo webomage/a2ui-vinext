@@ -64,8 +64,17 @@ RANK = {"patch": 0, "minor": 1, "major": 2}
 ALLOW_RANK = {"none": -1, "patch": 0, "minor": 1, "major": 2}  # max bump a tool's `auto` permits
 
 
+def smoke_argv(smoke: str) -> list[str]:
+    if any(tok in smoke for tok in ("&&", "|", ">", "'", '"', "$")):
+        return ["sh", "-c", smoke]
+    return smoke.split()
+
+
 def run(cmd: list[str], cwd: Path | None = None, timeout: int = 300):
-    return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)
+    try:
+        return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return subprocess.CompletedProcess(cmd, 1, "", str(exc))
 
 
 def is_agent_tree(root: Path) -> bool:
@@ -128,7 +137,7 @@ def promote(policy: dict, apply: bool) -> int:
             blocked.append(f"{name}: {frm} → {to} has NO smoke declared — verify by hand")
         else:
             print(f"  → {name}: {frm} → {to}, smoking `{spec['smoke']}`...")
-            sr = run(spec["smoke"].split(), cwd=WEB, timeout=180)
+            sr = run(smoke_argv(spec["smoke"]), cwd=WEB, timeout=180)
             if sr.returncode != 0:
                 blocked.append(f"{name}: smoke FAILED for {to} — {(sr.stderr or sr.stdout).strip()[-160:]}")
             else:
@@ -194,7 +203,7 @@ def reconcile(tools: dict, policy: dict, apply: bool) -> tuple[list[str], list[s
             blocked.append(f"{name}: {kg} → {cur} has NO smoke declared — verify by hand")
             continue
         print(f"  → {name}: {kg} → {cur}, smoking `{smoke}`...")
-        sr = run(smoke.split(), cwd=WEB, timeout=180)
+        sr = run(smoke_argv(smoke), cwd=WEB, timeout=180)
         if sr.returncode != 0:
             blocked.append(f"{name}: smoke FAILED for {cur} — {(sr.stderr or sr.stdout).strip()[-160:]}")
             continue
@@ -338,7 +347,7 @@ def main() -> int:
             print(f"    · {src} returned {up.returncode} but version advanced to {new} (likely a link/notice warning) — continuing to smoke")
         smoke = spec.get("smoke")
         if smoke:
-            sr = run(smoke.split(), cwd=WEB, timeout=180)
+            sr = run(smoke_argv(smoke), cwd=WEB, timeout=180)
             if sr.returncode != 0:
                 print(f"    ✗ smoke FAILED (`{smoke}`) — NOT proposing a known_good bump; review/rollback:\n{(sr.stderr or sr.stdout)[-400:]}")
                 failed.append(name)

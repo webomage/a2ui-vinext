@@ -3,7 +3,7 @@
   "tools": {
     "ast-grep": {
       "min": "0.38.0",
-      "known_good": "0.45.3",
+      "known_good": "0.51.0",
       "required": false,
       "source": "brew",
       "auto": "minor",
@@ -62,7 +62,7 @@
     },
     "gauge": {
       "min": "1.6.0",
-      "known_good": "1.6.31",
+      "known_good": "1.6.40",
       "required": false,
       "source": "brew",
       "auto": "none",
@@ -116,7 +116,7 @@
     },
     "infisical": {
       "min": "0.40.0",
-      "known_good": "0.43.138",
+      "known_good": "0.44.1",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -143,7 +143,7 @@
     },
     "mypy": {
       "min": "1.15.0",
-      "known_good": "1.15.0",
+      "known_good": "2.4.0",
       "required": false,
       "source": "pyenv",
       "auto": "minor",
@@ -169,7 +169,7 @@
     },
     "osv-scanner": {
       "min": "2.0.0",
-      "known_good": "2.6.0",
+      "known_good": "2.7.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -213,7 +213,7 @@
     },
     "semgrep": {
       "min": "1.100.0",
-      "known_good": "1.179.0",
+      "known_good": "1.181.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -258,7 +258,7 @@
     },
     "uv": {
       "min": "0.5.0",
-      "known_good": "0.10.7",
+      "known_good": "0.13.1",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -276,7 +276,7 @@
     },
     "openspec": {
       "min": "1.11.0",
-      "known_good": "1.12.0",
+      "known_good": "1.14.3",
       "required": false,
       "source": "pnpm",
       "auto": "none",

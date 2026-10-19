@@ -299,6 +299,17 @@ class Structure(unittest.TestCase):
         jf = (REPO / "wom7api" / "justfile").read_text()
         self.assertRegex(jf, rf"(?m)^{entry['recipe']}:\n    @python3 \.\./scripts/tests/test_tools_upgrade\.py")
 
+    def test_compound_shell_smoke_uses_sh_c_and_missing_binary_returns_failure_without_crashing(self):
+        """supabase's smoke starts with `cd ../wom7api && ...`; splitting on spaces raises FileNotFoundError('cd') and aborts before proposals are saved."""
+        self.assertEqual(tu.smoke_argv("ast-grep --version"), ["ast-grep", "--version"])
+        self.assertEqual(
+            tu.smoke_argv("cd ../wom7api && infisical run --env=beta --silent -- sh -c 'true'"),
+            ["sh", "-c", "cd ../wom7api && infisical run --env=beta --silent -- sh -c 'true'"],
+        )
+        res = tu.run(["__no_such_binary_t546__"])
+        self.assertNotEqual(res.returncode, 0)
+        self.assertIn("__no_such_binary_t546__", res.stderr)
+
 
 class PendingIsVisible(unittest.TestCase):
     def test_the_full_check_names_pending_proposals_and_how_to_promote_them(self):
