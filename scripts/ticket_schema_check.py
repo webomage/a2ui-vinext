@@ -416,6 +416,11 @@ def check(path: Path, required: list[str]) -> tuple[list[str], list[str], dict]:
         if VALID_MILESTONES and ms not in VALID_MILESTONES:
             errors.append(f"milestone `{ms}` is not declared in .w0m/sdlc.json -> milestones {sorted(VALID_MILESTONES)}")
 
+    # ── agent_id (T564) ────────────────────────────────────────────────────────
+    aid = _unq(fm.get("agent_id", ""))
+    if aid and not re.match(r"^[a-z0-9][a-z0-9_-]{0,24}:[a-z0-9][a-z0-9_-]{0,39}$", aid):
+        errors.append(f"agent_id `{aid}` does not match `<harness>:<handle>` pattern (e.g. `agy:ant-ci`)")
+
     # ── spec points at a file that exists ──────────────────────────────────────────────
     sp = _unq(fm.get("spec", ""))
     if sp and not ((WEB / sp).exists() or (ROOT / sp).exists()):

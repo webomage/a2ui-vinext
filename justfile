@@ -791,6 +791,28 @@ agent-tree-remove name *args:
 agent-tree-test:
     @python3 -m pytest wom7web/project/scripts/tests/test_agent_tree.py -q -p no:cacheprovider
 
+# T564 — virtual agent identity (`agent_id`) and cross-worktree ticket claim/tagging system.
+agent-id *args:
+    @python3 wom7web/project/scripts/agent_identity.py whoami {{ args }}
+
+agent-id-set agent_id *args:
+    @python3 wom7web/project/scripts/agent_identity.py set {{ agent_id }} {{ args }}
+
+ticket-claim ticket *args:
+    @python3 wom7web/project/scripts/agent_identity.py claim {{ ticket }} {{ args }}
+
+ticket-release ticket *args:
+    @python3 wom7web/project/scripts/agent_identity.py release {{ ticket }} {{ args }}
+
+ticket-tag ticket *args:
+    @python3 wom7web/project/scripts/agent_identity.py tag {{ ticket }} {{ args }}
+
+agent-claims *args:
+    @python3 wom7web/project/scripts/agent_identity.py claims {{ args }}
+
+agent-identity-test:
+    @python3 -m pytest wom7web/project/scripts/tests/test_agent_identity.py -q -p no:cacheprovider
+
 # T481 — Persistent isolated STABLE and CONFIRMED worktrees: full local regression runs in stable, stable-promote advances confirmed
 stable-sync *args:
     @python3 wom7web/project/scripts/release.py stable-sync {{ args }}

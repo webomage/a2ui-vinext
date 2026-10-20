@@ -269,6 +269,7 @@ def load(today: date | None = None) -> list[dict]:
             "epic": (fm.get("epic", "") or "").strip('"'),
             "area": fm.get("area", ""),
             "queue": fm.get("queue", ""),
+            "agent_id": (fm.get("agent_id", "") or "").strip('"'),
             "tags": [t for t in re.findall(r"[\w-]+", fm.get("tags", "")) if t],
             "created": created,
             "rowless": rowless,
@@ -350,9 +351,67 @@ def rank_sdlc(tickets: list[dict], n: int, priority: str | None = None) -> list[
     return sorted(out, key=lambda t: (-t["sdlc_score"], -t["ac_pct"], num(t["id"])))[:n]
 
 
+def apply_cross_tree_radar(
+    tickets: list[dict],
+    *,
+    include_claimed: bool = False,
+    agent_filter: str | None = None,
+    work_root: Path | None = None,
+    registry_path: Path | None = None,
+) -> tuple[list[dict], list[dict], str]:
+    """Scan sibling `~/.w0m/work/*` trees + registry for virtual agent claims/completions (T564 AC4)."""
+    web_scripts = WEB_ROOT / "project" / "scripts"
+    if str(web_scripts) not in sys.path:
+        sys.path.insert(0, str(web_scripts))
+    try:
+        import agent_identity as ai
+    except ImportError:
+        return tickets, [], "agent:main"
+
+    my_agent = ai.resolve_agent_id(workspace_root=WORKSPACE_ROOT, work_root=work_root)
+    claims = ai.scan_cross_tree_claims(
+        workspace_root=WORKSPACE_ROOT,
+        work_root=work_root,
+        registry_path=registry_path,
+    )
+    target_agent = ai.normalize_virtual_id(agent_filter) if agent_filter else None
+    target_tag = ai.agent_id_to_tag(target_agent) if target_agent else None
+
+    excluded: list[dict] = []
+    out: list[dict] = []
+    for t in tickets:
+        row = dict(t)
+        c = claims.get(row["id"])
+        if c:
+            row["virtual_claim"] = c
+            if not row.get("agent_id") and c.get("agent_id"):
+                row["agent_id"] = c["agent_id"]
+        if target_agent:
+            if row.get("agent_id") != target_agent and target_tag not in row.get("tags", []):
+                continue
+        elif row["open"] and c and not include_claimed:
+            c_status = c.get("status", "")
+            c_agent = c.get("agent_id", "")
+            # Exclude if already completed in a sibling tree, or actively owned by another virtual agent
+            if c_status in DONE or (c_agent and c_agent != my_agent and c_status in ("in-progress", "claimed")):
+                row["cross_tree_excluded"] = True
+                excluded.append({
+                    "id": row["id"],
+                    "agent_id": c_agent,
+                    "status": c_status,
+                    "source": c.get("source", ""),
+                    "title": row["title"],
+                })
+        out.append(row)
+    return out, excluded, my_agent
+
+
 def rank(tickets: list[dict], n: int, priority: str | None = None,
-         status: str | None = None, include_blocked: bool = False) -> list[dict]:
+         status: str | None = None, include_blocked: bool = False,
+         exclude_cross_tree: bool = False) -> list[dict]:
     pool = [t for t in tickets if t["open"]]
+    if exclude_cross_tree:
+        pool = [t for t in pool if not t.get("cross_tree_excluded")]
     if priority:
         pool = [t for t in pool if t["priority"].upper() == priority.upper()]
     if status:
@@ -865,6 +924,9 @@ def main() -> int:
     ap.add_argument("--tag", help="filter or focus plan on tickets with a specific tag")
     ap.add_argument("--plan", help="named plan from `.w0m/sdlc.json -> plans`")
     ap.add_argument("--ticket", help="target ticket ID for dependency tree inspection (used with `tree` mode)")
+    ap.add_argument("--agent", help="filter to tickets owned/tagged by a virtual agent ID (e.g. 'agy:ant-ci')")
+    ap.add_argument("--include-claimed", action="store_true",
+                    help="do not exclude tickets claimed or completed in sibling agent trees from HOT")
     args = ap.parse_args()
 
     tickets = load()
@@ -876,6 +938,15 @@ def main() -> int:
               "empty set (has the directory or frontmatter format moved?)", file=sys.stderr)
         return 1
 
+    excluded_claims: list[dict] = []
+    my_agent = "agent:main"
+    if args.mode in ("board", "hot", "list", "next", "wip") or args.agent:
+        tickets, excluded_claims, my_agent = apply_cross_tree_radar(
+            tickets,
+            include_claimed=args.include_claimed,
+            agent_filter=args.agent,
+        )
+
     if args.mode == "epic" and not args.epic:
         args.epic = "current"
 
@@ -884,7 +955,7 @@ def main() -> int:
         active_plan = load_plan(epic=args.epic, tickets_filter=args.tickets, tag=args.tag, plan_name=args.plan, tickets=tickets)
 
     if args.mode == "next":
-        return cmd_next(tickets)
+        return cmd_next(tickets, exclude_cross_tree=not args.include_claimed)
 
     if args.mode == "wip":
         return cmd_wip(tickets)
@@ -941,7 +1012,7 @@ def main() -> int:
     elif args.mode in ("sdlc", "sdlc-md", "board"):
         rows = rank_sdlc(tickets, args.n, args.priority)
     else:
-        rows = rank(tickets, args.n, args.priority, args.status)
+        rows = rank(tickets, args.n, args.priority, args.status, exclude_cross_tree=not args.include_claimed)
 
     if args.json:
         print(json.dumps(rows, indent=2))
@@ -953,9 +1024,12 @@ def main() -> int:
         emit(markdown_sdlc(rows))
         return 0
     if args.mode == "board":
-        hot_rows = rank(tickets, args.n, args.priority, args.status)
+        hot_rows = rank(tickets, args.n, args.priority, args.status, exclude_cross_tree=not args.include_claimed)
         open_n = len([t for t in tickets if t["open"]])
         print(f"▶ HOT — what can be STARTED — top {len(hot_rows)} of {open_n} open")
+        if excluded_claims:
+            items = ", ".join(f"{c['id']} ({c['status']} by {c['agent_id']})" for c in excluded_claims[:8])
+            print(f"  ℹ️  Virtual Agent Radar (me={my_agent}): excluded {len(excluded_claims)} ticket(s) owned/done in sibling trees: {items} (--include-claimed to show)")
         emit(markdown_hot(hot_rows))
 
         measurable = len([t for t in tickets if t["open"] and ac_progress(t["id"])[1] > 0])
@@ -1007,6 +1081,9 @@ def main() -> int:
     if args.status:
         label += f" · {args.status}"
     print(f"▶ {label} — top {len(rows)} of {len([t for t in tickets if t['open']])} open")
+    if excluded_claims:
+        items = ", ".join(f"{c['id']} ({c['status']} by {c['agent_id']})" for c in excluded_claims[:8])
+        print(f"  ℹ️  Virtual Agent Radar (me={my_agent}): excluded {len(excluded_claims)} ticket(s) owned/done in sibling trees: {items} (--include-claimed to show)")
     # `hot` renders through the SAME linked markdown as `sdlc`. It used to fall through to
     # fmt_table, whose bare `id` column dropped both the ticket-file link and the GitHub issue —
     # so the two halves of one report disagreed about whether a ticket is reachable, and the
@@ -1751,10 +1828,10 @@ def cmd_area(tickets: list[dict], area_filter: str | None = None) -> int:
     return 0
 
 
-def cmd_next(tickets: list[dict]) -> int:
+def cmd_next(tickets: list[dict], exclude_cross_tree: bool = True) -> int:
     """Show the single most actionable next ticket and its direct pickup command."""
     openq = [t for t in tickets if t["open"]]
-    hot_rows = rank(tickets, 10)
+    hot_rows = rank(tickets, 10, exclude_cross_tree=exclude_cross_tree)
     unblocked = [t for t in hot_rows if t["status"] not in ("blocked", "paused")]
     if not unblocked:
         print("\u2139\ufe0f  no unblocked tickets in the hot ranking.")

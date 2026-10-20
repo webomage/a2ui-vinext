@@ -233,6 +233,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T564](.tasks/T564.md) | **P1** | **Virtual agent identity (agent_id) & cross-worktree ticket claim and tagging system** | tooling, web | — | ✅ **done** |
 | [T563](.tasks/T563.md) | **P1** | 🆕 **Build multi-platform Outreach & Communications Hub in job.webomage.com with AI drafting and follow-up pipeline** | web, api | — | ✅ **done** |
 | [T562](.tasks/T562.md) | **P1** | 🆕 **Extend wom7ext browser extension with Universal Page & Selection Clipper and multi-platform freelancer/outreach specs** | ext, api | — | ✅ **done** |
 | [T561](.tasks/T561.md) | **P1** | 🆕 **Build multi-platform Outreach & Clipping Vault schema, source_links integration, and outreach-clip-ingest Edge Function** | api, web | — | ✅ **done** |

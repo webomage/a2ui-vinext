@@ -58,6 +58,7 @@ spec: ""                # e.g. "openspec/changes/2026-07-12-multi-hat"  (blank i
 # OPTIONAL x_hot_score: 0.0       # derived by tasks_query.py / tickets_frontmatter_sync.py
 # OPTIONAL x_blocked_by: []       # derived by tasks_query.py / tickets_frontmatter_sync.py
 # OPTIONAL x_synced: "2026-09-18" # synced by scripts/sync_github.py
+# OPTIONAL agent_id: ""           # virtual agent id (<harness>:<handle>, e.g. agy:ant-ci, claude:main) — T564
 gh_issue:               # filled by scripts/sync_github.py
 tags: []                # e.g. [ai, security]
                         # OPTIONAL namespaced form (T353): `_`-delimited, most-general segment
