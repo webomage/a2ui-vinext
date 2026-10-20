@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 227 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **227** are
+> ⚠️ **0 of 224 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **224** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `89355149` |
-| `wom7api` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `455e3f2` |
+| `wom7web` | `agent/agy-jobs-cp` | **11** | **n/a — NO UPSTREAM** | `89355149` |
+| `wom7api` | `agent/agy-jobs-cp` | **3** | **n/a — NO UPSTREAM** | `455e3f2` |
 | `wom7func` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `180faa5` |
 | `wom7skills` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
-| `wom7ext` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `57b3e6b` |
+| `wom7ext` | `agent/agy-jobs-cp` | **18** | **n/a — NO UPSTREAM** | `57b3e6b` |
 | `wom7sec` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `be6ae19` |
 | `wom7mlx/wom7mlx` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 227 open · 563 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 224 open · 563 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T213","T510","T29","T43","T63","T214","T279","T336","T337","T365"],"repos":{"wom7api":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"455e3f2","unpushed":null},"wom7ext":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"180faa5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"be6ae19","unpushed":null},"wom7skills":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"89355149","unpushed":null}},"tickets":{"open":227,"rowless_open":[],"rows":563}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T213","T510","T29","T43","T63","T214","T279","T336","T337","T365"],"repos":{"wom7api":{"branch":"agent/agy-jobs-cp","dirty":3,"has_upstream":true,"head":"455e3f2","unpushed":null},"wom7ext":{"branch":"agent/agy-jobs-cp","dirty":18,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"180faa5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"be6ae19","unpushed":null},"wom7skills":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/agy-jobs-cp","dirty":11,"has_upstream":true,"head":"89355149","unpushed":null}},"tickets":{"open":224,"rowless_open":[],"rows":563}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -134,7 +134,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T510** — Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card
   - **2026-10-19** (today): (U4.2 + U5.1 complete — 13/14 ACs done; only AC7 post-deploy live proof remaining)
 
-#### Completed today (19):
+#### Completed today (22):
 
 - **T3** — Shared client/team CP (Done (3/3 ACs verified, moved to client-alfa). Wired orgProposals(sb, orgId) into orgDashboard() in apps/cp/src/lib/client/org-scope.ts, passed proposals from apps/cp/src/pages/o/[org]/index.astro to ClientDashboard.svelte, and rendered the Requests & Proposals stat card and Proposals & Service Requests section (data-tour="cp-portal-proposals"). Verified by org-scope.test.ts (27/27) and shared-pages.test.ts (34/34).)
 - **T5** — Unified contracts registry (Done (3/3 ACs verified, moved to client-alfa). Added apps/cp/src/lib/contracts/unified-registry.ts merging public.contracts (direct / internal), public.upwork_contracts_view (queried via sessionClient so public.current_profile_id() resolves), and public.source_links annotations. Updated o/[org]/money/contracts/index.astro and ContractManager.svelte (including @webomage/ui Button.Root conversion). Verified by unified-registry.test.ts (3/3) and shared-pages.test.ts (34/34).)
@@ -155,6 +155,9 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T546** — The scheduled tools upgrade proposes known_good bumps; only an agent-tree promotion writes them (T546 closed (4/4 ACs): fixed smoke.split() FileNotFoundError('cd') crash on compound shell smoke commands in scripts/tools_upgrade.py (smoke_argv() + OSError guard, 26/26 tools-upgrade-test green) and promoted 8 smoke-verified known_good bumps via just tools-promote --apply in agent tree ant-ci.)
 - **T558** — TypeSafe System One & Jev Image Processing: fast initial classification, two-stage skill suggestion, and multimodal image/box pipeline for w0m & Orca (Added native Cloudflare Workers AI providers clef-flash (@cf/cloudflare/clef-flash) and clef (@cf/cloudflare/clef) to PROVIDER_REGISTRY and SystemOneClient in wom7web/project/scripts/jev_system_one.py (automatic assets → images data URL mapping, Cloudflare {"result": ...} envelope unwrapping, get_score(), box guard, and just jev-image probe-clef), verified with 13/13 unit tests in test_jev_system_one.py and live probe against Cloudflare Workers AI.)
 - **T560** — Move Resume Studio, Upwork sync, proposals, messages, recruiting, and contract management to job.webomage.com with 301 cutovers in cp.webomage.com (Completed and verified (AgDR-0033).)
+- **T561** — Build multi-platform Outreach & Clipping Vault schema, source_links integration, and outreach-clip-ingest Edge Function (Done (AgDR-0033, Phase 2). Added wom7api/supabase/migrations/20261020010000_t561_outreach_clipping_vault.sql (verified on throwaway Postgres cluster via test_t561_outreach_vault.py + X39-outreach-vault-grants-and-rls in authz_probe_suite.py) and wom7api/supabase/functions/outreach-clip-ingest/{index.ts,handler.ts,handler.test.ts} (just deno-check 68 functions, just deno-test 352 passed). Ready for owner just db-migrate.)
+- **T562** — Extend wom7ext browser extension with Universal Page & Selection Clipper and multi-platform freelancer/outreach specs (Done (AgDR-0033, Phase 3). Added wom7ext/extension/src/content/clipper.ts, 10 declarative platform specs in wom7ext/extension/specs/, popup/context-menu actions in background.ts + popup.ts, and wom7ext/extension/scripts/clipper.test.ts (just typecheck, just lint-gate 0 warnings/0 errors, deno test 4 passed).)
+- **T563** — Build multi-platform Outreach & Communications Hub in job.webomage.com with AI drafting and follow-up pipeline (Done (AgDR-0033, Phase 4). Added /api/outreach/{clips,threads,messages,draft} in apps/cp + re-exports in apps/job (JOB_ME_APIS), built OutreachHub.svelte using @webomage/ui primitives (ds_conformance.py green), mounted on /me/outreach and /o/[org]/outreach in apps/job, and verified with outreach-hub.test.ts.)
 
 ## 3. Other open threads (in TASKS.md)
 

@@ -38,9 +38,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T563](.tasks/T563.md) | **P1** | 🆕 **Build multi-platform Outreach & Communications Hub in job.webomage.com with AI drafting and follow-up pipeline** | web, api | — | ⚪ **queued** |
-| [T562](.tasks/T562.md) | **P1** | 🆕 **Extend wom7ext browser extension with Universal Page & Selection Clipper and multi-platform freelancer/outreach specs** | ext, api | — | ⚪ **queued** |
-| [T561](.tasks/T561.md) | **P1** | 🆕 **Build multi-platform Outreach & Clipping Vault schema, source_links integration, and outreach-clip-ingest Edge Function** | api, web | — | ⚪ **queued** |
 | [T531](.tasks/T531.md) | **P1** | 🆕 **Per-agent workspace sets: parallel agents stop sharing one working tree, one index and one set of generated files** | tooling | — | ⚪ **queued** |
 | [T530](.tasks/T530.md) | **P1** | 🆕 **Org model S9: retire Axis-1 account classes and network.member, unify CP context switcher on engagement hats and root admin** | web, api | — | ⚪ **queued** |
 | [T528](.tasks/T528.md) | **P1** | 🆕 **KYC personal half: KYC reads the member's contact and identity records, and CURP and RFC leave gamification.compliance_profiles** | web, api | — | ⚪ **queued** |
@@ -255,6 +252,9 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T563](.tasks/T563.md) | **P1** | 🆕 **Build multi-platform Outreach & Communications Hub in job.webomage.com with AI drafting and follow-up pipeline** | web, api | — | ✅ **done** |
+| [T562](.tasks/T562.md) | **P1** | 🆕 **Extend wom7ext browser extension with Universal Page & Selection Clipper and multi-platform freelancer/outreach specs** | ext, api | — | ✅ **done** |
+| [T561](.tasks/T561.md) | **P1** | 🆕 **Build multi-platform Outreach & Clipping Vault schema, source_links integration, and outreach-clip-ingest Edge Function** | api, web | — | ✅ **done** |
 | [T560](.tasks/T560.md) | **P0** | **Move Resume Studio, Upwork sync, proposals, messages, recruiting, and contract management to job.webomage.com with 301 cutovers in cp.webomage.com** | web, api | — | ✅ **done** |
 | [T559](.tasks/T559.md) | **P0** | **CP Upwork Full MCP/DB Sync & Advanced Messages/Proposals Explorer UI + Auth Redirect Loop Fix** | web, api | — | ✅ **done** |
 | [T558](.tasks/T558.md) | **P0** | **TypeSafe System One & Jev Image Processing: fast initial classification, two-stage skill suggestion, and multimodal image/box pipeline for w0m & Orca** | web, tooling, skills | — | ✅ **done** |
