@@ -211,7 +211,7 @@
       "workflow": "job-aggregator",
       "markets": ["us", "gb", "ca"],
       "docs": "https://developer.adzuna.com/",
-      "note": "REST API search across US, UK, and Canada remote developer listings (T213). Configure ADZUNA_APP_ID and ADZUNA_APP_KEY in the Admin Panel (public.admin_secrets) or sync via Infisical."
+      "note": "REST API search across US, UK, and Canada remote developer listings (T213). Unowned bulk-imported literal retired and source paused by default (2026-10-19); designated owner when provisioned: aleksei@webomage.com via public.admin_secrets (/admin/connections) or Infisical beta."
     },
     {
       "key": "jooble",
@@ -223,7 +223,7 @@
       "workflow": "job-aggregator",
       "markets": ["global"],
       "docs": "https://jooble.org/api/about",
-      "note": "REST API job search aggregator for remote engineering roles (T213). Configure JOOBLE_API_KEY in the Admin Panel (public.admin_secrets) or sync via Infisical."
+      "note": "REST API job search aggregator for remote engineering roles (T213). Unowned bulk-imported literal retired and source paused by default (2026-10-19); designated owner when provisioned: aleksei@webomage.com via public.admin_secrets (/admin/connections) or Infisical beta."
     },
     {
       "key": "remoteok",
