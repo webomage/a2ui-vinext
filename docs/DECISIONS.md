@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**370 recorded decision(s)** — 33 structured (AgDR), 337 in place across 170 file(s).
+**371 recorded decision(s)** — 33 structured (AgDR), 338 in place across 171 file(s).
 
 ## Structured records (AgDR)
 
@@ -55,6 +55,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 
 | Date | Where | Decision |
 |---|---|---|
+| 2026-10-19 | [`.tasks/T213.md:114`](../.tasks/T213.md) | Verified 2026-10-19 (owner decision): Retired both unowned bulk-imported literals ( dcdad84 ) from active use and paused adzuna and jooble by default ( 20261020031000 t213 disable unowned job sources.sql + defaultEnabled in wom7api/src/workflows/job-aggregator |
 | 2026-10-19 | [`.tasks/T560.md:54`](../.tasks/T560.md) | 9 — Created and started ( AgDR-0033 , owner decisions D1–D5). Owner confirmed D2b ("let's move it to job as well"): both member-level ( /me/resume , /me/work , /me/contracts , /me/proposals , /me/messages ) and org-level commercial ( /o/[org]/money/{contracts, |
 | 2026-10-19 | [`.w0m/sdlc.json:630`](../.w0m/sdlc.json) | comment": "Set by just plan-set — Owner 2026-10-19: Client Alfa (§33, 23/23) and Hero Epic (§38, 10/10) are 100% done; advance current plan to Client Beta (§34). Stages are a projection of the tickets whose epic rolls up to ROADMAP §34; add exit / exit checks |
 | 2026-10-19 | [`.w0m/sdlc.json:633`](../.w0m/sdlc.json) | "reason": "Owner 2026-10-19: Client Alfa (§33, 23/23) and Hero Epic (§38, 10/10) are 100% done; advance current plan to Client Beta (§34)", |
@@ -72,8 +73,8 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-10-02 | [`.tasks/T539.md:57`](../.tasks/T539.md) | - Split from: [[T537]] (owner decision 2026-10-02). Supplies the live data for [[T533]] AC3 to AC5 for the owner's own account. |
 | 2026-10-01 | [`.tasks/T508.md:129`](../.tasks/T508.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): |
 | 2026-10-01 | [`.tasks/T509.md:186`](../.tasks/T509.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): |
-| 2026-10-01 | [`.tasks/T510.md:206`](../.tasks/T510.md) | are already in git history. DEFERRED (owner, 2026-10-01): wait until the estate is clean and its change tracing is stable. 18 files under private/resumes/ (and the static public set) are tracked, |
-| 2026-10-01 | [`.tasks/T510.md:227`](../.tasks/T510.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): |
+| 2026-10-01 | [`.tasks/T510.md:207`](../.tasks/T510.md) | are already in git history. DEFERRED (owner, 2026-10-01): wait until the estate is clean and its change tracing is stable. 18 files under private/resumes/ (and the static public set) are tracked, |
+| 2026-10-01 | [`.tasks/T510.md:228`](../.tasks/T510.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): |
 | 2026-10-01 | [`.tasks/T512.md:82`](../.tasks/T512.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 measure first whether a wom7web session sees the root's skills; Q2 run the aggregate |
 | 2026-10-01 | [`.tasks/T513.md:95`](../.tasks/T513.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 a right-hand drawer; Q2 the browser's built-in PDF viewer on the signed URL (still to be |
 | 2026-10-01 | [`.tasks/T514.md:94`](../.tasks/T514.md) | 6-10-01 — Owner decisions recorded (owner, 2026-09-30, "all other things look good with suggestions", in reply to the classified review of open questions): Q1 both sources, vCard first; Q2 deterministic extraction first, a model only for the |

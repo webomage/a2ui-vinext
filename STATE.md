@@ -15,16 +15,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T29](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
-| 2 | [T43](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 85 | Full-observability logging strategy 📄 live spec |
-| 3 | [T63](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
-| 4 | [T214](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 84 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
-| 5 | [T279](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 82 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
-| 6 | [T336](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 80 | Public free security audit lead magnet & client registration gate 📄 live spec |
-| 7 | [T337](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T337.md) | [#337](https://github.com/webomage/wom7board/issues/337) | P1 | queued | tools | 80 | Advanced code & infrastructure audit runner with ephemeral air-gapped sandb 📄 live spec |
-| 8 | [T365](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 79 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
-| 9 | [T374](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T374.md) | [#374](https://github.com/webomage/wom7board/issues/374) | P1 | queued | tools | 79 | Unified oMLX process management: multi-mode daemon/GUI/CLI detection, port  📄 live spec |
-| 10 | [T394](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T394.md) | [#394](https://github.com/webomage/wom7board/issues/394) | P1 | queued | tools | 79 | Interactive filtering, multi-dimensional aggregation, and client-delivery r 📄 live spec |
+| 1 | [T29](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 85 | Project delivery via agency GitHub 📄 live spec |
+| 2 | [T43](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 85 | Full-observability logging strategy 📄 live spec |
+| 3 | [T63](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T63.md) | [#63](https://github.com/webomage/wom7board/issues/63) | P1 | queued | product | 85 | Indeed & X-Team Integrations 📄 live spec |
+| 4 | [T214](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T214.md) | [#214](https://github.com/webomage/wom7board/issues/214) | P1 | queued | schemas | 84 | Universal System Standards & RFC Adherence — Single Source of Truth for Sch 📄 live spec |
+| 5 | [T279](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 82 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
+| 6 | [T336](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T336.md) | [#336](https://github.com/webomage/wom7board/issues/336) | P1 | queued | product | 80 | Public free security audit lead magnet & client registration gate 📄 live spec |
+| 7 | [T337](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T337.md) | [#337](https://github.com/webomage/wom7board/issues/337) | P1 | queued | tools | 80 | Advanced code & infrastructure audit runner with ephemeral air-gapped sandb 📄 live spec |
+| 8 | [T365](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 79 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
+| 9 | [T374](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T374.md) | [#374](https://github.com/webomage/wom7board/issues/374) | P1 | queued | tools | 79 | Unified oMLX process management: multi-mode daemon/GUI/CLI detection, port  📄 live spec |
+| 10 | [T394](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T394.md) | [#394](https://github.com/webomage/wom7board/issues/394) | P1 | queued | tools | 79 | Interactive filtering, multi-dimensional aggregation, and client-delivery r 📄 live spec |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -40,16 +40,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T219](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T219.md) | [#219](https://github.com/webomage/wom7board/issues/219) | P2 | queued | infra | 3/5 | `██████░░░░` 60% | — | wom7ext ↔ ZeroClaw realignment — mcp-b is already vestigial  |
-| 2 | [T184](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T184.md) | [#184](https://github.com/webomage/wom7board/issues/184) | P3 | queued | tools | 5/8 | `██████░░░░` 62% | — | wom7mlx is P3 — consolidate the MLX/Rust-port work behind on |
-| 3 | [T537](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T537.md) | — | P1 | blocked | data | 1/10 | `█░░░░░░░░░` 10% | — | Upwork connector on the official MCP with per-member OAuth;  |
-| 4 | [T24](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T24.md) | [#24](https://github.com/webomage/wom7board/issues/24) | P1 | queued | skills | 0/3 | `░░░░░░░░░░` 0% | — | Skills expansion — import + survey |
-| 5 | [T25](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T25.md) | [#25](https://github.com/webomage/wom7board/issues/25) | P1 | queued | knowledge | 0/3 | `░░░░░░░░░░` 0% | — | Knowledge-graph engine research |
-| 6 | [T26](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T26.md) | [#26](https://github.com/webomage/wom7board/issues/26) | P1 | queued | tools | 0/2 | `░░░░░░░░░░` 0% | — | Package discovery via awesome-repositories MCP |
-| 7 | [T29](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Project delivery via agency GitHub |
-| 8 | [T36](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 0/5 | `░░░░░░░░░░` 0% | — | AI provider-adapter seam + lib hygiene |
-| 9 | [T43](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 0/7 | `░░░░░░░░░░` 0% | — | Full-observability logging strategy |
-| 10 | [T48](/home/aleksei/.w0m/work/agy-jobs-cp/w0m/.tasks/T48.md) | [#48](https://github.com/webomage/wom7board/issues/48) | P1 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Migrate workflows to Hatchet SDK V1 |
+| 1 | [T219](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T219.md) | [#219](https://github.com/webomage/wom7board/issues/219) | P2 | queued | infra | 3/5 | `██████░░░░` 60% | — | wom7ext ↔ ZeroClaw realignment — mcp-b is already vestigial  |
+| 2 | [T184](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T184.md) | [#184](https://github.com/webomage/wom7board/issues/184) | P3 | queued | tools | 5/8 | `██████░░░░` 62% | — | wom7mlx is P3 — consolidate the MLX/Rust-port work behind on |
+| 3 | [T537](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T537.md) | — | P1 | blocked | data | 1/10 | `█░░░░░░░░░` 10% | — | Upwork connector on the official MCP with per-member OAuth;  |
+| 4 | [T24](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T24.md) | [#24](https://github.com/webomage/wom7board/issues/24) | P1 | queued | skills | 0/3 | `░░░░░░░░░░` 0% | — | Skills expansion — import + survey |
+| 5 | [T25](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T25.md) | [#25](https://github.com/webomage/wom7board/issues/25) | P1 | queued | knowledge | 0/3 | `░░░░░░░░░░` 0% | — | Knowledge-graph engine research |
+| 6 | [T26](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T26.md) | [#26](https://github.com/webomage/wom7board/issues/26) | P1 | queued | tools | 0/2 | `░░░░░░░░░░` 0% | — | Package discovery via awesome-repositories MCP |
+| 7 | [T29](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T29.md) | [#29](https://github.com/webomage/wom7board/issues/29) | P1 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Project delivery via agency GitHub |
+| 8 | [T36](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 0/5 | `░░░░░░░░░░` 0% | — | AI provider-adapter seam + lib hygiene |
+| 9 | [T43](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 0/7 | `░░░░░░░░░░` 0% | — | Full-observability logging strategy |
+| 10 | [T48](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T48.md) | [#48](https://github.com/webomage/wom7board/issues/48) | P1 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Migrate workflows to Hatchet SDK V1 |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `7c3ff8af` |
-| `wom7api` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `79ecb4b` |
-| `wom7func` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `ed3ae5c` |
-| `wom7skills` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
-| `wom7ext` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `773e841` |
-| `wom7sec` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `be6ae19` |
-| `wom7mlx/wom7mlx` | `agent/agy-jobs-cp` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
+| `wom7web` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `9178ec2f` |
+| `wom7api` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `8a9cca6` |
+| `wom7func` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `ed3ae5c` |
+| `wom7skills` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
+| `wom7ext` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `57b3e6b` |
+| `wom7sec` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `be6ae19` |
+| `wom7mlx/wom7mlx` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
 **Tickets:** 218 open · 563 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T29","T43","T63","T214","T279","T336","T337","T365","T374","T394"],"repos":{"wom7api":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"79ecb4b","unpushed":null},"wom7ext":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"773e841","unpushed":null},"wom7func":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"ed3ae5c","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"be6ae19","unpushed":null},"wom7skills":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/agy-jobs-cp","dirty":0,"has_upstream":true,"head":"7c3ff8af","unpushed":null}},"tickets":{"open":218,"rowless_open":[],"rows":563}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T29","T43","T63","T214","T279","T336","T337","T365","T374","T394"],"repos":{"wom7api":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"8a9cca6","unpushed":null},"wom7ext":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"57b3e6b","unpushed":null},"wom7func":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"ed3ae5c","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"be6ae19","unpushed":null},"wom7skills":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"9178ec2f","unpushed":null}},"tickets":{"open":218,"rowless_open":[],"rows":563}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
