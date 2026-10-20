@@ -3,16 +3,16 @@
   "_comment_obsidian": "T144 — the two Obsidian vaults over MCP, added 2026-08-07. Served by the `semantic-vault-mcp` plugin inside each vault's Obsidian window, so they exist ONLY while that window is open; a closed vault makes the bridge exit with a clear message rather than hang. Entries are stdio-via-bridge rather than `type: http` on purpose: the servers require `Authorization: Bearer <apiKey>`, and CLAUDE.md makes 'secrets via infisical, never a file' a non-negotiable — a literal key here, or an ${ENV} expansion needing a variable set in whatever shell launches the desktop app, both fail that. The bridge reads the key AND the port at launch from the plugin's own gitignored data.json, so the credential stays in its single existing home and the port cannot drift. Names carry the vault because the port↔vault mapping was unknown for twelve days while they were called -a and -b. 🔴 Both expose an `edit` tool with readOnlyMode=false — wom7web is a live code repo, so an agent write there lands outside the normal Edit/git path. Tracked declaration lives in wom7web/.w0m/sdlc.json → mcp.servers; THIS file is not in any git repo. Verify with `python3 wom7web/project/scripts/obsidian_mcp_bridge.py <vault>`.",
   "mcpServers": {
     "graphify": {
-      "command": "/Users/proto/.local/bin/graphify-mcp",
+      "command": "/home/aleksei/.local/bin/graphify-mcp",
       "args": [
-        "/Users/proto/.graphify/global-graph.json"
+        "/home/aleksei/.graphify/global-graph.json"
       ]
     },
     "obsidian-wom7web": {
       "command": "/usr/bin/python3",
       "args": [
-        "/Users/proto/Projects/@self/@wom/wom7web/project/scripts/obsidian_mcp_bridge.py",
-        "/Users/proto/Projects/@self/@wom/wom7web"
+        "/home/aleksei/Projects/!self/w0m/wom7web/project/scripts/obsidian_mcp_bridge.py",
+        "/home/aleksei/Projects/!self/w0m/wom7web"
       ]
     },
     "upwork": {

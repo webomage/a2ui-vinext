@@ -345,6 +345,9 @@ ask *args:
 graph-global *args:
     @just --justfile wom7web/justfile graph-global {{ args }}
 
+graph-health *args:
+    @just --justfile wom7web/justfile graph-health {{ args }}
+
 crg-serve *args:
     @just --justfile wom7web/justfile crg-serve {{ args }}
 

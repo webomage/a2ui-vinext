@@ -15,7 +15,7 @@
     "_comment": "Must be byte-identical across the listed repos — cross-repo type/ABI coupling. hono: wom7web types its RPC client against the worker's AppType, so a skew breaks `astro check`.",
     "_hono_upper_bound": "SUPERSEDED 2026-09-08 — the bound is LIFTED to '>=4.13.5', with the real astro check the old note demanded. Three MODERATE advisories affect 4.12.34 (GHSA-crvj-82cr-hjcx query-parser cache-key confusion, GHSA-g6gw-parsebody parseBody memory exhaustion, GHSA-gqvv-2mrq-wpjv toSSG path traversal, incomplete fix for CVE-2026-39408) and ALL THREE are fixed only in 4.13.5 — there is no 4.12.x backport, so the old bound could not be kept without carrying three advisories. 🔴 THE OLD NOTE'S 3 ERRORS WERE A PARTIAL-BUMP ARTEFACT, NOT A 4.13 REGRESSION: apps/web/src/lib/rpc.ts imports AppType across repos from wom7cfworkers/src/index, so bumping wom7web alone types hc from 4.13 against an AppType built by 4.12 and the variance mismatch surfaces as Hono<...> does not satisfy Hono<any,any,any> at rpc.ts:16/:27 plus rpc is unknown at linkedin.ts:128. Reproduced those exact 3 errors on 2026-09-08 by bumping wom7web only; moved wom7cfworkers to 4.13.7 as well and just typecheck returned 0 errors across all 4 projects (153+175+5+7 files). THAT is what lockstep means — the entry lists three repos precisely so they move together, and measuring one of them is the failure mode the bound recorded. wom7api reached >=4.13.5 first in cde8149; the deps gate correctly flagged the resulting skew, which is how this was found.",
     "hono": {
-      "version": ">=4.13.5",
+      "version": ">=4.13.11",
       "repos": [
         "wom7web",
         "wom7api",
