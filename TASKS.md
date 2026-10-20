@@ -36,7 +36,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T531](.tasks/T531.md) | **P1** | 🆕 **Per-agent workspace sets: parallel agents stop sharing one working tree, one index and one set of generated files** | tooling | — | ⚪ **queued** |
-| [T530](.tasks/T530.md) | **P1** | 🆕 **Org model S9: retire Axis-1 account classes and network.member, unify CP context switcher on engagement hats and root admin** | web, api | — | ⚪ **queued** |
 | [T528](.tasks/T528.md) | **P1** | 🆕 **KYC personal half: KYC reads the member's contact and identity records, and CURP and RFC leave gamification.compliance_profiles** | web, api | — | ⚪ **queued** |
 | [T509](.tasks/T509.md) | **P1** | 🆕 **Root-first layout: finish the T414 move in staged units, behind a stale-path probe that checks the file a recipe, hook or profile runs actually exists** | web, api | — | ⚪ **queued** |
 | [T506](.tasks/T506.md) | **P1** | 🆕 **Security & PII cutover: AES-256-GCM token encryption, IP retention in ai_usage, and legacy cv bucket cleanup** | api, web, func | — | ⚪ **queued** |
@@ -258,6 +257,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T535](.tasks/T535.md) | **P1** | 🆕 **The Upwork poller has failed every run since 2026-09-19 (582 in a row) and the failure row does not say why; nothing alerts on it** | api, web | — | ✅ **done** |
 | [T533](.tasks/T533.md) | **P1** | 🆕 **Upwork linked knowledge store: proposals with their screening answers, messages and contracts linked and stored for AI search, mentions, proofs and Resume Studio** | api, web | — | ✅ **done** |
 | [T532](.tasks/T532.md) | **P1** | 🆕 **E2E local sandbox execution environment and full corpus verification run** | web | — | ✅ **done** |
+| [T530](.tasks/T530.md) | **P1** | 🆕 **Org model S9: retire Axis-1 account classes and network.member, unify CP context switcher on engagement hats and root admin** | web, api | — | ✅ **done** |
 | [T529](.tasks/T529.md) | **P1** | 🆕 **Org model S8: retire public.clients and client_users; company details keyed by org, client hats on engagements** | api, web | — | ✅ **done** |
 | [T515](.tasks/T515.md) | **P1** | 🆕 **A Tinybird token literal is committed in wom7api/scripts/init_tinybird_schemas.py: rotate it, remove it, and make the script read it by injection** | api | — | ✅ **done** |
 | [T513](.tasks/T513.md) | **P1** | 🆕 **Resume Studio documents: View Markdown shows nowhere you are looking, PDFs have no preview, a 400 fires on every load, and the card buttons overflow** | web | — | ✅ **done** |
