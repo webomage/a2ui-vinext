@@ -6,7 +6,7 @@
 ## 1. Executive Summary
 
 - **Governed Repositories:** `8` (`root`, `wom7web`, `wom7api`, `wom7func`, `wom7ext`, `wom7sec`, `wom7skills`, `wom7mlx/wom7mlx`)
-- **Total Tracked Files Classified:** `9625`
+- **Total Tracked Files Classified:** `9633`
 - **Unclassified Tracked Files (Measured Baseline):** `0`
 - **Explicitly Waived Legacy Files:** `54` (ratchet ceiling: `54`)
 - **Unclassified `.gitignore` Patterns:** `0`
@@ -16,11 +16,11 @@
 | Repo | `source` | `test` | `spec` | `doc` | `report` | `config` | `asset` | `generated` | `vendored` | `scratch` | Unclassified | Total |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | `.` | 115 | 0 | 570 | 49 | 95 | 134 | 0 | 0 | 0 | 0 | 0 | **963** |
-| `wom7web` | 2643 | 529 | 903 | 424 | 125 | 205 | 1592 | 525 | 0 | 20 | 0 | **6966** |
+| `wom7web` | 2644 | 531 | 906 | 424 | 125 | 205 | 1592 | 525 | 0 | 20 | 0 | **6972** |
 | `wom7api` | 691 | 35 | 45 | 18 | 0 | 37 | 1 | 7 | 0 | 4 | 0 | **838** |
 | `wom7func` | 25 | 9 | 0 | 8 | 0 | 14 | 0 | 2 | 0 | 0 | 0 | **58** |
 | `wom7ext` | 425 | 29 | 37 | 13 | 0 | 12 | 18 | 3 | 0 | 0 | 0 | **537** |
-| `wom7sec` | 2 | 1 | 1 | 7 | 0 | 5 | 0 | 1 | 0 | 0 | 0 | **17** |
+| `wom7sec` | 3 | 2 | 1 | 7 | 0 | 5 | 0 | 1 | 0 | 0 | 0 | **19** |
 | `wom7skills` | 137 | 6 | 0 | 21 | 0 | 13 | 0 | 2 | 0 | 0 | 0 | **179** |
 | `wom7mlx/wom7mlx` | 14 | 16 | 7 | 10 | 4 | 9 | 1 | 3 | 0 | 3 | 0 | **67** |
 
