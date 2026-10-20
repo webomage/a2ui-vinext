@@ -162,30 +162,157 @@
       "title": "LinkedIn",
       "implemented": true,
       "entity": "person",
+      "transport": "api",
+      "mcp_url": null,
+      "headless": true,
+      "evidence": {
+        "date": "2026-10-20",
+        "method": "OAuth 2.0 authorization_code + refresh_token via LinkedIn REST API v2; migrated to unified connector framework (T442, AgDR-0034). No official remote MCP server."
+      },
+      "scopes": [
+        {
+          "scope": "openid",
+          "description": "Verify your LinkedIn OpenID identity",
+          "capability": "profile.read"
+        },
+        {
+          "scope": "profile",
+          "description": "Read your basic LinkedIn profile (name, headline, avatar)",
+          "capability": "profile.read"
+        },
+        {
+          "scope": "email",
+          "description": "Read your primary LinkedIn email address",
+          "capability": "profile.read"
+        },
+        {
+          "scope": "w_member_social",
+          "description": "Publish and manage posts on your personal LinkedIn feed",
+          "capability": "share.write"
+        },
+        {
+          "scope": "w_organization_social",
+          "description": "Publish and manage posts on LinkedIn Company Pages you administer",
+          "capability": "organization.share.write"
+        }
+      ],
+      "capabilities": [
+        "profile.read",
+        "share.write",
+        "organization.share.write"
+      ],
       "docs": "docs/backend/connectors/linkedin.md",
-      "note": "The only built connector. `linkedin-oauth` edge fn → public.social_integrations; the CP's Connect button drives it."
+      "note": "Connected via unified /api/connections/linkedin/{start,callback} flow → public.connections (T442)."
     },
     {
       "key": "github",
       "title": "GitHub",
-      "implemented": false,
+      "implemented": true,
       "entity": "person",
+      "transport": "api",
+      "mcp_url": null,
+      "headless": true,
+      "evidence": {
+        "date": "2026-10-20",
+        "method": "GitHub App user-to-server OAuth + installation token refresh (GITHUB_APP_CLIENT_ID / GITHUB_APP_CLIENT_SECRET); supports unattended background refresh and fine-grained repository, PR, and activity permissions (T442, AgDR-0034)."
+      },
+      "scopes": [
+        {
+          "scope": "read:user",
+          "description": "Read your GitHub profile and account metadata",
+          "capability": "profile.read"
+        },
+        {
+          "scope": "repo:status",
+          "description": "Read repository metadata and commit statuses granted to the GitHub App",
+          "capability": "repos.read"
+        },
+        {
+          "scope": "pull_requests:read",
+          "description": "Read pull requests, reviews, and merge status",
+          "capability": "prs.read"
+        },
+        {
+          "scope": "events:read",
+          "description": "Read contribution and repository activity events",
+          "capability": "activity.read"
+        }
+      ],
+      "capabilities": [
+        "profile.read",
+        "repos.read",
+        "prs.read",
+        "activity.read"
+      ],
       "docs": "docs/backend/connectors/github-app.md",
-      "note": "T94(b) — declared, NOT implemented. ⚠️ The GITHUB_APP_* credentials in `services` above are for the APP, not for a member's account link; do not read their presence as this connector existing."
+      "note": "GitHub App service connection (/api/connections/github/{start,callback}) → public.connections; distinct from Supabase GitHub sign-in identity (T442)."
     },
     {
       "key": "upwork",
       "title": "Upwork",
       "implemented": false,
+      "on_hold": true,
       "entity": "person",
+      "transport": "mcp",
+      "mcp_url": "https://mcp.upwork.com/mcp",
+      "headless": false,
+      "evidence": {
+        "date": "2026-10-05",
+        "method": "Measured in T537 (upwork_mcp_spike.py, 2026-10-02..2026-10-05): Upwork OAuth 2.1 DCR (https://mcp.upwork.com/register) rejected non-localhost https:// redirect URIs with HTTP 400 invalid_redirect_uri; legacy GraphQL API is deprecated; server-side storage awaits Upwork support ToS sign-off (AgDR-0034)."
+      },
+      "scopes": [
+        {
+          "scope": "mcp:contracts.read",
+          "description": "Read Upwork contracts, milestones, and work diary summaries via MCP",
+          "capability": "contracts.read"
+        },
+        {
+          "scope": "mcp:proposals.read",
+          "description": "Read submitted Upwork proposals and cover letters via MCP",
+          "capability": "proposals.read"
+        },
+        {
+          "scope": "mcp:messages.read",
+          "description": "Read Upwork message rooms and thread history via MCP",
+          "capability": "messages.read"
+        },
+        {
+          "scope": "mcp:jobs.read",
+          "description": "Search and read Upwork job postings via MCP",
+          "capability": "jobs.read"
+        }
+      ],
+      "capabilities": [
+        "contracts.read",
+        "proposals.read",
+        "messages.read",
+        "jobs.read"
+      ],
       "docs": "docs/backend/connectors/upwork.md",
-      "note": "T94(b) — declared, NOT implemented. The `upwork-poller` edge fn has its own auth path and is not a per-member connection."
+      "note": "T537 / T442 — Adapter and MCP allowlist built; remote web OAuth connect is on hold because Upwork DCR rejects non-localhost https:// callbacks (HTTP 400 invalid_redirect_uri) and server-side storage awaits Upwork support ToS sign-off. Local MCP sync runs via upwork_mcp_sync.py."
     },
     {
       "key": "credly",
       "title": "Credly",
       "implemented": false,
       "entity": "person",
+      "transport": "api",
+      "mcp_url": null,
+      "headless": true,
+      "evidence": {
+        "date": "2026-09-16",
+        "method": "Measured in T94 (docs/backend/CONNECTOR-RESEARCH-MATRIX.md): REST badge API only, no official MCP."
+      },
+      "scopes": [
+        {
+          "scope": "badges:read",
+          "description": "Read issued Credly badges and certification metadata",
+          "capability": "badges.read"
+        }
+      ],
+      "capabilities": [
+        "badges.read"
+      ],
       "docs": "docs/backend/connectors/credly.md",
       "note": "T94(b) — declared, NOT implemented. No connector, no credentials declared."
     },
@@ -195,6 +322,35 @@
       "implemented": false,
       "entity": "person",
       "priority": "high",
+      "transport": "api",
+      "mcp_url": null,
+      "headless": true,
+      "evidence": {
+        "date": "2026-09-16",
+        "method": "Measured in T94 (docs/backend/CONNECTOR-RESEARCH-MATRIX.md): OAuth2 authorization_code with duration=permanent refresh token (1h access token); no official MCP."
+      },
+      "scopes": [
+        {
+          "scope": "identity",
+          "description": "Read Reddit username and account karma",
+          "capability": "identity.read"
+        },
+        {
+          "scope": "read",
+          "description": "Read posts and comments in subscribed subreddits",
+          "capability": "posts.read"
+        },
+        {
+          "scope": "history",
+          "description": "Read user submission and comment history",
+          "capability": "history.read"
+        }
+      ],
+      "capabilities": [
+        "identity.read",
+        "posts.read",
+        "history.read"
+      ],
       "docs": "docs/backend/CONNECTOR-RESEARCH-MATRIX.md",
       "note": "T94(b) — declared, NOT implemented. HIGH PRIORITY per owner ask 2026-09-16 (see project/tickets/T94.md Status notes). OAuth2 authorization_code, 1h access tokens, refreshable; rung 2 (read sync) on the depth ladder, no webhook, no official MCP. New Data API apps must register with Reddit by 2026-09-30 — sequence the adapter build accordingly."
     }
