@@ -35,6 +35,8 @@
 # convention, so the README is versioned while the tray's contents stay out (client material, and
 # a tray is not an archive).
 !/_in/README.md
+!/_in/INDEX.md
+!/_in/ledger.json
 /_t99_arc/
 /_msg/*
 !/_msg/README.md

@@ -13,11 +13,12 @@ This is the top-level workspace root (`@wom`) containing the 7 estate repositori
 
 ## Session start — every agent, before any work
 
-1. **`just preflight --fast`** (~1.5s) — MCP, graph currency, repo state, toolchain.
+1. **`just preflight --fast`** (~1.5s) — MCP, graph currency, repo state, toolchain, `_in/` tray disposition (`just in-check`).
 2. **`just state-brief`** — the current ⭐ PICK UP HERE block of `STATE.md`: what the last session
    believed was next. It is **recorded intent, not measured fact** — re-derive any number it cites
    (`just state-check`, `just tasks`) before acting on it. Do not read the rest of `STATE.md` or its
    archive to orient. The full pickup gate is the `w0m-state-load` skill.
+3. **`just in-triage`** — when `preflight` reports `new` drops in `_in/` (or before picking up an inbound drop), run `just in-triage` to inspect `_in/INDEX.md` and related tickets/specs (T447).
 
 Claude Code runs both automatically (SessionStart hook in `.claude/settings.local.json`). Every other
 agent — Antigravity, Codex, opencode, Gemini — has no such hook here and must run them itself.
@@ -84,6 +85,8 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 | **Decided Technical Debt** | `TECH-DEBT.md` (`just debt-check`) | Clean, non-drifting list of accepted debts |
 | **Tech Stacks & Command Registry** | `project/stacks-policy.json` (`just discovery`) | Per-stack contract mapping tools to `just` commands |
 | **Estate & Client Port Governance** | `project/ports-policy.json` (`just ports-check`) | Canonical port registry (`4321–4325` apps, `8787/8788` headroom, `8790` `wom7func`, `4400–4499` client projects, T402) |
+| **Estate File Layout & Hygiene** | `project/layout-policy.json` (`just layout-check`) | Tracked file directory classes, stale report citations, and `.gitignore` justification across 8 repos (T446) |
+| **Inbound Tray (`_in/`) Triage** | `_in/INDEX.md` (`just in-triage`, `just in-check`) | Disposition ledger (`new`/`adopted`/`declined`/`living`) and ticket/spec matcher for `_in/` drops (T447) |
 | **System Topology & Boundaries** | `docs/ECOSYSTEM.md` & `docs/ARCHITECTURE.md` | Maps cross-boundary data and service flows |
 | **Backend Knowledge Base Index** | `docs/backend/KB-INDEX.md` | Curated index for backend, DB, and edge functions |
 

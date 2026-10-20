@@ -1,0 +1,248 @@
+{
+  "_comment": [
+    "T447 — Canonical disposition ledger for the `_in/` inbound tray.",
+    "Each item has exactly one state: `new`, `adopted`, `declined`, or `living`.",
+    "`_in/INDEX.md` is generated mechanically from this file + any on-disk YAML front-matter in `_in/` via `just in-sync`.",
+    "`just in-check` fails when an item in `_in/` has no state, exceeds `max_new_days` while `new`, or lacks `adopted_to` / `reason`."
+  ],
+  "max_new_days": 7,
+  "allowed_states": [
+    "new",
+    "adopted",
+    "declined",
+    "living"
+  ],
+  "items": [
+    {
+      "file": "README.md",
+      "state": "living",
+      "author": "owner",
+      "dropped": "2026-09-02",
+      "reason": "Permanent drop protocol and untrusted-input notice for the `_in/` tray."
+    },
+    {
+      "file": "INDEX.md",
+      "state": "living",
+      "author": "w0m-in-tray",
+      "dropped": "2026-10-20",
+      "reason": "Generated disposition board (`just in-sync`) showing what is new vs adopted, declined, or living."
+    },
+    {
+      "file": "ledger.json",
+      "state": "living",
+      "author": "w0m-in-tray",
+      "dropped": "2026-10-20",
+      "reason": "Machine-readable disposition ledger backing `_in/INDEX.md` and `just in-check`."
+    },
+    {
+      "file": "active-work.json",
+      "state": "living",
+      "author": "agent-claim",
+      "dropped": "2026-09-03",
+      "reason": "Living coordination claim file (T274 / T426) read by `active-work-heads-up`; never moved out."
+    },
+    {
+      "file": "Lahore_Prospect_Proposal_2026-06.md",
+      "state": "adopted",
+      "author": "owner",
+      "dropped": "2026-09-02",
+      "adopted_to": "client-projects/lahore-prospect (client-projects tier; excluded from public KB per KB content policy)"
+    },
+    {
+      "file": "orca",
+      "state": "adopted",
+      "author": "owner",
+      "dropped": "2026-09-02",
+      "adopted_to": "[[T377]] · [[T409]] · [[T423]] · wom7pr/orca"
+    },
+    {
+      "file": "2026-09-03-projects-inventory-audit.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-03",
+      "adopted_to": "[[T308]] · wom7web/docs/reports/PROJECTS_CATALOG_AND_CLEANUP_AUDIT_2026.md"
+    },
+    {
+      "file": "2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-04",
+      "adopted_to": "[[T312]] · wom7web/docs/reports/2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md"
+    },
+    {
+      "file": "2026-09-05-project-roles-hats-offices-and-resource-access-architecture.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-05",
+      "adopted_to": "[[T319]] · [[T313]] · [[T315]]"
+    },
+    {
+      "file": "2026-09-06-login-logout-role-change-audit-and-suggested-actions.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-06",
+      "adopted_to": "[[T320]] · [[T159]] · wom7web/docs/reports/2026-09-06-login-logout-session-audit.md"
+    },
+    {
+      "file": "2026-09-07-client-registration-and-projects-readiness-measured.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-07",
+      "adopted_to": "[[T328]] · wom7web/docs/reports/2026-09-07-client-registration-and-projects-readiness-measured.md"
+    },
+    {
+      "file": "2026-09-09-proposal-w0m-slim-vm-universal-sandboxing.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-09",
+      "adopted_to": "[[T296]] · [[T297]] · wom7web/docs/reports/2026-09-09-proposal-w0m-slim-vm-universal-sandboxing.md"
+    },
+    {
+      "file": "2026-09-11-analysis-orca-vs-zeroclaw-unification.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-11",
+      "adopted_to": "[[AgDR-0012]] · [[T180]] · wom7web/docs/reports/2026-09-11-analysis-orca-vs-zeroclaw-unification.md"
+    },
+    {
+      "file": "2026-09-11-proposal-unified-one-button-platform-connectors.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-11",
+      "adopted_to": "[[T94]] · [[T442]] · wom7web/docs/reports/2026-09-11-proposal-unified-one-button-platform-connectors.md"
+    },
+    {
+      "file": "2026-09-11-proposal-w0m-resource-governance.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-11",
+      "adopted_to": "[[T343]] · wom7web/openspec/changes/2026-09-11-resource-governance"
+    },
+    {
+      "file": "2026-09-11-research-ios-app-store-sandbox-audit.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-11",
+      "adopted_to": "[[T336]] · [[T337]] · wom7web/docs/reports/2026-09-11-research-ios-app-store-sandbox-audit.md"
+    },
+    {
+      "file": "2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-11",
+      "adopted_to": "[[AgDR-0012]] · [[T180]] · wom7web/docs/reports/2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md"
+    },
+    {
+      "file": "2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-11",
+      "adopted_to": "[[AgDR-0012]] · [[T345]] · wom7web/docs/reports/2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md"
+    },
+    {
+      "file": "2026-09-15-artemio-delivery-report.md",
+      "state": "adopted",
+      "author": "agent-delivery",
+      "dropped": "2026-09-15",
+      "adopted_to": "[[T357]] · client-projects/artemio (_arch/artemio_reports_2026-09-15/)"
+    },
+    {
+      "file": "w0m_agent_integration.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-16",
+      "adopted_to": "[[T367]] · wom7web/openspec/changes/archive/2026-09-17-2026-09-16-siri-shortcuts-zeroclaw-orca/proposal.md"
+    },
+    {
+      "file": "2026-09-17-claude-obsidian-project-vaults-cp-embedding.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-17",
+      "adopted_to": "[[T370]] · wom7web/docs/reports/2026-09-17-claude-obsidian-project-vaults-cp-embedding.md"
+    },
+    {
+      "file": "2026-09-21-audit-design-system-vs-shipping-code-and-update-proposal.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-21",
+      "adopted_to": "[[T420]] · wom7web/openspec/changes/archive/2026-09-22-design-system-reconciliation/proposal.md"
+    },
+    {
+      "file": "2026-09-22-t165-member-resume-web-tool-architecture.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-22",
+      "adopted_to": "[[T165]] · .agents/reports/2026-09-22-t165-member-resume-web-tool-architecture.md"
+    },
+    {
+      "file": "2026-09-22-t420-design-system-reconciliation-brief.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-22",
+      "adopted_to": "[[T420]] · .agents/reports/2026-09-22-t420-design-system-reconciliation-brief.md"
+    },
+    {
+      "file": "2026-09-23-recheck-design-system-post-t420-and-react-free-component-plan.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-23",
+      "adopted_to": "[[T422]] · wom7web/openspec/changes/archive/2026-09-23-2026-09-23-design-system-react-elimination-and-tokens-ssot/proposal.md"
+    },
+    {
+      "file": "2026-09-23-cowork-research-parallel-agents-isolation-and-merge.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-23",
+      "adopted_to": "[[T423]] · .agents/reports/2026-09-23-cowork-research-parallel-agents-isolation-and-merge.md"
+    },
+    {
+      "file": "2026-09-23-parallel-agents-isolation-and-merge-proposal.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-23",
+      "adopted_to": "[[T423]] · [[T424]] · [[T425]] · [[T426]] · .agents/reports/2026-09-23-parallel-agents-isolation-and-merge-proposal.md"
+    },
+    {
+      "file": "2026-09-23-t432-research-dora-space-devex-for-w0m.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-23",
+      "adopted_to": "[[T432]] · .agents/reports/2026-09-23-t432-research-dora-space-devex-for-w0m.md"
+    },
+    {
+      "file": "2026-09-23-t433-research-bug-bounty-participation-and-listings.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-23",
+      "adopted_to": "[[T433]] · .agents/reports/2026-09-23-t433-research-bug-bounty-participation-and-listings.md"
+    },
+    {
+      "file": "2026-09-24-agent-rule-enforcement-audit.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-24",
+      "adopted_to": "[[T434]] · .agents/reports/2026-09-24-agent-rule-enforcement-audit.md"
+    },
+    {
+      "file": "2026-09-24-t211-ticket-diagram-sync.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-24",
+      "adopted_to": "[[T211]] · .agents/reports/2026-09-24-t211-ticket-diagram-sync.md"
+    },
+    {
+      "file": "2026-09-24-t435-deploy-confirmation-gate-test-and-agent-refusal-report.md",
+      "state": "adopted",
+      "author": "antigravity",
+      "dropped": "2026-09-24",
+      "adopted_to": "[[T435]] · .agents/reports/2026-09-24-t435-deploy-confirmation-gate-test-and-agent-refusal-report.md"
+    },
+    {
+      "file": "2026-09-25-client-org-model-review-T439.md",
+      "state": "adopted",
+      "author": "claude",
+      "dropped": "2026-09-25",
+      "adopted_to": "[[T439]] · .agents/reports/2026-09-25-client-org-model-review-T439.md"
+    }
+  ]
+}

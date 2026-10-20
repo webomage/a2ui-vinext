@@ -1231,4 +1231,24 @@ ports-check-test:
 status-dashboard-test:
     @python3 wom7web/project/scripts/tests/test_gen_status_dashboard.py
 
+# ── Estate File Hygiene & _in Tray Disposition (T446 / T447) ────────────────
+layout-check *args:
+    @python3 wom7web/project/scripts/layout_check.py {{ args }}
+
+layout-check-test:
+    @python3 wom7web/project/scripts/tests/test_layout_check.py
+
+in-triage *args:
+    @python3 wom7web/project/scripts/in_tray.py triage {{ args }}
+
+in-check *args:
+    @python3 wom7web/project/scripts/in_tray.py check {{ args }}
+
+in-sync *args:
+    @python3 wom7web/project/scripts/in_tray.py sync {{ args }}
+
+in-check-test:
+    @python3 wom7web/project/scripts/tests/test_in_tray.py
+
+
 
