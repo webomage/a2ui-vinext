@@ -2,6 +2,17 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.20-1792536207
+_First deployed: 2026-10-20 23:17:13.35776+00_
+
+### Features
+- **connectors**: record AgDR-0034, expand services-policy oauth_providers, and close T442 (T442) ([T442](file:///.tasks/T442.md))
+- **sdlc**: add T564 virtual agent_id & cross-worktree ticket claim/tagging system (T564) ([T564](file:///.tasks/T564.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `cedbec4` | 2026-10-20 23:17:13.35776+00 |
+
 ## 2026.10.20-1792525002
 _First deployed: 2026-10-20 20:32:53.690066+00_
 
