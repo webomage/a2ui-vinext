@@ -2,6 +2,19 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.20-1792525002
+_First deployed: 2026-10-20 20:32:53.690066+00_
+
+### Features
+- **sdlc**: close T337 air-gapped sandbox audit runner and cloud compliance binder ([T337](file:///.tasks/T337.md))
+
+### Fixes
+- **graph,deps**: update .mcp.json Linux paths, forward graph-health, and bump hono floor (T25) ([T25](file:///.tasks/T25.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `f002cf6` | 2026-10-20 20:32:53.690066+00 |
+
 ## 2026.10.20-1792477624
 _First deployed: 2026-10-20 06:37:53.964338+00_
 
