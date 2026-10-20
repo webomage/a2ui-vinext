@@ -1250,5 +1250,13 @@ in-sync *args:
 in-check-test:
     @python3 wom7web/project/scripts/tests/test_in_tray.py
 
+# ── Universal System Standards & SSOT Adherence (T214) ──────────────────────
+standards-check *args:
+    @python3 wom7web/project/scripts/standards_check.py {{ args }}
+
+standards-check-test:
+    @python3 wom7web/project/scripts/tests/test_standards_check.py
+
+
 
 

@@ -1,0 +1,33 @@
+flowchart TD
+  subgraph SSOT["Authoritative Single Sources of Truth (SSOT)"]
+    DDL["PostgreSQL Migrations<br/>(wom7api/supabase/migrations/*.sql)"]
+    TOKENS["CSS Design Tokens<br/>(packages/ui/src/styles/tokens.css)"]
+    SKILLS["Canonical Agent Skills<br/>(wom7skills/skills/*/SKILL.md)"]
+    META["Ticket & SDLC Meta-Assets<br/>(.tasks/T*.md · .w0m/sdlc.json)"]
+    SPECS["OpenSpec & Declarative Specs<br/>(openspec/ · wom7ext/extension/specs/*.json)"]
+  end
+
+  subgraph COMPILERS["Unidirectional Generators & Validation Gates"]
+    DB_GEN["just db-types / migration-lint"]
+    DS_GATE["just ds-conformance"]
+    SKILL_SYNC["just skills-sync / skills-version-check"]
+    TASK_RENDER["tasks_render.py / state_doctor.py / gen_status_dashboard.py"]
+    STD_CHECK["just standards-check (standards_check.py)"]
+  end
+
+  subgraph DOWNSTREAM["Downstream Compiled / Validated Artifacts (Read-Only Targets)"]
+    TS_DB["Generated TypeScript DB & Drizzle Models"]
+    UI_PKG["@webomage/ui Svelte 5 Primitives & Apps"]
+    AGENT_DIRS[".agents/skills/* · .claude/skills/*"]
+    BOARDS["TASKS.md · STATE.md · docs/STATUS-DASHBOARD.html"]
+    RUNTIME["MCP Servers · Edge Functions · Browser Extension Clipper"]
+  end
+
+  DDL --> DB_GEN --> TS_DB
+  TOKENS --> DS_GATE --> UI_PKG
+  SKILLS --> SKILL_SYNC --> AGENT_DIRS
+  META --> TASK_RENDER --> BOARDS
+  SPECS --> STD_CHECK --> RUNTIME
+  DDL --> STD_CHECK
+  META --> STD_CHECK
+  SKILLS --> STD_CHECK

@@ -87,6 +87,7 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 | **Estate & Client Port Governance** | `project/ports-policy.json` (`just ports-check`) | Canonical port registry (`4321–4325` apps, `8787/8788` headroom, `8790` `wom7func`, `4400–4499` client projects, T402) |
 | **Estate File Layout & Hygiene** | `project/layout-policy.json` (`just layout-check`) | Tracked file directory classes, stale report citations, and `.gitignore` justification across 8 repos (T446) |
 | **Inbound Tray (`_in/`) Triage** | `_in/INDEX.md` (`just in-triage`, `just in-check`) | Disposition ledger (`new`/`adopted`/`declined`/`living`) and ticket/spec matcher for `_in/` drops (T447) |
+| **Universal System Standards & SSOT** | `docs/standards/SYSTEM-STANDARDS-MATRIX.md` (`just standards-check`) | 10-layer RFC/Standard matrix, SSOT authority graph, meta-asset JSON Schemas, and coverage engine (T214) |
 | **System Topology & Boundaries** | `docs/ECOSYSTEM.md` & `docs/ARCHITECTURE.md` | Maps cross-boundary data and service flows |
 | **Backend Knowledge Base Index** | `docs/backend/KB-INDEX.md` | Curated index for backend, DB, and edge functions |
 

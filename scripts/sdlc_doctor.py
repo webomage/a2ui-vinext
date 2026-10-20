@@ -519,6 +519,13 @@ def main() -> int:
     check_hygiene(problems, notes)
     check_ticket_parity(problems, notes)
 
+    # ── T214 AC4: universal system standards & meta-asset schema gate ─────────
+    std_script = CANONICAL / "project" / "scripts" / "standards_check.py"
+    if std_script.exists():
+        code, out = sh("python3", str(std_script))
+        if code != 0:
+            problems.append(f"standards-check failed: {out.strip().splitlines()[0] if out.strip() else 'exit ' + str(code)}")
+
     for n in notes:
         if not quiet:
             print(f"  ⚠  {n}")
