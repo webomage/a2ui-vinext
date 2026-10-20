@@ -83,6 +83,7 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 | **Ticket Queue & Task Priorities** | `TASKS.md` (`just tasks`, `just tasks hot`) | Ranked task queue with status, priority, and ACs |
 | **Decided Technical Debt** | `TECH-DEBT.md` (`just debt-check`) | Clean, non-drifting list of accepted debts |
 | **Tech Stacks & Command Registry** | `project/stacks-policy.json` (`just discovery`) | Per-stack contract mapping tools to `just` commands |
+| **Estate & Client Port Governance** | `project/ports-policy.json` (`just ports-check`) | Canonical port registry (`4321–4325` apps, `8787/8788` headroom, `8790` `wom7func`, `4400–4499` client projects, T402) |
 | **System Topology & Boundaries** | `docs/ECOSYSTEM.md` & `docs/ARCHITECTURE.md` | Maps cross-boundary data and service flows |
 | **Backend Knowledge Base Index** | `docs/backend/KB-INDEX.md` | Curated index for backend, DB, and edge functions |
 

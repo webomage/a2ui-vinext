@@ -1218,3 +1218,14 @@ project-report-ingest *args:
 project-report-ingest-test:
     @python3 wom7web/project/scripts/tests/test_report_ingest.py -v
 
+# ── Estate Port Governance & Interactive Status Dashboard (T402 / T394) ─────
+ports-check *args:
+    @python3 wom7web/project/scripts/ports_check.py {{ args }}
+
+ports-check-test:
+    @python3 wom7web/project/scripts/tests/test_ports_check.py
+
+status-dashboard-test:
+    @python3 wom7web/project/scripts/tests/test_gen_status_dashboard.py
+
+
