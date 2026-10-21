@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: research
-  version: "2026.09.27-1790539585"
+  version: "2026.10.21-1792622813"
 ---
 
 # w0m-sdlc-research — the deep grounding gate
@@ -77,6 +77,12 @@ Run all that apply; record what each *actually* shows with a citation:
 - **Stack drift (T130).** If the ticket touches a stack's tools/build, run `just discovery` and note
   any drift (used-not-declared / declared-not-used) in the Grounding Report. → Does
   `project/stacks-policy.json` still match what the stack actually uses?
+- **Vetted OSS package discovery (`awesome-repositories` MCP, T26).** When a ticket or spec proposes
+  introducing a new third-party dependency, replacing a custom module with an open-source library, or
+  evaluating upstream candidates (`wom7open` / `wom7pr`), query the read-only `awesome-repositories`
+  MCP server (`search_repositories`, `search_metadata_tags`, `get_repository`, `list_curated_searches`,
+  `list_repository_docs`; see `docs/PACKAGE-DISCOVERY-MCP.md`) and verify the chosen package's license
+  against `project/policies/deps-policy.json` before drafting the spec.
 - **Triangulated SSOT & Multi-sided verification (`fact-checker`, `socrates` / `/grill-me`, `torvalds`).**
   Enforce adversarial rigor: cross-validate facts across the 5 surfaces (*Docs vs Specs vs Code vs Tests vs Live Infra*) using `fact-checker` to disprove stale assumptions. Apply Socratic questioning (`socrates` / `/grill-me`) to expose boundary conditions and missing edge cases. Apply ruthless pragmatism (`torvalds`) to eliminate bloat and unnecessary abstractions before any spec is drafted.
 - **UI/UX surface & design system (MANDATORY for tickets with UI/UX changes).**

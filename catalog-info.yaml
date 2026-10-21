@@ -286,6 +286,40 @@ relations:
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
+  name: mcp-awesome-repositories
+  namespace: default
+  title: 'MCP Server: awesome-repositories'
+  description: 'T26: Standing read-only HTTP MCP server (https://awesome-repositories.com/api/mcp,
+    OAuth 2.1 auto-discovery via /.well-known/oauth-protected-resource) for vetted
+    OSS package & repository discovery during SDLC research and spec stages (docs/PACKAGE-DISCOVERY-MCP.md).'
+  annotations:
+    w0m.dev/mcp-auth: oauth-2.1-auto-discovery
+    w0m.dev/mcp-required: 'false'
+    w0m.dev/mcp-scope: project
+    w0m.dev/mcp-transport: remote
+    w0m.dev/source-register: .w0m/sdlc.json
+  tags:
+  - mcp
+  - mcp-server
+  - remote
+  - project
+spec:
+  type: mcp-server
+  lifecycle: production
+  owner: group:default/platform
+  definition: 'T26: Standing read-only HTTP MCP server (https://awesome-repositories.com/api/mcp,
+    OAuth 2.1 auto-discovery via /.well-known/oauth-protected-resource) for vetted
+    OSS package & repository discovery during SDLC research and spec stages (docs/PACKAGE-DISCOVERY-MCP.md).'
+  system: system:default/w0m
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
   name: mcp-claude-in-chrome
   namespace: default
   title: 'MCP Server: claude-in-chrome'
@@ -1497,6 +1531,7 @@ spec:
   system: system:default/w0m
   subcomponentOf: component:default/repo-wom7func
   consumesApis:
+  - api:default/mcp-awesome-repositories
   - api:default/mcp-claude-in-chrome
   - api:default/mcp-cloudflare
   - api:default/mcp-codegraph
@@ -1551,6 +1586,7 @@ spec:
   system: system:default/w0m
   subcomponentOf: component:default/repo-wom7api
   consumesApis:
+  - api:default/mcp-awesome-repositories
   - api:default/mcp-claude-in-chrome
   - api:default/mcp-cloudflare
   - api:default/mcp-codegraph
@@ -1584,10 +1620,10 @@ metadata:
     is the REPO-ROOT wom7ext/package.json. AC3 is therefore ''wire up what exists''.
     Two surfaces share the package name `wom7ext-extension` (extension + extension-ff).'
   annotations:
-    w0m.dev/commands: '{"build": "build-extension", "lint": "lint-gate", "test-e2e":
-      "test-e2e", "typecheck": "typecheck"}'
-    w0m.dev/gates: '{"build": "manual", "lint": "pre-commit", "test-e2e": "manual",
-      "typecheck": "pre-commit"}'
+    w0m.dev/commands: '{"build": "build-extension", "lint": "lint-gate", "test": "test",
+      "test-e2e": "test-e2e", "typecheck": "typecheck"}'
+    w0m.dev/gates: '{"build": "manual", "lint": "pre-commit", "test": "manual", "test-e2e":
+      "manual", "typecheck": "pre-commit"}'
     w0m.dev/justfile: wom7ext/justfile
     w0m.dev/path: .
     w0m.dev/push-gate: central
@@ -1606,6 +1642,7 @@ spec:
   system: system:default/w0m
   subcomponentOf: component:default/repo-wom7ext
   consumesApis:
+  - api:default/mcp-awesome-repositories
   - api:default/mcp-claude-in-chrome
   - api:default/mcp-cloudflare
   - api:default/mcp-codegraph
@@ -1666,6 +1703,7 @@ spec:
   system: system:default/w0m
   subcomponentOf: component:default/repo-wom7mlx-wom7mlx
   consumesApis:
+  - api:default/mcp-awesome-repositories
   - api:default/mcp-claude-in-chrome
   - api:default/mcp-cloudflare
   - api:default/mcp-codegraph
@@ -1721,6 +1759,7 @@ spec:
   system: system:default/w0m
   subcomponentOf: component:default/repo-wom7sec
   consumesApis:
+  - api:default/mcp-awesome-repositories
   - api:default/mcp-claude-in-chrome
   - api:default/mcp-cloudflare
   - api:default/mcp-codegraph
@@ -1778,6 +1817,7 @@ spec:
   system: system:default/w0m
   subcomponentOf: component:default/repo-wom7skills
   consumesApis:
+  - api:default/mcp-awesome-repositories
   - api:default/mcp-claude-in-chrome
   - api:default/mcp-cloudflare
   - api:default/mcp-codegraph
@@ -1825,6 +1865,7 @@ spec:
   system: system:default/w0m
   subcomponentOf: component:default/repo-wom7web
   consumesApis:
+  - api:default/mcp-awesome-repositories
   - api:default/mcp-claude-in-chrome
   - api:default/mcp-cloudflare
   - api:default/mcp-codegraph
@@ -1872,6 +1913,7 @@ spec:
   system: system:default/w0m
   subcomponentOf: component:default/repo-wom7api
   consumesApis:
+  - api:default/mcp-awesome-repositories
   - api:default/mcp-claude-in-chrome
   - api:default/mcp-cloudflare
   - api:default/mcp-codegraph
@@ -1940,6 +1982,7 @@ spec:
   system: system:default/w0m
   subcomponentOf: component:default/repo-wom7web
   consumesApis:
+  - api:default/mcp-awesome-repositories
   - api:default/mcp-claude-in-chrome
   - api:default/mcp-cloudflare
   - api:default/mcp-codegraph
@@ -1993,6 +2036,7 @@ spec:
   system: system:default/w0m
   subcomponentOf: component:default/repo-wom7api
   consumesApis:
+  - api:default/mcp-awesome-repositories
   - api:default/mcp-claude-in-chrome
   - api:default/mcp-cloudflare
   - api:default/mcp-codegraph

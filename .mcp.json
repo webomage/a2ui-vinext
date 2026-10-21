@@ -18,6 +18,10 @@
     "upwork": {
       "type": "http",
       "url": "https://mcp.upwork.com/mcp"
+    },
+    "awesome-repositories": {
+      "type": "http",
+      "url": "https://awesome-repositories.com/api/mcp"
     }
   }
 }

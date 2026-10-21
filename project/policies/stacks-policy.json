@@ -487,6 +487,7 @@
       ],
       "commands": {
         "build": "build-extension",
+        "test": "test",
         "test-e2e": "test-e2e",
         "lint": "lint-gate",
         "typecheck": "typecheck"
@@ -501,6 +502,11 @@
           "phase": "manual",
           "reason": "`build-extension` runs `pnpm install` before building, so it reaches the network and can rewrite the lockfile — neither belongs in a commit or push hook. The read-only check for this stack is `type-check` (T135 task 3.6), not the bundle build.",
           "remeasure": "Promote if the recipe is split so the build step no longer installs."
+        },
+        "test": {
+          "phase": "manual",
+          "reason": "T142 AC3: executes the 8 Gauge specs in `wom7ext/specs/` (smoke + 7 migrated LinkedIn/Upwork extension specs) via `gauge run`. Kept manual alongside `wom7web` Gauge specs because `gauge-ts` runner initialization takes ~20s.",
+          "remeasure": "Promote to pre-push if Gauge runner startup is pooled or budgeted in the pre-push tier."
         },
         "test-e2e": {
           "phase": "manual",

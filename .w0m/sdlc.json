@@ -489,6 +489,24 @@
         "endpoint": "/mcp",
         "scope": "project",
         "purpose": "T144 AC7 / T26: HTTP JSON-RPC 2.0 MCP server exposed by wom7func (`POST /mcp`) using `@modelcontextprotocol/sdk` protocol structures for platform health, awesome-repositories, and edge dispatch tools."
+      },
+      "awesome-repositories": {
+        "enabled": true,
+        "required": false,
+        "transport": "remote",
+        "url": "https://awesome-repositories.com/api/mcp",
+        "auth": "oauth-2.1-auto-discovery",
+        "oauth_discovery": "/.well-known/oauth-protected-resource",
+        "read_only": true,
+        "tools": [
+          "search_repositories",
+          "search_metadata_tags",
+          "get_repository",
+          "list_curated_searches",
+          "list_repository_docs"
+        ],
+        "scope": "project",
+        "purpose": "T26: Standing read-only HTTP MCP server (https://awesome-repositories.com/api/mcp, OAuth 2.1 auto-discovery via /.well-known/oauth-protected-resource) for vetted OSS package & repository discovery during SDLC research and spec stages (docs/PACKAGE-DISCOVERY-MCP.md)."
       }
     },
     "directions": {

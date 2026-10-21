@@ -910,6 +910,15 @@ skills-audit-tools *args:
 skills-chips *args:
     @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" chips {{ args }}
 
+skills-catalog *args:
+    @python3 wom7web/project/scripts/skills_catalog_gen.py --write {{ args }}
+
+skills-catalog-check *args:
+    @python3 wom7web/project/scripts/skills_catalog_gen.py --check {{ args }}
+
+skills-catalog-test:
+    @PYTHONPATH=wom7web python3 -m pytest wom7web/project/scripts/tests/test_t24_skills_expansion.py -q -p no:cacheprovider
+
 # ── SkillOpt Self-Evolution & Nightly Sleep Loop (T482) ──────────────────────
 sleep *args:
     @python3 scripts/sleep_harness.py {{ args }}

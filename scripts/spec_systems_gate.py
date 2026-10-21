@@ -130,11 +130,10 @@ def main() -> int:
         by_repo: dict[str, int] = {}
         for p in gherkin:
             by_repo[p.relative_to(ESTATE).parts[0]] = by_repo.get(p.relative_to(ESTATE).parts[0], 0) + 1
-        print(f"\n [MED] GHERKIN IN A w0m REPO: {len(gherkin)} file(s) — "
+        print(f"\n  ❌ GHERKIN IN A w0m REPO: {len(gherkin)} file(s) — "
               + ", ".join(f"{k} {v}" for k, v in sorted(by_repo.items())))
-        print("       Gherkin is a CUSTOMER-PROJECT tool by standing decision; inside w0m it "
-              "migrates to Gauge.")
-        print(" [WARN] These RUN (`cucumber-js` is wired as `test:e2e`) — migrate, do not delete.")
+        print("       Gherkin is a CUSTOMER-PROJECT tool by standing decision (T72 / T142); inside w0m "
+              "all executable specs use Gauge (`*.spec`).")
         for p in gherkin[:6]:
             print(f"         · {p.relative_to(ESTATE)}")
         if len(gherkin) > 6:
@@ -142,13 +141,11 @@ def main() -> int:
     else:
         print("  ✅ no Gherkin inside any w0m repo")
 
-    n = len(resurrected) + len(gherkin)
-    print(f"\n── {len(resurrected)} resurrection(s), {len(gherkin)} Gherkin file(s)."
-          + ("" if args.enforce else " Advisory: exits 0."))
-    # 🔴 Only a RESURRECTION gates. The Gherkin backlog is pre-existing and migrating 16 running
-    # e2e specs is its own piece of work — gating on it would install a red check nobody can clear
-    # in one push, which is how a gate teaches people to route around it (T135 AC8).
-    return 1 if (resurrected and args.enforce) else 0
+    print(f"\n── {len(resurrected)} resurrection(s), {len(gherkin)} Gherkin file(s).")
+    # T142 AC7: all 10 remaining .feature files in wom7ext (7) and wom7mlx (3) have been migrated
+    # to Gauge .spec files. Both retired spec-system resurrections and any new .feature file inside
+    # a w0m7* repo now block unconditionally.
+    return 1 if (resurrected or gherkin) else 0
 
 
 if __name__ == "__main__":

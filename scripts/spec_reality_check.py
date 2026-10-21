@@ -125,7 +125,12 @@ def main() -> int:
                 return ok
         return None
 
-    specs = sorted(SPECS.rglob("*.spec"))
+    spec_roots = [
+        SPECS,
+        ROOT / "wom7ext" / "specs",
+        ROOT / "wom7mlx" / "wom7mlx" / "specs",
+    ]
+    specs = sorted(sp for sr in spec_roots if sr.is_dir() for sp in sr.rglob("*.spec"))
     if not specs:
         print("  ❌ no specs found — broken path, not a clean corpus.")
         return 2
