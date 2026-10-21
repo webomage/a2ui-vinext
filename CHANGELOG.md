@@ -2,6 +2,17 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.21-1792617301
+_First deployed: 2026-10-21 21:26:13.07356+00_
+
+### Features
+- **sdlc**: declare design_system contract and complete T183 + T118 ([T183](file:///.tasks/T183.md), [T118](file:///.tasks/T118.md))
+- **sdlc**: close Track D tickets (T99, T114, T219, T333) and wire standing audit probes ([T99](file:///.tasks/T99.md), [T114](file:///.tasks/T114.md), [T219](file:///.tasks/T219.md), [T333](file:///.tasks/T333.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `1df175c` | 2026-10-21 21:26:13.07356+00 |
+
 ## 2026.10.21-1792595362
 _First deployed: 2026-10-21 15:20:59.887169+00_
 
