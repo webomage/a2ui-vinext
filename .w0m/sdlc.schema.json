@@ -27,6 +27,7 @@
     "toolchain",
     "skills",
     "stacks",
+    "design_system",
     "ide_surfaces",
     "mcp",
     "iac",
@@ -129,6 +130,38 @@
     },
     "stacks": {
       "type": ["object", "string", "array"]
+    },
+    "design_system": {
+      "type": "object",
+      "required": ["format", "path", "tokens", "adherence_gate"],
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["claude-design", "custom", "docs", "none"]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paths": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "tokens": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tokens_strategy": {
+          "type": "string",
+          "enum": ["css-custom-properties", "tailwind-theme", "hybrid", "none"]
+        },
+        "skill": {
+          "type": "string"
+        },
+        "adherence_gate": {
+          "type": ["object", "string"]
+        }
+      }
     },
     "ide_surfaces": {
       "type": "object",

@@ -316,6 +316,52 @@
     "schema": "project/policies/stacks-policy.schema.json",
     "discovery": "scripts/discovery.py"
   },
+  "design_system": {
+    "_comment": "T183 AC1–AC11: the Design System contract surface. Declares presence, format (`claude-design` | `custom` | `docs` | `none`), paths, token strategy, skill parity anchor, and stack-keyed adherence enforcement (`just design-system-check`, `wom7web/project/scripts/design_system_check.py`). Content-based detection pins `claude-design` on real markers (`<x-dc>` in `.dc.html`, `_ds/<slug>-<uuid>/tokens/*.css`, `_ds_bundle.js` + `_adherence.oxlintrc.json`) rather than folder names so hand-rolled DS directories (1945 `custom`), prose specs (Artemio `docs`), and multi-root bundles (BridgeRoad `ds-bundle/` / `.design-sync/` + `design_guidelines.md`) are never misclassified.",
+    "format": "claude-design",
+    "path": "wom7web/design-system",
+    "paths": [
+      "wom7web/design-system",
+      "wom7web/packages/ui"
+    ],
+    "tokens": "wom7web/design-system/tokens",
+    "tokens_strategy": "css-custom-properties",
+    "_tokens_note": "CSS custom properties in `wom7web/design-system/tokens/*.css` are the single canonical token SSOT; Tailwind 4 `@theme` and `packages/ui` consume these CSS variables rather than maintaining a second hex palette.",
+    "skill": "webomage-design",
+    "skill_path": "wom7web/design-system/SKILL.md",
+    "manifest": "wom7web/design-system/_ds_manifest.json",
+    "adherence_config": "wom7web/design-system/_adherence.oxlintrc.json",
+    "runtime_package": "wom7web/packages/ui",
+    "check": "just design-system-check",
+    "adherence_gate": {
+      "default": "just ds-adherence",
+      "by_stack": {
+        "astro+svelte": {
+          "recipe": "just ds-adherence",
+          "script": "wom7web/project/scripts/ds_sync_pipeline.py",
+          "enforces": [
+            "css-custom-property-tokens",
+            "ast-grep-disallow-brand-hex-literal",
+            "svelte-component-prop-types"
+          ],
+          "note": "T93 + T183 AC8: `_adherence.oxlintrc.json` has ~25 JSXOpeningElement selectors that match 0 `.svelte`/`.astro` files. Astro+Svelte stacks (w0m, Artemio) enforce token & primitive adherence via `just ds-adherence` (`ds_sync_pipeline.py` + `ast-grep` + `svelte-check`)."
+        },
+        "react+jsx": {
+          "recipe": "oxlint -c design-system/_ref/_adherence.oxlintrc.json",
+          "enforces": [
+            "jsx-prop-contracts",
+            "literal-hex-px-font"
+          ],
+          "note": "T183 AC8: React/JSX stacks without TypeScript (1945: 72 `.jsx`, 0 `.tsx`) execute `JSXOpeningElement` prop-contract selectors natively via oxlint."
+        }
+      }
+    },
+    "handoff": {
+      "contract": "T183",
+      "enforcement_and_sync": "T93",
+      "content_and_visual_refresh": "T42"
+    }
+  },
   "ide_surfaces": {
     "_comment": "T192 AC1: the connected IDEs — which agentic tools this project is used with, and therefore whose autoload surface must carry the same contract. 🔑 THE DECLARATION IS THE SOURCE OF TRUTH, and it has to be, because nothing else records it: `openspec init --tools` writes each chosen tool's surface and keeps NO memory of the choice (measured 2026-08-10 — `openspec/config.yaml` contains `schema: spec-driven` and nothing else, in every project that has one). Read by project/scripts/ide_trace.py (`just ide-trace` / `--enforce`); the per-tool autoload knowledge and the non-negotiables checked for parity live in the policy file, never here. ⚠️ `connected` is a DICT here because w0m is one project spanning seven repos under this single sdlc.json — keys are `repos` keys, and each repo is scanned as its own unit since each autoloads its own CLAUDE.md. A single-root project (every client) declares a plain LIST instead.",
     "policy": "project/policies/ide-policy.json",
