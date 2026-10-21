@@ -164,6 +164,13 @@ def check_conform():
             add(WARN, "decommission", name.split("—")[0].strip(),
                 "retired, but no `absent` block proves it stayed gone")
 
+    bp_check = WEB_ROOT / "project" / "scripts" / "blueprint_catalog_check.py"
+    if bp_check.is_file():
+        r_bp = subprocess.run([sys.executable, str(bp_check)], cwd=WEB_ROOT, capture_output=True, text=True)
+        bp_msg = (r_bp.stdout or r_bp.stderr).strip().splitlines()
+        add(PASS if r_bp.returncode == 0 else FAIL, "conform", "blueprint-catalog",
+            bp_msg[-1] if bp_msg else ("ok" if r_bp.returncode == 0 else "blueprint catalog drift"))
+
 
 # ── DRIFT: git + spec ────────────────────────────────────────────────────────────
 def check_drift(scope_diff=None):
@@ -881,14 +888,27 @@ def check_upwork_sync():
     add(PASS, "upwork-sync", "coverage-and-health", summary)
 
 
-def check_connectors():
-    """T95 AC4 — services-policy.json services[] vs docs/backend/connectors/, both directions."""
+def check_connectors() -> None:
+    """T95 AC4 + T99 AC8 — services-policy.json services[] vs docs/backend/connectors/, plus live token encryption & column_privileges."""
     r = subprocess.run(["just", "connector-check"], cwd=API_ROOT, capture_output=True, text=True)
     detail = (r.stdout + r.stderr).strip().splitlines()
     _MARKERS = ("✅", "❌", "✗", "[OK]", "[FAIL]", "[PASS]", "[WARN]", "--")
     summary = "; ".join(l.strip() for l in detail if l.strip().startswith(_MARKERS))[:300]
     add(PASS if r.returncode == 0 else FAIL, "connectors", "doc-coverage",
         summary or ("ok" if r.returncode == 0 else "connector-check failed"))
+
+    if shutil.which("infisical") is None:
+        add(SKIP, "connectors", "token-encryption-and-grants", "infisical not on PATH")
+        return
+    probe = WEB_ROOT / "project" / "scripts" / "t506_security_pii_probe.py"
+    r_tok = subprocess.run(
+        ["infisical", "run", "--env=beta", "--silent", "--", sys.executable, str(probe), "--live"],
+        cwd=API_ROOT, capture_output=True, text=True,
+    )
+    tok_lines = (r_tok.stdout + r_tok.stderr).strip().splitlines()
+    tok_summary = "; ".join(l.strip() for l in tok_lines if l.strip().startswith(_MARKERS))[:300]
+    add(PASS if r_tok.returncode == 0 else FAIL, "connectors", "token-encryption-and-grants",
+        tok_summary or ("ok" if r_tok.returncode == 0 else "connector token encryption/grant check failed"))
 
 
 def check_deep():
