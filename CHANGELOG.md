@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.20-1792552492
+_First deployed: 2026-10-21 03:26:07.475201+00_
+
+### Features
+- **T272**: declare client project external services & cost attribution and record T271 comparison ([T272](file:///.tasks/T272.md), [T271](file:///.tasks/T271.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `24881df` | 2026-10-21 03:26:07.475201+00 |
+
 ## 2026.10.20-1792549859
 _First deployed: 2026-10-21 02:42:35.728739+00_
 
