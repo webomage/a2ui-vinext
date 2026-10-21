@@ -17,7 +17,7 @@
 |---|---|---|---|---|---|---|---|
 | 1 | [T43](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 85 | Full-observability logging strategy 📄 live spec |
 | 2 | [T279](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 83 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
-| 3 | [T365](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 79 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
+| 3 | [T365](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 80 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
 | 4 | [T374](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T374.md) | [#374](https://github.com/webomage/wom7board/issues/374) | P1 | queued | tools | 79 | Unified oMLX process management: multi-mode daemon/GUI/CLI detection, port  📄 live spec |
 | 5 | [T24](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T24.md) | [#24](https://github.com/webomage/wom7board/issues/24) | P1 | queued | skills | 70 | Skills expansion — import + survey |
 | 6 | [T26](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T26.md) | [#26](https://github.com/webomage/wom7board/issues/26) | P1 | queued | tools | 70 | Package discovery via awesome-repositories MCP |
@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 201 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **201** are
+> ⚠️ **0 of 197 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **197** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `3690efb4` |
-| `wom7api` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `66cbdb1` |
-| `wom7func` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `b316326` |
+| `wom7web` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `d27adf34` |
+| `wom7api` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `77f6cfd` |
+| `wom7func` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `c3abbaa` |
 | `wom7skills` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
 | `wom7ext` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `fc516e7` |
 | `wom7sec` | `agent/ant-ci` | **2** | **n/a — NO UPSTREAM** | `d56236b` |
 | `wom7mlx/wom7mlx` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 201 open · 564 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 197 open · 564 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T43","T279","T365","T374","T24","T26","T36","T50","T51","T57"],"repos":{"wom7api":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"66cbdb1","unpushed":null},"wom7ext":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"fc516e7","unpushed":null},"wom7func":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"b316326","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/ant-ci","dirty":2,"has_upstream":true,"head":"d56236b","unpushed":null},"wom7skills":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"3690efb4","unpushed":null}},"tickets":{"open":201,"rowless_open":[],"rows":564}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T43","T279","T365","T374","T24","T26","T36","T50","T51","T57"],"repos":{"wom7api":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"77f6cfd","unpushed":null},"wom7ext":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"fc516e7","unpushed":null},"wom7func":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"c3abbaa","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/ant-ci","dirty":2,"has_upstream":true,"head":"d56236b","unpushed":null},"wom7skills":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"d27adf34","unpushed":null}},"tickets":{"open":197,"rowless_open":[],"rows":564}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -123,29 +123,13 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-10-20 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-10-21 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
-
-#### Completed today (13):
-
-- **T214** — Universal System Standards & RFC Adherence — Single Source of Truth for Schemas, Models, Interfaces, APIs & MCP (Done (7/7 ACs verified))
-- **T272** — Show each client the services their project uses, what they cost, and let them manage those settings — but neither attribution nor safe credential storage exists yet (deployed (2026.10.20-1792552492, commit 24881df), verified live & archived (status: done).)
-- **T336** — Public free security audit lead magnet & client registration gate (Shipped AC1–AC6 + unified cross-portal side panel (CpShell) across apps/cp, apps/job, and apps/join)
-- **T337** — Advanced code & infrastructure audit runner with ephemeral air-gapped sandboxes (Completed all 8 ACs across wom7sec and wom7web: implemented wom7sec/scripts/sandbox_audit_runner.py + wom7sec/tests/test_t337_sandbox_runner.py (6/6 passing) and @webomage/lib/security/advanced-audit + packages/lib/src/security/advanced-audit.test.ts (5/5 passing) + wom7web/project/scripts/tests/test_t337_advanced_audit.py (2/2 passing); wired Level 2 trial demo mode and Level 3 @k7 topology/FinOps/compliance readiness binder into apps/web/src/pages/api/security-audit.ts, apps/cp/src/pages/api/client/security-audit.ts, and apps/cp/src/components/client/SecurityAuditReportViewer.svelte; archived OpenSpec 2026-10-20-2026-09-11-multi-tier-audit-and-secure-sandboxes.)
-- **T394** — Interactive filtering, multi-dimensional aggregation, and client-delivery readiness insights in STATUS-DASHBOARD (Done: Updated wom7web/project/scripts/gen_status_dashboard.py to extract canonical ticket metadata (area, tags, epic, ac_done, ac_total), emit #w0m-client-readiness-insights (Security, Quality, and Stability pillars with one-click filtering), #w0m-board-filters (clickable Status, Domain, Roadmap, and Top Tags pills + live search and reset), and inline row pills on docs/STATUS-DASHBOARD.html. Authored project/scripts/tests/test_gen_status_dashboard.py and registered status-dashboard-test in project/test-suites.json.)
-- **T402** — Port governance: enumerate estate ports, resolve port 8788 conflict, and allocate dedicated client project range (Done: Codified wom7web/project/ports-policy.json (12 single-port allocations + 3 ranges including 4400–4499 for client delivery projects), updated apps/web/src/lib/rpc.ts, apps/cp/src/lib/rpc.ts, tests/steps/ats.steps.ts, and DOCS_DEEP_ANALYSIS.md from 8788 to 8790, authored project/scripts/ports_check.py and project/scripts/tests/test_ports_check.py, documented the client port allocation standard in docs/ECOSYSTEM.md and AGENTS.md, and wired just ports-check and just ports-check-test across all justfiles and project/test-suites.json.)
-- **T442** — Connector framework — one OAuth connect flow for every service, MCP-first transport with API/App fallback per provider, tokens encrypted at rest (D3 (Adapters & UI): Shipped @webomage/lib/connectors (types.ts, pkce.ts, crypto.ts, status.ts, adapters.ts, flow.ts), unified CP routes (/api/connections, /api/connections/[provider]/start, /api/connections/[provider]/callback, /api/connections/[id]), migration wom7api/supabase/migrations/20261020160000_t442_connector_framework.sql (org owner support, scopes/capabilities, single-use PKCE oauth_states, column-level GRANT SELECT excluding all token/ciphertext/code_verifier columns from anon/authenticated), and UI surfaces in Me → Profile (ConnectedIdentities.svelte), Org → Settings → Integrations (OrgIntegrationsManager.svelte), and Admin → Connections (ConnectionsManager.svelte). Archived OpenSpec change to wom7web/openspec/changes/archive/-2026-09-24-connector-framework and created main spec wom7web/openspec/specs/service-connections/spec.md.)
-- **T446** — Estate file hygiene: every tracked file has a home, an owner and a reason, enforced (Done (5/5 ACs verified))
-- **T447** — Process the _in tray: each item shows whether it became a spec, a ticket or code, or is still new (Done (5/5 ACs verified))
-- **T528** — KYC personal half: KYC reads the member's contact and identity records, and CURP and RFC leave gamification.compliance_profiles (AC1–AC5 implemented, deployed (2026.10.20-1792549859), and verified live (48/48 Vitest, 4/4 scratch Postgres test_t528_kyc_personal_half.py, 15/15 live t349_kyc_probe.py))
-- **T530** — Org model S9: retire Axis-1 account classes and network.member, unify CP context switcher on engagement hats and root admin (Done (6/6 ACs): Retired the Axis-1 "Global Roles" switcher grid from SidebarHatSwitcher.svelte (converting all controls to @webomage/ui Button and CSS tokens, ratcheting ds-conformance down by -5 native buttons and -1 hex color), unified engagement/project hat switching on <contractor>.<engagement>.<client> (formatEngagementAddress) with POST /api/project/hats (wom_wear_hat / wom_take_off_hat) + POST /api/auth/switch-role persistence, replaced network.member with hat.talent across packages/lib/src/auth/capability.ts and apps/cp/src/lib/context/nav.ts, and updated defineAbilityFor / canAccess / middleware.ts / portal-policy.ts / apps/cp/src/pages/index.astro so engagement hat slugs (pm, tl, dev, devops, qa, design, trainer, trainee, client) are enforced directly while root admin access (admin-console, web-private) remains invariant across worn hats (306/306 unit tests passing across 19 suites + 19/19 live verify_t439_context_rbac.py + 7/7 live engagements_hats_verify.py).)
-- **T560** — Move Resume Studio, Upwork sync, proposals, messages, recruiting, and contract management to job.webomage.com with 301 cutovers in cp.webomage.com (Post-deploy fix for job.webomage.com / join.webomage.com BaseHead.astro SSR Astro.site truncation (T560).)
-- **T564** — Virtual agent identity (agent_id) & cross-worktree ticket claim and tagging system (Implemented wom7web/project/scripts/agent_identity.py (whoami, set, claim, release, tag, claims), updated tickets-schema.jsonc / ticket-frontmatter.schema.json / ticket_schema_check.py / project/templates/ticket.md for agent_id + agent_<harness>_<handle> tags, wired cross-worktree live radar into scripts/tasks_query.py (apply_cross_tree_radar) and wom7web/project/scripts/agent_tree.py, added just agent-id, just ticket-claim, just ticket-release, just ticket-tag, just agent-claims, just agent-identity-test, and registered agent-identity in wom7web/project/test-suites.json (4/4 unit tests green).)
 
 ## 3. Other open threads (in TASKS.md)
 
