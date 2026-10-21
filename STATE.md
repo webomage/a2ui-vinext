@@ -24,7 +24,7 @@
 | 7 | [T36](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 70 | AI provider-adapter seam + lib hygiene |
 | 8 | [T50](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T50.md) | [#50](https://github.com/webomage/wom7board/issues/50) | P1 | queued | data | 70 | Fix Upwork Ingestion Pagination & CLI Search |
 | 9 | [T57](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 70 | Implement w0m Open Routing Layer |
-| 10 | [T92](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T92.md) | [#92](https://github.com/webomage/wom7board/issues/92) | P1 | queued | product | 70 | Design System — unify shared components into @webomage/ui |
+| 10 | [T118](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T118.md) | [#118](https://github.com/webomage/wom7board/issues/118) | P1 | queued | product | 70 | Content & blueprint deep-review + DS alignment |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 178 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **178** are
+> ⚠️ **0 of 176 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **176** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -48,8 +48,8 @@
 | 6 | [T43](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | infra | 0/7 | `░░░░░░░░░░` 0% | — | Full-observability logging strategy |
 | 7 | [T50](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T50.md) | [#50](https://github.com/webomage/wom7board/issues/50) | P1 | queued | data | 0/3 | `░░░░░░░░░░` 0% | — | Fix Upwork Ingestion Pagination & CLI Search |
 | 8 | [T57](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Implement w0m Open Routing Layer |
-| 9 | [T92](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T92.md) | [#92](https://github.com/webomage/wom7board/issues/92) | P1 | queued | product | 0/6 | `░░░░░░░░░░` 0% | — | Design System — unify shared components into @webomage/ui |
-| 10 | [T93](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T93.md) | [#93](https://github.com/webomage/wom7board/issues/93) | P1 | queued | product | 0/6 | `░░░░░░░░░░` 0% | — | Design System — Claude-Design sync pipeline + adherence enfo |
+| 9 | [T118](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T118.md) | [#118](https://github.com/webomage/wom7board/issues/118) | P1 | queued | product | 0/6 | `░░░░░░░░░░` 0% | — | Content & blueprint deep-review + DS alignment |
+| 10 | [T136](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T136.md) | [#136](https://github.com/webomage/wom7board/issues/136) | P1 | queued | product | 0/7 | `░░░░░░░░░░` 0% | — | Research migrating WordPress sites to the vinext (Vite+React |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -60,8 +60,8 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `bb9900d4` |
-| `wom7api` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `405916b` |
+| `wom7web` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `547e04c7` |
+| `wom7api` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `5728d67` |
 | `wom7func` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `33d8a91` |
 | `wom7skills` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
 | `wom7ext` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `fc516e7` |
@@ -69,9 +69,9 @@
 | `wom7mlx/wom7mlx` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 178 open · 564 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 176 open · 564 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T43","T279","T365","T374","T24","T26","T36","T50","T57","T92"],"repos":{"wom7api":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"405916b","unpushed":null},"wom7ext":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"fc516e7","unpushed":null},"wom7func":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"33d8a91","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"227646b","unpushed":null},"wom7skills":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"bb9900d4","unpushed":null}},"tickets":{"open":178,"rowless_open":[],"rows":564}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T43","T279","T365","T374","T24","T26","T36","T50","T57","T118"],"repos":{"wom7api":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"5728d67","unpushed":null},"wom7ext":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"fc516e7","unpushed":null},"wom7func":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"33d8a91","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"227646b","unpushed":null},"wom7skills":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"547e04c7","unpushed":null}},"tickets":{"open":176,"rowless_open":[],"rows":564}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
