@@ -20,6 +20,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 |---|------|------|-------|-----|--------|
 | [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | **P1** | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 🔵 **blocked** |
+| [T528](.tasks/T528.md) | **P1** | 🆕 **KYC personal half: KYC reads the member's contact and identity records, and CURP and RFC leave gamification.compliance_profiles** | web, api | — | 🟡 **in-progress** |
 | [T466](.tasks/T466.md) | **P1** | 🆕 **User-guide stories: stable ids, a Gauge UI spec per story, a Jam walkthrough per story, and a coverage gate** | web | — | ⚪ **queued** |
 | [T441](.tasks/T441.md) | **P1** | 🆕 **Upwork for every member — connect from Me, one sync engine for estate and member accounts, and CP UI for status, history and control** | api, web | — | ⚪ **queued** |
 | [T424](.tasks/T424.md) · [#424](https://github.com/casualuser/webomage.com/issues/424) | **P1** | 🆕 **Orca as the one worktree factory: orca.yaml setup with computed estate parent shims; delete worktree_agent.py** | tooling, web, api, func | — | ⚪ **queued** |
@@ -36,7 +37,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T531](.tasks/T531.md) | **P1** | 🆕 **Per-agent workspace sets: parallel agents stop sharing one working tree, one index and one set of generated files** | tooling | — | ⚪ **queued** |
-| [T528](.tasks/T528.md) | **P1** | 🆕 **KYC personal half: KYC reads the member's contact and identity records, and CURP and RFC leave gamification.compliance_profiles** | web, api | — | ⚪ **queued** |
 | [T509](.tasks/T509.md) | **P1** | 🆕 **Root-first layout: finish the T414 move in staged units, behind a stale-path probe that checks the file a recipe, hook or profile runs actually exists** | web, api | — | ⚪ **queued** |
 | [T506](.tasks/T506.md) | **P1** | 🆕 **Security & PII cutover: AES-256-GCM token encryption, IP retention in ai_usage, and legacy cv bucket cleanup** | api, web, func | — | ⚪ **queued** |
 | [T475](.tasks/T475.md) | **P1** | 🆕 **Biometric hardware anchor for @wom/kyc and compliance profiles** | web, api | — | ⚪ **queued** |
