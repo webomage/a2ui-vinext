@@ -20,7 +20,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 |---|------|------|-------|-----|--------|
 | [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | **P1** | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 🔵 **blocked** |
-| [T528](.tasks/T528.md) | **P1** | 🆕 **KYC personal half: KYC reads the member's contact and identity records, and CURP and RFC leave gamification.compliance_profiles** | web, api | — | 🟡 **in-progress** |
 | [T466](.tasks/T466.md) | **P1** | 🆕 **User-guide stories: stable ids, a Gauge UI spec per story, a Jam walkthrough per story, and a coverage gate** | web | — | ⚪ **queued** |
 | [T441](.tasks/T441.md) | **P1** | 🆕 **Upwork for every member — connect from Me, one sync engine for estate and member accounts, and CP UI for status, history and control** | api, web | — | ⚪ **queued** |
 | [T424](.tasks/T424.md) · [#424](https://github.com/casualuser/webomage.com/issues/424) | **P1** | 🆕 **Orca as the one worktree factory: orca.yaml setup with computed estate parent shims; delete worktree_agent.py** | tooling, web, api, func | — | ⚪ **queued** |
@@ -259,6 +258,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T532](.tasks/T532.md) | **P1** | 🆕 **E2E local sandbox execution environment and full corpus verification run** | web | — | ✅ **done** |
 | [T530](.tasks/T530.md) | **P1** | 🆕 **Org model S9: retire Axis-1 account classes and network.member, unify CP context switcher on engagement hats and root admin** | web, api | — | ✅ **done** |
 | [T529](.tasks/T529.md) | **P1** | 🆕 **Org model S8: retire public.clients and client_users; company details keyed by org, client hats on engagements** | api, web | — | ✅ **done** |
+| [T528](.tasks/T528.md) | **P1** | 🆕 **KYC personal half: KYC reads the member's contact and identity records, and CURP and RFC leave gamification.compliance_profiles** | web, api | — | ✅ **done** |
 | [T515](.tasks/T515.md) | **P1** | 🆕 **A Tinybird token literal is committed in wom7api/scripts/init_tinybird_schemas.py: rotate it, remove it, and make the script read it by injection** | api | — | ✅ **done** |
 | [T513](.tasks/T513.md) | **P1** | 🆕 **Resume Studio documents: View Markdown shows nowhere you are looking, PDFs have no preview, a 400 fires on every load, and the card buttons overflow** | web | — | ✅ **done** |
 | [T510](.tasks/T510.md) | **P1** | 🆕 **Resume vault: every resume private in the members vault; per-profile 'Public resume' and 'Show LinkedIn' switches drive the team-page card** | web, api | — | ✅ **done** |
