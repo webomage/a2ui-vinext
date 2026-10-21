@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.20-1792549859
+_First deployed: 2026-10-21 02:42:35.728739+00_
+
+### Features
+- **kyc**: record AgDR-0035 and mark T528 AC1-AC4 complete (T528) ([T528](file:///.tasks/T528.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `a0801e2` | 2026-10-21 02:42:35.728739+00 |
+
 ## 2026.10.20-1792536207
 _First deployed: 2026-10-20 23:17:13.35776+00_
 
