@@ -1279,6 +1279,14 @@ standards-check *args:
 standards-check-test:
     @python3 wom7web/project/scripts/tests/test_standards_check.py
 
+# ── Client Project Services, Cost Attribution & Scoped Settings (T272) ──────
+client-services-check *args:
+    @python3 wom7web/project/scripts/client_services_check.py {{ args }}
+
+client-services-check-test:
+    @python3 wom7web/project/scripts/tests/test_client_services_check.py
+
+
 
 
 

@@ -45,6 +45,29 @@
           "reason": "Owner-write-only: deployments are executed directly by Aleksei; w0m deployment pipeline does not push to 1945 production."
         }
       },
+      "external_services": [
+        {
+          "service_key": "github",
+          "title": "GitHub Repository (1945socialclub.com)",
+          "category": "vcs",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "GitHub Free",
+          "monthly_base_usd": 0,
+          "unit_label": "Managed repository on branch beta"
+        },
+        {
+          "service_key": "cloudflare",
+          "title": "Production Deployment Pipeline",
+          "category": "compute",
+          "reachability": "external",
+          "external_reason": "Owner-write-only: deployments are executed directly by Aleksei outside w0m automated pipeline.",
+          "attribution_class": "not-attributable",
+          "current_plan": "Owner-managed",
+          "monthly_base_usd": null,
+          "unit_label": "Manual owner deployment lane"
+        }
+      ],
       "identity": {
         "git_user_name": "Aleksei Tcelishchev",
         "git_user_email": "casualuser@gmail.com",
@@ -59,6 +82,8 @@
       "role": "managed",
       "root": "../../_self/delivery/artemioquierocomer.mx",
       "enabled": true,
+      "org_slug": "artemio-quiero-comer",
+      "project_slug": "artemio-quiero-comer",
       "runtime": {
         "substrate": "host"
       },
@@ -67,6 +92,112 @@
         "repo": "casualuser/artemioquierocomer.mx",
         "default_branch": "main"
       },
+      "external_services": [
+        {
+          "service_key": "supabase",
+          "title": "Supabase (Portal Tenancy, Contracts, Invoices, Milestones)",
+          "category": "database",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "Supabase Free (Shared pqbbjgeapylcengbuvee)",
+          "monthly_base_usd": 0,
+          "unit_label": "Tenant-keyed rows (orgs, projects, contracts, invoices, client_milestones)",
+          "resources": [
+            "org:76618087-7279-49a5-af21-9248690582b8",
+            "project:a7e31002-2660-4000-8000-000000000001"
+          ],
+          "paid_tier_option": {
+            "plan": "Supabase Pro",
+            "monthly_usd": 25,
+            "attributable_formula": "Shared DB row/byte footprint is measurable, but egress (5 GB Free / 250 GB Pro) is unmeasurable via Management API (T229 HTTP 404) — cannot attribute overage per tenant."
+          }
+        },
+        {
+          "service_key": "cloudflare",
+          "title": "Cloudflare Workers, KV, Images, AI & Browser Rendering",
+          "category": "compute",
+          "reachability": "w0m_managed",
+          "attribution_class": "attributable",
+          "current_plan": "Cloudflare Free (Account bc601016b37b7d59e75bdb7e33b7f74d)",
+          "monthly_base_usd": 0,
+          "unit_label": "Dedicated Worker artemioquierocomer-mx + Dedicated KV ORDERS_KV",
+          "resources": [
+            "worker:artemioquierocomer-mx",
+            "kv:ORDERS_KV:9d9177d48ba643808a756c0ffce023ae",
+            "binding:IMAGES",
+            "binding:AI",
+            "binding:MYBROWSER",
+            "domain:artemioquierocomer.mx"
+          ],
+          "paid_tier_option": {
+            "plan": "Cloudflare Workers Paid",
+            "monthly_usd": 5,
+            "attributable_formula": "100% of requests and KV operations on worker artemioquierocomer-mx and namespace ORDERS_KV are isolated to Artemio."
+          }
+        },
+        {
+          "service_key": "infisical",
+          "title": "Infisical Secrets Manager (Dedicated Project Workspace)",
+          "category": "secrets",
+          "reachability": "external",
+          "external_reason": "Managed in Artemio's dedicated Infisical workspace (19a35ec3-5a10-4631-a65a-5b7cab961e9b, T203) and pushed to Worker artemioquierocomer-mx via just secrets-push-prod; not reachable from cp.webomage.com runtime.",
+          "attribution_class": "shared-tier",
+          "current_plan": "Infisical Free (Workspace 19a35ec3-5a10-4631-a65a-5b7cab961e9b)",
+          "monthly_base_usd": 0,
+          "unit_label": "4 Worker runtime secrets (ADMIN_USERNAME, ADMIN_PASSWORD, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)",
+          "resources": [
+            "infisical:19a35ec3-5a10-4631-a65a-5b7cab961e9b"
+          ]
+        },
+        {
+          "service_key": "telegram",
+          "title": "Telegram Order & Admin Bot (@artemioquierocomer_bot)",
+          "category": "messaging",
+          "reachability": "external",
+          "external_reason": "TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID live in Artemio's dedicated Infisical workspace (19a35ec3-…) and Cloudflare Worker artemioquierocomer-mx secrets outside cp.webomage.com.",
+          "attribution_class": "attributable",
+          "current_plan": "Telegram Bot API (Free)",
+          "monthly_base_usd": 0,
+          "unit_label": "Dedicated bot @artemioquierocomer_bot",
+          "resources": [
+            "bot:artemioquierocomer_bot"
+          ]
+        },
+        {
+          "service_key": "clarity",
+          "title": "Microsoft Clarity Session & Heatmap Analytics",
+          "category": "analytics",
+          "reachability": "external",
+          "external_reason": "Configured directly in artemioquierocomer.mx frontend (@microsoft/clarity) and managed in the external Microsoft Clarity dashboard.",
+          "attribution_class": "attributable",
+          "current_plan": "Microsoft Clarity Free",
+          "monthly_base_usd": 0,
+          "unit_label": "Dedicated Clarity project tag on artemioquierocomer.mx"
+        },
+        {
+          "service_key": "github",
+          "title": "GitHub Repository (casualuser/artemioquierocomer.mx)",
+          "category": "vcs",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "GitHub Free",
+          "monthly_base_usd": 0,
+          "unit_label": "Dedicated repository casualuser/artemioquierocomer.mx",
+          "resources": [
+            "repo:casualuser/artemioquierocomer.mx"
+          ]
+        },
+        {
+          "service_key": "stripe",
+          "title": "Stripe Checkout & Invoice Settlement",
+          "category": "payments",
+          "reachability": "w0m_managed",
+          "attribution_class": "attributable",
+          "current_plan": "Pay-as-you-go (Declared, not yet connected)",
+          "monthly_base_usd": 0,
+          "unit_label": "Per-invoice payment processing when enabled"
+        }
+      ],
       "identity": {
         "git_user_name": "Aleksei Tcelishchev",
         "git_user_email": "casualuser@gmail.com",
@@ -114,6 +245,31 @@
       "id": "bridgeroad",
       "role": "self-managed",
       "root": "../../_proj/bridgeroad",
+      "org_slug": "bridgeroad",
+      "project_slug": "bridgeroad-mvp",
+      "external_services": [
+        {
+          "service_key": "supabase",
+          "title": "Supabase (Portal Tenancy & Engagement Records)",
+          "category": "database",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "Supabase Free (Shared pqbbjgeapylcengbuvee)",
+          "monthly_base_usd": 0,
+          "unit_label": "Tenant-keyed org & project rows in w0m CP"
+        },
+        {
+          "service_key": "github",
+          "title": "GitHub Repository (BridgeRoad/bridgeroad-app)",
+          "category": "vcs",
+          "reachability": "external",
+          "external_reason": "Self-managed client repository in third-party GitHub organization BridgeRoad; w0m writes no config to it (T265/T294).",
+          "attribution_class": "not-attributable",
+          "current_plan": "Client-managed (BridgeRoad org)",
+          "monthly_base_usd": null,
+          "unit_label": "Managed in client GitHub organization"
+        }
+      ],
       "runtime": {
         "substrate": "tart-linux",
         "guest_name": "w0m-bridgeroad"
