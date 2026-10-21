@@ -15,16 +15,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T43](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 85 | Full-observability logging strategy 📄 live spec |
-| 2 | [T279](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 83 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
-| 3 | [T365](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 80 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
-| 4 | [T374](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T374.md) | [#374](https://github.com/webomage/wom7board/issues/374) | P1 | queued | tools | 79 | Unified oMLX process management: multi-mode daemon/GUI/CLI detection, port  📄 live spec |
-| 5 | [T24](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T24.md) | [#24](https://github.com/webomage/wom7board/issues/24) | P1 | queued | skills | 70 | Skills expansion — import + survey |
-| 6 | [T26](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T26.md) | [#26](https://github.com/webomage/wom7board/issues/26) | P1 | queued | tools | 70 | Package discovery via awesome-repositories MCP |
-| 7 | [T36](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 70 | AI provider-adapter seam + lib hygiene |
-| 8 | [T50](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T50.md) | [#50](https://github.com/webomage/wom7board/issues/50) | P1 | queued | data | 70 | Fix Upwork Ingestion Pagination & CLI Search |
-| 9 | [T51](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T51.md) | [#51](https://github.com/webomage/wom7board/issues/51) | P1 | queued | knowledge | 70 | Implement Obsidian Vault ZIP import in Resource Library |
-| 10 | [T57](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 70 | Implement w0m Open Routing Layer |
+| 1 | [T43](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | infra | 85 | Full-observability logging strategy 📄 live spec |
+| 2 | [T279](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T279.md) | [#279](https://github.com/webomage/wom7board/issues/279) | P1 | queued | product | 83 | Onboard Maksim Kulikov (servicios777@webomage.com) as a Managed Multi-Proje 📄 live spec |
+| 3 | [T365](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 80 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
+| 4 | [T374](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T374.md) | [#374](https://github.com/webomage/wom7board/issues/374) | P1 | queued | tools | 79 | Unified oMLX process management: multi-mode daemon/GUI/CLI detection, port  📄 live spec |
+| 5 | [T24](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T24.md) | [#24](https://github.com/webomage/wom7board/issues/24) | P1 | queued | skills | 70 | Skills expansion — import + survey |
+| 6 | [T26](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T26.md) | [#26](https://github.com/webomage/wom7board/issues/26) | P1 | queued | tools | 70 | Package discovery via awesome-repositories MCP |
+| 7 | [T36](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 70 | AI provider-adapter seam + lib hygiene |
+| 8 | [T50](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T50.md) | [#50](https://github.com/webomage/wom7board/issues/50) | P1 | queued | data | 70 | Fix Upwork Ingestion Pagination & CLI Search |
+| 9 | [T57](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 70 | Implement w0m Open Routing Layer |
+| 10 | [T58](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T58.md) | [#58](https://github.com/webomage/wom7board/issues/58) | P1 | queued | sdlc | 70 | Implement Inner-Loop Agent Security Verification |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,24 +32,24 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 197 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **197** are
+> ⚠️ **0 of 189 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **189** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T219](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T219.md) | [#219](https://github.com/webomage/wom7board/issues/219) | P2 | queued | infra | 3/5 | `██████░░░░` 60% | — | wom7ext ↔ ZeroClaw realignment — mcp-b is already vestigial  |
-| 2 | [T184](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T184.md) | [#184](https://github.com/webomage/wom7board/issues/184) | P3 | queued | tools | 5/8 | `██████░░░░` 62% | — | wom7mlx is P3 — consolidate the MLX/Rust-port work behind on |
-| 3 | [T537](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T537.md) | — | P1 | blocked | data | 1/10 | `█░░░░░░░░░` 10% | — | Upwork connector on the official MCP with per-member OAuth;  |
-| 4 | [T24](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T24.md) | [#24](https://github.com/webomage/wom7board/issues/24) | P1 | queued | skills | 0/3 | `░░░░░░░░░░` 0% | — | Skills expansion — import + survey |
-| 5 | [T26](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T26.md) | [#26](https://github.com/webomage/wom7board/issues/26) | P1 | queued | tools | 0/2 | `░░░░░░░░░░` 0% | — | Package discovery via awesome-repositories MCP |
-| 6 | [T36](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 0/5 | `░░░░░░░░░░` 0% | — | AI provider-adapter seam + lib hygiene |
-| 7 | [T43](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | product | 0/7 | `░░░░░░░░░░` 0% | — | Full-observability logging strategy |
-| 8 | [T50](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T50.md) | [#50](https://github.com/webomage/wom7board/issues/50) | P1 | queued | data | 0/3 | `░░░░░░░░░░` 0% | — | Fix Upwork Ingestion Pagination & CLI Search |
-| 9 | [T51](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T51.md) | [#51](https://github.com/webomage/wom7board/issues/51) | P1 | queued | knowledge | 0/5 | `░░░░░░░░░░` 0% | — | Implement Obsidian Vault ZIP import in Resource Library |
-| 10 | [T57](/home/aleksei/.w0m/work/ant-ci/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Implement w0m Open Routing Layer |
+| 1 | [T219](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T219.md) | [#219](https://github.com/webomage/wom7board/issues/219) | P2 | queued | infra | 3/5 | `██████░░░░` 60% | — | wom7ext ↔ ZeroClaw realignment — mcp-b is already vestigial  |
+| 2 | [T184](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T184.md) | [#184](https://github.com/webomage/wom7board/issues/184) | P3 | queued | tools | 5/8 | `██████░░░░` 62% | — | wom7mlx is P3 — consolidate the MLX/Rust-port work behind on |
+| 3 | [T537](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T537.md) | — | P1 | blocked | data | 1/10 | `█░░░░░░░░░` 10% | — | Upwork connector on the official MCP with per-member OAuth;  |
+| 4 | [T24](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T24.md) | [#24](https://github.com/webomage/wom7board/issues/24) | P1 | queued | skills | 0/3 | `░░░░░░░░░░` 0% | — | Skills expansion — import + survey |
+| 5 | [T26](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T26.md) | [#26](https://github.com/webomage/wom7board/issues/26) | P1 | queued | tools | 0/2 | `░░░░░░░░░░` 0% | — | Package discovery via awesome-repositories MCP |
+| 6 | [T36](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 0/5 | `░░░░░░░░░░` 0% | — | AI provider-adapter seam + lib hygiene |
+| 7 | [T43](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | infra | 0/7 | `░░░░░░░░░░` 0% | — | Full-observability logging strategy |
+| 8 | [T50](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T50.md) | [#50](https://github.com/webomage/wom7board/issues/50) | P1 | queued | data | 0/3 | `░░░░░░░░░░` 0% | — | Fix Upwork Ingestion Pagination & CLI Search |
+| 9 | [T57](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Implement w0m Open Routing Layer |
+| 10 | [T58](/home/aleksei/.w0m/work/ant-catalog-dora/w0m/.tasks/T58.md) | [#58](https://github.com/webomage/wom7board/issues/58) | P1 | queued | sdlc | 0/4 | `░░░░░░░░░░` 0% | — | Implement Inner-Loop Agent Security Verification |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `d27adf34` |
-| `wom7api` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `77f6cfd` |
-| `wom7func` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `c3abbaa` |
-| `wom7skills` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
-| `wom7ext` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `fc516e7` |
-| `wom7sec` | `agent/ant-ci` | **2** | **n/a — NO UPSTREAM** | `d56236b` |
-| `wom7mlx/wom7mlx` | `agent/ant-ci` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
+| `wom7web` | `agent/ant-catalog-dora` | 0 | **n/a — NO UPSTREAM** | `e913137f` |
+| `wom7api` | `agent/ant-catalog-dora` | 0 | **n/a — NO UPSTREAM** | `58fb656` |
+| `wom7func` | `agent/ant-catalog-dora` | 0 | **n/a — NO UPSTREAM** | `33d8a91` |
+| `wom7skills` | `agent/ant-catalog-dora` | 0 | **n/a — NO UPSTREAM** | `bf42fdd` |
+| `wom7ext` | `agent/ant-catalog-dora` | 0 | **n/a — NO UPSTREAM** | `fc516e7` |
+| `wom7sec` | `agent/ant-catalog-dora` | 0 | **n/a — NO UPSTREAM** | `d56236b` |
+| `wom7mlx/wom7mlx` | `agent/ant-catalog-dora` | 0 | **n/a — NO UPSTREAM** | `ae254ef` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 197 open · 564 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 189 open · 564 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T43","T279","T365","T374","T24","T26","T36","T50","T51","T57"],"repos":{"wom7api":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"77f6cfd","unpushed":null},"wom7ext":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"fc516e7","unpushed":null},"wom7func":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"c3abbaa","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/ant-ci","dirty":2,"has_upstream":true,"head":"d56236b","unpushed":null},"wom7skills":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/ant-ci","dirty":0,"has_upstream":true,"head":"d27adf34","unpushed":null}},"tickets":{"open":197,"rowless_open":[],"rows":564}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T43","T279","T365","T374","T24","T26","T36","T50","T57","T58"],"repos":{"wom7api":{"branch":"agent/ant-catalog-dora","dirty":0,"has_upstream":true,"head":"58fb656","unpushed":null},"wom7ext":{"branch":"agent/ant-catalog-dora","dirty":0,"has_upstream":true,"head":"fc516e7","unpushed":null},"wom7func":{"branch":"agent/ant-catalog-dora","dirty":0,"has_upstream":true,"head":"33d8a91","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/ant-catalog-dora","dirty":0,"has_upstream":true,"head":"ae254ef","unpushed":null},"wom7sec":{"branch":"agent/ant-catalog-dora","dirty":0,"has_upstream":true,"head":"d56236b","unpushed":null},"wom7skills":{"branch":"agent/ant-catalog-dora","dirty":0,"has_upstream":true,"head":"bf42fdd","unpushed":null},"wom7web":{"branch":"agent/ant-catalog-dora","dirty":0,"has_upstream":true,"head":"e913137f","unpushed":null}},"tickets":{"open":189,"rowless_open":[],"rows":564}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -130,6 +130,12 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
+
+#### Completed today (3):
+
+- **T64** — w0m + Dagger + Backstage Synergy Integration (Completed AC1, AC2, and AC3 (agy:ant_catalog_dora))
+- **T432** — Delivery & DevEx measurement: DORA 5-metric cockpit, Agent-DevEx signals, DX Core 4 scorecard, SPACE charter (Completed AC1–AC10 (agy:ant_catalog_dora))
+- **T448** — Type the estate's Python against a real contract: Backstage catalog entities first, then an untyped-code ratchet (Completed all 6 ACs (agy:ant_catalog_dora))
 
 ## 3. Other open threads (in TASKS.md)
 

@@ -597,12 +597,10 @@ smoke-live *args:
     @just --justfile wom7api/justfile smoke-live {{ args }}
 
 _assert-clean-tree:
-    @dirty="$(cd wom7web && git status --porcelain -- apps/web/src/config apps/web/.generated 2>/dev/null)"; \
-        if [ -n "$dirty" ]; then echo "❌ Deploy dirtied tracked files:"; echo "$dirty"; exit 1; fi; \
-        echo "✅ Deploy left no tracked snapshot/version files dirty."
+    @pnpm --dir wom7api exec tsx dagger/pipeline.ts assert-clean-tree
 
 _log-deploy:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py release "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)"
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py release "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 changelog:
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/gen_changelog.py
@@ -664,15 +662,7 @@ plan-set-check:
 # work in them at once); a release cannot see that. Inside the release worktree W0M_RELEASE_WORKTREE=1 is set and this
 # recipe runs the chain itself. Forcing a deploy of the local working tree is explicit: `just deploy-local`.
 deploy:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    if [ -z "${W0M_RELEASE_WORKTREE:-}" ] && [ -z "${W0M_DEPLOY_LOCAL:-}" ]; then
-      exec python3 wom7web/project/scripts/release.py ship deploy
-    fi
-    if [ -n "${W0M_DEPLOY_LOGGED:-}" ]; then
-      exec just _deploy-chain
-    fi
-    exec env W0M_DEPLOY_LOGGED=1 python3 wom7web/project/scripts/deploy_logged.py _deploy-chain
+    @pnpm --dir wom7api exec tsx dagger/pipeline.ts entrypoint --mode deploy
 
 # T473 — FORCE: deploy the local working tree as it is (uncommitted edits of anyone included). Not the default.
 deploy-local:
@@ -703,35 +693,21 @@ _deploy-ship:
     @just _assert-clean-tree
     @just _log-deploy
 
-# T473 D2: deploy each app, in the order the chain always used. W0M_RELEASE_APPS (set by a release deploy) lists the
-# apps whose fingerprint changed since the last deployed release; the others are skipped and keep serving their
-# previous version. Unset (a local deploy) = every app. `just deploy --all` sets the full list.
+# T473 D2 & T64 AC1/AC3: deploy each app via the TypeScript Dagger pipeline module (`wom7api/dagger/pipeline.ts`).
+# W0M_RELEASE_APPS (set by a release deploy) lists the apps whose fingerprint changed since the last deployed release;
+# the others are skipped and keep serving their previous version. Unset (a local deploy) = every app.
 _deploy-apps:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    apps=(api web cp join job demo)
-    total=${#apps[@]}
-    idx=0
-    for app in "${apps[@]}"; do
-      idx=$((idx + 1))
-      if [ -n "${W0M_RELEASE_APPS+x}" ] && ! printf ' %s ' ${W0M_RELEASE_APPS} | grep -q " ${app} "; then
-        python3 scripts/progress.py --step "$idx" --total "$total" --label "⏭  ${app}: unchanged — skipped (T473)" || true
-        continue
-      fi
-      python3 scripts/progress.py --step "$idx" --total "$total" --label "Deploying ${app}" || true
-      just deploy-${app}
-    done
+    @pnpm --dir wom7api exec tsx dagger/pipeline.ts deploy-apps
 
 deploy-all:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    if [ -z "${W0M_RELEASE_WORKTREE:-}" ] && [ -z "${W0M_DEPLOY_LOCAL:-}" ]; then
-      exec python3 wom7web/project/scripts/release.py ship deploy-all
-    fi
-    if [ -n "${W0M_DEPLOY_LOGGED:-}" ]; then
-      exec just _deploy-all-chain
-    fi
-    exec env W0M_DEPLOY_LOGGED=1 python3 wom7web/project/scripts/deploy_logged.py _deploy-all-chain
+    @pnpm --dir wom7api exec tsx dagger/pipeline.ts entrypoint --mode deploy-all
+
+# T64 AC1 & AC3 — Dagger TypeScript pipeline plan preview & unit/typecheck suite (`wom7api/dagger/`).
+dagger-plan:
+    @pnpm --dir wom7api exec tsx dagger/pipeline.ts plan
+
+dagger-test:
+    @cd wom7api && pnpm exec tsc --noEmit -p dagger/tsconfig.json && pnpm exec vitest run dagger/__tests__/pipeline.test.ts
 
 # T473 — FORCE: deploy-all from the local working tree. Not the default.
 deploy-all-local:
@@ -1285,6 +1261,32 @@ client-services-check *args:
 
 client-services-check-test:
     @python3 wom7web/project/scripts/tests/test_client_services_check.py
+
+# ── Typed Python Ratchet, Backstage Catalog & DORA/DevEx Cockpit (T448 / T64 / T432) ──
+py-typing-check *args:
+    @python3 wom7web/project/scripts/py_typing_check.py {{ args }}
+
+py-typing-check-test:
+    @python3 wom7web/project/scripts/py_typing_check_test.py
+
+catalog-sync *args:
+    @python3 wom7web/project/scripts/catalog_sync.py --write {{ args }}
+
+catalog-check:
+    @python3 wom7web/project/scripts/catalog_sync.py --check
+
+catalog-check-test:
+    @python3 wom7web/project/scripts/catalog_sync_test.py
+
+dora *args:
+    @python3 scripts/dora_metrics.py {{ args }}
+
+devex-pulse *args:
+    @python3 scripts/dora_metrics.py --pulse {{ args }}
+
+dora-test:
+    @python3 scripts/dora_metrics_test.py
+
 
 
 

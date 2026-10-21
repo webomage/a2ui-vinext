@@ -82,10 +82,16 @@ ACCOUNT = _VCS.get("gh_account", REPO.split("/", 1)[0])
 # becomes the org when the tracker moves (T242). One value cannot be both, and getting it wrong
 # is silent in BOTH directions: set it to the org and the auth switch fails, leave it and the
 # board half keeps writing to the old board. Both exit 0.
-from board_identity import BoardIdentityError, describe as _describe_board, load as _load_board  # noqa: E402
+from board_identity import (  # noqa: E402
+    BoardIdentityError,
+    describe as _describe_board,
+    load as _load_board,
+    load_board_projection_config as _load_board_config,
+)
 
 try:
     BOARD = _load_board()
+    BOARD_CONFIG = _load_board_config()
 except BoardIdentityError as _exc:
     sys.exit(f"FATAL: {_exc}")
 OWNER = BOARD["owner"]
@@ -237,6 +243,169 @@ def reconcile_labels(current: set[str], desired: set[str]) -> tuple[list[str], l
     to_add = sorted(desired - current)
     to_remove = sorted({c for c in current if is_owned(c)} - desired)
     return to_add, to_remove
+
+
+def desired_board_fields(ticket: dict, board_cfg: dict | None = None) -> dict[str, str]:
+    """T141 AC1, AC2, AC3, AC4, AC7 — Map a ticket's frontmatter (and optional SDLC lifecycle stage)
+    onto Projects v2 board fields (`Status`, `Priority`, `Area`, `Epic`, `Repo`) using the versioned
+    mapping declared in `.w0m/sdlc.json → board`.
+    """
+    cfg = board_cfg or BOARD_CONFIG
+    status_map: dict[str, str] = cfg.get("status_map") or {}
+    lifecycle_map: dict[str, str] = cfg.get("lifecycle_map") or {}
+    fields_map: dict[str, str] = cfg.get("fields") or {}
+
+    raw_status = str(ticket.get("status") or "").strip().replace("_", "-")
+    stage = str(ticket.get("lifecycle_stage") or "").strip()
+
+    # Explicit ticket status (`paused`, `blocked`, `done`, `in-progress`, `queued`) takes precedence;
+    # if an active gate stage is supplied and status is generic, `lifecycle_map` refines it.
+    if raw_status in status_map:
+        mapped_status = status_map[raw_status]
+    elif stage and stage in lifecycle_map:
+        mapped_status = lifecycle_map[stage]
+    else:
+        mapped_status = status_map.get("queued", raw_status or "queued")
+
+    out: dict[str, str] = {}
+    for board_field, source_key in fields_map.items():
+        if board_field == "Status":
+            out["Status"] = mapped_status
+            continue
+        val = ticket.get(source_key)
+        if isinstance(val, list):
+            joined = ",".join(str(x).strip() for x in val if x)
+            if joined:
+                out[board_field] = joined
+        elif val is not None and str(val).strip():
+            out[board_field] = str(val).strip()
+    return out
+
+
+def sync_board_item_fields(
+    proj_id: str,
+    item_id: str,
+    ticket: dict,
+    board_fields_meta: dict[str, dict],
+    board_cfg: dict | None = None,
+) -> int:
+    """T141 AC2, AC4, AC5 — Write `Status`, `Priority`, `Area`, `Epic`, `Repo` onto a Projects v2
+    board item. Returns the count of field mutations executed.
+    """
+    if not proj_id or not item_id or not board_fields_meta:
+        return 0
+    desired = desired_board_fields(ticket, board_cfg)
+    writes = 0
+    for field_name, want_val in desired.items():
+        if not want_val:
+            continue
+        fmeta = board_fields_meta.get(field_name)
+        if not fmeta or not fmeta.get("id"):
+            continue
+        field_id = str(fmeta["id"])
+        options = fmeta.get("options")
+        if isinstance(options, dict):
+            opt_id = options.get(want_val)
+            if not opt_id:
+                continue
+            sh(
+                [
+                    "gh",
+                    "project",
+                    "item-edit",
+                    "--id",
+                    item_id,
+                    "--project-id",
+                    proj_id,
+                    "--field-id",
+                    field_id,
+                    "--single-select-option-id",
+                    str(opt_id),
+                ],
+                check=True,
+            )
+            writes += 1
+        else:
+            sh(
+                [
+                    "gh",
+                    "project",
+                    "item-edit",
+                    "--id",
+                    item_id,
+                    "--project-id",
+                    proj_id,
+                    "--field-id",
+                    field_id,
+                    "--text",
+                    want_val,
+                ],
+                check=True,
+            )
+            writes += 1
+    return writes
+
+
+def check_board_drift(
+    tickets: list[dict],
+    board_items: list[dict],
+    board_cfg: dict | None = None,
+) -> list[str]:
+    """T141 AC6 & AC8 — Compare Projects v2 board state against ticket frontmatter and return
+    human-readable mismatch descriptions.
+
+    🔴 AC6 / AC8 anti-vacuity discipline: MUST FAIL on an empty ticket list or empty board item list,
+    never pass vacuously.
+    """
+    if not tickets or not board_items:
+        return [
+            f"board drift: empty input set (tickets={len(tickets)}, board_items={len(board_items)}) — "
+            "refusing to report 0 mismatches over an empty set (T141 AC6/AC8)"
+        ]
+
+    cfg = board_cfg or BOARD_CONFIG
+    by_issue: dict[int, dict] = {}
+    for item in board_items:
+        num = item.get("issue_number") or (item.get("content") or {}).get("number")
+        if isinstance(num, int):
+            by_issue[num] = item
+
+    if not by_issue:
+        return [
+            "board drift: 0 board items carry an issue number — refusing to pass on unmapped board set"
+        ]
+
+    mismatches: list[str] = []
+    compared = 0
+    for t in tickets:
+        gh_num = t.get("gh_issue")
+        if not isinstance(gh_num, int):
+            continue
+        b_item = by_issue.get(gh_num)
+        if b_item is None:
+            mismatches.append(f"{t['id']} (#{gh_num}): missing from Project board")
+            continue
+        compared += 1
+        desired = desired_board_fields(t, cfg)
+        live_fields = b_item.get("fields") or {}
+        want_status = desired.get("Status")
+        have_status = live_fields.get("Status", b_item.get("status"))
+        if want_status and have_status != want_status:
+            mismatches.append(
+                f"{t['id']} (#{gh_num}): board Status is {have_status!r}, ticket requires {want_status!r}"
+            )
+        for fname in ("Priority", "Area", "Epic", "Repo"):
+            want_val = desired.get(fname)
+            if want_val and fname in live_fields and live_fields[fname] != want_val:
+                mismatches.append(
+                    f"{t['id']} (#{gh_num}): board {fname} is {live_fields[fname]!r}, ticket requires {want_val!r}"
+                )
+
+    if compared == 0 and not mismatches:
+        return [
+            "board drift: 0 tickets with gh_issue matched against board — refusing vacuous pass"
+        ]
+    return mismatches
 
 
 REPO_BLOB = f"https://github.com/{REPO}/blob/{BRANCH}"
@@ -834,8 +1003,21 @@ def main() -> int:
 
             backfill(tid, num)
             if proj_num:
-                sh(["gh", "project", "item-add", proj_num, "--owner", OWNER,
-                    "--url", f"https://github.com/{REPO}/issues/{num}"], check=False)
+                # T141 AC8 & AC9: `check=True` so a failing `item-add` is never silently swallowed.
+                item_out = sh(["gh", "project", "item-add", proj_num, "--owner", OWNER,
+                               "--url", f"https://github.com/{REPO}/issues/{num}"], check=True)
+                if item_out and item_out.lstrip().startswith("{"):
+                    try:
+                        item_data = json.loads(item_out)
+                    except json.JSONDecodeError:
+                        item_data = {}
+                    if item_data.get("id") and item_data.get("project_id") and item_data.get("fields_meta"):
+                        sync_board_item_fields(
+                            str(item_data["project_id"]),
+                            str(item_data["id"]),
+                            t,
+                            item_data["fields_meta"],
+                        )
             hashes[tid] = phash
             print(f"  {tid} → #{num}")
         except Exception as e:                                    # noqa: BLE001 — see below

@@ -1,0 +1,13 @@
+{
+  "id": "INC-2026-09-30-001",
+  "title": "Deploy chain applied live DB migrations before offline test gates ran",
+  "severity": "sev2",
+  "status": "resolved",
+  "detected_at": "2026-09-30T14:10:00Z",
+  "recovered_at": "2026-09-30T16:25:00Z",
+  "cause_deploy_version": "2026.09.30-1790777400",
+  "resolution_deploy_version": "2026.09.30-1790785500",
+  "affected_services": ["release", "db", "api"],
+  "tickets": ["T503"],
+  "summary": "_deploy-all-chain ran db-migrate before _deploy-gates, applying two live schema migrations before stopping on five failing suites. Fixed in T503 by moving _deploy-preflight and _deploy-gates ahead of db-migrate and pinning the recipe graph order in test_deploy_chain_order.py."
+}

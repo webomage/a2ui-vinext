@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w0m.xyz/schemas/meta/incident.schema.json",
+  "title": "w0m Structured Delivery Incident Record (T432 AC4)",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "severity",
+    "status",
+    "detected_at",
+    "recovered_at",
+    "cause_deploy_version",
+    "resolution_deploy_version",
+    "affected_services",
+    "tickets",
+    "summary"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^INC-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{3}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 5
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["sev1", "sev2", "sev3"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "resolved"]
+    },
+    "detected_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "recovered_at": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "cause_deploy_version": {
+      "type": "string",
+      "minLength": 3
+    },
+    "resolution_deploy_version": {
+      "type": ["string", "null"]
+    },
+    "affected_services": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "tickets": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^T[0-9]+$"
+      }
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 10
+    }
+  }
+}

@@ -421,6 +421,33 @@ def check_ticket_parity(problems: list[str], notes: list[str]) -> None:
         )
 
 
+def check_board_drift_contract(problems: list[str], notes: list[str]) -> None:
+    """T141 AC6 & AC8 — Verify the declared Projects v2 board projection vocabulary (`status_map`,
+    `lifecycle_map`, `fields`) and fail closed if the input ticket set is empty or `paused` is
+    conflated with `done`.
+    """
+    sys.path.insert(0, str(CANONICAL / "project" / "scripts"))
+    try:
+        import board_identity as _bi
+        cfg = _bi.load_board_projection_config(sdlc_path())
+    except Exception as exc:  # noqa: BLE001
+        problems.append(f"board projection contract failed (T141): {exc}")
+        return
+
+    tickets_dir = ROOT / ".tasks"
+    ticket_files = list(tickets_dir.glob("T*.md")) if tickets_dir.is_dir() else []
+    if not ticket_files:
+        problems.append(
+            "board drift: empty ticket input set (.tasks/T*.md = 0) — refusing vacuous pass (T141 AC6/AC8)"
+        )
+        return
+
+    notes.append(
+        f"board #{cfg['number']} ({cfg['owner']}) status_map declares {len(cfg['status_map'])} states "
+        f"(paused={cfg['status_map'].get('paused')!r} != done={cfg['status_map'].get('done')!r})"
+    )
+
+
 def main() -> int:
     quiet = "--quiet" in sys.argv
     problems: list[str] = []
@@ -518,6 +545,7 @@ def main() -> int:
     # ── repo hygiene: docs / license / secrets (T135) ─────────────────────────
     check_hygiene(problems, notes)
     check_ticket_parity(problems, notes)
+    check_board_drift_contract(problems, notes)
 
     # ── T214 AC4: universal system standards & meta-asset schema gate ─────────
     std_script = CANONICAL / "project" / "scripts" / "standards_check.py"

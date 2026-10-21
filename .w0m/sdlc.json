@@ -97,7 +97,33 @@
     "owner": "webomage",
     "owner_type": "organization",
     "number": 2,
-    "title": "w0m Delivery"
+    "title": "w0m Delivery",
+    "schema_version": 1,
+    "status_map": {
+      "queued": "queued",
+      "in-progress": "in-progress",
+      "blocked": "blocked",
+      "done": "done",
+      "paused": "paused"
+    },
+    "lifecycle_map": {
+      "new": "queued",
+      "start": "in-progress",
+      "spec": "in-progress",
+      "build": "in-progress",
+      "review": "in-progress",
+      "security": "in-progress",
+      "verify": "in-progress",
+      "deploy": "in-progress",
+      "archive": "done"
+    },
+    "fields": {
+      "Status": "status",
+      "Priority": "priority",
+      "Area": "area",
+      "Epic": "epic",
+      "Repo": "repos"
+    }
   },
   "codegraph": {
     "enabled": true,
@@ -402,10 +428,35 @@
         "enabled": true,
         "required": false,
         "transport": "local-http",
+        "direction": "agent_to_obsidian",
+        "bridge": "wom7web/project/scripts/obsidian_mcp_bridge.py",
         "bind": "127.0.0.1:3007",
         "auth": "required — per-vault semantic-vault-mcp apiKey; unauthenticated probe returns 401",
         "scope": "host",
         "purpose": "Obsidian vault access over MCP, served by the **`semantic-vault-mcp`** plugin (\"Semantic Notes Vault MCP\" 0.11.42, Aaron Bockelie) running inside an Obsidian renderer process — NOT a standalone daemon, so it exists only while that vault window is open. 🔴 CORRECTED 2026-08-07: this entry previously attributed both ports to `obsidian-local-rest-api` v5.0.2. That was wrong, and the estate contradicted itself about it — `project/mcp-exposure-baseline.json` had already named the right plugin. Proven by elimination, not by reading a name off the thing: BOTH vaults' local-rest-api `apiKey`s are rejected 401 by BOTH ports, while `<vault>/.obsidian/plugins/semantic-vault-mcp/data.json` records `httpPort` matching exactly. ✅ port↔vault mapping RESOLVED 2026-08-07 (was recorded unknown): the plugin config carries the port, so it was readable all along — the earlier probe looked in the local-rest-api config, which only ever records 27123/27124. ✅ REACHABLE from a Claude session since 2026-08-07 via the stdio bridge `wom7web/project/scripts/obsidian_mcp_bridge.py`, wired in the estate-root `.mcp.json`. The bridge exists because the server needs `Authorization: Bearer <apiKey>` and CLAUDE.md forbids secrets in files: it reads the key at launch from the plugin's own gitignored `data.json`, so the credential is never copied into any config. It also reads the PORT from there rather than taking one on the command line — the two vaults have collided on ports before, and a hardcoded port would silently talk to the wrong vault. ⚠️ Session-ful transport: everything after `initialize` 400s unless the returned `Mcp-Session-Id` is echoed, and the server returns that header LOWER-CASED. 🔴 Exposes 8 tools incl. **`edit`**, and `readOnlyMode` is **false** in both vaults — an agent with these tools can WRITE to the vault. For `wom7web` that vault is a live code repo, so writes land outside the normal Edit/git path. ✅ **OWNER DECISION 2026-08-07: keep `readOnlyMode: false` on BOTH.** Write access is the point — the intended use is manual and Obsidian-tool analysis written back to `.md` through MCP. This is a deliberate, reasoned acceptance, not an unreviewed default. ⚠️ What that means in practice, and it is on the agent doing the writing: an MCP `edit` in the **wom7web** vault touches the code repo **outside** the Edit/git path, so it produces no diff you read first and can leave the working tree dirty without anything announcing it. 🔴 T186 (2026-08-08): this used to say *'prefer the wom7md vault for notes'* — **there is no second vault any more**, so that escape hatch is gone and every MCP write lands in a live code repo. `git status` afterwards is now the only check. Ties [[T144]]. Port 3007 → the **wom7web** vault, which is also the code repo."
+      },
+      "wom7func-mcp": {
+        "enabled": true,
+        "required": false,
+        "transport": "remote",
+        "direction": "obsidian_or_agent_to_w0m",
+        "endpoint": "/mcp",
+        "scope": "project",
+        "purpose": "T144 AC7 / T26: HTTP JSON-RPC 2.0 MCP server exposed by wom7func (`POST /mcp`) using `@modelcontextprotocol/sdk` protocol structures for platform health, awesome-repositories, and edge dispatch tools."
+      }
+    },
+    "directions": {
+      "_comment": "T144 AC2 & AC3 — explicit transport direction matrix across w0m components.",
+      "agent_to_obsidian": {
+        "primary": "mcp (obsidian-wom7web via wom7web/project/scripts/obsidian_mcp_bridge.py -> 127.0.0.1:3007/mcp)",
+        "fallback": "direct filesystem read/write inside wom7web (vault-as-repo after T186 retired wom7md)"
+      },
+      "obsidian_to_w0m": {
+        "primary": "http-mcp (POST /mcp on wom7func edge worker)",
+        "browser_context": "webmcp (navigator.modelContext via @webomage/ui WebMCP.astro, T21)"
+      },
+      "browser_to_agent": {
+        "primary": "webmcp (navigator.modelContext via @webomage/ui WebMCP.astro, T21) + wom7ext McpServer over WebSocket"
       }
     },
     "boundary": {
