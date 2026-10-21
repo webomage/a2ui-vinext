@@ -138,6 +138,9 @@
             "items": {
               "$ref": "#/definitions/external_service"
             }
+          },
+          "knowledge_hub": {
+            "$ref": "#/definitions/knowledge_hub"
           }
         },
         "allOf": [
@@ -604,6 +607,43 @@
         "required": [
           "external_reason"
         ]
+      }
+    },
+    "knowledge_hub": {
+      "type": "object",
+      "description": "T284 AC1/AC5 — Declared client-facing knowledge hub corpus boundary. Maps a client org/project to its explicit vault_slug, corpus_root (relative to estate root), allowed_prefixes, and denied_prefixes so client document boundaries are DATA, never inferred from directory names.",
+      "required": [
+        "vault_slug",
+        "corpus_root",
+        "allowed_prefixes",
+        "denied_prefixes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "vault_slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "corpus_root": {
+          "type": "string",
+          "minLength": 3
+        },
+        "allowed_prefixes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "denied_prefixes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
       }
     }
   },

@@ -36,6 +36,25 @@
       "role": "managed",
       "root": "../../_self/1945",
       "enabled": true,
+      "org_slug": "1945-social-club",
+      "knowledge_hub": {
+        "vault_slug": "1945",
+        "corpus_root": "wom7web/projects/1945/vault",
+        "allowed_prefixes": [
+          "index.md",
+          "mocs/",
+          "notes/",
+          "sources/",
+          "claims/"
+        ],
+        "denied_prefixes": [
+          "inbox/",
+          ".obsidian/",
+          "internal/",
+          ".w0m/",
+          "openspec/"
+        ]
+      },
       "runtime": {
         "substrate": "host"
       },
@@ -84,6 +103,24 @@
       "enabled": true,
       "org_slug": "artemio-quiero-comer",
       "project_slug": "artemio-quiero-comer",
+      "knowledge_hub": {
+        "vault_slug": "artemio",
+        "corpus_root": "wom7web/projects/artemio/vault",
+        "allowed_prefixes": [
+          "index.md",
+          "mocs/",
+          "notes/",
+          "sources/",
+          "claims/"
+        ],
+        "denied_prefixes": [
+          "inbox/",
+          ".obsidian/",
+          "internal/",
+          ".w0m/",
+          "openspec/"
+        ]
+      },
       "runtime": {
         "substrate": "host"
       },
