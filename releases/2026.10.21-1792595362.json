@@ -1,0 +1,85 @@
+{
+  "version": "2026.10.21-1792595362",
+  "branch": "beta",
+  "repos": {
+    ".": "6c7d3d08fc1caa07b257191ab85d746137c62b7d",
+    "wom7api": "e63201eed82270a083a592d39d7a40416ee6dd1c",
+    "wom7ava": "3386b586c5961bc1864d6a561691b3a9190fa533",
+    "wom7clips": "5ce2a5ac2137d371cbf9154ccb85cc2f72d49d20",
+    "wom7ext": "fc516e7c3eec7b2df2a86a2df6892bef4c9f774a",
+    "wom7func": "33d8a91717a9bf133341d4243742a422df8d7541",
+    "wom7mlx/wom7mlx": "ae254efce2a13ec3352527438ec18f9806115b42",
+    "wom7sec": "d56236b15855f87e00b15f186eeefe00a3d1aca7",
+    "wom7skills": "bf42fdd0ac2ab003d7eafcb7d2cb9d4e79ff521a",
+    "wom7web": "e913137f4695a8773fb7a25abc71595343de33e1"
+  },
+  "apps": {
+    "api": {
+      "fingerprint": "b31c53d2c231e0414fa149010ba37aa5d5746bcdd3d4ee7b321d5b29e0cc8896",
+      "deployable": true,
+      "deploy": "deploy-api",
+      "changed": true,
+      "previous": "6ede7058ba1c93e86e4f6cac2463cba638b786939c15af0a72c1e578f3832fd5"
+    },
+    "web": {
+      "fingerprint": "328d4fcaa92a04f8a30fa0bc4a96e1f04bbec08245a8825eb31b06d88c78b17e",
+      "deployable": true,
+      "deploy": "deploy-web",
+      "changed": true,
+      "previous": "a728315281a45bd616cc1e24ce9a720c7c7ca41332eea5359e3aae8bd7e63f09"
+    },
+    "cp": {
+      "fingerprint": "f446698f0a860eb2cd44c3381e8a339c66cc8e3d9e6a22dbc66e531d4d119221",
+      "deployable": true,
+      "deploy": "deploy-cp",
+      "changed": true,
+      "previous": "30f63ffa07002d8338c8492cb8f128f79afa8372b5d70b2b62b656806bae39ab"
+    },
+    "join": {
+      "fingerprint": "c57fd3337911659c4573bf535195a3100fac775817b1ca3b0378b8e05dc768b5",
+      "deployable": true,
+      "deploy": "deploy-join",
+      "changed": true,
+      "previous": "6ac86013a4e8b4301da8122185c4a806c4941a8d53262ed0d307a89f645b5d5b"
+    },
+    "job": {
+      "fingerprint": "cbbe4a37f93832e188e402c53349c52195b288cbe15ccc26454b2d297e38c264",
+      "deployable": true,
+      "deploy": "deploy-job",
+      "changed": true,
+      "previous": "c2f6603a2659e7183f4d7cbcddb1ef37e1fa046bfc8b1a181f2be32b328bed02"
+    },
+    "demo": {
+      "fingerprint": "442217cf70086256010dbbd1f62e84da2f3bbcecdd7b24c882990232d9a03657",
+      "deployable": true,
+      "deploy": "deploy-demo",
+      "changed": true,
+      "previous": "20c0953cbd73090a122af4f7063fd56b1e441b5c6aa07316dd65391bbeefaf21"
+    },
+    "db": {
+      "fingerprint": "1d33f8d4b70bd43686e382e2b93e9122f51512e8f6f4a49a25a9ac1f0f49e628",
+      "deployable": false,
+      "deploy": null,
+      "changed": true,
+      "previous": "72eb582e400b7c29064fb90e131375b8f304af62d47c040fc7522013b876c3a8"
+    }
+  },
+  "previous_release": "2026.10.20-1792556546",
+  "deployed": true,
+  "deployed_apps": [
+    "api",
+    "web",
+    "cp",
+    "join",
+    "job",
+    "demo"
+  ],
+  "e2e": {
+    "tested": false,
+    "reason": "no e2e result found in stable"
+  },
+  "confirmed": {
+    "confirmed": false,
+    "reason": "confirmed worktree has not been promoted yet (run `just stable-promote`)"
+  }
+}

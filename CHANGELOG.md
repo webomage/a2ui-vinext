@@ -2,6 +2,17 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.21-1792595362
+_First deployed: 2026-10-21 15:20:59.887169+00_
+
+### Features
+- **sdlc,dora**: Backstage catalog, DORA 5/Core 4 cockpit, AgDR-0036, and close T448, T64, T432, T292, T59, T51, T141, T144 ([T448](file:///.tasks/T448.md), [T64](file:///.tasks/T64.md), [T432](file:///.tasks/T432.md), [T292](file:///.tasks/T292.md), [T59](file:///.tasks/T59.md), [T51](file:///.tasks/T51.md), [T141](file:///.tasks/T141.md), [T144](file:///.tasks/T144.md))
+- **sdlc**: close T506, T520, T525, T534 with reports and state refresh ([T506](file:///.tasks/T506.md), [T520](file:///.tasks/T520.md), [T525](file:///.tasks/T525.md), [T534](file:///.tasks/T534.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `6c7d3d0` | 2026-10-21 15:20:59.887169+00 |
+
 ## 2026.10.20-1792556546
 _First deployed: 2026-10-21 04:32:06.003839+00_
 
