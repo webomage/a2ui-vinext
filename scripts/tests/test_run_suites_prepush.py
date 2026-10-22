@@ -19,6 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("run_suites", ROOT / "scripts" / "run_suites.py")
+assert spec is not None and spec.loader is not None
 rs = importlib.util.module_from_spec(spec)
 sys.modules["run_suites"] = rs
 spec.loader.exec_module(rs)
@@ -66,8 +67,8 @@ class TestRealRegistry(unittest.TestCase):
 
     def test_the_ratchets_that_failed_a_deploy_are_flagged(self):
         flagged = {s["name"] for s in rs.select_suites(self.suites, "offline", prepush=True)}
-        for name in ("spec-standard-gate", "ac-recipe-check", "ds-conformance-selftest"):
-            self.assertIn(name, flagged, f"{name} failed a deploy on 2026-09-30 and is not in the prepush tier")
+        for name in ("spec-standard-gate", "ac-recipe-check", "ds-conformance-selftest", "suites-drift"):
+            self.assertIn(name, flagged, f"{name} failed a deploy on 2026-09-30 / 2026-10-06 and is not in the prepush tier")
 
     def test_the_prepush_tier_stays_small(self):
         n = len(rs.select_suites(self.suites, "offline", prepush=True))

@@ -7,7 +7,11 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
+<<<<<<< HEAD
 **371 recorded decision(s)** — 37 structured (AgDR), 334 in place across 171 file(s).
+=======
+**368 recorded decision(s)** — 36 structured (AgDR), 332 in place across 171 file(s).
+>>>>>>> d23d2cf (feat(sdlc): close Wave 1 Track 2 tickets and harden audit/debt/suite gates (T43, T225, T241, T276, T328, T331, T385, T549))
 
 ## Structured records (AgDR)
 
@@ -242,7 +246,11 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-08-18 | [`.tasks/T231.md:60`](../.tasks/T231.md) | - [x] AC1 — ✅ DECIDED & BUILT 2026-08-18 — option (a)+(c): this machine produces, the Worker mirrors. |
 | 2026-08-18 | [`.tasks/T231.md:254`](../.tasks/T231.md) | for the 1945 project's apex (owner, 2026-08-18) |
 | 2026-08-18 | [`.w0m/sdlc.json:621`](../.w0m/sdlc.json) | " comment": "T229 AC6 — OWNER DECISION 2026-08-18: stay on the Supabase FREE tier and do not hit the limits; Pro is available for the w0m project if genuinely needed, but Free is the default. A limit you have chosen to live inside must be watched, because thes |
+<<<<<<< HEAD
 | 2026-08-18 | [`TECH-DEBT.md:92`](../TECH-DEBT.md) | decision ( cron.alter job active := false , verified by two missed firings), so growth has stopped, but the project is still unmeasured from here, ~8 months of runway, ~19% of it unpruned cron.job run details . Closing it = a second connection string in infis |
+=======
+| 2026-08-18 | [`TECH-DEBT.md:91`](../TECH-DEBT.md) | decision ( cron.alter job active := false , verified by two missed firings), so growth has stopped, but the project is still unmeasured from here, ~8 months of runway, ~19% of it unpruned cron.job run details . Closing it = a second connection string in infis |
+>>>>>>> d23d2cf (feat(sdlc): close Wave 1 Track 2 tickets and harden audit/debt/suite gates (T43, T225, T241, T276, T328, T331, T385, T549))
 | 2026-08-18 | [`docs/decisions/AgDR-0003-stay-on-supabase-free.md:1`](../docs/decisions/AgDR-0003-stay-on-supabase-free.md) | In the context of two Supabase projects on the Free tier after a downgrade, facing limits that fail abruptly rather than gradually, we decided to stay on Free and not hit the limits, to achieve no recurring spend while the estate is pre-revenue, accepting no PITR, a 2-project per-org cap, and egress we cannot even measure. |
 | 2026-08-18 | [`docs/decisions/AgDR-0004-pause-solar-flares-cron.md:1`](../docs/decisions/AgDR-0004-pause-solar-flares-cron.md) | In the context of a project the owner put on hold that was in fact running a 5-minute cron, facing a shared Free-tier budget it was quietly consuming, we decided to deactivate the job rather than unschedule it, to achieve an immediate stop that is reversible in one statement, accepting that the job definition — including a plaintext servicerole JWT — stays in the database. |
 | 2026-08-18 | [`docs/decisions/AgDR-0005-backup-producer-is-this-machine.md:1`](../docs/decisions/AgDR-0005-backup-producer-is-this-machine.md) | In the context of backups proven to restore but living only on one laptop, facing a Worker that cannot run pgdump and 5/5 Cloudflare cron slots already used, we decided to produce backups here via the existing launchd scheduler and push them to R2 directly, to achieve an offsite copy without new infrastructure, accepting that a laptop which is off does not run them. |

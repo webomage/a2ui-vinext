@@ -34,6 +34,36 @@ reported **17 rows**, of which the ones examined were all still-real debt that h
 the ticket that noticed them. ⇒ **Give the column a grammar before gating on it** — e.g. an explicit
 `owner:` vs `found-at:` — and until then this class stays informational.
   · **RESOLVED, NOT DELETED** — a row whose text says RESOLVED/PAID, still sitting in the register
+  · **UNKNOWN CITATION (T331 AC1/AC3)** — a `D##` citation in live prose/skills/config that has
+    neither an open row nor a `## Closed-Debt Ledger` entry in `TECH-DEBT.md`
+  · **STALE OPEN ASSERTION (T331 AC2/AC3)** — a live citation to a `## Closed-Debt Ledger` entry
+    that asserts the closed debt row is still open/active/tracked
+
+Citation & Disambiguation Grammar (T331 AC3):
+  · **Scanned surfaces:** `TECH-DEBT.md`, `CLAUDE.md`, `AGENTS.md`, `ROADMAP.md`,
+    `wom7web/docs/**/*.md`, `.agents/skills/*/SKILL.md`, `wom7web/.agents/skills/*/SKILL.md`,
+    `.w0m/sdlc.json`, `wom7web/project/test-suites.json`.
+  · **Candidate token:** `\\bD([1-9]\\d*)\\b` (matches `[[D\\d+]]`, `` `D\\d+` ``, `debt row D\\d+`,
+    `TECH-DEBT D\\d+`, and bare `D\\d+`; word boundaries reject `3D`, hex strings, UUIDs, and `D0`).
+  · **Non-debt exclusions:**
+    1. Mermaid graph node IDs (`D\\d+["..."]`, `--> D\\d+`, `D\\d+ -->`).
+    2. Local checklist / AgDR decision-table labels (`- [ ] D1.`, `| **D1** |`, `AgDR-... D1–D5`).
+    3. Cloudflare D1 database tokens (`D1` on lines mentioning `Cloudflare`, `Workers`, `KV`, `R2`,
+       `SQLite`, `wrangler`, or `D1 database`).
+  · **Classification:**
+    - `open`: `D##` is an active row in `TECH-DEBT.md` → OK.
+    - `closed_historical`: `D##` is in `## Closed-Debt Ledger` and the line does not assert open
+      status → OK.
+    - `stale_assertion` (HIGH): `D##` is in `## Closed-Debt Ledger` and the line matches an
+      open-status assertion (`tracked as/in/under D##`, `see debt row D##`, `see TECH-DEBT D##`,
+      `open/active/unresolved debt D##`, `D## is/remains open`) without a historical/closed
+      qualifier (`closed`, `paid`, `deleted`, `resolved`, `retired`, `fixed`, `was`, `until`,
+      `formerly`, `historically`, `said`).
+    - `unknown_citation` (HIGH): `D##` is in neither open rows nor `## Closed-Debt Ledger`.
+  · **Denominator & fail-closed reporting (T331 AC5):**
+    Reports `files_scanned`, `citations_total`, `citations_open`, `citations_closed_historical`,
+    `citations_unknown`, `citations_stale`, and `unmeasurable_surfaces`. Missing required surfaces
+    in an estate checkout fail closed as `UNMEASURABLE`.
 
 ⚠️ **A row with `— (needs a T-row)` is NOT rot.** Ten rows say that deliberately; it means *nobody
 has filed the ticket yet*, which is a real state and honestly recorded. Flagging it would train
@@ -65,6 +95,9 @@ REGISTER = Path(os.environ.get("W0M_TECH_DEBT_MD") or (ROOT / "TECH-DEBT.md"))
 TICKETS = Path(os.environ.get("W0M_TASKS_DIR") or (ROOT / ".tasks"))
 
 ROW = re.compile(r"^\|\s*(D\d+)\s*\|(.*)$", re.M)
+CLOSED_HEADING = re.compile(r"^##\s+Closed-Debt Ledger\b", re.I)
+NEXT_HEADING = re.compile(r"^##\s+")
+DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 TREF = re.compile(r"\[\[(T\d+[a-z]?)\]\]|\b(T\d+[a-z]?)\b")
 # A path is worth checking only if it looks like one: has a slash and a real extension.
 PATH = re.compile(r"`([\w./@-]+/[\w.@-]+\.(?:ts|tsx|js|mjs|py|astro|svelte|sql|json|md|sh|yaml|yml))`")
@@ -79,6 +112,24 @@ RESOLVED = re.compile(
     re.I)
 NOT_RESOLVED = re.compile(r"NOT\s+RESOLVED", re.I)
 
+DEBT_TOKEN = re.compile(r"\bD([1-9]\d*)\b")
+MERMAID_NODE = re.compile(r"(?:-->\s*D\d+\b|\bD\d+\s*(?:-->|[\[\(\{]))")
+LOCAL_DECISION_LINE = re.compile(
+    r"(?:^\s*-\s*\[[ xX]\]\s*D\d+\.|^\s*\|\s*\*\*D\d+\*\*\s*\||AgDR-\d+.*`D1`[–-]`D\d+`)"
+)
+CLOUDFLARE_D1_CONTEXT = re.compile(
+    r"(?i)\b(?:cloudflare|workers|wrangler|sqlite|d1\s+databases?|r2|kv)\b"
+)
+STALE_OPEN_PATTERNS = (
+    re.compile(r"(?i)\btracked\s+(?:as|in|under)\s+\[*\`*(D[1-9]\d*)\`*\b"),
+    re.compile(r"(?i)\bsee\s+(?:debt\s+row|TECH-DEBT(?:\.md)?)\s+\[*\`*(D[1-9]\d*)\`*\b"),
+    re.compile(r"(?i)\b(?:open|active|unresolved)\s+debt(?:\s+row)?\s+\[*\`*(D[1-9]\d*)\`*\b"),
+    re.compile(r"(?i)\[*\`*(D[1-9]\d*)\`*\]*\s+(?:is|remains)\s+(?:still\s+)?(?:open|active|unresolved)\b"),
+)
+HISTORICAL_GUARD = re.compile(
+    r"(?i)\b(?:closed|paid|deleted|resolved|retired|fixed|was|until|formerly|historically|said)\b"
+)
+
 
 def ticket_status(tid: str) -> str | None:
     f = TICKETS / f"{tid}.md"
@@ -86,6 +137,112 @@ def ticket_status(tid: str) -> str | None:
         return None
     m = re.search(r"^status:\s*(\S+)", f.read_text(encoding="utf-8"), re.M)
     return m.group(1) if m else "unknown"
+
+
+def split_register_sections(text: str) -> tuple[str, dict[str, dict]]:
+    """Split TECH-DEBT.md into open-table text and parsed Closed-Debt Ledger entries."""
+    open_lines: list[str] = []
+    closed_ledger: dict[str, dict] = {}
+    in_closed = False
+    for lineno, line in enumerate(text.splitlines(), 1):
+        if CLOSED_HEADING.match(line):
+            in_closed = True
+            continue
+        if in_closed and NEXT_HEADING.match(line):
+            in_closed = False
+        if not in_closed:
+            open_lines.append(line)
+            continue
+        m = ROW.match(line)
+        if not m:
+            continue
+        did = m.group(1)
+        cells = [c.strip() for c in m.group(2).split("|")]
+        if cells and cells[-1] == "":
+            cells = cells[:-1]
+        closed_date = cells[0] if len(cells) >= 1 else ""
+        paid_by = cells[1] if len(cells) >= 2 else ""
+        summary = cells[2] if len(cells) >= 3 else ""
+        refs = sorted({a or b for a, b in TREF.findall(paid_by)})
+        closed_ledger[did] = {
+            "id": did,
+            "line": lineno,
+            "closed": closed_date,
+            "paid_by": paid_by,
+            "tickets": refs,
+            "summary": summary,
+        }
+    return "\n".join(open_lines), closed_ledger
+
+
+def _is_non_debt_token(did: str, line: str) -> bool:
+    if MERMAID_NODE.search(line):
+        return True
+    if LOCAL_DECISION_LINE.search(line):
+        return True
+    if did == "D1" and CLOUDFLARE_D1_CONTEXT.search(line):
+        return True
+    return False
+
+
+def _is_stale_open_assertion(did: str, line: str) -> bool:
+    if HISTORICAL_GUARD.search(line):
+        return False
+    for pat in STALE_OPEN_PATTERNS:
+        for m in pat.finditer(line):
+            if m.group(1) == did:
+                return True
+    return False
+
+
+def collect_citation_surfaces(root: Path, register: Path) -> tuple[dict[str, str], list[str]]:
+    """Collect readable surfaces and report any missing/unreadable required estate surfaces."""
+    surfaces: dict[str, str] = {}
+    unmeasurable: list[str] = []
+    require_estate_surfaces = (root / ".w0m").is_dir() or os.environ.get("W0M_REQUIRE_SURFACES") == "1"
+
+    reg_rel = str(register.relative_to(root)) if register.is_relative_to(root) else register.name
+    surfaces[reg_rel] = register.read_text(encoding="utf-8")
+
+    fixed_rel_paths = (
+        "CLAUDE.md",
+        "AGENTS.md",
+        "ROADMAP.md",
+        ".w0m/sdlc.json",
+        "wom7web/project/test-suites.json",
+    )
+    for rel in fixed_rel_paths:
+        p = root / rel
+        if p.is_file():
+            try:
+                surfaces[rel] = p.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                unmeasurable.append(f"{rel} (unreadable)")
+        elif require_estate_surfaces:
+            unmeasurable.append(f"{rel} (missing)")
+
+    docs_dir = root / "wom7web/docs"
+    if docs_dir.is_dir():
+        for p in sorted(docs_dir.rglob("*.md")):
+            rel = str(p.relative_to(root))
+            try:
+                surfaces[rel] = p.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                unmeasurable.append(f"{rel} (unreadable)")
+    elif require_estate_surfaces:
+        unmeasurable.append("wom7web/docs (missing)")
+
+    for sdir_rel in (".agents/skills", "wom7web/.agents/skills"):
+        sdir = root / sdir_rel
+        if sdir.is_dir():
+            for p in sorted(sdir.glob("*/SKILL.md")):
+                rel = str(p.relative_to(root))
+                try:
+                    surfaces[rel] = p.read_text(encoding="utf-8", errors="replace")
+                except OSError:
+                    unmeasurable.append(f"{rel} (unreadable)")
+
+    return surfaces, unmeasurable
 
 
 def main() -> int:
@@ -99,7 +256,8 @@ def main() -> int:
         return 1
 
     text = REGISTER.read_text(encoding="utf-8")
-    rows = ROW.findall(text)
+    open_text, closed_ledger = split_register_sections(text)
+    rows = ROW.findall(open_text)
     if not rows:
         print("[HIGH] EMPTY CORPUS — parsed 0 debt rows. Fix the parse; do not read this as "
               "'the register is clean'.")
@@ -107,13 +265,20 @@ def main() -> int:
 
     findings: dict[str, list[dict]] = {k: [] for k in
                                        ("duplicate", "dead_path", "dead_ticket",
-                                        "stale_tracking", "resolved_not_deleted")}
+                                        "stale_tracking", "resolved_not_deleted",
+                                        "unknown_citation", "stale_assertion",
+                                        "unmeasurable")}
     seen: dict[str, int] = {}
 
     for did, body in rows:
         if did in seen:
             findings["duplicate"].append({"id": did, "detail": "declared more than once"})
         seen[did] = seen.get(did, 0) + 1
+        if did in closed_ledger:
+            findings["duplicate"].append({
+                "id": did,
+                "detail": f"present in both open table and Closed-Debt Ledger (line {closed_ledger[did]['line']})",
+            })
 
         # ⚠️ A debt row ABOUT a deletion legitimately cites the deleted path — D27/D28 describe
         # `lib/vault.ts` precisely because T168 removed it. So a missing path is only interesting
@@ -153,14 +318,77 @@ def main() -> int:
             findings["resolved_not_deleted"].append(
                 {"id": did, "detail": "row text says resolved — CLAUDE.md says delete it"})
 
-    if args.json:
-        print(json.dumps({"rows": len(rows), "findings": findings}, indent=2))
-        return 1 if (any(findings.values()) and args.enforce) else 0
+    for did, entry in closed_ledger.items():
+        if not DATE_RE.match(entry["closed"]):
+            findings["dead_ticket"].append(
+                {"id": did, "detail": f"Closed-Debt Ledger invalid date '{entry['closed']}'"}
+            )
+        for t_ in entry["tickets"]:
+            if ticket_status(t_) is None:
+                findings["dead_ticket"].append(
+                    {"id": did, "detail": f"Closed-Debt Ledger ticket {t_} has no ticket file"}
+                )
+
+    surfaces, unmeasurable_list = collect_citation_surfaces(ROOT, REGISTER)
+    for u in unmeasurable_list:
+        findings["unmeasurable"].append({"id": "UNMEASURABLE", "detail": u})
+
+    citations_total = 0
+    citations_open = 0
+    citations_closed_historical = 0
+    for rel, content in surfaces.items():
+        is_register = rel.endswith("TECH-DEBT.md")
+        for lineno, line in enumerate(content.splitlines(), 1):
+            scan_line = line
+            if is_register:
+                m_row = ROW.match(line)
+                if m_row:
+                    scan_line = m_row.group(2)
+            for m in DEBT_TOKEN.finditer(scan_line):
+                did = f"D{m.group(1)}"
+                if _is_non_debt_token(did, line):
+                    continue
+                citations_total += 1
+                if did in seen:
+                    citations_open += 1
+                elif did in closed_ledger:
+                    if _is_stale_open_assertion(did, line):
+                        findings["stale_assertion"].append({
+                            "id": did,
+                            "detail": f"{rel}:{lineno} asserts closed debt is open (closed {closed_ledger[did]['closed']} by {closed_ledger[did]['paid_by']})",
+                        })
+                    else:
+                        citations_closed_historical += 1
+                else:
+                    findings["unknown_citation"].append({
+                        "id": did,
+                        "detail": f"{rel}:{lineno} has no open row and no Closed-Debt Ledger entry",
+                    })
 
     gating = {k: v for k, v in findings.items() if k != "stale_tracking"}
     total = sum(len(v) for v in gating.values())
     informational = len(findings["stale_tracking"])
-    print(f"[STEP] tech-debt register ↔ reality · {len(rows)} row(s) in {REGISTER.name}\n")
+
+    if args.json:
+        print(json.dumps({
+            "rows": len(rows),
+            "closed_ledger_rows": len(closed_ledger),
+            "files_scanned": len(surfaces),
+            "citations_total": citations_total,
+            "citations_open": citations_open,
+            "citations_closed_historical": citations_closed_historical,
+            "citations_unknown": len(findings["unknown_citation"]),
+            "citations_stale": len(findings["stale_assertion"]),
+            "unmeasurable_surfaces": unmeasurable_list,
+            "findings": findings,
+        }, indent=2))
+        return 1 if (total and args.enforce) else 0
+
+    print(
+        f"[STEP] tech-debt register ↔ reality · {len(rows)} row(s) + {len(closed_ledger)} closed-ledger row(s) "
+        f"in {REGISTER.name} · {len(surfaces)} file(s) scanned · {citations_total} citation(s) resolved "
+        f"({citations_open} open, {citations_closed_historical} historical-closed)\n"
+    )
 
     labels = {
         "duplicate": ("[HIGH]", "DUPLICATE ID"),
@@ -169,6 +397,9 @@ def main() -> int:
         "stale_tracking": ("[INFO]", "UNOWNED — no LIVE ticket in the Tracked cell (informational: "
                                     "the column has no grammar, see the module docstring)"),
         "resolved_not_deleted": ("[WARN]", "RESOLVED, NOT DELETED"),
+        "unknown_citation": ("[HIGH]", "UNKNOWN CITATION — cited D## has no open row and no Closed-Debt Ledger entry"),
+        "stale_assertion": ("[HIGH]", "STALE OPEN ASSERTION — cites closed D## as still open/tracked"),
+        "unmeasurable": ("[HIGH]", "UNMEASURABLE — required citation surface missing or unreadable"),
     }
     for key, (marker, label) in labels.items():
         hits = findings[key]

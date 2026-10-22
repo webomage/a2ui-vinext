@@ -64,8 +64,8 @@ def add(level, section, name, detail=""):
     print(f"  {level}  [{section}] {name}" + (f" — {detail}" if detail else ""))
 
 
-def git(*args, cwd=WEB_ROOT):
-    return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True)
+def git(*args, cwd=None):
+    return subprocess.run(["git", *args], cwd=cwd or WEB_ROOT, capture_output=True, text=True)
 
 
 def http_json(url, timeout=10):
@@ -173,7 +173,97 @@ def check_conform():
 
 
 # ── DRIFT: git + spec ────────────────────────────────────────────────────────────
-def check_drift(scope_diff=None):
+def _openspec_scope_plan(scope_diff: str) -> tuple[list[str], int, int]:
+    """Compute (touched_tracked_items, skipped_tracked_count, untracked_disk_count) for scoped OpenSpec validation.
+
+    Uses the same `--scope-diff` reachability basis as `spec_drift_gate.py`:
+      - tracked active changes (`openspec/changes/<id>/...`, excluding `archive/`) and specs (`openspec/specs/<id>/...`)
+        modified in `<scope_diff>...HEAD`, `<scope_diff> HEAD`, or staged (`--cached`) in `WEB_ROOT`;
+      - tracked active changes/specs linked via `spec:` frontmatter from `.tasks/T*.md` tickets modified in `MONO_ROOT`.
+    Untracked OpenSpec directories on disk are never validated in scoped mode and are counted separately.
+    """
+    changes_root = Path(WEB_ROOT) / "openspec" / "changes"
+    specs_root = Path(WEB_ROOT) / "openspec" / "specs"
+    disk_changes = (
+        {d.name for d in changes_root.iterdir() if d.is_dir() and d.name != "archive"}
+        if changes_root.is_dir() else set()
+    )
+    disk_specs = (
+        {d.name for d in specs_root.iterdir() if d.is_dir()}
+        if specs_root.is_dir() else set()
+    )
+
+    ls_res = git("ls-files", "openspec/changes", "openspec/specs", cwd=WEB_ROOT)
+    tracked_changes: set[str] = set()
+    tracked_specs: set[str] = set()
+    if ls_res.returncode == 0:
+        for line in ls_res.stdout.splitlines():
+            p = line.strip()
+            mc = re.match(r"^openspec/changes/([^/]+)/", p)
+            if mc and mc.group(1) != "archive" and mc.group(1) in disk_changes:
+                tracked_changes.add(mc.group(1))
+            ms = re.match(r"^openspec/specs/([^/]+)/", p)
+            if ms and ms.group(1) in disk_specs:
+                tracked_specs.add(ms.group(1))
+    else:
+        tracked_changes = set(disk_changes)
+        tracked_specs = set(disk_specs)
+
+    untracked_count = len(disk_changes - tracked_changes) + len(disk_specs - tracked_specs)
+    total_tracked = len(tracked_changes) + len(tracked_specs)
+
+    d_three = git("diff", "--name-only", f"{scope_diff}...HEAD", cwd=WEB_ROOT)
+    d_two = git("diff", "--name-only", scope_diff, "HEAD", cwd=WEB_ROOT)
+    d_cached = git("diff", "--name-only", "--cached", cwd=WEB_ROOT)
+    changed_paths: set[str] = set()
+    for res in (d_three, d_two, d_cached):
+        if res.returncode == 0:
+            changed_paths.update(p.strip() for p in res.stdout.splitlines() if p.strip())
+    if d_three.returncode != 0 and d_two.returncode != 0:
+        d_fallback = git("diff", "--name-only", "HEAD~1...HEAD", cwd=WEB_ROOT)
+        if d_fallback.returncode == 0:
+            changed_paths.update(p.strip() for p in d_fallback.stdout.splitlines() if p.strip())
+
+    touched_changes: set[str] = set()
+    touched_specs: set[str] = set()
+    for path in changed_paths:
+        mc = re.match(r"^openspec/changes/([^/]+)/", path)
+        if mc and mc.group(1) in tracked_changes:
+            touched_changes.add(mc.group(1))
+        ms = re.match(r"^openspec/specs/([^/]+)/", path)
+        if ms and ms.group(1) in tracked_specs:
+            touched_specs.add(ms.group(1))
+
+    tasks_dir = Path(MONO_ROOT) / ".tasks"
+    if tasks_dir.is_dir():
+        m_three = git("diff", "--name-only", f"{scope_diff}...HEAD", cwd=MONO_ROOT)
+        m_two = git("diff", "--name-only", scope_diff, "HEAD", cwd=MONO_ROOT)
+        m_cached = git("diff", "--name-only", "--cached", cwd=MONO_ROOT)
+        mono_paths: set[str] = set()
+        for res in (m_three, m_two, m_cached):
+            if res.returncode == 0:
+                mono_paths.update(p.strip() for p in res.stdout.splitlines() if p.strip())
+        for path in mono_paths:
+            if re.match(r"^\.tasks/T[^/]+\.md$", path):
+                tfile = Path(MONO_ROOT) / path
+                if tfile.is_file():
+                    txt = tfile.read_text(encoding="utf-8", errors="ignore")
+                    fm_spec = re.search(r"^spec:\s*[\"']?(.*?)[\"']?\s*$", txt, re.M)
+                    if fm_spec:
+                        spec_val = fm_spec.group(1)
+                        for cid in re.findall(r"openspec/changes/([^/\s\"',]+)", spec_val):
+                            if cid != "archive" and cid in tracked_changes:
+                                touched_changes.add(cid)
+                        for sid in re.findall(r"openspec/specs/([^/\s\"',]+)", spec_val):
+                            if sid in tracked_specs:
+                                touched_specs.add(sid)
+
+    touched_items = sorted(touched_changes) + [s for s in sorted(touched_specs) if s not in touched_changes]
+    skipped_count = max(0, total_tracked - len(touched_items))
+    return touched_items, skipped_count, untracked_count
+
+
+def check_drift(scope_diff: str | None = None) -> None:
     print("\n▶ DRIFT — git + specs")
     porcelain = git("status", "--porcelain")
     dirty = [l for l in porcelain.stdout.splitlines() if l.strip()]
@@ -212,38 +302,37 @@ def check_drift(scope_diff=None):
     if not openspec_bin:
         add(SKIP, "spec", "openspec validate", "openspec CLI not on PATH")
     elif scope_diff:
-        diff_out = git("diff", "--name-only", scope_diff, "HEAD").stdout
-        all_changed = set(diff_out.splitlines())
-        touched_changes = set()
-        for path in all_changed:
-            m = re.match(r"^openspec/changes/([^/]+)/", path)
-            if m and m.group(1) != "archive":
-                cid = m.group(1)
-                if os.path.isdir(os.path.join(WEB_ROOT, "openspec/changes", cid)):
-                    touched_changes.add(cid)
-
-        if not touched_changes:
-            add(PASS, "spec", "openspec validate (scoped)", "no active changes in scope")
+        touched_items, skipped_count, untracked_count = _openspec_scope_plan(scope_diff)
+        validated_count = len(touched_items)
+        scope_summary = (
+            f"validated {validated_count} touched item(s), "
+            f"skipped {skipped_count} untouched item(s) (scope: {scope_diff}); "
+            f"{untracked_count} untracked ignored"
+        )
+        if not touched_items:
+            add(PASS, "spec", "openspec validate (scoped)", scope_summary)
         else:
             all_valid = True
             first_fail = ""
-            for cid in sorted(touched_changes):
+            for cid in touched_items:
                 res = subprocess.run([openspec_bin, "validate", cid, "--strict"],
                                      cwd=WEB_ROOT, capture_output=True, text=True)
                 if res.returncode != 0:
                     all_valid = False
                     tail = (res.stdout + res.stderr).strip().splitlines()
-                    first_fail = f"{cid}: {tail[-1] if tail else 'invalid'}"
+                    first_fail = f"{cid}: {tail[-1] if tail else 'invalid'} ({scope_summary})"
                     break
             if all_valid:
-                add(PASS, "spec", "openspec validate (scoped)", f"all {len(touched_changes)} change(s) valid")
+                add(PASS, "spec", "openspec validate (scoped)", scope_summary)
             else:
-                add(FAIL, "spec", "openspec validate (scoped)", first_fail[:120])
+                add(FAIL, "spec", "openspec validate (scoped)", first_fail[:200])
     else:
         ov = subprocess.run([openspec_bin, "validate", "--all", "--strict"],
                             cwd=WEB_ROOT, capture_output=True, text=True)
         if ov.returncode == 0:
-            add(PASS, "spec", "openspec validate --all --strict", "all valid")
+            totals = [l.strip() for l in (ov.stdout + ov.stderr).splitlines() if l.strip().startswith("Totals:")]
+            detail = f"all valid ({totals[-1]})" if totals else "all valid"
+            add(PASS, "spec", "openspec validate --all --strict", detail)
         else:
             tail = (ov.stdout + ov.stderr).strip().splitlines()
             add(FAIL, "spec", "openspec validate --all --strict", (tail[-1] if tail else "invalid")[:120])
@@ -957,7 +1046,7 @@ def main():
     ap.add_argument("--deep", action="store_true", help="+ markers/lexicon + migrations drift (lexicon needs infisical)")
     ap.add_argument("--no-report", action="store_true", help="don't write the md report")
     ap.add_argument("--scope-diff", metavar="REF", default=None,
-                    help="scope the spec-drift gate to changes vs REF (e.g. origin/beta) — used by the pre-push hook")
+                    help="scope spec-drift and openspec validate to changes vs REF (e.g. origin/beta) — used by the pre-push hook")
     args = ap.parse_args()
 
     head = git("rev-parse", "HEAD").stdout.strip()

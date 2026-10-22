@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-10-22T04:35:15.900Z",
+  "generatedAt": "2026-10-22T16:15:11.798Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -120,7 +120,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-spec",
-      "integrity": "sha256-ad5ad9af58a473dda51a1e56cddac2782cd2a1d15ccb25b09374a7545f327ea9"
+      "integrity": "sha256-6c0243b19bcf2ab92b2e04edd1cba58567f89426506178c09466c7ea34c2e964"
     },
     "w0m-sdlc-start": {
       "provider": "w0m-native",

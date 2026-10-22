@@ -37,7 +37,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "wom7web"
-API = ROOT / "wom7api"
+API = Path(os.environ.get("W0M_SUITES_API") or (ROOT / "wom7api"))
 
 # Overridable so the runner can be driven against a fixture registry — the tests need to
 # prove the failure paths without executing real suites.
@@ -94,17 +94,33 @@ UNIQUE_FILES = re.compile(r"\bunique\s+\((\d+)\s+file\(s\)\)", re.M)
 CHECKED_N = re.compile(r"^Checked\s+(\d+)\s+\w+", re.M)
 OK_COLON = re.compile(r"^(?:OK:\s|\s*All\s+\S+\s+checks\s+passed\.)", re.M)
 
-_RECIPE_CACHE: dict[Path, dict[str, str]] = {}
+_RECIPE_CACHE: dict[tuple[Path, int, int], dict[str, str]] = {}
+
+ACCEPTED_DIALECTS: tuple[str, ...] = (
+    "1. Glyph per-check lines: `✅ label` / `❌ label` or `✓ label` / `✗ label`",
+    "2. Bracketed text per-check lines: `[PASS] label` / `[FAIL] label` / `[OK] label`",
+    "3. Framework summary lines: `pytest`/`vitest` `N passed`, `(N/M)` ratio, `Ran N tests`, or `mypy` summary",
+)
+
+UNMEASURABLE_RE = re.compile(
+    r"\b(?:UNMEASURABLE|COULD NOT MEASURE|NOT MEASURED)\b|nothing was measured",
+    re.I,
+)
 
 
 def _known_recipes() -> dict[str, str]:
     jf_path = API / "justfile"
-    if jf_path not in _RECIPE_CACHE:
+    try:
+        st = jf_path.stat()
+        key = (jf_path, st.st_mtime_ns, st.st_size)
+    except OSError:
+        return {}
+    if key not in _RECIPE_CACHE:
         try:
-            _RECIPE_CACHE[jf_path] = recipes(jf_path.read_text(encoding="utf-8"))
+            _RECIPE_CACHE[key] = recipes(jf_path.read_text(encoding="utf-8"))
         except OSError:
-            _RECIPE_CACHE[jf_path] = {}
-    return _RECIPE_CACHE[jf_path]
+            _RECIPE_CACHE[key] = {}
+    return _RECIPE_CACHE[key]
 
 
 def load_registry() -> list[dict]:
@@ -128,8 +144,97 @@ def load_registry() -> list[dict]:
 def recipe_exists(recipe: str) -> bool:
     if recipe in _known_recipes():
         return True
-    r = subprocess.run(["just", "--show", recipe], cwd=API, capture_output=True, text=True)
+    jf_path = API / "justfile"
+    if not jf_path.is_file():
+        return False
+    r = subprocess.run(
+        ["just", "--justfile", str(jf_path), "--working-directory", str(API), "--show", recipe],
+        cwd=API,
+        capture_output=True,
+        text=True,
+    )
     return r.returncode == 0
+
+
+def unresolved_suites(suites: list[dict]) -> list[dict]:
+    """Registered suites whose recipe cannot be resolved in the runner's justfile (T549 AC1).
+
+    Resolves each registered recipe against `API / 'justfile'` with working directory `API`
+    (`just --justfile <API/justfile> --working-directory <API> --show <recipe>`), never the root
+    justfile. Fast-paths recipes already parsed from `API / 'justfile'` and shells out to
+    `just --show` for any candidate not found in the static parse so imported/aliased recipes
+    and missing recipes are verified identically to the runner.
+    """
+    jf_path = API / "justfile"
+    try:
+        jf_display = str(jf_path.relative_to(ROOT))
+    except ValueError:
+        jf_display = str(jf_path)
+    known = _known_recipes()
+    bad: list[dict] = []
+    for s in suites:
+        recipe = s.get("recipe", "")
+        if not recipe or recipe not in known:
+            if jf_path.is_file() and recipe:
+                r = subprocess.run(
+                    ["just", "--justfile", str(jf_path), "--working-directory", str(API), "--show", recipe],
+                    cwd=API,
+                    capture_output=True,
+                    text=True,
+                )
+                ok = r.returncode == 0
+                err = r.stderr.strip()
+            else:
+                ok = False
+                err = "justfile not found" if not jf_path.is_file() else "empty recipe"
+            if not ok:
+                bad.append({
+                    "name": s.get("name", "?"),
+                    "recipe": recipe,
+                    "entry": s,
+                    "justfile": jf_display,
+                    "stderr": err,
+                })
+    return bad
+
+
+def _strip_log_header(raw: str) -> str:
+    lines = raw.splitlines()
+    idx = 0
+    while idx < len(lines) and lines[idx].startswith("# "):
+        idx += 1
+    return "\n".join(lines[idx:])
+
+
+def uncountable_suites(suites: list[dict], log_dir: Path | None = None) -> list[dict]:
+    """Suites whose sample or cached output yields no countable checks (T549 AC3)."""
+    d = log_dir or Path(os.environ.get("W0M_SUITES_LOG_DIR") or (WEB / "reports" / "suites"))
+    bad: list[dict] = []
+    for s in suites:
+        name = s.get("name", "?")
+        sample = s.get("sample_output")
+        source = "registry sample_output"
+        if sample is None and d.is_dir():
+            lf = d / f"{name}.log"
+            if lf.is_file():
+                try:
+                    raw = lf.read_text(encoding="utf-8", errors="replace")
+                except OSError:
+                    continue
+                if "status: UNMEASURABLE" in raw[:300] or "status: MISSING" in raw[:300]:
+                    continue
+                sample = _strip_log_header(raw)
+                source = f"reports/suites/{name}.log"
+        if sample is not None:
+            c = count_checks(sample)
+            if c is None or c == 0:
+                bad.append({
+                    "name": name,
+                    "recipe": s.get("recipe", "?"),
+                    "checks": c,
+                    "source": source,
+                })
+    return bad
 
 
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
@@ -175,9 +280,16 @@ def run(suite: dict) -> dict:
     p = subprocess.run(["just", recipe], cwd=API, capture_output=True, text=True)
     out = p.stdout + p.stderr
     checks = count_checks(out)
-    status = "pass" if p.returncode == 0 else "FAIL"
-    if status == "pass" and checks == 0:
-        status = "VACUOUS"
+    if p.returncode == 0:
+        status = "VACUOUS" if checks == 0 else "pass"
+    elif (p.returncode == 2 and (UNMEASURABLE_RE.search(out) or not checks)) or (
+        UNMEASURABLE_RE.search(out) and not checks
+    ):
+        # T328 AC5 / T242: a suite that cannot measure (exit 2 / UNMEASURABLE) is distinct from
+        # a suite that ran and found a violation (FAIL).
+        status = "UNMEASURABLE"
+    else:
+        status = "FAIL"
     return {**suite, "status": status, "checks": checks, "rc": p.returncode, "raw": out,
             "tail": out.strip().splitlines()[-1][:100] if out.strip() else ""}
 
@@ -419,11 +531,19 @@ def main() -> int:
 
     suites = load_registry()
     if args.drift:
+        unresolved = unresolved_suites(suites)
+        uncountable = uncountable_suites(suites)
         missing = drift(suites)
         tier_a = {n: why for n, why in missing.items() if why.startswith("[Tier A]")}
         tier_b = {n: why for n, why in missing.items() if why.startswith("[Tier B]")}
         print(f"▶ suite-registry drift — {len(suites)} declared, {len(missing)} undeclared "
-              f"({len(tier_a)} Tier A, {len(tier_b)} Tier B)")
+              f"({len(tier_a)} Tier A, {len(tier_b)} Tier B), {len(unresolved)} unresolved")
+        if unresolved:
+            print(f"\n  🔴 Unresolved registered recipes in {unresolved[0]['justfile']} ({len(unresolved)}):")
+            for u in unresolved:
+                print(f"     [FAIL] suite={u['name']!r} recipe={u['recipe']!r} "
+                      f"registry={REGISTRY} justfile={u['justfile']} "
+                      f"entry={json.dumps(u['entry'], sort_keys=True)}")
         if tier_a:
             print(f"\n  🔴 Tier A — completely undeclared ({len(tier_a)}):")
             for m, why in tier_a.items():
@@ -432,10 +552,21 @@ def main() -> int:
             print(f"\n  🟡 Tier B — red-proof declared, gate itself unrun ({len(tier_b)}):")
             for m, why in tier_b.items():
                 print(f"     [WARN] {m} ({why.removeprefix('[Tier B] ')})")
+        if uncountable:
+            print(f"\n  🟡 Advisory — {len(uncountable)} suite(s) produced no countable checks (`?` or `0`):")
+            for u in uncountable:
+                lbl = "?" if u["checks"] is None else "0"
+                print(f"     [WARN] {u['name']} (recipe={u['recipe']}, checks={lbl}, source={u['source']})")
+            print("     Accepted check dialects (emit at least one so `run_suites.py` can count checks):")
+            for d_line in ACCEPTED_DIALECTS:
+                print(f"       · {d_line}")
+        if unresolved:
+            print(f"\n❌ {len(unresolved)} registered suite(s) do not resolve in {unresolved[0]['justfile']}")
+            return 1
         if missing:
             print("\n❌ undeclared suites exist — add them (or record why they are excluded)")
             return 1
-        print("  ✅ every recipe that behaves like a suite is declared")
+        print("  ✅ every recipe that behaves like a suite is declared and resolves in wom7api/justfile")
         return 0
 
     problems = prepush_problems(suites)
@@ -458,11 +589,23 @@ def main() -> int:
         results.append(r)
         if isinstance(r["checks"], int):
             total += r["checks"]
-        mark = {"pass": "✅", "FAIL": "❌", "MISSING": "🚫", "VACUOUS": "⚠️"}[r["status"]]
+        mark = {
+            "pass": "✅",
+            "FAIL": "❌",
+            "MISSING": "🚫",
+            "VACUOUS": "⚠️",
+            "UNMEASURABLE": "⚪",
+        }[r["status"]]
         n = "?" if r["checks"] is None else r["checks"]
+        tier_lbl = r.get("tier", "offline")
+        mode_lbl = "blocking" if r.get("blocking", True) else "advisory"
         block = "" if r.get("blocking", True) else "  (advisory)"
-        print(f"  {mark} {r['name']:22} {str(n):>4} check(s){block}", flush=True)
-        if r["status"] in ("FAIL", "MISSING"):
+        unm_tag = "  [UNMEASURABLE]" if r["status"] == "UNMEASURABLE" else ""
+        print(
+            f"  {mark} {r['name']:22} {str(n):>4} check(s)  [{tier_lbl}/{mode_lbl}]{block}{unm_tag}",
+            flush=True,
+        )
+        if r["status"] in ("FAIL", "MISSING", "UNMEASURABLE"):
             print(f"       ↳ {r.get('tail') or 'recipe not found'}", flush=True)
 
     heavy = {"py-test", "test-js", "skill-test", "py-typecheck", "hygiene-check", "mmd-validate", "deno-test", "deno-check"}
@@ -533,7 +676,9 @@ def main() -> int:
             ceiling = None
 
     hard = [r for r in results if r["status"] in ("FAIL", "MISSING") and r.get("blocking", True)]
+    hard_unm = [r for r in results if r["status"] == "UNMEASURABLE" and r.get("blocking", True)]
     soft = [r for r in results if r["status"] in ("FAIL", "MISSING") and not r.get("blocking", True)]
+    soft_unm = [r for r in results if r["status"] == "UNMEASURABLE" and not r.get("blocking", True)]
     vac = [r for r in results if r["status"] == "VACUOUS"]
 
     print(f"\n  {total} check(s) ran across {len(picked)} suite(s)")
@@ -558,15 +703,24 @@ def main() -> int:
         print("   A suite reports in a dialect nothing can measure, so it cannot be told apart")
         print("   from one that ran no checks. Make it print ✅/❌ (or ✓/✗) per check, or extend")
         print("   count_checks(). Do NOT raise the baseline just to silence this.")
+    if soft_unm:
+        items = ", ".join(f"{r['name']} [{r.get('tier', 'offline')}/advisory]" for r in soft_unm)
+        print(f"  ⚪ {len(soft_unm)} advisory suite(s) unmeasurable: {items}")
     if soft:
-        print(f"  🟡 {len(soft)} advisory suite(s) failing: {', '.join(r['name'] for r in soft)}")
+        items = ", ".join(f"{r['name']} [{r.get('tier', 'offline')}/advisory]" for r in soft)
+        print(f"  🟡 {len(soft)} advisory suite(s) failing: {items}")
     if vac:
         print(f" [WARN] {len(vac)} suite(s) exited 0 having run ZERO checks: "
               f"{', '.join(r['name'] for r in vac)} — a pass over nothing is not a pass")
+    if hard_unm:
+        items = ", ".join(f"{r['name']} [{r.get('tier', 'offline')}/blocking]" for r in hard_unm)
+        print(f"\n❌ {len(hard_unm)} blocking suite(s) unmeasurable: {items}")
     if hard:
-        print(f"\n❌ {len(hard)} blocking suite(s) failed: {', '.join(r['name'] for r in hard)}")
+        items = ", ".join(f"{r['name']} [{r.get('tier', 'offline')}/blocking]" for r in hard)
+        print(f"\n❌ {len(hard)} blocking suite(s) failed: {items}")
+    if hard or hard_unm:
         return 1
-    if not total:
+    if not total and not soft_unm:
         print("\n❌ zero checks ran in total — that is a broken aggregate, not a clean run")
         return 1
     print("\n✅ all blocking suites passed")
