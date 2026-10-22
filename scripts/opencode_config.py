@@ -195,13 +195,13 @@ def render_command_markdown(name: str, description: str) -> str:
 def generate_opencode_surfaces(root: Path = ESTATE_ROOT) -> dict[str, Any]:
     """Generate `opencode.json` and `.opencode/commands/*.md` from canonical sources."""
     skills_manifest_path = root / ".w0m" / "skills.json"
-    skills_manifest = json.loads(skills_manifest_path.read_text(encoding="utf-8"))
+    skills_manifest: dict[str, Any] = json.loads(skills_manifest_path.read_text(encoding="utf-8"))
     declared_skills = skills_manifest.get("skills", {})
 
     registry_path = root / "wom7skills" / "skills-registry.json"
     registry_skills: dict[str, Any] = {}
     if registry_path.is_file():
-        reg_data = json.loads(registry_path.read_text(encoding="utf-8"))
+        reg_data: dict[str, Any] = json.loads(registry_path.read_text(encoding="utf-8"))
         registry_skills = reg_data.get("skills", {})
 
     cfg = build_canonical_opencode_config()
@@ -245,7 +245,7 @@ def drive_ticket_lifecycle_in_opencode(
         raise FileNotFoundError(f"Ticket file not found: {ticket_path}")
 
     sdlc_path = root / ".w0m" / "sdlc.json"
-    sdlc = json.loads(sdlc_path.read_text(encoding="utf-8"))
+    sdlc: dict[str, Any] = json.loads(sdlc_path.read_text(encoding="utf-8"))
     lifecycle = sdlc.get("lifecycle", [])
 
     executed_stages: list[dict[str, str]] = []
@@ -304,7 +304,7 @@ def validate_opencode_config_text(raw_text: str, root: Path = ESTATE_ROOT) -> tu
     if TRAILING_COMMA_RE.search(raw_text):
         errors.append("opencode.json contains a trailing comma (violates strict JSON, T152 AC1)")
     try:
-        cfg = json.loads(raw_text)
+        cfg: dict[str, Any] = json.loads(raw_text)
     except json.JSONDecodeError as exc:
         errors.append(f"opencode.json is not valid strict JSON: {exc} (T152 AC1)")
         return None, errors

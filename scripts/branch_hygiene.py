@@ -70,7 +70,7 @@ def load_branch_model(root: Path) -> dict[str, Any]:
     ]
     for path in candidates:
         if path.exists():
-            data = json.loads(path.read_text(encoding="utf-8"))
+            data: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
             if "branch_model" in data and isinstance(data["branch_model"], dict):
                 return data["branch_model"]
     raise RuntimeError("branch_model missing from .w0m/sdlc.json")

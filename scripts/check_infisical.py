@@ -79,11 +79,12 @@ def auto_upgrade_infisical() -> int:
 
 
 def find_link(start: Path) -> Path | None:
-    """Return the nearest `.infisical.json` at or above `start` (the CLI's own lookup)."""
+    """Return the nearest `.infisical.yaml` or `.infisical.json` at or above `start` (the CLI's own lookup)."""
     for d in (start, *start.parents):
-        candidate = d / ".infisical.json"
-        if candidate.is_file():
-            return candidate
+        for name in (".infisical.yaml", ".infisical.json"):
+            candidate = d / name
+            if candidate.is_file():
+                return candidate
     return None
 
 

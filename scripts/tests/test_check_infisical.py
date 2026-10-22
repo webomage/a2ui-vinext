@@ -86,6 +86,13 @@ class CheckInfisicalTest(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stdout)
         self.assertIn("authenticated", r.stdout)
 
+    def test_success_with_yaml_link_file_found_in_parent(self):
+        (self.tmp / ".infisical.yaml").write_text("secrets-management:\n    project-id: x\n")
+        self.make_fake("2026-10-22 INF Injecting 107 Infisical secrets into your application process", 0)
+        r = self.run_check()
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn("authenticated", r.stdout)
+
     def test_missing_cli(self):
         env = {**os.environ, "W0M_INFISICAL_BIN": str(self.tmp / "nope")}
         r = subprocess.run([sys.executable, str(SCRIPT), "--project-id", "x"], cwd=self.work,

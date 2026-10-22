@@ -524,9 +524,13 @@ def main() -> int:
     for repo in sorted(ROOT.glob("wom7*")):
         if not (repo / ".git").exists() or repo.name in exempt:
             continue
-        if not (repo / ".infisical.json").exists():
+        if not (
+            (repo / ".infisical.yaml").exists()
+            or (repo / ".infisical.json").exists()
+            or (ROOT / ".infisical.yaml").exists()
+        ):
             notes.append(
-                f"{repo.name}: no .infisical.json — add one, or declare it in "
+                f"{repo.name}: no .infisical.yaml/.infisical.json — add one, or declare it in "
                 f".w0m/sdlc.json -> toolchain.exempt"
             )
 
