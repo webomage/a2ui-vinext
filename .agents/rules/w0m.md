@@ -6,10 +6,9 @@
 > rather than scan the old path — *"the registry moved; fix the policy rather than scan a
 > path that no longer exists"*.
 
-> ⚠️ **ONE FILE, TWO REPOS.** `wom7api/.agents` is a **symlink** to `../wom7web/.agents` (tracked as
-> a single git entry in wom7api, 517 files in wom7web). Editing this file changes the rules for
-> both repos at once. Same shape as `wom7api/justfile`, which wom7web and wom7cfworkers symlink —
-> and the same hazard: one careless line is wrong in two places immediately.
+> ⚠️ **GOVERNED ACROSS REPOS.** `.agents/rules/w0m.md` is synchronized across `@wom`, `wom7web`, and
+> `wom7api` as real tracked files (cross-repo `.agent` symlinks were removed in T427 / AgDR-0025).
+> Keep all copies aligned with the canonical rules in `@wom/AGENTS.md` and `CLAUDE.md`.
 
 **Canonical conventions live in [`../CLAUDE.md`](../CLAUDE.md)** (i.e. `wom7web/CLAUDE.md`).
 Read it first. This file exists because Antigravity does **not** autoload `CLAUDE.md` — it loads

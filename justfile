@@ -4,6 +4,9 @@
 
 set dotenv-load := false
 
+# Canonical @wom estate root exported to all child recipes and scripts (T427 / AgDR-0025).
+export W0M_ROOT := env_var_or_default('W0M_ROOT', justfile_directory())
+
 # Deployment Version & Parameters (T131 / T421)
 project_ref := "pqbbjgeapylcengbuvee"
 # Infisical project (workspace) id, the ONE source for every `infisical run` below (T429). It is an
