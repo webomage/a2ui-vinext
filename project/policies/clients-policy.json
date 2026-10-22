@@ -249,9 +249,45 @@
       "role": "managed",
       "root": "../../_self/servicios777.mx",
       "enabled": true,
+      "org_slug": "maksim-kulikov",
+      "project_slug": "servicios777",
       "runtime": {
         "substrate": "host"
       },
+      "vcs": {
+        "provider": "github",
+        "repo": "casualuser/servicios777.mx",
+        "default_branch": "main"
+      },
+      "external_services": [
+        {
+          "service_key": "supabase",
+          "title": "Supabase (Portal Tenancy, Contracts, Invoices, Milestones)",
+          "category": "database",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "Supabase Free (Shared pqbbjgeapylcengbuvee)",
+          "monthly_base_usd": 0,
+          "unit_label": "Tenant-keyed rows (orgs: maksim-kulikov, project: c2790021-2790-4000-8000-000000000001)",
+          "resources": [
+            "org:c2790001-2790-4000-8000-000000000001",
+            "project:c2790021-2790-4000-8000-000000000001"
+          ]
+        },
+        {
+          "service_key": "github",
+          "title": "GitHub Repository (casualuser/servicios777.mx)",
+          "category": "vcs",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "GitHub Free",
+          "monthly_base_usd": 0,
+          "unit_label": "Dedicated repository casualuser/servicios777.mx",
+          "resources": [
+            "repo:casualuser/servicios777.mx"
+          ]
+        }
+      ],
       "identity": {
         "git_user_name": "Aleksei Tcelishchev",
         "git_user_email": "casualuser@gmail.com",
@@ -259,16 +295,52 @@
         "gh_account": "casualuser",
         "gh_config_dir": "~/.config/gh-w0m"
       },
-      "note": "\ud83e\uddca THE COLD RUN (T182 AC7). Registered 2026-08-09 having never been imported \u2014 no `.w0m/` at all, unlike every other project here. On `main`. Chosen precisely because nothing about it was shaped by the two imports that produced the path: if the written procedure only works on projects it was derived from, this is where that shows."
+      "note": "\ud83e\uddca THE COLD RUN (T182 AC7 / T279 / T280). Registered 2026-08-09 and onboarded under Maksim Kulikov (`servicios777@webomage.com`, org `maksim-kulikov`, project `c2790021-2790-4000-8000-000000000001`). Conforms 9/9 to `client-profile.json` (`just client-check servicios777`)."
     },
     {
       "id": "personaje0",
       "role": "managed",
       "root": "../../_self/personaje0",
       "enabled": true,
+      "org_slug": "maksim-kulikov",
+      "project_slug": "personaje0",
       "runtime": {
         "substrate": "host"
       },
+      "vcs": {
+        "provider": "github",
+        "repo": "casualuser/personaje0",
+        "default_branch": "main"
+      },
+      "external_services": [
+        {
+          "service_key": "supabase",
+          "title": "Supabase (Portal Tenancy, Contracts, Invoices, Milestones)",
+          "category": "database",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "Supabase Free (Shared pqbbjgeapylcengbuvee)",
+          "monthly_base_usd": 0,
+          "unit_label": "Tenant-keyed rows (orgs: maksim-kulikov, project: c2790022-2790-4000-8000-000000000002)",
+          "resources": [
+            "org:c2790001-2790-4000-8000-000000000001",
+            "project:c2790022-2790-4000-8000-000000000002"
+          ]
+        },
+        {
+          "service_key": "github",
+          "title": "GitHub Repository (casualuser/personaje0)",
+          "category": "vcs",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "GitHub Free",
+          "monthly_base_usd": 0,
+          "unit_label": "Dedicated repository casualuser/personaje0",
+          "resources": [
+            "repo:casualuser/personaje0"
+          ]
+        }
+      ],
       "identity": {
         "git_user_name": "Aleksei Tcelishchev",
         "git_user_email": "casualuser@gmail.com",
@@ -276,7 +348,7 @@
         "gh_account": "casualuser",
         "gh_config_dir": "~/.config/gh-w0m"
       },
-      "note": "\ud83d\udd34 A THIRD partly-imported project, found 2026-08-09 while looking for an AC7 subject \u2014 it has `.w0m/sdlc.json` + `templates/` and nobody had mentioned it. The ticket's framing (\"both clients are already partly imported\") was an UNDERCOUNT: the estate had three, and the third was invisible because nothing enumerated projects. Registered read-only so it is measured rather than remembered. On `main`."
+      "note": "\ud83d\udd34 Onboarded under Maksim Kulikov (`servicios777@webomage.com`, org `maksim-kulikov`, project `c2790022-2790-4000-8000-000000000002`, T279 / T280). Conforms 9/9 to `client-profile.json` (`just client-check personaje0`)."
     },
     {
       "id": "bridgeroad",
