@@ -86,6 +86,10 @@ ACKNOWLEDGED: dict[tuple[str, str], str] = {
         "true when ticked: a per-function recipe T431 replaced with `just deploy-function "
         "agent-consultant`. Historical citation of the deploy step, not a missing gate."
     ),
+    ("T426", "claim"): (
+        "a removal AC: T426 AC5 explicitly removes `just claim`/`unclaim`, `agent_claim.py`, and "
+        "`_in/active-work.json`; the absence of `just claim` is the ticket's own success condition."
+    ),
 }
 
 

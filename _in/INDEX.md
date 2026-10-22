@@ -16,7 +16,7 @@ reason: "Generated disposition board (`just in-sync`) showing what is new vs ado
 |---|---:|---|
 | `new` | 0 | Must be triaged (`just in-triage`) within **7 days** |
 | `living` | 4 | Permanent tray infrastructure (`README.md`, `INDEX.md`, `ledger.json`, `active-work.json`) |
-| `adopted` | 29 | Moved out of `_in/` into a ticket (`[[T###]]`), OpenSpec change, `docs/reports/`, or `client-projects/` |
+| `adopted` | 30 | Moved out of `_in/` into a ticket (`[[T###]]`), OpenSpec change, `docs/reports/`, or `client-projects/` |
 | `declined` | 0 | Evaluated and declined with a recorded reason |
 
 ## New Drops (`state: new`)
@@ -38,7 +38,8 @@ _No untriaged `new` items currently in `_in/`._
 |---|---|---|---|
 | `Lahore_Prospect_Proposal_2026-06.md` | `owner` | `2026-09-02` | client-projects/lahore-prospect (client-projects tier; excluded from public KB per KB content policy) |
 | `orca` | `owner` | `2026-09-02` | [[T377]] · [[T409]] · [[T423]] · wom7pr/orca |
-| `2026-09-03-projects-inventory-audit.md` | `antigravity` | `2026-09-03` | [[T308]] · wom7web/docs/reports/PROJECTS_CATALOG_AND_CLEANUP_AUDIT_2026.md |
+| `2026-09-03-projects-inventory-audit.md` | `antigravity` | `2026-09-03` | [[T308]] · wom7web/docs/reports/PROJECTS_CATALOG_AND_CLEANUP_AUDIT_2026.md · wom7web/docs/reports/2026-10-22-projects-inventory-audit-followup-t308.md |
+| `2026-10-22-projects-inventory-audit-followup-t308.md` | `antigravity` | `2026-10-22` | [[T308]] · wom7web/docs/reports/2026-10-22-projects-inventory-audit-followup-t308.md |
 | `2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md` | `antigravity` | `2026-09-04` | [[T312]] · wom7web/docs/reports/2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md |
 | `2026-09-05-project-roles-hats-offices-and-resource-access-architecture.md` | `antigravity` | `2026-09-05` | [[T319]] · [[T313]] · [[T315]] |
 | `2026-09-06-login-logout-role-change-audit-and-suggested-actions.md` | `antigravity` | `2026-09-06` | [[T320]] · [[T159]] · wom7web/docs/reports/2026-09-06-login-logout-session-audit.md |

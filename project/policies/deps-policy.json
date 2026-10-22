@@ -34,7 +34,9 @@
     }
   },
   "floors": {
-    "_comment": "Security floors as pnpm.overrides. Every listed repo that ALREADY has this override must satisfy both the lower bound (>=x.y.z) and optional upper ceiling (<a.b.c or <a); --apply writes the full floor string (both bounds), --check fails if any repo is below the floor, omits a required upper bound, loosens the upper bound, or resolves >= upper in pnpm-lock.yaml (T140). Raising a floor here is the single edit that replaces chasing an advisory through N lockfiles.",
+    "_comment": "Security floors as pnpm.overrides plus tracked lockfile verification (pnpm-lock.yaml and tracked npm package-lock.json). Every listed repo that ALREADY has an override must satisfy both the lower bound (>=x.y.z) and optional upper ceiling (<a.b.c or <a); any repo whose pnpm-lock.yaml or tracked package-lock.json resolves a package in `floors` must resolve >= lower and < upper (T140, T298). Repos where zero floors land (neither in pnpm.overrides nor in tracked lockfiles) are reported as `no floor applies` rather than counted as aligned.",
+    "_comment_npm_lockfiles": "T298 AC3 — Tracked npm `package-lock.json` files (discovered via `git ls-files` inside each listed repo, e.g. `wom7skills/skills/mmd-validate/package-lock.json`) are inspected against `floors` alongside `pnpm-lock.yaml`. Untracked vendored trees (`wom7web`'s 43 and `wom7ext`'s 1 untracked package-lock.json files) are excluded by `git ls-files`.",
+    "_comment_osv_division_of_labour": "T298 AC6 — Preventive vs detective division of labour: `deps-check` (`deps_sync.py`) is PREVENTIVE and authoritative for cross-repo version alignment (`lockstep`, `toolchain`) and preventing regression below established security floors (`floors`) across `package.json`, `pnpm-lock.yaml`, and tracked `package-lock.json`. `osv-scanner` is DETECTIVE and authoritative for discovering newly published CVEs/GHSAs across all lockfiles before a floor exists in `deps-policy.json`. A green `deps-check` proves floor & lockstep compliance on checked repos, never absence of uncatalogued CVEs.",
     "_ceiling_audit_t140": {
       "sharp": "no ceiling needed — direct/Astro image consumer compatible across 0.35.x",
       "fast-uri": "no ceiling needed — transitive schema validator URI parser on 4.x",
@@ -56,6 +58,7 @@
       "smol-toml": "no ceiling needed — TOML parser compatible on >=1.7.1",
       "markdown-it": "<15 required — wom7ext transitive consumer requires 14.x API",
       "dompurify": "no ceiling needed — HTML sanitizer compatible on >=3.4.16",
+      "mermaid": "no ceiling needed — mmd-validate CLI and web renderer compatible across mermaid 11.x (T298 AC4)",
       "@grpc/grpc-js": "no ceiling needed — gRPC client compatible on >=1.14.5"
     },
     "sharp": ">=0.35.4",
@@ -78,6 +81,7 @@
     "smol-toml": ">=1.7.1",
     "markdown-it": ">=14.3.1 <15",
     "dompurify": ">=3.4.16",
+    "mermaid": ">=11.16.1",
     "@grpc/grpc-js": ">=1.14.5"
   },
   "repo_floors": {
