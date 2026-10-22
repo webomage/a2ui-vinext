@@ -22,7 +22,6 @@
       "tickets": [
         "T504",
         "T454",
-        "T466",
         "T475",
         "T17",
         "T28",
@@ -69,13 +68,13 @@
         "T527",
         "T549"
       ],
-      "status": "open",
+      "status": "completed",
       "xp_reward": 750,
       "rarity": "epic",
       "assigned_developer": null,
       "attached_agent": null,
       "worktree": null,
-      "summary": "15 open quests (8 P1, 7 P2): full-observability logging, BGE embedding replacement, svelte-check gate, unified git hook runner, worktree hook bootstrap, and pre-push state-check."
+      "summary": "All 15 quests completed (T43, T104, T129, T225, T241, T276, T278, T328, T331, T385, T386, T408, T527, T531, T549)."
     },
     {
       "id": "area-3",
@@ -161,8 +160,6 @@
       "epic": "Raid: AI Agent Engine & Transport Stack",
       "milestone": "Adventure: Provider-Adapter Seam, WebMCP Transport & System One",
       "tickets": [
-        "T36",
-        "T220",
         "T9",
         "T37",
         "T88",
@@ -190,10 +187,8 @@
       "milestone": "Adventure: Upwork MCP, Per-Member Sync & Telegram/Threads",
       "tickets": [
         "T537",
-        "T98",
         "T181",
         "T526",
-        "T550",
         "T10"
       ],
       "status": "open",
@@ -220,7 +215,7 @@
       "assigned_developer": "aleksei@webomage.com",
       "attached_agent": "antigravity",
       "worktree": "agent/ant-area7a",
-      "summary": "8/10 quests completed (T264, T305, T6, T61, T298, T302, T308, T316 done; plus T15, T62, T451). 2 remaining quests are 100% code-complete and await owner external auth: T290 (6/7 ACs done — awaits STRIPE_WEBHOOK_SECRET in Stripe dashboard) and T306 (5/7 ACs done — awaits interactive gh auth login for aleksei@webomage.com & elena@webomage.com)."
+      "summary": "8/10 quests completed (T264, T305, T6, T61, T298, T302, T308, T316 done; plus T15, T62, T451). 2 remaining quests are 100% code-complete and await owner external auth: T290 (6/7 ACs done \u2014 awaits STRIPE_WEBHOOK_SECRET in Stripe dashboard) and T306 (5/7 ACs done \u2014 awaits interactive gh auth login for aleksei@webomage.com & elena@webomage.com)."
     },
     {
       "id": "area-8",
@@ -263,15 +258,7 @@
         "T136",
         "T271",
         "T365",
-        "T387",
-        "T60",
-        "T197",
-        "T274",
-        "T326",
-        "T340",
-        "T427",
-        "T437",
-        "T438"
+        "T387"
       ],
       "status": "open",
       "xp_reward": 750,

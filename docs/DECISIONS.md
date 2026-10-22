@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**373 recorded decision(s)** — 39 structured (AgDR), 334 in place across 171 file(s).
+**370 recorded decision(s)** — 40 structured (AgDR), 330 in place across 169 file(s).
 
 ## Structured records (AgDR)
 
@@ -54,6 +54,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`AgDR-0037`](../docs/decisions/AgDR-0037-workspace-root-anchoring.md) | executed | antigravity / claude-opus-4-6 | Workspace-Root Anchoring for Skills, Tools, and Estate SDLC Contract<br/><sub>In the context of multi-repo estate (@wom) and half-managed/self-managed client workspaces (bridgeroad-w0m, k7), facing the risk of polluting third-party client repositories (BridgeMvp) with w0m-owned</sub> |
 | [`AgDR-0038`](../docs/decisions/AgDR-0038-ai-model-selection-and-guardrail-rationale.md) | executed | antigravity / claude-opus-4-6 | AI Model Selection, Provider-Adapter Seam, and Non-Chat Guardrail/Embedding/MLX Rationale<br/><sub>In the context of routing w0m chat, typed-decision, guardrail, embedding, and local MLX inference across wom7api, wom7web, wom7func, and wom7mlx (T36, T8, T225, T434, T501), facing six historical aimo</sub> |
 | [`AgDR-0039`](../docs/decisions/AgDR-0039-agent-transport-stack-per-layer.md) | executed | antigravity / claude-opus-4-6 | Agent Transport Stack per Layer: WebMCP (Page), Authenticated HTTPS (Extension), MCP Streamable HTTP (Service APIs), and ACP (Host)<br/><sub>In the context of connecting browser pages, wom7ext, w0m backend/portal APIs, and local IDE/daemon hosts (ZeroClaw, Antigravity, Claude Code) (T220, T21, T153, T154, T560), facing the retirement of wo</sub> |
+| [`AgDR-0041`](../docs/decisions/AgDR-0041-librqbit-webrtc-transport-architecture.md) | 🔴 superseded |  /  | ~~librqbit WebRTC / WebTorrent Transport Architecture and Tauri Desktop Path~~ → **null**<br/><sub>librqbit WebRTC / WebTorrent Transport Architecture and Tauri Desktop Path</sub> |
 
 ## Recorded in place (unstructured)
 
@@ -141,10 +142,6 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-09-24 | [`.tasks/T100.md:43`](../.tasks/T100.md) | tHub connected on the person profile (owner, 2026-09-24, raised to P0). From Me → Account & security |
 | 2026-09-24 | [`.tasks/T434.md:115`](../.tasks/T434.md) | ] AC8 — Internal Cloudflare endpoint (owner, 2026-09-24). Edge sites get their typed decisions from our own |
 | 2026-09-24 | [`.tasks/T434.md:130`](../.tasks/T434.md) | - [ ] AC9 — Checks and tests (owner, 2026-09-24). Typed decisions also serve local gates and test judges, under |
-| 2026-09-24 | [`.tasks/T437.md:54`](../.tasks/T437.md) | C3 — Rust path split into [[T438]] (owner decision 2026-09-24), which carries the research. |
-| 2026-09-24 | [`.tasks/T437.md:55`](../.tasks/T437.md) | - [~] AC4 — Fork release, unsigned (owner decision 2026-09-24: no active Apple Developer account yet). Built with |
-| 2026-09-24 | [`.tasks/T438.md:28`](../.tasks/T438.md) | Split from [[T437]] AC5 (owner, 2026-09-24: "Rust will wait and we can separate it to extra ticket"). T437 fixes the |
-| 2026-09-24 | [`.tasks/T438.md:76`](../.tasks/T438.md) | -09-24 — Created by splitting T437 AC5 (owner decision). Research carried over from T437; nothing built. |
 | 2026-09-24 | [`.tasks/T439.md:27`](../.tasks/T439.md) | Owner, 2026-09-24: "concentrate on reworking UI for CP and Job/Join — reorganise menu and pages in CP to make it |
 | 2026-09-24 | [`.tasks/T439.md:46`](../.tasks/T439.md) | Decided (owner, 2026-09-24): |
 | 2026-09-24 | [`.tasks/T440.md:28`](../.tasks/T440.md) | Split from [[T439]] (CP IA). Owner, 2026-09-24: "resume part in CP to receive/accumulate all our already fetched |
@@ -212,7 +209,6 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-08-24 | [`.tasks/T267.md:133`](../.tasks/T267.md) | efect, folded in here 2026-08-24 by owner decision |
 | 2026-08-24 | [`.tasks/T267.md:223`](../.tasks/T267.md) | - 2026-08-24 — scope widened by owner decision : "fold T274 AC7 into T267" . The emoji-check |
 | 2026-08-24 | [`.tasks/T271.md:96`](../.tasks/T271.md) | Owner, 2026-08-24: "we can go with some paid services on CF and Supabase or maybe even something |
-| 2026-08-24 | [`.tasks/T274.md:111`](../.tasks/T274.md) | T267]] AS AC8 on 2026-08-24, by owner decision ( "fold T274 AC7 into |
 | 2026-08-24 | [`.tasks/T275.md:135`](../.tasks/T275.md) | - 2026-08-24 — filed on owner decision, at the moment [[T261]] became archivable. The suite stays |
 | 2026-08-24 | [`docs/decisions/AgDR-0010-no-kitesurf-for-w0m-browser-workloads.md:1`](../docs/decisions/AgDR-0010-no-kitesurf-for-w0m-browser-workloads.md) | In the context of five distinct browser workloads across wom7cfworkers, wom7web and wom7ext, facing a free beta browser that explicitly drops pixel-perfect rendering and persistent authenticated sessions, we decided not to adopt Kitesurf anywhere today, to achieve measurements and deliverables that stay trustworthy, accepting that we keep paying full Chromium cost for PDF generation and keep a local browser in the loop for layout gates, and that a beta product may narrow these limits later and deserve a re-read. |
 | 2026-08-23 | [`.tasks/T242.md:1017`](../.tasks/T242.md) | wner decision. 🔴 Pushing it was blocked TWICE, neither time by an authorization defect — and the second one was a real gate bug: three probes returned no numeric row returned inside the hook and the push was refused as an authorization probe is RED , while the |
@@ -425,6 +421,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`.tasks/T251.md:140`](../.tasks/T251.md) | - [x] AC2 — ✅ DECIDED: ASSIGN, not delete — and implemented. agent-consultant now |
 | [`.tasks/T266.md:134`](../.tasks/T266.md) | lient' . 🔴 Whose email is an owner decision and must be recorded, not assumed — |
 | [`.tasks/T271.md:278`](../.tasks/T271.md) | an explicit owner decision, not an engineering one. A survey that omits price is a wish list. |
+| [`.tasks/T274.md:49`](../.tasks/T274.md) | B (dead project candidates — human owner decision required): wom7cfworkers , .wrangler-noop , dockerify-android , etc., with mandatory pre-deletion git checks. |
 | [`.tasks/T308.md:68`](../.tasks/T308.md) | deliberately unmanaged (owner decision, sandbox-substrate direction) — this ticket does |
 | [`.tasks/T32.md:32`](../.tasks/T32.md) | an owner call, and it is the only rotation item still carrying an unverified claim. |
 | [`.tasks/T344.md:50`](../.tasks/T344.md) | r half was already attempted and is a DECIDED, NAMED debt row: |
@@ -441,3 +438,4 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | [`wom7web/project/data/cv/resolutions.json:10`](../wom7web/project/data/cv/resolutions.json) | "decidedOn": "YYYY-MM-DD (absolute, never relative)" |
 | [`wom7web/AGENTS.md:439`](../wom7web/AGENTS.md) | was this DECIDED, or did it just happen? ../docs/DECISIONS.md ( just decisions ) a generated INDEX — the reasoning stays in the file that made it |
 | [`wom7web/CLAUDE.md:181`](../wom7web/CLAUDE.md) | own owner decision had already superseded ( .serena/ + !.serena/project.yml in all 7 repos). |
+| [`docs/decisions/AgDR-0041-librqbit-webrtc-transport-architecture.md:1`](../docs/decisions/AgDR-0041-librqbit-webrtc-transport-architecture.md) | librqbit WebRTC / WebTorrent Transport Architecture and Tauri Desktop Path |

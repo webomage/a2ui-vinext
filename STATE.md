@@ -18,13 +18,13 @@
 | 1 | [T180](/home/aleksei/Projects/!self/w0m/.tasks/T180.md) | [#180](https://github.com/webomage/wom7board/issues/180) | P1 | in-progress | sdlc | 110 | Tart macOS VMs as isolated agent sandboxes — a candidate answer to the subs 📄 live spec |
 | 2 | [T306](/home/aleksei/Projects/!self/w0m/.tasks/T306.md) | [#306](https://github.com/webomage/wom7board/issues/306) | P1 | in-progress | security | 92 | New work-scoped GitHub identities (webomage.com) and gh CLI scaffolding for 4 identities |
 | 3 | [T365](/home/aleksei/Projects/!self/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 80 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
-| 4 | [T36](/home/aleksei/Projects/!self/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 70 | AI provider-adapter seam + lib hygiene |
-| 5 | [T57](/home/aleksei/Projects/!self/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 70 | Implement w0m Open Routing Layer |
-| 6 | [T136](/home/aleksei/Projects/!self/w0m/.tasks/T136.md) | [#136](https://github.com/webomage/wom7board/issues/136) | P1 | queued | product | 70 | Research migrating WordPress sites to the vinext (Vite+React) stack as a delivery offeri |
-| 7 | [T164](/home/aleksei/Projects/!self/w0m/.tasks/T164.md) | [#164](https://github.com/webomage/wom7board/issues/164) | P1 | queued | tools | 70 | Govern the full host CLI surface and report toolchain health in the health report |
-| 8 | [T368](/home/aleksei/Projects/!self/w0m/.tasks/T368.md) | [#368](https://github.com/webomage/wom7board/issues/368) | P2 | in-progress | infra | 70 | Research Apple Silicon native microVM containerization (apple/container), c 📄 live spec |
-| 9 | [T220](/home/aleksei/Projects/!self/w0m/.tasks/T220.md) | [#220](https://github.com/webomage/wom7board/issues/220) | P1 | queued | infra | 69 | Choose the agent transport stack per layer — WebMCP, MCP Streamable HTTP, ACP — and writ |
-| 10 | [T259](/home/aleksei/Projects/!self/w0m/.tasks/T259.md) | [#259](https://github.com/webomage/wom7board/issues/259) | P1 | queued | sdlc | 68 | Deploys that bypass the recording wrapper are invisible to deploy_log, the changelog and |
+| 4 | [T57](/home/aleksei/Projects/!self/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 70 | Implement w0m Open Routing Layer |
+| 5 | [T136](/home/aleksei/Projects/!self/w0m/.tasks/T136.md) | [#136](https://github.com/webomage/wom7board/issues/136) | P1 | queued | product | 70 | Research migrating WordPress sites to the vinext (Vite+React) stack as a delivery offeri |
+| 6 | [T164](/home/aleksei/Projects/!self/w0m/.tasks/T164.md) | [#164](https://github.com/webomage/wom7board/issues/164) | P1 | queued | tools | 70 | Govern the full host CLI surface and report toolchain health in the health report |
+| 7 | [T368](/home/aleksei/Projects/!self/w0m/.tasks/T368.md) | [#368](https://github.com/webomage/wom7board/issues/368) | P2 | in-progress | infra | 70 | Research Apple Silicon native microVM containerization (apple/container), c 📄 live spec |
+| 8 | [T259](/home/aleksei/Projects/!self/w0m/.tasks/T259.md) | [#259](https://github.com/webomage/wom7board/issues/259) | P1 | queued | sdlc | 68 | Deploys that bypass the recording wrapper are invisible to deploy_log, the changelog and |
+| 9 | [T271](/home/aleksei/Projects/!self/w0m/.tasks/T271.md) | [#271](https://github.com/webomage/wom7board/issues/271) | P1 | queued | infra | 68 | We are on Cloudflare and use six of its services — survey the rest against real needs, w |
+| 10 | [T273](/home/aleksei/Projects/!self/w0m/.tasks/T273.md) | [#273](https://github.com/webomage/wom7board/issues/273) | P1 | queued | tools | 68 | Adopt Rust→WASM for Cloudflare Workers tools and utilities — the runtime is already gove |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 95 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **95** are
+> ⚠️ **0 of 82 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **82** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -44,12 +44,12 @@
 | 2 | [T180](/home/aleksei/Projects/!self/w0m/.tasks/T180.md) | [#180](https://github.com/webomage/wom7board/issues/180) | P1 | in-progress | sdlc | 6/9 | `███████░░░` 67% | — | Tart macOS VMs as isolated agent sandboxes — a candidate ans |
 | 3 | [T152](/home/aleksei/Projects/!self/w0m/.tasks/T152.md) | [#152](https://github.com/webomage/wom7board/issues/152) | P2 | in-progress | sdlc | 8/11 | `███████░░░` 73% | — | Dual-agent SDLC — make wom7skills, tools and openspec work o |
 | 4 | [T179](/home/aleksei/Projects/!self/w0m/.tasks/T179.md) | [#179](https://github.com/webomage/wom7board/issues/179) | P2 | in-progress | tools | 4/7 | `██████░░░░` 57% | — | DevPod machine provider for Tart — the multipass-shaped gap, |
-| 5 | [T36](/home/aleksei/Projects/!self/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 1/5 | `██░░░░░░░░` 20% | — | AI provider-adapter seam + lib hygiene |
-| 6 | [T220](/home/aleksei/Projects/!self/w0m/.tasks/T220.md) | [#220](https://github.com/webomage/wom7board/issues/220) | P1 | queued | infra | 1/6 | `██░░░░░░░░` 17% | — | Choose the agent transport stack per layer — WebMCP, MCP Str |
-| 7 | [T537](/home/aleksei/Projects/!self/w0m/.tasks/T537.md) | ⚠️ not mirrored | P1 | blocked | data | 1/10 | `█░░░░░░░░░` 10% | — | Upwork connector on the official MCP with per-member OAuth;  |
-| 8 | [T57](/home/aleksei/Projects/!self/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Implement w0m Open Routing Layer |
-| 9 | [T136](/home/aleksei/Projects/!self/w0m/.tasks/T136.md) | [#136](https://github.com/webomage/wom7board/issues/136) | P1 | queued | product | 0/7 | `░░░░░░░░░░` 0% | — | Research migrating WordPress sites to the vinext (Vite+React |
-| 10 | [T164](/home/aleksei/Projects/!self/w0m/.tasks/T164.md) | [#164](https://github.com/webomage/wom7board/issues/164) | P1 | queued | tools | 0/6 | `░░░░░░░░░░` 0% | — | Govern the full host CLI surface and report toolchain health |
+| 5 | [T537](/home/aleksei/Projects/!self/w0m/.tasks/T537.md) | ⚠️ not mirrored | P1 | blocked | data | 1/10 | `█░░░░░░░░░` 10% | — | Upwork connector on the official MCP with per-member OAuth;  |
+| 6 | [T57](/home/aleksei/Projects/!self/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Implement w0m Open Routing Layer |
+| 7 | [T136](/home/aleksei/Projects/!self/w0m/.tasks/T136.md) | [#136](https://github.com/webomage/wom7board/issues/136) | P1 | queued | product | 0/7 | `░░░░░░░░░░` 0% | — | Research migrating WordPress sites to the vinext (Vite+React |
+| 8 | [T164](/home/aleksei/Projects/!self/w0m/.tasks/T164.md) | [#164](https://github.com/webomage/wom7board/issues/164) | P1 | queued | tools | 0/6 | `░░░░░░░░░░` 0% | — | Govern the full host CLI surface and report toolchain health |
+| 9 | [T259](/home/aleksei/Projects/!self/w0m/.tasks/T259.md) | [#259](https://github.com/webomage/wom7board/issues/259) | P1 | queued | sdlc | 0/5 | `░░░░░░░░░░` 0% | — | Deploys that bypass the recording wrapper are invisible to d |
+| 10 | [T271](/home/aleksei/Projects/!self/w0m/.tasks/T271.md) | [#271](https://github.com/webomage/wom7board/issues/271) | P1 | queued | infra | 0/11 | `░░░░░░░░░░` 0% | — | We are on Cloudflare and use six of its services — survey th |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `db8337ed` |
-| `wom7api` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `fd36029` |
-| `wom7func` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `1897fd1` |
-| `wom7skills` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `6d80b6a` |
-| `wom7ext` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `9107a8b` |
-| `wom7sec` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
-| `wom7mlx/wom7mlx` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `660569a` |
+| `wom7web` | `agent/ant-wave1` | 0 | **n/a — NO UPSTREAM** | `020a97d0` |
+| `wom7api` | `agent/ant-wave1` | 0 | **n/a — NO UPSTREAM** | `96f041c` |
+| `wom7func` | `agent/ant-wave1` | 0 | **n/a — NO UPSTREAM** | `2a1cea5` |
+| `wom7skills` | `agent/ant-wave1` | 0 | **n/a — NO UPSTREAM** | `6d80b6a` |
+| `wom7ext` | `agent/ant-wave1` | 0 | **n/a — NO UPSTREAM** | `4534f2f` |
+| `wom7sec` | `agent/ant-wave1` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
+| `wom7mlx/wom7mlx` | `agent/ant-wave1` | 0 | **n/a — NO UPSTREAM** | `660569a` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 95 open · 566 TASKS.md rows · 201/566 specced (7/95 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 82 open · 566 TASKS.md rows · 206/566 specced (7/82 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T180","T306","T365","T36","T57","T136","T164","T368","T220","T259"],"repos":{"wom7api":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"fd36029","unpushed":null},"wom7ext":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"9107a8b","unpushed":null},"wom7func":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"1897fd1","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"660569a","unpushed":null},"wom7sec":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"6d80b6a","unpushed":null},"wom7web":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"db8337ed","unpushed":null}},"tickets":{"open":95,"rowless_open":[],"rows":566,"specced":201,"specced_open":7,"total":566,"unmirrored_open":4}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T180","T306","T365","T57","T136","T164","T368","T259","T271","T273"],"repos":{"wom7api":{"branch":"agent/ant-wave1","dirty":0,"has_upstream":true,"head":"96f041c","unpushed":null},"wom7ext":{"branch":"agent/ant-wave1","dirty":0,"has_upstream":true,"head":"4534f2f","unpushed":null},"wom7func":{"branch":"agent/ant-wave1","dirty":0,"has_upstream":true,"head":"2a1cea5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/ant-wave1","dirty":0,"has_upstream":true,"head":"660569a","unpushed":null},"wom7sec":{"branch":"agent/ant-wave1","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/ant-wave1","dirty":0,"has_upstream":true,"head":"6d80b6a","unpushed":null},"wom7web":{"branch":"agent/ant-wave1","dirty":0,"has_upstream":true,"head":"020a97d0","unpushed":null}},"tickets":{"open":82,"rowless_open":[],"rows":566,"specced":206,"specced_open":7,"total":566,"unmirrored_open":3}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
