@@ -2,6 +2,18 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.22-1792676871
+_First deployed: 2026-10-22 14:01:26.618232+00_
+
+### Features
+- **sdlc**: complete Track 4 Wave 2 — spec policy, consumer skill gate, lessons check, eli5 default tier & OpenCode config (T152, T177, T178, T179, T180, T185, T245, T270, T368, T565) ([T152](file:///.tasks/T152.md), [T177](file:///.tasks/T177.md), [T178](file:///.tasks/T178.md), [T179](file:///.tasks/T179.md), [T180](file:///.tasks/T180.md), [T185](file:///.tasks/T185.md), [T245](file:///.tasks/T245.md), [T270](file:///.tasks/T270.md), [T368](file:///.tasks/T368.md), [T565](file:///.tasks/T565.md))
+- **sdlc**: complete Track 4 Wave 1 — branch hygiene, delivery record, Serena reconciliation & tickets (T148, T158, T172, T176, T193, T212, T269, T339, T548, T552) ([T148](file:///.tasks/T148.md), [T158](file:///.tasks/T158.md), [T172](file:///.tasks/T172.md), [T176](file:///.tasks/T176.md), [T193](file:///.tasks/T193.md), [T212](file:///.tasks/T212.md), [T269](file:///.tasks/T269.md), [T339](file:///.tasks/T339.md), [T548](file:///.tasks/T548.md), [T552](file:///.tasks/T552.md))
+- **T429**: auto-upgrade infisical on update banner and bump tools known_good (T112) ([T429](file:///.tasks/T429.md), [T112](file:///.tasks/T112.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `411f850` | 2026-10-22 14:01:26.618232+00 |
+
 ## 2026.10.21-1792633374
 _First deployed: 2026-10-22 01:55:09.194303+00_
 
