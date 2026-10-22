@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.21-1792633374
+_First deployed: 2026-10-22 01:55:09.194303+00_
+
+### Features
+- **sdlc**: complete Gauge migration, obsidian-skills survey/catalog, and awesome-repositories MCP (T24, T26, T142) ([T24](file:///.tasks/T24.md), [T26](file:///.tasks/T26.md), [T142](file:///.tasks/T142.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `e3f7219` | 2026-10-22 01:55:09.194303+00 |
+
 ## 2026.10.21-1792620789
 _First deployed: 2026-10-21 22:21:58.110663+00_
 
