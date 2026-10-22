@@ -1,0 +1,180 @@
+{
+  "_comment": [
+    "Canonical w0m Estate Quest Tracks Registry (T333 / 9-Area Domain Taxonomy).",
+    "Shared across CLI agents (antigravity, claude-code, codex, zeroclaw, opencode) and",
+    "mirrored to the CP Internal Developer Bounty Board (/me/opportunities) and",
+    "Agent Tasks & Worktree Board (/admin/ai-agents)."
+  ],
+  "updated_at": "2026-10-21T22:30:00Z",
+  "terminology_bridge": {
+    "epic": "Raid",
+    "milestone": "Adventure",
+    "ticket": "Quest",
+    "model": "Model A (AgDR-0022: public.projects + TASKS.md + gamification.xp_ledger)"
+  },
+  "area_tracks": [
+    {
+      "id": "area-1",
+      "code": "Area 1",
+      "title": "Security, Auth, RBAC & Secret Hygiene",
+      "epic": "Raid: Zero-Trust Security & RBAC Hardening",
+      "milestone": "Adventure: MFA, Biometric KYC, Secret Rotation & Bug Bounty",
+      "tickets": [
+        "T504", "T454", "T466", "T475", "T17", "T28", "T31", "T32", "T65", "T66",
+        "T347", "T433", "T459", "T460", "T462", "T479", "T489", "T524", "T547", "T490"
+      ],
+      "status": "open",
+      "xp_reward": 900,
+      "rarity": "legendary",
+      "assigned_developer": null,
+      "attached_agent": null,
+      "worktree": null,
+      "summary": "20 open quests (1 P0, 3 P1, 15 P2, 1 P3): non-admin MFA, @wom/kyc biometric anchor, Jam/UI guide coverage, HttpOnly island tokens, and bug-bounty posture."
+    },
+    {
+      "id": "area-2",
+      "code": "Area 2",
+      "title": "SDLC Gates, Hook Integrity & Test Ratchets",
+      "epic": "Raid: Gate Integrity & Hook Unification",
+      "milestone": "Adventure: Unified Just Hooks, Scope-Diff & Non-Vacuous Suites",
+      "tickets": [
+        "T43", "T225", "T241", "T278", "T385", "T386", "T408", "T531",
+        "T104", "T129", "T276", "T328", "T331", "T527", "T549"
+      ],
+      "status": "open",
+      "xp_reward": 750,
+      "rarity": "epic",
+      "assigned_developer": null,
+      "attached_agent": null,
+      "worktree": null,
+      "summary": "15 open quests (8 P1, 7 P2): full-observability logging, BGE embedding replacement, unified git hook runner, worktree hook bootstrap, and pre-push state-check."
+    },
+    {
+      "id": "area-3",
+      "code": "Area 3",
+      "title": "Platform Health, Release Engineering & Dev Tooling",
+      "epic": "Raid: Platform Health & Release Engineering",
+      "milestone": "Adventure: Host CLI Governance, JSON Resume, Rust Workers & Root Layout",
+      "tickets": [
+        "T164", "T167", "T259", "T273", "T293", "T374", "T384", "T400", "T401", "T509",
+        "T56", "T70", "T71", "T76", "T80", "T81", "T113", "T116", "T143", "T226",
+        "T227", "T330", "T343", "T355", "T383", "T395", "T480", "T486", "T491", "T492",
+        "T508", "T512", "T516", "T521", "T523", "T12", "T82", "T83", "T84", "T106",
+        "T184", "T487", "T517", "T518", "T519", "T522"
+      ],
+      "status": "open",
+      "xp_reward": 1200,
+      "rarity": "legendary",
+      "assigned_developer": null,
+      "attached_agent": null,
+      "worktree": null,
+      "summary": "46 open quests (10 P1, 25 P2, 11 P3): host CLI governance, JSON Resume registry, deploy ledger recording, wom7func workflows reliability, and root-first layout."
+    },
+    {
+      "id": "area-4",
+      "code": "Area 4",
+      "title": "Agent Worktrees, Sandboxes & Multi-Agent Orchestration",
+      "epic": "Raid: Agent Substrate & Isolated Sandboxes",
+      "milestone": "Adventure: Tart VMs, ZeroClaw Runtime, OpenSpec Floor & Portable Plugin",
+      "tickets": [
+        "T148", "T153", "T176", "T177", "T180", "T185", "T212", "T152", "T158", "T171",
+        "T172", "T178", "T179", "T193", "T234", "T245", "T269", "T270", "T339", "T368",
+        "T552", "T548"
+      ],
+      "status": "open",
+      "xp_reward": 850,
+      "rarity": "epic",
+      "assigned_developer": null,
+      "attached_agent": null,
+      "worktree": null,
+      "summary": "22 open quests (7 P1, 14 P2, 1 P3): main/beta consolidation, ZeroClaw managed runtime, Tart macOS VM sandboxes, spec backfill, and portable wom7skills plugin."
+    },
+    {
+      "id": "area-5",
+      "code": "Area 5",
+      "title": "AI Agent Engine, MLX Inference, WebMCP & Skills",
+      "epic": "Raid: AI Agent Engine & Transport Stack",
+      "milestone": "Adventure: Provider-Adapter Seam, WebMCP Transport & System One",
+      "tickets": [
+        "T36", "T220", "T9", "T37", "T88", "T109", "T128", "T132", "T434", "T500", "T11", "T14"
+      ],
+      "status": "open",
+      "xp_reward": 650,
+      "rarity": "epic",
+      "assigned_developer": null,
+      "attached_agent": null,
+      "worktree": null,
+      "summary": "12 open quests (2 P1, 8 P2, 2 P3): AI provider-adapter seam, per-layer agent transport stack, streaming tool loop, System One typed decisions, and w0m- agent prefix."
+    },
+    {
+      "id": "area-6",
+      "code": "Area 6",
+      "title": "Connectors, Upwork, Outreach & External Integrations",
+      "epic": "Raid: Commercial Connectors & Per-Member Upwork",
+      "milestone": "Adventure: Upwork MCP, Per-Member Sync & Telegram/Threads",
+      "tickets": [
+        "T50", "T441", "T537", "T98", "T181", "T218", "T526", "T550", "T10"
+      ],
+      "status": "open",
+      "xp_reward": 550,
+      "rarity": "rare",
+      "assigned_developer": null,
+      "attached_agent": null,
+      "worktree": null,
+      "summary": "9 open quests (3 P1, 5 P2, 1 P3): Upwork ingestion pagination, per-member Upwork OAuth & MCP sync, GUI workstation VMs, and Telegram/Threads connectors."
+    },
+    {
+      "id": "area-7",
+      "code": "Area 7",
+      "title": "Governed Client Projects, Portals, Contracts & Billing",
+      "epic": "Raid: Governed Client Delivery & Portals",
+      "milestone": "Adventure: Cloud Compute Governance, Work-Scoped GitHub & Stage-4 Money",
+      "tickets": [
+        "T264", "T290", "T305", "T306", "T6", "T15", "T61", "T62", "T298", "T302", "T308", "T316"
+      ],
+      "status": "open",
+      "xp_reward": 650,
+      "rarity": "epic",
+      "assigned_developer": null,
+      "attached_agent": null,
+      "worktree": null,
+      "summary": "12 open quests (4 P1, 8 P2; T451 completed): 1945 declaration, Stage-4 Stripe reconciliation, cloud compute governance, and work-scoped GitHub identities."
+    },
+    {
+      "id": "area-8",
+      "code": "Area 8",
+      "title": "Design System (@webomage/ui), Public Web, Brand & Media",
+      "epic": "Raid: Design System Unification, CV Studio & Media",
+      "milestone": "Adventure: Layout Ratchet, DS Master Sync, Public Profiles, Claims & Media Bootstraps",
+      "tickets": [
+        "T275", "T42", "T55", "T97", "T133", "T252", "T322", "T323",
+        "T494", "T495", "T496", "T502", "T514", "T511"
+      ],
+      "status": "completed",
+      "xp_reward": 800,
+      "rarity": "epic",
+      "assigned_developer": "aleksei@webomage.com",
+      "attached_agent": "antigravity",
+      "worktree": "agent/ant-area8",
+      "summary": "All 14 quests completed on agent/ant-area8: T275 layout ratchet, T42 DS sync, T55 Tailwind @source gate, T97 tours/KB allowlist, T133 DS export recovery, T252 CP simulator fix, T322 wom7clips, T323 wom7ava, T494 public profiles, T495 brand claims, T496 Job/Join UI, T502 resume parser, T514 contact import, T511 avatar management."
+    },
+    {
+      "id": "area-9",
+      "code": "Area 9",
+      "title": "Platform Operations, Backups, Infra & Market Strategy",
+      "epic": "Raid: Platform Operations, Orca & Market Strategy",
+      "milestone": "Adventure: Open Routing Layer, Orca Worktree Factory & CI/CD Recovery",
+      "tickets": [
+        "T57", "T136", "T271", "T365", "T387", "T423", "T424", "T426",
+        "T60", "T197", "T274", "T326", "T340", "T427", "T437", "T438"
+      ],
+      "status": "open",
+      "xp_reward": 750,
+      "rarity": "epic",
+      "assigned_developer": null,
+      "attached_agent": null,
+      "worktree": null,
+      "summary": "16 open quests (8 P1, 6 P2, 2 P3): w0m Open Routing Layer, WordPress->vinext migration offering, Orca worktree factory & parallel-agent pilot, and outbound mail auth."
+    }
+  ]
+}

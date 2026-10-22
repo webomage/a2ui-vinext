@@ -100,9 +100,11 @@ def _clear_held_status(cleared_tools: set[str]) -> None:
     if not cleared_tools or not STATUS.exists():
         return
     try:
-        st = json.loads(STATUS.read_text(encoding="utf-8"))
-        held = [t for t in (st.get("held") or []) if t not in cleared_tools]
-        if held != list(st.get("held") or []):
+        st: dict[str, object] = json.loads(STATUS.read_text(encoding="utf-8"))
+        raw_held = st.get("held")
+        held_list = list(raw_held) if isinstance(raw_held, list) else []
+        held = [t for t in held_list if t not in cleared_tools]
+        if held != held_list:
             st["held"] = held
             st["ok"] = not held
             STATUS.write_text(json.dumps(st, indent=2) + "\n", encoding="utf-8")
