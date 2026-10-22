@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `a927d087` |
-| `wom7api` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `b54f8e7` |
-| `wom7func` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `6596cdf` |
-| `wom7skills` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `6d80b6a` |
-| `wom7ext` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `9107a8b` |
-| `wom7sec` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
-| `wom7mlx/wom7mlx` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `660569a` |
+| `wom7web` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `db8337ed` |
+| `wom7api` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `fd36029` |
+| `wom7func` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `1897fd1` |
+| `wom7skills` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `6d80b6a` |
+| `wom7ext` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `9107a8b` |
+| `wom7sec` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
+| `wom7mlx/wom7mlx` | `agent/agy-astro-fix` | 0 | **n/a — NO UPSTREAM** | `660569a` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 95 open · 565 TASKS.md rows · 200/565 specced (7/95 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 95 open · 566 TASKS.md rows · 201/566 specced (7/95 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T180","T306","T365","T36","T57","T136","T164","T368","T220","T259"],"repos":{"wom7api":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"b54f8e7","unpushed":null},"wom7ext":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"9107a8b","unpushed":null},"wom7func":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"6596cdf","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"660569a","unpushed":null},"wom7sec":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"6d80b6a","unpushed":null},"wom7web":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"a927d087","unpushed":null}},"tickets":{"open":95,"rowless_open":[],"rows":565,"specced":200,"specced_open":7,"total":565,"unmirrored_open":4}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T180","T306","T365","T36","T57","T136","T164","T368","T220","T259"],"repos":{"wom7api":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"fd36029","unpushed":null},"wom7ext":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"9107a8b","unpushed":null},"wom7func":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"1897fd1","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"660569a","unpushed":null},"wom7sec":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"6d80b6a","unpushed":null},"wom7web":{"branch":"agent/agy-astro-fix","dirty":0,"has_upstream":true,"head":"db8337ed","unpushed":null}},"tickets":{"open":95,"rowless_open":[],"rows":566,"specced":201,"specced_open":7,"total":566,"unmirrored_open":4}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.

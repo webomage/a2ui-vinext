@@ -896,6 +896,14 @@ An agent landed `20261006120000_t544_...` in the afternoon; another landed `2026
 ⭐ **The tell:** two files in `wom7api/supabase/migrations/` with one 14-digit prefix; a pending list shorter than `git log` says it should be. Tests must also exercise a collision on the REAL directory, not only a temp one, and an empty or missing directory must fail rather than pass.
 ⚠️ Detection is built; prevention (a `migration-new` that takes the next free version from `origin/beta`, like the ticket-id guard in `agent-tree-land`) is T551 AC4.
 
+### ⛔ A FRAMEWORK FLOOR BUMP MUST VERIFY ADAPTER ESM EXPORTS AND PEER LINKAGE — `astro check` NEVER BUNDLES SERVER ENTRYPOINTS
+**2026-10-22, T566.**
+
+When `astro` was raised from `7.2.1` to `7.3.3` in `wom7web/package.json` (`pnpm.overrides`) to clear an `osv-scanner` advisory on host Node `22.23.3`, `@astrojs/cloudflare` remained locked at `14.2.1` in `pnpm-lock.yaml`. Every pre-push gate (`just typecheck` / `astro check`, `deps_sync.py`) and `just preflight` passed green, yet `just deploy-all` (`deploy-web`) failed 14 seconds into `astro build` with `[MISSING_EXPORT] "beginContentEntryCollection" is not exported by ".../astro/dist/core/app/entrypoints/index.js"`, because `astro@7.3.0+` replaced `beginContentEntryCollection` with `renderForPrerender` (adopted in `@astrojs/cloudflare@14.3.0+`). Upgrading `@astrojs/cloudflare` to `14.3.4` in turn pulled `@cloudflare/vite-plugin@1.64.0`, which asserts `wrangler@^4.151.0` at config-load time.
+
+⇒ **Never assume `astro check` or version-floor checks prove an Astro/adapter bump can build.** `deps_sync.py` (`check_astro_adapter_exports`, `check_node_engines`) and `preflight.py` (`check_tools`) now statically verify in <50ms that every named symbol imported by `@astrojs/*/dist/**/*.js` from `astro/*` is exported by the installed `astro` package, that `@astrojs/*` and `@cloudflare/vite-plugin` `peerDependencies` (`astro`, `wrangler`) are satisfied across all workspaces, and that host `node -v` satisfies `engines.node`; and `wom7web/.husky/pre-push` (`gate_deps_sync`) runs an `astro build` smoke check whenever `package.json` or `pnpm-lock.yaml` changes in the push range.
+⭐ **The tell:** bumping `astro` in `pnpm.overrides` without bumping `@astrojs/cloudflare` and `wrangler` in lockstep, or relying on `astro check` (which only runs TypeScript/Volar over `src/`) to catch Rollup/Vite server entrypoint linkage errors.
+
 
 ## 5. Records
 
