@@ -29,18 +29,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 POLICY = ROOT / "project" / "policies" / "tools-policy.json"
-SEMVER = re.compile(r"(\d+)\.(\d+)\.(\d+)")
+SEMVER = re.compile(r"(\d+)\.(\d+)(?:\.(\d+))?")
 
 
 def ver_tuple(s: str) -> tuple[int, int, int]:
     m = SEMVER.search(s or "")
     if not m:
         return (0, 0, 0)
-    # Unpacked rather than `tuple(int(x) for x in m.groups())`: SEMVER has exactly three groups,
+    # Unpacked rather than `tuple(int(x) for x in m.groups())`: SEMVER has three groups (patch optional),
     # so that comprehension is correct at runtime but types as `tuple[int, ...]` — the declared
     # 3-tuple was a claim the code could not back. This makes the arity checkable (T188).
     major, minor, patch = m.groups()
-    return (int(major), int(minor), int(patch))
+    return (int(major), int(minor), int(patch or 0))
 
 
 BREW_FORMULA = {"aws": "awscli", "az": "azure-cli"}  # tool name -> brew formula when they differ
@@ -116,7 +116,7 @@ def installed_version(tool: str, arg: str, spec: dict | None = None) -> str | No
     if shutil.which(tool) is None:
         return None
     try:
-        out = subprocess.run([tool, arg], capture_output=True, text=True, timeout=15)
+        out = subprocess.run([tool, arg], capture_output=True, text=True, timeout=45)
     except (OSError, subprocess.SubprocessError):
         return None
     m = SEMVER.search((out.stdout or "") + "\n" + (out.stderr or ""))
@@ -250,7 +250,7 @@ def _refresh_cadence_days() -> int | None:
     try:
         agent = plistlib.loads(LAUNCH_AGENT.read_bytes())
     except (OSError, ValueError):
-        return None
+        return 7 if sys.platform != "darwin" else None
     interval = agent.get("StartCalendarInterval")
     if isinstance(interval, dict):
         return 7 if "Weekday" in interval else 1

@@ -80,7 +80,7 @@
     },
     "gh": {
       "min": "2.60.0",
-      "known_good": "2.102.0",
+      "known_good": "2.103.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -116,7 +116,7 @@
     },
     "infisical": {
       "min": "0.40.0",
-      "known_good": "0.44.1",
+      "known_good": "0.44.6",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -213,7 +213,7 @@
     },
     "semgrep": {
       "min": "1.100.0",
-      "known_good": "1.181.0",
+      "known_good": "1.182.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -258,7 +258,7 @@
     },
     "uv": {
       "min": "0.5.0",
-      "known_good": "0.13.1",
+      "known_good": "0.13.4",
       "required": true,
       "source": "brew",
       "auto": "minor",

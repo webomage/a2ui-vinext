@@ -48,6 +48,34 @@ AUTH_PATTERNS = (
     "unauthorized",
     "status-code=401",
 )
+UPDATE_NOTICE_RE = re.compile(r"a new release of infisical is available:\s*([^\r\n]+)", re.IGNORECASE)
+
+
+def extract_update_notice(stderr: str) -> str | None:
+    """Return the version transition string if Infisical printed an update banner on stderr."""
+    clean = ANSI.sub("", stderr or "")
+    m = UPDATE_NOTICE_RE.search(clean)
+    return m.group(1).strip() if m else None
+
+
+def auto_upgrade_infisical() -> int:
+    """Run tools_upgrade.py --only infisical --apply (or test seam W0M_INFISICAL_UPGRADE_CMD)."""
+    override = os.environ.get("W0M_INFISICAL_UPGRADE_CMD")
+    if override is not None:
+        if not override.strip():
+            return 0
+        cmd = ["sh", "-c", override]
+    else:
+        script = Path(__file__).resolve().parent / "tools_upgrade.py"
+        cmd = [sys.executable, str(script), "--only", "infisical", "--apply"]
+    proc = subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=300)
+    if proc.returncode == 0:
+        print("✅ Infisical CLI auto-upgraded and smoke-verified (`just tools-promote --apply` in an agent tree to record known_good).")
+    else:
+        tail = (proc.stderr or proc.stdout or "").strip().splitlines()
+        msg = tail[-1][:MAX_LINE] if tail else f"exit {proc.returncode}"
+        print(f"⚠️  Infisical auto-upgrade did not complete ({msg}) — continuing with current binary.")
+    return proc.returncode
 
 
 def find_link(start: Path) -> Path | None:
@@ -108,6 +136,12 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if proc.returncode == 0:
+        notice = extract_update_notice(proc.stderr or "")
+        if notice:
+            print(f"⚠️  Infisical CLI update available ({notice}) — auto-upgrading via tools_upgrade.py...")
+            # Only run the real brew upgrade when using the real binary or explicit test seam
+            if args.infisical == "infisical" or "W0M_INFISICAL_UPGRADE_CMD" in os.environ:
+                auto_upgrade_infisical()
         print("✅ Infisical authenticated.")
         return 0
 

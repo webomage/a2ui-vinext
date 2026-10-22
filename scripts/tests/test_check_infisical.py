@@ -93,6 +93,26 @@ class CheckInfisicalTest(unittest.TestCase):
         self.assertEqual(r.returncode, 1)
         self.assertIn("CLI not found", r.stdout)
 
+    def test_update_banner_on_success_triggers_auto_upgrade(self):
+        marker = self.tmp / "upgraded.txt"
+        self.make_fake(
+            "2026-10-21 INF Injecting 107 Infisical secrets into your application process\n"
+            "A new release of infisical is available: 0.44.1 -> 0.44.3\n"
+            "To update, run: sudo apt-get update && sudo apt-get install infisical",
+            0,
+        )
+        env = {
+            **os.environ,
+            "W0M_INFISICAL_BIN": str(self.fake),
+            "W0M_INFISICAL_UPGRADE_CMD": f"printf 'upgraded' > '{marker}'",
+        }
+        r = subprocess.run([sys.executable, str(SCRIPT), "--project-id", "x"], cwd=self.work,
+                           env=env, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn("0.44.1 -> 0.44.3", r.stdout)
+        self.assertIn("auto-upgraded", r.stdout)
+        self.assertTrue(marker.is_file(), "expected auto-upgrade command to run when update banner is printed")
+
 
 class RootJustfileProjectIdTest(unittest.TestCase):
     """Every `infisical run` in the root justfile passes the single explicit project id (T429 AC2)."""

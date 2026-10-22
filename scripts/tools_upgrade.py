@@ -95,6 +95,21 @@ def record_proposal(proposals: dict, name: str, spec: dict, frm: str, to: str, s
     }
 
 
+def _clear_held_status(cleared_tools: set[str]) -> None:
+    """Remove tools that subsequently passed smoke in reconcile/promote from STATUS['held']."""
+    if not cleared_tools or not STATUS.exists():
+        return
+    try:
+        st = json.loads(STATUS.read_text(encoding="utf-8"))
+        held = [t for t in (st.get("held") or []) if t not in cleared_tools]
+        if held != list(st.get("held") or []):
+            st["held"] = held
+            st["ok"] = not held
+            STATUS.write_text(json.dumps(st, indent=2) + "\n", encoding="utf-8")
+    except (OSError, ValueError):
+        pass
+
+
 def promote(policy: dict, apply: bool) -> int:
     """Re-verify every recorded proposal NOW and, with `apply`, write the ones that hold into THIS tree's policy.
 
@@ -151,6 +166,7 @@ def promote(policy: dict, apply: bool) -> int:
         for name, _frm, _to in promoted:
             proposals.pop(name, None)
         save_proposals(PROPOSED, proposals)
+        _clear_held_status({name for name, _frm, _to in promoted})
     print(f"\n  {'promoted' if apply else 'would promote'}: {', '.join(f'{n} {f}→{t}' for n, f, t in promoted) or 'none'}")
     if blocked:
         print(f"  \u26a0 {len(blocked)} NOT promoted (they stay proposed, so they stay visible):")
@@ -213,6 +229,7 @@ def reconcile(tools: dict, policy: dict, apply: bool) -> tuple[list[str], list[s
         promoted.append(f"{name} {kg}→{cur}")
     if apply and promoted:
         save_proposals(PROPOSED, proposals)
+        _clear_held_status({p.split()[0] for p in promoted})
     return promoted, blocked
 
 
