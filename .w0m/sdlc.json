@@ -45,6 +45,28 @@
       "prefer_positional_commands": true
     }
   },
+  "spec_policy": {
+    "_comment": "T185 AC1 — machine-readable spec requirement policy so the SDLC gates and ticket template can distinguish work that requires an OpenSpec change from work that is legitimately exempt (paying down D38).",
+    "requires_spec": [
+      "new_feature",
+      "schema_or_contract_change",
+      "cross_repo_behaviour_change",
+      "security_surface_change"
+    ],
+    "exempt_classes": {
+      "consolidation_decision": "Consolidation, priority, or deferral records that change no runtime behaviour (e.g. T184)",
+      "audit_sweep": "One-shot verification or hygiene sweeps where the gate/test itself is the contract (e.g. T177)",
+      "hygiene_or_cleanup": "Mechanical cleanup, dead-code removal, rotation, or formatting where no contract changes (e.g. T174, T186)",
+      "doc_or_registry_sync": "Documentation, template, or registry synchronization without behaviour change",
+      "duplicate_or_superseded": "Tickets closed as duplicate or not-planned in favour of another ticket"
+    },
+    "backfill_provenance_required": true,
+    "backfill_provenance_fields": [
+      "Shipped",
+      "Filed",
+      "Authored"
+    ]
+  },
   "release": {
     "e2e_gate": "record",
     "e2e_before_deploy": false,

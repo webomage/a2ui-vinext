@@ -230,6 +230,16 @@
       "smoke": "uvx --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena project health-check .",
       "note": "🔴 DO NOT INSTALL THE `serena` MARKETPLACE PLUGIN. Removed 2026-08-31 (`claude plugin uninstall serena@claude-plugins-official`). It is authored by Oraios — serena's own upstream — and distributed through Anthropic's official marketplace, so it looks like the sanctioned way to get this tool. It is not compatible with governing it. The plugin ships NOTHING but a manifest and one .mcp.json whose entire content launches `uvx --from git+https://github.com/oraios/serena` with NO ref, so it resolves upstream's DEFAULT BRANCH on every start. Its own version is a marketplace commit SHA describing the WRAPPER, so pinning the plugin does not pin serena — there is no configuration that reconciles the two. Installed 2026-08-12 22:19Z; commit 5b02bbef rewrote all three .serena/project.yml files to the `language_servers:` schema at 2026-08-13 05:16 -0500, under seven hours later, and the pinned 1.6.1 was dead from then until 2026-08-31. Keeping both registrations is the one arrangement that cannot work: they fight over the same config file, and the ungoverned one wins silently. `just mcp-health` now catches a repeat the same day. LSP-backed symbol edits + diagnostics over MCP (T166). PyPI package is **serena-agent**, NOT `serena` — `serena` on PyPI is an unrelated project at 0.9.1, so installing it gets you the wrong software. 🔴 PINNED 2026-08-05 (T166 AC1b): the launch in ~/.claude.json was `uvx --from git+https://github.com/oraios/serena`, which re-resolved the DEFAULT BRANCH on every start — the one tool that can rewrite source at symbol granularity had no version, no lockfile and no integrity check, and was running an unreleased **1.6.2.dev0**. min/known_good were literally unenforceable against a moving branch. 🔴 EXTENDED & FORKED 2026-09-20 (T170): Pinned to w0m-maintained fork tag `v1.7.0-w0m.1` (casualuser/serena) adding @astrojs/language-server support (AstroLanguageServer under solidlsp) with upstream PR #2085. The smoke test exercises project loading (`serena project health-check .`) rather than just `--version`, so broken schemas or missing language providers fail organically. ⚠️ Bumping this means editing BOTH this entry and the `args` in ~/.claude.json — the version lives in the MCP launch line, not in a lockfile. ⚠️ Needs a `projects` key in ~/.serena/serena_config.yml or it fails to boot. Installed by Headroom as its default --code-memory backend, not chosen independently."
     },
+    "sshpass": {
+      "min": "1.06",
+      "known_good": "1.10",
+      "required": false,
+      "source": "brew",
+      "auto": "patch",
+      "version_arg": "-V",
+      "smoke": "sshpass -V",
+      "note": "T179 AC7 — non-interactive SSH password provider required by `tools/devpod-provider-tart/provider.yaml` (`init` and `command` verbs) for Tart Linux devcontainer transport. `required: false` because DevPod/Tart is a workstation sandbox provider, not a commit/push gate."
+    },
     "supabase": {
       "min": "2.100.0",
       "known_good": "2.113.0",

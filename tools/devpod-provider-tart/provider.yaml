@@ -1,0 +1,105 @@
+name: tart
+version: v0.1.0
+description: DevPod machine provider for Tart Linux VMs on Apple Silicon (T179)
+icon: https://raw.githubusercontent.com/cirruslabs/tart/main/Assets/logo.png
+options:
+  TART_IMAGE:
+    description: OCI Linux image to clone for the Tart guest (macOS images are rejected at create time due to M1 Max nested-virtualization ceiling)
+    default: ghcr.io/cirruslabs/ubuntu:latest
+  TART_CPU:
+    description: Number of virtual CPUs allocated to the Tart guest
+    default: "4"
+  TART_MEMORY:
+    description: Memory in MB allocated to the Tart guest
+    default: "8192"
+  TART_DISK:
+    description: Disk size in GB allocated to the Tart guest
+    default: "50"
+  TART_SSH_USER:
+    description: SSH username inside the Tart guest
+    default: admin
+  TART_SSH_PASSWORD:
+    description: SSH password inside the Tart guest
+    default: admin
+  INJECT_GIT_CREDENTIALS:
+    description: Opt-in git credential forwarding into the sandbox (default false per T171/T179 AC5)
+    default: "false"
+  INJECT_DOCKER_CREDENTIALS:
+    description: Opt-in docker credential forwarding into the sandbox (default false per T171/T179 AC5)
+    default: "false"
+agent:
+  path: /var/lib/toolbox/devpod
+  inactivityTimeout: 10m
+  injectGitCredentials: ${INJECT_GIT_CREDENTIALS}
+  injectDockerCredentials: ${INJECT_DOCKER_CREDENTIALS}
+  driver: docker
+exec:
+  init: |-
+    set -euo pipefail
+    if ! command -v tart >/dev/null 2>&1; then
+      echo "Error: 'tart' CLI is not installed on PATH (brew install cirruslabs/cli/tart)." >&2
+      exit 1
+    fi
+    if ! command -v sshpass >/dev/null 2>&1; then
+      echo "Error: 'sshpass' is required for Tart guest SSH transport." >&2
+      exit 1
+    fi
+  create: |-
+    set -euo pipefail
+    IMAGE="${TART_IMAGE:-ghcr.io/cirruslabs/ubuntu:latest}"
+    if printf '%s' "${IMAGE}" | grep -iq 'macos'; then
+      echo "Error: TART_IMAGE '${IMAGE}' is a macOS guest image, which is unsupported by the DevPod Tart provider (T179 AC4)." >&2
+      echo "Reason: M1 Max hardware ceiling (kern.hv_support=0 inside guest) prevents nested virtualization; DevPod requires a container runtime (docker) inside the guest." >&2
+      echo "Remediation: Use a Linux OCI image (e.g. ghcr.io/cirruslabs/ubuntu:latest) for DevPod, or use 'python3 scripts/tart_sandbox.py' for isolated macOS agent sandboxes (T180)." >&2
+      exit 1
+    fi
+    mkdir -p "${MACHINE_FOLDER:-.}"
+    tart clone "${IMAGE}" "${MACHINE_ID}"
+    tart set "${MACHINE_ID}" --cpu "${TART_CPU:-4}" --memory "${TART_MEMORY:-8192}" --disk-size "${TART_DISK:-50}"
+    nohup tart run "${MACHINE_ID}" --no-graphics --no-clipboard --no-audio >"${MACHINE_FOLDER:-.}/tart.log" 2>&1 &
+    echo $! > "${MACHINE_FOLDER:-.}/tart.pid"
+    tart ip "${MACHINE_ID}" --wait 60 >/dev/null
+  start: |-
+    set -euo pipefail
+    mkdir -p "${MACHINE_FOLDER:-.}"
+    STATE="$(tart list | awk -v id="${MACHINE_ID}" '$2 == id {print $NF}')"
+    if [ "${STATE}" != "running" ]; then
+      nohup tart run "${MACHINE_ID}" --no-graphics --no-clipboard --no-audio >"${MACHINE_FOLDER:-.}/tart.log" 2>&1 &
+      echo $! > "${MACHINE_FOLDER:-.}/tart.pid"
+    fi
+    tart ip "${MACHINE_ID}" --wait 60 >/dev/null
+  stop: |-
+    set -euo pipefail
+    tart stop "${MACHINE_ID}"
+    if [ -n "${MACHINE_FOLDER:-}" ] && [ -f "${MACHINE_FOLDER}/tart.pid" ]; then
+      rm -f "${MACHINE_FOLDER}/tart.pid"
+    fi
+  status: |-
+    set -euo pipefail
+    STATE="$(tart list | awk -v id="${MACHINE_ID}" '$2 == id {print $NF}')"
+    case "${STATE}" in
+      running)
+        printf 'Running\n'
+        ;;
+      stopped)
+        printf 'Stopped\n'
+        ;;
+      *)
+        printf 'NotFound\n'
+        ;;
+    esac
+  delete: |-
+    set -euo pipefail
+    tart stop "${MACHINE_ID}" >/dev/null 2>&1 || true
+    tart delete "${MACHINE_ID}"
+    if [ -n "${MACHINE_FOLDER:-}" ]; then
+      rm -f "${MACHINE_FOLDER}/tart.pid" "${MACHINE_FOLDER}/tart.log"
+    fi
+  command: |-
+    set -euo pipefail
+    VM_IP="$(tart ip "${MACHINE_ID}" --wait 30)"
+    exec sshpass -p "${TART_SSH_PASSWORD:-admin}" ssh -q \
+      -o StrictHostKeyChecking=no \
+      -o UserKnownHostsFile=/dev/null \
+      -o LogLevel=ERROR \
+      "${TART_SSH_USER:-admin}@${VM_IP}" "${COMMAND}"

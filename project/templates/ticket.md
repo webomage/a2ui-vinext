@@ -59,6 +59,8 @@ spec: ""                # e.g. "openspec/changes/2026-07-12-multi-hat"  (blank i
 # OPTIONAL x_blocked_by: []       # derived by tasks_query.py / tickets_frontmatter_sync.py
 # OPTIONAL x_synced: "2026-09-18" # synced by scripts/sync_github.py
 # OPTIONAL agent_id: ""           # virtual agent id (<harness>:<handle>, e.g. agy:ant-ci, claude:main) — T564
+# OPTIONAL pending_closure: ""    # declared external condition holding a 100%-AC ticket open (e.g. awaiting deploy) — T245 AC1b
+# OPTIONAL spec_exempt: ""        # exemption class from .w0m/sdlc.json -> spec_policy.exempt_classes — T185 AC1/AC2
 gh_issue:               # filled by scripts/sync_github.py
 tags: []                # e.g. [ai, security]
                         # OPTIONAL namespaced form (T353): `_`-delimited, most-general segment
@@ -93,7 +95,7 @@ TASKS.md row; expand where the board view had to stay terse.
 ## Definition of Done
 
 Per [`../../openspec/SPEC-AUTHORING-STANDARD.md`](../../openspec/SPEC-AUTHORING-STANDARD.md):
-- Proposal spec authored and verified against the standard (when an OpenSpec change is required).
+- Spec verified (`openspec-verify-change`) when required by `.w0m/sdlc.json → spec_policy`, or exemption class noted.
 - Acceptance criteria verified with tests/quality gates.
 - Quality gates clean (`just test`, `just lint`, `just typecheck`, `just debt-check`).
 - Committed referencing ticket ID; TASKS.md row + ticket + GH issue in sync.

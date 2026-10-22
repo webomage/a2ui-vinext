@@ -1060,8 +1060,10 @@ def main() -> int:
 
     if args.mode == "stats":
         openq = [t for t in tickets if t["open"]]
+        specced_all = sum(1 for t in tickets if (t.get("spec") or "").strip())
+        specced_open = sum(1 for t in openq if (t.get("spec") or "").strip())
         from collections import Counter
-        print(f"  tickets: {len(tickets)} total · {len(openq)} open")
+        print(f"  tickets: {len(tickets)} total · {len(openq)} open · {specced_all}/{len(tickets)} specced ({specced_open}/{len(openq)} open specced)")
         print(f"  by priority: {dict(Counter(t['priority'] or '—' for t in openq))}")
         print(f"  by status:   {dict(Counter(t['status'] for t in openq))}")
         print(f"  rowless open: {[t['id'] for t in openq if t['rowless']]}")
@@ -1087,7 +1089,9 @@ def main() -> int:
     if args.mode == "board":
         hot_rows = rank(tickets, args.n, args.priority, args.status, exclude_cross_tree=not args.include_claimed)
         open_n = len([t for t in tickets if t["open"]])
-        print(f"▶ HOT — what can be STARTED — top {len(hot_rows)} of {open_n} open")
+        specced_all = sum(1 for t in tickets if (t.get("spec") or "").strip())
+        specced_open = sum(1 for t in tickets if t["open"] and (t.get("spec") or "").strip())
+        print(f"▶ HOT — what can be STARTED — top {len(hot_rows)} of {open_n} open ({specced_all}/{len(tickets)} specced · {specced_open}/{open_n} open specced)")
         if excluded_claims:
             items = ", ".join(f"{c['id']} ({c['status']} by {c['agent_id']})" for c in excluded_claims[:8])
             print(f"  ℹ️  Virtual Agent Radar (me={my_agent}): excluded {len(excluded_claims)} ticket(s) owned/done in sibling trees: {items} (--include-claimed to show)")
@@ -1705,7 +1709,9 @@ def cmd_overview(tickets: list[dict], top: int) -> int:
         d, tot = ac_progress(t["id"])
         t["ac_done"], t["ac_total"] = d, tot
     unmeasured = sum(1 for t in openq if not t["ac_total"])
-    print(f"▶ OVERVIEW — {n} open tickets, grouped four ways")
+    specced_all = sum(1 for t in tickets if (t.get("spec") or "").strip())
+    specced_open = sum(1 for t in openq if (t.get("spec") or "").strip())
+    print(f"▶ OVERVIEW — {n} open tickets ({specced_open}/{n} open specced · {specced_all}/{len(tickets)} specced total), grouped four ways")
     print(f"   AC bars cover the {n - unmeasured} measurable ticket(s); "
           f"{unmeasured} have no acceptance criteria and are excluded from them, not scored 0%.\n")
 

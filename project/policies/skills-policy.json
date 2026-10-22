@@ -10,6 +10,23 @@
     "_why_sandboxed": "A skill can ship runnable files, and something else then invokes them by path — Artemio's `just idea-refine-init` did, and broke when upstream swapped the helper's language. `sandboxed: true` asserts that a skill's shipped code is only executed in an isolated environment, never directly on the host. Same meaning wom7sec already uses: no audited code executes on the host."
   },
 
+  "defaults": {
+    "_comment": "Stack-independent baseline skills recommended across w0m projects (T270). Unlike stack-specific skills, cross-cutting communication and persona skills cannot be inferred from package manifests or file extensions, so entries here carry no `detect` rules.",
+    "eli5": {
+      "provider": "w0m-native",
+      "upstream": "anthropics/claude-plugins-community@eli5",
+      "category": "communication-and-explanation",
+      "portable": true,
+      "reason": "Audience-adaptive progressive simplification and self-contained interactive visual HTML architecture explainers (T270)."
+    },
+    "feynman": {
+      "provider": "w0m-native",
+      "category": "communication-and-explanation",
+      "portable": true,
+      "reason": "First-principles debugging and conceptual gap exposure via the Feynman Technique."
+    }
+  },
+
   "detect_executable": {
     "_comment": "How the catalogue decides a skill SHIPS EXECUTABLE CONTENT — the population for which `sandboxed` is load-bearing rather than decorative. Measured 2026-08-09 across the whole estate: exactly 2 skills of 115 qualify (w0m `webapp-testing`, Artemio `idea-refine`). Reported honestly rather than inflated — a setting that applies to 2 things should say so.",
     "suffixes": [".sh", ".py", ".mjs", ".js", ".ts", ".bash", ".zsh", ".rb", ".pl"],

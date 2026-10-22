@@ -4,7 +4,7 @@
   "title": "w0m skills catalogue policy (T182)",
   "description": "Validates the catalogue policy. Its main job is structural: an override MUST carry a reason, so a recommendation can never be waived silently.",
   "type": "object",
-  "required": ["project", "recommended", "detect_executable"],
+  "required": ["project", "recommended", "defaults", "detect_executable"],
   "additionalProperties": false,
   "properties": {
     "$schema": { "type": "string" },
@@ -19,6 +19,30 @@
         "sandboxed": { "type": "boolean" }
       },
       "patternProperties": { "^_": { "type": "string" } },
+      "additionalProperties": false
+    },
+    "defaults": {
+      "type": "object",
+      "description": "Stack-independent baseline skills recommended across w0m projects (T270). Must not carry `detect` rules because stack detection cannot discover cross-cutting communication and persona skills.",
+      "patternProperties": {
+        "^_": { "type": "string" },
+        "^[a-z0-9-]+$": {
+          "type": "object",
+          "required": ["provider", "category", "portable", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "provider": { "type": "string", "enum": ["w0m-native", "skills.sh", "official", "external"] },
+            "upstream": { "type": "string", "minLength": 3 },
+            "category": { "type": "string", "minLength": 3 },
+            "portable": { "type": "boolean" },
+            "reason": {
+              "type": "string",
+              "minLength": 20,
+              "description": "Mandatory justification for why this skill belongs in the stack-independent baseline."
+            }
+          }
+        }
+      },
       "additionalProperties": false
     },
     "detect_executable": {

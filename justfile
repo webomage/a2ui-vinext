@@ -1319,4 +1319,39 @@ serena-config-check *args:
 serena-config-check-test:
     @python3 wom7web/project/scripts/tests/test_serena_config_check.py
 
+# ── Delivery Record, Spec Policy, Consumer Gate, Lessons & OpenCode (T245 / T185 / T177 / T178 / T270 / T152) ──
+ac-trace-test:
+    @python3 wom7web/project/scripts/tests/test_ac_trace_check.py
+
+spec-policy-check *args:
+    @python3 wom7web/project/scripts/spec_policy_check.py {{ args }}
+
+spec-policy-test:
+    @python3 wom7web/project/scripts/tests/test_spec_policy_check.py
+
+consumer-skill-gate *args:
+    @python3 wom7web/project/scripts/consumer_skill_gate.py {{ args }}
+
+consumer-skill-gate-test:
+    @python3 wom7web/project/scripts/tests/test_consumer_skill_gate.py
+
+lessons-check *args:
+    @python3 wom7web/project/scripts/lessons_check.py {{ args }}
+
+lessons-check-test:
+    @python3 wom7web/project/scripts/tests/test_lessons_check.py
+
+eli5-governance-test:
+    @python3 -m unittest wom7web/project/scripts/tests/test_t270_eli5_governance.py
+
+opencode-health *args:
+    @python3 scripts/opencode_config.py --check {{ args }}
+
+opencode-sync *args:
+    @python3 scripts/opencode_config.py --generate {{ args }}
+
+opencode-config-test:
+    @python3 -m unittest wom7web/project/scripts/tests/test_opencode_config.py
+
+
 

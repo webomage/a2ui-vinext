@@ -168,12 +168,23 @@ def ticket_facts() -> dict:
         return {"_error": "TASKS.md or .tasks/ not found"}
     rows = set(re.findall(TASKS_ROW_RE, tasks_md.read_text(), re.M))
     open_ids, rowless, unmirrored = [], [], []
+    total_all = 0
+    specced_all = 0
+    specced_open = 0
     for path in sorted(tickets_dir.glob("T*.md")):
-        head = path.read_text()[:600]
+        total_all += 1
+        head = path.read_text()[:900]
+        m_sp = re.search(r"^spec:\s*(.*)$", head, re.M)
+        sp_raw = re.split(r"\s+#", m_sp.group(1).strip(), maxsplit=1)[0].strip().strip('"\'') if m_sp else ""
+        has_spec = bool(sp_raw)
+        if has_spec:
+            specced_all += 1
         m = re.search(r"^status:\s*(\S+)", head, re.M)
         status = m.group(1).strip().strip('"') if m else ""
         if status in ("done", "archived"):
             continue
+        if has_spec:
+            specced_open += 1
         open_ids.append(path.stem)
         if path.stem not in rows:
             rowless.append(path.stem)
@@ -184,6 +195,9 @@ def ticket_facts() -> dict:
     key = lambda t: int(re.sub(r"\D", "", t))  # noqa: E731
     return {
         "open": len(open_ids),
+        "total": total_all,
+        "specced": specced_all,
+        "specced_open": specced_open,
         "rows": len(rows),
         "rowless_open": sorted(rowless, key=key),
         "unmirrored_open": len(unmirrored),
@@ -356,6 +370,7 @@ def render(data: dict) -> str:
         "",
         f"**Hygiene gates:** {gate_line}",
         f"**Tickets:** {t.get('open', '?')} open · {t.get('rows', '?')} TASKS.md rows · "
+        f"{t.get('specced', '?')}/{t.get('total', '?')} specced ({t.get('specced_open', '?')}/{t.get('open', '?')} open specced) · "
         f"{t.get('unmirrored_open', '?')} unmirrored open · "
         f"**{len(t.get('rowless_open', []))} OPEN ticket(s) with no row:** {rowless}",
         "",

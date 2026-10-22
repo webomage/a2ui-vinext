@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-09-27T21:28:06.768Z",
+  "generatedAt": "2026-10-22T04:35:15.900Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -57,7 +57,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-lessons",
-      "integrity": "sha256-6a6ca7e43f98e539540ce69f26a7a782df792b3e1f3012938fb0c857049dace7"
+      "integrity": "sha256-85eabf12c8ade071264dff26f9f059dae794d14738f631a952aa28b1d3ed0bc2"
     },
     "w0m-mcp-builder": {
       "provider": "w0m-native",
@@ -71,7 +71,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-archive",
-      "integrity": "sha256-04bfc42d05c5b40dd51b617d4d4c5deabbd50ad603a057ab2c29a2d4a09e19bd"
+      "integrity": "sha256-41c74554a959a03b522fbc78cc13805fa04745245ef465dead5b2198f20d1cf7"
     },
     "w0m-sdlc-build": {
       "provider": "w0m-native",
@@ -99,7 +99,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-research",
-      "integrity": "sha256-de9a3100558504e3df833b85d4d9deb631b379ca0a086f7760f68309c332e1ce"
+      "integrity": "sha256-2d04b5526044e8dbebe2087945ef115dc5524648e9ece00bc9c7ea08253da01e"
     },
     "w0m-sdlc-review": {
       "provider": "w0m-native",
@@ -155,7 +155,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-tasks",
-      "integrity": "sha256-0521d11dd68251e8fd5f7904f7da9dcc80439c1826855348d7af7a1b080e56c5"
+      "integrity": "sha256-fcb319cd4218acb9dacdfb8d4a1e5ac0224cf0dcfecece9fcc21c20eedf11d06"
     },
     "w0m-tdd": {
       "provider": "w0m-native",
@@ -177,6 +177,13 @@
       "scope": "project",
       "path": ".agents/skills/w0m-ticket-audit",
       "integrity": "sha256-a285d2b6ecb360f6f49252d77128786ff64420b4c94c77768c00cfdbe9bec0b0"
+    },
+    "eli5": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/eli5",
+      "integrity": "sha256-471ce694d7750fee9c2eca2895d422eea0e301fd859746aeb3bc0750267ce55c"
     }
   }
 }
