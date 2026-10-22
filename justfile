@@ -1296,8 +1296,27 @@ devex-pulse *args:
 dora-test:
     @python3 scripts/dora_metrics_test.py
 
+# ── SDLC Branch Hygiene & Stage-Branch Consolidation Monitor (T148) ──────────
+branch-hygiene *args:
+    @python3 scripts/branch_hygiene.py {{ args }}
 
+branch-hygiene-test:
+    @python3 wom7web/project/scripts/tests/test_branch_hygiene.py
 
+# ── Codegraph Codemap Generator & Serena Config Reconciliation (T193 / T172) ─
+codemap-gen *args:
+    @python3 wom7web/project/scripts/codemap_gen.py --write {{ args }}
 
+codemap-check *args:
+    @python3 wom7web/project/scripts/codemap_gen.py --check {{ args }}
+
+codemap-check-test:
+    @python3 wom7web/project/scripts/tests/test_codemap_gen.py
+
+serena-config-check *args:
+    @python3 wom7web/project/scripts/serena_config_check.py {{ args }}
+
+serena-config-check-test:
+    @python3 wom7web/project/scripts/tests/test_serena_config_check.py
 
 

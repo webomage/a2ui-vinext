@@ -805,5 +805,60 @@
         "any row whose gh_issue mapping would break — 223 issue links depend on it"
       ]
     }
+  },
+  "branch_model": {
+    "_comment": "T148 AC3 — estate stage-branch contract per AgDR-0032 and AGENTS.md. Read by scripts/branch_hygiene.py (`just branch-hygiene`). Preservation-first (AC7): strictly read-only monitoring, never auto-deletes or force-pushes branches.",
+    "canonical_branch": "beta",
+    "agent_branch_prefix": "agent/",
+    "release_tag_prefix": "release/",
+    "stale_days": 14,
+    "governed_repos": [
+      "@wom",
+      "wom7web",
+      "wom7api",
+      "wom7func",
+      "wom7skills",
+      "wom7ext",
+      "wom7sec"
+    ],
+    "single_branch_by_design": [
+      "@wom",
+      "wom7func",
+      "wom7skills"
+    ],
+    "legacy_main_repos": [
+      "wom7web",
+      "wom7api",
+      "wom7ext",
+      "wom7sec"
+    ],
+    "legacy_main_status": {
+      "wom7web": {
+        "diverged_pre_rewrite_do_not_merge": false,
+        "status": "trails_beta_cleanly"
+      },
+      "wom7api": {
+        "diverged_pre_rewrite_do_not_merge": true,
+        "status": "diverged_pre_rewrite_do_not_merge",
+        "note": "180 commits on origin/main (dfd3d4b..1fbcb1c) are pre-2026-07-12 credential-scrub history that already have 1-to-1 counterparts on origin/beta (dfd3d4b..f70d0ca, identical tree 1b6bf2ff). Never merge main into beta (resurrects pre-rewrite .env objects in commits #1-#52)."
+      },
+      "wom7ext": {
+        "diverged_pre_rewrite_do_not_merge": false,
+        "status": "trails_beta_cleanly"
+      },
+      "wom7sec": {
+        "diverged_pre_rewrite_do_not_merge": false,
+        "status": "trails_beta_cleanly"
+      }
+    },
+    "excluded_repos": [
+      "wom7mlx/wom7mlx"
+    ],
+    "command": "just branch-hygiene",
+    "test": "just branch-hygiene-test",
+    "script": "scripts/branch_hygiene.py",
+    "blocking": false,
+    "read_only": true,
+    "policy": "One canonical stage branch (beta); agents work in isolated agent/<name> worktrees and land via fast-forward/rebase onto origin/beta (AgDR-0032). Preservation-first: never auto-delete or force-push branches."
   }
 }

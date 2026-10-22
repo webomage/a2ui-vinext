@@ -749,8 +749,54 @@ def terminalise(block: str) -> str:
     return "\n".join(out)
 
 
+_AGENT_TREE_RE = re.compile(r"^(.*?)/\.w0m/work/[^/]+/w0m(?:/.*)?$")
+MISSING_MIRROR_MARKER = "⚠️ not mirrored"
+MISSING_SLUG_NOTE = (
+    "> ⚠️ GitHub mirror links omitted: repository slug unavailable in `.w0m/sdlc.json`."
+)
+
+
+def live_workspace_root(root: Path | None = None) -> Path:
+    """Resolve the canonical LIVE estate root (never an ephemeral `.w0m/work/<tree>/w0m` agent tree — T548).
+
+    An agent tree is removed as soon as it lands (AgDR-0032), so any absolute path under
+    `~/.w0m/work/<tree>/w0m/` embedded in `STATE.md` becomes a dead link immediately after landing.
+    Because each agent tree is a git worktree of the live estate, `git rev-parse --git-common-dir`
+    resolves back to `<live-root>/.git`. For non-git synthetic agent-tree paths in tests
+    (`.../.w0m/work/<tree>/w0m`), the `.w0m/work/<tree>` segment is stripped.
+    """
+    override = os.environ.get("W0M_LIVE_ROOT")
+    if override:
+        return Path(override)
+    base = (root or TICKETS.parent).resolve()
+    try:
+        r = subprocess.run(
+            ["git", "-C", str(base), "rev-parse", "--path-format=absolute", "--git-common-dir"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if r.returncode == 0 and r.stdout.strip():
+            common = Path(r.stdout.strip()).resolve()
+            candidate = common.parent if common.name == ".git" else common
+            if "/.w0m/work/" not in candidate.as_posix():
+                return candidate
+    except (OSError, subprocess.SubprocessError):
+        pass
+    posix = base.as_posix()
+    m = _AGENT_TREE_RE.match(posix)
+    if m:
+        prefix = m.group(1)
+        if prefix == Path.home().as_posix() and base != WORKSPACE_ROOT.resolve():
+            return live_workspace_root(WORKSPACE_ROOT)
+        return Path(f"{prefix}/w0m")
+    return base
+
+
 def _ticket_href(tid: str) -> str:
-    """ABSOLUTE path to the ticket. Deliberately not relative — see below.
+    """ABSOLUTE path to the ticket under the LIVE estate root (T548).
+
+    Deliberately not relative — see below — and deliberately rooted at `live_workspace_root()`
+    rather than `TICKETS` directly, so generating `STATE.md` inside an ephemeral agent tree
+    (`~/.w0m/work/<tree>/w0m`) never embeds a path that dies when the tree is removed.
 
     This went through two wrong answers before landing here, both of which *looked* right:
 
@@ -763,26 +809,35 @@ def _ticket_href(tid: str) -> str:
        it gets pasted into STATE.md, into tickets, into chat — and at that point the base
        directory it was computed against is gone.
 
-    An absolute path has no base to lose. It resolves for every reader, in every cwd, after any
-    amount of copying, and terminals linkify it where they leave `../` alone. It costs nothing to
-    read either: the link LABEL is the bare id (`T2`), so the href is never displayed.
+    An absolute path under the live root has no base to lose. It resolves for every reader, in
+    every cwd, after any amount of copying, and terminals linkify it where they leave `../` alone.
+    It costs nothing to read either: the link LABEL is the bare id (`T2`), so the href is never
+    displayed.
     """
-    return (TICKETS / f"{tid}.md").as_posix()
+    return (live_workspace_root(TICKETS.parent) / ".tasks" / f"{tid}.md").as_posix()
 
 
 def _issue_link(t: dict) -> str:
-    """The GitHub issue, as its own column.
+    """The GitHub issue, as its own column (T158 AC1–AC3).
 
-    An unmirrored ticket renders `—` rather than an empty cell. A dedicated column is what makes
-    the absence legible at all: while ticket and issue shared one cell, a missing issue just made
-    the cell shorter and read as "no link expected" (the complaint [[T158]] was filed about).
+    An unmirrored ticket (`gh_issue` missing or `"0"`) renders `⚠️ not mirrored` rather than an
+    ambiguous dash or empty cell. When `_repo_slug()` is unavailable (`""`) but `gh_issue` is
+    present, the cell preserves `#{gh}` and the table emits `MISSING_SLUG_NOTE` once below.
     """
-    gh = str(t.get("gh_issue") or "0")
+    gh = str(t.get("gh_issue") or "0").strip()
+    has_issue = gh.isdigit() and gh != "0"
     slug = _repo_slug()
-    if gh.isdigit() and gh != "0" and slug:
+    if has_issue and slug:
         url = f"https://github.com/{slug}/issues/{gh}"
         return _link(f"#{gh}", url, f"[#{gh}]({url})")
-    return "—"
+    if has_issue:
+        return f"#{gh}"
+    return MISSING_MIRROR_MARKER
+
+
+def _links(t: dict) -> str:
+    """Combined local ticket link + GitHub issue surface (T158 AC1–AC3)."""
+    return f"{_ticket_link(t)} · {_issue_link(t)}"
 
 
 def markdown_hot(rows: list[dict]) -> str:
@@ -796,6 +851,9 @@ def markdown_hot(rows: list[dict]) -> str:
         out.append(
             f"| {i} | {_ticket_link(t)} | {_issue_link(t)} | {t['priority'] or '—'} | "
             f"{t['status']} | {area} | {t['score']} | {_md_trunc(t['title'], title_w)}{flags} |")
+    if rows and not _repo_slug():
+        out.append("")
+        out.append(MISSING_SLUG_NOTE)
     return "\n".join(out)
 
 
@@ -834,6 +892,9 @@ def markdown_sdlc(rows: list[dict]) -> str:
             f"| {i} | {_ticket_link(t)} | {_issue_link(t)} | {t['priority'] or '—'} | "
             f"{t['status']}{flag} | {area} | {t['ac_done']}/{t['ac_total']} | `{bar}` {t['ac_pct']}% | "
             f"{dep_s} | {_md_trunc(t['title'], 60)} |")
+    if rows and not _repo_slug():
+        out.append("")
+        out.append(MISSING_SLUG_NOTE)
     if at_100:
         out.append("")
         out.append(f"  ⚠️  {len(at_100)} row(s) at 100% with a non-done status: "

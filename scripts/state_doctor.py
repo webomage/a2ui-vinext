@@ -167,20 +167,26 @@ def ticket_facts() -> dict:
     if not tasks_md.exists() or not tickets_dir.is_dir():
         return {"_error": "TASKS.md or .tasks/ not found"}
     rows = set(re.findall(TASKS_ROW_RE, tasks_md.read_text(), re.M))
-    open_ids, rowless = [], []
+    open_ids, rowless, unmirrored = [], [], []
     for path in sorted(tickets_dir.glob("T*.md")):
-        m = re.search(r"^status:\s*(\S+)", path.read_text()[:600], re.M)
+        head = path.read_text()[:600]
+        m = re.search(r"^status:\s*(\S+)", head, re.M)
         status = m.group(1).strip().strip('"') if m else ""
         if status in ("done", "archived"):
             continue
         open_ids.append(path.stem)
         if path.stem not in rows:
             rowless.append(path.stem)
+        m_gh = re.search(r"^gh_issue:\s*(\S*)", head, re.M)
+        gh = m_gh.group(1).strip().strip('"\'') if m_gh else ""
+        if not (gh.isdigit() and gh != "0"):
+            unmirrored.append(path.stem)
     key = lambda t: int(re.sub(r"\D", "", t))  # noqa: E731
     return {
         "open": len(open_ids),
         "rows": len(rows),
         "rowless_open": sorted(rowless, key=key),
+        "unmirrored_open": len(unmirrored),
     }
 
 
@@ -350,6 +356,7 @@ def render(data: dict) -> str:
         "",
         f"**Hygiene gates:** {gate_line}",
         f"**Tickets:** {t.get('open', '?')} open · {t.get('rows', '?')} TASKS.md rows · "
+        f"{t.get('unmirrored_open', '?')} unmirrored open · "
         f"**{len(t.get('rowless_open', []))} OPEN ticket(s) with no row:** {rowless}",
         "",
         # `_`-prefixed keys are render-only detail (the full hot rows) and are deliberately kept OUT

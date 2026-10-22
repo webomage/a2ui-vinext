@@ -15,16 +15,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T43](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | infra | 85 | Full-observability logging strategy 📄 live spec |
-| 2 | [T365](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 80 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
-| 3 | [T374](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T374.md) | [#374](https://github.com/webomage/wom7board/issues/374) | P1 | queued | tools | 79 | Unified oMLX process management: multi-mode daemon/GUI/CLI detection, port  📄 live spec |
-| 4 | [T36](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 70 | AI provider-adapter seam + lib hygiene |
-| 5 | [T50](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T50.md) | [#50](https://github.com/webomage/wom7board/issues/50) | P1 | queued | data | 70 | Fix Upwork Ingestion Pagination & CLI Search |
-| 6 | [T57](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 70 | Implement w0m Open Routing Layer |
-| 7 | [T136](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T136.md) | [#136](https://github.com/webomage/wom7board/issues/136) | P1 | queued | product | 70 | Research migrating WordPress sites to the vinext (Vite+React) stack as a delivery offeri |
-| 8 | [T148](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T148.md) | [#148](https://github.com/webomage/wom7board/issues/148) | P1 | queued | sdlc | 70 | SDLC branch hygiene: monitor stale branches, consolidate main↔beta per stage without los |
-| 9 | [T164](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T164.md) | [#164](https://github.com/webomage/wom7board/issues/164) | P1 | queued | tools | 70 | Govern the full host CLI surface and report toolchain health in the health report |
-| 10 | [T167](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T167.md) | [#167](https://github.com/webomage/wom7board/issues/167) | P1 | queued | product | 70 | Internal JSON Resume registry — a schema-validated profile per user, exportable to PDF a |
+| 1 | [T43](/home/aleksei/Projects/!self/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | infra | 85 | Full-observability logging strategy 📄 live spec |
+| 2 | [T365](/home/aleksei/Projects/!self/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 80 | GUI sandbox browser & extension bundling: pre-provisioned Chromium with man 📄 live spec |
+| 3 | [T374](/home/aleksei/Projects/!self/w0m/.tasks/T374.md) | [#374](https://github.com/webomage/wom7board/issues/374) | P1 | queued | tools | 79 | Unified oMLX process management: multi-mode daemon/GUI/CLI detection, port  📄 live spec |
+| 4 | [T36](/home/aleksei/Projects/!self/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 70 | AI provider-adapter seam + lib hygiene |
+| 5 | [T50](/home/aleksei/Projects/!self/w0m/.tasks/T50.md) | [#50](https://github.com/webomage/wom7board/issues/50) | P1 | queued | data | 70 | Fix Upwork Ingestion Pagination & CLI Search |
+| 6 | [T57](/home/aleksei/Projects/!self/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 70 | Implement w0m Open Routing Layer |
+| 7 | [T136](/home/aleksei/Projects/!self/w0m/.tasks/T136.md) | [#136](https://github.com/webomage/wom7board/issues/136) | P1 | queued | product | 70 | Research migrating WordPress sites to the vinext (Vite+React) stack as a delivery offeri |
+| 8 | [T164](/home/aleksei/Projects/!self/w0m/.tasks/T164.md) | [#164](https://github.com/webomage/wom7board/issues/164) | P1 | queued | tools | 70 | Govern the full host CLI surface and report toolchain health in the health report |
+| 9 | [T167](/home/aleksei/Projects/!self/w0m/.tasks/T167.md) | [#167](https://github.com/webomage/wom7board/issues/167) | P1 | queued | product | 70 | Internal JSON Resume registry — a schema-validated profile per user, exportable to PDF a |
+| 10 | [T177](/home/aleksei/Projects/!self/w0m/.tasks/T177.md) | [#177](https://github.com/webomage/wom7board/issues/177) | P1 | queued | sdlc | 70 | T174 retention stops at the estate boundary — 1945 carries 931 KB of unbounded agent mem |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,24 +32,24 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 167 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **167** are
+> ⚠️ **0 of 157 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **157** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T184](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T184.md) | [#184](https://github.com/webomage/wom7board/issues/184) | P3 | queued | tools | 5/8 | `██████░░░░` 62% | — | wom7mlx is P3 — consolidate the MLX/Rust-port work behind on |
-| 2 | [T537](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T537.md) | — | P1 | blocked | data | 1/10 | `█░░░░░░░░░` 10% | — | Upwork connector on the official MCP with per-member OAuth;  |
-| 3 | [T36](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 0/5 | `░░░░░░░░░░` 0% | — | AI provider-adapter seam + lib hygiene |
-| 4 | [T43](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | infra | 0/7 | `░░░░░░░░░░` 0% | — | Full-observability logging strategy |
-| 5 | [T50](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T50.md) | [#50](https://github.com/webomage/wom7board/issues/50) | P1 | queued | data | 0/3 | `░░░░░░░░░░` 0% | — | Fix Upwork Ingestion Pagination & CLI Search |
-| 6 | [T57](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Implement w0m Open Routing Layer |
-| 7 | [T136](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T136.md) | [#136](https://github.com/webomage/wom7board/issues/136) | P1 | queued | product | 0/7 | `░░░░░░░░░░` 0% | — | Research migrating WordPress sites to the vinext (Vite+React |
-| 8 | [T148](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T148.md) | [#148](https://github.com/webomage/wom7board/issues/148) | P1 | queued | sdlc | 0/7 | `░░░░░░░░░░` 0% | — | SDLC branch hygiene: monitor stale branches, consolidate mai |
-| 9 | [T164](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T164.md) | [#164](https://github.com/webomage/wom7board/issues/164) | P1 | queued | tools | 0/6 | `░░░░░░░░░░` 0% | — | Govern the full host CLI surface and report toolchain health |
-| 10 | [T167](/home/aleksei/.w0m/work/agy-batch/w0m/.tasks/T167.md) | [#167](https://github.com/webomage/wom7board/issues/167) | P1 | queued | product | 0/8 | `░░░░░░░░░░` 0% | — | Internal JSON Resume registry — a schema-validated profile p |
+| 1 | [T184](/home/aleksei/Projects/!self/w0m/.tasks/T184.md) | [#184](https://github.com/webomage/wom7board/issues/184) | P3 | queued | tools | 5/8 | `██████░░░░` 62% | — | wom7mlx is P3 — consolidate the MLX/Rust-port work behind on |
+| 2 | [T537](/home/aleksei/Projects/!self/w0m/.tasks/T537.md) | ⚠️ not mirrored | P1 | blocked | data | 1/10 | `█░░░░░░░░░` 10% | — | Upwork connector on the official MCP with per-member OAuth;  |
+| 3 | [T36](/home/aleksei/Projects/!self/w0m/.tasks/T36.md) | [#36](https://github.com/webomage/wom7board/issues/36) | P1 | queued | ai | 0/5 | `░░░░░░░░░░` 0% | — | AI provider-adapter seam + lib hygiene |
+| 4 | [T43](/home/aleksei/Projects/!self/w0m/.tasks/T43.md) | [#43](https://github.com/webomage/wom7board/issues/43) | P1 | queued | infra | 0/7 | `░░░░░░░░░░` 0% | — | Full-observability logging strategy |
+| 5 | [T50](/home/aleksei/Projects/!self/w0m/.tasks/T50.md) | [#50](https://github.com/webomage/wom7board/issues/50) | P1 | queued | data | 0/3 | `░░░░░░░░░░` 0% | — | Fix Upwork Ingestion Pagination & CLI Search |
+| 6 | [T57](/home/aleksei/Projects/!self/w0m/.tasks/T57.md) | [#57](https://github.com/webomage/wom7board/issues/57) | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Implement w0m Open Routing Layer |
+| 7 | [T136](/home/aleksei/Projects/!self/w0m/.tasks/T136.md) | [#136](https://github.com/webomage/wom7board/issues/136) | P1 | queued | product | 0/7 | `░░░░░░░░░░` 0% | — | Research migrating WordPress sites to the vinext (Vite+React |
+| 8 | [T164](/home/aleksei/Projects/!self/w0m/.tasks/T164.md) | [#164](https://github.com/webomage/wom7board/issues/164) | P1 | queued | tools | 0/6 | `░░░░░░░░░░` 0% | — | Govern the full host CLI surface and report toolchain health |
+| 9 | [T167](/home/aleksei/Projects/!self/w0m/.tasks/T167.md) | [#167](https://github.com/webomage/wom7board/issues/167) | P1 | queued | product | 0/8 | `░░░░░░░░░░` 0% | — | Internal JSON Resume registry — a schema-validated profile p |
+| 10 | [T177](/home/aleksei/Projects/!self/w0m/.tasks/T177.md) | [#177](https://github.com/webomage/wom7board/issues/177) | P1 | queued | sdlc | 0/6 | `░░░░░░░░░░` 0% | — | T174 retention stops at the estate boundary — 1945 carries 9 |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `66c369d4` |
-| `wom7api` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `2461195` |
+| `wom7web` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `9dcd8d49` |
+| `wom7api` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `fb42416` |
 | `wom7func` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `33d8a91` |
-| `wom7skills` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `7ee7b8e` |
+| `wom7skills` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `bd739ba` |
 | `wom7ext` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `2631b1f` |
 | `wom7sec` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `227646b` |
 | `wom7mlx/wom7mlx` | `agent/agy-batch` | 0 | **n/a — NO UPSTREAM** | `cebe5c6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 167 open · 564 TASKS.md rows · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 157 open · 564 TASKS.md rows · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T43","T365","T374","T36","T50","T57","T136","T148","T164","T167"],"repos":{"wom7api":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"2461195","unpushed":null},"wom7ext":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"2631b1f","unpushed":null},"wom7func":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"33d8a91","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"cebe5c6","unpushed":null},"wom7sec":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"227646b","unpushed":null},"wom7skills":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"7ee7b8e","unpushed":null},"wom7web":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"66c369d4","unpushed":null}},"tickets":{"open":167,"rowless_open":[],"rows":564}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T43","T365","T374","T36","T50","T57","T136","T164","T167","T177"],"repos":{"wom7api":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"fb42416","unpushed":null},"wom7ext":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"2631b1f","unpushed":null},"wom7func":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"33d8a91","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"cebe5c6","unpushed":null},"wom7sec":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"227646b","unpushed":null},"wom7skills":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"bd739ba","unpushed":null},"wom7web":{"branch":"agent/agy-batch","dirty":0,"has_upstream":true,"head":"9dcd8d49","unpushed":null}},"tickets":{"open":157,"rowless_open":[],"rows":564,"unmirrored_open":4}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -131,7 +131,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (13):
+#### Completed today (19):
 
 - **T24** — Skills expansion — import + survey (Completed & Verified (all 3 ACs))
 - **T26** — Package discovery via awesome-repositories MCP (Completed & Verified (all 2 ACs))
@@ -141,11 +141,17 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T118** — Content & blueprint deep-review + DS alignment (✅  — DONE (AC1–AC6). Synced Aleksei_CV_2026.md and Aleksei_CV_2026_Private.md with role-templates/ (Airflow, Hatchet, CrewAI, AutoGen, Google ADK, A2A, Kayse SOC 2 legal RAG & emotional-tone scoring, Meetocean.ai HIPAA healthcare voice-AI, Featherglass HIPAA live transcription, TheorQL SWE-bench; 60/60 CV validation tests passing). Verified all 7 Upwork Short Intros (6 role-templates/.md + cover_letter.md#plain-text-upwork) are <= 1000 chars (712–922 chars) and 100% 7-bit ASCII. Audited all 25 blueprints, attached structured wom7sec multi-tier audit profiles in apps/web/src/pages/blueprints/[...slug].astro, aligned [...slug].astro to canonical DS CSS custom properties (var(--bg-color), var(--brand-color), var(--surface-glass), var(--segment-)), updated docs/backend/branding/TODO-content-hardening-audit.md with the dated audit log, and wired wom7web/project/scripts/content_blueprint_audit_t118.py (just content-blueprint-audit, test_t118_content_blueprint_audit.py 6/6 passing).)
 - **T140** — Dependency floors need upper bounds: deps_sync.py is blind to the right-hand side of a range (Completed AC1–AC7 (done).)
 - **T142** — Migrate all remaining Gherkin inside w0m to Gauge; keep Gherkin only as a customer-project SDLC tool (Completed & Verified (all 7 ACs))
+- **T158** — TOP 10 HOT / SDLC: always show both the local ticket and the GitHub issue — a missing mirror must be visible, not absent (Updated _issue_link(), _links(), markdown_hot(), and markdown_sdlc() in scripts/tasks_query.py so unmirrored tickets explicitly render ⚠️ not mirrored (MISSING_MIRROR_MARKER), a missing _repo_slug() preserves #<issue> without false not mirrored markers while emitting MISSING_SLUG_NOTE once under each table, and the local ticket link is always present. Updated scripts/state_doctor.py (ticket_facts() and render()) to record and render unmirrored_open in STATE.md's mechanical block. Added unit tests covering all 4 combinations (issue+slug, issue-no-slug, no-issue+slug, neither) plus RED mutant proof in wom7web/project/scripts/tests/test_tasks_render.py and wom7web/project/scripts/tests/test_state_doctor.py.)
+- **T172** — The serena config actually in use is the ungoverned umbrella one — T166 governs two files the session never reads (DONE (5/5 ACs).)
 - **T183** — `design_system` is the one major surface sdlc.json does not declare — three projects, three incompatible shapes, no detection and no gate (✅  — DONE (AC1–AC11). Declared design_system in .w0m/sdlc.json and .w0m/sdlc.schema.json with format: "claude-design" | "custom" | "docs" | "none", tokens_strategy: "css-custom-properties", skill: "webomage-design", stack-keyed adherence_gate (astro+svelte -> just ds-adherence, react+jsx -> oxlint -c design-system/_ref/_adherence.oxlintrc.json), and explicit hand-off (T183 / T93 / T42). Implemented content-based detector & gate wom7web/project/scripts/design_system_check.py (just design-system-check, just design-system-check-test), registered design_system in wom7web/project/client-profile.json (optional, client_scoped: true, 14/14 gates verified by client_profile_check.py) and wired design-system-check into client_check.py. Verified by test_t183_design_system_sdlc.py (10/10 passing).)
+- **T212** — Portable w0m Core CLI Toolchain & just Recipe Distribution via wom7skills Claude Plugin (done (AC1–AC5 verified))
+- **T269** — Research `.mcpb` / `.dxt` as a packaging format for w0m skills and tools — and establish first whether we have anything shaped like what it packages (done (AC1–AC7 verified))
 - **T284** — Client-facing knowledge hubs — implement Blueprint A from the hosted-vault research, so a client can read their own architecture, specs and decisions (Completed & verified (Blueprint A shipped))
 - **T344** — Make Telegram connection mandatory for CP clients and w0m team members (Completed & verified)
 - **T432** — Delivery & DevEx measurement: DORA 5-metric cockpit, Agent-DevEx signals, DX Core 4 scorecard, SPACE charter (Completed AC1–AC10 (agy:ant_catalog_dora))
 - **T448** — Type the estate's Python against a real contract: Backstage catalog entities first, then an untyped-code ratchet (Completed all 6 ACs (agy:ant_catalog_dora))
+- **T548** — STATE.md ticket links embed the absolute path of the agent tree that generated them, and die when the tree is removed (Added live_workspace_root() to scripts/tasks_query.py and updated _ticket_href() to always resolve ticket paths under the canonical live estate root (via --git-common-dir / .w0m/work/<tree> stripping) rather than the ephemeral generating agent tree. Added regression and RED-mutation probes to wom7web/project/scripts/tests/test_tasks_render.py and wom7web/project/scripts/tests/test_state_doctor.py.)
+- **T552** — tickets-frontmatter-check is a blocking deploy gate that goes red at midnight, because the hot score includes the ticket's age in weeks (Implemented Option (a): wom7web/project/scripts/tickets_frontmatter_sync.py now computes x_hot_score via hot_score_for_frontmatter(row, include_age=False) (excluding the time-dependent age term from stored frontmatter while tasks_query.load() continues to add parts["age"] on read). Added wom7web/project/scripts/tests/test_tickets_frontmatter.py (5/5 tests green, including multi-date invariance across week boundaries and RED mutation proof) and dropped the midnight caveat from LESSONS.md.)
 
 ## 3. Other open threads (in TASKS.md)
 
