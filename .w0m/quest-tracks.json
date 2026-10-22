@@ -211,24 +211,16 @@
       "epic": "Raid: Governed Client Delivery & Portals",
       "milestone": "Adventure: Cloud Compute Governance, Work-Scoped GitHub & Stage-4 Money",
       "tickets": [
-        "T264",
         "T290",
-        "T305",
-        "T306",
-        "T6",
-        "T61",
-        "T298",
-        "T302",
-        "T308",
-        "T316"
+        "T306"
       ],
-      "status": "open",
+      "status": "in-progress",
       "xp_reward": 650,
       "rarity": "epic",
-      "assigned_developer": null,
-      "attached_agent": null,
-      "worktree": null,
-      "summary": "10 open quests (4 P1, 6 P2; T15, T62, T451 completed): 1945 declaration, Stage-4 Stripe reconciliation, cloud compute governance, work-scoped GitHub identities, and pm/tl dual-manager policy."
+      "assigned_developer": "aleksei@webomage.com",
+      "attached_agent": "antigravity",
+      "worktree": "agent/ant-area7a",
+      "summary": "8/10 quests completed (T264, T305, T6, T61, T298, T302, T308, T316 done; plus T15, T62, T451). 2 remaining quests are 100% code-complete and await owner external auth: T290 (6/7 ACs done — awaits STRIPE_WEBHOOK_SECRET in Stripe dashboard) and T306 (5/7 ACs done — awaits interactive gh auth login for aleksei@webomage.com & elena@webomage.com)."
     },
     {
       "id": "area-8",
