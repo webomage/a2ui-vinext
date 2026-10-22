@@ -225,6 +225,20 @@
     "tasks_surface": {
       "type": "object",
       "minProperties": 1
+    },
+    "cloud_compute": {
+      "type": "object",
+      "required": ["surfaces"],
+      "properties": {
+        "_comment": { "type": "string" },
+        "command": { "type": "string", "minLength": 1 },
+        "test": { "type": "string", "minLength": 1 },
+        "script": { "type": "string", "minLength": 1 },
+        "surfaces": {
+          "type": "object",
+          "minProperties": 1
+        }
+      }
     }
   }
 }

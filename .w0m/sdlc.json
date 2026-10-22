@@ -882,5 +882,69 @@
     "blocking": false,
     "read_only": true,
     "policy": "One canonical stage branch (beta); agents work in isolated agent/<name> worktrees and land via fast-forward/rebase onto origin/beta (AgDR-0032). Preservation-first: never auto-delete or force-push branches."
+  },
+  "cloud_compute": {
+    "_comment": "T305 AC1/AC2/AC3/AC4/AC5/AC6 — Governed inventory of remote cloud compute and agent execution environments. Every surface declares status (governed | retired-unused-or-unlinked), provider, owner, principal, secrets_carried, cost_ceiling_usd, reachability, and rationale/spend_monitor. Read by scripts/cloud_compute_check.py (`just cloud-compute-check`).",
+    "command": "just cloud-compute-check",
+    "test": "just cloud-compute-check-test",
+    "script": "scripts/cloud_compute_check.py",
+    "unmeasurable_boundaries": {
+      "claude_ai_server_config": "UNMEASURABLE — claude.ai/code server-side environment container config has no CLI read endpoint.",
+      "github_app_installations": "UNMEASURABLE — GET /user/installations returns 403 without a GitHub-App user-to-server token."
+    },
+    "surfaces": {
+      "claude-code-web-w0m": {
+        "status": "retired-unused-or-unlinked",
+        "provider": "anthropic-claude-code-web",
+        "owner": "casualuser",
+        "principal": "casualuser",
+        "secrets_carried": "none (0 estate secrets provisioned; Infisical beta secrets never exported to claude.ai/code)",
+        "cost_ceiling_usd": 0,
+        "reachability": "unmeasurable-server-side",
+        "rationale": "Retired/unlinked per T305 AC4: estate agent execution runs in local isolated agent trees (`just agent-tree`) and governed CI/edge runtimes rather than unmanaged Claude Code on the web environments."
+      },
+      "cloudflare-workers-wom7func": {
+        "status": "governed",
+        "provider": "cloudflare-workers",
+        "owner": "webomage",
+        "principal": "service_role (wrangler secret put via sync-cfworkers-secrets)",
+        "repo": "wom7func",
+        "config_path": "wom7func/wrangler.jsonc",
+        "deploy_recipe": "deploy-workers",
+        "secrets_carried": "SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, CLOUDFLARE_ACCOUNT_ID, TELEGRAM_AGENCY_CHANNEL_ID, TELEGRAM_BOT_TOKEN, R2_READONLY_ACCESS_KEY_ID, R2_READONLY_SECRET_ACCESS_KEY",
+        "cost_ceiling_usd": 25,
+        "reachability": "governed-config-and-wrangler",
+        "spend_monitor": "Cloudflare Workers Paid plan cap ($5 base + usage alert)",
+        "rationale": "Asynchronous background workflows, scheduled cron dispatch, and R2 backup freshness watchdog."
+      },
+      "supabase-edge-functions-wom7api": {
+        "status": "governed",
+        "provider": "supabase-edge-runtime",
+        "owner": "webomage",
+        "principal": "service_role / per-function JWT verification (wom7api/supabase/config.toml)",
+        "repo": "wom7api",
+        "config_path": "wom7api/supabase/config.toml",
+        "deploy_recipe": "deploy-functions",
+        "secrets_carried": "Injected from Infisical beta via `just sync-secrets` (scripts/sync_supabase_secrets.py)",
+        "cost_ceiling_usd": 25,
+        "reachability": "governed-config-and-supabase-cli",
+        "spend_monitor": "just supabase-limits",
+        "rationale": "Backend capability layer serving 30+ Deno edge functions for web, cp, join, job, and webhooks."
+      },
+      "github-actions-estate": {
+        "status": "governed",
+        "provider": "github-actions",
+        "owner": "webomage",
+        "principal": "GITHUB_TOKEN (repo-scoped workflow token; CI replaced locally by wom7api/dagger/pipeline.ts)",
+        "repo": "wom7api",
+        "config_path": "wom7api/dagger/pipeline.ts",
+        "deploy_recipe": "branch-hygiene",
+        "secrets_carried": "Zero estate secrets in GitHub Actions (CI runs via local Dagger pipeline and pre-push hooks; production deploys run from owner terminal via Touch ID gate)",
+        "cost_ceiling_usd": 0,
+        "reachability": "governed-workflow-manifests",
+        "spend_monitor": "GitHub Actions disabled / 0 paid runner overage ceiling",
+        "rationale": "Estate CI/CD governance surface (remote GitHub Actions workflows retired in favor of local Dagger pipeline `wom7api/dagger/pipeline.ts` and `just test-prepush`)."
+      }
+    }
   }
 }

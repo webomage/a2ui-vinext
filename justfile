@@ -1353,5 +1353,25 @@ opencode-sync *args:
 opencode-config-test:
     @python3 -m unittest wom7web/project/scripts/tests/test_opencode_config.py
 
+# ── Stripe Reconciliation, Cloud Compute & 4-Identity Selector (T290 / T305 / T306) ──
+stripe-reconcile *args:
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/stripe_reconcile.py {{ args }}
+
+stripe-reconcile-test:
+    @python3 -m pytest wom7api/scripts/tests/test_stripe_reconcile.py -q
+
+cloud-compute-check *args:
+    @python3 scripts/cloud_compute_check.py {{ args }}
+
+cloud-compute-check-test:
+    @python3 -m pytest scripts/tests/test_cloud_compute_check.py -q
+
+gh-identity *args:
+    @python3 scripts/gh_identity_select.py {{ args }}
+
+gh-identity-test:
+    @python3 -m pytest scripts/tests/test_gh_identity_select.py -q
+
+
 
 

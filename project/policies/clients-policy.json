@@ -403,6 +403,26 @@
           "gh_config_dir": "~/.config/gh-elena"
         }
       },
+      "role_assignments": {
+        "aleksei": {
+          "identity_key": "aleksei-personal",
+          "hats": [
+            "tl",
+            "tech.lead"
+          ],
+          "note": "Aleksei acts as Technical Lead (tl / tech.lead) on BridgeRoad; tpm retired per AgDR-0028 / T553."
+        },
+        "elena": {
+          "identity_key": "elena-personal",
+          "hats": [
+            "pm",
+            "project.manager",
+            "dev",
+            "developer"
+          ],
+          "note": "Elena acts as Project Manager (pm / project.manager) and Developer (dev / developer) on BridgeRoad."
+        }
+      },
       "enabled": true,
       "tier_reason": "Elena Shatalova's Upwork engagement for Hadi Alshahrouri; the app repo belongs to a third-party org (BridgeRoad/bridgeroad-app) and w0m writes nothing to it. Skills, tools and the SDLC workflow apply; ticketing does not \u2014 no T-ids, no GitHub mirroring (T265 AC4). The contract lives at the workspace root because that root is now `bridgeroad-w0m`, a repo we own: the alternative was putting .w0m/ inside the client's repository, which happened once and published this estate's Infisical invocation into their org (T294 AC3).",
       "note": "T265 AC3 / T294 AC6 \u2014 declared 2026-09-02, after the tier existed to declare it into. The AGY run's original registration (role: client, root pointing at a non-repo) is preserved at project/clients/bridgeroad/PENDING-registration-T265-AC1.patch as the record of what was held."
@@ -490,6 +510,68 @@
     "PROGRESS.md",
     "DECISIONS.md"
   ],
+  "identities_catalog": {
+    "aleksei-personal": {
+      "operator": "aleksei",
+      "scope": "personal",
+      "git_user_name": "Aleksei Tcelishchev",
+      "git_user_email": "casualuser@gmail.com",
+      "ssh_key": "~/.ssh/id_ed25519_aleksei",
+      "gh_account": "casualuser",
+      "gh_config_dir": "~/.config/gh-w0m",
+      "provisioning_status": "active",
+      "default_hats": [
+        "tl",
+        "tech.lead"
+      ]
+    },
+    "elena-personal": {
+      "operator": "elena",
+      "scope": "personal",
+      "git_user_name": "Elena Shatalova",
+      "git_user_email": "elenashatalova.it@gmail.com",
+      "ssh_key": "~/.ssh/id_ed25519_elena",
+      "gh_account": "Shinagawa-monkey",
+      "gh_config_dir": "~/.config/gh-elena",
+      "provisioning_status": "active",
+      "default_hats": [
+        "pm",
+        "project.manager",
+        "dev",
+        "developer"
+      ]
+    },
+    "aleksei-work": {
+      "operator": "aleksei",
+      "scope": "work",
+      "git_user_name": "Aleksei Tcelishchev",
+      "git_user_email": "aleksei@webomage.com",
+      "ssh_key": "~/.ssh/id_ed25519_aleksei",
+      "gh_account": "aleksei-w0m",
+      "gh_config_dir": "~/.config/gh-aleksei-work",
+      "provisioning_status": "provisioned-dir-pending-gh-login",
+      "default_hats": [
+        "tl",
+        "tech.lead"
+      ]
+    },
+    "elena-work": {
+      "operator": "elena",
+      "scope": "work",
+      "git_user_name": "Elena Shatalova",
+      "git_user_email": "elena@webomage.com",
+      "ssh_key": "~/.ssh/id_ed25519_elena",
+      "gh_account": "elena-w0m",
+      "gh_config_dir": "~/.config/gh-elena-work",
+      "provisioning_status": "provisioned-dir-pending-gh-login",
+      "default_hats": [
+        "pm",
+        "project.manager",
+        "dev",
+        "developer"
+      ]
+    }
+  },
   "tiers": {
     "_comment": "T265 AC2 \u2014 every governance surface decided IN or OUT for the half-managed tier, explicitly. A surface not named is a gap, not a default, so every one of the estate contract's 33 keys appears here plus the surfaces AC2 names that are not contract keys. The organising principle: IN if it describes the project or is read-only and is part of skills/tools/SDLC; OUT if it is ticketing (owner instruction) or requires WRITE access to something that is not ours.",
     "half-managed": {
@@ -638,6 +720,10 @@
         "lessons_surface": {
           "status": "out",
           "reason": "The LESSONS.md earned-rules register is the estate's own (queried by `just lessons`); nothing in this tier reads or requires it from the project."
+        },
+        "cloud_compute": {
+          "status": "out",
+          "reason": "Governs the w0m estate's remote cloud compute and agent execution environments (T305); client compute is tracked via external_services (T272)."
         }
       },
       "non_contract_surfaces": {
@@ -801,6 +887,10 @@
         "lessons_surface": {
           "status": "out",
           "reason": "The LESSONS.md earned-rules register is the estate's own (queried by `just lessons`); nothing in this tier reads or requires it from the project."
+        },
+        "cloud_compute": {
+          "status": "out",
+          "reason": "Governs the w0m estate's remote cloud compute and agent execution environments (T305); client compute is tracked via external_services (T272)."
         }
       },
       "non_contract_surfaces": {

@@ -122,6 +122,46 @@
               "$ref": "#/definitions/identity"
             }
           },
+          "role_assignments": {
+            "type": "object",
+            "description": "T306 AC2/AC4 — Per-project delivery hat assignments mapping operator slug or identity key to canonical office/hat codes (tl/tech.lead, pm/project.manager, dev/developer; tpm retired per AgDR-0028/T553).",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "identity_key",
+                "hats"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "identity_key": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "hats": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "tl",
+                      "tech.lead",
+                      "pm",
+                      "project.manager",
+                      "dev",
+                      "developer",
+                      "devops",
+                      "qa",
+                      "designer",
+                      "client"
+                    ]
+                  }
+                },
+                "note": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "org_slug": {
             "type": "string",
             "pattern": "^[a-z0-9][a-z0-9-]*$",
@@ -248,6 +288,63 @@
         "type": "string"
       },
       "description": "Agent-maintained files whose size is reported per project (T177/T174 linkage). Reported, never judged \u2014 the threshold belongs to the profile gate, not the inventory."
+    },
+    "identities_catalog": {
+      "type": "object",
+      "description": "T306 AC1/AC2/AC5 — Canonical 4-identity catalog (aleksei-personal, elena-personal, aleksei-work, elena-work) with SSH key pointers, GH_CONFIG_DIR isolation directories, and provisioning status.",
+      "minProperties": 4,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "operator",
+          "scope",
+          "git_user_name",
+          "git_user_email",
+          "ssh_key",
+          "gh_account",
+          "gh_config_dir",
+          "provisioning_status"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "operator": {
+            "type": "string",
+            "enum": ["aleksei", "elena"]
+          },
+          "scope": {
+            "type": "string",
+            "enum": ["personal", "work"]
+          },
+          "git_user_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "git_user_email": {
+            "type": "string",
+            "minLength": 3
+          },
+          "ssh_key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "gh_account": {
+            "type": "string",
+            "minLength": 1
+          },
+          "gh_config_dir": {
+            "type": "string",
+            "minLength": 1
+          },
+          "provisioning_status": {
+            "type": "string",
+            "enum": ["active", "provisioned-dir-pending-gh-login"]
+          },
+          "default_hats": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
     },
     "tiers": {
       "type": "object",
