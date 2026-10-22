@@ -220,6 +220,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--check", action="store_true", help="fail if the committed index is stale")
+    ap.add_argument("--write", action="store_true", help="write the index (default when --check is not set)")
     a = ap.parse_args()
 
     rows = harvest() + agdr_records()

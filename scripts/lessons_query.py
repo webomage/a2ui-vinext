@@ -121,16 +121,16 @@ def find_lessons_file(start_path: Path | None = None) -> Path:
     return canonical
 
 
-def parse_lessons(lessons_path: Path) -> list[Lesson]:
-    """Parse LESSONS.md into structured Lesson records."""
+def _parse_lessons_file(lessons_path: Path, default_sec_num: int = 0, default_sec_name: str = "Preamble") -> list[Lesson]:
+    """Parse a single markdown file containing one or more `### ...` lesson entries."""
     text = lessons_path.read_text(encoding="utf-8")
     lines = text.splitlines()
 
     section_re = re.compile(r"^##\s+(\d+)\.\s+(.*)")
     heading_re = re.compile(r"^###\s+(.*)")
 
-    current_section_num = 0
-    current_section_name = "Preamble"
+    current_section_num = default_sec_num
+    current_section_name = default_sec_name
 
     lessons: list[Lesson] = []
     current_title: str | None = None
@@ -207,6 +207,80 @@ def parse_lessons(lessons_path: Path) -> list[Lesson]:
 
     flush_lesson()
     return lessons
+
+
+def parse_lessons(lessons_path: Path) -> list[Lesson]:
+    """Parse LESSONS.md and/or a directory of keyed per-lesson `.md` files (T531 AC2)."""
+    if lessons_path.is_dir():
+        lessons: list[Lesson] = []
+        for entry in sorted(lessons_path.glob("*.md"), key=lambda p: p.name):
+            lessons.extend(_parse_lessons_file(entry))
+        return lessons
+
+    lessons = _parse_lessons_file(lessons_path)
+    # Also load keyed per-lesson drop-in files from sibling `project/lessons/` or `lessons.d/`
+    for rel_dir in ("project/lessons", "lessons.d"):
+        dropin_dir = lessons_path.parent / rel_dir
+        if dropin_dir.is_dir():
+            for entry in sorted(dropin_dir.glob("*.md"), key=lambda p: p.name):
+                lessons.extend(_parse_lessons_file(entry))
+    return lessons
+
+
+def record_lesson(
+    lessons_dir: Path,
+    key: str,
+    title: str,
+    body: str,
+    *,
+    section_num: int = 3,
+    section_name: str = "Gates, Tests & Verification",
+    date_ticket: str = "",
+    generalisation: str = "",
+    tell: str = "",
+) -> Path:
+    """Atomically write a keyed lesson file (`<lessons_dir>/<key>.md`) using O_CREAT | O_EXCL (T531 AC2).
+
+    Two concurrent agents recording lessons write independent keyed files and never share an EOF anchor.
+    """
+    import os
+
+    lessons_dir = Path(lessons_dir)
+    lessons_dir.mkdir(parents=True, exist_ok=True)
+    safe_key = re.sub(r"[^a-zA-Z0-9._-]+", "-", key.strip()).strip("-")
+    if not safe_key:
+        raise ValueError("lesson key must not be empty")
+
+    target = lessons_dir / f"{safe_key}.md"
+    fd = os.open(str(target), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+    try:
+        lines = [
+            f"## {section_num}. {section_name}",
+            "",
+            f"### {title.strip()}",
+        ]
+        if date_ticket:
+            dt_line = date_ticket.strip()
+            if not dt_line.startswith("**"):
+                dt_line = f"**{dt_line}**"
+            lines.append(dt_line)
+        if body:
+            lines.append(body.strip())
+        if generalisation:
+            gen_line = generalisation.strip()
+            if not (gen_line.startswith("⇒") or gen_line.startswith("=>")):
+                gen_line = f"⇒ {gen_line}"
+            lines.append(gen_line)
+        if tell:
+            tell_line = tell.strip()
+            if not tell_line.startswith("⭐"):
+                tell_line = f"⭐ **The tell:** {tell_line}"
+            lines.append(tell_line)
+        content = "\n".join(lines) + "\n"
+        os.write(fd, content.encode("utf-8"))
+    finally:
+        os.close(fd)
+    return target
 
 
 def filter_lessons(

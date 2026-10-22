@@ -25,6 +25,9 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 
 ## Non-negotiables
 
+- **Create or claim the ticket (`T##`) BEFORE writing or committing non-trivial code — never backfill tickets retroactively (T129 AC3/AC4).**
+  - **Non-trivial work** (any `feat`, `fix`, `refactor`, `perf`, `test`, `security`, or `build` commit, or any change touching >1 file of substantive code, migrations, contracts, or runtime behaviour) MUST start by creating (`w0m-sdlc-new`) or claiming (`w0m-sdlc-start`) a `.tasks/T##.md` ticket BEFORE implementation begins, and every commit must reference `T##` (enforced by `scripts/conventional_commit.py` / `just commit-msg-check`).
+  - **Trivial work** (`chore`, `docs`, `style`, `ci`, `revert` commits limited to single-file doc typos, `STATE.md` / generated index refreshes, or comment-only edits) is exempt from ticket creation, but the commit-msg gate rejects unticketed `chore:`/`docs:` commits that stage substantive code or migrations (`.w0m/sdlc.json → change_classification`).
 - **Never `--no-verify`.** Hooks are the gate; fix the finding instead.
 - **Collaborative worktree safety & zero blanket git discards.**
   The working tree is a **shared concurrent workspace** used simultaneously by human developers, Claude Code, Antigravity, and background agents (T235).

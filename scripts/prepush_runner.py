@@ -445,7 +445,7 @@ def cmd_run_typecheck(args: argparse.Namespace) -> int:
             cmd = ["sh", "-c", cmd_template.format(app=app)]
         else:
             cmd = ["pnpm", "--filter", app, "exec", "astro", "check"]
-        proc = subprocess.run(cmd, cwd=web_root, capture_output=True, text=True, env=env)
+        proc = subprocess.run(cmd, cwd=web_root, stdin=subprocess.DEVNULL, capture_output=True, text=True, env=env)
         dur = time.monotonic() - t0
         return app, proc.returncode, dur, (proc.stdout or "") + (proc.stderr or "")
 
@@ -458,10 +458,19 @@ def cmd_run_typecheck(args: argparse.Namespace) -> int:
             results_by_app[app_name] = (rc, dur, out)
 
     failed_apps: list[str] = []
+    total_svelte = 0
     for app in apps:
         rc, dur, out = results_by_app[app]
         mark = "✅" if rc == 0 else "❌"
+        app_src = web_root / "apps" / app / "src"
+        svelte_count = sum(1 for _ in app_src.rglob("*.svelte")) if app_src.is_dir() else 0
+        total_svelte += svelte_count
         print(f"  {mark} [typecheck:{app}] ({dur:.1f}s)", flush=True)
+        print(
+            f"     [typecheck:{app}] scope: astro check covers .astro/.ts; "
+            f"{svelte_count} .svelte file(s) excluded by astro check -> gated by svelte-typecheck-ratchet",
+            flush=True,
+        )
         if out.strip():
             print(out.rstrip(), flush=True)
         if rc != 0:
@@ -476,7 +485,19 @@ def cmd_run_typecheck(args: argparse.Namespace) -> int:
             flush=True,
         )
         return 1
-    print(f"  ✅ typecheck: all {len(apps)} apps passed in {total_dur:.1f}s (concurrency={concurrency})", flush=True)
+
+    if not cmd_template:
+        svelte_ratchet = web_root / "project" / "scripts" / "svelte_typecheck_ratchet.py"
+        if svelte_ratchet.is_file():
+            sr = subprocess.run([sys.executable, str(svelte_ratchet), "--web-root", str(web_root)], cwd=web_root)
+            if sr.returncode != 0:
+                return sr.returncode
+
+    print(
+        f"  ✅ typecheck: all {len(apps)} apps passed in {total_dur:.1f}s (concurrency={concurrency}; "
+        f"{total_svelte} .svelte file(s) excluded by astro check -> gated by svelte-typecheck-ratchet)",
+        flush=True,
+    )
     return 0
 
 

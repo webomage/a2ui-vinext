@@ -212,6 +212,8 @@
   "conventions": {
     "commit_style": "conventional",
     "reference_ticket_in_commit": true,
+    "ticket_before_code": true,
+    "anti_retroactive_ticket": true,
     "never_skip_hooks": true,
     "no_coauthor_trailer": true,
     "tool_ladder": [
@@ -221,6 +223,52 @@
       "typescript",
       "bash-oneliner"
     ]
+  },
+  "change_classification": {
+    "_comment": "T129 AC3 — structural boundary between non-trivial work (requires T## ticket created/claimed BEFORE code is written and full w0m-sdlc-* pipeline) and trivial work (exempt from ticket creation when strictly non-code/state/typo maintenance).",
+    "non_trivial": {
+      "requires_ticket_before_code": true,
+      "requires_sdlc_lifecycle": true,
+      "commit_types": [
+        "feat",
+        "fix",
+        "refactor",
+        "perf",
+        "test",
+        "security",
+        "build"
+      ],
+      "criteria": [
+        "Touches >1 file of substantive code, runtime configuration, or test suites",
+        "Adds or modifies a feature, behaviour, API endpoint, or CLI command",
+        "Modifies a database schema, Supabase migration, or RLS policy",
+        "Changes a cross-repo contract, policy schema, or security boundary",
+        "Resolves a bug, audit finding, or technical-debt item"
+      ]
+    },
+    "trivial": {
+      "requires_ticket_before_code": false,
+      "requires_sdlc_lifecycle": false,
+      "exempt_commit_types": [
+        "chore",
+        "docs",
+        "style",
+        "ci",
+        "revert"
+      ],
+      "criteria": [
+        "Single-file documentation typo or prose clarification with zero runtime or contract impact",
+        "Mechanical STATE.md / handoff rotation or generated index refresh",
+        "Comment-only or formatting-only adjustment with zero AST/behaviour change"
+      ],
+      "anti_dodge_rule": "Exempt commit types (`chore`, `docs`, `style`, `ci`, `revert`) MUST NOT stage substantive code (`.ts`, `.astro`, `.svelte`, `.py`, `.rs`, `.sql`, `.sh`, `.tf`) or migration/runtime paths without a `T##` ticket reference."
+    },
+    "anti_retroactive_rule": "Tickets (`T##`) MUST be created (`w0m-sdlc-new`) or claimed (`w0m-sdlc-start`) BEFORE writing or committing implementation code. Retroactive ticket backfilling after shipping code is a protocol violation; if discovered, the ticket must record explicit `Backfilled:` provenance.",
+    "commit_msg_gate": {
+      "script": "scripts/conventional_commit.py",
+      "recipe": "just commit-msg-check",
+      "ticket_pattern": "\\bT[0-9]+\\b"
+    }
   },
   "lifecycle": [
     "new",

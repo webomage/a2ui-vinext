@@ -70,6 +70,7 @@
         "toolset-status": "toolset-status",
         "hooks-check": "hooks-check",
         "typecheck-ratchet": "typecheck-ratchet",
+        "svelte-typecheck-ratchet": "svelte-typecheck-ratchet",
         "graph-global": "graph-global",
         "graph-health": "graph-health",
         "graph-docs": "graph-docs",
@@ -78,9 +79,17 @@
         "mcp-ratchet": "mcp-ratchet",
         "mcp-ratchet-test": "mcp-ratchet-test",
         "sdlc-trace": "sdlc-trace",
-        "dep-licenses-check": "dep-licenses-check"
+        "dep-licenses-check": "dep-licenses-check",
+        "lint": "lint-staged",
+        "fmt": "fmt-staged",
+        "fmt-check": "fmt-astro-staged",
+        "scan": "semgrep-staged"
       },
       "gates": {
+        "lint": "pre-commit",
+        "fmt": "pre-commit",
+        "fmt-check": "pre-commit",
+        "scan": "pre-commit",
         "typecheck": "pre-push",
         "docs-check": "pre-push",
         "state-check": {
@@ -134,6 +143,10 @@
         "typecheck-ratchet": {
           "phase": "pre-push",
           "reason": "T149 / TECH-DEBT D6 — `join` (12) cannot pass `astro check`, so it is ratcheted rather than gated — `job` GRADUATED 2026-08-10 (107 → 0, given the standalone tsconfig it never had) and moved into `just typecheck`: the count may FALL, never RISE. pre-push and BLOCKING because a ratchet nobody must obey stops nothing, and leaving these apps ungated is precisely how `job` drifted 104 → 107 unnoticed. ⚠️ COST: ~26s (join 6.7 + job 19.7), measured 2026-07-27 — deliberately NOT path-scoped to apps/join|job, because their tsconfigs reach into ../cp/src/** and repo-root files, so a change elsewhere can move their counts. The way to make this cheap is to fix those tsconfig boundaries (T104c), not to narrow the trigger."
+        },
+        "svelte-typecheck-ratchet": {
+          "phase": "pre-push",
+          "reason": "T278 AC2/AC3/AC4/AC5 — `astro check` walks `.astro` and `.ts` only and silently skips `.svelte` components (140 files across cp/web/join/job/demo). Enforces a downward-only baseline (`project/svelte-typecheck-baseline.json`) via `svelte-check` across all 5 apps at pre-push so Svelte type errors may fall, never rise."
         },
         "graph-global": {
           "phase": "pre-push",

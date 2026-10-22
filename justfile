@@ -764,8 +764,23 @@ agent-tree-land *args:
 agent-tree-remove name *args:
     @python3 wom7web/project/scripts/agent_tree.py remove {{ name }} {{ args }}
 
+agent-tree-prune:
+    @python3 wom7web/project/scripts/agent_tree.py prune
+
 agent-tree-test:
     @python3 -m pytest wom7web/project/scripts/tests/test_agent_tree.py -q -p no:cacheprovider
+
+t531-layers-test:
+    @python3 -m pytest wom7web/project/scripts/tests/test_t531_layers.py -q -p no:cacheprovider
+
+[no-cd]
+[positional-arguments]
+commit *args:
+    @python3 "{{justfile_directory()}}/scripts/commit_by_path.py" "$@"
+
+[positional-arguments]
+ticket-new *args:
+    @python3 "{{justfile_directory()}}/scripts/ticket_new.py" "$@"
 
 # T564 — virtual agent identity (`agent_id`) and cross-worktree ticket claim/tagging system.
 agent-id *args:
@@ -1151,6 +1166,12 @@ test-all:
 typecheck *args:
     @just --justfile wom7web/justfile typecheck {{ args }}
 
+svelte-typecheck-ratchet *args:
+    @cd wom7web && python3 project/scripts/svelte_typecheck_ratchet.py {{ args }}
+
+svelte-typecheck-ratchet-test:
+    @cd wom7web && pytest -q project/scripts/tests/test_svelte_typecheck_ratchet.py
+
 suites-drift *args:
     @python3 scripts/run_suites.py --drift {{ args }}
 
@@ -1371,6 +1392,15 @@ gh-identity *args:
 
 gh-identity-test:
     @python3 -m pytest scripts/tests/test_gh_identity_select.py -q
+
+# ── Git Hook Recipes & Commit-Msg T## Gate (T129 / T386) ─────────────────────
+[no-cd]
+[positional-arguments]
+commit-msg-check *args:
+    @python3 "{{justfile_directory()}}/scripts/conventional_commit.py" "$@"
+
+t129-t386-hooks-test:
+    @python3 wom7web/project/scripts/tests/test_t129_t386_hooks.py
 
 
 

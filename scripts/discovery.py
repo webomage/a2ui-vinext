@@ -229,6 +229,8 @@ COMMAND_ROLES = frozenset({
     "hooks-check",
     # T149 / D6 — type-error ratchet for apps not yet gated at zero. The count may fall, never rise.
     "typecheck-ratchet",
+    # T278 — downward-only .svelte type-error ratchet across all 5 wom7web apps via svelte-check.
+    "svelte-typecheck-ratchet",
     # T154 — HOST exposure, not stack build: `mcp-exposure` inventories every listening socket and
     # asks whether it is usable WITHOUT credentials; `mcp-ratchet` gates that against the declared
     # baseline (may shrink, never grow); `mcp-ratchet-test` is its fixture-only regression proof.
@@ -444,14 +446,14 @@ def python_deps(stack_root: Path, repo: Path) -> set[str]:
 
                 data = tomllib.loads(read_text(pyproject) or "")
                 for spec in data.get("project", {}).get("dependencies", []) or []:
-                    names.add(re.split(r"[<>=!~\[; ]", spec, 1)[0].strip())
+                    names.add(re.split(r"[<>=!~\[; ]", spec, maxsplit=1)[0].strip())
             except Exception:  # noqa: BLE001
                 pass
         for req in base.glob("requirements*.txt"):
             for line in (read_text(req) or "").splitlines():
                 s = line.strip()
                 if s and not s.startswith(("#", "-")):
-                    names.add(re.split(r"[<>=!~\[; ]", s, 1)[0].strip())
+                    names.add(re.split(r"[<>=!~\[; ]", s, maxsplit=1)[0].strip())
     return {n for n in names if n}
 
 

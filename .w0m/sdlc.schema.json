@@ -21,6 +21,7 @@
     "quality_gates",
     "tech_debt",
     "conventions",
+    "change_classification",
     "lifecycle",
     "state_surface",
     "lessons_surface",
@@ -123,6 +124,28 @@
     "conventions": {
       "type": "object",
       "minProperties": 1
+    },
+    "change_classification": {
+      "type": "object",
+      "required": ["non_trivial", "trivial", "anti_retroactive_rule", "commit_msg_gate"],
+      "properties": {
+        "non_trivial": {
+          "type": "object",
+          "required": ["requires_ticket_before_code", "requires_sdlc_lifecycle", "commit_types", "criteria"]
+        },
+        "trivial": {
+          "type": "object",
+          "required": ["requires_ticket_before_code", "requires_sdlc_lifecycle", "exempt_commit_types", "criteria", "anti_dodge_rule"]
+        },
+        "anti_retroactive_rule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commit_msg_gate": {
+          "type": "object",
+          "required": ["script", "recipe", "ticket_pattern"]
+        }
+      }
     },
     "lifecycle": {
       "type": "array",

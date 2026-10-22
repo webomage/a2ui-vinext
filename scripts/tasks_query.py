@@ -1176,23 +1176,48 @@ EPIC_ROLLUP = re.compile(r"ROADMAP\s*§\s*(\d+)")
 _SLUG_TO_ROADMAP: dict[str, str] | None = None
 
 
-def _load_slug_to_roadmap() -> dict[str, str]:
+def parse_roadmap_epic_slugs(rm_path: pathlib.Path | None = None) -> dict[str, str]:
+    """Return {section_id: slug} parsed directly from `> **Epic slug:**` lines in ROADMAP.md (T531 AC2)."""
+    target = rm_path
+    if target is None:
+        target = WORKSPACE_ROOT / "ROADMAP.md" if (WORKSPACE_ROOT / "ROADMAP.md").is_file() else WEB_ROOT / "ROADMAP.md"
+    if not target.is_file():
+        return {}
+    epics: dict[str, str] = {}
+    current_sec: str | None = None
+    for line in target.read_text(encoding="utf-8", errors="replace").splitlines():
+        m_sec = re.match(r"^##\s+(\d+)\.", line)
+        if m_sec:
+            current_sec = m_sec.group(1)
+            continue
+        m_slug = re.match(r"^>\s*\*\*Epic slug[^*]*\*\*:?\s*[`\"]([a-z0-9-]+)[`\"]", line, re.I)
+        if m_slug and current_sec and current_sec not in epics:
+            epics[current_sec] = m_slug.group(1).lower()
+            continue
+        m_sub = re.match(
+            r"^\*\s+\*\*(\d+\.\d+)\s+.*?\*\*.*?\*\*Epic slug:\*\*\s*[`\"]([a-z0-9-]+)[`\"]",
+            line,
+            re.I,
+        )
+        if m_sub:
+            epics[m_sub.group(1)] = m_sub.group(2).lower()
+    return epics
+
+
+def _load_slug_to_roadmap(rm_path: pathlib.Path | None = None) -> dict[str, str]:
     global _SLUG_TO_ROADMAP
+    if rm_path is not None:
+        return {slug: f"ROADMAP §{sec}" for sec, slug in parse_roadmap_epic_slugs(rm_path).items()}
     if _SLUG_TO_ROADMAP is not None:
         return _SLUG_TO_ROADMAP
-    _SLUG_TO_ROADMAP = {}
-    try:
-        rm_path = WORKSPACE_ROOT / "ROADMAP.md" if (WORKSPACE_ROOT / "ROADMAP.md").is_file() else WEB_ROOT / "ROADMAP.md"
-        rm = rm_path.read_text()
-        for m in re.finditer(r"(?:##|\*\*)\s*(\d+(?:\.\d+)?)\.?\s*.*?(?:\n[>\s*]*)?(?:\*\*Epic slug:\*\*\s*[`\"]([a-z0-9-]+)[`\"])", rm, re.I):
-            sec, slug = m.group(1), m.group(2).lower()
-            _SLUG_TO_ROADMAP[slug] = f"ROADMAP §{sec}"
-    except Exception:
-        pass
+    _SLUG_TO_ROADMAP = {
+        slug: f"ROADMAP §{sec}"
+        for sec, slug in parse_roadmap_epic_slugs().items()
+    }
     return _SLUG_TO_ROADMAP
 
 
-def epic_key(epic: str) -> str:
+def epic_key(epic: str, rm_path: pathlib.Path | None = None) -> str:
     """Roll `ROADMAP §13.2 — skills platform` up to `ROADMAP §13`, or map epic slug to ROADMAP section.
 
     Deliberate: §13, §13.2, §13.3 and `§13 — platform tooling (child of T149)` are four spellings
@@ -1202,7 +1227,7 @@ def epic_key(epic: str) -> str:
     m = EPIC_ROLLUP.search(epic or "")
     if m:
         return f"ROADMAP §{m.group(1)}"
-    slugs = _load_slug_to_roadmap()
+    slugs = _load_slug_to_roadmap(rm_path)
     if epic and epic.lower() in slugs:
         sec = slugs[epic.lower()]
         m_slug = EPIC_ROLLUP.search(sec)
@@ -1371,15 +1396,9 @@ def load_plan(epic: str | None = None,
             clean_q = re.sub(r"^(ROADMAP\s*)?§?\s*", "", q, flags=re.I).strip()
             roadmap_slugs: set[str] = set()
             if re.fullmatch(r"\d+(\.\d+)?", clean_q):
-                try:
-                    rm_path = WORKSPACE_ROOT / "ROADMAP.md" if (WORKSPACE_ROOT / "ROADMAP.md").is_file() else WEB_ROOT / "ROADMAP.md"
-                    rm = rm_path.read_text()
-                    for m in re.finditer(r"(?:##|\*\*)\s*(\d+(?:\.\d+)?)\.?\s*.*?(?:\n[>\s*]*)?(?:\*\*Epic slug:\*\*\s*[`\"]([a-z0-9-]+)[`\"])", rm, re.I):
-                        sec, slug = m.group(1), m.group(2).lower()
-                        if sec == clean_q or sec.startswith(clean_q + "."):
-                            roadmap_slugs.add(slug)
-                except Exception:
-                    pass
+                for sec, slug in parse_roadmap_epic_slugs().items():
+                    if sec == clean_q or sec.startswith(clean_q + "."):
+                        roadmap_slugs.add(slug)
 
             matched = []
             for t in all_t:

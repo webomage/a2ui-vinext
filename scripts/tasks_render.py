@@ -253,7 +253,11 @@ def render_tasks_md(
     output_path.write_text(result, encoding="utf-8")
 
     # Maintain backward-compatible symlink at wom7web/TASKS.md if compiling to root TASKS.md
-    if output_path.resolve() == (WORKSPACE_ROOT / "TASKS.md").resolve() and WEB_ROOT.is_dir():
+    if (
+        WEB_ROOT != WORKSPACE_ROOT
+        and output_path.resolve() == (WORKSPACE_ROOT / "TASKS.md").resolve()
+        and WEB_ROOT.is_dir()
+    ):
         web_tasks = WEB_ROOT / "TASKS.md"
         if not web_tasks.is_symlink() or not web_tasks.resolve().is_file():
             if web_tasks.exists() or web_tasks.is_symlink():

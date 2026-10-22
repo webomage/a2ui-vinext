@@ -101,8 +101,16 @@ AREA_CLOSED = bool(_VOCAB["area"].get("closed"))
 # and only a check pinned to the DECLARED vocabulary can settle it.
 VALID_REPO = set(_VOCAB["repo"]["values"])
 
-# ── epic & milestone (T239 AC1, AC3b, AC5) ──────────────────────────────────
-VALID_EPIC = set((_VOCAB.get("epic") or {}).get("values", []))
+# ── epic & milestone (T239 AC1, AC3b, AC5, T531 AC2) ────────────────────────
+def valid_epics(roadmap_path: Path | None = None) -> set[str]:
+    """Return canonical epic slugs from ROADMAP.md `> **Epic slug:**` lines (T531 AC2)."""
+    from_roadmap = set(tq.parse_roadmap_epic_slugs(roadmap_path).values())
+    if roadmap_path is not None:
+        return from_roadmap
+    return from_roadmap | set((_VOCAB.get("epic") or {}).get("values", []))
+
+
+VALID_EPIC = valid_epics()
 EPIC_ALIASES = (_VOCAB.get("epic") or {}).get("aliases", {})
 EPIC_CLOSED = bool((_VOCAB.get("epic") or {}).get("closed"))
 

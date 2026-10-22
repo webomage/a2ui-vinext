@@ -43,6 +43,7 @@
         "toolset-status",
         "typecheck",
         "typecheck-ratchet",
+        "svelte-typecheck-ratchet",
         "version-check",
         "version-stamp"
       ],

@@ -58,6 +58,17 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      # T527 AC4 — committing a .tasks/T*.md file must never leave TASKS.md without a row for it.
+      # Automatically runs tasks_render.py + git add TASKS.md when a row is missing, and fails closed
+      # if any .tasks/T*.md still lacks a board row in TASKS.md.
+      - id: ticket-row-check
+        name: Ensure every .tasks/T*.md ticket has a row in TASKS.md (T527 AC4)
+        entry: python3 scripts/ticket_row_check.py
+        language: system
+        files: ^(\.tasks/T\d+\.md|TASKS\.md)$
+        pass_filenames: false
+        stages: [pre-commit]
+
       - id: tickets-frontmatter
         name: Refresh ticket frontmatter (derived x_* fields)
         entry: sh -c 'python3 wom7web/project/scripts/tickets_frontmatter_sync.py --porcelain | xargs -r git add'
