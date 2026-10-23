@@ -2,6 +2,26 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.22-1792719973
+_First deployed: 2026-10-23 02:00:07.053834+00_
+
+### Features
+- **estate**: add W0M_ROOT fail-closed resolver, AgDR-0041, and close T274/T340/T427/T437/T438 (T274, T340, T427, T437, T438) ([T274](file:///.tasks/T274.md), [T340](file:///.tasks/T340.md), [T427](file:///.tasks/T427.md), [T437](file:///.tasks/T437.md), [T438](file:///.tasks/T438.md))
+- **decisions,tasks**: record AgDR-0038/AgDR-0039 and close T36, T220, T550, T98 (T36, T220, T550, T98) ([T36](file:///.tasks/T36.md), [T220](file:///.tasks/T220.md), [T550](file:///.tasks/T550.md), [T98](file:///.tasks/T98.md))
+- **sdlc**: close Track 2 gate integrity, hook runner, svelte typecheck, and multi-agent landing tickets (T104, T129, T278, T386, T408, T527, T531) ([T104](file:///.tasks/T104.md), [T129](file:///.tasks/T129.md), [T278](file:///.tasks/T278.md), [T386](file:///.tasks/T386.md), [T408](file:///.tasks/T408.md), [T527](file:///.tasks/T527.md), [T531](file:///.tasks/T531.md))
+- **sdlc**: close Wave 1 Track 2 tickets and harden audit/debt/suite gates (T43, T225, T241, T276, T328, T331, T385, T549) ([T43](file:///.tasks/T43.md), [T225](file:///.tasks/T225.md), [T241](file:///.tasks/T241.md), [T276](file:///.tasks/T276.md), [T328](file:///.tasks/T328.md), [T331](file:///.tasks/T331.md), [T385](file:///.tasks/T385.md), [T549](file:///.tasks/T549.md))
+- **T6,T61,T290,T305,T306**: cloud compute governance, 4-identity selector, and ticket tracking ([T6](file:///.tasks/T6.md), [T61](file:///.tasks/T61.md), [T290](file:///.tasks/T290.md), [T305](file:///.tasks/T305.md), [T306](file:///.tasks/T306.md))
+- **governance**: close Area 7A client governance, non-vacuous deps & boundary tickets (T264, T298, T302, T308, T316) ([T264](file:///.tasks/T264.md), [T298](file:///.tasks/T298.md), [T302](file:///.tasks/T302.md), [T308](file:///.tasks/T308.md), [T316](file:///.tasks/T316.md))
+
+### Fixes
+- **deps**: close T566 @astrojs/cloudflare 14.3.4 linkage & preflight/pre-push gates (T566) ([T566](file:///.tasks/T566.md))
+- **tasks**: add space before YAML comment on status: done in T116 & T293 (T333) ([T116](file:///.tasks/T116.md), [T293](file:///.tasks/T293.md), [T333](file:///.tasks/T333.md))
+- **infisical,typing**: resolve .infisical.yaml link lookup and type json.loads (T429, T448) ([T429](file:///.tasks/T429.md), [T448](file:///.tasks/T448.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `edbd553` | 2026-10-23 02:00:07.053834+00 |
+
 ## 2026.10.22-1792676871
 _First deployed: 2026-10-22 14:01:26.618232+00_
 
