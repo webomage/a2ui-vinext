@@ -2,6 +2,18 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.23-1792798998
+_First deployed: 2026-10-23 23:52:39.980812+00_
+
+### Features
+- **tools**: prepare upstream Graphify-Labs/graphify PR for global status, sync, and commit provenance (T570) ([T570](file:///.tasks/T570.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `323c89a` | 2026-10-23 23:52:39.980812+00 |
+| cp | `323c89a` | 2026-10-23 23:51:51.752851+00 |
+| web | `323c89a` | 2026-10-23 23:49:48.74264+00 |
+
 ## 2026.10.23-1792786764
 _First deployed: 2026-10-23 20:38:08.946115+00_
 
