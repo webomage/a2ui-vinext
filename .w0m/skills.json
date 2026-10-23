@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/casualuser/wom7skills/beta/skills.schema.json",
+  "$schema": "https://raw.githubusercontent.com/webomage/w0m-skills/beta/skills.schema.json",
   "project": "w0m",
   "skills": {
     "doubt-driven-development": {
