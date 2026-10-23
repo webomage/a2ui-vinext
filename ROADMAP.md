@@ -98,7 +98,7 @@ existed" — both were true until 2026-08-31 and neither is now.** D15 is closed
 and gained a reader (`just decommission-check`), which asserts `SWARM_URL` has stayed gone rather
 than trusting this sentence. The one remaining mention, in `telegram.ts`, is the comment that
 explains the decommission and is declared as an allowed exception with that reason.
-* **Leftover follow-up**: the Telegram bot now has no backend — repoint it to the `agent-consultant` edge function if wanted (`TODO(telegram)` in `telegram.ts`).
+* **Leftover follow-up**: the Telegram bot now has no backend — repoint it to the `w0m-consultant` edge function if wanted (`TODO(telegram)` in `telegram.ts`).
 
 ## 8. wom7mlx Refresh + Fast Rust Gemma Launcher (R&D)
 
@@ -140,7 +140,7 @@ explains the decommission and is declared as an allowed exception with that reas
   3. ✅ **Eval harness** — `wom7api/scripts/ai-eval.ts`; data-picked consultant → `mistral-small-3.1-24b` (live).
   4. ✅ **Tool/function calling** — `submit_service_request → ai_chat lead`, deterministic execution, `normalizeToolCalls` for the 3 CF per-model shapes. Verified live (real lead created).
 * ✅ **Streaming ↔ tool-calling integration (was the 🔴 follow-up)** — `routeChatStream` now forwards tools and, on a tool-call SSE frame, re-issues one non-streaming call for authoritative args (CF streams tool args in unreliable fragments); `processChatQueryStream` executes + emits the confirmation. api `b985b3f`, verified live 2026-07-12 (isolated-session streaming intake 4/4, full email preserved). (TASKS T1.)
-* **Remaining cross-cutting (§4.1, unstarted)**: durable/summarized conversation memory; guardrails via `llama-guard-3-8b`; cost + rate accounting from CF GraphQL (chat logs 0 tokens today). Then per-agent feature depth (§4.2–4.5) + Telegram bridge (also the §7 leftover: repoint the bot to `agent-consultant`).
+* **Remaining cross-cutting (§4.1, unstarted)**: durable/summarized conversation memory; guardrails via `llama-guard-3-8b`; cost + rate accounting from CF GraphQL (chat logs 0 tokens today). Then per-agent feature depth (§4.2–4.5) + Telegram bridge (also the §7 leftover: repoint the bot to `w0m-consultant`).
 * **Funnel linkage**: gap #4's `submit_service_request` is the **intake** stage of the client-conversion funnel (§10). The **registration** stage (`client-register`, lead → CP client) is specced in `2026-07-11-client-conversion-and-contracts` but not built — the tool's confirmation is where the guided-registration offer belongs.
 
 ## 12. WebMCP — Role-Gated Agent Tools Across All Apps (P1, status 2026-07-12)
@@ -151,7 +151,7 @@ explains the decommission and is declared as an allowed exception with that reas
   1. **Shared `@webomage/webmcp`** — `navigator.modelContext` adapter with feature-detection + origin-trial token; **progressive enhancement** (no-op, zero regression where unsupported).
   2. **One tool manifest** (`name`/`params`/`requiredRole`/`endpoint`/`sideEffect`) shared with the server-side LLM tool-calling in `chat-core`, so the browser and server surfaces can't drift (engine-agnostic, AI-AGENTS §1).
   3. **Role-gated registration** across **web / cp / join / job** — only tools the session's role (public/recruit/member/admin/`client`) permits are registered/discoverable; deregister on sign-out/role change.
-  4. **Server stays authoritative (defense in depth)** — each tool is a thin client over an existing RBAC-enforcing edge fn (agent-consultant, guild-api, lead-api, client-api); client gating is UX only; args re-validated server-side.
+  4. **Server stays authoritative (defense in depth)** — each tool is a thin client over an existing RBAC-enforcing edge fn (w0m-consultant, guild-api, lead-api, client-api); client gating is UX only; args re-validated server-side.
   5. **Audit + safety** — every invocation logged (`user/role/tool/args_hash`); write tools require confirmation + per-role rate limits.
 * **Initial catalog**: web → `search_knowledge`, `submit_service_request`, `list_services`; cp → member `claim_quest`/`submit_quest`/`list_bounties`, admin `assign_questmaster`/`approve_payout`/`query_metrics`, client `list_my_requests`/`view_proposal`/`accept_proposal` (gated on the `client` role, T2); join/job → `apply`/`check_application_status`.
 * **Relates to**: #46 CF-hosted MCP server (server-side sibling), the tool-calling engine (T1 done), T2 (`client` role for client-scoped cp tools).

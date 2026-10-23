@@ -40,7 +40,7 @@ CURATED_ELI5: dict[str, str] = {
     "T10": (
         "Our Telegram webhook (`telegram-webhook/index.ts`) receives incoming bot messages, but still has an unfinished "
         "TODO instead of forwarding conversational questions to our AI consultant agent. This ticket wires the Telegram "
-        "bot bridge to `agent-consultant` (`w0m-consultant`) and completes the remaining per-agent persona capabilities "
+        "bot bridge to `w0m-consultant` and completes the remaining per-agent persona capabilities "
         "so users can chat with the consultant directly through Telegram."
     ),
     "T11": (
@@ -334,10 +334,10 @@ CURATED_ELI5: dict[str, str] = {
         "access-control model for multi-trainee group training engagements."
     ),
     "T462": (
-        "Our public sales chatbot (`agent-consultant`) searches our knowledge base (`public.documents` via `pgvector`) "
-        "before answering, but our signed-in Technical Architect agent (`agent-architect`) currently answers from memory "
+        "Our public sales chatbot (`w0m-consultant`) searches our knowledge base (`public.documents` via `pgvector`) "
+        "before answering, but our signed-in Technical Architect agent (`w0m-architect`) previously answered from memory "
         "('zero-shot') without reading our stored architecture blueprints or diagrams. This research ticket measures what "
-        "`agent-architect` actually reads today, checks our privacy rules (`KB-INDEX.md`—never leak private client data "
+        "`w0m-architect` reads, checks our privacy rules (`KB-INDEX.md`—never leak private client data "
         "into public tiers), and delivers a weighted decision on how to connect Architect Mode to our indexed blueprints."
     ),
     "T475": (
@@ -379,11 +379,11 @@ CURATED_ELI5: dict[str, str] = {
         "`w0m-*` estate rebrand verified by `just name-refs --gate`."
     ),
     "T500": (
-        "Right now the names for our AI agents and our AI model aliases collide and confuse readers—for example, the edge "
-        "function is called `agent-architect`, its database persona points to a model alias named `w0m-architect`, and the "
-        "admin agent function is named `chat-internal`. This ticket performs one clean, estate-wide rename so every agent "
-        "persona and edge function is `w0m-<role>` (`w0m-architect`, `w0m-consultant`, `w0m-admin`) and every model alias "
-        "in `ai_models` is `w0m-llm-<role>` (`w0m-llm-architect`, `w0m-llm-consultant`, `w0m-llm-admin`)."
+        "Previously the names for our AI agents and our AI model aliases collided and confused readers—for example, "
+        "agent functions and database personas used legacy prefixes while model aliases used `w0m-<role>`. This ticket "
+        "performs one clean, estate-wide rename so every agent persona and edge function is `w0m-<role>` "
+        "(`w0m-architect`, `w0m-consultant`, `w0m-admin`) and every model alias in `ai_models` is `w0m-llm-<role>` "
+        "(`w0m-llm-architect`, `w0m-llm-consultant`, `w0m-llm-admin`)."
     ),
     "T504": (
         "Historical `.dev.vars` files committed in May 2026 contained credentials that needed rotation after Google flagged "
@@ -483,6 +483,12 @@ CURATED_ELI5: dict[str, str] = {
         "file and reading past YAML frontmatter, tables, and internal acronyms. This ticket adds `just eli5` (`scripts/ticket_eli5.py`) "
         "so passing any ticket ID (`T57`), wildcard (`T5*`, `T*`), or filter (`--area ai`) prints a single plain-English "
         "ELI5 paragraph per ticket, even when bash expands unquoted `T*` in the workspace root."
+    ),
+    "T569": (
+        "Split from T434: while the System One contract (`system_one.py` / `system-one.ts`), 100-ticket held-out benchmark, "
+        "`type_backfill.py` migration, and `hooks-llm-policy.json` shipped on Linux, converting the `Jev`/`Kev`/`Laya` GGUF "
+        "weights to 4-bit Apple MLX (`mlx_lm.convert`) and benchmarking live sub-500ms latency against `omlx` requires "
+        "macOS Apple Silicon hardware and is tracked here."
     ),
 }
 

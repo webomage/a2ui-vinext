@@ -44,6 +44,15 @@ eli5 *args:
 eli5-test:
     @python3 wom7web/project/scripts/tests/test_ticket_eli5.py
 
+system-one-test:
+    @python3 wom7web/project/scripts/tests/test_system_one.py
+
+hooks-llm-check:
+    @python3 wom7web/project/scripts/hooks_llm_check.py
+
+system-one-bench *args:
+    @python3 wom7web/project/scripts/system_one_bench.py {{ args }}
+
 tasks-render *args:
     @python3 scripts/tasks_render.py {{ args }}
 

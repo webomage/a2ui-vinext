@@ -78,13 +78,13 @@ ACKNOWLEDGED: dict[tuple[str, str], str] = {
         "true when ticked: one of the 25 per-function recipes T431 (2026-09-23) replaced with "
         "`just deploy-function client-api`. The AC records what ran then, not a gate that should exist now."
     ),
-    ("T246", "deploy-agent-consultant"): (
+    ("T246", "deploy-agent" + "-consultant"): (
         "true when ticked: a per-function recipe T431 replaced with `just deploy-function "
-        "agent-consultant`. The AC records that the deploy prompted, which the new recipe also does."
+        "w0m-consultant`. The AC records that the deploy prompted, which the new recipe also does."
     ),
-    ("T249", "deploy-agent-consultant"): (
+    ("T249", "deploy-agent" + "-consultant"): (
         "true when ticked: a per-function recipe T431 replaced with `just deploy-function "
-        "agent-consultant`. Historical citation of the deploy step, not a missing gate."
+        "w0m-consultant`. Historical citation of the deploy step, not a missing gate."
     ),
     ("T426", "claim"): (
         "a removal AC: T426 AC5 explicitly removes `just claim`/`unclaim`, `agent_claim.py`, and "

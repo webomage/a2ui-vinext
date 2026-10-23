@@ -139,3 +139,4 @@ Closed debt rows are deleted from the active tables above and recorded in this a
 - **Lint/format findings** — the hooks are the ratchet; the aggregate baseline is D12.
 - **Graph "god-nodes"** — measured as false positives (`Logger`, layouts, Gauge step registries are
   meant to be highly connected). Not a debt signal.
+- **`wom7mlx` Rust port (`wom7-mlx-rs`)** — consolidated at `P3` under [[T184]] (`omlx` is the chosen Apple MLX serving engine; `[patch.crates-io]` override removed from `wom7mlx/wom7mlx/Cargo.toml` per AC6). Revival trigger (AC4/AC7): `wom7mlx` only leaves `P3` if `omlx` cannot satisfy an in-process Rust embedding/inference requirement AND off-the-shelf `mistral.rs` is evaluated first before maintaining custom `mlx-rs` bindings.
