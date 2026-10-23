@@ -8,7 +8,7 @@ scope: oss
 repos: ["wom7web"]
 tickets: ["T437", "T438"]
 supersedes: []
-superseded_by: null
+superseded_by:
 ---
 
 # AgDR-0041: librqbit WebRTC / WebTorrent Transport Architecture and Tauri Desktop Path

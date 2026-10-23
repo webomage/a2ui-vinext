@@ -1,107 +1,77 @@
 ---
 id: AgDR-0012
-title: "Orca/ZeroClaw absorption + wom7*/k7* to w0m rebrand — hold for owner decision"
-timestamp: 2026-09-11T00:00:00Z
-agent: claude-code
-model: claude-sonnet-5
-trigger: audit
-status: proposed
+title: "Mandatory w0m-* estate rebrand and repository migration to github.com/webomage"
+timestamp: 2026-10-22T00:00:00Z
+agent: antigravity
+model: claude-opus-4-6
+trigger: user-prompt
+status: accepted
 superseded_by:
 supersedes:
-ticket:
+ticket: T567
 ---
 
-# AgDR-0012 — Orca/ZeroClaw absorption + estate rebrand: hold for owner decision
+# AgDR-0012 — Mandatory `w0m-*` estate rebrand and repository migration to `github.com/webomage`
 
 ## Y-statement
 
-> In the context of three inbound documents proposing (a) retiring the standalone ZeroClaw daemon
-> in favor of absorbing its capabilities into Orca, and (b) rebranding all `wom7*`/`k7*` estate
-> names to a unified `w0m-*` taxonomy, facing direct overlap with the in-progress [[T153]] (which
-> is building ZeroClaw as a *managed, bidirectional* w0m runtime — the opposite direction) and
-> `wom7open/orca`'s currently ungoverned status, we decided to **record this as a proposed decision
-> point and take no ticketing or execution action**, to avoid either committing to a hard-to-reverse
-> outward-facing rename or silently reversing T153's in-flight direction without owner sign-off,
-> accepting that the proposal sits unactioned until reviewed.
+> In the context of **ten estate repositories and fork remotes still living under personal `github.com/casualuser/*` with fragmented historical naming (`webomage.com`, `api.webomage.com`, `wom7func`, `wom7*`, `k7*`) while `w0m` is the canonical platform brand and `github.com/webomage` is the organization**, facing **a high blast radius across 11 reference classes (git remotes, local folders, `.w0m/sdlc.json`, `stacks-policy.json`, `agent_tree.py`, `release.py`, `install_excludes.py`, Cloudflare Worker scripts, and Infisical paths)**, we decided **to make the `w0m-*` rebrand and migration of all estate repositories to `github.com/webomage/w0m-*` mandatory (with `wom7func` renamed once to `w0m-cf` per [[T491]] Option B, and `k7*` TUIs unified into the `w0m` CLI), executed in 4 atomic, gate-verified stages under [[T567]]**, to achieve **one cohesive `w0m` brand and organization-owned repository topology (`github.com/webomage/w0m*`) without breaking active deploys or renaming `wom7func` twice**, accepting **the staged engineering effort and the requirement that `just name-refs <old-name> --gate` and `T509` root-first decoupling gate the folder cutover**.
 
 ## Context
 
-**Source:** three of six documents from Antigravity session `22fc09aa-07f7-4f3c-8a29-c873e5b5c186`,
-dated 2026-09-11, read in full from `_in/`:
-- `2026-09-11-analysis-orca-vs-zeroclaw-unification.md`
-- `2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md`
-- `2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md`
+Originally recorded as `status: proposed` on 2026-09-11 from three strategy/spec documents (`2026-09-11-analysis-orca-vs-zeroclaw-unification.md`, `2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md`, `2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md`).
 
-**What they propose, combined:**
-1. Deprecate the standalone ZeroClaw Rust daemon; absorb its 4 "gems" (Hermes skill distillation,
-   Honcho ToM memory, w0m SDLC gate interception, visual Tart VM control) directly into Orca
-   (`wom7open/orca`)'s Electron/TypeScript main process.
-2. Rebrand every `wom7*` repo, every `k7*` TUI, and `orca` itself into a unified `w0m-*` naming
-   scheme (`w0m-web`, `w0m-api`, `w0m-orca`, a consolidated `w0m` CLI replacing the `k7*` binaries),
-   in three phases ending in an optional full monorepo consolidation into `casualuser/w0m`.
+On **2026-10-22**, the owner reviewed all 40 AgDRs and locked the decision:
+1. **Rebranding `wom7*`/`k7*` to `w0m-*` and moving all repositories to our GitHub organization is mandatory** (despite its complexity).
+2. Because `github.com/w0m` is occupied by an unrelated third-party GitHub user and `github.com/webomage` is our canonical GitHub Organization (per owner direction 2026-10-18), the target repository namespace is **`github.com/webomage/w0m*`**.
+3. **Hyphenated `w0m-*` naming is locked** for all member repositories and local directories, and **`wom7func` becomes `w0m-cf`** (solving [[T491]] Option B in the same pass so the Cloudflare repo is renamed once rather than twice).
 
-**Measured, checked against the live estate before recording this:**
-- **[[T153]]** ("ZeroClaw as a managed w0m runtime") is `in-progress`, P1, 1/8 AC, with a real spec
-  (`openspec/changes/2026-08-20-zeroclaw-runtime-and-ecosystem-integration`) already under the
-  opposite premise: ZeroClaw stays a standalone runtime, bidirectionally integrated with w0m, used
-  for sandboxed client-project audits — not retired and absorbed into Orca. Proposal 1 above is not
-  additive to T153; it reverses it.
-- **`wom7open/orca` is not declared in `.w0m/sdlc.json` → `repos`** — it has no SDLC governance,
-  no ticket history, and is outside the `wom7*` set this estate's non-negotiables (AGENTS.md) are
-  written against. Absorbing ZeroClaw into it, or renaming it, would be the first governed action
-  taken on that repo.
-- The rebrand's own blast-radius section (in the spec doc) names GitHub remotes/CI secrets, `.agent`/
-  `.claude`/`.opencode` symlinks between `wom7api` and `wom7web`, and `stacks-policy.json` as things
-  that break on a naive rename — i.e. it is self-documented as outward-facing and hard to reverse
-  cleanly.
-- `.w0m/sdlc.json` was **not** re-read line-by-line for this record beyond what earlier verification
-  in this session already covered (repos/lifecycle/conventions) — no new config claim is made here
-  beyond "`orca` is absent from `repos`", which was directly grepped.
+### Target Repository & Directory Mapping
+
+| Current Local Path | Current GitHub Remote | Target Local Path | Target GitHub Remote (`github.com/webomage`) | Stack / Role |
+|---|---|---|---|---|
+| `.` (`@wom` root) | `casualuser/w0m` | `.` (`@wom` root) | **`webomage/w0m`** | Umbrella workspace root & SDLC orchestrator |
+| `wom7web` | `casualuser/webomage.com` | **`w0m-web`** | **`webomage/w0m-web`** | Canonical web monorepo (Astro apps + shared packages) |
+| `wom7api` | `casualuser/api.webomage.com` | **`w0m-api`** | **`webomage/w0m-api`** | Backend API, Supabase migrations, edge functions & workflows |
+| `wom7func` | `casualuser/wom7func` | **`w0m-cf`** | **`webomage/w0m-cf`** | Cloudflare Worker crons & ATS routines (resolves [[T491]]) |
+| `wom7ext` | `casualuser/wom7ext` | **`w0m-ext`** | **`webomage/w0m-ext`** | Browser extensions (Manifest V3 clipper & command runner) |
+| `wom7sec` | `casualuser/wom7sec` | **`w0m-sec`** | **`webomage/w0m-sec`** | Security probes, authz RLS matrix & red-team suite |
+| `wom7skills` | `casualuser/wom7skills` | **`w0m-skills`** | **`webomage/w0m-skills`** | Canonical Agent Skills registry & sync tooling |
+| `wom7mlx` | `casualuser/wom7mlx` | **`w0m-mlx`** | **`webomage/w0m-mlx`** | Apple Silicon MLX local inference subsystem |
+| `wom7ava` | `casualuser/wom7ava` | **`w0m-ava`** | **`webomage/w0m-ava`** | Avatar generation subsystem |
+| `wom7clips` | `casualuser/wom7clips` | **`w0m-clips`** | **`webomage/w0m-clips`** | Media/video clip subsystem |
+| `wom7pr/orca` | `casualuser/orca` | **`w0m-pr/w0m-orca`** | **`webomage/w0m-orca`** | Flagship desktop AI IDE & visual cockpit |
+
+### Developer CLI Consolidation (`k7*` → `w0m`)
+
+- Disjoint `k7*` terminal binaries (`k7d`, `k7s`, `k7c`, `k7llm`, `k7spec`, `k7tg`) converge into subcommands of the unified **`w0m` CLI** (`w0m vm`, `w0m k8s`, `w0m cloud`, `w0m llm`, `w0m spec`, `w0m notify`).
 
 ## Options considered
 
 | Option | Pros | Cons | Verdict |
 |---|---|---|---|
-| Ticket the rebrand + Orca absorption now as new work | Captures the idea while fresh; owner can triage it in the normal queue | Commits scope before owner review; silently conflicts with in-progress T153's opposite direction; tickets an already-ungoverned repo without first deciding to govern it | Rejected |
-| Execute the rename / absorption directly | None that justify skipping review | Hard-to-reverse (GitHub repo renames, CI secrets, symlinks, DB trigger names per the spec's own analysis); zero owner authorization; would reverse T153 mid-flight | Rejected |
-| Drop the proposal, discard the documents | Simplest | Loses a substantive architecture analysis; the "7 repos" naming premise is already factually broken (`@wom` became an 8th repo 2026-09-02), which is a real, correct observation worth keeping | Rejected |
-| Record as a **proposed** AgDR, take no ticket/execution action, surface the T153 conflict explicitly | Preserves the analysis git-durably; makes the conflict with T153 visible to whoever next opens either; forecloses nothing | Proposal sits idle until the owner reviews it | **Adopted** |
+| Reject or indefinitely defer the rebrand | Zero migration churn | Leaves 3 competing naming schemes (`webomage.com`/`wom7*`/`k7*`/`w0m`) and personal `casualuser/*` remotes permanently across the estate | Rejected (Owner 2026-10-22: rebrand & GH move is mandatory) |
+| Compact `w0m*` (`w0mweb`, `w0mapi`, `w0mcf`) | Slightly shorter folder names | Harder to read visually (`w0mmlx`, `w0mskills`) and diverges from `w0m-sdlc-*` / `w0m-orca` hyphenated convention | Rejected |
+| **Hyphenated `w0m-*` under `github.com/webomage` (`webomage/w0m`, `webomage/w0m-web`, `webomage/w0m-api`, `webomage/w0m-cf`, …) executed in 4 atomic stages** | Clean visual hierarchy; aligns with `w0m-sdlc-*` skills; folds [[T491]] (`w0m-cf`) into one rename; staged cutover prevents deploy breakage | Requires disciplined 4-stage execution across 11 reference surfaces | **Accepted (Owner 2026-10-22)** |
 
 ## Decision
 
-Record this as a `status: proposed` AgDR — a decision point, not a decision. No ticket is filed,
-no repo is renamed, no code is written toward absorbing ZeroClaw into Orca, and `wom7open/orca` is
-not added to `.w0m/sdlc.json` governance as a side effect of this record. The three source documents
-are moved from the ephemeral (gitignored) `_in/` tray into `docs/reports/` so their content is
-git-durable, cited from here rather than left as untracked inbox items.
-
-If the owner accepts direction 1 (absorb ZeroClaw into Orca), **T153's spec and status notes need
-real reconciliation**, not a supersession note alone — its 1 already-done AC and its
-bidirectional-integration design would need to be re-evaluated against "ZeroClaw retired" rather
-than assumed compatible.
-
-If the owner accepts direction 2 (rebrand), the first ticket should scope **Phase 1 only** (logical
-aliases in `.w0m/sdlc.json`, no renames) per the source strategy doc's own phased plan — not the
-full three-phase execution in one ticket.
-
-Either direction, or neither, may be chosen independently — they are coupled in the source
-documents but are not logically dependent on each other.
+1. **Status flipped from `proposed` to `accepted` (2026-10-22).** Tracked in **[[T567]]** (with [[T491]] AC1 satisfied by choosing `w0m-cf`).
+2. **Execute in 4 atomic stages to guarantee zero deploy regression:**
+   - **Stage 1 — GitHub Org Transfer & Remote Cutover (Zero Local Path Churn):**
+     - Ensure `webomage` org PAT policy (`<= 366 days` lifetime) and [[T306]] work identities are ready.
+     - Transfer/rename the GitHub repositories from `casualuser/*` to `github.com/webomage/w0m` and `github.com/webomage/w0m-*` (GitHub preserves automatic 301 redirects for git/GHCR).
+     - Repoint `git remote set-url origin` across the live checkout, `~/.w0m/confirmed/w0m`, and `release.py`, keeping local directory names unchanged during Stage 1.
+   - **Stage 2 — Finish Root-First Decoupling ([[T509]]):**
+     - Complete [[T509]] so cross-repo relative symlinks (`wom7web/justfile -> ../wom7api/justfile`, `wom7func/justfile -> ../wom7api/justfile`) are eliminated before any local folder rename.
+   - **Stage 3 — Coordinated Local Directory & Governance Cutover (`wom7*` → `w0m-*`):**
+     - Using `just name-refs <old> --files` before and `just name-refs <old> --gate` after, atomically rename local directories (`wom7web` → `w0m-web`, `wom7api` → `w0m-api`, `wom7func` → `w0m-cf`, `wom7ext` → `w0m-ext`, `wom7sec` → `w0m-sec`, `wom7skills` → `w0m-skills`, `wom7mlx` → `w0m-mlx`, `wom7ava` → `w0m-ava`, `wom7clips` → `w0m-clips`) and update `.w0m/sdlc.json`, `stacks-policy.json`, `layout-policy.json`, `install_excludes.py`, `release.py`, `agent_tree.py`, and `.serena/project.yml`.
+     - Keep PostgreSQL internal identifiers (`wom_*` triggers/functions) and historical migration filenames untouched.
+   - **Stage 4 — Deployed Worker Script Names & `k7*` → `w0m` CLI Convergence:**
+     - Keep Cloudflare Worker script names (`wom7api`, `wom7func` in `wrangler.jsonc`) pinned during Stage 3 so live cron triggers, Durable Objects, and `WORKERS_WEBHOOK_URL` never break; rename Worker scripts only in a dedicated secret-rotation window if desired.
+     - Unify `k7*` developer TUIs into subcommands of the `w0m` CLI.
 
 ## Consequences
 
-**Positive:** the architecture research survives in a durable, reviewable location instead of an
-ephemeral inbox file; the T153 conflict is explicit rather than discovered later as duplicated or
-contradictory work; no irreversible action (rename, retirement) was taken without the person who
-owns that call.
-
-**Negative:** the proposal produces no forward progress until the owner reviews it — three
-substantial documents' worth of analysis sits as a recorded option rather than active work; if the
-owner does want to proceed, the reconciliation work against T153 is real, non-trivial follow-up
-that this record does not do.
-
-## What this does NOT decide
-
-Whether ZeroClaw is retired or kept as a standalone runtime; whether any `wom7*`/`k7*`/`orca` repo
-or tool is renamed; whether `wom7open/orca` becomes an SDLC-governed repo; whether T153's spec or
-scope changes. This record does not modify T153 itself (a one-line cross-reference is added to its
-Status notes pointing here, nothing else).
+- **Positive:** Eliminates the obsolete "7" counter (`wom7*`, `k7*`) and personal `casualuser/*` repo URLs; establishes a single `github.com/webomage/w0m*` identity across all repos, tools, and skills; resolves [[T491]] without a double rename.
+- **Negative / Trade-off:** Every active agent worktree (`~/.w0m/work/*`) must be landed or removed before Stage 3's folder cutover, and all 11 reference classes must pass `just name-refs --gate`.
