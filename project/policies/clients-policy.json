@@ -353,7 +353,7 @@
     {
       "id": "bridgeroad",
       "role": "self-managed",
-      "root": "../../_proj/bridgeroad",
+      "root": "../../!proj/bridgeroad",
       "org_slug": "bridgeroad",
       "project_slug": "bridgeroad-mvp",
       "external_services": [
@@ -430,7 +430,7 @@
     {
       "id": "evercred",
       "role": "self-managed",
-      "root": "../../_proj/Evercred",
+      "root": "../../!proj/Evercred",
       "runtime": {
         "substrate": "tart-linux",
         "guest_name": "evercred"
