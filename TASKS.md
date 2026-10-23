@@ -91,6 +91,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T570](.tasks/T570.md) | **P1** | **Upstream PR to Graphify-Labs/graphify: commit-provenance manifest, settle guard, and global status/sync subcommands** | tooling | — | ✅ **done** |
 | [T568](.tasks/T568.md) | **P2** | **just eli5 T* — plain-English one-paragraph ELI5 ticket explainer CLI & recipe** | web, api, tooling | openspec/changes/archive/2026-10-23-ticket-eli5-cli | ✅ **done** |
 | [T566](.tasks/T566.md) | **P1** | **Catch @astrojs/* adapter ESM export mismatch, engines.node drift, and lockfile build failures at preflight and pre-push** | web | null | ✅ **done** |
 | [T564](.tasks/T564.md) | **P1** | **Virtual agent identity (agent_id) & cross-worktree ticket claim and tagging system** | tooling, web | — | ✅ **done** |
