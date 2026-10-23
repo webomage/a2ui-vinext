@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-t567-stage1` | 0 | **n/a — NO UPSTREAM** | `9f5819a4` |
-| `wom7api` | `agent/agy-t567-stage1` | 0 | **n/a — NO UPSTREAM** | `38b3c90` |
-| `wom7func` | `agent/agy-t567-stage1` | 0 | **n/a — NO UPSTREAM** | `2a1cea5` |
-| `wom7skills` | `agent/agy-t567-stage1` | 0 | **n/a — NO UPSTREAM** | `a489dd0` |
-| `wom7ext` | `agent/agy-t567-stage1` | 0 | **n/a — NO UPSTREAM** | `4534f2f` |
-| `wom7sec` | `agent/agy-t567-stage1` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
-| `wom7mlx/wom7mlx` | `agent/agy-t567-stage1` | 0 | **n/a — NO UPSTREAM** | `660569a` |
+| `wom7web` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `4e579548` |
+| `wom7api` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `fe14dbc` |
+| `wom7func` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `2a1cea5` |
+| `wom7skills` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `6d80b6a` |
+| `wom7ext` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `4534f2f` |
+| `wom7sec` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
+| `wom7mlx/wom7mlx` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `660569a` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 82 open · 567 TASKS.md rows · 206/567 specced (7/82 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 82 open · 568 TASKS.md rows · 207/568 specced (7/82 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T306","T365","T57","T136","T164","T259","T271","T273","T384","T387"],"repos":{"wom7api":{"branch":"agent/agy-t567-stage1","dirty":0,"has_upstream":true,"head":"38b3c90","unpushed":null},"wom7ext":{"branch":"agent/agy-t567-stage1","dirty":0,"has_upstream":true,"head":"4534f2f","unpushed":null},"wom7func":{"branch":"agent/agy-t567-stage1","dirty":0,"has_upstream":true,"head":"2a1cea5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-t567-stage1","dirty":0,"has_upstream":true,"head":"660569a","unpushed":null},"wom7sec":{"branch":"agent/agy-t567-stage1","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/agy-t567-stage1","dirty":0,"has_upstream":true,"head":"a489dd0","unpushed":null},"wom7web":{"branch":"agent/agy-t567-stage1","dirty":0,"has_upstream":true,"head":"9f5819a4","unpushed":null}},"tickets":{"open":82,"rowless_open":[],"rows":567,"specced":206,"specced_open":7,"total":567,"unmirrored_open":4}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T306","T365","T57","T136","T164","T259","T271","T273","T384","T387"],"repos":{"wom7api":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"fe14dbc","unpushed":null},"wom7ext":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"4534f2f","unpushed":null},"wom7func":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"2a1cea5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"660569a","unpushed":null},"wom7sec":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"6d80b6a","unpushed":null},"wom7web":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"4e579548","unpushed":null}},"tickets":{"open":82,"rowless_open":[],"rows":568,"specced":207,"specced_open":7,"total":568,"unmirrored_open":4}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -135,6 +135,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
   - **2026-10-22** (1d ago): AC3, AC4, AC5, AC6, AC7 completed & verified (scripts/gh_identity_select.py, scripts/tests/test_gh_identity_select.py).
 - **T567** — Rebrand wom7*/k7* to w0m-* and migrate all estate repositories from casualuser/* to github.com/webomage/w0m-*
   - **2026-10-23** (today): Stage 1 (AC2) completed. Following casualuser promotion to admin (Owner) in github.com/orgs/webomage, transferred and renamed all 12 repositories (webomage/w0m, webomage/w0m-web, webomage/w0m-api, webomage/w0m-cf, webomage/w0m-ext, webomage/w0m-sec, webomage/w0m-skills, webomage/w0m-mlx, webomage/w0m-ava, webomage/w0m-clips, webomage/w0m-orca, webomage/harness2), updated origin remotes across all local checkouts and worktrees ([remote] 0 in name-refs), and updated w0m-skills schema URLs.
+
+#### Completed today (1):
+
+- **T568** — just eli5 T* — plain-English one-paragraph ELI5 ticket explainer CLI & recipe (Completed (5/5 ACs). Built scripts/ticket_eli5.py, wired just eli5 / just eli5-test / just tasks eli5 across @wom/justfile and wom7api/justfile, added 7 unit tests in test_ticket_eli5.py, verified just suites-drift (331 declared, 0 undeclared), and archived OpenSpec change 2026-10-23-ticket-eli5-cli.)
 
 ## 3. Other open threads (in TASKS.md)
 

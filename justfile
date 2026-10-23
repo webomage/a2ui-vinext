@@ -37,6 +37,13 @@ default:
 tasks *args:
     @python3 scripts/tasks_query.py {{ args }}
 
+[positional-arguments]
+eli5 *args:
+    @python3 scripts/ticket_eli5.py "$@"
+
+eli5-test:
+    @python3 wom7web/project/scripts/tests/test_ticket_eli5.py
+
 tasks-render *args:
     @python3 scripts/tasks_render.py {{ args }}
 

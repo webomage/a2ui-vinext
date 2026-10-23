@@ -109,7 +109,7 @@ def frontmatter(path: Path) -> dict:
         return {}
     out: dict = {}
     for line in text[3:end].splitlines():
-        m = re.match(r"^([a-z_]+):\s*(.*)$", line.strip())
+        m = re.match(r"^([a-z0-9_]+):\s*(.*)$", line.strip())
         if not m:
             continue
         key, raw = m.group(1), m.group(2).strip()
@@ -964,6 +964,10 @@ def markdown_unspecified(rows: list[dict]) -> str:
 
 
 def main() -> int:
+    if len(sys.argv) > 1 and sys.argv[1] == "eli5":
+        import ticket_eli5
+        return ticket_eli5.main(sys.argv[2:])
+
     ap = argparse.ArgumentParser(description="w0m queue query + ranking (T146)")
     # `board` is the default because the two rankings only mean something TOGETHER: `hot` ranks
     # what can be started, `sdlc` what is closest to finished, and the interesting signal is where
@@ -971,7 +975,7 @@ def main() -> int:
     # ask for, so it was routinely read as the whole picture.
     ap.add_argument("mode", nargs="?", default="board",
                     choices=["board", "hot", "list", "blocked", "stats", "md", "sdlc", "sdlc-md",
-                             "unspecified", "overview", "plan", "epic", "current", "next", "wip", "tree", "area"])
+                             "unspecified", "overview", "plan", "epic", "current", "next", "wip", "tree", "area", "eli5"])
     ap.add_argument("-n", type=int, default=10)
     ap.add_argument("--priority", help="filter: P0/P1/P2/P3")
     ap.add_argument("--status", help="filter: in-progress/queued/blocked/paused")
