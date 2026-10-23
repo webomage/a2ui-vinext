@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `070b8ae2` |
-| `wom7api` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `fe14dbc` |
-| `wom7func` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `2a1cea5` |
-| `wom7skills` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `6d80b6a` |
-| `wom7ext` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `4534f2f` |
-| `wom7sec` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
-| `wom7mlx/wom7mlx` | `agent/eli5` | 0 | **n/a — NO UPSTREAM** | `660569a` |
+| `wom7web` | `agent/agy-fork-naming` | 0 | **n/a — NO UPSTREAM** | `070b8ae2` |
+| `wom7api` | `agent/agy-fork-naming` | 0 | **n/a — NO UPSTREAM** | `fe14dbc` |
+| `wom7func` | `agent/agy-fork-naming` | 0 | **n/a — NO UPSTREAM** | `2a1cea5` |
+| `wom7skills` | `agent/agy-fork-naming` | 0 | **n/a — NO UPSTREAM** | `a489dd0` |
+| `wom7ext` | `agent/agy-fork-naming` | 0 | **n/a — NO UPSTREAM** | `4534f2f` |
+| `wom7sec` | `agent/agy-fork-naming` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
+| `wom7mlx/wom7mlx` | `agent/agy-fork-naming` | 0 | **n/a — NO UPSTREAM** | `660569a` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
 **Tickets:** 82 open · 568 TASKS.md rows · 207/568 specced (7/82 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T306","T365","T57","T136","T164","T259","T271","T273","T384","T387"],"repos":{"wom7api":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"fe14dbc","unpushed":null},"wom7ext":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"4534f2f","unpushed":null},"wom7func":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"2a1cea5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"660569a","unpushed":null},"wom7sec":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"6d80b6a","unpushed":null},"wom7web":{"branch":"agent/eli5","dirty":0,"has_upstream":true,"head":"070b8ae2","unpushed":null}},"tickets":{"open":82,"rowless_open":[],"rows":568,"specced":207,"specced_open":7,"total":568,"unmirrored_open":4}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T306","T365","T57","T136","T164","T259","T271","T273","T384","T387"],"repos":{"wom7api":{"branch":"agent/agy-fork-naming","dirty":0,"has_upstream":true,"head":"fe14dbc","unpushed":null},"wom7ext":{"branch":"agent/agy-fork-naming","dirty":0,"has_upstream":true,"head":"4534f2f","unpushed":null},"wom7func":{"branch":"agent/agy-fork-naming","dirty":0,"has_upstream":true,"head":"2a1cea5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-fork-naming","dirty":0,"has_upstream":true,"head":"660569a","unpushed":null},"wom7sec":{"branch":"agent/agy-fork-naming","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/agy-fork-naming","dirty":0,"has_upstream":true,"head":"a489dd0","unpushed":null},"wom7web":{"branch":"agent/agy-fork-naming","dirty":0,"has_upstream":true,"head":"070b8ae2","unpushed":null}},"tickets":{"open":82,"rowless_open":[],"rows":568,"specced":207,"specced_open":7,"total":568,"unmirrored_open":4}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -134,7 +134,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T306** — New work-scoped GitHub identities (webomage.com) and gh CLI scaffolding for 4 identities, not 2
   - **2026-10-22** (1d ago): AC3, AC4, AC5, AC6, AC7 completed & verified (scripts/gh_identity_select.py, scripts/tests/test_gh_identity_select.py).
 - **T567** — Rebrand wom7*/k7* to w0m-* and migrate all estate repositories from casualuser/* to github.com/webomage/w0m-*
-  - **2026-10-23** (today): Stage 1 (AC2) completed. Following casualuser promotion to admin (Owner) in github.com/orgs/webomage, transferred and renamed all 12 repositories (webomage/w0m, webomage/w0m-web, webomage/w0m-api, webomage/w0m-cf, webomage/w0m-ext, webomage/w0m-sec, webomage/w0m-skills, webomage/w0m-mlx, webomage/w0m-ava, webomage/w0m-clips, webomage/w0m-orca, webomage/harness2), updated origin remotes across all local checkouts and worktrees ([remote] 0 in name-refs), and updated w0m-skills schema URLs.
+  - **2026-10-23** (today): Stage 1 (AC2) completed & public fork naming convention locked. Following casualuser promotion to admin (Owner) in github.com/orgs/webomage, transferred and renamed all 10 first-party repositories (webomage/w0m, webomage/w0m-web, webomage/w0m-api, webomage/w0m-cf, webomage/w0m-ext, webomage/w0m-sec, webomage/w0m-skills, webomage/w0m-mlx, webomage/w0m-ava, webomage/w0m-clips) and consolidated all 11 public open-source forks under webomage/<repo> (orca, harness2, headroom, webtorrent-desktop, omlx, mlx-vlm, tart, tart-guest-agent, virtual-fido, serena, zeroclaw) keeping their upstream repository names (or <upstream-org>-<repo> on collision). Updated origin remotes across all local checkouts ([remote] 0 in name-refs) and updated w0m-skills schema URLs.
 
 #### Completed today (1):
 

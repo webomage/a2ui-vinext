@@ -40,7 +40,7 @@ On **2026-10-22**, the owner reviewed all 40 AgDRs and locked the decision:
 | `wom7mlx` | `casualuser/wom7mlx` | **`w0m-mlx`** | **`webomage/w0m-mlx`** | Apple Silicon MLX local inference subsystem |
 | `wom7ava` | `casualuser/wom7ava` | **`w0m-ava`** | **`webomage/w0m-ava`** | Avatar generation subsystem |
 | `wom7clips` | `casualuser/wom7clips` | **`w0m-clips`** | **`webomage/w0m-clips`** | Media/video clip subsystem |
-| `wom7pr/orca` | `casualuser/orca` | **`w0m-pr/w0m-orca`** | **`webomage/w0m-orca`** | Flagship desktop AI IDE & visual cockpit |
+| `wom7pr/<repo>` (e.g. `orca`, `harness2`, `omlx`, `serena`) | `casualuser/<repo>` | **`w0m-pr/<repo>`** | **`webomage/<repo>`** (or `webomage/<upstream-org>-<repo>` on collision) | Public open-source forks keep the original upstream `<repo>` name (or `<org>-<repo>` on collision); `w0m-*` is reserved strictly for first-party repos |
 
 ### Developer CLI Consolidation (`k7*` → `w0m`)
 
