@@ -5,8 +5,8 @@ Reads `project/policies/clients-policy.json -> identities_catalog` and `projects
 to support deterministic selection across all 4 identities:
   1. `aleksei-personal` (`casualuser`, `~/.config/gh-w0m`, `~/.ssh/id_ed25519_aleksei`)
   2. `elena-personal`   (`Shinagawa-monkey`, `~/.config/gh-elena`, `~/.ssh/id_ed25519_elena`)
-  3. `aleksei-work`     (`aleksei-w0m`, `~/.config/gh-aleksei-work`, `~/.ssh/id_ed25519_aleksei`)
-  4. `elena-work`       (`elena-w0m`, `~/.config/gh-elena-work`, `~/.ssh/id_ed25519_elena`)
+  3. `aleksei-work`     (`casualuser`, `~/.config/gh-aleksei-work`, `~/.ssh/id_ed25519_aleksei_work`)
+  4. `elena-work`       (`elena-w0m`, `~/.config/gh-elena-work`, `~/.ssh/id_ed25519_elena_work`)
 
 Eliminates reliance on the global `~/.config/gh` active account (which flips across
 sessions) by scoping `GH_CONFIG_DIR`, `GIT_SSH_COMMAND`, and `GIT_AUTHOR_*` /
@@ -196,6 +196,8 @@ def verify_identities(
         if req_key not in catalog:
             errors.append(f"Missing required identity {req_key!r} in identities_catalog")
 
+    seen_ssh_keys: dict[str, str] = {}
+    seen_gh_dirs: dict[str, str] = {}
     for key, raw in catalog.items():
         if not isinstance(raw, dict):
             errors.append(f"Identity {key!r} must be an object")
@@ -209,8 +211,25 @@ def verify_identities(
 
         if not ssh_exists:
             errors.append(f"Identity {key!r} SSH key does not exist on host: {ssh_path}")
+        else:
+            real_ssh = str(ssh_path.resolve())
+            if real_ssh in seen_ssh_keys:
+                errors.append(
+                    f"AC1 VIOLATION: Identity {key!r} shares SSH key material ({real_ssh}) with {seen_ssh_keys[real_ssh]!r}"
+                )
+            else:
+                seen_ssh_keys[real_ssh] = key
+
         if not gh_dir_exists:
             errors.append(f"Identity {key!r} GH_CONFIG_DIR does not exist on host: {gh_dir}")
+        else:
+            real_gh = str(gh_dir.resolve())
+            if real_gh in seen_gh_dirs:
+                errors.append(
+                    f"AC2 VIOLATION: Identity {key!r} shares GH_CONFIG_DIR ({real_gh}) with {seen_gh_dirs[real_gh]!r}"
+                )
+            else:
+                seen_gh_dirs[real_gh] = key
 
         if ident.scope == "work" and not gh_hosts_exists:
             pending_owner_actions.append(

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/casualuser/webomage.com/beta/project/stacks-policy.schema.json",
   "title": "w0m per-stack tech/tools registry",
-  "description": "Per-stack, tech-aware extension of the global toolchain contract (.w0m/sdlc.json -> toolchain, T119) — T130. Declares, for each live stack, its runtime, the techs/frameworks that define it, and the CLIs that operate it (each bound to the `just` recipe that drives it). Read by project/scripts/discovery.py (`just discovery` / `--enforce`). This is the tech-aware layer above tools-policy.json (host CLI floors) and deps-policy.json (npm security floors), neither of which is stack-scoped.",
+  "description": "Per-stack, tech-aware extension of the global toolchain contract (.w0m/sdlc.json -> toolchain, T119) — T130. Declares, for each live stack, its runtime, the techs/frameworks that define it, and the CLIs that operate it (each bound to the `just` recipe that drives it). Read by scripts/discovery.py (`just discovery` / `--enforce`). This is the tech-aware layer above tools-policy.json (host CLI floors) and deps-policy.json (npm security floors), neither of which is stack-scoped.",
   "type": "object",
   "required": [
     "project",

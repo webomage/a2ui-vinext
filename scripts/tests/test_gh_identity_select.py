@@ -30,6 +30,12 @@ class TestGhIdentitySelect(unittest.TestCase):
         self.assertTrue(report.offices_verified)
         self.assertTrue(report.bridgeroad_roles_verified)
         self.assertTrue(report.no_private_keys_verified)
+        ssh_keys = {info["ssh_key"] for info in report.identities.values()}
+        gh_dirs = {info["gh_config_dir"] for info in report.identities.values()}
+        self.assertEqual(len(ssh_keys), 4, "All 4 identities must have distinct SSH keys")
+        self.assertEqual(len(gh_dirs), 4, "All 4 identities must have distinct GH_CONFIG_DIRs")
+        self.assertTrue(report.identities["aleksei-personal"]["gh_hosts_authenticated"])
+        self.assertTrue(report.identities["aleksei-work"]["gh_hosts_authenticated"])
 
     def test_select_each_of_four_identities(self) -> None:
         expected = {

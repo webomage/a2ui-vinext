@@ -1,34 +1,57 @@
 #!/usr/bin/env python3
-"""Monitor the host CLI tool versions the w0m workflow depends on.
+"""Monitor the host CLI tool versions the w0m workflow depends on (T112 / T164 / T247 / T546).
 
-Reads `project/tools-policy.json`, runs each tool's version command, and reports:
+Reads `.w0m/sdlc.json -> toolchain.policy` (`project/policies/tools-policy.json`), runs each
+tool's version command, validates `out_of_scope` coverage, and reports:
   - MISSING     : not on PATH        (FAIL if required, else note)
   - below min   : older than policy min   (FAIL if required, else WARN)
-  - drift       : present & >= min but != known_good (INFO — not a problem)
+  - drift       : present & >= min but != known_good (DRIFT if required, else INFO)
   - ok          : == known_good
 
 ADVISORY by default (exit 0) — host tools legitimately vary per machine. `--strict` exits
-non-zero on any required tool that is MISSING or below min (for `just audit --deep` / CI).
+non-zero on any required tool that is MISSING, below min, or on an unverified version (`DRIFT`),
+or when the policy's `out_of_scope` declarations are malformed.
 `--update-known-good` rewrites each present tool's known_good to the installed version.
 
 Usage:
-    python3 project/scripts/tools_check.py            # report, exit 0
-    python3 project/scripts/tools_check.py --strict   # exit 1 if a required tool is missing/old
-    python3 project/scripts/tools_check.py --update-known-good
+    python3 scripts/tools_check.py            # report, exit 0
+    python3 scripts/tools_check.py --strict   # exit 1 if a required tool is missing/old/drifted
+    python3 scripts/tools_check.py --update-known-good
 """
 from __future__ import annotations
 
 import json
-import re
 import os
+from pathlib import Path
+import re
 import shlex
 import shutil
 import subprocess
 import sys
-from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
-POLICY = ROOT / "project" / "policies" / "tools-policy.json"
+SDLC_JSON = ROOT / ".w0m" / "sdlc.json"
+
+
+def resolve_policy_path(root: Path | None = None, sdlc_path: Path | None = None) -> Path:
+    """Resolve `tools-policy.json` from `.w0m/sdlc.json -> toolchain.policy` (T164 AC5)."""
+    base = root if root is not None else ROOT
+    cfg_file = sdlc_path if sdlc_path is not None else (base / ".w0m" / "sdlc.json")
+    if cfg_file.is_file():
+        try:
+            cfg: dict[str, Any] = json.loads(cfg_file.read_text(encoding="utf-8"))
+            tc = cfg.get("toolchain")
+            if isinstance(tc, dict):
+                rel = tc.get("policy")
+                if isinstance(rel, str) and rel.strip():
+                    return base / rel.strip()
+        except (OSError, ValueError):
+            pass
+    return base / "project" / "policies" / "tools-policy.json"
+
+
+POLICY = resolve_policy_path(ROOT)
 SEMVER = re.compile(r"(\d+)\.(\d+)(?:\.(\d+))?")
 
 
@@ -43,14 +66,18 @@ def ver_tuple(s: str) -> tuple[int, int, int]:
     return (int(major), int(minor), int(patch or 0))
 
 
-BREW_FORMULA = {"aws": "awscli", "az": "azure-cli"}  # tool name -> brew formula when they differ
+BREW_FORMULA = {"aws": "awscli", "az": "azure-cli", "psql": "libpq"}  # tool name -> brew formula when they differ
 
 
 def brew_latest() -> dict[str, str]:
     """{formula: latest_version} for outdated brew formulae. One `brew outdated` call, best-effort."""
     try:
-        out = subprocess.run(["brew", "outdated", "--formula", "--verbose"],
-                             capture_output=True, text=True, timeout=60)
+        out = subprocess.run(
+            ["brew", "outdated", "--formula", "--verbose"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
     except (OSError, subprocess.SubprocessError):
         return {}
     latest: dict[str, str] = {}
@@ -72,8 +99,12 @@ def gcloud_latest() -> tuple[str, str] | None:
     if shutil.which("gcloud") is None:
         return None
     try:
-        out = subprocess.run(["gcloud", "components", "list", "--quiet"],
-                             capture_output=True, text=True, timeout=90)
+        out = subprocess.run(
+            ["gcloud", "components", "list", "--quiet"],
+            capture_output=True,
+            text=True,
+            timeout=90,
+        )
     except (OSError, subprocess.SubprocessError):
         return None
     text = (out.stdout or "") + "\n" + (out.stderr or "")
@@ -84,7 +115,7 @@ def gcloud_latest() -> tuple[str, str] | None:
     return None
 
 
-def bump_level(cur: tuple, new: tuple) -> str:
+def bump_level(cur: tuple[int, int, int], new: tuple[int, int, int]) -> str:
     if new[0] != cur[0]:
         return "major"
     if new[1] != cur[1]:
@@ -92,7 +123,7 @@ def bump_level(cur: tuple, new: tuple) -> str:
     return "patch"
 
 
-def installed_version(tool: str, arg: str, spec: dict | None = None) -> str | None:
+def installed_version(tool: str, arg: str = "--version", spec: dict[str, Any] | None = None) -> str | None:
     """First semver anywhere in the tool's version output, or None if not found/installed.
 
     Normally probes `<tool> <arg>` after a PATH lookup. `source: uvx` tools have NO binary on
@@ -125,18 +156,10 @@ def installed_version(tool: str, arg: str, spec: dict | None = None) -> str | No
 
 CACHE = ROOT / "project" / ".tools-outdated.json"  # gitignored, per-machine; written by the weekly run
 # T247 AC1 — the OUTCOME of the last scheduled run, which the cache cannot express.
-# `tools-weekly` refreshes the cache FIRST and applies upgrades second, so a run that failed at the
-# apply step leaves a perfectly fresh cache. That is exactly what happened on 2026-08-17: the run
-# exited 1 holding osv-scanner and semgrep, the cache looked 0 days old, and the only record was a
-# launchd log nobody reads. Cache age therefore cannot detect a failed run — only a separate
-# outcome record can. Written by `tools_upgrade.py --apply`; gitignored, per-machine.
 STATUS = ROOT / "project" / ".tools-weekly-status.json"
 
 
-# T546 — PROPOSED `known_good` bumps. The scheduled run upgrades and smoke-tests, then RECORDS what it verified here instead of writing
-# the policy: it ran in the live checkout and never committed, so that checkout sat dirty and `git merge --ff-only` aborted. The file is
-# machine-level (outside every tree) on purpose: the weekly run happens in the live tree, the promotion in an agent tree, and both must see
-# the same state. `W0M_STATE_DIR` redirects it for tests.
+# T546 — PROPOSED `known_good` bumps.
 def state_dir() -> Path:
     env = os.environ.get("W0M_STATE_DIR")
     return Path(env) if env else Path.home() / ".w0m" / "state"
@@ -145,19 +168,19 @@ def state_dir() -> Path:
 PROPOSED = state_dir() / "tools-proposed.json"
 
 
-def load_proposals(path: Path) -> dict:
-    """The proposals, or {} when there is no file. A file that exists but cannot be read raises: an unreadable state file must not read as 'nothing proposed'."""
+def load_proposals(path: Path) -> dict[str, Any]:
+    """The proposals, or {} when there is no file. A file that exists but cannot be read raises."""
     try:
         text = path.read_text(encoding="utf-8")
     except FileNotFoundError:
         return {}
-    data = json.loads(text)
+    data: Any = json.loads(text)
     if not isinstance(data, dict):
         raise ValueError(f"{path}: expected a JSON object of proposals")
     return data
 
 
-def save_proposals(path: Path, proposals: dict) -> None:
+def save_proposals(path: Path, proposals: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
     tmp.write_text(json.dumps(proposals, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -166,53 +189,65 @@ def save_proposals(path: Path, proposals: dict) -> None:
 
 def pending_proposals_line(path: Path | None = None) -> str:
     """One line for the full check: what the weekly run verified and nobody has promoted yet. '' when there is nothing."""
-    path = PROPOSED if path is None else path
+    target = PROPOSED if path is None else path
     try:
-        props = load_proposals(path)
+        props = load_proposals(target)
     except (OSError, ValueError) as exc:
-        return f"proposed bumps: state file unreadable ({exc}) — fix or delete {path}"
+        return f"proposed bumps: state file unreadable ({exc}) — fix or delete {target}"
     if not props:
         return ""
     names = ", ".join(f"{p['tool']} {p['from']}→{p['to']}" for _k, p in sorted(props.items()))
     return f"{len(props)} proposed known_good bump(s) awaiting promotion: {names} — `just tools-promote` (dry run), then `--apply` in an agent tree"
 
 
-def report_outdated(tools: dict, cache: bool = False) -> int:
-    """Read-only: which policy tools have an upstream update, and would tools-upgrade take it?
-
-    With cache=True, also writes CACHE (timestamp + rows) so pre-push can warn instantly without
-    the slow `brew outdated` call.
-    """
+def report_outdated(tools: dict[str, Any], cache: bool = False) -> int:
+    """Read-only: which policy tools have an upstream update, and would tools-upgrade take it?"""
     import datetime
+
     brew = brew_latest()
-    gcloud = gcloud_latest() if any(s.get("source") == "gcloud" for s in tools.values()) else None
+    gcloud = gcloud_latest() if any(isinstance(s, dict) and s.get("source") == "gcloud" for s in tools.values()) else None
     ranked = {"patch": 0, "minor": 1, "major": 2}
-    rows = []
+    rows: list[tuple[str, str, str, str, str, str]] = []
     for name, spec in tools.items():
-        if name.startswith("_"):
+        if name.startswith("_") or not isinstance(spec, dict):
             continue
-        cur = installed_version(name, spec.get("version_arg", "--version"))
-        src = spec.get("source", "manual")
+        cur = installed_version(name, spec.get("version_arg", "--version"), spec)
+        src = str(spec.get("source", "manual"))
         if src == "brew":
             latest = brew.get(BREW_FORMULA.get(name, name))
         elif src == "gcloud":
-            # gcloud self-updates (`gcloud components update`); resolve via its own version header.
             cur = (gcloud[0] if gcloud else cur) or cur
             latest = gcloud[1] if gcloud else None
         else:
-            latest = None  # nvs / pyenv / tfenv / uv / npm — not resolvable here (report via note only)
+            latest = None
         if cur is None or latest is None or ver_tuple(latest) <= ver_tuple(cur):
-            continue  # up to date, or not resolvable
+            continue
         lvl = bump_level(ver_tuple(cur), ver_tuple(latest))
-        allow = spec.get("auto", "none")
+        allow = str(spec.get("auto", "none"))
         auto_ok = allow != "none" and ranked[lvl] <= ranked[allow]
         rows.append((name, cur, latest, lvl, "AUTO" if auto_ok else "manual", src))
     if cache:
-        CACHE.write_text(json.dumps({
-            "generated": datetime.datetime.now().isoformat(timespec="seconds"),
-            "updates": [{"tool": r[0], "cur": r[1], "latest": r[2], "level": r[3],
-                         "mode": r[4], "source": r[5]} for r in rows],
-        }, indent=2) + "\n", encoding="utf-8")
+        CACHE.write_text(
+            json.dumps(
+                {
+                    "generated": datetime.datetime.now().isoformat(timespec="seconds"),
+                    "updates": [
+                        {
+                            "tool": r[0],
+                            "cur": r[1],
+                            "latest": r[2],
+                            "level": r[3],
+                            "mode": r[4],
+                            "source": r[5],
+                        }
+                        for r in rows
+                    ],
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
     if not rows:
         print("  ✓ all policy tools up to date (brew-resolvable)")
         return 0
@@ -220,12 +255,10 @@ def report_outdated(tools: dict, cache: bool = False) -> int:
     for name, cur, latest, lvl, mode, src in sorted(rows, key=lambda r: (r[4] != "AUTO", r[0])):
         print(f"    {name:12} {cur:>10} → {latest:<10} [{lvl}]  {mode} ({src})")
     n_auto = sum(1 for r in rows if r[4] == "AUTO")
-    print(f"\n  {len(rows)} update(s): {n_auto} auto-eligible (`just tools-upgrade`), "
-          f"{len(rows) - n_auto} manual (prod-gating / major / non-brew)")
-    # Explicit: this reporter is READ-ONLY and never gates, so an available update is not a
-    # failure. It previously fell off the end, returning None through `main()`'s `return
-    # report_outdated(...)` into `sys.exit(None)` — which is also 0, so the declared `-> int`
-    # was being honoured by accident rather than by the code (T188).
+    print(
+        f"\n  {len(rows)} update(s): {n_auto} auto-eligible (`just tools-upgrade`), "
+        f"{len(rows) - n_auto} manual (prod-gating / major / non-brew)"
+    )
     return 0
 
 
@@ -233,24 +266,21 @@ LAUNCH_AGENT = Path.home() / "Library/LaunchAgents/com.w0m.tools-weekly.plist"
 
 
 def _refresh_cadence_days() -> int | None:
-    """How often the cache is SUPPOSED to be refreshed, read from the INSTALLED LaunchAgent.
+    """How often the cache is SUPPOSED to be refreshed.
 
-    Read from the installed plist rather than `project/launchd/schedules.jsonc` for two reasons:
-    it is the schedule that actually runs (a declared-but-never-installed agent refreshes nothing),
-    and `plistlib` is stdlib — parsing the JSONC declaration would mean importing the estate's one
-    JSONC reader, which lives in `authz_blanket_gate` and pulls `authz_probe` (database access) in
-    at module level. A pre-push warn must not reach for a DB dependency to decide a threshold.
-
-    A `Weekday` key means weekly; a bare Hour/Minute means daily.
-
-    Returns None when the agent is not installed or unreadable, and staleness is then NOT asserted
-    at all — better silent than confidently wrong about a cadence that was never measured.
+    Multi-OS safe (T164): on non-macOS (`sys.platform != 'darwin'`, e.g. Linux `x86_64`), returns
+    the 7-day weekly cadence directly without probing `~/Library/LaunchAgents`. On macOS, reads
+    the installed launchd plist via `plistlib`.
     """
+    plat: str = getattr(sys, "platform", "")
+    if plat != "darwin":
+        return 7
     import plistlib
+
     try:
         agent = plistlib.loads(LAUNCH_AGENT.read_bytes())
     except (OSError, ValueError):
-        return 7 if sys.platform != "darwin" else None
+        return None
     interval = agent.get("StartCalendarInterval")
     if isinstance(interval, dict):
         return 7 if "Weekday" in interval else 1
@@ -259,39 +289,27 @@ def _refresh_cadence_days() -> int | None:
 
 
 def warn_cached() -> int:
-    """Fast, non-blocking: warn from the cached outdated result (no brew call). Always exit 0.
-
-    Used on pre-push. The cache is refreshed by the scheduled `just tools-weekly` run.
-
-    🔴 This reports a SNAPSHOT and it must say so. It used to print
-    "N CLI tool update(s) available" — present tense, from a file up to a week old. Measured
-    2026-08-21: that line read "1 update available (1 auto): gcloud" while live detection found
-    NINE (4 auto), including a pending `infisical` patch. The count was wrong by eight, it printed
-    on ten consecutive pushes, and the owner found the update from infisical's own CLI notice
-    instead. A stale number phrased as a current one is worse than no number: it reads as
-    reassurance.
-    """
+    """Fast, non-blocking: warn from the cached outdated result (no brew call). Always exit 0."""
     import datetime
+
     if not CACHE.exists():
-        return 0  # never nag before the first scheduled run
+        return 0
     try:
-        data = json.loads(CACHE.read_text(encoding="utf-8"))
+        data: dict[str, Any] = json.loads(CACHE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return 0
     ups = data.get("updates", [])
-    age_days = None
+    age_days: int | None = None
     try:
         gen = datetime.datetime.fromisoformat(data["generated"])
         age_days = (datetime.datetime.now() - gen).days
     except (KeyError, ValueError):
         pass
 
-    # T247 AC1 — the last run's OUTCOME, read before anything else because a failed run is a
-    # bigger fact than a pending update. Independent of the cache on purpose: see STATUS.
     held: list[str] = []
-    status_age = None
+    status_age: int | None = None
     try:
-        st = json.loads(STATUS.read_text(encoding="utf-8"))
+        st: dict[str, Any] = json.loads(STATUS.read_text(encoding="utf-8"))
         held = list(st.get("held") or [])
         ran = datetime.datetime.fromisoformat(st["ran"])
         status_age = (datetime.datetime.now() - ran).days
@@ -299,99 +317,192 @@ def warn_cached() -> int:
         pass
 
     cadence = _refresh_cadence_days()
-    # A cache older than its own refresh cadence means a scheduled run did not happen, or ran and
-    # FAILED. `tools_upgrade.py` returns non-zero if ANY tool is held, and that exit code surfaces
-    # nowhere but `~/Library/Logs/w0m-tools-weekly.log` — so this is the only place a missed or
-    # failed run becomes visible to a human. It is the headline, above whatever the snapshot holds.
-    #
-    # The threshold used to be a hardcoded 10 days against a 7-day cycle, so a cache that had
-    # missed an entire scheduled run could never be reported stale. A threshold that cannot fire
-    # inside its own cadence is not a threshold.
     missed_run = age_days is not None and cadence is not None and age_days > cadence
 
-    # A run that HELD a tool exited non-zero. Report it whether or not anything is pending: the
-    # held tool is now running a version the estate never verified, and `tools-upgrade` cannot fix
-    # that by itself (installed ends up AHEAD of known_good, so there is nothing left to upgrade).
     if held:
         age = f" {status_age}d ago" if status_age is not None else ""
         print(f" [WARN] the last toolchain run{age} FAILED — held: {', '.join(held)}")
-        print("     those tools run versions the policy never verified; "
-              "`just tools-check` lists the drift")
+        print("     those tools run versions the policy never verified; `just tools-check` lists the drift")
 
     if not ups and not missed_run and not held:
         return 0
 
     if missed_run:
-        print(f" [WARN] tools-outdated cache is {age_days}d old but refreshes every {cadence}d — "
-              f"a scheduled run was MISSED or FAILED")
-        print("     check `~/Library/Logs/w0m-tools-weekly.log`, then `just tools-weekly`")
+        print(
+            f" [WARN] tools-outdated cache is {age_days}d old but refreshes every {cadence}d — "
+            f"a scheduled run was MISSED or FAILED"
+        )
+        if getattr(sys, "platform", "") == "darwin":
+            print("     check `~/Library/Logs/w0m-tools-weekly.log`, then `just tools-weekly`")
+        else:
+            print("     run `just tools-weekly` to refresh the outdated cache and propose verified bumps")
 
     if ups:
         n_auto = sum(1 for u in ups if u.get("mode") == "AUTO")
         names = ", ".join(u["tool"] for u in ups[:6])
-        # `is not None`, not truthiness: a 0-day-old cache is the freshest possible and used to
-        # print no age at all, so "fresh" and "timestamp unreadable" looked identical.
         asof = f" as of {age_days}d ago" if age_days is not None else " (age unknown)"
-        # Phrased as a snapshot deliberately — never "N updates available".
         print(f" [WARN] {len(ups)} tool update(s) in the last snapshot{asof} ({n_auto} auto): {names}")
-        print("     the live count may be HIGHER — `just tools-outdated` measures now; "
-              "`just tools-upgrade --apply` applies the auto subset")
+        print(
+            "     the live count may be HIGHER — `just tools-outdated` measures now; "
+            "`just tools-upgrade --apply` applies the auto subset"
+        )
     return 0
+
+
+def validate_out_of_scope(policy: dict[str, Any]) -> list[str]:
+    """Validate the `out_of_scope` map in `tools-policy.json` (T164 AC1)."""
+    problems: list[str] = []
+    oos = policy.get("out_of_scope")
+    if oos is None:
+        return []
+    if not isinstance(oos, dict) or not oos:
+        return ["tools-policy.json: `out_of_scope` must be a non-empty object mapping CLI names to written reasons"]
+    tools = policy.get("tools") or {}
+    overlap = sorted(set(tools) & set(oos))
+    if overlap:
+        problems.append(f"tools-policy.json: tool(s) declared in both `tools` and `out_of_scope`: {', '.join(overlap)}")
+    for name, reason in sorted(oos.items()):
+        if name.startswith("_"):
+            continue
+        if not isinstance(reason, str) or not reason.strip():
+            problems.append(f"out_of_scope.{name}: missing written reason")
+    return problems
+
+
+def evaluate_toolchain(
+    policy: dict[str, Any] | None = None,
+    policy_path: Path | None = None,
+    strict: bool = False,
+) -> dict[str, Any]:
+    """Evaluate every tool in `tools-policy.json` and return a structured report (T164 AC2/AC4/AC6)."""
+    target_path = policy_path or POLICY
+    loaded: dict[str, Any] = (
+        policy if policy is not None else json.loads(target_path.read_text(encoding="utf-8"))
+    )
+    tools: dict[str, Any] = loaded.get("tools", {})
+    policy_problems = validate_out_of_scope(loaded)
+
+    fails: list[str] = list(policy_problems)
+    warns: list[str] = []
+    infos: list[str] = []
+    drift_req: list[str] = []
+    rows: list[tuple[str, str, str]] = []
+    details: list[dict[str, Any]] = []
+
+    for name, spec in tools.items():
+        if name.startswith("_") or not isinstance(spec, dict):
+            continue
+        arg = str(spec.get("version_arg", "--version"))
+        req = bool(spec.get("required", False))
+        min_ver = str(spec.get("min", "0.0.0"))
+        kg_ver = str(spec.get("known_good", "0.0.0"))
+        cur = installed_version(name, arg, spec)
+        if cur is None:
+            status = "missing"
+            mark = "✗ MISSING" + (" (required)" if req else " (optional)")
+            (fails if req else infos).append(f"{name}: not installed — {spec.get('note', '')}")
+        elif ver_tuple(cur) < ver_tuple(min_ver):
+            status = "below_min"
+            mark = f"✗ {cur} < min {min_ver}"
+            (fails if req else warns).append(f"{name}: {cur} below min {min_ver}")
+        elif cur != kg_ver:
+            status = "drift"
+            mark = f"~ {cur} (known-good {kg_ver})"
+            msg = f"{name}: {cur} != known-good {kg_ver}"
+            (drift_req if req else infos).append(msg)
+        else:
+            status = "ok"
+            mark = f"✓ {cur}"
+        rows.append((name, "req" if req else "opt", mark))
+        details.append(
+            {
+                "name": name,
+                "required": req,
+                "installed": cur,
+                "min": min_ver,
+                "known_good": kg_ver,
+                "source": str(spec.get("source", "manual")),
+                "auto": str(spec.get("auto", "none")),
+                "status": status,
+                "mark": mark,
+            }
+        )
+
+    if fails and strict:
+        verdict = "FAIL"
+    elif fails:
+        verdict = "FAIL"
+    elif drift_req:
+        verdict = "DRIFT"
+    else:
+        verdict = "ok"
+
+    out_of_scope_raw = loaded.get("out_of_scope")
+    out_of_scope: dict[str, str] = (
+        {k: str(v) for k, v in out_of_scope_raw.items() if not k.startswith("_")}
+        if isinstance(out_of_scope_raw, dict)
+        else {}
+    )
+
+    return {
+        "policy_path": str(target_path),
+        "verdict": verdict,
+        "rows": rows,
+        "details": details,
+        "fails": fails,
+        "warns": warns,
+        "drift_req": drift_req,
+        "infos": infos,
+        "out_of_scope": out_of_scope,
+        "required_problems": len(fails),
+    }
 
 
 def main() -> int:
     strict = "--strict" in sys.argv
     update = "--update-known-good" in sys.argv
     outdated = "--outdated" in sys.argv
-    policy = json.loads(POLICY.read_text(encoding="utf-8"))
-    tools = policy["tools"]
+
+    pol_path = POLICY
+    if "--policy" in sys.argv:
+        idx = sys.argv.index("--policy")
+        if idx + 1 < len(sys.argv):
+            pol_path = Path(sys.argv[idx + 1])
+    elif "--project" in sys.argv:
+        idx = sys.argv.index("--project")
+        if idx + 1 < len(sys.argv):
+            pol_path = resolve_policy_path(Path(sys.argv[idx + 1]))
+
+    policy: dict[str, Any] = json.loads(pol_path.read_text(encoding="utf-8"))
+    tools: dict[str, Any] = policy["tools"]
     if "--warn-cached" in sys.argv:
         return warn_cached()
     if outdated:
         return report_outdated(tools, cache="--cache" in sys.argv)
 
-    fails: list[str] = []
-    warns: list[str] = []
-    infos: list[str] = []
-    # T247 AC4 — REQUIRED-tool drift is its own bucket. It used to land in `infos` beside optional
-    # tools and the verdict printed `ok — … 4 drift`: the number was right there and ignored. A
-    # required tool running a version the estate never verified is not informational — `osv-scanner`
-    # gates every commit in seven repos and sat drifted for days under an "ok".
-    drift_req: list[str] = []
-    rows: list[tuple[str, str, str]] = []
-    changed = False
-
-    for name, spec in tools.items():
-        if name.startswith("_"):
-            continue
-        arg = spec.get("version_arg", "--version")
-        req = spec.get("required", False)
-        cur = installed_version(name, arg, spec)
-        if cur is None:
-            mark = "✗ MISSING" + (" (required)" if req else " (optional)")
-            (fails if req else infos).append(f"{name}: not installed — {spec.get('note','')}")
-        else:
-            if ver_tuple(cur) < ver_tuple(spec["min"]):
-                mark = f"✗ {cur} < min {spec['min']}"
-                (fails if req else warns).append(f"{name}: {cur} below min {spec['min']}")
-            elif cur != spec["known_good"]:
-                mark = f"~ {cur} (known-good {spec['known_good']})"
-                msg = f"{name}: {cur} != known-good {spec['known_good']}"
-                (drift_req if req else infos).append(msg)
-            else:
-                mark = f"✓ {cur}"
-            if update and cur != spec.get("known_good"):
+    if update:
+        changed = False
+        for name, spec in tools.items():
+            if name.startswith("_") or not isinstance(spec, dict):
+                continue
+            arg = str(spec.get("version_arg", "--version"))
+            cur = installed_version(name, arg, spec)
+            if cur is not None and cur != spec.get("known_good"):
                 spec["known_good"] = cur
                 changed = True
-        rows.append((name, "req" if req else "opt", mark))
-
-    if update:
         if changed:
-            POLICY.write_text(json.dumps(policy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            pol_path.write_text(json.dumps(policy, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
             print("  updated known_good to installed versions")
         else:
             print("  known_good already matches installed")
         return 0
+
+    report = evaluate_toolchain(policy=policy, policy_path=pol_path, strict=strict)
+    rows: list[tuple[str, str, str]] = report["rows"]
+    fails: list[str] = report["fails"]
+    warns: list[str] = report["warns"]
+    drift_req: list[str] = report["drift_req"]
+    infos: list[str] = report["infos"]
 
     for name, kind, mark in rows:
         print(f"  {name:12} [{kind}] {mark}")
@@ -399,7 +510,9 @@ def main() -> int:
         print(f"\n  \u26a0  {len(drift_req)} REQUIRED tool(s) on an unverified version:")
         for d in drift_req:
             print(f"    \u00b7 {d}")
-        print("     `just tools-weekly` proposes verified bumps and `just tools-promote` lands them (T546), or pin the tool back.")
+        print(
+            "     `just tools-weekly` proposes verified bumps and `just tools-promote` lands them (T546), or pin the tool back."
+        )
     if infos:
         print("\n  drift / optional (informational):")
         for i in infos:
@@ -412,13 +525,7 @@ def main() -> int:
         print(f"\n  ✗ {len(fails)} required tool problem(s):")
         for f in fails:
             print(f"    - {f}")
-        if strict:
-            return 1
-    # T247 AC4 — the verdict may no longer say `ok` while a REQUIRED tool is unverified. Tiering is
-    # deliberate rather than maximal: this check is advisory per-machine by design (`--strict` is
-    # what gates `just audit --deep`), so required drift earns a distinct non-ok verdict here and a
-    # hard failure under --strict. Optional-tool drift stays informational — `omlx` and `tart` are
-    # not commit gates, and reddening on them is how a gate trains people to ignore it.
+
     if fails and strict:
         verdict = "FAIL"
     elif drift_req:
@@ -428,9 +535,11 @@ def main() -> int:
     pending = pending_proposals_line()
     if pending:
         print(f"\n  · {pending}")
-    print(f"\n  {'strict: ' if strict else ''}{verdict} — "
-          f"{len(rows)} tools, {len(fails)} required-problem(s), {len(warns)} warn, "
-          f"{len(drift_req)} required-drift, {len(infos)} optional-drift")
+    print(
+        f"\n  {'strict: ' if strict else ''}{verdict} — "
+        f"{len(rows)} tools, {len(fails)} required-problem(s), {len(warns)} warn, "
+        f"{len(drift_req)} required-drift, {len(infos)} optional-drift"
+    )
     return 1 if (strict and (fails or drift_req)) else 0
 
 

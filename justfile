@@ -397,31 +397,6 @@ graph-affected *args:
 graph-benchmark *args:
     @just --justfile wom7web/justfile graph-benchmark {{ args }}
 
-# ── SDLC Lifecycle Gates ─────────────────────────────────────────────────────
-sdlc-start *args:
-    @just --justfile wom7web/justfile sdlc-start {{ args }}
-
-sdlc-spec *args:
-    @just --justfile wom7web/justfile sdlc-spec {{ args }}
-
-sdlc-build *args:
-    @just --justfile wom7web/justfile sdlc-build {{ args }}
-
-sdlc-review *args:
-    @just --justfile wom7web/justfile sdlc-review {{ args }}
-
-sdlc-security *args:
-    @just --justfile wom7web/justfile sdlc-security {{ args }}
-
-sdlc-verify *args:
-    @just --justfile wom7web/justfile sdlc-verify {{ args }}
-
-sdlc-deploy *args:
-    @just --justfile wom7web/justfile sdlc-deploy {{ args }}
-
-sdlc-archive *args:
-    @just --justfile wom7web/justfile sdlc-archive {{ args }}
-
 # ── Deployment Machinery & Elevation (T131 / T161 / T421) ─────────────────────
 # One producer for the estate's release-version schema (T131 AC1).
 version:
@@ -498,6 +473,7 @@ deploy-web: (_confirm "deploy-web")
     @echo "🔍 Building pagefind search index..."
     @cd wom7web/apps/web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run build:search
     @cd wom7web/apps/web/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_WEB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py web "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/join (join.webomage.com)
 deploy-join: (_confirm "deploy-join")
@@ -505,6 +481,7 @@ deploy-join: (_confirm "deploy-join")
     @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter join build
     @just _assert-provisioned join
     @cd wom7web/apps/join/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOIN:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py join "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/job (job.webomage.com)
 deploy-job: (_confirm "deploy-job")
@@ -512,12 +489,14 @@ deploy-job: (_confirm "deploy-job")
     @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter job build
     @just _assert-provisioned job
     @cd wom7web/apps/job/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py job "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/demo (demo.webomage.com — T79 demo showcase) to Cloudflare Workers
 deploy-demo: (_confirm "deploy-demo")
     @echo "Building and deploying apps/demo to Cloudflare Workers (Version: {{ deploy_version }})..."
     @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter demo build
     @cd wom7web/apps/demo/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_DEMO:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py demo "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/cp (cp.w0m.xyz)
 deploy-cp: (_confirm "deploy-cp")
@@ -525,11 +504,13 @@ deploy-cp: (_confirm "deploy-cp")
     @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter cp build
     @just _assert-provisioned cp
     @cd wom7web/apps/cp/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_CP:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py cp "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy wom7func to Cloudflare
 deploy-workers: (_confirm "deploy-workers")
     @echo "Deploying wom7func to Cloudflare Workflows (Version: {{ deploy_version }})..."
     @cd wom7func && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec wrangler deploy --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py wom7func "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy all functions in parallel using Supabase CLI
 deploy-functions: (_confirm "deploy-functions")
@@ -537,6 +518,7 @@ deploy-functions: (_confirm "deploy-functions")
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'supabase secrets set DEPLOY_VERSION="{{ deploy_version }}" DEPLOY_AT="{{ deploy_at }}" DEPLOY_COMMIT="{{ deploy_commit }}" --project-ref {{ project_ref }} > /dev/null 2>&1'
     # Bulk deploy, then VERIFY each function updated and retry only the stale ones (scripts/deploy_functions.py).
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/deploy_functions.py --project-ref {{ project_ref }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py api "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Offline probes for the deploy-functions staleness/retry logic.
 deploy-functions-test:
@@ -554,7 +536,7 @@ deploy-function +names: (_confirm "deploy-function")
 deploy-function-list:
     @python3 scripts/deploy_function.py --list --project-ref {{ project_ref }} --infisical-project-id {{ infisical_project_id }}
 
-deploy-api: (_confirm "deploy-api") check-auth check-warp supabase-redeploy-all check-supabase
+deploy-api: (_confirm "deploy-api") check-auth check-warp supabase-redeploy-all check-supabase _log-deploy
 
 # Pre-deploy security gate & infrastructure checks
 check-infisical:
@@ -588,19 +570,6 @@ db-migrate *args:
 # T551 AC4 — allocate the next free 14-digit migration version from origin/beta + local migrations and create wom7api/supabase/migrations/<version>_<name>.sql.
 migration-new name:
     @python3 wom7web/project/scripts/db_drift_check.py --new "{{ name }}"
-
-# T488 — Resume Studio documents into the PRIVATE `resumes` bucket. Forwards to wom7api/justfile, where the recipes live.
-resumes-upload:
-    @just --justfile wom7api/justfile resumes-upload
-
-# T488 — same for the HOSTED project + removes the old CV from the PUBLIC bucket. Confirm-gated in wom7api/justfile
-# (Touch ID; refused from any agent session), so run it yourself in a plain terminal.
-resumes-upload-live:
-    @just --justfile wom7api/justfile resumes-upload-live
-
-# T488 — offline tests for resumes_upload unpublish and error handling
-resumes-upload-test:
-    @just --justfile wom7api/justfile resumes-upload-test
 
 # T529 — clients & client_users retirement verification and offline tests
 clients-retirement-verify *args:
@@ -1420,6 +1389,41 @@ commit-msg-check *args:
 
 t129-t386-hooks-test:
     @python3 wom7web/project/scripts/tests/test_t129_t386_hooks.py
+
+# ── Toolchain Governance, Deploy Drift, Suppression Ratchet, Remote CI, AI Memory & Stale-Path Probe (T164 / T259 / T384 / T387 / T234 / T509) ──
+tools-check-test:
+    @python3 scripts/tests/test_tools_check.py
+
+deploy-drift *args:
+    @python3 wom7web/project/scripts/deploy_drift_check.py {{ args }}
+
+deploy-drift-test:
+    @python3 wom7web/project/scripts/tests/test_deploy_drift_check.py
+
+suppression-ratchet *args:
+    @python3 wom7web/project/scripts/suppression_ratchet.py {{ args }}
+
+suppression-ratchet-test:
+    @python3 wom7web/project/scripts/tests/test_suppression_ratchet.py
+
+ci-workflow-check *args:
+    @python3 wom7web/project/scripts/ci_workflow_check.py {{ args }}
+
+ci-workflow-check-test:
+    @python3 wom7web/project/scripts/tests/test_ci_workflow_check.py
+
+ai-memory-pin-check *args:
+    @python3 wom7web/project/scripts/ai_memory_pin_check.py {{ args }}
+
+ai-memory-pin-test:
+    @python3 wom7web/project/scripts/tests/test_ai_memory_pin_check.py
+
+stale-path-check *args:
+    @python3 scripts/stale_path_check.py {{ args }}
+
+stale-path-check-test:
+    @python3 scripts/tests/test_stale_path_check.py
+
 
 
 

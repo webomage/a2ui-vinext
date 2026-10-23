@@ -1,0 +1,132 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - beta
+  pull_request:
+    branches:
+      - beta
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gates:
+    name: Offline Quality Gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: "true"
+      ASTRO_TELEMETRY_DISABLED: "1"
+      DO_NOT_TRACK: "1"
+    steps:
+      - name: Checkout Estate Root (@wom)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout Member Repo (wom7web)
+        uses: actions/checkout@v4
+        with:
+          repository: webomage/w0m-web
+          ref: beta
+          path: wom7web
+          token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
+          fetch-depth: 0
+
+      - name: Checkout Member Repo (wom7api)
+        uses: actions/checkout@v4
+        with:
+          repository: webomage/w0m-api
+          ref: beta
+          path: wom7api
+          token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
+
+      - name: Checkout Member Repo (wom7func)
+        uses: actions/checkout@v4
+        with:
+          repository: webomage/w0m-cf
+          ref: beta
+          path: wom7func
+          token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
+
+      - name: Checkout Member Repo (wom7ext)
+        uses: actions/checkout@v4
+        with:
+          repository: webomage/w0m-ext
+          ref: beta
+          path: wom7ext
+          token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
+
+      - name: Checkout Member Repo (wom7sec)
+        uses: actions/checkout@v4
+        with:
+          repository: webomage/w0m-sec
+          ref: beta
+          path: wom7sec
+          token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
+
+      - name: Checkout Member Repo (wom7skills)
+        uses: actions/checkout@v4
+        with:
+          repository: webomage/w0m-skills
+          ref: beta
+          path: wom7skills
+          token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
+
+      - name: Checkout Member Repo (wom7mlx)
+        uses: actions/checkout@v4
+        with:
+          repository: webomage/w0m-mlx
+          ref: beta
+          path: wom7mlx/wom7mlx
+          token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
+
+      - name: Install Just
+        uses: extractions/setup-just@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+          cache-dependency-path: wom7web/pnpm-lock.yaml
+
+      - name: Install Monorepo Dependencies
+        run: pnpm --dir wom7web install --frozen-lockfile
+
+      - name: Validate CI Workflows
+        run: python3 wom7web/project/scripts/ci_workflow_check.py
+
+      - name: Gate — state-check
+        run: just state-check
+
+      - name: Gate — debt-check
+        run: just debt-check --enforce
+
+      - name: Gate — emoji-check
+        run: just emoji-check
+
+      - name: Gate — spec-drift
+        run: just spec-drift
+
+      - name: Gate — astro check (typecheck)
+        run: |
+          just typecheck
+          pnpm --dir wom7web run typecheck

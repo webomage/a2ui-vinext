@@ -60,6 +60,15 @@
       "auto": "none",
       "note": "GATES the deno-check type hook — a version bump can change type-checking. Bump manually + run deno-check."
     },
+    "docker": {
+      "min": "24.0.0",
+      "known_good": "29.9.0",
+      "required": false,
+      "source": "brew",
+      "auto": "none",
+      "smoke": "docker --version",
+      "note": "T164 AC1 — container CLI invoked by `wom7api/scripts/db_baseline.py` (4 subprocess calls: `docker info`, `docker run -d ... postgres:15`, `docker rm -f`) for ephemeral Postgres 15 baseline verification (`just db-baseline-verify` / `just db-baseline-build`). `required: false` because commit/push gates never spin up containers; `auto: none` so engine upgrades stay deliberate."
+    },
     "gauge": {
       "min": "1.6.0",
       "known_good": "1.6.40",
@@ -175,6 +184,15 @@
       "auto": "minor",
       "smoke": "osv-scanner scan --lockfile=pnpm-lock.yaml",
       "note": "pre-commit advisory gate"
+    },
+    "psql": {
+      "min": "15.0",
+      "known_good": "18.6",
+      "required": false,
+      "source": "brew",
+      "auto": "none",
+      "smoke": "psql --version",
+      "note": "T164 AC1 — PostgreSQL interactive/batch client (`libpq` / `postgresql@18`). Measured 33 command/subprocess invocations across 18 files (40 raw before symlink deduplication): `wom7api/justfile` (`db-psql`, `db-psql-ssl`, `tracks-report`, `upwork-sync-check`, `db-audit-log`), `wom7api/scripts/db_baseline.py`, `db_local_migrate.py`, `db_local_seed.py`, `stage2_schema_check.py`, `wom7web/project/scripts/lexicon_lint.py`, and `wom7web/apps/web/scripts/snapshot-*.mjs`, plus declared in `.w0m/sdlc.json` (`mcp.servers.supabase`) as the primary CLI fallback when the Supabase MCP server is disconnected. `required: false` because commit/push hooks do not require a local `psql` binary; floor `15.0` matches the estate's Supabase Postgres 15 baseline."
     },
     "python3": {
       "min": "3.11.0",
@@ -293,5 +311,28 @@
       "smoke": "openspec --version",
       "note": "Spec-driven change workflow (`@fission-ai/openspec`; the bare `openspec` npm package is a dead placeholder). 🔴 ADDED 2026-08-30 — it was UNGOVERNED until then, with no floor at all, which is the wrong posture for the one tool that WRITES agent surfaces into every repo: it generates 10 skills + 10 workflows per declared tool into .agent/, .claude/, .opencode/ and keeps no memory of `--tools`, regenerating from whatever is on disk. ⚠️ `min` is 1.11.0 while 1.6.0 is what is installed, so this reports DRIFT on purpose. The floor is set to what the estate needs, not to what is running — setting it to 1.6.0 to stay green is the same act as raising a ratchet. Two things land in 1.11.0 that the estate wants: Antigravity moves to the shared `.agents/` root (matching Antigravity's own documented default, where `.agent/` is now only backward-compat), and 1.8.0 added a vendor-neutral `agents` target writing `.agents/skills/` for AGENTS.md-aware assistants. 🔴 UPGRADE IS NOT A NO-OP — measured on a scratch repo 2026-08-30: `update --force` on a 1.6.0 layout COPIES to `.agents/` and LEAVES `.agent/` in place (duplication, not migration, despite the release note), and it detected and generated for `codex` from 'legacy artifacts' though codex was never declared. A fresh `init` on 1.11.0 is clean (`.agents/` only). Plan the upgrade per repo with the leftover `.agent/` removed deliberately, not as a side effect."
     }
+  },
+  "_out_of_scope_comment": "T164 AC1 — host CLIs probed by `wom7web/project/scripts/tool_usage_probe.py` (`just tools-usage`) that have ZERO command-position / subprocess invocations across the estate's justfiles, scripts, and git hooks, and are deliberately excluded from `tools` so the policy governs real workflow dependencies rather than whatever happens to be installed on a workstation.",
+  "out_of_scope": {
+    "ansible": "0 command-position uses across the estate; IaC is managed via Terraform (`wom7api/cloudflare`, `wom7api/monitoring`) and Cloudflare Wrangler, with no Ansible playbooks.",
+    "bat": "0 command-position uses; interactive terminal pager/cat replacement, never invoked by scripts, recipes, or git hooks.",
+    "cmake": "0 command-position uses; native C/C++ build generator not invoked directly by any estate recipe (`wom7mlx` compiles via `cargo`).",
+    "direnv": "0 command-position uses; `.env` and `.envrc` files are prohibited across the estate in favour of `infisical run` process injection (T119 AC2b / T135 §6).",
+    "fd": "0 command-position uses; interactive file finder (`fd = os.open(...)` in Python scripts is a local file-descriptor variable, not a CLI call).",
+    "go": "0 command-position uses; no Go stack or module exists in the estate (`stacks-policy.json` runtimes are `node`, `deno`, `python`, `rust`).",
+    "helm": "0 command-position uses; no Kubernetes/Helm charts exist in the estate (compute runs on Cloudflare Workers/Pages and Supabase).",
+    "java": "0 command-position uses; no JVM stack or tooling exists in the estate.",
+    "kubectl": "0 command-position uses; no Kubernetes cluster or manifest exists in the estate.",
+    "ncdu": "0 command-position uses; interactive disk-usage TUI, never invoked by scripts, recipes, or git hooks.",
+    "pip3": "0 command-position uses; Python package management in estate recipes uses `uv` (`uv pip install`, `uv run`, `uv tool install`), never raw `pip3`.",
+    "podman": "0 command-position uses; ephemeral container verification (`wom7api/scripts/db_baseline.py`) invokes `docker`, not `podman`.",
+    "redis-cli": "0 command-position uses; no Redis instance or client workflow exists in the estate.",
+    "rg": "0 command-position uses; `just search` (`scripts/estate_search.py`) runs `LC_ALL=C git --no-pager grep` per repo, and agent harnesses bundle their own ripgrep.",
+    "ruff": "0 command-position uses; retired from TS/Rust repos in T135 task 3.1 and not wired into any recipe or hook (`py-typecheck` uses `mypy`).",
+    "sg": "0 command-position uses; `ast-grep` is invoked by its full binary name (`ast-grep scan`) because `/usr/bin/sg` on Linux is `newgrp` (shadow-utils).",
+    "sqlite3": "0 command-position uses; Python scripts use the stdlib `sqlite3` module in-process rather than shelling out to the `sqlite3` CLI.",
+    "tree": "0 command-position uses; interactive directory printer (`graph-tree`, `agent-tree`, `context-tree` are `just` recipe names, and `tree = ...` in Python/TS is a local variable).",
+    "wget": "0 command-position uses; HTTP probes in recipes and hooks use `curl` or Python `urllib.request`.",
+    "yq": "0 command-position uses; YAML/JSON parsing in recipes and scripts uses `jq` or Python `json`/`yaml`."
   }
 }

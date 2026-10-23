@@ -5,7 +5,7 @@ timestamp: 2026-08-19T00:00:00Z
 agent: claude-code
 model: claude-opus-5
 trigger: user-prompt
-status: proposed
+status: accepted
 superseded_by:
 supersedes: AgDR-0008
 ticket: T234
@@ -137,3 +137,25 @@ it (`auth-rbac-audit-2026-07-14`, 25,286 B) — a file that arguably wants split
 **The fork needs no enhancement to be adoptable.** Its value is **build-from-source**, and the
 decision reduces to one honest question: *is cross-agent recall for 24 memories worth running a
 daemon and owning a Rust dependency?* That is an owner call, not a technical blocker.
+
+
+## 2026-10-23 — Accepted & Reconciled (T234 / T178 / AgDR-0032)
+
+This record is promoted from `proposed` to `accepted` to reconcile the internal drift between
+`T234.md` (§"Adoption — 2026-08-19: ADOPTED, pinned to v1.29.0"), the live pin in
+`wom7web/project/ai-memory-pin.json`, and the estate's settled knowledge architecture:
+
+1. **4-Home Knowledge Split (`T178`, `AC8`) & Worktree Isolation (`AgDR-0032`, `AC6`).**
+   `T178` formally ratified the 4-Home Knowledge Split (`CLAUDE.md` / `AGENTS.md`, `MEMORY.md`,
+   `.tasks/T##.md`, and `@wom/LESSONS.md`), deprecating duplicate pointer memories in favor of
+   canonical git-tracked registers without introducing a ninth unmanaged surface. Separately,
+   `AgDR-0032` (`just agent-tree`) eliminated the shared-worktree `git add -A` race (`AC6`) by
+   giving every concurrent agent an isolated copy of the estate (`~/.w0m/work/<name>/w0m`).
+2. **Pinned Fork & Supply-Chain Gate (`v1.29.0`, `AC3`–`AC5`, `AC7`).**
+   The self-built fork checkout at `_ext/ai-memory` remains pinned to `v1.29.0` (commit
+   `805fa4b17d575dadcd9cc9064aad42975e59e04e`, freeze tag `w0m-validated-2026-08-19`,
+   `auto_update: false`) in `wom7web/project/ai-memory-pin.json`, enforced by
+   `wom7web/project/scripts/ai_memory_pin_check.py` (`just ai-memory-check`) and offline red/green
+   unit tests in `wom7web/project/scripts/tests/test_ai_memory_pin_check.py`. No background daemon
+   or unmanaged global lifecycle hook is enabled on the host.
+

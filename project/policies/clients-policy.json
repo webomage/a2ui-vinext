@@ -546,10 +546,10 @@
       "scope": "work",
       "git_user_name": "Aleksei Tcelishchev",
       "git_user_email": "aleksei@webomage.com",
-      "ssh_key": "~/.ssh/id_ed25519_aleksei",
-      "gh_account": "aleksei-w0m",
+      "ssh_key": "~/.ssh/id_ed25519_aleksei_work",
+      "gh_account": "casualuser",
       "gh_config_dir": "~/.config/gh-aleksei-work",
-      "provisioning_status": "provisioned-dir-pending-gh-login",
+      "provisioning_status": "active",
       "default_hats": [
         "tl",
         "tech.lead"
@@ -560,7 +560,7 @@
       "scope": "work",
       "git_user_name": "Elena Shatalova",
       "git_user_email": "elena@webomage.com",
-      "ssh_key": "~/.ssh/id_ed25519_elena",
+      "ssh_key": "~/.ssh/id_ed25519_elena_work",
       "gh_account": "elena-w0m",
       "gh_config_dir": "~/.config/gh-elena-work",
       "provisioning_status": "provisioned-dir-pending-gh-login",

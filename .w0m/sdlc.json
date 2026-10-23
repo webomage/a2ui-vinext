@@ -22,7 +22,7 @@
     "pattern": "T{id}.md",
     "template": "project/templates/ticket.md",
     "id_prefix": "T",
-    "sync": "project/scripts/sync_github.py"
+    "sync": "scripts/sync_github.py"
   },
   "milestones": [
     {
@@ -189,7 +189,9 @@
     "skills_outdated": "just skill outdated",
     "skills_reconcile": "just skill reconcile",
     "skills_check_user_scope": "just skill check --scope user",
+    "tools_check": "just tools-check",
     "tools_outdated": "just tools-outdated",
+    "tools_usage": "just tools-usage",
     "plan": "just tasks plan"
   },
   "quality_gates": {
@@ -342,9 +344,13 @@
     }
   },
   "toolchain": {
-    "_comment": "T119 AC7: the two standard SDLC interfaces. Both are required:true in project/tools-policy.json; this block is the CONTRACT that gates use them. Verified by `just sdlc-doctor`.",
+    "_comment": "T119 AC7 / T164 AC4-AC5: the two standard SDLC interfaces and host CLI toolchain policy. Both just and infisical are required:true in project/policies/tools-policy.json; this block is the CONTRACT that gates and health checks read. Verified by `just sdlc-doctor` and `just tools-check`.",
     "commands_via": "just",
     "secrets_via": "infisical",
+    "policy": "project/policies/tools-policy.json",
+    "script": "scripts/tools_check.py",
+    "check": "just tools-check",
+    "usage_probe": "wom7web/project/scripts/tool_usage_probe.py",
     "canonical_recipes": [
       "check",
       "typecheck",
@@ -714,9 +720,9 @@
     "exempt": {
       "package.json": "T391: All governed private manifests (@wom root, wom7web monorepo, and apps/*) uniformly declare the canonical date-timestamp release version format. Because private: true is set across all apps, pnpm permits this without registry publishing friction. External published packages retain semver.",
       "report filenames": "Audit/report files use %Y%m%d_%H%M%S for UNIQUENESS, not release identity. ⚠️ This is a CATEGORY note, not a path — the matcher is path-substring, so it matches nothing on its own; the two scripts above are the concrete entries. Kept because the category is the reasoning future entries should follow.",
-      "project/scripts/w0m_audit.py": "Report header prose (`%Y-%m-%d %H:%M UTC`) and the IDEMPOTENT per-day filename `W0M-STATUS-<day>.md`. Both fall under versioning.artifact_naming.does_not_apply_to — the header is written for a person, and the daily file's stable path is its purpose. Not drift: excluded by category, under the declared standard.",
-      "project/scripts/tools_check.py": "A machine-parsed ISO `generated` field read back with datetime.fromisoformat to compute an age. Excluded by category under versioning.artifact_naming.does_not_apply_to: the release schema is not ISO-8601 and would not parse. It is a data field, not an artefact name.",
-      "project/scripts/tools_upgrade.py": "T247 AC1 — the same category as tools_check.py above, and for the same field: a machine-parsed ISO `ran` timestamp in .tools-weekly-status.json, read back with datetime.fromisoformat to say how long ago the last toolchain run failed. It is a data field, not an artefact name or a release identity. ⚠️ This file DOES talk about versions constantly — it is the tool upgrader — which is exactly why the year+version heuristic fired here, and why the exemption is scoped to the timestamp rather than the file being waved through: any future release-shaped string in it should still be a finding.",
+      "scripts/w0m_audit.py": "Report header prose (`%Y-%m-%d %H:%M UTC`) and the IDEMPOTENT per-day filename `W0M-STATUS-<day>.md`. Both fall under versioning.artifact_naming.does_not_apply_to — the header is written for a person, and the daily file's stable path is its purpose. Not drift: excluded by category, under the declared standard.",
+      "scripts/tools_check.py": "A machine-parsed ISO `generated` field read back with datetime.fromisoformat to compute an age. Excluded by category under versioning.artifact_naming.does_not_apply_to: the release schema is not ISO-8601 and would not parse. It is a data field, not an artefact name.",
+      "scripts/tools_upgrade.py": "T247 AC1 — the same category as tools_check.py above, and for the same field: a machine-parsed ISO `ran` timestamp in .tools-weekly-status.json, read back with datetime.fromisoformat to say how long ago the last toolchain run failed. It is a data field, not an artefact name or a release identity. ⚠️ This file DOES talk about versions constantly — it is the tool upgrader — which is exactly why the year+version heuristic fired here, and why the exemption is scoped to the timestamp rather than the file being waved through: any future release-shaped string in it should still be a finding.",
       "project/scripts/tests/test_toolchain_chain.py": "T247 AC7 — the regression proof for the toolchain chain. Its `datetime` use FABRICATES run timestamps (a 4-day-old failed run, a fresh clean one) to assert that a held tool is surfaced with its age, and its version strings are FIXTURES the checker is run against — the same category as wom7skills/tests/skills_version.test.ts. A test that must not contain version-shaped strings cannot test a version reconciler. ⚠️ Scoped to this file for that reason, not because test files are exempt as a class.",
       "wom7skills/tests/skills_version.test.ts": "T131 AC3's regression suite. The version strings in it are FIXTURES the checker is run against — a conforming one, a non-conforming `1.0` reproducing the pre-T131 state, and a deliberately varying producer that proves a no-op stamp stays a no-op even when the clock moves. None is a release identity and none reaches any artifact. ⚠️ Exempting a TEST is the narrow case: the thing under test is the version format itself, so it must be able to write bad versions on purpose. This does NOT extend to the tool it tests — `wom7skills/version.ts` is deliberately NOT exempt and is not flagged, because it reads `producer.expression` from this file rather than carrying a format of its own. If version.ts ever starts constructing a literal, the gate SHOULD fire on it.",
       "wom7api/scripts/db_backup.py": "T229 AC1 — the %Y%m%d_%H%M%S in `backup_<stamp>.sql` names a DUMP FILE for uniqueness and chronological sort; it is not a release identity and nothing reads it back as a version. Exempted by PATH rather than under the existing 'report filenames' category note because that entry says of itself that it is a category, not a path — leaning on it would make this exemption unverifiable. ⚠️ If this file ever produces a string that something PARSES as a version, this exemption is wrong and should be removed rather than widened.",
@@ -724,8 +730,8 @@
       "wom7web/scripts/hook_log_wrap.sh": "T230 — the %Y%m%d_%H%M%S in `<repo>-<hook>-<stamp>.log` names a HOOK RUN LOG for uniqueness and chronological sort. Nothing parses it back as a version, and the file has no release semantics at all. Exempted by PATH, matching the `wom7api/scripts/db_backup.py` precedent where the date-stamp is likewise intrinsic to a generated filename. ⚠️ Distinct from `tasks_query.py`, which was REWORDED instead: there the word 'version' appeared incidentally in prose beside an unrelated date-parse, so removing it kept the gate's signal sharp. Exempt when the stamp is the file's job; reword when the match is an accident.",
       "wom7api/scripts/backup_freshness.py": "T229 AC2 / T231 AC4 — a FALSE POSITIVE with two halves, both stated because neither alone justifies the exemption. (1) The `%Y%m%d%H%M%S` is a strptime PARSE of `backup_<stamp>.sql` / `storage_<stamp>/` names, i.e. reading a date this file did not create — dating backup artefacts IS this file's job, matching the `db_backup.py` precedent. (2) The word that actually tripped the gate is `signature_version=\"s3v4\"`, boto3's S3 CONFIG KEYWORD. \\u26a0\\ufe0f This estate's own rule is *exempt when the stamp is the file's job; REWORD when the match is an accident* — and the match here IS an accident, but it cannot be reworded: it is a third-party API parameter name, not our prose. That is the only reason this is an exemption rather than a rename. \\ud83d\\udd34 If a future version of this file constructs a version string, this exemption is wrong and should be removed rather than widened.",
       "wom7web/project/scripts/upwork_mcp_sync.py": "T155 — TWO non-release uses, both verified rather than waved through. (1) Line 73 `clientInfo: {name, version: \"1.0\"}` is the MCP INITIALIZE HANDSHAKE — the protocol's own field for a client identifying itself to the Upwork server. It is the version of this SYNC CLIENT as the remote sees it, not of any w0m release, and MCP fixes the field name. (2) Lines 439/447 `synced_at: %Y-%m-%dT%H:%M:%SZ` is an ISO timestamp recording WHEN a record was pulled, stored in the JSONL row. Neither is a release identifier; neither reconstructs the release expression. ⚠️ This file first tripped version-check on 2026-08-19 when `git add -A` swept it into an unrelated commit — the gate catching it there is why that mistake was noticed at all, so the exemption is narrowed to this PATH and not widened to the pattern.",
-      "wom7web/project/scripts/prepush_runner.py": "T375 — ISO-8601 timestamps (datetime.now(timezone.utc).isoformat()) recorded in checkpoint JSON to track step execution timestamps and durations. The word 'version' appears incidentally in the registered gate list citing the 'version-check' gate (T131). It is a diagnostic execution stamp, not a release identifier or artefact name.",
-      "wom7web/project/scripts/sync_manifest_versions.py": "T391 — synchronizes governed workspace and sub-app package.json manifests with the canonical release version format emitted by `just version`. It propagates the declared producer's output; it does not define a competing release format.",
+      "scripts/prepush_runner.py": "T375 — ISO-8601 timestamps (datetime.now(timezone.utc).isoformat()) recorded in checkpoint JSON to track step execution timestamps and durations. The word 'version' appears incidentally in the registered gate list citing the 'version-check' gate (T131). It is a diagnostic execution stamp, not a release identifier or artefact name.",
+      "scripts/sync_manifest_versions.py": "T391 — synchronizes governed workspace and sub-app package.json manifests with the canonical release version format emitted by `just version`. It propagates the declared producer's output; it does not define a competing release format.",
       "wom7web/project/scripts/release.py": "T481 — uses datetime.now() for persistent lock timestamps (~/.w0m/stable/.lock) and e2e test recording (~/.w0m/stable/e2e-result.json); release versions strictly come from declared producer (just version).",
       "wom7web/project/scripts/db_drift_check.py": "T551 AC4 — allocates and steps 14-digit numeric Supabase migration prefixes (`%Y%m%d%H%M%S`) for `supabase/migrations/<14digits>_<slug>.sql` (`just db-new-migration`). Supabase `schema_migrations.version` requires a purely numeric 8..14 digit prefix (`^\\d{8,14}_`), not the release `YYYY.MM.DD-<unix>` format; this file allocates database migration sequence numbers, never release or artefact versions."
     },
@@ -973,7 +979,7 @@
         "repo": "wom7api",
         "config_path": "wom7api/supabase/config.toml",
         "deploy_recipe": "deploy-functions",
-        "secrets_carried": "Injected from Infisical beta via `just sync-secrets` (scripts/sync_supabase_secrets.py)",
+        "secrets_carried": "Injected from Infisical beta via `just sync-secrets` (wom7api/scripts/sync_supabase_secrets.py)",
         "cost_ceiling_usd": 25,
         "reachability": "governed-config-and-supabase-cli",
         "spend_monitor": "just supabase-limits",

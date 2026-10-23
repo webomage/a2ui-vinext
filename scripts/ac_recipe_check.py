@@ -90,6 +90,18 @@ ACKNOWLEDGED: dict[tuple[str, str], str] = {
         "a removal AC: T426 AC5 explicitly removes `just claim`/`unclaim`, `agent_claim.py`, and "
         "`_in/active-work.json`; the absence of `just claim` is the ticket's own success condition."
     ),
+    ("T488", "resumes-upload-live"): (
+        "true when ticked: T510 U4 retired `resumes-upload*` (and its root forwarder in T509 U0) after "
+        "moving resume storage to the private `resumes` bucket verified by `just resume-vault-verify`."
+    ),
+    ("T506", "resumes-upload-live"): (
+        "true when ticked: T510 U4 retired `resumes-upload*` (and its root forwarder in T509 U0) in "
+        "favour of `just resume-vault-verify`."
+    ),
+    ("T510", "resumes-upload-live"): (
+        "a removal/historical AC: T510 U4 explicitly retires `resumes-upload*` in favour of "
+        "`just resume-vault-verify`; T509 U0 removed the dangling root forwarder."
+    ),
 }
 
 
