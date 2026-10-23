@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 83 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **83** are
+> ⚠️ **0 of 82 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **82** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/ant-mail-tier` | 0 | **n/a — NO UPSTREAM** | `a71d9839` |
-| `wom7api` | `agent/ant-mail-tier` | 0 | **n/a — NO UPSTREAM** | `0e4a376` |
-| `wom7func` | `agent/ant-mail-tier` | 0 | **n/a — NO UPSTREAM** | `2a1cea5` |
-| `wom7skills` | `agent/ant-mail-tier` | 0 | **n/a — NO UPSTREAM** | `6d80b6a` |
-| `wom7ext` | `agent/ant-mail-tier` | 0 | **n/a — NO UPSTREAM** | `4534f2f` |
-| `wom7sec` | `agent/ant-mail-tier` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
-| `wom7mlx/wom7mlx` | `agent/ant-mail-tier` | 0 | **n/a — NO UPSTREAM** | `660569a` |
+| `wom7web` | `agent/agy-t489-done` | 0 | **n/a — NO UPSTREAM** | `a71d9839` |
+| `wom7api` | `agent/agy-t489-done` | 0 | **n/a — NO UPSTREAM** | `0e4a376` |
+| `wom7func` | `agent/agy-t489-done` | 0 | **n/a — NO UPSTREAM** | `2a1cea5` |
+| `wom7skills` | `agent/agy-t489-done` | 0 | **n/a — NO UPSTREAM** | `6d80b6a` |
+| `wom7ext` | `agent/agy-t489-done` | 0 | **n/a — NO UPSTREAM** | `4534f2f` |
+| `wom7sec` | `agent/agy-t489-done` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
+| `wom7mlx/wom7mlx` | `agent/agy-t489-done` | 0 | **n/a — NO UPSTREAM** | `660569a` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 83 open · 567 TASKS.md rows · 206/567 specced (7/83 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 82 open · 567 TASKS.md rows · 206/567 specced (7/82 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T306","T365","T57","T136","T164","T259","T271","T273","T384","T387"],"repos":{"wom7api":{"branch":"agent/ant-mail-tier","dirty":0,"has_upstream":true,"head":"0e4a376","unpushed":null},"wom7ext":{"branch":"agent/ant-mail-tier","dirty":0,"has_upstream":true,"head":"4534f2f","unpushed":null},"wom7func":{"branch":"agent/ant-mail-tier","dirty":0,"has_upstream":true,"head":"2a1cea5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/ant-mail-tier","dirty":0,"has_upstream":true,"head":"660569a","unpushed":null},"wom7sec":{"branch":"agent/ant-mail-tier","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/ant-mail-tier","dirty":0,"has_upstream":true,"head":"6d80b6a","unpushed":null},"wom7web":{"branch":"agent/ant-mail-tier","dirty":0,"has_upstream":true,"head":"a71d9839","unpushed":null}},"tickets":{"open":83,"rowless_open":[],"rows":567,"specced":206,"specced_open":7,"total":567,"unmirrored_open":4}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T306","T365","T57","T136","T164","T259","T271","T273","T384","T387"],"repos":{"wom7api":{"branch":"agent/agy-t489-done","dirty":0,"has_upstream":true,"head":"0e4a376","unpushed":null},"wom7ext":{"branch":"agent/agy-t489-done","dirty":0,"has_upstream":true,"head":"4534f2f","unpushed":null},"wom7func":{"branch":"agent/agy-t489-done","dirty":0,"has_upstream":true,"head":"2a1cea5","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-t489-done","dirty":0,"has_upstream":true,"head":"660569a","unpushed":null},"wom7sec":{"branch":"agent/agy-t489-done","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/agy-t489-done","dirty":0,"has_upstream":true,"head":"6d80b6a","unpushed":null},"wom7web":{"branch":"agent/agy-t489-done","dirty":0,"has_upstream":true,"head":"a71d9839","unpushed":null}},"tickets":{"open":82,"rowless_open":[],"rows":567,"specced":206,"specced_open":7,"total":567,"unmirrored_open":4}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -134,7 +134,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T306** — New work-scoped GitHub identities (webomage.com) and gh CLI scaffolding for 4 identities, not 2
   - **2026-10-22** (today): AC3, AC4, AC5, AC6, AC7 completed & verified (scripts/gh_identity_select.py, scripts/tests/test_gh_identity_select.py).
 
-#### Completed today (34):
+#### Completed today (35):
 
 - **T12** — Cross-repo tech-debt KB (Actuality audit: Superseded by migration 20260721140000_retire_tech_debt_census.sql (which dropped public.tech_debt), .w0m/sdlc.json -> tech_debt.note, TECH-DEBT.md (just debt-check), and [[AgDR-0025]] (single source of truth). Closed as superseded/not-planned.)
 - **T15** — CP people hierarchy scoping (Actuality audit: Superseded and delivered by [[AgDR-0019]] (<org>.<unit> namespace & offices-to-hats unification), [[AgDR-0027]] (orgs, persons, operator gate), [[AgDR-0028]] (engagements <contractor>.<engagement>.<client>, minimum hats client/pm/tl, role collapse), [[T458]], [[T461]], and [[T553]] (wom_staff_hat, wom_retract_hat, wom_can_read_project_hats). Closed as completed.)
@@ -167,6 +167,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T424** — Orca as the one worktree factory: orca.yaml setup with computed estate parent shims; delete worktree_agent.py (Actuality audit: orca.yaml worktree factory and parent shims were explicitly rejected and superseded by [[AgDR-0032]] / [[T531]] (just agent-tree in wom7web/project/scripts/agent_tree.py); retiring legacy scripts/worktree_agent.py is tracked under [[T531]]. Closed as superseded/not-planned.)
 - **T426** — Parallel-agents pilot (2 agent kinds via Orca), then enforce land-only main checkouts and make it the default (Actuality audit: AC5 (_in/active-work.json and agent_claim.py removal) completed 2026-09-24; AC1–AC4 (parallel-agent worktree workflow in AGENTS.md) superseded and delivered by [[AgDR-0032]] / [[T531]] (just agent-tree / just agent-tree-land). Closed as completed/superseded.)
 - **T441** — Upwork for every member — connect from Me, one sync engine for estate and member accounts, and CP UI for status, history and control (Actuality audit: Superseded by [[T442]] ([[AgDR-0034]] unified OAuth connector framework & AES-256-GCM encrypted public.connections), [[T537]] (per-member Upwork MCP OAuth & deprecation of upwork-poller), [[T539]] (upwork_mcp_sync.py), and [[T560]] ([[AgDR-0033]] job.webomage.com/me/connectors). Closed as completed/superseded.)
+- **T489** — Live test-team provisioning & production non-founder verification (confirm-gated) (Completed (2/2 ACs). Stored owner-supplied wom@webomage.com password into Infisical (beta), provisioned all 11 QA/test-team personas (wom+<role>@webomage.com + demo-@demo.webomage.com) with user_roles, profiles (webomage.team org_unit_id for internal staff), and hats, verified password login across all 11 accounts, and confirmed 0 founder rows visible to non-founder (wom+dev@webomage.com) across profile_resumes, profile_cv_facts, profile_identity, and profile_contact.)
 - **T527** — state-check never runs at push: its tracking-surface scope looks for files in the repo that no longer holds them, and the root repo has no such step (DONE (4/4 ACs verified))
 - **T531** — Several agents, one estate: commit by path, derive at landing, gate the snapshot, allocate ids atomically; workspace sets last (Completed AC1–AC6 (closed))
 - **T549** — suites-drift passes a registered suite whose recipe the runner cannot resolve; make the registry check resolve recipes the way the runner does (done (3/3 ACs verified))
