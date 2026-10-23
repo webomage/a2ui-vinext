@@ -2,6 +2,28 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.23-1792786764
+_First deployed: 2026-10-23 20:38:08.946115+00_
+
+### Features
+- **estate**: land 4-identity selector, stale-path probe, remote CI, and autonomous queue (T306, T164, T234, T259, T384, T387, T400, T509) ([T306](file:///.tasks/T306.md), [T164](file:///.tasks/T164.md), [T234](file:///.tasks/T234.md), [T259](file:///.tasks/T259.md), [T384](file:///.tasks/T384.md), [T387](file:///.tasks/T387.md), [T400](file:///.tasks/T400.md), [T509](file:///.tasks/T509.md))
+- **estate**: close 13 Area 5 & Area 6 tickets, record AgDR-0046, and split T569 (T500, T57, T88, T11, T10, T462, T9, T434, T569, T184, T37, T66, T143, T490) ([T569](file:///.tasks/T569.md), [T500](file:///.tasks/T500.md), [T57](file:///.tasks/T57.md), [T88](file:///.tasks/T88.md), [T11](file:///.tasks/T11.md), [T10](file:///.tasks/T10.md), [T462](file:///.tasks/T462.md), [T9](file:///.tasks/T9.md), [T434](file:///.tasks/T434.md), [T184](file:///.tasks/T184.md), [T37](file:///.tasks/T37.md), [T66](file:///.tasks/T66.md), [T143](file:///.tasks/T143.md), [T490](file:///.tasks/T490.md))
+- **tools**: add just eli5 T* plain-English ticket explainer CLI (T568) ([T568](file:///.tasks/T568.md))
+
+### Fixes
+- **clients**: point bridgeroad and evercred roots to ../../!proj in clients-policy.json (T385) ([T385](file:///.tasks/T385.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `0f60c25` | 2026-10-23 20:38:08.946115+00 |
+| demo | `0f60c25` | 2026-10-23 20:37:15.777594+00 |
+| job | `0f60c25` | 2026-10-23 20:36:13.788682+00 |
+| join | `0f60c25` | 2026-10-23 20:34:17.115834+00 |
+| cp | `0f60c25` | 2026-10-23 20:32:54.750093+00 |
+| web | `0f60c25` | 2026-10-23 20:29:44.048935+00 |
+| release | `0f60c25` | 2026-10-23 20:26:24.361201+00 |
+| api | `0f60c25` | 2026-10-23 20:26:17.105667+00 |
+
 ## 2026.10.22-1792728937
 _First deployed: 2026-10-23 04:41:09.323079+00_
 
