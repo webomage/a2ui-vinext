@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-10-26T10:14:07.449Z",
+  "generatedAt": "2026-10-26T22:51:36.719Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -43,7 +43,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m",
-      "integrity": "sha256-dd6760aaa4bbfe8d596a1398a210126a936605816acb1fa74565c8ec1949f857"
+      "integrity": "sha256-4446b7343ddc26640333ce8e5afb9ff9b6915837912d624da7da7267c2b44a66"
     },
     "w0m-handoff": {
       "provider": "w0m-native",
@@ -184,6 +184,20 @@
       "scope": "project",
       "path": ".agents/skills/eli5",
       "integrity": "sha256-471ce694d7750fee9c2eca2895d422eea0e301fd859746aeb3bc0750267ce55c"
+    },
+    "mmd-validate": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/mmd-validate",
+      "integrity": "sha256-eb049c82acd492b27ab5d16f0884a72e76250dc967c89e48a8e57d6c01100d40"
+    },
+    "w0m-pixel-clone": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/w0m-pixel-clone",
+      "integrity": "sha256-c90e499c6256446b772d22dca2fb2e40569682d871c00e5b2822ee1b9926ac6a"
     }
   }
 }

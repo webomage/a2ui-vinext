@@ -2542,30 +2542,7 @@ knowledge-light: codegraph-sync lexicon-lint status-dashboard
 # If it has, oxfmt can replace prettier for .astro and we drop a formatter + a plugin.
 # Until then prettier + prettier-plugin-astro handles .astro (see w0m-web/.prettierrc.json).
 check-oxfmt-astro:
-    #!/usr/bin/env bash
-    set -uo pipefail
-    echo "🔎 oxfmt astro-support watch"
-    latest=$(npm view oxfmt version 2>/dev/null | tail -1)
-    have=$(node -p "require('w0m-web/node_modules/oxfmt/package.json').version" 2>/dev/null || echo "?")
-    echo "   installed: $have   npm latest: $latest"
-    # Authoritative test: an `astro` key in the CONFIG SCHEMA of the published package.
-    # Must inspect only that file — the tarball's README/CHANGELOG mention astro and
-    # grepping the whole archive gives a false positive (learned the hard way).
-    tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
-    if curl -sL "$(npm view oxfmt dist.tarball 2>/dev/null)" -o "$tmp/o.tgz" 2>/dev/null \
-       && tar -xzf "$tmp/o.tgz" -C "$tmp" package/configuration_schema.json 2>/dev/null; then
-        if node -e 'const s=require(process.argv[1]);process.exit(Object.keys(s.properties||{}).some(k=>/astro/i.test(k))?0:1)' "$tmp/package/configuration_schema.json"; then
-            echo "   ✅ ASTRO SUPPORT DETECTED in oxfmt $latest"
-            echo "      → add @astrojs/compiler at the w0m-web root, set \"astro\": true in .oxfmtrc.json,"
-            echo "        add .astro to the oxfmt hook, retire prettier + prettier-plugin-astro (T106)."
-        else
-            echo "   ⏳ no astro option in oxfmt $latest's config schema — nothing to do."
-            if [ "$have" != "$latest" ]; then echo "      (newer oxfmt available: $have -> $latest)"; fi
-        fi
-    else
-        echo "   ⚠️  could not fetch/inspect the oxfmt tarball — check manually:"
-        echo "      npx oxfmt --help | grep -i astro"
-    fi
+    @python3 "{{ W0M_ROOT }}/w0m-web/project/scripts/check_oxfmt_astro.py"
 
 # Where does symbol/concept A connect to B? (graphify relationship path, w0m-web)
 ask-path a b:

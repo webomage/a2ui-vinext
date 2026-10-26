@@ -230,19 +230,46 @@ def skills_facts(root: Path) -> dict:
         sym, real = entries(root / rel)
         return {"path": rel, "symlinks": sym, "real_dirs": real, "total": sym + real}
 
+    def dir_names(d: Path) -> set[str]:
+        try:
+            return {p.name for p in d.iterdir() if not p.name.startswith(".") and p.is_dir()}
+        except OSError:
+            return set()
+
     sym_c, real_c = entries(root / ".claude" / "skills")
     governed = surface(".agents/skills")
     retired = surface(".agent/skills")          # pre-T127, retired — still live in the wild
     manifest = load_json(root / ".w0m" / "skills.json")
     declared = manifest.get("skills") if isinstance(manifest, dict) else None
+    excluded = manifest.get("exclude") if isinstance(manifest, dict) else None
+    declared_set = set(declared) if isinstance(declared, (list, dict)) else set()
+    installed_names = dir_names(root / ".agents" / "skills") | dir_names(root / ".claude" / "skills")
     return {
         "manifest": manifest is not None,
         "lock": (root / ".w0m" / "skills.lock.json").exists(),
         "declared": len(declared) if isinstance(declared, (list, dict)) else None,
+        "excluded": len(excluded) if isinstance(excluded, (list, dict)) else 0,
+        "project_managed": sum(1 for n in installed_names if n in declared_set),
         "claude_skills": {"symlinks": sym_c, "real_dirs": real_c, "total": sym_c + real_c},
         "agents_skills": governed,
         "retired_agent_skills": retired,
     }
+
+
+def workspace_skills_facts(p: dict, root: Path) -> dict:
+    """Resolve skills facts for a project, including per-surface breakdown for multi-surface workspaces (T508 AC10)."""
+    ws_root = (ROOT / p["root"]).resolve() if p.get("repos") else root.resolve()
+    repos_decl = p.get("repos") or {}
+    if p.get("role") in ("w0m", "estate") and ws_root == ROOT.resolve() and (CANONICAL / ".w0m" / "skills.json").is_file():
+        primary = skills_facts(CANONICAL)
+        surfaces: dict[str, dict] = {".": skills_facts(ws_root)}
+        for rname, rel in sorted(repos_decl.items()):
+            rp = (ws_root / rel).resolve()
+            if (rp / ".w0m" / "skills.json").is_file() or (rp / ".agents" / "skills").is_dir() or (rp / ".claude" / "skills").is_dir():
+                surfaces[rname] = skills_facts(rp)
+        primary["surfaces"] = surfaces
+        return primary
+    return skills_facts(root)
 
 
 def just_recipes(root: Path) -> int | None:
@@ -617,7 +644,7 @@ def inventory(registry: Path = REGISTRY) -> tuple[dict, list[str]]:
             },
             "claude_md": claude_md(root),
             "tasks_board": tasks_board(root),
-            "skills": skills_facts(root),
+            "skills": workspace_skills_facts(p, root),
             "just_recipes": just_recipes(root),
             "state_surface": state_surface(root, candidates),
         })

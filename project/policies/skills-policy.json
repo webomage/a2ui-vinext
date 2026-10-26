@@ -28,7 +28,7 @@
   },
 
   "detect_executable": {
-    "_comment": "How the catalogue decides a skill SHIPS EXECUTABLE CONTENT — the population for which `sandboxed` is load-bearing rather than decorative. Measured 2026-08-09 across the whole estate: exactly 2 skills of 115 qualify (w0m `webapp-testing`, Artemio `idea-refine`). Reported honestly rather than inflated — a setting that applies to 2 things should say so.",
+    "_comment": "How the catalogue decides a skill SHIPS EXECUTABLE CONTENT — the population for which `sandboxed` is load-bearing rather than decorative. Re-measured 2026-10-26 across all estate surfaces (T508): 6 project:skill pairs qualify (`w0m:mmd-validate`, `w0m:w0m-pixel-clone`, `w0m:webapp-testing`, `w0m:wiki-mode`, `artemio:idea-refine`, `artemio:mmd-validate`). Reported honestly rather than inflated.",
     "suffixes": [".sh", ".py", ".mjs", ".js", ".ts", ".bash", ".zsh", ".rb", ".pl"],
     "executable_bit": true
   },
@@ -37,7 +37,7 @@
     "_comment": "Per-skill exceptions to the recommendation, keyed `<project>:<skill>`. A reason is MANDATORY — an unreasoned override is how a recommendation quietly becomes a rubber stamp.",
     "artemio:idea-refine": {
       "sandboxed": false,
-      "reason": "Declared false because it IS false, and the catalogue proved it: `just idea-refine-init` (justfile:215) runs the skill's shipped `scripts/idea-refine.sh` with `bash`, on the host. The inherited `sandboxed: true` default asserted the opposite. The script itself is trivial — it creates `docs/ideas` and echoes JSON — so the exposure is small, but the honest record is `false` plus this reason, not a default nobody chose. ⚠️ Revisit if the skill's shipped code ever does more than mkdir."
+      "reason": "Declared false because it IS false, and the catalogue proved it: `just idea-refine-init` in artemio/justfile runs the skill's shipped `scripts/idea-refine.sh` with `bash`, on the host. The inherited `sandboxed: true` default asserted the opposite. The script itself is trivial — it creates `docs/ideas` and echoes JSON — so the exposure is small, but the honest record is `false` plus this reason, not a default nobody chose. ⚠️ Revisit if the skill's shipped code ever does more than mkdir."
     },
     "w0m:webapp-testing": {
       "sandboxed": false,
@@ -46,6 +46,14 @@
     "w0m:mmd-validate": {
       "sandboxed": false,
       "reason": "Declared false because it IS false: `just mmd-validate` and the pre-commit hook run the skill's shipped `validate.mjs` with `node` on the host. Read 2026-09-30: it only parses diagrams (mermaid over a jsdom DOM shim), with no network call, no child process and no file write. A pen would break the hook for no security gain. Owner direction 2026-10-01: it becomes a portable w0m skills tool for clients (T521). Revisit if its shipped code ever does more than read files."
+    },
+    "w0m:w0m-pixel-clone": {
+      "sandboxed": false,
+      "reason": "Ships `scripts/pixel_clone.mjs` and `scripts/test_pixel_clone.mjs` (T132), executed directly with `node` on the host during local pixel-clone token extraction, component emission, and unit testing. Read 2026-10-26: uses stdlib `node:fs` and `node:path` only, with Stage 0 domain allowlisting (`checkAuthorization`), zero network calls, and zero child processes."
+    },
+    "w0m:wiki-mode": {
+      "sandboxed": false,
+      "reason": "Ships `scripts/wiki-mode.py` (T128 AC8), a read-only vault methodology inspection and destination-routing helper run on the host via `python3`. Read 2026-10-26: uses Python stdlib only (`argparse`, `json`, `re`, `pathlib`), reads `.vault-meta/mode.json` without writing files, making network calls, or spawning subprocesses."
     },
     "artemio:mmd-validate": {
       "sandboxed": false,

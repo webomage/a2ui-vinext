@@ -3,7 +3,7 @@ name: w0m
 description: >
   The Grand Orchestrator and entrypoint for the w0m ecosystem. Trigger when starting a new task, making architectural decisions, or needing guidance. Manages access to the deployed w0m-sdlc-* lifecycle gates (new/research/start/spec/build/review/security/verify/deploy/archive) and to whichever optional persona skills a project has declared in its .w0m/skills.json.
 metadata:
-  version: "2026.10.26-1793009642"
+  version: "2026.10.26-1793053633"
 ---
 
 # w0m: Ecosystem Orchestrator
@@ -48,6 +48,9 @@ Invoke these when working with specific technologies or domains:
 - **`security-guardrails`**: Auditing code for insecure defaults.
 - **`doubt-driven-development`**: Adversarial fresh-context review loops.
 - **`observability-instrumentation`**: Telemetry, logging, and metrics.
+- **`mmd-validate`**: Headless Mermaid diagram syntax validation (`.mmd` and ```` ```mermaid ```` fences).
+- **`w0m-pixel-clone`**: Pixel-perfect parse-and-copy workflow into Astro + Svelte 5 runes and `@webomage/ui` tokens.
+- **`w0m-prs`**: GitHub PR discovery, health audit, watch poller, and visual reporting.
 
 ## Instructions
 When invoked:

@@ -119,10 +119,10 @@ Closed debt rows are deleted from the active tables above and recorded in this a
 | D48 | 2026-08-12 | [[T196]] | Resolved and closed under [[T196]] |
 | D50 | 2026-10-20 | [[T207]] | Dead `/noise.png` public asset reference removed from `ChromeHeader` |
 | D52 | 2026-10-22 | [[T386]] | All local `.pre-commit-config.yaml` hooks routed through `just` recipes and registered in `stacks-policy.json` / `test-suites.json` |
-| D53 | 2026-10-22 | [[T385]] | `client-profile`, `client-inventory`, and `skills-catalogue` suites remediated and promoted to blocking |
+| D53 | 2026-10-26 | [[T385]] / [[T226]] / [[T508]] / [[T522]] | `client-profile` (24/24), `client-inventory` (47/47), and `skills-catalogue` (34/34, `--enforce` exit 0 across `.`, `w0m-web`, `w0m-api`, client surfaces, and user scope) remediated with property-based assertions + red probes and promoted to blocking |
 | D61 | 2026-10-21 | [[T275]] | `/blueprints` per-page hero measure override paying down `h1-wrap` |
 | D63 | 2026-09-17 | [[T344]] | Telegram `ConnectedServices.svelte` integration wired |
-| D66 | 2026-10-22 | [[T385]] | `drop-callers` and client/skills suites promoted to blocking; remaining non-blocking suites audited |
+| D66 | 2026-10-26 | [[T385]] / [[T226]] / [[T508]] / [[T522]] | `drop-callers` and `client-profile` / `client-inventory` (47/47) / `skills-catalogue` (34/34) suites promoted to blocking after replacing hardcoded client counts and `justfile` line numbers with manifest-derived invariants and red probes |
 | D67 | 2026-10-22 | [[T386]] | Git hooks unified under single `just` runner contract; `husky` vs `pre-commit` commit-msg shadowing eliminated via `scripts/conventional_commit.py` |
 | D47 | 2026-10-23 | [[T259]] | All per-app and function deploy recipes (`deploy-web`, `deploy-cp`, `deploy-join`, `deploy-job`, `deploy-demo`, `deploy-workers`, `deploy-functions`, `deploy-api`) wired to `scripts/log_deploy.py` and audited by `just deploy-drift` |
 | D65 | 2026-10-23 | [[T384]] | `fix_ts.py` and `fix_static_imports.py` deleted, ambient `cloudflare:workers` types added across all 5 apps, `w0m-api`/`w0m-ext` `@ts-ignore` eliminated, and downward-only `just suppression-ratchet` installed |

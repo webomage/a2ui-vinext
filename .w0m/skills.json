@@ -22,6 +22,11 @@
       "version": "canonical",
       "observed_version": "2026.07.27-1785131185"
     },
+    "mmd-validate": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.10.26-1793055094"
+    },
     "socrates": {
       "provider": "w0m-native",
       "version": "canonical",
@@ -35,7 +40,7 @@
     "w0m": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.10.26-1793009642"
+      "observed_version": "2026.10.26-1793053633"
     },
     "w0m-handoff": {
       "provider": "w0m-native",
@@ -51,6 +56,11 @@
       "provider": "w0m-native",
       "version": "canonical",
       "observed_version": "2026.07.27-1785131185"
+    },
+    "w0m-pixel-clone": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.10.26-1793055094"
     },
     "w0m-prs": {
       "provider": "w0m-native",

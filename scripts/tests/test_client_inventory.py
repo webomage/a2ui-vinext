@@ -118,14 +118,18 @@ check("prose CLAUDE.md is not treated as a directive",
       and by_id["w0m"]["claude_md"]["resolves"] is None)
 
 # Governed set vs runtime surface must not be conflated.
-# Artemio's skills are governed under manifest + lock (56 declared real dirs in .agents/skills,
-# and .claude/skills holds 56 symlinks + 10 openspec real dirs).
+# Derived from the live manifest rather than a hardcoded census (T226 AC2):
+art_root = Path(by_id["artemio"]["root"])
+art_manifest = json.loads((art_root / ".w0m" / "skills.json").read_text())
+art_expected_decl = len(art_manifest.get("skills", {}))
+art_expected_excl = len(art_manifest.get("exclude", {}))
 art_decl = by_id["artemio"]["skills"]["declared"]
-check("artemio's runtime skills are governed — manifest + lock, 56 declared",
+check("artemio's runtime skills are governed — manifest + lock, declared matches .w0m/skills.json",
       by_id["artemio"]["skills"]["manifest"] is True
       and by_id["artemio"]["skills"]["lock"] is True
-      and art_decl == 56
-      and by_id["artemio"]["skills"]["claude_skills"]["total"] == art_decl + 10)
+      and art_decl == art_expected_decl
+      and by_id["artemio"]["skills"]["excluded"] == art_expected_excl
+      and by_id["artemio"]["skills"]["claude_skills"]["total"] == art_decl + art_expected_excl)
 check("governed skills in .agents/skills are separated from runtime symlinks and CLI-owned real dirs",
       by_id["w0m"]["skills"]["agents_skills"]["real_dirs"] >= by_id["w0m"]["skills"]["declared"]
       and by_id["artemio"]["skills"]["claude_skills"]["symlinks"] > 0
@@ -139,12 +143,12 @@ check("the retired path is ENUMERATED for every project — the field exists, no
       all("retired_agent_skills" in by_id[p]["skills"] for p in by_id))
 check("no project still carries a retired .agent/skills tree",
       all(by_id[p]["skills"]["retired_agent_skills"]["total"] == 0 for p in by_id))
-# Artemio was migrated to the two-layer layout: 56 governed real dirs in
-# .agents/skills, and .claude/skills as 56 symlinks + the 10 openspec real dirs.
-check("artemio now matches the estate layout — 56 governed, 56 symlinks + 10 real dirs",
+# Artemio was migrated to the two-layer layout: governed real dirs in
+# .agents/skills, and .claude/skills as symlinks + excluded real dirs.
+check("artemio matches the two-layer estate layout — governed in .agents/skills, symlinks + excluded in .claude/skills",
       by_id["artemio"]["skills"]["agents_skills"]["total"] == art_decl
       and by_id["artemio"]["skills"]["claude_skills"]["symlinks"] == art_decl
-      and by_id["artemio"]["skills"]["claude_skills"]["real_dirs"] == 10)
+      and by_id["artemio"]["skills"]["claude_skills"]["real_dirs"] == art_expected_excl)
 
 # ── red probes: every integrity check observed FAILING ─────────────────────────
 # The subdirectory trap. `project/` sits inside w0m-web, a real repo — git answers about
@@ -345,6 +349,33 @@ code, out = run(with_zero_services("zero-services.json"))
 p1 = next((p for p in out.get("projects", []) if p["id"] == base["projects"][1]["id"]), None) if code == 0 else None
 check("T299 AC8 probe 4: project with 0 services enabled is legal and distinct from absent",
       code == 0 and p1 is not None and p1.get("services_enabled") == 0 and p1.get("services_total") == 14)
+
+# ── T226 AC4: Red probes for retired `.agent/skills` and ungoverned `.claude/skills` ──────────
+retired_repo = FIX / "retired_probe_repo"
+retired_repo.mkdir(exist_ok=True)
+subprocess.run(["git", "init", "-q"], cwd=str(retired_repo), check=True)
+(retired_repo / ".agent" / "skills" / "stale-skill").mkdir(parents=True, exist_ok=True)
+(retired_repo / ".claude" / "skills" / "untracked-a").mkdir(parents=True, exist_ok=True)
+(retired_repo / ".claude" / "skills" / "untracked-b").mkdir(parents=True, exist_ok=True)
+
+reg_retired = dict(base)
+reg_retired["projects"] = projects(base) + [{
+    "id": "retiredprobe",
+    "role": "managed",
+    "root": str(retired_repo),
+    "enabled": True,
+    "runtime": {"substrate": "host"},
+}]
+code, out = run(write("retired-skills.json", reg_retired))
+rp_entry = next((p for p in out.get("projects", []) if p["id"] == "retiredprobe"), {})
+rp_skills = rp_entry.get("skills", {})
+check("T226 AC4 red probe 1: a project carrying a retired .agent/skills tree is surfaced (retired_agent_skills.total > 0)",
+      code == 0 and rp_skills.get("retired_agent_skills", {}).get("total") == 1
+      and not all(p["skills"]["retired_agent_skills"]["total"] == 0 for p in out.get("projects", [])))
+check("T226 AC4 red probe 2: a project with an ungoverned .claude/skills directory is surfaced (manifest=False, real_dirs=2)",
+      code == 0 and rp_skills.get("manifest") is False
+      and rp_skills.get("claude_skills", {}).get("real_dirs") == 2
+      and rp_skills.get("agents_skills", {}).get("total") == 0)
 
 
 print(f"\n  {checks - len(fails)}/{checks} passed\n")

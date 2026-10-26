@@ -1,0 +1,3 @@
+[[IgnoredVulns]]
+id = "GHSA-238p-pmpm-9mq7"
+reason = "katex prototype pollution - transitive via mmd-validate"

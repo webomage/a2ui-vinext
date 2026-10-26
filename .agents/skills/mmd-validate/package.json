@@ -1,0 +1,21 @@
+{
+  "name": "@wom/mmd-validate",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Headless Mermaid (.mmd) syntax validation — no browser/playwright. Used by git hooks, CI, and the CP.",
+  "bin": {
+    "mmd-validate": "./validate.mjs"
+  },
+  "scripts": {
+    "validate": "node validate.mjs"
+  },
+  "dependencies": {
+    "mermaid": "^11",
+    "jsdom": "^25"
+  },
+  "overrides": {
+    "dompurify": ">=3.4.17"
+  },
+  "license": "UNLICENSED"
+}
