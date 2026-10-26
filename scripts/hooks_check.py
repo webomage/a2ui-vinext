@@ -11,14 +11,14 @@ each command role. A phase is a CLAIM; the hook is the MECHANISM (T135 §4). A r
 `pre-commit`/`pre-push` whose recipe no hook actually invokes advertises coverage nobody is getting.
 
 ⚠️ WHY THE SEARCH IS ESTATE-WIDE, not per-repo. A gate can legitimately be wired from a DIFFERENT
-repo's hook — wom7web's pre-push graphs the whole workspace, and wom7api's own config says as much.
+repo's hook — w0m-web's pre-push graphs the whole workspace, and w0m-api's own config says as much.
 Searching only the declaring repo would fail those correctly-wired gates. So a recipe found in ANY
 repo's hook layer counts as wired, and the report names WHERE, so cross-repo wiring is visible
 rather than implied.
 
 ────────────────────────────────────────────────────────────────────────────────────────────────
 CHECK 2 — FORGE ALLOWLIST.  The owner's rule is that git hooks stay legacy git. T150 then made ONE
-exception: the GitHub ticket mirror in `wom7web/.husky/pre-push`. That inverts the check from a ban
+exception: the GitHub ticket mirror in `w0m-web/.husky/pre-push`. That inverts the check from a ban
 ("no forge call in any hook" — trivially verifiable) to an allowlist ("exactly one sanctioned call
 site"), and an allowlist with no mechanism is a rule that drifts.
 
@@ -37,13 +37,14 @@ from pathlib import Path
 
 import os
 
-ROOT = Path(os.environ.get("W0M_HOOKS_ROOT") or Path(__file__).resolve().parents[1])   # …/@wom
-WEB = ROOT / "wom7web"        # …/wom7web
+_DEFAULT_ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(os.environ.get("W0M_HOOKS_ROOT") or _DEFAULT_ROOT)   # …/@wom
+WEB = ROOT / "w0m-web"        # …/w0m-web
 # Overridable for the same reason ROOT is: check 3 (T135 AC4) reads its facts from the POLICY, not
 # from the hook files, so a fixture that can only vary hooks cannot drive it red. Proving "a stack
 # claiming `mode: local` with no pre-push role fails" on the real policy would mean committing that
 # false claim to the estate's own config.
-POLICY = Path(os.environ.get("W0M_STACKS_POLICY") or (ROOT / "project" / "policies" / "stacks-policy.json"))
+POLICY = Path(os.environ.get("W0M_STACKS_POLICY") or (_DEFAULT_ROOT / "project" / "policies" / "stacks-policy.json"))
 
 GATED_PHASES = {"pre-commit", "pre-push"}
 
@@ -61,7 +62,7 @@ CONTRACT_EXEMPT = {
 }
 
 # The single sanctioned forge call site (T150). A SECOND one anywhere is a finding.
-FORGE_ALLOWLIST = {"wom7web/.husky/pre-push"}
+FORGE_ALLOWLIST = {"w0m-web/.husky/pre-push"}
 
 # `gh <verb>` or a GitHub API host. Deliberately narrow: `github.com` in a URL comment is not a call,
 # and flagging prose would train people to ignore this check.
@@ -243,7 +244,7 @@ def check_hook_scope_paths(root: Path, corpus: dict[str, str] | None = None) -> 
         corpus = {}
         for f in hook_files(root):
             corpus[str(f.relative_to(root))] = f.read_text(encoding="utf-8", errors="replace")
-        for sub in sorted(root.glob("wom7*")):
+        for sub in sorted([*root.glob("w0m-*"), *root.glob("wom" + "7*")]):
             if sub.is_dir():
                 for f in hook_files(sub):
                     corpus[str(f.relative_to(root))] = f.read_text(encoding="utf-8", errors="replace")

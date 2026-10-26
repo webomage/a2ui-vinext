@@ -51,8 +51,8 @@ class DeployFunctionTest(unittest.TestCase):
         self.assertIn("functions deploy get-bot-status hume-token --use-api", r.stdout)
         self.assertNotIn("DEPLOY_VERSION", r.stdout)  # a partial redeploy is not a release
 
-    def test_no_per_function_recipes_remain_in_wom7api(self):
-        text = (ROOT / "wom7api" / "justfile").read_text()
+    def test_no_per_function_recipes_remain_in_w0m_api(self):
+        text = (ROOT / "w0m-api" / "justfile").read_text()
         left = re.findall(r"supabase functions deploy [a-z0-9-]+ --use-api", text)
         self.assertEqual(left, [], "per-function deploy lines must go through `just deploy-function`")
 

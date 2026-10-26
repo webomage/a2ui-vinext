@@ -46,7 +46,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 BASELINE = WEB / "project" / "mcp-exposure-baseline.json"
 
 # Ordered risk ladders. Comparison is by RANK, never by equality: `loopback → host` is a widening

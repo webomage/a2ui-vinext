@@ -3,7 +3,7 @@
   "instructions": [
     "AGENTS.md",
     "CLAUDE.md",
-    "wom7web/openspec/SPEC-AUTHORING-STANDARD.md"
+    "w0m-web/openspec/SPEC-AUTHORING-STANDARD.md"
   ],
   "model": "mlx/gemma-4-12b-coder-fable5-composer2.5-4bit",
   "small_model": "mlx/gemma-4-e4b-it-4bit",
@@ -50,7 +50,7 @@
       "url": "http://127.0.0.1:3001/mcp",
       "enabled": true
     },
-    "wom7web": {
+    "w0m-web": {
       "type": "remote",
       "url": "http://127.0.0.1:3007/mcp",
       "enabled": true

@@ -13,7 +13,7 @@ import json, subprocess, sys, shutil, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 REAL = ROOT / "project" / "policies" / "stacks-policy.json"
 SCHEMA = ROOT / "project" / "policies" / "stacks-policy.schema.json"
 FIX = Path(tempfile.mkdtemp(prefix="t130-"))
@@ -108,7 +108,7 @@ def scan_fixture(recipes):
         _disc.ROOT = real
 
 
-_raw = scan_fixture({"wom7api/justfile": {"typecheck"}})
+_raw = scan_fixture({"w0m-api/justfile": {"typecheck"}})
 _none = scan_fixture({})                       # no recipes parsed → nothing to route TO
 
 check("detector FIRES on a raw invocation in a synthetic hook, naming file, line and tool",
@@ -308,21 +308,21 @@ code, d = run(write("bad-role.json", r))
 check("unknown command role → exit 1", code == 1 and has(d["problems"], "unknown command role"))
 
 # 19-22) exemptions must carry a substantive, non-restating reason (task 1.3)
-r = clone(); r["exempt"]["wom7ext"] = ""
+r = clone(); r["exempt"]["w0m-ext"] = ""
 code, d = run(write("exempt-empty.json", r))
 check("exempt with empty reason → exit 1", code == 1 and has(d["problems"], "missing a reason"))
 
-r = clone(); r["exempt"]["wom7ext"] = "wom7ext"
+r = clone(); r["exempt"]["w0m-ext"] = "w0m-ext"
 code, d = run(write("exempt-restates.json", r))
 check("exempt reason restating the key → exit 1",
       code == 1 and has(d["problems"], "merely restates the key"))
 
-r = clone(); r["exempt"]["wom7ext"] = "no build yet"
+r = clone(); r["exempt"]["w0m-ext"] = "no build yet"
 code, d = run(write("exempt-terse.json", r))
 check("exempt reason too terse → exit 1", code == 1 and has(d["problems"], "record the condition"))
 
 # A bare LIST of names is the shape the rule exists to reject — it records no decision at all.
-r = clone(); r["exempt"] = ["wom7md", "wom7ext"]
+r = clone(); r["exempt"] = ["wom7md", "w0m-ext"]
 code, d = run(write("exempt-list.json", r))
 check("exempt as a bare list → exit 1", code == 1 and has(d["problems"], "records no decision"))
 

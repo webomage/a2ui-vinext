@@ -62,7 +62,7 @@ import time
 from pathlib import Path
 
 ESTATE = Path(__file__).resolve().parents[1]
-ROOT = ESTATE / "wom7web"  # wom7web/
+ROOT = ESTATE / "w0m-web"  # w0m-web/
 SDLC = ESTATE / ".w0m" / "sdlc.json"
 
 # ── project scoping (T182) ────────────────────────────────────────────────────
@@ -157,7 +157,7 @@ def check_mcp() -> dict:
 
     for name, spec in sorted(enabled.items()):
         # `required` defaults true — a server has to opt into being allowed to be down.
-        # obsidian-wom7web is the first false: its own .mcp.json comment already documents
+        # obsidian-w0m-web is the first false: its own .mcp.json comment already documents
         # "a closed vault is the normal case, not an error", but this check still flipped the
         # whole mcp gate red on it, contradicting that documented design.
         required = spec.get("required", True)
@@ -220,8 +220,8 @@ def check_repos() -> dict:
     alone would lose the fact that the registry is incomplete. So do both and report the gap.
     """
     # Use graph_health's REPOS map rather than globbing. Both naive enumerators are wrong here and
-    # each is wrong in the estate's signature way: top-level-only finds 7 because wom7mlx is nested
-    # at wom7mlx/wom7mlx, and one-level-down finds 28 because wom7mlx/ holds ~20 vendored
+    # each is wrong in the estate's signature way: top-level-only finds 7 because w0m-mlx is nested
+    # at w0m-mlx/w0m-mlx, and one-level-down finds 28 because w0m-mlx/ holds ~20 vendored
     # third-party checkouts (mlx, candle, mlx-rs …). The correct set is a DECISION, already made
     # and already written down once. Importing it keeps one home for it; a third enumerator here
     # would be a third thing to drift.
@@ -252,8 +252,8 @@ def check_repos() -> dict:
     if absent:
         raise Finding(f"declared repo(s) not on disk: {', '.join(absent)}")
 
-    # Compare on basenames: the registry may store a bare name ("wom7web") or a nested path
-    # ("wom7mlx/wom7mlx"), and both mean the same repo.
+    # Compare on basenames: the registry may store a bare name ("w0m-web") or a nested path
+    # ("w0m-mlx/w0m-mlx"), and both mean the same repo.
     declared = {Path(v).name for v in json.loads(sdlc.read_text()).get("repos", {}).values()}
     problems: list[str] = []
     notes: list[str] = []          # reported, but never a conformance failure (client mode)
@@ -315,7 +315,7 @@ def check_tools() -> dict:
         sys.path.insert(0, str(ESTATE / "scripts"))
         import deps_sync
 
-        runtime_errors.extend(deps_sync.check_node_engines({"wom7web": ROOT / "package.json"}))
+        runtime_errors.extend(deps_sync.check_node_engines({"w0m-web": ROOT / "package.json"}))
         runtime_errors.extend(deps_sync.check_astro_adapter_exports(ROOT))
         detail.extend(runtime_errors)
     outdated_cache = ESTATE / "project" / ".tools-outdated.json"

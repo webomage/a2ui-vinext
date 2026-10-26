@@ -27,7 +27,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import emoji_policy_check as g  # noqa: E402
@@ -137,10 +137,10 @@ check("generated trees are excluded by DECLARATION, not by luck",
       "graphify-out" in POL["exclude_paths"],
       "graphify-out holds 31 emoji headings per generated report; counting them as authored text "
       "is what made the first baseline wrong")
-# The real bug this hit: `wom7ext/extension/export.md` is a DIRECTORY named `.md`.
+# The real bug this hit: `w0m-ext/extension/export.md` is a DIRECTORY named `.md`.
 check("a DIRECTORY named *.md does not crash the walk",
       all(p.is_file() for p in g.authored(POL, "*/**/*.md")),
-      "IsADirectoryError on wom7ext/extension/export.md killed the first measurement outright")
+      "IsADirectoryError on w0m-ext/extension/export.md killed the first measurement outright")
 
 # ── the DISCOVERY check: declared must be a superset of discovered ──────────────────────────────
 # 🔴 These probes exist because the hand-written coupling list was WRONG. It had six entries, then
@@ -192,7 +192,7 @@ check("a tracked markdown file IS in the authored corpus",
       "the ignore filter must not swallow the corpus it is meant to clean — an empty corpus "
       "passes every ratchet")
 
-# 🔴 Added 2026-09-05 (T312 follow-up). `@wom/.agents` is a symlink to `wom7web/.agents` (T312,
+# 🔴 Added 2026-09-05 (T312 follow-up). `@wom/.agents` is a symlink to `w0m-web/.agents` (T312,
 # multi-agent parity), and the glob traverses it — so the same file was walked twice under two
 # different-looking paths and its heading emoji counted twice, moving the ratchet +5 with no new
 # content. `authored()` now dedups by `Path.resolve()`; this proves it with a minimal fixture

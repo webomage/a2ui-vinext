@@ -34,7 +34,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve()
 ROOT = HERE.parents[1]                      # …/@wom
-CANONICAL = ROOT / "wom7web"                # …/wom7web
+CANONICAL = ROOT / "w0m-web"                # …/w0m-web
 REGISTRY = ROOT / "project" / "policies" / "clients-policy.json"
 PROFILE = CANONICAL / "project" / "client-profile.json"
 
@@ -51,7 +51,7 @@ INVOCATIONS: dict[str, list[str]] = {
     # The mode gate. `--dry-run` because this RUNNER must never mutate the project it is
     # measuring: the installer writes skills, and a conformance check that installs things
     # is not a check. It still exercises the real refusal path, which is what `profile` gates.
-    "skills-install-generic": ["pnpm", "--dir", "../wom7skills", "exec", "tsx",
+    "skills-install-generic": ["pnpm", "--dir", "../w0m-skills", "exec", "tsx",
                                "scripts/install_generic.ts", "{root}", "--dry-run"],
 }
 

@@ -28,7 +28,7 @@ import time
 from pathlib import Path
 
 ESTATE = Path(__file__).resolve().parents[2]
-WEB_ROOT = ESTATE / "wom7web"
+WEB_ROOT = ESTATE / "w0m-web"
 SCRIPT = ESTATE / "scripts" / "confirm_step.py"
 POLICY = ESTATE / "project" / "policies" / "confirm-policy.json"
 # 🔴 The probes MUST NOT touch the shared consent file. They grant and clear consent, and this
@@ -207,8 +207,8 @@ def clear() -> None:
 PROSE_SURFACES = (
     "scripts/confirm_step.py",
     "project/policies/confirm-policy.json",
-    "wom7web/docs/DEPLOY-CONFIRM.md",
-    "just/estate.just" if (ESTATE / "just/estate.just").exists() else "wom7api/justfile",
+    "w0m-web/docs/DEPLOY-CONFIRM.md",
+    "justfile",
 )
 
 # "this step asks again even inside an agreed root"
@@ -290,7 +290,7 @@ def surface_problems(rel: str, raw: str, policy: dict, read_error: str = "") -> 
     🔴 THREE STATES, NOT TWO. A surface that cannot be read, or whose extractor matches no prose
     region, must come back with a PROBLEM rather than an empty list. "Not checked" rendering as
     "agrees" is the vacuous pass this estate keeps finding in its own audit tools (T242), and
-    `justfile` is the live instance: it is a symlink into the wom7api repo, so in a detached
+    `justfile` is the live instance: it is a symlink into the w0m-api repo, so in a detached
     worktree it resolves to nothing and a two-state version of this goes green having read zero
     bytes."""
     if read_error:
@@ -352,9 +352,9 @@ CHAINS: dict[str, tuple[dict[int, tuple[int, str, str]], str | None]] = {
 DEPLOY_SHAPED = re.compile(
     r"wrangler\s+deploy|functions\s+deploy|secrets\s+set|db\s+push|terraform\b[^\n]*\bapply"
     r"|npm\s+run\s+deploy|wrangler\s+secret\s+put|sync_supabase_secrets", re.I)
-# Every justfile the estate runs recipes from. wom7web/wom7func/wom7authz link to wom7api's.
-JUSTFILES = ("justfile", "wom7api/justfile", "wom7ext/justfile", "wom7sec/justfile",
-             "wom7mlx/wom7mlx/justfile")
+# Every justfile the estate runs recipes from. w0m-web/w0m-cf/wom7authz link to w0m-api's.
+JUSTFILES = ("justfile", "w0m-api/justfile", "w0m-ext/justfile", "w0m-sec/justfile",
+             "w0m-mlx/w0m-mlx/justfile")
 
 
 def recipe_body(rec: dict) -> str:
@@ -695,7 +695,7 @@ def main() -> int:
           "no prose read == not checked == fail; a two-state version goes green on zero bytes")
     check("an UNREADABLE surface FAILS rather than passing",
           bool(surface_problems("justfile", "", policy, "cannot read it: No such file or directory")),
-          "the justfile symlink crosses into wom7api and does break — this is not hypothetical")
+          "the justfile symlink crosses into w0m-api and does break — this is not hypothetical")
     check("stays SILENT on the corrected text",
           not prose_contradictions(
               "A standalone `just db-migrate` still asks on its own. Consent lasts 45 min.", policy),

@@ -49,10 +49,10 @@ def test_sdlc_branch_model_contract() -> None:
     assert model["agent_branch_prefix"] == "agent/"
     assert model["release_tag_prefix"] == "release/"
     assert int(model["stale_days"]) == 14
-    assert set(model["single_branch_by_design"]) == {"@wom", "wom7func", "wom7skills"}
-    assert set(model["legacy_main_repos"]) == {"wom7web", "wom7api", "wom7ext", "wom7sec"}
-    assert model["excluded_repos"] == ["wom7mlx/wom7mlx"]
-    api_meta = model["legacy_main_status"]["wom7api"]
+    assert set(model["single_branch_by_design"]) == {"@wom", "w0m-cf", "w0m-skills"}
+    assert set(model["legacy_main_repos"]) == {"w0m-web", "w0m-api", "w0m-ext", "w0m-sec"}
+    assert model["excluded_repos"] == ["w0m-mlx/w0m-mlx"]
+    api_meta = model["legacy_main_status"]["w0m-api"]
     assert api_meta["diverged_pre_rewrite_do_not_merge"] is True
     print("  \u2705 test_sdlc_branch_model_contract")
 
@@ -191,9 +191,9 @@ def test_readonly_whitelist_and_live_estate_non_mutation() -> None:
     assert payload["summary"]["excluded_repo_count"] == 1
     assert payload["summary"]["vacuous"] is False
     repos_by_name = {r["repo"]: r for r in payload["repos"]}
-    assert repos_by_name["wom7api"]["main_status"] == "DIVERGED_PRE_REWRITE_DO_NOT_MERGE"
-    assert repos_by_name["wom7api"]["main_ahead_of_beta"] == 180
-    assert repos_by_name["wom7mlx/wom7mlx"]["excluded"] is True
+    assert repos_by_name["w0m-api"]["main_status"] == "DIVERGED_PRE_REWRITE_DO_NOT_MERGE"
+    assert repos_by_name["w0m-api"]["main_ahead_of_beta"] == 180
+    assert repos_by_name["w0m-mlx/w0m-mlx"]["excluded"] is True
     print("  \u2705 test_readonly_whitelist_and_live_estate_non_mutation")
 
 

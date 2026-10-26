@@ -13,8 +13,8 @@ import pytest
 
 SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 ROOT = SCRIPTS_DIR.parent
-WEB_SCRIPTS_DIR = ROOT / "wom7web" / "project" / "scripts"
-REGISTRY_PATH = ROOT / "wom7web" / "project" / "test-suites.json"
+WEB_SCRIPTS_DIR = ROOT / "w0m-web" / "project" / "scripts"
+REGISTRY_PATH = ROOT / "w0m-web" / "project" / "test-suites.json"
 
 for _p in (SCRIPTS_DIR, WEB_SCRIPTS_DIR):
     _s = str(_p)

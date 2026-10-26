@@ -194,10 +194,13 @@ class LandRootStagingTest(unittest.TestCase):
 
 class LandTopologicalOrderTest(unittest.TestCase):
     def test_sort_order(self):
-        from scripts.land import sort_repos_topologically
-        input_repos = ["root", "wom7web", "wom7api", "wom7func"]
-        ordered = sort_repos_topologically(input_repos)
-        self.assertEqual(ordered, ["wom7api", "wom7func", "wom7web", "root"])
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("land", SCRIPT)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        input_repos = ["root", "w0m-web", "w0m-api", "w0m-cf"]
+        ordered = mod.sort_repos_topologically(input_repos)
+        self.assertEqual(ordered, ["w0m-api", "w0m-cf", "w0m-web", "root"])
 
 
 class LandMemberPipelineTest(unittest.TestCase):

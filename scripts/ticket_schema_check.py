@@ -31,7 +31,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 TICKETS = ROOT / ".tasks"
 if not TICKETS.is_dir():
     sys.exit(f"FATAL: Canonical tickets directory not found at {TICKETS} (AgDR-0025: zero silent fallbacks)")

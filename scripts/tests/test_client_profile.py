@@ -21,7 +21,7 @@ import json, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 
 # 🔑 Corpus assertions are read from the REGISTRY, never hardcoded. Onboarding servicios777 and
 # personaje0 (T182 AC7) broke four suites at once because each asserted a fixed project set — a
@@ -111,14 +111,14 @@ art_row = next((r for r in live["schema_refs"] if r["id"] == "artemio"), None)
 check("a client's vendored $schema resolves and has not drifted",
       art_row is not None and art_row["resolves"] and art_row["drifted"] is False)
 
-# The dangling-$schema finding: reported, and blocking only under --enforce.
+# All declared schema_refs now resolve (w0m, 1945, artemio, servicios777, personaje0, bridgeroad);
+# uncloned portfolio entries (k7, mob) are reported in findings as advisory by default, blocking under --enforce.
 dangling = [r for r in live["schema_refs"] if not r["resolves"]]
-# w0m resolved via .w0m/sdlc.schema.json (T301) and Artemio vendors the schema; 1945 still has none.
-check("the still-unvalidated declaration (1945) is reported",
-      len(dangling) == 1 and dangling[0]["id"] == "1945")
+check("all declared $schema references resolve (0 dangling)",
+      len(dangling) == 0)
 check("findings are advisory by default", code == 0 and live.get("findings"))
 code_e, _ = run(REAL, "--enforce")
-check("--enforce makes the dangling $schema block", code_e == 1)
+check("--enforce makes profile findings block", code_e == 1)
 
 # 🔴 Phase 7 — the profile must validate CLIENTS, not just itself, and must be honest about how
 # much of it can even be enforced at one. Measured 2026-08-09: only 2 of 8 required keys have a
@@ -142,10 +142,9 @@ check("every declared client is validated against the profile",
 by_client = {c["id"]: c for c in live["clients"]}
 check("artemio CONFORMS — every required key declared",
       by_client["artemio"]["conforms"] and by_client["artemio"]["missing_required"] == [])
-check("1945 does not, and its missing keys are named",
-      not by_client["1945"]["conforms"]
-      and by_client["1945"]["missing_required"] == ["$schema", "mcp", "profile", "stacks",
-                                                    "state_surface", "toolchain"])
+check("1945 CONFORMS and uncloned portfolio (k7) missing keys are named",
+      by_client["1945"]["conforms"] and by_client["1945"]["missing_required"] == []
+      and not by_client["k7"]["conforms"] and len(by_client["k7"]["missing_required"]) == 9)
 
 # ── red probes: each defect manufactured and required to fail ──────────────────
 def set_recipe(reg, key, recipe):
@@ -157,7 +156,7 @@ check("a gate naming a NON-EXISTENT recipe fails", code == 1 and "not a recipe" 
 
 p = variant("wrong-script.json",
             lambda r: r["keys"]["stacks"]["gate"].update(
-                {"script": "scripts/version_doctor.py"}))
+                {"script": "project/scripts/version_doctor.py"}))
 code, out = run(p)
 check("a gate script that does NOT read its key fails",
       code == 1 and "does NOT read the key" in errs(out))

@@ -27,7 +27,7 @@ from typing import Any, cast
 from urllib.parse import quote
 
 ESTATE_ROOT = Path(__file__).resolve().parents[1]
-WEB_ROOT = ESTATE_ROOT / "wom7web"
+WEB_ROOT = ESTATE_ROOT / "w0m-web"
 TEMPLATE_PATH = WEB_ROOT / "project" / "zeroclaw" / "config.template.toml"
 SHORTCUT_JSON_PATH = WEB_ROOT / "project" / "data" / "shortcuts" / "AskZeroClaw.shortcut.json"
 ZEROCLAW_DIR = Path(os.path.expanduser("~/.zeroclaw"))
@@ -106,7 +106,7 @@ def verify_siri_shortcuts_contract(
     # 4. Orca deep-link protocol contract
     sample_title = "Voice task: fix compile break"
     encoded_title = quote(sample_title)
-    sample_repo = "wom7web"
+    sample_repo = "w0m-web"
     deep_link = f"orca://orchestration/new?title={encoded_title}&repo={sample_repo}"
     dl_ok = (
         deep_link.startswith("orca://orchestration/new?")

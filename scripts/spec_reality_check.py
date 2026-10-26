@@ -28,7 +28,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 SPECS, TESTS = WEB / "specs", WEB / "tests"
 
 ASSERT = re.compile(
@@ -127,8 +127,8 @@ def main() -> int:
 
     spec_roots = [
         SPECS,
-        ROOT / "wom7ext" / "specs",
-        ROOT / "wom7mlx" / "wom7mlx" / "specs",
+        ROOT / "w0m-ext" / "specs",
+        ROOT / "w0m-mlx" / "w0m-mlx" / "specs",
     ]
     specs = sorted(sp for sr in spec_roots if sr.is_dir() for sp in sr.rglob("*.spec"))
     if not specs:

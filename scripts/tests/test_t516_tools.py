@@ -27,8 +27,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
-sys.path.insert(0, str(ROOT / "wom7web" / "project" / "scripts"))
-sys.path.insert(0, str(ROOT / "wom7api" / "scripts"))
+sys.path.insert(0, str(ROOT / "w0m-web" / "project" / "scripts"))
+sys.path.insert(0, str(ROOT / "w0m-api" / "scripts"))
 
 import ds_inventory  # noqa: E402
 import get_keys  # noqa: E402
@@ -57,11 +57,11 @@ def main() -> int:
         ROOT / "scripts" / "write_hygiene_docs.py",
         ROOT / "scripts" / "status_truth.py",
         ROOT / "scripts" / "zc_compression_measure.py",
-        ROOT / "wom7web" / "project" / "scripts" / "ds_inventory.py",
+        ROOT / "w0m-web" / "project" / "scripts" / "ds_inventory.py",
         ROOT / "scripts" / "infisical_set_prod.py",
         ROOT / "scripts" / "get_keys.py",
         ROOT / "scripts" / "graph_callsites.py",
-        ROOT / "wom7api" / "scripts" / "init_tinybird_schemas.py",
+        ROOT / "w0m-api" / "scripts" / "init_tinybird_schemas.py",
     ]
     for pt in py_tools:
         proc = subprocess.run(
@@ -76,9 +76,9 @@ def main() -> int:
     # 2. --help exit 0 across Deno / TS tools (when deno is on PATH)
     if shutil.which("deno"):
         deno_tools = [
-            ROOT / "wom7api" / "scripts" / "ai-eval.ts",
-            ROOT / "wom7api" / "scripts" / "resume-assist-eval.ts",
-            ROOT / "wom7api" / "scripts" / "get_upwork_auth.ts",
+            ROOT / "w0m-api" / "scripts" / "ai-eval.ts",
+            ROOT / "w0m-api" / "scripts" / "resume-assist-eval.ts",
+            ROOT / "w0m-api" / "scripts" / "get_upwork_auth.ts",
         ]
         for dt in deno_tools:
             proc_d = subprocess.run(

@@ -9,7 +9,7 @@ Enforces the T273 acceptance criteria across the w0m estate:
          compressed ceiling (`1,048,576` B = 1 MB) and Paid tier ceiling (`10,485,760` B = 10 MB),
          failing closed at 85% of the Free tier budget (`891,289` B) so Rust on Workers never
          silently pushes the estate onto Workers Paid (`AgDR-0003` / `T271` / `T272`).
-  - AC3: Type/lint/format gate for `wom7func/crates/w0m-wasm-utils` (`cargo check` + `clippy`
+  - AC3: Type/lint/format gate for `w0m-cf/crates/w0m-wasm-utils` (`cargo check` + `clippy`
          for `wasm32-unknown-unknown` when `cargo` is installed on the host, plus static crate
          manifest/`#![no_std]` source verification and W3C `.wasm` binary section/export ABI
          verification on all hosts).
@@ -38,12 +38,12 @@ ROOT = HERE.parent.parent
 
 TOOLS_POLICY_PATH = ROOT / "project" / "policies" / "tools-policy.json"
 STACKS_POLICY_PATH = ROOT / "project" / "policies" / "stacks-policy.json"
-SUITES_JSON_PATH = ROOT / "wom7web" / "project" / "test-suites.json"
+SUITES_JSON_PATH = ROOT / "w0m-web" / "project" / "test-suites.json"
 AGDR_0044_PATH = (
     ROOT / "docs" / "decisions" / "AgDR-0044-rust-wasm-worker-boundary-and-bundle-budget.md"
 )
 
-FUNC_DIR = ROOT / "wom7func"
+FUNC_DIR = ROOT / "w0m-cf"
 CRATE_DIR = FUNC_DIR / "crates" / "w0m-wasm-utils"
 CARGO_TOML_PATH = CRATE_DIR / "Cargo.toml"
 LIB_RS_PATH = CRATE_DIR / "src" / "lib.rs"
@@ -108,7 +108,7 @@ def _encode_str(text: str) -> bytes:
 def build_deterministic_wasm_bytes() -> bytes:
     """Assemble the deterministic W3C WebAssembly 1.0 binary for `w0m-wasm-utils`.
 
-    Matches `wom7func/crates/w0m-wasm-utils/src/lib.rs` C-ABI exports:
+    Matches `w0m-cf/crates/w0m-wasm-utils/src/lib.rs` C-ABI exports:
       - `memory`: 1..2 pages (64 KiB..128 KiB)
       - `fnv1a64(ptr: i32, len: i32) -> i64`
       - `levenshtein_distance(ptr_a: i32, len_a: i32, ptr_b: i32, len_b: i32) -> i32`
@@ -449,8 +449,8 @@ def check_toolchain_policies(
     else:
         if wasm_stack.get("runtime") != "rust":
             problems.append("stacks-policy.json `wasm-worker` must declare `runtime: \"rust\"`")
-        if wasm_stack.get("repo") != "wom7func":
-            problems.append("stacks-policy.json `wasm-worker` must declare `repo: \"wom7func\"`")
+        if wasm_stack.get("repo") != "w0m-cf":
+            problems.append("stacks-policy.json `wasm-worker` must declare `repo: \"w0m-cf\"`")
         cmds = wasm_stack.get("commands") or {}
         for role in ("build", "test", "lint", "fmt", "fmt-check"):
             if role not in cmds:
@@ -463,7 +463,7 @@ def check_toolchain_policies(
             isinstance(s, dict) and s.get("recipe") == "wasm-worker-check" for s in suites
         )
         if not has_suite:
-            problems.append("wom7web/project/test-suites.json missing `wasm-worker-check` suite")
+            problems.append("w0m-web/project/test-suites.json missing `wasm-worker-check` suite")
     else:
         problems.append(f"Missing test-suites.json: {suites_path}")
 
@@ -479,7 +479,7 @@ def measure_bundle_budget(
     free_limit_bytes: int = CF_FREE_TIER_LIMIT_BYTES,
     budget_ratio: float = CF_FREE_BUDGET_RATIO,
 ) -> dict[str, Any]:
-    """AC2: Measure `wom7func` TS baseline + `.wasm` binary against Cloudflare Free tier limit."""
+    """AC2: Measure `w0m-cf` TS baseline + `.wasm` binary against Cloudflare Free tier limit."""
     problems: list[str] = []
     ts_files: list[Path] = []
     src_dir = func_dir / "src"

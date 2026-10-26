@@ -284,7 +284,7 @@ def _detect_repo_and_paths(
         raise CommitByPathError("at least one path is required")
 
     # Determine enclosing git repo from the first path so running from estate root
-    # with `wom7web/foo.py` or `.tasks/T1.md` automatically targets the right repo.
+    # with `w0m-web/foo.py` or `.tasks/T1.md` automatically targets the right repo.
     first_abs = (cwd / raw_paths[0]).resolve(strict=False)
     probe = first_abs if first_abs.is_dir() else first_abs.parent
     while not probe.exists() and probe != probe.parent:

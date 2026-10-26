@@ -33,7 +33,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ESTATE = HERE.parent  # …/@wom
-PIN = ESTATE / "wom7web" / "project" / "ai-memory-pin.json"
+PIN = ESTATE / "w0m-web" / "project" / "ai-memory-pin.json"
 
 
 def git(repo: Path, *args: str) -> str | None:

@@ -2,13 +2,13 @@
 """T267 — probes for the deploy-in-flight hook's SCOPE.
 
 🔴 Why this file exists. The hook scanned `ps` HOST-WIDE for any `just deploy*`, so on 2026-08-23
-another project's apex production deploy blocked a commit in `wom7web` — a repo whose
+another project's apex production deploy blocked a commit in `w0m-web` — a repo whose
 `confirm_step.py` that deploy has never heard of. The fact being protected is repo-scoped
 (`confirm_step.py:148` pins `head_sha()` to `cwd=WEB_ROOT`); the detection was machine-scoped.
 
 🔑 AND THE OBVIOUS FIX IS WRONG, which is why the CONTROL below is the most important probe here.
 "Block only if the deploy's git toplevel is this repo" reads like a tightening and is a silent
-removal: a w0m deploy runs from `wom7api/`, a DIFFERENT repo under the same estate, so that rule
+removal: a w0m deploy runs from `w0m-api/`, a DIFFERENT repo under the same estate, so that rule
 unblocks precisely the case the hook exists for. The boundary is the ESTATE, declared at
 `.w0m/sdlc.json -> root`.
 
@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import deploy_in_flight_check as dif  # noqa: E402
@@ -42,7 +42,7 @@ def check(label: str, ok: bool, detail: str = "") -> None:
 
 
 ESTATE = dif.estate_root()
-API = str(WEB.parent / "wom7api")
+API = str(WEB.parent / "w0m-api")
 FOREIGN = "/Users/proto/Projects/_self/1945"
 
 
@@ -89,13 +89,13 @@ check("AC1: a deploy OUTSIDE the declared estate does NOT block",
       blocking == [] and unmeasurable == [],
       "this is the 2026-08-23 false positive — 1945's apex deploy stopped a commit here")
 
-# ── AC2: THE CONTROL. A w0m deploy from wom7api/ STILL blocks. ───────────────────────────────
+# ── AC2: THE CONTROL. A w0m deploy from w0m-api/ STILL blocks. ───────────────────────────────
 # 🔴 If this fails, the change is indistinguishable from deleting the hook.
 dif.subprocess.run = fake(["222 /opt/homebrew/bin/just deploy-all"], {"222": API})
 blocking, unmeasurable = dif.running_deploys()
-check("AC2 CONTROL: a w0m deploy running from wom7api/ STILL blocks",
+check("AC2 CONTROL: a w0m deploy running from w0m-api/ STILL blocks",
       len(blocking) == 1 and not unmeasurable,
-      "deploys run from wom7api/, NOT wom7web/ — the naive 'same repo' predicate would unblock "
+      "deploys run from w0m-api/, NOT w0m-web/ — the naive 'same repo' predicate would unblock "
       "the exact case this hook exists for, while reading as a tightening")
 
 # ── AC4: the three states ────────────────────────────────────────────────────────────────────
@@ -170,7 +170,7 @@ check("MUTATION: the OLD rule BLOCKS on the foreign deploy (the new one does not
       len(old_running_deploys(_foreign_ps)) == 1,
       "if the old rule also allowed it, AC1 above would be asserting nothing — this is the "
       "2026-08-23 false positive, reproduced")
-check("MUTATION: old and new AGREE that a wom7api deploy blocks",
+check("MUTATION: old and new AGREE that a w0m-api deploy blocks",
       len(old_running_deploys(_api_ps)) == 1,
       "the change must be confined to the out-of-estate case; if it moved this verdict it is not "
       "a narrowing, it is a different gate")
@@ -185,4 +185,4 @@ if failures:
     print("\ndeploy-in-flight scope: FAILED")
     sys.exit(1)
 print(f"deploy-in-flight scope: OK — {checks}/{checks}; scoped to the declared estate, and a "
-      "wom7api deploy still blocks")
+      "w0m-api deploy still blocks")

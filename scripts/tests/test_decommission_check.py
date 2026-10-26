@@ -52,7 +52,7 @@ def main() -> int:
     p.check("a tombstone WITH an absent block is parsed", len(a) == 1, str(a))
     p.check("a tombstone WITHOUT one is reported, not skipped silently",
             missing == ["beta — retired"], str(missing))
-    p.check("repos defaults to wom7web when unstated", a[0]["repos"] == ["wom7web"], str(a[0]))
+    p.check("repos defaults to w0m-web when unstated", a[0]["repos"] == ["w0m-web"], str(a[0]))
 
     print("\nTHE EMPTY CORPUS MUST FAIL (it must never report a confident green over nothing)")
     empty = write("# T\n\nno tombstones at all\n")

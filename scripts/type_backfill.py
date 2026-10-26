@@ -21,7 +21,7 @@ from typing import Any
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT = SCRIPT_DIR.parent
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 WEB_SCRIPTS = WEB / "project" / "scripts"
 if str(WEB_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(WEB_SCRIPTS))

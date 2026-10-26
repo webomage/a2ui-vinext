@@ -82,8 +82,8 @@ def main() -> int:
             "is declared but does not exist" in src)
 
     print("\nTHE LIVE ESTATE IS NON-VACUOUS")
-    found = ia.find_ignore_files("wom7web", pol)
-    p.check("wom7web really has ignore files to audit", len(found) >= 5, str(len(found)))
+    found = ia.find_ignore_files("w0m-web", pol)
+    p.check("w0m-web really has ignore files to audit", len(found) >= 5, str(len(found)))
     p.check("...and the extension icons are no longer ignored (the fix holds)",
             not any(e["path"].startswith("extension/icons") for e in und + acc),
             "icons should be fixed by a negation, not accepted as a conflict")

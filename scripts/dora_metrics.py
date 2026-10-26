@@ -40,8 +40,8 @@ INCIDENTS_DIR = ESTATE_ROOT / ".incidents"
 INCIDENT_SCHEMA_PATH = INCIDENTS_DIR / "incident.schema.json"
 TASKS_DIR = ESTATE_ROOT / ".tasks"
 DEPLOY_LOGS_DIR = ESTATE_ROOT / "deploy-logs"
-SUITES_PATH = ESTATE_ROOT / "wom7web" / "project" / "test-suites.json"
-PY_TYPING_BASELINE_PATH = ESTATE_ROOT / "wom7web" / "project" / "py-typing-baseline.json"
+SUITES_PATH = ESTATE_ROOT / "w0m-web" / "project" / "test-suites.json"
+PY_TYPING_BASELINE_PATH = ESTATE_ROOT / "w0m-web" / "project" / "py-typing-baseline.json"
 
 VERSION_EPOCH_RE = re.compile(r"^(?P<date>\d{4}\.\d{2}\.\d{2})-(?P<epoch>\d{9,12})$")
 INFERRED_AREA_RE = re.compile(r"^area:.*#\s*⚠️\s*inferred", re.M)

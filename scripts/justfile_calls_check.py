@@ -4,8 +4,8 @@
 WHY THIS EXISTS
     T421 moved the deploy machinery to the estate-root justfile and carried
     `_post-deploy-knowledge` over verbatim: its body ran `just knowledge-light`, a recipe that
-    exists only in `wom7api/justfile`. Every other root recipe delegates explicitly
-    (`just --justfile wom7api/justfile …`); this one did not, and its `-` prefix turned
+    exists only in `w0m-api/justfile`. Every other root recipe delegates explicitly
+    (`just --justfile w0m-api/justfile …`); this one did not, and its `-` prefix turned
     `error: justfile does not contain recipe` into a green step. The owner's deploy-all on
     2026-09-24 printed the error and still ended `✅ exited 0` — the post-deploy knowledge refresh
     had not run once since the move (T431 run 7).
@@ -56,7 +56,7 @@ def body_lines(recipe: dict) -> list[str]:
 def executable(line: str) -> str:
     """The part of a body line the shell would run as a command: no comment, no quoted text.
 
-    The first run against wom7api flagged 4 "calls" that were English — `# … just like a real
+    The first run against w0m-api flagged 4 "calls" that were English — `# … just like a real
     absence`, `echo "  just do <recipe>"`. A comment or a quoted string is not a call, and a check
     that cries wolf on prose gets switched off.
     """
@@ -96,9 +96,9 @@ def scan(data: dict) -> tuple[int, int, int, list[str]]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--justfile", action="append", type=Path,
-                    help="justfile to scan (repeatable); default: the estate root and wom7api")
+                    help="justfile to scan (repeatable); default: the estate root and w0m-api")
     args = ap.parse_args()
-    targets = args.justfile or [ROOT / "justfile", ROOT / "wom7api" / "justfile"]
+    targets = args.justfile or [ROOT / "justfile", ROOT / "w0m-api" / "justfile"]
 
     failed = unmeasured = False
     seen_recipes: dict[str, Path] = {}

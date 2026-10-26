@@ -27,7 +27,7 @@ _os.environ["W0M_CONFIRM_CONSENT"] = str(_CONSENT_SENTINEL)
 
 
 ROOT = Path(__file__).resolve().parents[2]
-REPO = ROOT / "wom7web"
+REPO = ROOT / "w0m-web"
 spec = importlib.util.spec_from_file_location("dl", ROOT / "scripts/deploy_logged.py")
 dl = importlib.util.module_from_spec(spec); spec.loader.exec_module(dl)
 
@@ -70,7 +70,7 @@ check("the variable NAME survives", "SUPABASE_SERVICE_ROLE_KEY" in out, out)
 # ── and must NOT fire on ordinary deploy chatter ──────────────────────────────────────────────
 BENIGN = [
     "Injecting 98 Infisical secrets into your application process",
-    "Uploaded wom7api (4.21 sec)",
+    "Uploaded w0m-api (4.21 sec)",
     "https://api.webomage.com/health",
     "warning: 3 vulnerabilities found",
 ]

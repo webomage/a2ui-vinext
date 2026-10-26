@@ -115,7 +115,7 @@ def main() -> int:
         eentry = re.search(r"id: decisions-index-fresh[\s\S]*?entry: (.+)", cfg).group(1)
         p.check("...and it is CHECK-ONLY (cannot rewrite a file in a sibling repo)",
                 "--check" in eentry and "git add" not in eentry)
-        for path in [pat.replace("T*.md", "T204.md") for _, base, pat in di.SOURCES if base == di.ESTATE and not pat.startswith("wom7web/")]:
+        for path in [pat.replace("T*.md", "T204.md") for _, base, pat in di.SOURCES if base == di.ESTATE and not pat.startswith("w0m-web/")]:
             p.check(f"the umbrella hook fires on {path}", bool(erx.match(path)),
                     "a source the generator reads but the hook ignores goes stale silently")
         p.check("the umbrella hook fires on docs/decisions/AgDR-0001-test.md",

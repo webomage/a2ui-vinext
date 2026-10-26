@@ -38,19 +38,19 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ESTATE = Path(__file__).resolve().parents[1]
-JUSTFILE = ESTATE / "wom7api" / "justfile"
-JUSTFILES = (ESTATE / "justfile", ESTATE / "just" / "estate.just", ESTATE / "wom7api" / "justfile")
-BASELINE = ESTATE / "wom7web" / "project" / "secret-flow-baseline.json"
+JUSTFILE = ESTATE / "w0m-api" / "justfile"
+JUSTFILES = (ESTATE / "justfile", ESTATE / "just" / "estate.just", ESTATE / "w0m-api" / "justfile")
+BASELINE = ESTATE / "w0m-web" / "project" / "secret-flow-baseline.json"
 
 # worker (as named in `--name`) -> the source trees that can read its secrets. `webomage` is the sync-cf-secrets default (apps/web).
 WORKER_SOURCES: dict[str, list[str]] = {
-    "wom7func": ["wom7func/src"],
-    "wom7api": ["wom7api/src"],
-    "webomage": ["wom7web/apps/web/src", "wom7web/packages/lib/src"],
-    "webomage-cp": ["wom7web/apps/cp/src", "wom7web/packages/lib/src"],
-    "webomage-join": ["wom7web/apps/join/src", "wom7web/apps/cp/src", "wom7web/packages/lib/src"],
-    "webomage-job": ["wom7web/apps/job/src", "wom7web/apps/cp/src", "wom7web/packages/lib/src"],
-    "webomage-demo": ["wom7web/apps/demo/src", "wom7web/packages/lib/src"],
+    "wom7func": ["w0m-cf/src"],  # pinned worker
+    "wom7api": ["w0m-api/src"],  # pinned worker
+    "webomage": ["w0m-web/apps/web/src", "w0m-web/packages/lib/src"],
+    "webomage-cp": ["w0m-web/apps/cp/src", "w0m-web/packages/lib/src"],
+    "webomage-join": ["w0m-web/apps/join/src", "w0m-web/apps/cp/src", "w0m-web/packages/lib/src"],
+    "webomage-job": ["w0m-web/apps/job/src", "w0m-web/apps/cp/src", "w0m-web/packages/lib/src"],
+    "webomage-demo": ["w0m-web/apps/demo/src", "w0m-web/packages/lib/src"],
 }
 
 ECHO_PUSH = re.compile(
@@ -146,7 +146,7 @@ def load_tree(rel_dirs: list[str], root: Path = ESTATE) -> dict[str, str]:
 def estate_consumers(name: str, root: Path = ESTATE) -> list[str]:
     """Files anywhere in the estate that use `name` other than recipes, docs and records (those describe or push it, they do not consume it)."""
     hits: list[str] = []
-    for repo in ("wom7web", "wom7api", "wom7func", "wom7ext", "wom7sec", "wom7skills"):
+    for repo in ("w0m-web", "w0m-api", "w0m-cf", "w0m-ext", "w0m-sec", "w0m-skills"):
         candidates: list[str] = []
         d = root / repo
         if not (d / ".git").exists():
@@ -280,10 +280,10 @@ def selftest() -> int:
         '      echo "$PUBLIC_SUPABASE_URL" | pnpm exec wrangler secret put PUBLIC_SUPABASE_URL --name {{ project }}\'\n'
     )
     pushes = parse_pushes(recipe)
-    tree = {"wom7func": {"wom7func/src/index.ts": "const t = env.TELEGRAM_BOT_TOKEN;\nconst g = env.GEMINI_API_KEY;\n",
-                         "wom7func/worker-configuration.d.ts": "  CLOUDFLARE_API_TOKEN: string;\n"},
-            "wom7api": {"wom7api/src/a.ts": "const k = env.ADZUNA_APP_ID; const j = env.JOOBLE_API_KEY;"},
-            "webomage": {"wom7web/apps/web/src/x.ts": "import.meta.env.PUBLIC_SUPABASE_URL"}}
+    tree = {"w0m-cf": {"w0m-cf/src/index.ts": "const t = env.TELEGRAM_BOT_TOKEN;\nconst g = env.GEMINI_API_KEY;\n",  # pinned worker
+                         "w0m-cf/worker-configuration.d.ts": "  CLOUDFLARE_API_TOKEN: string;\n"},
+            "w0m-api": {"w0m-api/src/a.ts": "const k = env.ADZUNA_APP_ID; const j = env.JOOBLE_API_KEY;"},  # pinned worker
+            "webomage": {"w0m-web/apps/web/src/x.ts": "import.meta.env.PUBLIC_SUPABASE_URL"}}
     def consumers(k: str) -> list[str]:
         return [] if k == "CF_RUNTIME_API_TOKEN" else ["somewhere.ts"]
     checks: list[tuple[str, bool]] = []
@@ -295,21 +295,21 @@ def selftest() -> int:
         checks.append((name, bool(cond)))
     ok("parses the echo shape, the loop shape and the {{ project }} default",
        {(p.src, p.dst, p.worker) for p in pushes} == {
-           ("CF_RUNTIME_API_TOKEN", "CLOUDFLARE_API_TOKEN", "wom7func"), ("TELEGRAM_BOT_TOKEN", "TELEGRAM_BOT_TOKEN", "wom7func"),
-           ("GEMINI_API_KEY", "GEMINI_API_KEY", "wom7func"), ("ADZUNA_APP_ID", "ADZUNA_APP_ID", "wom7api"),
-           ("JOOBLE_API_KEY", "JOOBLE_API_KEY", "wom7api"), ("PUBLIC_SUPABASE_URL", "PUBLIC_SUPABASE_URL", "webomage")})
+           ("CF_RUNTIME_API_TOKEN", "CLOUDFLARE_API_TOKEN", "wom7func"), ("TELEGRAM_BOT_TOKEN", "TELEGRAM_BOT_TOKEN", "wom7func"),  # pinned worker
+           ("GEMINI_API_KEY", "GEMINI_API_KEY", "wom7func"), ("ADZUNA_APP_ID", "ADZUNA_APP_ID", "wom7api"),  # pinned worker
+           ("JOOBLE_API_KEY", "JOOBLE_API_KEY", "wom7api"), ("PUBLIC_SUPABASE_URL", "PUBLIC_SUPABASE_URL", "webomage")})  # pinned worker
     vault_full = {"CF_RUNTIME_API_TOKEN": 53, "TELEGRAM_BOT_TOKEN": 46, "GEMINI_API_KEY": 39, "ADZUNA_APP_ID": 8, "JOOBLE_API_KEY": 36, "PUBLIC_SUPABASE_URL": 40}
     fs = evaluate(pushes, tree, consumers, vault_full, {"CF_RUNTIME_API_TOKEN": "dead"})
-    ok("SHAPE 1 - pushed but unread: CLOUDFLARE_API_TOKEN on wom7func (a `.d.ts` declaration is not a reader)", has(fs, "UNREAD", "wom7func:CLOUDFLARE_API_TOKEN"))
+    ok("SHAPE 1 - pushed but unread: CLOUDFLARE_API_TOKEN on wom7func (a `.d.ts` declaration is not a reader)", has(fs, "UNREAD", "wom7func:CLOUDFLARE_API_TOKEN"))  # pinned worker
     ok("SHAPE 2 - the vault key's only consumer is the pusher: CF_RUNTIME_API_TOKEN", has(fs, "PUSHER-ONLY", "vault:CF_RUNTIME_API_TOKEN"))
-    ok("...and the rename on push is reported (ALIASED)", has(fs, "ALIASED", "wom7func:CLOUDFLARE_API_TOKEN"))
+    ok("...and the rename on push is reported (ALIASED)", has(fs, "ALIASED", "wom7func:CLOUDFLARE_API_TOKEN"))  # pinned worker
     ok("...and a well-formed vault key the provider rejects is DEAD", has(fs, "DEAD", "vault:CF_RUNTIME_API_TOKEN"))
     fs3 = evaluate(pushes, tree, consumers, {k: v for k, v in vault_full.items() if k != "TELEGRAM_BOT_TOKEN"}, {})
     ok("SHAPE 3 - absent from the vault but pushed to the worker: TELEGRAM_BOT_TOKEN", has(fs3, "ABSENT", "vault:TELEGRAM_BOT_TOKEN"))
     ok("an EMPTY vault value is its own state (the empty-secret digest trap)",
        has(evaluate(pushes, tree, consumers, {**vault_full, "GEMINI_API_KEY": 0}, {}), "EMPTY", "vault:GEMINI_API_KEY"))
     ok("positive control: a read secret with a present vault key is NOT unread/absent/empty",
-       not any(f.key in ("wom7func:GEMINI_API_KEY", "vault:GEMINI_API_KEY") and f.state in ("UNREAD", "ABSENT", "EMPTY", "PUSHER-ONLY") for f in fs))
+       not any(f.key in ("wom7func:GEMINI_API_KEY", "vault:GEMINI_API_KEY") and f.state in ("UNREAD", "ABSENT", "EMPTY", "PUSHER-ONLY") for f in fs))  # pinned worker
     ok("no vault injected -> NOT MEASURABLE, never a pass and never a violation",
        has(evaluate(pushes, tree, consumers, None, {}), "NOT MEASURABLE", "vault:GEMINI_API_KEY"))
     ok("no probe for a credential -> NOT MEASURABLE (reported, not passed)", has(fs, "NOT MEASURABLE", "vault:GEMINI_API_KEY"))

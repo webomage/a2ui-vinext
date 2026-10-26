@@ -60,7 +60,7 @@ class TestSelection(unittest.TestCase):
 class TestRealRegistry(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.suites = json.loads((ROOT / "wom7web" / "project" / "test-suites.json").read_text())["suites"]
+        cls.suites = json.loads((ROOT / "w0m-web" / "project" / "test-suites.json").read_text())["suites"]
 
     def test_the_real_registry_is_valid(self):
         self.assertEqual(rs.prepush_problems(self.suites), [])

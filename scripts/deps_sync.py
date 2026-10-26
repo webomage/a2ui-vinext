@@ -150,7 +150,7 @@ def lockfile_min(repo_dir: Path, dep: str) -> tuple[int, int, int] | None:
     """Lowest resolved version of `dep` in the repo's pnpm-lock.yaml, or None if absent.
 
     Lets a security floor be INJECTED into a repo that resolves a vulnerable version but has
-    no override yet (the wom7cfworkers case) — without over-constraining repos that don't use it.
+    no override yet (the w0m-cf case) — without over-constraining repos that don't use it.
     """
     found = lockfile_versions(repo_dir, dep)
     return min(found) if found else None
@@ -165,8 +165,8 @@ def lockfile_max(repo_dir: Path, dep: str) -> tuple[int, int, int] | None:
 def tracked_npm_lockfiles(repo_dir: Path) -> list[Path]:
     """Return tracked npm `package-lock.json` files inside `repo_dir` (T298 AC3).
 
-    In git-backed repos (`wom7web`, `wom7ext`, `wom7skills`, etc.), `git ls-files` is used so
-    untracked vendored trees (`wom7web`'s 43 and `wom7ext`'s 1 untracked package-lock.json files)
+    In git-backed repos (`w0m-web`, `w0m-ext`, `w0m-skills`, etc.), `git ls-files` is used so
+    untracked vendored trees (`w0m-web`'s 43 and `w0m-ext`'s 1 untracked package-lock.json files)
     are never picked up. In non-git synthetic test fixtures, falls back to walking `repo_dir`
     while excluding `node_modules` and `.git`.
     """
@@ -427,8 +427,8 @@ def discover_workspace_packages(
     """Enumerate every `package.json` in each repo's pnpm workspace, not just the root (T56 AC1).
 
     Returns a deterministic list of `(ws_key, repo_name, pkg_path, pkg_dict)` tuples where
-    `ws_key` is the workspace-qualified identifier (e.g. `"wom7web"`, `"wom7web/apps/join"`,
-    `"wom7web/packages/lib"`, `"wom7ext/extension"`).
+    `ws_key` is the workspace-qualified identifier (e.g. `"w0m-web"`, `"w0m-web/apps/join"`,
+    `"w0m-web/packages/lib"`, `"w0m-ext/extension"`).
     """
     discovered: list[tuple[str, str, Path, dict]] = []
     seen_paths: set[Path] = set()
@@ -497,7 +497,7 @@ def _lookup_lagging_entry(
     repo_name: str,
     is_root: bool,
 ) -> tuple[str | None, object]:
-    """Match a workspace key (`wom7web/apps/join` or `wom7ext/extension`) against `lagging` (T56 AC4)."""
+    """Match a workspace key (`w0m-web/apps/join` or `w0m-ext/extension`) against `lagging` (T56 AC4)."""
     if ws_key in lagging:
         return ws_key, lagging[ws_key]
     if is_root and repo_name in lagging:
@@ -518,8 +518,8 @@ def check_runtime_alignment(
 
     if estate_root is not None:
         base_root = estate_root
-    elif "wom7web" in repos:
-        base_root = repos["wom7web"].parent.parent
+    elif "w0m-web" in repos:
+        base_root = repos["w0m-web"].parent.parent
     elif repos:
         first_repo, first_path = next(iter(repos.items()))
         base_root = (
@@ -1192,11 +1192,11 @@ def evaluate_policy_detailed(
         for r in pkgs:
             if f": {r} " in eng_err:
                 violated_repos.add(r)
-    if "wom7web" in repos:
-        astro_errs = check_astro_adapter_exports(repos["wom7web"].parent)
+    if "w0m-web" in repos:
+        astro_errs = check_astro_adapter_exports(repos["w0m-web"].parent)
         if astro_errs:
             hard.extend(astro_errs)
-            violated_repos.add("wom7web")
+            violated_repos.add("w0m-web")
 
     override_repos = [r for r in pkgs if override_hits[r] > 0]
     no_override_floor_applies = [r for r in pkgs if override_hits[r] == 0]

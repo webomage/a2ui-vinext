@@ -31,61 +31,61 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Checkout Member Repo (wom7web)
+      - name: Checkout Member Repo (w0m-web)
         uses: actions/checkout@v4
         with:
           repository: webomage/w0m-web
           ref: beta
-          path: wom7web
+          path: w0m-web
           token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
           fetch-depth: 0
 
-      - name: Checkout Member Repo (wom7api)
+      - name: Checkout Member Repo (w0m-api)
         uses: actions/checkout@v4
         with:
           repository: webomage/w0m-api
           ref: beta
-          path: wom7api
+          path: w0m-api
           token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
 
-      - name: Checkout Member Repo (wom7func)
+      - name: Checkout Member Repo (w0m-cf)
         uses: actions/checkout@v4
         with:
           repository: webomage/w0m-cf
           ref: beta
-          path: wom7func
+          path: w0m-cf
           token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
 
-      - name: Checkout Member Repo (wom7ext)
+      - name: Checkout Member Repo (w0m-ext)
         uses: actions/checkout@v4
         with:
           repository: webomage/w0m-ext
           ref: beta
-          path: wom7ext
+          path: w0m-ext
           token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
 
-      - name: Checkout Member Repo (wom7sec)
+      - name: Checkout Member Repo (w0m-sec)
         uses: actions/checkout@v4
         with:
           repository: webomage/w0m-sec
           ref: beta
-          path: wom7sec
+          path: w0m-sec
           token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
 
-      - name: Checkout Member Repo (wom7skills)
+      - name: Checkout Member Repo (w0m-skills)
         uses: actions/checkout@v4
         with:
           repository: webomage/w0m-skills
           ref: beta
-          path: wom7skills
+          path: w0m-skills
           token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
 
-      - name: Checkout Member Repo (wom7mlx)
+      - name: Checkout Member Repo (w0m-mlx)
         uses: actions/checkout@v4
         with:
           repository: webomage/w0m-mlx
           ref: beta
-          path: wom7mlx/wom7mlx
+          path: w0m-mlx/w0m-mlx
           token: ${{ secrets.W0M_CI_REPO_READ_TOKEN || github.token }}
 
       - name: Install Just
@@ -106,13 +106,13 @@ jobs:
         with:
           node-version: "22"
           cache: "pnpm"
-          cache-dependency-path: wom7web/pnpm-lock.yaml
+          cache-dependency-path: w0m-web/pnpm-lock.yaml
 
       - name: Install Monorepo Dependencies
-        run: pnpm --dir wom7web install --frozen-lockfile
+        run: pnpm --dir w0m-web install --frozen-lockfile
 
       - name: Validate CI Workflows
-        run: python3 wom7web/project/scripts/ci_workflow_check.py
+        run: python3 w0m-web/project/scripts/ci_workflow_check.py
 
       - name: Gate — state-check
         run: just state-check
@@ -129,4 +129,4 @@ jobs:
       - name: Gate — astro check (typecheck)
         run: |
           just typecheck
-          pnpm --dir wom7web run typecheck
+          pnpm --dir w0m-web run typecheck

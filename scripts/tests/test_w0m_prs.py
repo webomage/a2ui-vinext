@@ -29,14 +29,14 @@ def main() -> int:
 
     # 1. Existence and presets
     check("w0m_prs.py exists", (SCRIPTS / "w0m_prs.py").is_file())
-    check("preset wom7pr defined", "wom7pr" in w0m_prs.PRESET_REPOS)
+    check("preset w0m-pr defined", "w0m-pr" in w0m_prs.PRESET_REPOS)
     check("preset wom7open alias defined", "wom7open" in w0m_prs.PRESET_REPOS)
-    check("preset includes orca", "stablyai/orca" in w0m_prs.PRESET_REPOS["wom7pr"])
-    check("preset includes tart-guest-agent", "openai/tart-guest-agent" in w0m_prs.PRESET_REPOS["wom7pr"])
-    check("preset includes omlx", "jundot/omlx" in w0m_prs.PRESET_REPOS["wom7pr"])
-    check("preset includes mlx-vlm", "Blaizzy/mlx-vlm" in w0m_prs.PRESET_REPOS["wom7pr"])
-    check("preset includes tart", "cirruslabs/tart" in w0m_prs.PRESET_REPOS["wom7pr"])
-    check("preset includes harness2", "google-research/harness2" in w0m_prs.PRESET_REPOS["wom7pr"])
+    check("preset includes orca", "stablyai/orca" in w0m_prs.PRESET_REPOS["w0m-pr"])
+    check("preset includes tart-guest-agent", "openai/tart-guest-agent" in w0m_prs.PRESET_REPOS["w0m-pr"])
+    check("preset includes omlx", "jundot/omlx" in w0m_prs.PRESET_REPOS["w0m-pr"])
+    check("preset includes mlx-vlm", "Blaizzy/mlx-vlm" in w0m_prs.PRESET_REPOS["w0m-pr"])
+    check("preset includes tart", "cirruslabs/tart" in w0m_prs.PRESET_REPOS["w0m-pr"])
+    check("preset includes harness2", "google-research/harness2" in w0m_prs.PRESET_REPOS["w0m-pr"])
 
     # 2. Search mock
     mock_res = MagicMock()
@@ -199,8 +199,8 @@ def main() -> int:
             check("update_fork fast-forwards clean branch", up_clean["success"] is True and up_clean["action"] == "fast_forwarded")
 
     # 8. Skill check
-    skill_md = ROOT / "wom7skills/skills/w0m-prs/SKILL.md"
-    check("w0m-prs SKILL.md exists in wom7skills", skill_md.is_file())
+    skill_md = ROOT / "w0m-skills/skills/w0m-prs/SKILL.md"
+    check("w0m-prs SKILL.md exists in w0m-skills", skill_md.is_file())
 
     print("─" * 60)
     print(f"Results: {checks - len(fails)}/{checks} passed")

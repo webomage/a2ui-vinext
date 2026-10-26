@@ -68,7 +68,7 @@ x_ac_pct: 40
 def test_referenced_paths_checking() -> None:
     print("\n── 3. Referenced Path Extraction & Resolution ──")
     sample_text = "See `scripts/ticket_audit.py` and nonexistent `foo/bar/fake_file.ts`."
-    repo_map = {"tooling": ROOT, "web": ROOT / "wom7web"}
+    repo_map = {"tooling": ROOT, "web": ROOT / "w0m-web"}
     resolving, missing = ticket_audit.check_referenced_paths(sample_text, repo_map)
     check("Resolving path detected", any("ticket_audit.py" in p for p in resolving))
     check("Missing path detected", "foo/bar/fake_file.ts" in missing)
@@ -85,7 +85,7 @@ def test_ac_classification_heuristics() -> None:
 - [x] AC5 — Covered by gate `just deno-check`
 - [ ] AC6 — Planned gate `just nonexistent-gate-xyz`
 """
-    repo_map = {"web": ROOT / "wom7web"}
+    repo_map = {"web": ROOT / "w0m-web"}
     missing_paths = ["some/missing/module.ts"]
 
     classified = ticket_audit.classify_acs(body, repo_map, missing_paths)

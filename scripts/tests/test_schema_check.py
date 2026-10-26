@@ -13,7 +13,7 @@ Verifies that:
      `unmeasurable, not passing` as an error rather than passing.
 
 Run standalone: `just schema-check-test`
-Run via pytest: `uv run pytest ../wom7web/project/scripts/tests/test_schema_check.py`
+Run via pytest: `uv run pytest ../w0m-web/project/scripts/tests/test_schema_check.py`
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ from unittest import mock
 HERE = Path(__file__).resolve()
 SCRIPTS_DIR = HERE.parents[1]
 ESTATE_ROOT = HERE.parents[2]
-WEB_ROOT = ESTATE_ROOT / "wom7web"
+WEB_ROOT = ESTATE_ROOT / "w0m-web"
 
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
@@ -70,8 +70,8 @@ def run_all_probes() -> tuple[int, list[str]]:
         "project/policies/profiles-policy.json",
         "project/policies/skills-policy.json",
         "project/policies/stacks-policy.json",
-        "wom7web/project/authz-allowlist.jsonc",
-        "wom7web/project/client-profile.json",
+        "w0m-web/project/authz-allowlist.jsonc",
+        "w0m-web/project/client-profile.json",
     }
     check(
         "AC5: live estate discovers all 9 local-$schema configs dynamically and validates with 0 errors",

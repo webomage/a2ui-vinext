@@ -53,28 +53,28 @@
       "state": "adopted",
       "author": "owner",
       "dropped": "2026-09-02",
-      "adopted_to": "[[T377]] · [[T409]] · [[T423]] · wom7pr/orca"
+      "adopted_to": "[[T377]] · [[T409]] · [[T423]] · w0m-pr/orca"
     },
     {
       "file": "2026-09-03-projects-inventory-audit.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-03",
-      "adopted_to": "[[T308]] · wom7web/docs/reports/PROJECTS_CATALOG_AND_CLEANUP_AUDIT_2026.md · wom7web/docs/reports/2026-10-22-projects-inventory-audit-followup-t308.md"
+      "adopted_to": "[[T308]] · w0m-web/docs/reports/PROJECTS_CATALOG_AND_CLEANUP_AUDIT_2026.md · w0m-web/docs/reports/2026-10-22-projects-inventory-audit-followup-t308.md"
     },
     {
       "file": "2026-10-22-projects-inventory-audit-followup-t308.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-10-22",
-      "adopted_to": "[[T308]] · wom7web/docs/reports/2026-10-22-projects-inventory-audit-followup-t308.md"
+      "adopted_to": "[[T308]] · w0m-web/docs/reports/2026-10-22-projects-inventory-audit-followup-t308.md"
     },
     {
       "file": "2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-04",
-      "adopted_to": "[[T312]] · wom7web/docs/reports/2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md"
+      "adopted_to": "[[T312]] · w0m-web/docs/reports/2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md"
     },
     {
       "file": "2026-09-05-project-roles-hats-offices-and-resource-access-architecture.md",
@@ -88,63 +88,63 @@
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-06",
-      "adopted_to": "[[T320]] · [[T159]] · wom7web/docs/reports/2026-09-06-login-logout-session-audit.md"
+      "adopted_to": "[[T320]] · [[T159]] · w0m-web/docs/reports/2026-09-06-login-logout-session-audit.md"
     },
     {
       "file": "2026-09-07-client-registration-and-projects-readiness-measured.md",
       "state": "adopted",
       "author": "claude",
       "dropped": "2026-09-07",
-      "adopted_to": "[[T328]] · wom7web/docs/reports/2026-09-07-client-registration-and-projects-readiness-measured.md"
+      "adopted_to": "[[T328]] · w0m-web/docs/reports/2026-09-07-client-registration-and-projects-readiness-measured.md"
     },
     {
       "file": "2026-09-09-proposal-w0m-slim-vm-universal-sandboxing.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-09",
-      "adopted_to": "[[T296]] · [[T297]] · wom7web/docs/reports/2026-09-09-proposal-w0m-slim-vm-universal-sandboxing.md"
+      "adopted_to": "[[T296]] · [[T297]] · w0m-web/docs/reports/2026-09-09-proposal-w0m-slim-vm-universal-sandboxing.md"
     },
     {
       "file": "2026-09-11-analysis-orca-vs-zeroclaw-unification.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-11",
-      "adopted_to": "[[AgDR-0012]] · [[T180]] · wom7web/docs/reports/2026-09-11-analysis-orca-vs-zeroclaw-unification.md"
+      "adopted_to": "[[AgDR-0012]] · [[T180]] · w0m-web/docs/reports/2026-09-11-analysis-orca-vs-zeroclaw-unification.md"
     },
     {
       "file": "2026-09-11-proposal-unified-one-button-platform-connectors.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-11",
-      "adopted_to": "[[T94]] · [[T442]] · wom7web/docs/reports/2026-09-11-proposal-unified-one-button-platform-connectors.md"
+      "adopted_to": "[[T94]] · [[T442]] · w0m-web/docs/reports/2026-09-11-proposal-unified-one-button-platform-connectors.md"
     },
     {
       "file": "2026-09-11-proposal-w0m-resource-governance.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-11",
-      "adopted_to": "[[T343]] · wom7web/openspec/changes/2026-09-11-resource-governance"
+      "adopted_to": "[[T343]] · w0m-web/openspec/changes/2026-09-11-resource-governance"
     },
     {
       "file": "2026-09-11-research-ios-app-store-sandbox-audit.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-11",
-      "adopted_to": "[[T336]] · [[T337]] · wom7web/docs/reports/2026-09-11-research-ios-app-store-sandbox-audit.md"
+      "adopted_to": "[[T336]] · [[T337]] · w0m-web/docs/reports/2026-09-11-research-ios-app-store-sandbox-audit.md"
     },
     {
       "file": "2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-11",
-      "adopted_to": "[[AgDR-0012]] · [[T180]] · wom7web/docs/reports/2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md"
+      "adopted_to": "[[AgDR-0012]] · [[T180]] · w0m-web/docs/reports/2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md"
     },
     {
       "file": "2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-11",
-      "adopted_to": "[[AgDR-0012]] · [[T345]] · wom7web/docs/reports/2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md"
+      "adopted_to": "[[AgDR-0012]] · [[T345]] · w0m-web/docs/reports/2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md"
     },
     {
       "file": "2026-09-15-artemio-delivery-report.md",
@@ -158,21 +158,21 @@
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-16",
-      "adopted_to": "[[T367]] · wom7web/openspec/changes/archive/2026-09-17-2026-09-16-siri-shortcuts-zeroclaw-orca/proposal.md"
+      "adopted_to": "[[T367]] · w0m-web/openspec/changes/archive/2026-09-17-2026-09-16-siri-shortcuts-zeroclaw-orca/proposal.md"
     },
     {
       "file": "2026-09-17-claude-obsidian-project-vaults-cp-embedding.md",
       "state": "adopted",
       "author": "claude",
       "dropped": "2026-09-17",
-      "adopted_to": "[[T370]] · wom7web/docs/reports/2026-09-17-claude-obsidian-project-vaults-cp-embedding.md"
+      "adopted_to": "[[T370]] · w0m-web/docs/reports/2026-09-17-claude-obsidian-project-vaults-cp-embedding.md"
     },
     {
       "file": "2026-09-21-audit-design-system-vs-shipping-code-and-update-proposal.md",
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-21",
-      "adopted_to": "[[T420]] · wom7web/openspec/changes/archive/2026-09-22-design-system-reconciliation/proposal.md"
+      "adopted_to": "[[T420]] · w0m-web/openspec/changes/archive/2026-09-22-design-system-reconciliation/proposal.md"
     },
     {
       "file": "2026-09-22-t165-member-resume-web-tool-architecture.md",
@@ -193,7 +193,7 @@
       "state": "adopted",
       "author": "antigravity",
       "dropped": "2026-09-23",
-      "adopted_to": "[[T422]] · wom7web/openspec/changes/archive/2026-09-23-2026-09-23-design-system-react-elimination-and-tokens-ssot/proposal.md"
+      "adopted_to": "[[T422]] · w0m-web/openspec/changes/archive/2026-09-23-2026-09-23-design-system-react-elimination-and-tokens-ssot/proposal.md"
     },
     {
       "file": "2026-09-23-cowork-research-parallel-agents-isolation-and-merge.md",

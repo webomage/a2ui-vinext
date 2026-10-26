@@ -57,13 +57,13 @@ def find_workspace_root(start_path: pathlib.Path | None = None) -> pathlib.Path:
     for parent in [cur] + list(cur.parents):
         if (parent / ".tasks").is_dir() and (parent / ".w0m").is_dir():
             return parent
-        if (parent / ".git").exists() and (parent / "wom7web").is_dir():
+        if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return pathlib.Path(__file__).resolve().parents[1]
 
 
 WORKSPACE_ROOT = find_workspace_root()
-WEB_ROOT = WORKSPACE_ROOT / "wom7web" if (WORKSPACE_ROOT / "wom7web").is_dir() else WORKSPACE_ROOT
+WEB_ROOT = WORKSPACE_ROOT / "w0m-web" if (WORKSPACE_ROOT / "w0m-web").is_dir() else WORKSPACE_ROOT
 
 sys.path.insert(0, str(WORKSPACE_ROOT / "scripts"))
 sys.path.insert(0, str(WEB_ROOT / "project" / "scripts"))

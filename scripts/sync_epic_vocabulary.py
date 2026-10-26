@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 ROADMAP = ROOT / "ROADMAP.md"
 SCHEMA_FILE = WEB / "project" / "tickets-schema.jsonc"
 TICKETS = ROOT / ".tasks"
@@ -154,7 +154,7 @@ def get_epic_aliases() -> dict[str, dict[str, str]]:
         "ROADMAP §19 — Tenancy, RBAC & Delivery Roles": ("19", "in-ticket scope title"),
         "ROADMAP §21 (Market Research & Business Strategy Continuation)": ("21", "parenthetical notation"),
         "ROADMAP §25 — platform-sync restoration": ("25", "shortened section title"),
-        "ROADMAP §30 (wom7sec — audit toolchain, deployable as a service)": ("30", "parenthetical notation"),
+        "ROADMAP §30 (w0m-sec — audit toolchain, deployable as a service)": ("30", "parenthetical notation"),
         "ROADMAP §33 — client closed beta": ("33", "historical stage name"),
         "ROADMAP §33 (client closed beta)": ("33", "parenthetical historical stage name"),
         "ROADMAP §33 — Client Closed Beta — Full Feature Support, Staged": ("33", "historical stage name"),

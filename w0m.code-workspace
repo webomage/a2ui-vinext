@@ -1,28 +1,28 @@
 {
 	"folders": [
 		{
-			"name": "wom7web",
-			"path": "wom7web"
+			"name": "w0m-web",
+			"path": "w0m-web"
 		},
 		{
 			"name": "wom7api",
-			"path": "wom7api"
+			"path": "w0m-api"
 		},
 		{
 			"name": "wom7func",
-			"path": "wom7func"
+			"path": "w0m-cf"
 		},
 		{
 			"name": "wom7chatops",
 			"path": "wom7chatops"
 		},
 		{
-			"name": "wom7ext",
-			"path": "wom7ext"
+			"name": "w0m-ext",
+			"path": "w0m-ext"
 		},
 		{
-			"name": "wom7sec",
-			"path": "wom7sec"
+			"name": "w0m-sec",
+			"path": "w0m-sec"
 		},
 		{
 			"name": "upwork-ai-research",

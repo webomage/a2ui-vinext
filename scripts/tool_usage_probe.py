@@ -18,7 +18,7 @@ So a tool counts only where it is invoked as a command:
 2. In Python/JS/TS scripts (excluding test fixtures and this probe): argv0 of `subprocess.*`,
    `execFileSync`/`execSync`/`spawn*`, `shutil.which`, or local `sh([...])`/`run([...])` helpers.
 
-Symlinked files (e.g. `wom7web/justfile -> ../wom7api/justfile`) are deduplicated by resolved path
+Symlinked files (e.g. `w0m-web/justfile -> ../w0m-api/justfile`) are deduplicated by resolved path
 so canonical `justfile` invocations are counted once.
 
 Every candidate in `TOOLS` must be either:
@@ -44,13 +44,13 @@ SDLC_JSON = ROOT / ".w0m" / "sdlc.json"
 
 REPOS = [
     ".",
-    "wom7web",
-    "wom7api",
-    "wom7func",
-    "wom7ext",
-    "wom7skills",
-    "wom7sec",
-    "wom7mlx/wom7mlx",
+    "w0m-web",
+    "w0m-api",
+    "w0m-cf",
+    "w0m-ext",
+    "w0m-skills",
+    "w0m-sec",
+    "w0m-mlx/w0m-mlx",
 ]
 
 # Full T164 candidate CLI surface (20 host inventory candidates + 7 initial probe candidates).

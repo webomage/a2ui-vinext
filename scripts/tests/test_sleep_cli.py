@@ -449,7 +449,7 @@ def test_adopt_skill_and_lessons_flow(tmp_path: Path, monkeypatch: pytest.Monkey
     local_skill_dir.mkdir(parents=True)
     (local_skill_dir / "SKILL.md").write_text("# Old Local Skill\n", encoding="utf-8")
 
-    canonical_skill_dir = tmp_path / "wom7skills" / "skills" / "w0m-sdlc-start"
+    canonical_skill_dir = tmp_path / "w0m-skills" / "skills" / "w0m-sdlc-start"
     canonical_skill_dir.mkdir(parents=True)
     (canonical_skill_dir / "SKILL.md").write_text("# Old Canonical Skill\n", encoding="utf-8")
 

@@ -30,16 +30,16 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
     for parent in [cur] + list(cur.parents):
         if (parent / ".tasks").is_dir() and (parent / ".w0m").is_dir():
             return parent
-        if (parent / ".git").exists() and (parent / "wom7web").is_dir():
+        if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return Path(__file__).resolve().parents[1]
 
 
 ROOT = find_workspace_root()
-WEB = ROOT / "wom7web" if (ROOT / "wom7web").is_dir() else ROOT
-API = ROOT / "wom7api"
-FUNC = ROOT / "wom7func"
-SKILLS = ROOT / "wom7skills"
+WEB = ROOT / "w0m-web" if (ROOT / "w0m-web").is_dir() else ROOT
+API = ROOT / "w0m-api"
+FUNC = ROOT / "w0m-cf"
+SKILLS = ROOT / "w0m-skills"
 TICKETS_DIR = ROOT / ".tasks"
 if not TICKETS_DIR.is_dir():
     sys.exit(f"❌ Canonical tickets directory not found at {TICKETS_DIR} (AgDR-0025: zero silent fallbacks)")
@@ -350,7 +350,7 @@ def classify_acs(body: str, repo_map: dict[str, Path], missing_paths: list[str])
                 evidence = "public.leads was omitted from intake_tables in T206 migration (needs grant)"
             elif is_ticked:
                 verdict = "confirmed"
-                evidence = "Companion migration granting leads to svc_intake is present in wom7api"
+                evidence = "Companion migration granting leads to svc_intake is present in w0m-api"
             else:
                 verdict = "unmeasurable"
                 evidence = "Companion migration present; AC awaiting completion"

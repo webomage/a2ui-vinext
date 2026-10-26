@@ -5,17 +5,17 @@ Resolves the four declared-vs-running drifts and the MLX Gemma 4 tool-calling fa
 1. AC1: Emits strict, trailing-comma-free `opencode.json` from canonical sources and forbids
    competing `opencode.jsonc` / `opencode.json_` files.
 2. AC2 / AC3 / AC4 / AC5c: Generates `.opencode/commands/*.md` (`w0m-sdlc-*` and `opsx`) from
-   `.w0m/skills.json` + `wom7skills/skills-registry.json` so SDLC gates and OpenSpec run in both
+   `.w0m/skills.json` + `w0m-skills/skills-registry.json` so SDLC gates and OpenSpec run in both
    Claude Code and OpenCode without a second hand-maintained skill library.
 3. AC5: Implements the fail-closed MLX offload classifier & tool-call guard. Only text-in/text-out
    tasks (`summarize`, `classify`, `rewrite`, `draft`, `commit-msg`) with `tools=None` may route to
    `gemma-4-e4b-it-4bit`; any request carrying `tools` or emitting `<call:.../>` raises
    `ToolCallUnsupportedError`.
-4. AC5b: Verifies `AGENTS.md` and `wom7web/AGENTS.md` carry all non-negotiables (`--no-verify`,
+4. AC5b: Verifies `AGENTS.md` and `w0m-web/AGENTS.md` carry all non-negotiables (`--no-verify`,
    `Co-Authored-By` + Conventional Commits, and `.w0m/skills.json` governance).
-5. AC6: Verifies `wom7mlx/wom7mlx/justfile` matches the live served port (`8888`) and model IDs.
+5. AC6: Verifies `w0m-mlx/w0m-mlx/justfile` matches the live served port (`8888`) and model IDs.
 6. AC7: Enforces `127.0.0.1` (never `localhost`, preventing IPv6 `::1` fallthrough) on HTTP MCP
-   endpoints (`wom7md` :3001, `wom7web` :3007) and `["graphify-mcp", "--transport", "stdio"]`.
+   endpoints (`wom7md` :3001, `w0m-web` :3007) and `["graphify-mcp", "--transport", "stdio"]`.
 7. AC8: Reports health with explicit denominators across runtimes, models, MCPs, commands, and rules.
 """
 from __future__ import annotations
@@ -64,7 +64,7 @@ def build_canonical_opencode_config() -> dict[str, Any]:
         "instructions": [
             "AGENTS.md",
             "CLAUDE.md",
-            "wom7web/openspec/SPEC-AUTHORING-STANDARD.md",
+            "w0m-web/openspec/SPEC-AUTHORING-STANDARD.md",
         ],
         "model": f"mlx/{PRIMARY_MLX_MODEL}",
         "small_model": f"mlx/{SMALL_MLX_MODEL}",
@@ -103,7 +103,7 @@ def build_canonical_opencode_config() -> dict[str, Any]:
                 "url": "http://127.0.0.1:3001/mcp",
                 "enabled": True,
             },
-            "wom7web": {
+            "w0m-web": {
                 "type": "remote",
                 "url": "http://127.0.0.1:3007/mcp",
                 "enabled": True,
@@ -173,9 +173,9 @@ def render_command_markdown(name: str, description: str) -> str:
             f'description: "{description}"\n'
             "---\n\n"
             "# OpenSpec (`opsx`) Command Bridge for OpenCode (`T152` AC4 / AC5c)\n\n"
-            "Generated from `.w0m/skills.json` and `wom7web/openspec/SPEC-AUTHORING-STANDARD.md`.\n\n"
-            "1. Load authoring standard: `wom7web/openspec/SPEC-AUTHORING-STANDARD.md`\n"
-            "2. Validate change strictly: `cd wom7web && pnpm exec openspec validate $ARGUMENTS --type change --strict`\n"
+            "Generated from `.w0m/skills.json` and `w0m-web/openspec/SPEC-AUTHORING-STANDARD.md`.\n\n"
+            "1. Load authoring standard: `w0m-web/openspec/SPEC-AUTHORING-STANDARD.md`\n"
+            "2. Validate change strictly: `cd w0m-web && pnpm exec openspec validate $ARGUMENTS --type change --strict`\n"
             '3. Invoke skill when needed: `skill({ name: "w0m-sdlc-spec" })`\n'
         )
     return (
@@ -183,11 +183,11 @@ def render_command_markdown(name: str, description: str) -> str:
         f'description: "{description}"\n'
         "---\n\n"
         f"# `{name}` — OpenCode Command Shortcut (`T152` AC2 / AC3 / AC5c)\n\n"
-        "Generated from `.w0m/skills.json` + `wom7skills/skills-registry.json`. Do not hand-edit.\n\n"
+        "Generated from `.w0m/skills.json` + `w0m-skills/skills-registry.json`. Do not hand-edit.\n\n"
         f'- **Invoke canonical skill**: `skill({{ name: "{name}" }})`\n'
         f"- **Canonical skill instructions**: `.agents/skills/{name}/SKILL.md`\n"
         "- **SDLC contract**: `.w0m/sdlc.json`\n"
-        "- **Spec standard**: `wom7web/openspec/SPEC-AUTHORING-STANDARD.md`\n"
+        "- **Spec standard**: `w0m-web/openspec/SPEC-AUTHORING-STANDARD.md`\n"
         "- **Arguments**: `$ARGUMENTS`\n"
     )
 
@@ -198,7 +198,7 @@ def generate_opencode_surfaces(root: Path = ESTATE_ROOT) -> dict[str, Any]:
     skills_manifest: dict[str, Any] = json.loads(skills_manifest_path.read_text(encoding="utf-8"))
     declared_skills = skills_manifest.get("skills", {})
 
-    registry_path = root / "wom7skills" / "skills-registry.json"
+    registry_path = root / "w0m-skills" / "skills-registry.json"
     registry_skills: dict[str, Any] = {}
     if registry_path.is_file():
         reg_data: dict[str, Any] = json.loads(registry_path.read_text(encoding="utf-8"))
@@ -210,7 +210,7 @@ def generate_opencode_surfaces(root: Path = ESTATE_ROOT) -> dict[str, Any]:
 
     cmd_dirs = [
         root / ".opencode" / "commands",
-        root / "wom7web" / ".opencode" / "commands",
+        root / "w0m-web" / ".opencode" / "commands",
     ]
     written_files: list[str] = []
     for d in cmd_dirs:
@@ -279,7 +279,7 @@ def drive_ticket_lifecycle_in_opencode(
         "ticket_id": ticket_id,
         "ticket_path": str(ticket_path.relative_to(root)),
         "stages": executed_stages,
-        "openspec_standard": "wom7web/openspec/SPEC-AUTHORING-STANDARD.md",
+        "openspec_standard": "w0m-web/openspec/SPEC-AUTHORING-STANDARD.md",
     }
 
 
@@ -342,7 +342,7 @@ def validate_opencode_config_text(raw_text: str, root: Path = ESTATE_ROOT) -> tu
 
     # AC7: Check MCP servers
     mcp = cfg.get("mcp", {})
-    for req_mcp in ("codegraph", "graphify", "wom7md", "wom7web"):
+    for req_mcp in ("codegraph", "graphify", "wom7md", "w0m-web"):
         if req_mcp not in mcp:
             errors.append(f"Missing required MCP entry {req_mcp!r} in opencode.json (T152 AC7)")
 
@@ -352,7 +352,7 @@ def validate_opencode_config_text(raw_text: str, root: Path = ESTATE_ROOT) -> tu
             f"mcp.graphify.command must be ['graphify-mcp', '--transport', 'stdio'], got {graphify_cmd!r} (T152 AC7)"
         )
 
-    for remote_name, expected_port in (("wom7md", 3001), ("wom7web", 3007)):
+    for remote_name, expected_port in (("wom7md", 3001), ("w0m-web", 3007)):
         url = mcp.get(remote_name, {}).get("url", "")
         if "localhost" in url:
             errors.append(
@@ -380,21 +380,21 @@ def check_health(root: Path = ESTATE_ROOT) -> tuple[bool, dict[str, Any]]:
         )
         errors.extend(cfg_errors)
 
-    # AC6: Verify wom7mlx justfile alignment
-    mlx_justfile = root / "wom7mlx" / "wom7mlx" / "justfile"
+    # AC6: Verify w0m-mlx justfile alignment
+    mlx_justfile = root / "w0m-mlx" / "w0m-mlx" / "justfile"
     if not mlx_justfile.is_file():
         errors.append(f"Missing {mlx_justfile} (T152 AC6)")
     else:
         jf_text = mlx_justfile.read_text(encoding="utf-8")
         if f'gemma_model := "{PRIMARY_MLX_MODEL}"' not in jf_text:
-            errors.append(f"wom7mlx justfile gemma_model does not match {PRIMARY_MLX_MODEL!r} (T152 AC6)")
+            errors.append(f"w0m-mlx justfile gemma_model does not match {PRIMARY_MLX_MODEL!r} (T152 AC6)")
         if 'port := "8888"' not in jf_text:
-            errors.append('wom7mlx justfile port does not match "8888" (T152 AC6)')
+            errors.append('w0m-mlx justfile port does not match "8888" (T152 AC6)')
 
-    # AC5b: Verify AGENTS.md parity in both root and wom7web
+    # AC5b: Verify AGENTS.md parity in both root and w0m-web
     agents_surfaces = [
         (root / "AGENTS.md", "AGENTS.md"),
-        (root / "wom7web" / "AGENTS.md", "wom7web/AGENTS.md"),
+        (root / "w0m-web" / "AGENTS.md", "w0m-web/AGENTS.md"),
     ]
     agents_ok_count = 0
     for path, label in agents_surfaces:
@@ -410,7 +410,7 @@ def check_health(root: Path = ESTATE_ROOT) -> tuple[bool, dict[str, Any]]:
     cmd_ok_count = 0
     for cmd_name in REQUIRED_OPENCODE_COMMANDS:
         p1 = root / ".opencode" / "commands" / f"{cmd_name}.md"
-        p2 = root / "wom7web" / ".opencode" / "commands" / f"{cmd_name}.md"
+        p2 = root / "w0m-web" / ".opencode" / "commands" / f"{cmd_name}.md"
         if p1.is_file() and p2.is_file():
             cmd_ok_count += 1
         else:
@@ -432,7 +432,7 @@ def check_health(root: Path = ESTATE_ROOT) -> tuple[bool, dict[str, Any]]:
         "enumerated": {
             "runtimes": "2/2 (claude, opencode)",
             "served_mlx_models": f"{len(SERVED_MLX_MODELS)}/{len(SERVED_MLX_MODELS)} ({', '.join(SERVED_MLX_MODELS)})",
-            "mcp_endpoints": f"{mcp_count}/4 (codegraph, graphify, wom7md, wom7web)",
+            "mcp_endpoints": f"{mcp_count}/4 (codegraph, graphify, wom7md, w0m-web)",
             "opencode_commands": f"{cmd_ok_count}/{len(REQUIRED_OPENCODE_COMMANDS)}",
             "agents_md_surfaces": f"{agents_ok_count}/{len(agents_surfaces)} (4/4 non-negotiable patterns each)",
         },

@@ -276,12 +276,12 @@ class Structure(unittest.TestCase):
 
     def test_the_agent_tree_detector_knows_the_agent_tree_root_and_not_the_live_checkout(self):
         self.assertTrue(tu.is_agent_tree(Path.home() / ".w0m" / "work" / "someone" / "w0m"))
-        self.assertTrue(tu.is_agent_tree(Path.home() / ".w0m" / "work" / "someone" / "w0m" / "wom7web"))
+        self.assertTrue(tu.is_agent_tree(Path.home() / ".w0m" / "work" / "someone" / "w0m" / "w0m-web"))
         self.assertFalse(tu.is_agent_tree(Path("/Users/proto/Projects/@self/@wom")))
         self.assertFalse(tu.is_agent_tree(Path.home() / ".w0m" / "workaround" / "w0m"), "a prefix match is not a path match")
 
     def test_the_justfiles_have_the_promote_recipe_and_no_weekly_recipe_promotes(self):
-        """The root justfile duplicates these recipes, but the LAUNCHD job runs `just tools-weekly` from `@wom`, so the wom7api recipe is the one that must be right."""
+        """The root justfile duplicates these recipes, but the LAUNCHD job runs `just tools-weekly` from `@wom`, so the w0m-api recipe is the one that must be right."""
         for rel, forward in (("justfile", "scripts/tools_upgrade.py"),):
             jf = (REPO / rel).read_text()
             self.assertIn(f"tools-promote *args:\n    @python3 {forward} --promote {{{{ args }}}}", jf, rel)
@@ -293,18 +293,18 @@ class Structure(unittest.TestCase):
             self.assertIn("--apply", weekly, rel)
 
     def test_the_registered_suite_recipe_resolves_in_the_justfile_the_registry_runs(self):
-        """The registry lives in wom7web and runs recipes through wom7api's justfile (wom7web/justfile is a symlink to it). A recipe only in the root justfile reads as 'recipe not found', 0 checks."""
-        reg = json.loads((REPO / "wom7web" / "project" / "test-suites.json").read_text())["suites"]
+        """The registry lives in w0m-web and runs recipes through w0m-api's justfile (w0m-web/justfile is a symlink to it). A recipe only in the root justfile reads as 'recipe not found', 0 checks."""
+        reg = json.loads((REPO / "w0m-web" / "project" / "test-suites.json").read_text())["suites"]
         entry = next(s for s in reg if s["name"] == "tools-upgrade")
         jf = (REPO / "justfile").read_text()
         self.assertRegex(jf, rf"(?m)^{entry['recipe']}:\n    @python3 scripts/tests/test_tools_upgrade\.py")
 
     def test_compound_shell_smoke_uses_sh_c_and_missing_binary_returns_failure_without_crashing(self):
-        """supabase's smoke starts with `cd ../wom7api && ...`; splitting on spaces raises FileNotFoundError('cd') and aborts before proposals are saved."""
+        """supabase's smoke starts with `cd ../w0m-api && ...`; splitting on spaces raises FileNotFoundError('cd') and aborts before proposals are saved."""
         self.assertEqual(tu.smoke_argv("ast-grep --version"), ["ast-grep", "--version"])
         self.assertEqual(
-            tu.smoke_argv("cd ../wom7api && infisical run --env=beta --silent -- sh -c 'true'"),
-            ["sh", "-c", "cd ../wom7api && infisical run --env=beta --silent -- sh -c 'true'"],
+            tu.smoke_argv("cd ../w0m-api && infisical run --env=beta --silent -- sh -c 'true'"),
+            ["sh", "-c", "cd ../w0m-api && infisical run --env=beta --silent -- sh -c 'true'"],
         )
         res = tu.run(["__no_such_binary_t546__"])
         self.assertNotEqual(res.returncode, 0)

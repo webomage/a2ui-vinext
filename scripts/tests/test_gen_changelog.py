@@ -40,7 +40,7 @@ class GenChangelogTest(unittest.TestCase):
         )
         out_file = self.tmp_dir / "CHANGELOG.md"
         res = subprocess.run(
-            [sys.executable, str(GEN_SCRIPT), "--out", str(out_file), "--root", str(self.tmp_dir)],
+            [sys.executable, str(GEN_SCRIPT), "--stdin", "--out", str(out_file), "--root", str(self.tmp_dir)],
             input=tsv_input,
             capture_output=True,
             text=True,
@@ -90,7 +90,7 @@ class GenChangelogTest(unittest.TestCase):
         )
         out_file = self.tmp_dir / "CHANGELOG.md"
         res = subprocess.run(
-            [sys.executable, str(GEN_SCRIPT), "--out", str(out_file), "--root", str(self.tmp_dir)],
+            [sys.executable, str(GEN_SCRIPT), "--stdin", "--out", str(out_file), "--root", str(self.tmp_dir)],
             input=tsv_input,
             capture_output=True,
             text=True,

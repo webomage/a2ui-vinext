@@ -1,6 +1,6 @@
 {
   "_comment": "T151 AC8 — graphify over MCP, serving the UNITED cross-repo graph. Written 2026-07-28. Three corrections to the commonly-posted snippet, each verified on this machine: (1) the command is the `graphify-mcp` launcher, NOT `python -m graphify.serve` — graphify is installed as an isolated uv tool, so the system python cannot import it and that form fails with ModuleNotFoundError. (2) It serves ~/.graphify/global-graph.json (7 repos, ~54.9k nodes), not one repo's graphify-out/graph.json — the union is the whole point of AC2 and is what makes graphify better than codegraph's 6 separate per-repo indexes. (3) stdio, never --transport http: HTTP opens a listening socket and T154 is an open P0 about exactly that. Absolute paths because JSON args get no shell expansion and ~/.local/bin may not be on the client's PATH. Requires `graphifyy[mcp]` with mcp<2 pinned — graphify 0.9.15 imports AnyUrl from mcp.types, which mcp 2.x dropped. Refresh the graph it reads with `just graph-global`; check it with `just graph-health`.",
-  "_comment_obsidian": "T144 — the two Obsidian vaults over MCP, added 2026-08-07. Served by the `semantic-vault-mcp` plugin inside each vault's Obsidian window, so they exist ONLY while that window is open; a closed vault makes the bridge exit with a clear message rather than hang. Entries are stdio-via-bridge rather than `type: http` on purpose: the servers require `Authorization: Bearer <apiKey>`, and CLAUDE.md makes 'secrets via infisical, never a file' a non-negotiable — a literal key here, or an ${ENV} expansion needing a variable set in whatever shell launches the desktop app, both fail that. The bridge reads the key AND the port at launch from the plugin's own gitignored data.json, so the credential stays in its single existing home and the port cannot drift. Names carry the vault because the port↔vault mapping was unknown for twelve days while they were called -a and -b. 🔴 Both expose an `edit` tool with readOnlyMode=false — wom7web is a live code repo, so an agent write there lands outside the normal Edit/git path. Tracked declaration lives in .w0m/sdlc.json → mcp.servers; THIS file is not in any git repo. Verify with `python3 scripts/obsidian_mcp_bridge.py <vault>`.",
+  "_comment_obsidian": "T144 — the two Obsidian vaults over MCP, added 2026-08-07. Served by the `semantic-vault-mcp` plugin inside each vault's Obsidian window, so they exist ONLY while that window is open; a closed vault makes the bridge exit with a clear message rather than hang. Entries are stdio-via-bridge rather than `type: http` on purpose: the servers require `Authorization: Bearer <apiKey>`, and CLAUDE.md makes 'secrets via infisical, never a file' a non-negotiable — a literal key here, or an ${ENV} expansion needing a variable set in whatever shell launches the desktop app, both fail that. The bridge reads the key AND the port at launch from the plugin's own gitignored data.json, so the credential stays in its single existing home and the port cannot drift. Names carry the vault because the port↔vault mapping was unknown for twelve days while they were called -a and -b. 🔴 Both expose an `edit` tool with readOnlyMode=false — w0m-web is a live code repo, so an agent write there lands outside the normal Edit/git path. Tracked declaration lives in .w0m/sdlc.json → mcp.servers; THIS file is not in any git repo. Verify with `python3 scripts/obsidian_mcp_bridge.py <vault>`.",
   "mcpServers": {
     "graphify": {
       "command": "/home/aleksei/.local/bin/graphify-mcp",
@@ -8,11 +8,11 @@
         "/home/aleksei/.graphify/global-graph.json"
       ]
     },
-    "obsidian-wom7web": {
+    "obsidian-w0m-web": {
       "command": "/usr/bin/python3",
       "args": [
         "/home/aleksei/Projects/!self/w0m/scripts/obsidian_mcp_bridge.py",
-        "/home/aleksei/Projects/!self/w0m/wom7web"
+        "/home/aleksei/Projects/!self/w0m/w0m-web"
       ]
     },
     "upwork": {
@@ -22,6 +22,10 @@
     "awesome-repositories": {
       "type": "http",
       "url": "https://awesome-repositories.com/api/mcp"
+    },
+    "w0m-cf-mcp": {
+      "type": "http",
+      "url": "https://wom7func.webomage.workers.dev/mcp"
     }
   }
 }

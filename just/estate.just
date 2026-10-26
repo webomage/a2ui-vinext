@@ -1,16 +1,16 @@
-# ── @wom/just/estate.just — Estate-wide & cross-repo recipes elevated from wom7api/justfile (T509 L2) ──
+# ── @wom/just/estate.just — Estate-wide & cross-repo recipes elevated from w0m-api/justfile (T509 L2) ──
 
 
 # Start Cloudflare Tunnel for DB access
 db-tunnel:
-    @cloudflared tunnel --config wom7api/cloudflared/wom.yml run wom
+    @cloudflared tunnel --config w0m-api/cloudflared/wom.yml run wom
 
 # T431 probe for scripts/deploy_function.py (validation + dry-run only; never deploys).
 deploy-function-test:
     @python3 scripts/tests/test_deploy_function.py
 
 confirm-log:
-    @tail -40 wom7web/.git/w0m-confirm.log 2>/dev/null || echo "(no confirmations recorded yet)"
+    @tail -40 w0m-web/.git/w0m-confirm.log 2>/dev/null || echo "(no confirmations recorded yet)"
 
 # Seed/reset the two LIVE demo personas (T41: demo-client + demo-candidate) via the
 # seed-demo edge fn; idempotent (reset-and-reseed by the demo_account marker). Prints the
@@ -29,7 +29,7 @@ seed-demo:
 # LOUDLY instead. `just sync-secrets dry` previews without writing.
 sync-secrets mode="": (_confirm "sync-secrets")
     @echo "Syncing secrets from Infisical (dev) to Supabase project {{ project_ref }}"
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/sync_supabase_secrets.py {{ if mode == "dry" { "--dry-run" } else { "" } }}
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/sync_supabase_secrets.py {{ if mode == "dry" { "--dry-run" } else { "" } }}
 
 # RETIRED 2026-07-22 (T119 AC2b). `sync-env` exported Infisical into
 # apps/{web,cp}/.dev.vars — i.e. it MATERIALISED 83 secrets onto disk, which is the exact
@@ -57,7 +57,7 @@ sync-cf-secrets project="webomage": (_confirm "sync-cf-secrets")
       echo "$LINKEDIN_APP_ID" | pnpm exec wrangler secret put LINKEDIN_APP_ID --name {{ project }} && \
       echo "$LINKEDIN_APP_SECRET" | pnpm exec wrangler secret put LINKEDIN_APP_SECRET --name {{ project }}'
 
-# Sync secrets to Cloudflare Workflows (wom7func)
+# Sync secrets to Cloudflare Workflows (w0m-cf)
 # 🔴 T231 AC3b — TELEGRAM_AGENCY_CHANNEL_ID was ABSENT from the worker until 2026-08-20, and every
 # Telegram send is guarded `if (BOT_TOKEN && CHANNEL_ID)`, so `document-generator.ts` had been
 # skipping its notifications SILENTLY for as long as that guard existed. The estate's only alerting
@@ -79,7 +79,7 @@ sync-cf-secrets project="webomage": (_confirm "sync-cf-secrets")
 # rather than a plausible-looking string. ⚠️ The order mattered: set the vault, VERIFY, then wire it
 # in. Reversed, the first sync would have silently replaced a working token with an unchecked one.
 sync-cfworkers-secrets: (_confirm "sync-cfworkers-secrets")
-    @echo "Syncing secrets from Infisical to Cloudflare Workflows project: wom7func"
+    @echo "Syncing secrets from Infisical to Cloudflare Workflows project: w0m-cf"
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
       echo "$SUPABASE_URL" | pnpm exec wrangler secret put SUPABASE_URL --name wom7func && \
       echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name wom7func && \
@@ -92,13 +92,13 @@ sync-cfworkers-secrets: (_confirm "sync-cfworkers-secrets")
       echo "$R2_READONLY_ACCESS_KEY_ID"     | pnpm exec wrangler secret put R2_READONLY_ACCESS_KEY_ID     --name wom7func && \
       echo "$R2_READONLY_SECRET_ACCESS_KEY" | pnpm exec wrangler secret put R2_READONLY_SECRET_ACCESS_KEY --name wom7func'
 
-# Sync secrets to wom7api (Cloudflare Worker)
+# Sync secrets to w0m-api (Cloudflare Worker)
 # ⚠️ CLOUDFLARE_API_TOKEN is the account API token with D1/KV/Browser Rendering permissions (read by src/workflows/pdf-generator.ts).
-# 🔑 MISTRAL_API_KEY is used by wom7api AI workflows.
+# 🔑 MISTRAL_API_KEY is used by w0m-api AI workflows.
 # T213: ADZUNA_APP_ID / ADZUNA_APP_KEY / JOOBLE_API_KEY feed the job-aggregator; they can be managed in CP /admin/connections
 # (`public.admin_secrets`) or synced from Infisical when present, and this loop never pushes an EMPTY one over a working secret.
 sync-api-secrets: (_confirm "sync-api-secrets")
-    @echo "Syncing secrets from Infisical to wom7api Cloudflare Worker..."
+    @echo "Syncing secrets from Infisical to w0m-api Cloudflare Worker..."
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
       echo "$SUPABASE_URL" | pnpm exec wrangler secret put SUPABASE_URL --name wom7api && \
       echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name wom7api && \
@@ -168,28 +168,21 @@ db-psql-ssl:
 
 # Cloudflare Terraform helpers
 cf-plan:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" terraform -chdir=wom7api/cloudflare plan'
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" terraform -chdir=w0m-api/cloudflare plan'
 
 cf-apply: (_confirm "cf-apply")
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" terraform -chdir=wom7api/cloudflare apply'
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" terraform -chdir=w0m-api/cloudflare apply'
 
 # Azure jumphost Terraform helpers
 azure-jumphost-plan:
-    @cd wom7api && terraform -chdir=jumphost plan
+    @cd w0m-api && terraform -chdir=jumphost plan
 
 azure-jumphost-apply: (_confirm "azure-jumphost-apply")
-    @cd wom7api && terraform -chdir=jumphost apply -auto-approve
-
-# OCI ARM VM Terraform helpers
-oci-vm-plan:
-    @cd wom7api && terraform -chdir=oci plan
-
-oci-vm-apply:
-    @cd wom7api && terraform -chdir=oci apply
+    @cd w0m-api && terraform -chdir=jumphost apply -auto-approve
 
 # Ensure cv bucket exists
 ensure-cv-bucket:
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- node supabase/scripts/ensure-cv-bucket.mjs
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta -- node supabase/scripts/ensure-cv-bucket.mjs
 
 # T542: the database host must RESOLVE (getaddrinfo, what psql does) and accept a TCP connection. The old line here pinged a dual-stack site and said "the deploy path is IPv4",
 # which is false: the database host is IPv6-only, and on 2026-10-03 its name stopped resolving after 19 minutes of tests had already run.
@@ -198,7 +191,7 @@ check-db-host-test:
 
 # Health check all production services and report status
 healthcheck:
-    @cd wom7api && python3 scripts/healthcheck.py
+    @cd w0m-api && python3 scripts/healthcheck.py
 
 # Run SQL migrations
 # db-ddl-audit: list schema changes made OUTSIDE `just db-migrate` (T157).
@@ -213,7 +206,7 @@ db-ddl-audit:
 # The T198 AC8 red-probe suite — every authorization claim as a runnable assertion.
 # Advisory by default; `just authz-probe --enforce` exits 1 on any RED.
 authz-probe *args:
-    @cd wom7web && python3 project/scripts/authz_probe_suite.py {{args}}
+    @cd w0m-web && python3 project/scripts/authz_probe_suite.py {{args}}
 
 # T240 AC4 — the SUITE form of the probe above, and it needs its own recipe rather than a registry
 # row. `run_suites.py` invokes `["just", recipe]` with NO arguments, so registering bare
@@ -223,7 +216,7 @@ authz-probe *args:
 # "wire --enforce when RED reaches 0" — measured 0 RED of 18, with A2-cross-client (stage-0's exit
 # criterion) green. ⚠️ Read-only, but it reaches the LIVE database — see the header above.
 authz-probe-check:
-    @cd wom7web && python3 project/scripts/authz_probe_suite.py --enforce
+    @cd w0m-web && python3 project/scripts/authz_probe_suite.py --enforce
 
 # T289 AC3/AC4 — can `anon` EXECUTE functions in `public`, and is that getting worse?
 # 🔴 Reads the LIVE database on purpose. Supabase's `ALTER DEFAULT PRIVILEGES ... GRANT EXECUTE ON
@@ -235,12 +228,12 @@ authz-probe-check:
 # NEVER raise it to go green. Three functions are anon-reachable by design and are listed there
 # with the call site that needs them — a blanket revoke is the T246 outage, not a fix.
 anon-execute-ratchet *args:
-    @cd wom7web && python3 project/scripts/anon_execute_ratchet.py {{args}}
+    @cd w0m-web && python3 project/scripts/anon_execute_ratchet.py {{args}}
 
 # The gate's own red probes — proves it fails when it should, including the case the counts alone
 # would miss: swapping one definer function for another keeps the total flat and must STILL fail.
 anon-execute-ratchet-test:
-    @cd wom7web && python3 project/scripts/anon_execute_ratchet.py --selftest
+    @cd w0m-web && python3 project/scripts/anon_execute_ratchet.py --selftest
 
 # Owner rule 2026-08-20: "we have to push at least daily and with every completed ticket also."
 # Unpushed work exists in exactly one place. The rule was written after a day that ended with 34
@@ -287,11 +280,11 @@ sync-subissues *args:
 # ⚠️ Sound only because nothing here loads components dynamically (verified 2026-08-20). If that
 # changes, this needs a registry, not a wider grep. Advisory; `--enforce` exits 1.
 orphan-components *args:
-    @cd wom7web && python3 project/scripts/orphan_components_check.py {{args}}
+    @cd w0m-web && python3 project/scripts/orphan_components_check.py {{args}}
 
 # T240 AC6 / T236 AC4 — regression test for orphan-components check
 orphan-components-test:
-    @cd wom7web && python3 project/scripts/tests/test_orphan_components.py
+    @cd w0m-web && python3 project/scripts/tests/test_orphan_components.py
 
 # T2 AC5 — the client-registration handoff suite. Boots the web app and runs ONE Gauge spec that
 # mocks both endpoints (`w0m-consultant`, `client-register`), so unlike `e2e-local` it needs no
@@ -310,7 +303,7 @@ orphan-components-test:
 client-registration-test:
     #!/usr/bin/env bash
     set -uo pipefail
-    cd wom7web
+    cd w0m-web
     if ! curl -s -f -o /dev/null --max-time 3 "http://[::1]:4321/chat" \
        && ! curl -s -f -o /dev/null --max-time 3 "http://127.0.0.1:4321/chat"; then
       echo "  ▶ starting the web app…"
@@ -352,7 +345,7 @@ client-registration-test:
 client-magic-link-test:
     #!/usr/bin/env bash
     set -uo pipefail
-    cd wom7web
+    cd w0m-web
     if ! curl -s -f -o /dev/null --max-time 3 "http://127.0.0.1:4325/login" \
        && ! curl -s -f -o /dev/null --max-time 3 "http://[::1]:4325/login"; then
       echo "  ▶ starting the CP app…"
@@ -397,7 +390,7 @@ client-magic-link-test:
 client-proposal-accept-test:
     #!/usr/bin/env bash
     set -uo pipefail
-    cd wom7web
+    cd w0m-web
     if ! curl -s -f -o /dev/null --max-time 3 "http://127.0.0.1:4325/login" \
        && ! curl -s -f -o /dev/null --max-time 3 "http://[::1]:4325/login"; then
       echo "  ▶ starting the CP app…"
@@ -446,20 +439,20 @@ type-backfill *args:
 # T283 — what a REAL client sees on first sign-in: no fixture money, a self-consistent portal, a
 # resolving /client, a 404 that does not accuse, and anchors that keep their Tailwind colour.
 client-portal-firstrun-test:
-    @cd wom7web && python3 project/scripts/tests/test_client_portal_firstrun.py
+    @cd w0m-web && python3 project/scripts/tests/test_client_portal_firstrun.py
 
 # T317 AC4/4.2 — regression guard for the client-hat DS-component migration (AC5) + pins G1/G2.
 client-ds-migration-test:
-    @cd wom7web && python3 project/scripts/tests/test_client_ds_migration.py
+    @cd w0m-web && python3 project/scripts/tests/test_client_ds_migration.py
 
 client-register-guard-test:
-    @cd wom7web && python3 project/scripts/tests/test_client_register_guard.py
+    @cd w0m-web && python3 project/scripts/tests/test_client_register_guard.py
 
 purge-patterns-test:
-    @cd wom7web && python3 project/scripts/tests/test_purge_patterns.py
+    @cd w0m-web && python3 project/scripts/tests/test_purge_patterns.py
 
 stage1-walk-check:
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/stage1_walk_check.py
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/stage1_walk_check.py
 
 # T238 AC2 — write the running stack's local keys into a GITIGNORED properties file that Gauge
 # merges. They are Supabase's published local defaults, but committing them trips
@@ -469,8 +462,8 @@ stage1-walk-check:
 db-local-env:
     #!/usr/bin/env bash
     set -euo pipefail
-    s=$(cd wom7api && supabase status -o json)
-    out=wom7web/env/local/generated.properties
+    s=$(cd w0m-api && supabase status -o json)
+    out=w0m-web/env/local/generated.properties
     {
       echo "# GENERATED by \`just db-local-env\` — do not commit, do not edit."
       echo "PUBLIC_SUPABASE_ANON_KEY = $(echo "$s" | python3 -c 'import json,sys;print(json.load(sys.stdin)["PUBLISHABLE_KEY"])')"
@@ -489,15 +482,15 @@ db-local-env:
 # 🔴 Refuses any target that is not loopback. A seeding tool that can be pointed at production is a
 # data-loss incident with a convenient interface.
 db-local-seed *args:
-    @cd wom7api && python3 scripts/db_local_seed.py {{args}}
+    @cd w0m-api && python3 scripts/db_local_seed.py {{args}}
 
 # T478 AC2 — a full test team on the LOCAL stack: admin, manager, lead, member, client (with the client hat
 # its company's `client_users` trigger grants), recruit, and a person with nothing granted. Loopback only;
-# random passwords per run, written to the gitignored wom7web/env/local/test-team.properties, never printed.
+# random passwords per run, written to the gitignored w0m-web/env/local/test-team.properties, never printed.
 # Nobody is a webomage team member: the operator gate admits only @webomage.com, and tests live on
 # @test.webomage.com. Re-running converges. Order: db-local-up → db-local-env → db-local-seed → this.
 test-team-local:
-    @cd wom7api && python3 scripts/test_team_local.py
+    @cd w0m-api && python3 scripts/test_team_local.py
 
 # T478 — serve the edge functions against the LOCAL stack (foreground; Ctrl-C stops it). Secrets arrive by
 # `infisical run` and reach the CLI through a pipe, never a file. Functions get an ALLOWLIST: AI keys and request
@@ -506,7 +499,7 @@ test-team-local:
 # /ai/embed — the same URL carries chat-memory writes, which it refuses. Runs as a recipe because config.toml
 # reads `env(W0M_DB_MIGRATIONS)`, which this justfile exports; outside it the CLI fails ProjectConfigParseError.
 edge-local:
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 scripts/edge_local.py
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 scripts/edge_local.py
 
 # T238 AC1 — regenerate the schema baseline from the live database (READ-ONLY). The migration chain
 # cannot be replayed: `supabase start` dies on migration 1 of 226 because `20251215183000` ALTERs
@@ -514,13 +507,13 @@ edge-local:
 # The chain records the CHANGES without the STARTING SCHEMA, and nothing noticed in 226 migrations
 # because nothing ever replayed them — every environment is the one live database.
 db-baseline:
-    @cd wom7api && python3 scripts/db_baseline.py --generate
+    @cd w0m-api && python3 scripts/db_baseline.py --generate
 
 # T238 AC3 — the half that matters: replay the committed baseline into a THROWAWAY container and
 # assert it reproduces every table. A baseline nobody replays is the same artefact that got us here.
 # ⚠️ Exits 2 when Docker is unreachable or the baseline is absent — unknown, never a clean 0.
 db-baseline-verify:
-    @cd wom7api && python3 scripts/db_baseline.py --verify
+    @cd w0m-api && python3 scripts/db_baseline.py --verify
 
 # T234 — is the ai-memory checkout+binary still the VALIDATED one? Owner 2026-08-19: adopt it, but
 # "do not auto-update it without revalidating changes". Verifies THREE things, because each drifts
@@ -539,116 +532,116 @@ ai-memory-check *args:
 # sample. Reports the tables they read, and separates DEAD components — whose reads prove nothing.
 # ⚠️ Answers "which policies must work", not "do they work" — that is `just authz-probe`.
 authz-load-bearing *args:
-    @cd wom7web && python3 project/scripts/authz_load_bearing.py {{args}}
+    @cd w0m-web && python3 project/scripts/authz_load_bearing.py {{args}}
 
 # T198 AC4 — fail when a blanket permissive arm appears that project/authz-allowlist.jsonc
 # does not declare. Advisory until the allowlist holds 0 defect + 0 decision-needed entries.
 authz-blanket-check *args:
-    @cd wom7web && python3 project/scripts/authz_blanket_gate.py {{args}}
+    @cd w0m-web && python3 project/scripts/authz_blanket_gate.py {{args}}
 
 # T198 AC8b — attempt real writes instead of reading pg_policies. Everything runs inside
 # BEGIN ... ROLLBACK. 🔴 contracts/jobs/proposals are PERMANENTLY out of scope: outbound pg_net
 # triggers, and a rollback does not recall an HTTP call. Classifies DENIED / ALLOWED /
 # INCONCLUSIVE — a non-42501 failure is never counted as a pass.
 authz-write-probe *args:
-    @cd wom7web && python3 project/scripts/authz_write_probes.py {{args}}
+    @cd w0m-web && python3 project/scripts/authz_write_probes.py {{args}}
 
 # T458 S0 — every client has its org (AgDR-0027 decision 10). Live and read-only by default;
 # `--probe` runs the trigger's behaviour inside BEGIN ... ROLLBACK once migration 20260926120000 is applied.
 org-client-parity *args:
-    @cd wom7web && python3 project/scripts/org_client_parity.py {{args}}
+    @cd w0m-web && python3 project/scripts/org_client_parity.py {{args}}
 
 # T458 S0 — offline red probes of the parity script and the S0 migration.
 org-client-parity-test:
-    @cd wom7web && python3 project/scripts/org_client_parity.py --test
+    @cd w0m-web && python3 project/scripts/org_client_parity.py --test
 
 # T458 S1 — org kinds (platform | company | personal), Backstage-valid slugs, org sides. Live, read-only.
 org-kinds-verify *args:
-    @cd wom7web && python3 project/scripts/org_kinds_verify.py {{args}}
+    @cd w0m-web && python3 project/scripts/org_kinds_verify.py {{args}}
 
 # T458 S1 — offline red probes of the org-kinds judge.
 org-kinds-verify-test:
-    @cd wom7web && python3 project/scripts/org_kinds_verify.py --test
+    @cd w0m-web && python3 project/scripts/org_kinds_verify.py --test
 
 # T463 (P0) — admin privileges need an MFA-verified (AAL2) token in the database. Live, read-only: the real
 # admin under simulated AAL1 and AAL2 tokens; AAL1 must be refused everything admin, AAL2 must keep it.
 admin-aal-verify *args:
-    @cd wom7web && python3 project/scripts/admin_aal_verify.py {{args}}
+    @cd w0m-web && python3 project/scripts/admin_aal_verify.py {{args}}
 
 # T463 — offline red probes of the admin-AAL judge.
 admin-aal-verify-test:
-    @cd wom7web && python3 project/scripts/admin_aal_verify.py --test
+    @cd w0m-web && python3 project/scripts/admin_aal_verify.py --test
 
 # T465 (P1) — manager privileges need an MFA-verified (AAL2) token in the database. Live: manager account
 # under simulated AAL1 and AAL2 tokens; AAL1 must be refused everything manager, AAL2 must keep it.
 manager-aal-verify *args:
-    @cd wom7web && python3 project/scripts/manager_aal_verify.py {{args}}
+    @cd w0m-web && python3 project/scripts/manager_aal_verify.py {{args}}
 
 # T465 — offline red probes of the manager-AAL judge.
 manager-aal-verify-test:
-    @cd wom7web && python3 project/scripts/manager_aal_verify.py --test
+    @cd w0m-web && python3 project/scripts/manager_aal_verify.py --test
 
 # T458 S2 — org units (team per company, delivery/fin/growth on webomage, platform admin/system/talent). Live, read-only.
 org-units-verify *args:
-    @cd wom7web && python3 project/scripts/org_units_verify.py {{args}}
+    @cd w0m-web && python3 project/scripts/org_units_verify.py {{args}}
 
 # T458 S2 — offline red probes of the org-units judge.
 org-units-verify-test:
-    @cd wom7web && python3 project/scripts/org_units_verify.py --test
+    @cd w0m-web && python3 project/scripts/org_units_verify.py --test
 
 # T458 S3 — fixture deletion in owner-approved batches (report: .agents/reports/2026-09-26-s3-account-batches-T458.md).
 # DRY RUN: performs the batch's real deletes in one transaction, prints every row, and ROLLS BACK. Re-measures every
 # account first and refuses the whole batch on any dependent outside its allowed set.
 s3-delete batch:
-    @cd wom7web && python3 project/scripts/s3_delete.py {{batch}}
+    @cd w0m-web && python3 project/scripts/s3_delete.py {{batch}}
 
 # T458 S3 — the same transaction, COMMITTED. Owner-run only, behind the Touch ID confirm gate on every call.
 s3-delete-apply batch: (_confirm "s3-delete-apply")
-    @cd wom7web && python3 project/scripts/s3_delete.py {{batch}} --apply
+    @cd w0m-web && python3 project/scripts/s3_delete.py {{batch}} --apply
 
 # T458 S3 — offline red probes of the planner and its refusals.
 s3-delete-test:
-    @cd wom7web && python3 project/scripts/s3_delete.py --test
+    @cd w0m-web && python3 project/scripts/s3_delete.py --test
 
 # T458 S4 — every person has a home org (team unit), the operator gate, personal orgs private. Live, read-only.
 org-homes-verify *args:
-    @cd wom7web && python3 project/scripts/org_homes_verify.py {{args}}
+    @cd w0m-web && python3 project/scripts/org_homes_verify.py {{args}}
 
 # T458 S4 — offline red probes of the org-homes judge.
 org-homes-verify-test:
-    @cd wom7web && python3 project/scripts/org_homes_verify.py --test
+    @cd w0m-web && python3 project/scripts/org_homes_verify.py --test
 
 # T458 S5 — fold the secondary login casualuser@gmail.com into aleksei@ (audit rows moved, not deleted). DRY RUN.
 s5-merge:
-    @cd wom7web && python3 project/scripts/s5_merge.py
+    @cd w0m-web && python3 project/scripts/s5_merge.py
 
 # T458 S5 — the same transaction COMMITTED. Owner-run only, Touch ID on every call.
 s5-merge-apply: (_confirm "s5-merge-apply")
-    @cd wom7web && python3 project/scripts/s5_merge.py --apply
+    @cd w0m-web && python3 project/scripts/s5_merge.py --apply
 
 # T458 S5 — offline red probes.
 s5-merge-test:
-    @cd wom7web && python3 project/scripts/s5_merge.py --test
+    @cd w0m-web && python3 project/scripts/s5_merge.py --test
 
 # T468 phase A — the Upwork source layer and source links exist with the right access. Live, read-only.
 upwork-layer-verify *args:
-    @cd wom7web && python3 project/scripts/upwork_layer_verify.py {{args}}
+    @cd w0m-web && python3 project/scripts/upwork_layer_verify.py {{args}}
 
 # T468 phase A — offline red probes of the Upwork-layer judge.
 upwork-layer-verify-test:
-    @cd wom7web && python3 project/scripts/upwork_layer_verify.py --test
+    @cd w0m-web && python3 project/scripts/upwork_layer_verify.py --test
 
 # T327 AC1/AC4 — Enforcing downward-only ratchet for RLS-bypassing admin client
 authz-admin-client-check:
-    @cd wom7web && python3 project/scripts/authz_admin_client_triage.py --enforce
+    @cd w0m-web && python3 project/scripts/authz_admin_client_triage.py --enforce
 
 # T404 AC6 — Enforce zero unexempted process.env reads in worker-bundled sources.
 worker-env-check *args:
-    @cd wom7web && python3 project/scripts/worker_env_gate.py {{args}}
+    @cd w0m-web && python3 project/scripts/worker_env_gate.py {{args}}
 
 # T404 AC6 — Unit tests and red probes for worker_env_gate.py (15 probes)
 worker-env-test:
-    @cd wom7web && python3 project/scripts/tests/test_worker_env_gate.py
+    @cd w0m-web && python3 project/scripts/tests/test_worker_env_gate.py
 
 # T117 AC8 — the Drizzle schema against the live database. Two directions, only one is a defect:
 # a GHOST (declared, not live) fails at RUNTIME and nothing else catches it — the estate has no
@@ -656,7 +649,7 @@ worker-env-test:
 # from TypeScript entirely. UNDECLARED (live, not in Drizzle) is reported, never gated: the schema
 # covers 44 of 98 public tables BY CHOICE — it is the edge-function data layer, not a mirror.
 schema-drift *args:
-    @cd wom7web && python3 project/scripts/schema_drizzle_drift.py {{args}}
+    @cd w0m-web && python3 project/scripts/schema_drizzle_drift.py {{args}}
 
 # T69 AC5 — the same idea one layer down: every `.from('<table>')` CALL SITE against the live
 # catalog. schema-drift is blind to all three of T69's live bugs because nothing DECLARED those
@@ -667,13 +660,13 @@ schema-drift *args:
 # ⚠️ `supabase.storage.from('<bucket>')` is NOT a table — the first version of this check read all
 # 26 storage calls as GHOSTs. Buckets live in no schema by design.
 callsite-drift *args:
-    @cd wom7web && python3 project/scripts/call_site_schema_drift.py {{args}}
+    @cd w0m-web && python3 project/scripts/call_site_schema_drift.py {{args}}
 
 # The red probes for the above. Offline (synthetic catalog, no DB, no secrets), so a green run
 # proves the CHECK works rather than proving the live schema happens to agree with it. Every
 # "clean" probe is a false alarm this checker actually raised before it was fixed.
 callsite-drift-test:
-    @cd wom7web && python3 project/scripts/call_site_schema_drift_test.py
+    @cd w0m-web && python3 project/scripts/call_site_schema_drift_test.py
 
 # T235 AC9 — refuse to commit work this agent did not do. Born from a real incident: `git add -A`
 # in this SHARED worktree swept the parallel Antigravity agent's in-flight `upwork_mcp_sync.py`
@@ -689,7 +682,7 @@ stage-guard:
 stage-guard-test:
     #!/usr/bin/env bash
     set -uo pipefail
-    cd wom7web
+    cd w0m-web
     reg=project/co-tenancy.json
     # 🔑 The probe carries its OWN fixture. The first version staged the real incident file
     # (upwork_mcp_sync.py) and asserted the guard went red — which worked until the owner took
@@ -729,7 +722,7 @@ stage-guard-test:
 # was unreachable by that gate however the matcher was widened. With no argument it scans the tree;
 # pre-commit passes the staged files.
 mmd-validate *files:
-    @cd wom7web && node ../wom7skills/skills/mmd-validate/validate.mjs {{ files }}
+    @cd w0m-web && node ../w0m-skills/skills/mmd-validate/validate.mjs {{ files }}
 
 # The probe it shipped without. Its centrepiece is the 2026-08-10 regression: a PROSE MENTION of
 # the ```mermaid fence (how CLAUDE.md documents the convention) opened a phantom diagram under the
@@ -737,7 +730,7 @@ mmd-validate *files:
 # ⚠️ Exits 2 rather than 0 when jsdom/mermaid are absent — validate.mjs skips in that state, so a
 # probe that returned green would be certifying a validator that validates nothing.
 mmd-validate-test:
-    @cd wom7web && node ../wom7skills/skills/mmd-validate/test.mjs
+    @cd w0m-web && node ../w0m-skills/skills/mmd-validate/test.mjs
 
 # T194 — a `DROP TABLE` leaves its callers behind and nothing notices. Replays the migrations to
 # find relations dropped and never recreated, then searches the app/worker/edge code for callers
@@ -749,12 +742,12 @@ mmd-validate-test:
 # ⚠️ Absent at the migrations' END STATE, not merely dropped somewhere in history: a rebuilt table
 # is not a finding, and a gate that says otherwise is one people stop reading.
 drop-callers *args:
-    @cd wom7web && python3 project/scripts/drop_caller_gate.py {{ args }}
+    @cd w0m-web && python3 project/scripts/drop_caller_gate.py {{ args }}
 
 # 16 offline probes. The ones that matter most assert a finding is NOT raised — recreate, rename,
 # a comment quoting the DDL, and a storage bucket sharing the relation's name.
 drop-callers-test:
-    @cd wom7web && python3 project/scripts/tests/test_drop_caller_gate.py
+    @cd w0m-web && python3 project/scripts/tests/test_drop_caller_gate.py
 
 # T138 AC1/AC2 — every column the code MATCHES ON, against the indexes that exist. Three severities:
 # UNSAFE (a `.maybeSingle()` with no UNIQUE behind it = a latent 500), CONDITIONALLY UNIQUE (a
@@ -764,24 +757,24 @@ drop-callers-test:
 # COLUMN, so a composite `.eq(a).eq(b).maybeSingle()` backed by a composite unique index still
 # reports; and statement scoping is a 600-char window, which can span two queries.
 lookup-index-gate *args:
-    @cd wom7web && python3 project/scripts/lookup_index_gate.py {{ args }}
+    @cd w0m-web && python3 project/scripts/lookup_index_gate.py {{ args }}
 
 # 13 offline probes. The one that matters is PARTIAL-INDEX parsing: the gate's first run read a
 # `WHERE` clause as the column list and reported `posts.slug` as unindexed while its unique index
 # sat right there. Three of the four identifier indexes here are partial.
 lookup-index-test:
-    @cd wom7web && python3 project/scripts/tests/test_lookup_index_gate.py
+    @cd w0m-web && python3 project/scripts/tests/test_lookup_index_gate.py
 
 # T95 AC4 — every `services-policy.json` services[] entry's doc exists and holds the 3 required
 # headings, AND every file under docs/backend/connectors/ is declared by some entry. Deliberately
 # scoped away from oauth_providers[] — that's T94(b)'s separate, not-yet-built doc timeline.
 connector-check *args:
-    @cd wom7web && python3 project/scripts/check_connectors.py {{ args }}
+    @cd w0m-web && python3 project/scripts/check_connectors.py {{ args }}
 
 # 8 offline probes, both directions: a registry entry pointing at a missing/incomplete doc, and a
 # doc file with no registry entry naming it.
 connector-check-test:
-    @cd wom7web && python3 project/scripts/tests/test_check_connectors.py
+    @cd w0m-web && python3 project/scripts/tests/test_check_connectors.py
 
 # Governs every w0m-authored ignore file: inventory drift, required secret rules, and — the one
 # that matters — TRACKED files that an ignore rule matches. git cannot un-track a file by adding a
@@ -822,18 +815,18 @@ push-report-test:
 
 # T413 — Automated build hints and deprecation remediator.
 fix-hints *args:
-    @cd wom7web && python3 project/scripts/fix_hints.py {{ args }}
+    @cd w0m-web && python3 project/scripts/fix_hints.py {{ args }}
 
 # T413 — Unit test suite for fix_hints.py codemod.
 fix-hints-test:
-    @cd wom7web && python3 project/scripts/tests/test_fix_hints.py
+    @cd w0m-web && python3 project/scripts/tests/test_fix_hints.py
 
 # T210 Phase 1 task 1.5 — proves person/account detachment PER ROLE against a real accountless
 # fixture row, inside a transaction that always rolls back. Asserts service_role CAN see the row
 # as well as that anon/authenticated cannot: a passing "nobody sees it" is otherwise
 # indistinguishable from a revoked grant, which is how T69 hid for three months.
 profile-detach-probe *args:
-    @cd wom7web && python3 project/scripts/profile_detach_probe.py {{ args }}
+    @cd w0m-web && python3 project/scripts/profile_detach_probe.py {{ args }}
 
 # T210 Phase 2 task 2.2 — proves the email-uniqueness migration by MANUFACTURING the collision it
 # refuses, inside transactions that always roll back. The guard is the deliverable, not the index:
@@ -842,7 +835,7 @@ profile-detach-probe *args:
 # the guard NAMED the rows, which is the half `CREATE UNIQUE INDEX` does not do (verified against a
 # guard-stripped mutant 2026-08-14). Empty corpus = failure, since the migration tolerates one.
 profiles-email-probe *args:
-    @cd wom7web && python3 project/scripts/profiles_email_unique_probe.py {{ args }}
+    @cd w0m-web && python3 project/scripts/profiles_email_unique_probe.py {{ args }}
 
 # T210 Phase 3 tasks 3.1/3.4/3.5 — drives SIGNUP itself (real auth.users inserts, rolled back) and
 # proves a candidate keeps their profile ID through it. ⚠️ The id assertion is the point: "a profile
@@ -851,7 +844,7 @@ profiles-email-probe *args:
 # candidate's signup raised a unique violation, and a new signup could not see their own profile —
 # and both were confirmed RED against the unmigrated schema before the fix landed.
 profile-claim-probe *args:
-    @cd wom7web && python3 project/scripts/profile_claim_probe.py {{ args }}
+    @cd w0m-web && python3 project/scripts/profile_claim_probe.py {{ args }}
 
 # T210 Phase 4 task 4.1 — proves a connection belongs to the PERSON. 🔑 The case that matters is
 # `accountless_connection`: it inserts the row [[T194]] AC5 was declared blocked on for months (a
@@ -860,66 +853,66 @@ profile-claim-probe *args:
 # unreadable from a client, not the RLS policies. That assertion was mutation-tested: granting
 # SELECT makes the migration refuse, by name.
 social-rekey-probe *args:
-    @cd wom7web && python3 project/scripts/social_rekey_probe.py {{ args }}
+    @cd w0m-web && python3 project/scripts/social_rekey_probe.py {{ args }}
 
 # T349 AC7 — verify durable verified levels on public.clients and gamification.compliance_profiles
 kyc-probe *args:
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/t349_kyc_probe.py {{ args }}
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/t349_kyc_probe.py {{ args }}
 
 # T254 AC6 — verify unified device identity schema and relational cascade
 device-identity-probe *args:
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/t254_device_identity_probe.py {{ args }}
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/t254_device_identity_probe.py {{ args }}
 
 # T254 AC2b/A7 — verify AI quota checks fail closed on RPC error and enforce dual keying
 quota-failclosed-check *args:
-    @cd wom7web && python3 project/scripts/quota_failclosed_check.py {{ args }}
+    @cd w0m-web && python3 project/scripts/quota_failclosed_check.py {{ args }}
 
 # T254 AC2b/AC3 — shadow-mode hardware fingerprint entropy and collision report
 fingerprint-entropy *args:
-    @cd wom7web && python3 project/scripts/fingerprint_entropy.py {{ args }}
+    @cd w0m-web && python3 project/scripts/fingerprint_entropy.py {{ args }}
 
 # T134 — a service hand-listed in a page is the defect the derived catalog replaced:
 # `system/services.astro` held five hardcoded health URLs until 2026-08-13. Proves itself first by
 # firing on a seeded hand-list, and refuses to report clean over an empty corpus — which is how it
 # caught its own wrong root path during authoring.
 service-handlist-test:
-    @cd wom7web && python3 project/scripts/tests/test_no_service_handlist.py
+    @cd w0m-web && python3 project/scripts/tests/test_no_service_handlist.py
 
 # T207 AC1 — the cp member route policy must live in exactly ONE place. It used to be a literal
 # list in middleware.ts (13 entries, the ACCESS decision) AND a shorter one in AdminLayout.astro
 # (6, the NAV filter) — and they had drifted, so three member-allowed pages were never shown.
 # Also reports any member route that is neither in navGroups nor declared deep-link-only.
 cp-nav-check *args:
-    @cd wom7web && python3 project/scripts/cp_nav_policy_test.py {{args}}
+    @cd w0m-web && python3 project/scripts/cp_nav_policy_test.py {{args}}
 
 # T439 Plan B — live, read-only proof of the context RBAC migration: slugs, offices, hat backfill, client hats,
 # grants, and both RPCs called AS a client user and AS a tech lead. Exit 2 = unmeasured (DB unreachable).
 cp-context-rbac-verify:
-    @cd wom7web && python3 project/scripts/verify_t439_context_rbac.py
+    @cd w0m-web && python3 project/scripts/verify_t439_context_rbac.py
 
 # T439 — red probes for cp-nav-check's context checks (unmapped route, pending/live file existence, duplicate,
 # role names, context page without a nav.ts entry), then the live apps/cp tree.
 cp-nav-check-test:
-    @cd wom7web && python3 project/scripts/tests/test_cp_nav_context.py
+    @cd w0m-web && python3 project/scripts/tests/test_cp_nav_context.py
 
 # T207 AC5+AC6 — design-system token conformance gate.
 # Measures adoption by tokens (hardcoded hex, distinct palette) and native controls (<select>, <input>, <button>)
 # across apps/cp instead of component imports. Enforces non-regression against project/ds-conformance-baseline.json.
 ds-conformance *args:
-    @cd wom7web && python3 project/scripts/ds_conformance.py {{args}}
+    @cd w0m-web && python3 project/scripts/ds_conformance.py {{args}}
 
 ds-conformance-test:
-    @cd wom7web && python3 project/scripts/tests/test_ds_conformance.py
+    @cd w0m-web && python3 project/scripts/tests/test_ds_conformance.py
 
 # T422 AC4 — every token in design-system/tokens/*.css exists in packages/ui/src/tokens.css with the
 # same value, per selector. T422 ticked this AC on 2026-09-23 citing a recipe that did not exist; built
 # 2026-09-24 under T439 when the admin accent changed both files. Exit 1 = drift, 2 = unreadable.
 tokens-parity:
-    @cd wom7web && python3 project/scripts/tokens_parity.py
+    @cd w0m-web && python3 project/scripts/tokens_parity.py
 
 # Red probes (missing, changed, per-selector, comment/whitespace, unreadable), then the live check.
 tokens-parity-test:
-    @cd wom7web && python3 project/scripts/tests/test_tokens_parity.py
+    @cd w0m-web && python3 project/scripts/tests/test_tokens_parity.py
 
 # T199 AC6 — the GRANT layer is asserted, not assumed. Every RLS finding sits on top of a grant
 # nobody checks: a policy only runs if the role holds a table privilege first, and pg_policies
@@ -927,7 +920,7 @@ tokens-parity-test:
 # are inert ONLY because `authenticated` has no USAGE on the schema — one GRANT arms all 8 at once.
 # Drift is checked in BOTH directions; a grant vanishing breaks a live caller too.
 authz-grant-check *args:
-    @cd wom7web && python3 project/scripts/authz_grant_gate.py {{args}}
+    @cd w0m-web && python3 project/scripts/authz_grant_gate.py {{args}}
 
 # Red probes for the grant gate — offline, no DB. It starts GREEN, which is what makes these the
 # deliverable: a gate that has only ever passed cannot be told from one that cannot fail.
@@ -935,40 +928,40 @@ authz-grant-check *args:
 # input is a verbatim message captured on 2026-09-02, when three pushes were refused as
 # "an authorization probe is RED" and none was an authorization violation.
 authz-unavailable-test:
-    @cd wom7web && python3 project/scripts/authz_unavailable_test.py
+    @cd w0m-web && python3 project/scripts/authz_unavailable_test.py
 
 authz-grant-check-test:
-    @cd wom7web && python3 project/scripts/authz_grant_gate_test.py
+    @cd w0m-web && python3 project/scripts/authz_grant_gate_test.py
 
 # T206 AC5 — red probes for per-service Postgres roles (offline + live)
 authz-service-roles-test:
-    @cd wom7web && python3 project/scripts/tests/test_authz_service_roles.py
+    @cd w0m-web && python3 project/scripts/tests/test_authz_service_roles.py
 
 # T199 AC1 — which storage buckets may be public is a REVIEWED LIST (project/authz-buckets.jsonc),
 # not a remembered one. A bucket is exposed on TWO axes and closing it needs both: the `public`
 # flag (direct path reads, needs no policy — `snapshots` is public with ZERO policies) and a
 # public-role SELECT policy (listing). The gate checks both and fails on drift in either direction.
 authz-bucket-check *args:
-    @cd wom7web && python3 project/scripts/authz_bucket_gate.py {{args}}
+    @cd w0m-web && python3 project/scripts/authz_bucket_gate.py {{args}}
 
 # Red probes for the bucket gate — offline, no DB. Includes `boolean-spelling`, which is the near
 # miss the gate actually made: `public::text` is 'true', not the 't' psql displays, so the first
 # version read all 13 buckets as private, reported 0 public, and emitted 6 confident STALE findings.
 authz-bucket-check-test:
-    @cd wom7web && python3 project/scripts/authz_bucket_gate_test.py
+    @cd w0m-web && python3 project/scripts/authz_bucket_gate_test.py
 
 # T199 AC2 — the SECURITY DEFINER surface as a reviewed list. Fails on an undeclared definer
 # function, a grant that drifted in either direction, an unpinned search_path, or a reasonless
 # entry. 🔴 It never recommends a revoke: revoking anon EXECUTE broke the AI quota check OPEN once.
 authz-definer-check *args:
-    @cd wom7web && python3 project/scripts/authz_definer_gate.py {{args}}
+    @cd w0m-web && python3 project/scripts/authz_definer_gate.py {{args}}
 
 # Do agents in OTHER ADEs read the same rules as Claude? `ide-trace` answers "is it declared" and
 # "does the file carry the rules"; this answers the third question neither asks — is that surface
 # REACHABLE where the agent actually runs. Orca is a RUNNER: it provisions a git worktree and
 # executes a CLI agent inside it, so a surface reaches that agent only if git carries it AND any
 # symlink resolves inside the repo. Computed statically; validated against real worktrees of
-# wom7web and wom7api 2026-08-29, agreeing on all 10 surfaces. Advisory; `--enforce` to block.
+# w0m-web and w0m-api 2026-08-29, agreeing on all 10 surfaces. Advisory; `--enforce` to block.
 ade-rules-parity *args:
     @python3 scripts/ade_rules_parity.py {{args}}
 
@@ -983,28 +976,28 @@ ade-rules-parity-test:
 # panel and raises nothing. Reads the field list OUT of the component so the check cannot drift from
 # what it protects. Live: needs the beta DB. Mutation-tested (adding a field the RPC lacks fails it).
 hat-switcher-contract:
-    @cd wom7web && python3 project/scripts/tests/test_hat_switcher_contract.py
+    @cd w0m-web && python3 project/scripts/tests/test_hat_switcher_contract.py
 
 # Red probes for the definer gate. It is GREEN on its first run, which makes these MORE important:
 # a gate that has only ever passed is indistinguishable from one that cannot fail.
 authz-definer-check-test:
-    @cd wom7web && python3 project/scripts/authz_definer_gate_test.py
+    @cd w0m-web && python3 project/scripts/authz_definer_gate_test.py
 
 # Red probes for the gate above — proves it FAILS when it should. Offline, no DB.
 # A gate with no test that makes it fail is a gate nobody has proven works.
 authz-blanket-check-test:
-    @cd wom7web && python3 project/scripts/authz_blanket_gate_test.py
+    @cd w0m-web && python3 project/scripts/authz_blanket_gate_test.py
 
 # Re-measure the whole authorization surface and regenerate every docs/backend map.
 authz-remap:
-    @cd wom7web && python3 project/scripts/authz_probe.py \
+    @cd w0m-web && python3 project/scripts/authz_probe.py \
         && python3 project/scripts/authz_coverage.py \
         && python3 project/scripts/authz_edge_fns.py \
         && python3 project/scripts/authz_gen_maps.py
 
 # T205 AC6 / DoD — verify authz-remap generates all required artifacts including office/capability bundles. Offline.
 authz-remap-test:
-    @cd wom7web && python3 project/scripts/tests/test_authz_remap_outputs.py
+    @cd w0m-web && python3 project/scripts/tests/test_authz_remap_outputs.py
 
 # db-drift-check: prove the database is reproducible from the migrations directory (T156).
 # FAILS when the remote ledger holds a version with no local migration file — a schema change
@@ -1012,7 +1005,7 @@ authz-remap-test:
 # without failing (that is what db-migrate is for). Wrapped in `infisical run` for DATABASE_URL;
 # without it the script skips rather than passing, so it can run where secrets are absent.
 db-drift-check:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7web/project/scripts/db_drift_check.py
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-web/project/scripts/db_drift_check.py
 
 # attribution-drift-check: T325 AC4 — prove the contract/client attribution classification the
 # 2026-09-10 backfill established still matches live data (unclassified rows, a link with a stale
@@ -1020,12 +1013,12 @@ db-drift-check:
 # portal gap). Read-only via PostgREST; exit 2 (could not measure) is distinct from exit 0
 # (measured clean) — a failed read is never reported as zero findings (T242).
 attribution-drift-check:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7web/project/scripts/attribution_drift_check.py
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-web/project/scripts/attribution_drift_check.py
 
 # Backup Remote Database
 db-backup: (_confirm "db-backup")
     @echo "Backing up remote database..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/db_backup.py
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/db_backup.py
 
 # T229 AC1 — restore the newest dump into a scratch database and PROVE it matches live.
 # `db_backup.py` says in its own docstring that it cannot do this: a `pg_dump --list` on a plain-SQL
@@ -1035,7 +1028,7 @@ db-backup: (_confirm "db-backup")
 # 🔴 Fails closed on an EMPTY comparison — zero tables, or zero content hashes, exits 1. A backup
 # verifier reporting green over nothing would certify an unrestored dump.
 db-restore-verify *args:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/db_restore_verify.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/db_restore_verify.py {{ args }}
 
 # T4 AC2 — the machine-draft matcher must still FIRE against the live blueprint catalog.
 # `proposal-seed.test.ts` proves the logic against fixed rows; this proves the logic and the real
@@ -1047,7 +1040,7 @@ db-restore-verify *args:
 # it asserts the seed has not drifted to a different filter than the one it reads with.
 # Reads live; writes nothing. Two NEGATIVE controls must decline, or a guessing matcher passes.
 proposal-seed-catalog-check *args:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/proposal_seed_catalog_check.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/proposal_seed_catalog_check.py {{ args }}
 
 # T198 AC1 — a client page must scope by the client's ORGANISATION and must not hide its own errors.
 # Static, fast, deterministic: it reads `apps/cp/src/pages/client/*.astro`.
@@ -1059,7 +1052,7 @@ proposal-seed-catalog-check *args:
 # matched only `const { data: x } = await supabase…` and sailed past the ternary form these pages
 # actually use. Widened to match the destructure rather than the right-hand side.
 client-page-tenancy-test:
-    @cd wom7web && python3 project/scripts/tests/test_client_page_tenancy.py
+    @cd w0m-web && python3 project/scripts/tests/test_client_page_tenancy.py
 
 # T287 — `project_repos` behaves, proven by RUNNING the migrations against a scratch restore.
 # 🔴 The load-bearing check is the CLIENT READ, and it is behavioural for a specific reason: the
@@ -1070,13 +1063,13 @@ client-page-tenancy-test:
 # ⚠️ A separate file from `stage2-schema-check` on purpose: that one is stage-2's EXIT check, and a
 # T287 defect must not make stage-2 report red.
 t287-repos-check *args:
-    @cd wom7api && python3 scripts/t287_repos_check.py {{ args }}
+    @cd w0m-api && python3 scripts/t287_repos_check.py {{ args }}
 
 # T510 (U1) — proves resume publication by APPLYING its migration (twice) to a scratch restore of the newest dump and exercising it as real roles: the
 # owner-only settings table, one primary resume per profile, and the public team view carrying only what is switched on. Needs a local Postgres (exit 2 =
 # NOT MEASURED without one). A separate file from t287-repos-check on purpose: a defect in one ticket's proof must not turn the other red.
 t510-publication-check *args:
-    @cd wom7api && python3 scripts/t510_publication_check.py {{ args }}
+    @cd w0m-api && python3 scripts/t510_publication_check.py {{ args }}
 
 # T290 AC2 — `simulate_payment` must be gone from the DEPLOYED client-api, not just from the source.
 # 🔴 A grep proves the file; an edge function keeps serving its LAST DEPLOY, so those are different
@@ -1086,12 +1079,12 @@ t510-publication-check *args:
 # ⚠️ Carries a CONTROL: an unknown verb must answer the same way, or the call never reached the
 # router and the verdict is measuring the door. Missing config exits 2 (UNMEASURABLE), never 0.
 simulate-payment-gone *args:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/simulate_payment_gone_check.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/simulate_payment_gone_check.py {{ args }}
 
 # T373 AC6 / T290 AC3-AC4 — Anti-vacuous financial reconciliation against live Stripe API.
 # Distinguishes 3 states: 0 (reconciled), 1 (mismatched or empty/vacuous), 2 (unmeasurable).
 reconcile-stripe *args:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/reconcile_stripe_invoices.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/reconcile_stripe_invoices.py {{ args }}
 
 # T4 / T204 AC5 — stage-2's three migrations, APPLIED to a scratch restore and then exercised.
 # An agent cannot run `db-migrate` and deploy needs a human, so "the migration is written" is the
@@ -1103,7 +1096,7 @@ reconcile-stripe *args:
 # that let an unauthorized caller through, since `not (NULL or NULL)` is NULL and never fires.
 # Needs local postgres; touches only a scratch db it creates and drops.
 stage2-schema-check *args:
-    @cd wom7api && python3 scripts/stage2_schema_check.py {{ args }}
+    @cd w0m-api && python3 scripts/stage2_schema_check.py {{ args }}
 
 # T229 AC4 — back up STORAGE, which pg_dump does not touch. 555 objects / ~54 MB across 13 buckets;
 # a database restore that brings back rows pointing at missing files is a half-restore that looks
@@ -1112,12 +1105,12 @@ stage2-schema-check *args:
 # 🔴 Refuses on ZERO buckets or ZERO objects — a downloader that finds nothing and reports success
 # would certify that files are safe when none were copied.
 storage-backup *args: (_confirm "storage-backup")
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/storage_backup.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/storage_backup.py {{ args }}
 
 # T229 AC4 — prove storage-backup can go RED. Offline: a stub API serves a known corpus, and each
 # refusal (empty bucket list, empty object list, a short download, a failed fetch) is exercised.
 storage-backup-test:
-    @python3 wom7api/scripts/tests/test_storage_backup.py
+    @python3 w0m-api/scripts/tests/test_storage_backup.py
 
 # T229 AC2 — is there a RECENT backup? Reads the artefacts on disk, never a scheduler: this estate's
 # scheduler surface is split (desktop-app routines are invisible to the CLI scheduler), so a routine
@@ -1125,18 +1118,18 @@ storage-backup-test:
 # 🔴 ZERO backups FAILS — a freshness checker reporting "nothing to check ✓" is the exact failure
 # T229 documents, wearing a tick. No credentials, no network; safe on every push.
 backup-freshness *args:
-    @python3 wom7api/scripts/backup_freshness.py {{ args }}
+    @python3 w0m-api/scripts/backup_freshness.py {{ args }}
 
 # T229 AC2 — prove backup-freshness goes RED: no directory, an empty one, a stale dump, a truncated
 # dump, and a filename it cannot date. Runs on fixtures; never reads the real backups.
 backup-freshness-test:
-    @python3 wom7api/scripts/tests/test_backup_freshness.py
+    @python3 w0m-api/scripts/tests/test_backup_freshness.py
 
 # T231 — retention for scheduled backups. ~28 MB a dump + ~54 MB a Storage copy compounds to ~2.5 GB
 # a month if nothing prunes, so this is part of scheduling rather than a follow-up.
 # 🔴 Refuses --keep 0 and never touches a name it does not recognise.
 backup-prune *args:
-    @python3 wom7api/scripts/backup_prune.py {{ args }}
+    @python3 w0m-api/scripts/backup_prune.py {{ args }}
 
 # T231 AC3 — the offsite WATCHDOG's two static claims. The watchdog itself runs in the Cloudflare
 # Worker on the existing `0 8 * * *` cron; these check the things a deploy would not catch:
@@ -1147,10 +1140,10 @@ backup-prune *args:
 # 🔴 Exit 2 when a file or symbol is missing: "could not read the Worker" must never render as
 # "the Worker agrees".
 backup-watchdog-drift *args:
-    @cd wom7web && python3 project/scripts/backup_watchdog_drift.py {{ args }}
+    @cd w0m-web && python3 project/scripts/backup_watchdog_drift.py {{ args }}
 
 backup-watchdog-drift-test:
-    @cd wom7web && python3 project/scripts/tests/test_backup_watchdog_drift.py
+    @cd w0m-web && python3 project/scripts/tests/test_backup_watchdog_drift.py
 
 # T231 AC2 — the OFFSITE half. T229 proved the dump restores; it did not stop the only copy living
 # on one laptop. The Mac produces (only place `pg_dump` runs) and pushes to R2 directly.
@@ -1159,55 +1152,55 @@ backup-watchdog-drift-test:
 # one first sketched.
 # 🔴 Refuses an empty push, and asks R2 what it stored rather than trusting a 200.
 backup-push-r2 *args:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/backup_push_r2.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/backup_push_r2.py {{ args }}
 
 # T231 AC2 — prove the offsite copy is REAL: download the newest object of each kind and re-hash it.
 # A size match is not integrity, and head_object only reports what R2 believes.
 backup-verify-r2:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/backup_push_r2.py --verify
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/backup_push_r2.py --verify
 
 # T231 / debt D59 — restore the OFFSITE dump, not the local one. `backup-verify-r2` proves the
 # remote bytes round-trip; this proves they RESTORE, a different claim and the one T229 established
 # matters. Pulls the newest r2://wom7-backups/postgres/ object and runs the full restore+diff.
 db-restore-verify-r2:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/db_restore_verify.py --from-r2
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/db_restore_verify.py --from-r2
 
 # T231 / debt D59 — the STORAGE half of restoring from offsite: pull the newest tarball, extract it,
 # and verify all 555 objects against the manifest they were uploaded with. Distinct from
 # `backup-verify-r2`, which hashes the ARCHIVE — this checks the FILES inside it.
 # ⚠️ It does NOT re-upload into Supabase Storage; that is destructive and has no scratch bucket.
 storage-restore-verify-r2:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/storage_backup.py --from-r2
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/storage_backup.py --from-r2
 
 # T231 AC7 — prove backup-push-r2 goes RED. Offline: a fake S3 client, never the real bucket.
 backup-push-r2-test:
-    @python3 wom7api/scripts/tests/test_backup_push_r2.py
+    @python3 w0m-api/scripts/tests/test_backup_push_r2.py
 
 # T229 AC6 — watch the Free-tier limits the estate has CHOSEN to live inside (owner, 2026-08-18:
 # stay on Free, Pro only if genuinely needed). These fail abruptly rather than gradually.
 # 🔴 Reports what it could NOT measure and never folds it into a pass — egress has no Management API
 # endpoint, so it is listed as NOT MEASURED rather than silently omitted from a green tick.
 supabase-limits *args:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/supabase_limits.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/supabase_limits.py {{ args }}
 
 # T229 AC6 — prove supabase-limits goes RED and, just as importantly, that it never reports a pass
 # over an empty inventory or hides an unmeasured surface.
 supabase-limits-test:
-    @python3 wom7api/scripts/tests/test_supabase_limits.py
+    @python3 w0m-api/scripts/tests/test_supabase_limits.py
 
 # T229 AC1 — prove db-restore-verify can go RED. Seeds a scratch dump with a dropped table, an
 # inflated row and an unrecognised error, and asserts each is caught. Never touches a real dump.
 db-restore-verify-test:
-    @python3 wom7api/scripts/tests/test_db_restore_verify.py
+    @python3 w0m-api/scripts/tests/test_db_restore_verify.py
 
 # Infra-as-Code Deployment
 deploy-infra-tf: (_confirm "deploy-infra-tf")
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" terraform -chdir=wom7api/cloudflare apply -auto-approve'
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" terraform -chdir=w0m-api/cloudflare apply -auto-approve'
 
 # T131 AC2 — the shared stamp helper on its own, for a target that builds by other means. Same
 # rule: pass the triple you already hold; never let a second producer appear.
 _stamp version at commit:
-    @cd wom7web && python3 project/scripts/stamp_build.py \
+    @cd w0m-web && python3 project/scripts/stamp_build.py \
         --version "{{ version }}" --at "{{ at }}" --commit "{{ commit }}"
 
 # T429: probe for check_infisical.py (no-link / wrong-id / expired / other), against a fake CLI.
@@ -1221,7 +1214,7 @@ check-infisical-test:
 # `just login-admin https://cp.w0m.xyz` for admin-only. Pin the admin with ADMIN_EMAIL=…
 login-admin bases="https://cp.w0m.xyz,https://cp.webomage.com": check-infisical
     @echo "🔑 Minting fresh admin session(s)…"
-    @urls="$(cd wom7web && ADMIN_CP_BASES='{{bases}}' infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- node apps/cp/scripts/mint-admin-login.mjs)"; \
+    @urls="$(cd w0m-web && ADMIN_CP_BASES='{{bases}}' infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- node apps/cp/scripts/mint-admin-login.mjs)"; \
         [ -n "$urls" ] || { echo "❌ mint failed (see above)"; exit 1; }; \
         printf '%s\n' "$urls" | while IFS= read -r u; do [ -n "$u" ] && { echo "🌐 Opening → $u"; open "$u"; }; done
     @echo "🚪 Done testing? Run 'just logout-admin' to revoke what this minted."
@@ -1237,23 +1230,23 @@ logout-admin bases="https://cp.w0m.xyz,https://cp.webomage.com":
 
 # Setup Python env + Playwright binaries
 setup-python:
-    @cd wom7api && if [ ! -d ".venv" ]; then uv venv; fi
-    @cd wom7api && uv pip install -r pyproject.toml
-    @cd wom7api && uv run playwright install chromium
+    @cd w0m-api && if [ ! -d ".venv" ]; then uv venv; fi
+    @cd w0m-api && uv pip install -r pyproject.toml
+    @cd w0m-api && uv run playwright install chromium
 
 # AI helper recipes
 ai-infra-explain path:
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/ai_tools.py infra-explain {{ path }}
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/ai_tools.py infra-explain {{ path }}
 
 ai-copy-rewrite path:
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/ai_tools.py copy-rewrite {{ path }}
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/ai_tools.py copy-rewrite {{ path }}
 
 ai-case-scaffold path:
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/ai_tools.py case-scaffold {{ path }}
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/ai_tools.py case-scaffold {{ path }}
 
 # Generate a news post
 news-generate source_url bullets_file title_hint slug:
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/generate_news_post.py --source-url "{{ source_url }}" --bullets-file "{{ bullets_file }}" --title-hint "{{ title_hint }}" --slug "{{ slug }}"
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/generate_news_post.py --source-url "{{ source_url }}" --bullets-file "{{ bullets_file }}" --title-hint "{{ title_hint }}" --slug "{{ slug }}"
 
 # Trigger automated news generation
 news-trigger-automated:
@@ -1266,23 +1259,23 @@ news-trigger-automated:
 
 # Check and update system status
 check-status:
-    @cd wom7api && python3 scripts/healthcheck.py
+    @cd w0m-api && python3 scripts/healthcheck.py
 
 # Health alias
 health:
-    @cd wom7api && python3 scripts/healthcheck.py
+    @cd w0m-api && python3 scripts/healthcheck.py
 
 # Content / site sanity checks
-check-titles frontend_path="wom7web":
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/archive/check_duplicate_titles.py {{ frontend_path }}
+check-titles frontend_path="w0m-web":
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/archive/check_duplicate_titles.py {{ frontend_path }}
 
-check-post-images frontend_path="wom7web":
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/archive/check_post_images.py {{ frontend_path }}
+check-post-images frontend_path="w0m-web":
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/archive/check_post_images.py {{ frontend_path }}
 
 # Run SEO Audit (Meta tags, Images, Accessibility)
 audit-seo:
     @echo "Running SEO Audit..."
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- node scripts/audit_seo.js
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- node scripts/audit_seo.js
 
 # Audit Supabase posts for media metadata
 audit-media:
@@ -1290,7 +1283,7 @@ audit-media:
     # T189 AC4: this line previously carried BOTH a `-` prefix (just ignores the failure) AND
     # `|| echo` (the shell swallows it), so the recipe could not fail whatever the script did —
     # an audit that cannot report a problem. Both removed: a real failure now surfaces.
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta < /dev/null -- python3 scripts/audit_supabase_posts.py
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta < /dev/null -- python3 scripts/audit_supabase_posts.py
 
 # Legacy Gherkin-style E2E checks (superseded by Gauge)
 e2e-features:
@@ -1301,14 +1294,14 @@ e2e-features:
 spec: e2e
 
 
-gen-sitemap-mmd frontend_path="wom7web":
-    @cd wom7api && python3 scripts/gen_sitemap_mmd.py {{ frontend_path }}
+gen-sitemap-mmd frontend_path="w0m-web":
+    @cd w0m-api && python3 scripts/gen_sitemap_mmd.py {{ frontend_path }}
 
 codemaps-mmd:
-    @cd wom7api && python3 scripts/gen_blueprint_pages.py
+    @cd w0m-api && python3 scripts/gen_blueprint_pages.py
 
 # Verify website
-verify frontend_path="wom7web":
+verify frontend_path="w0m-web":
     @echo "Generating sitemap.mmd for {{ frontend_path }}..."
     @just gen-sitemap-mmd {{ frontend_path }}
     @echo "Generating codemap diagrams..."
@@ -1319,7 +1312,7 @@ verify frontend_path="wom7web":
     @just audit-media
 
 # Run Chaos Monkey UI tests
-verify-chaos frontend_path="wom7web":
+verify-chaos frontend_path="w0m-web":
     @echo "Running Chaos Monkey testing on {{ frontend_path }}..."
     cd {{ frontend_path }} && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec playwright test tests/chaos.spec.ts
 
@@ -1334,7 +1327,7 @@ report-visual url="http://localhost:4321":
     fi
     @echo "Generating visual report for {{ url }}..."
     @mkdir -p .reports
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec tsx scripts/generate_visual_report.js {{ url }} .reports/visual_report_$(date +%Y%m%d_%H%M%S)
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec tsx scripts/generate_visual_report.js {{ url }} .reports/visual_report_$(date +%Y%m%d_%H%M%S)
 
 # Generate Filmstrip Showcase Report (/_showcase)
 report-filmstrip url="http://localhost:4321":
@@ -1347,14 +1340,14 @@ report-filmstrip url="http://localhost:4321":
     fi
     @echo "Generating filmstrip report for {{ url }}/_showcase..."
     @mkdir -p .reports
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- node scripts/generate_filmstrip_report.js {{ url }} .reports/filmstrip_$(date +%Y%m%d_%H%M%S)
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- node scripts/generate_filmstrip_report.js {{ url }} .reports/filmstrip_$(date +%Y%m%d_%H%M%S)
 
 report-tracks:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'psql "$DATABASE_URL" -f wom7api/supabase/queries/tracks_report.sql'
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'psql "$DATABASE_URL" -f w0m-api/supabase/queries/tracks_report.sql'
 
 # T311: Upwork sync freshness (proposals/contracts/rooms/messages) -- read-only.
 report-upwork-sync:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'psql "$DATABASE_URL" --csv -f wom7api/supabase/queries/upwork_sync_check.sql'
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'psql "$DATABASE_URL" --csv -f w0m-api/supabase/queries/upwork_sync_check.sql'
 
 # MLX & Local LLM Serving (T184 AC8 — omlx on :8000 replaces retired serve_mlx.py / local-glm-4v)
 model-serve:
@@ -1366,20 +1359,20 @@ model-test:
     @curl -fsS http://localhost:8000/v1/models
 
 ext-supabase-start:
-    @echo "Starting local Supabase for wom7ext..."
-    @cd wom7ext && pnpm dlx supabase start
+    @echo "Starting local Supabase for w0m-ext..."
+    @cd w0m-ext && pnpm dlx supabase start
 
 ext-supabase-stop:
-    @echo "Stopping local Supabase for wom7ext..."
-    @cd wom7ext && pnpm dlx supabase stop
+    @echo "Stopping local Supabase for w0m-ext..."
+    @cd w0m-ext && pnpm dlx supabase stop
 
 crawler-deploy: (_confirm "crawler-deploy")
-    @echo "Deploying wom7web/cf-crawler..."
-    @cd wom7web/cf-crawler && npm run deploy
+    @echo "Deploying w0m-web/cf-crawler..."
+    @cd w0m-web/cf-crawler && npm run deploy
 
 crawler-dev:
-    @echo "Running wom7web/cf-crawler in dev mode..."
-    @cd wom7web/cf-crawler && npm run dev
+    @echo "Running w0m-web/cf-crawler in dev mode..."
+    @cd w0m-web/cf-crawler && npm run dev
 
 migrate-crawler-data:
     @echo "Triggering data migration worker..."
@@ -1387,15 +1380,15 @@ migrate-crawler-data:
 
 migrate-ext-data:
     @echo "Migrating Extension data (Local -> Remote)..."
-    @cd wom7api && python3 scripts/archive/migrate_wom7ext_data.py
+    @cd w0m-api && python3 scripts/archive/migrate_w0m_ext_data.py
 
 bake-pdfs:
     @echo "Baking PDFs (pandoc + weasyprint)..."
-    @python3 wom7api/scripts/bake_pdfs.py public
+    @python3 w0m-api/scripts/bake_pdfs.py public
 
 bake-private-cv:
     @echo "Baking Private CV PDF (pandoc + weasyprint)..."
-    @python3 wom7api/scripts/bake_pdfs.py private
+    @python3 w0m-api/scripts/bake_pdfs.py private
 
 # Bakes EVERY CV document in EVERY template into .cv-gallery/ (gitignored) and writes an index.
 # There are 7 CV documents here and, until 2026-08-31, effectively one design — so nothing let you
@@ -1406,11 +1399,11 @@ bake-private-cv:
 #
 # CV gallery — bake all documents x all templates, then open the index.
 cv-gallery *args:
-    @cd wom7web && python3 project/scripts/cv_gallery.py --open {{ args }}
+    @cd w0m-web && python3 project/scripts/cv_gallery.py --open {{ args }}
 
 # Same, without opening a browser (for a check or a headless run).
 cv-gallery-build *args:
-    @cd wom7web && python3 project/scripts/cv_gallery.py {{ args }}
+    @cd w0m-web && python3 project/scripts/cv_gallery.py {{ args }}
 
 # The two docs/backend/branding CV PDFs — `Aleksei_CV_2026_Public` and
 # `Aleksei_CV_2026_Private_Master`. They had NO generator until 2026-08-26: `bake-pdfs public`
@@ -1421,14 +1414,14 @@ cv-gallery-build *args:
 # reference number and the public file deliberately omits it.
 bake-branding-cv:
     @echo "Baking branding CV PDFs (pandoc + weasyprint)..."
-    @python3 wom7api/scripts/bake_pdfs.py branding
+    @python3 w0m-api/scripts/bake_pdfs.py branding
 
-# Bakes the client/applicant/trainee-facing manuals (wom7web/docs/manuals/*.md) to PDF, with
+# Bakes the client/applicant/trainee-facing manuals (w0m-web/docs/manuals/*.md) to PDF, with
 # screenshots and embedded Mermaid fences (rendered as plain code — no mermaid-to-image filter
 # wired in). Strips frontmatter and converts [[wikilinks]] to bold before handing off to pandoc.
 bake-manuals:
     @echo "Baking manuals PDFs (pandoc + weasyprint)..."
-    @python3 wom7api/scripts/bake_pdfs.py manuals
+    @python3 w0m-api/scripts/bake_pdfs.py manuals
 
 # T165 task 3.4 — generate the CV Professional Experience section from `resume.json`.
 # The hand-written branding CVs rendered 10 rows out of 27 canonical entries: they invented two
@@ -1440,7 +1433,7 @@ bake-manuals:
 # lives in `project/data/cv/engagement-model.json`, not in the script. Fails closed on an entry the
 # model does not classify — silently dropping a career is the defect this replaces.
 cv-experience *args:
-    @cd wom7web && python3 project/scripts/cv_experience.py {{args}}
+    @cd w0m-web && python3 project/scripts/cv_experience.py {{args}}
 
 # T165 task 3.5 — does the CV assert more than `resume.json` + `claims.json` can support?
 # 🔴 NOT `cv-claims`, which builds claims.json FROM documents. This reads the other direction:
@@ -1454,12 +1447,12 @@ cv-experience *args:
 # `accepted` in project/cv-overclaim-policy.json is downward-only, and every entry carries a
 # `clears_when`.
 cv-overclaim-check *args:
-    @cd wom7web && python3 project/scripts/cv_overclaim_check.py {{args}}
+    @cd w0m-web && python3 project/scripts/cv_overclaim_check.py {{args}}
 
 # The gate's own red probes — 8 cases, including that a NEW unbacked claim fails and that a section
 # outside the declared zone is not scanned.
 cv-overclaim-check-test:
-    @cd wom7web && python3 project/scripts/cv_overclaim_check.py --selftest
+    @cd w0m-web && python3 project/scripts/cv_overclaim_check.py --selftest
 
 # Verdict logic of the authorization probe suite (T198/T242). Offline — pure logic, no database.
 # Asserts that "counted zero", "counted violations" and "could not measure" are THREE states, and
@@ -1467,55 +1460,55 @@ cv-overclaim-check-test:
 # `got != 0 or err` with `got` defaulting to -1, so an unreachable database reported as a
 # violation and blocked a push while the same suite ran 0 RED five times in a row afterwards.
 authz-probe-verdict-test:
-    @cd wom7web && python3 project/scripts/tests/test_authz_probe_suite.py
+    @cd w0m-web && python3 project/scripts/tests/test_authz_probe_suite.py
 
 # T544 — profile_experience read is owner-or-admin (migration 20261006121000). Boots a THROWAWAY Postgres (Homebrew initdb/pg_ctl/psql), builds the table and its policies from the
 # real T360/T363/T468 migration text, and proves: the harness reproduces the open read, the fix narrows it, the write policies are byte-identical, the source_links policy still
 # works, and the authz probes X30-X34 read RED before and GREEN after. Fails (does not skip) without the Postgres binaries; tier `live` so `just test` stays green on a bare machine.
 t544-profile-experience-read-test:
-    @cd wom7web && python3 project/scripts/tests/test_t544_profile_experience_read.py
+    @cd w0m-web && python3 project/scripts/tests/test_t544_profile_experience_read.py
 
 # T555 — the Studio's six themes are named in three places in two repos (the Studio, the resume-pdf edge function, the worker's PDF renderer) and the stylesheet the Studio sends must pass the
 # worker's refusal rules. Offline: four files, no database.
 resume-themes-agree-test:
-    @cd wom7web && python3 project/scripts/tests/test_resume_themes_agree.py
+    @cd w0m-web && python3 project/scripts/tests/test_resume_themes_agree.py
 
 # T555 AC3 — bring the member's CV tables to the 2026 CV's structure: position kind/remote/via-Upwork, the canonical highlights the one-time seed stopped short of, the summary, grouped skills
 # with evidence, accreditations / open-source / education. ADDITIVE, DRY RUN by default; `--apply` is the owner's (run under `infisical run --env=beta --silent --`).
 cv-structure-load *args:
-    @cd wom7web && python3 project/scripts/cv_structure_load.py {{args}}
+    @cd w0m-web && python3 project/scripts/cv_structure_load.py {{args}}
 
 cv-structure-load-test:
-    @cd wom7web && python3 project/scripts/tests/test_cv_structure_load.py
+    @cd w0m-web && python3 project/scripts/tests/test_cv_structure_load.py
 
 # T555 AC2 — which numbers and technology terms of a CV summary and skills block does the canonical corpus (resume.json, claims.json) back? READ-ONLY: two JSON files and one
 # markdown file, no database, no network. Exit 1 when something is unbacked or conflicting, 2 when an input is missing.
 cv-evidence-report *args:
-    @cd wom7web && python3 project/scripts/cv_evidence_report.py {{args}}
+    @cd w0m-web && python3 project/scripts/cv_evidence_report.py {{args}}
 
 cv-evidence-report-test:
-    @cd wom7web && python3 project/scripts/tests/test_cv_evidence_report.py
+    @cd w0m-web && python3 project/scripts/tests/test_cv_evidence_report.py
 
 # T553 — the hat write path (migration 20261007010000): five SECURITY DEFINER functions that check authority and QH1/QH4/QH5 inside the function and write the audit row in the same
 # transaction. Boots a THROWAWAY Postgres (Homebrew initdb/pg_ctl/psql), applies the real T461 migration then the fix, and drives every rule as role `authenticated`. Fails (does not skip)
 # without the Postgres binaries; tier `live` so `just test` stays green on a bare machine. T553_MIGRATION=<path> runs the same checks against a mutated copy.
 t553-hat-write-path-test:
-    @cd wom7web && python3 project/scripts/tests/test_t553_hat_write_path.py
+    @cd w0m-web && python3 project/scripts/tests/test_t553_hat_write_path.py
 
 # T551 — no two migration files may share a version (the ledger key). Offline, no database, about a second: it runs at push, where the collision is made,
 # and `db_drift_check.py` also runs it first, so `db-migrate` (which runs that check as a dependency) refuses a colliding tree.
 migration-versions-check:
-    @cd wom7web && python3 project/scripts/db_drift_check.py --versions-only
+    @cd w0m-web && python3 project/scripts/db_drift_check.py --versions-only
 
 # T551 — offline proof of that check (16 checks: names every colliding file, refuses before the ledger is read, real tree clean, registered as a pre-push suite).
 migration-versions-test:
-    @python3 wom7web/project/scripts/tests/test_migration_versions_unique.py
+    @python3 w0m-web/project/scripts/tests/test_migration_versions_unique.py
 
 # T545 — "admin reads everything" over the four member-owned personal tables, behind ONE switch (migration 20261006130000). Throwaway Postgres (Homebrew binaries), owner policies taken from the
 # real T498/T505/T510 migration text. Proves: the admin read works, a password-only admin still reads nothing of anyone else's, the owner policies and grants are byte-identical, no write
 # arm exists, one statement narrows all four tables for onboarding, and the authz probes (built by the real suite, executed with \gset) are GREEN in both switch states and RED on a mismatch.
 t545-admin-reads-personal-data-test:
-    @cd wom7web && python3 project/scripts/tests/test_t545_admin_reads_personal_data.py
+    @cd w0m-web && python3 project/scripts/tests/test_t545_admin_reads_personal_data.py
 
 # Probes for the DECLARED board identity (T242). Offline — no gh, no network. Asserts one
 # declaration in `.w0m/sdlc.json -> board`, three readers, and that both silent breaks stay shut:
@@ -1533,7 +1526,7 @@ board-identity-test:
 layout-matrix pages="/services/,/,/blueprints/" out="../../docs/reports/layout-matrix.json":
     #!/usr/bin/env bash
     set -euo pipefail
-    cd wom7web/apps/web
+    cd w0m-web/apps/web
     node scripts/layout-matrix.mjs --pages '{{ pages }}' --out '{{ out }}'
 
 # The same measurement as a GATE (T261 AC6). Boots or reuses a dev server, then fails on clipped
@@ -1548,19 +1541,19 @@ layout-matrix pages="/services/,/,/blueprints/" out="../../docs/reports/layout-m
 layout-matrix-check pages="/services/,/,/blueprints/":
     #!/usr/bin/env bash
     set -euo pipefail
-    cd wom7web
+    cd w0m-web
     if curl -sf -o /dev/null http://localhost:4321/; then
       echo "[layout-matrix] reusing the dev server already on :4321"
     else
       echo "[layout-matrix] booting a dev server..."
-      ASTRO_DEV_BACKGROUND=1 infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web dev > /tmp/wom7web-layout-dev.log 2>&1 &
+      ASTRO_DEV_BACKGROUND=1 infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web dev > /tmp/w0m-web-layout-dev.log 2>&1 &
       DEV_PID=$!
       # Kill by PORT as well as PID: `infisical run -- pnpm dev` puts astro two levels down, so
       # killing the spawned PID alone leaks a server that the next run silently reuses (see goldens).
       trap 'lsof -ti tcp:4321 -sTCP:LISTEN 2>/dev/null | xargs -r kill 2>/dev/null || true; kill $DEV_PID 2>/dev/null || true' EXIT
       for i in $(seq 1 60); do
         if curl -sf -o /dev/null http://localhost:4321/; then echo "[OK] server ready after ${i}s"; break; fi
-        if [ "$i" -eq 60 ]; then echo "[FAIL] dev server did not start in 60s"; tail -20 /tmp/wom7web-layout-dev.log; exit 1; fi
+        if [ "$i" -eq 60 ]; then echo "[FAIL] dev server did not start in 60s"; tail -20 /tmp/w0m-web-layout-dev.log; exit 1; fi
         sleep 1
       done
       # A 200 is not readiness — a cold Astro server re-optimizes deps and reloads mid-navigation.
@@ -1578,17 +1571,17 @@ layout-matrix-check pages="/services/,/,/blueprints/":
 # every rule a page built to break it and FAILS if the rule stays quiet, then feeds it the two
 # shapes it must not flag. A detector reporting zero is a hypothesis until this suite is green.
 layout-matrix-test:
-    @cd wom7web/apps/web && node scripts/layout-matrix.test.mjs
+    @cd w0m-web/apps/web && node scripts/layout-matrix.test.mjs
 
 # Run E2E Tests (Gauge)
 e2e:
     #!/usr/bin/env bash
     set -euo pipefail
     echo "🔄 Restarting dev server for E2E tests..."
-    just redev > /tmp/wom7web-dev.log 2>&1 &
+    just redev > /tmp/w0m-web-dev.log 2>&1 &
     DEV_PID=$!
-    echo "🔄 Starting wom7func for E2E tests..."
-    (cd wom7func && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev) > /tmp/wom7func-dev.log 2>&1 &
+    echo "🔄 Starting w0m-cf for E2E tests..."
+    (cd w0m-cf && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev) > /tmp/w0m-cf-dev.log 2>&1 &
     CF_PID=$!
     echo "⏳ Waiting for http://localhost:4321 to be ready (up to 60s)..."
     READY=0
@@ -1602,7 +1595,7 @@ e2e:
     done
     if [ "$READY" -eq 0 ]; then
       echo "❌ Timeout: dev server did not start within 60s"
-      cat /tmp/wom7web-dev.log | tail -20
+      cat /tmp/w0m-web-dev.log | tail -20
       exit 1
     fi
     echo "⏳ Waiting for http://localhost:8787 to be ready..."
@@ -1610,39 +1603,39 @@ e2e:
       echo "✅ Worker server ready"
     else
       echo "⚠️ Timeout: worker server did not start within 60s (proceeding anyway)"
-      cat /tmp/wom7func-dev.log | tail -20 || true
+      cat /tmp/w0m-cf-dev.log | tail -20 || true
     fi
     echo "🧪 Running E2E Verification..."
-    cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm test:e2e
+    cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm test:e2e
 
 # Launch local Astro website
 dev:
-    cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev
+    cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev
 
 # Launch specific apps locally
 dev-join:
-    cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev:join
+    cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev:join
 
 dev-job:
-    cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev:job
+    cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev:job
 
 # The CP had NO sanctioned local dev path until 2026-08-13 — no `dev:cp` script and no recipe — so
 # every launch.json pointed at a bare `pnpm --filter cp dev`. That starts, and then every page
 # using Supabase dies in middleware with "environment variables are missing", because secrets reach
 # a process only by infisical injection (CLAUDE.md). Same shape as the siblings.
 dev-cp:
-    cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev:cp
+    cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev:cp
 
 # Kill all local "astro dev" running on all ports and start new one on port 4321
 # `sync-env` was dropped as a dependency (T119 AC2b retired it — it now always exits 1 by design,
 # which silently prevented `redev` from ever reaching `pnpm run dev`). Secrets are injected below.
 redev: stop-dev
-    cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev
+    cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev
 
-# Usage: just upwork-export --vault=../wom7web/src/content/upwork_vault --limit=100
+# Usage: just upwork-export --vault=../w0m-web/src/content/upwork_vault --limit=100
 upwork-export *args="":
     @echo "Running Upwork Exporter (Direct to Vault)..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node --import tsx wom7api/scripts/upwork_exporter.ts {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node --import tsx w0m-api/scripts/upwork_exporter.ts {{ args }}
 
 # Check Upwork auth status and tokens
 upwork-check:
@@ -1652,47 +1645,47 @@ upwork-check:
 
 # Search Upwork Jobs
 upwork-search *args="":
-    @cd wom7web && python3 project/scripts/upwork_mcp_sync.py {{ args }}
+    @cd w0m-web && python3 project/scripts/upwork_mcp_sync.py {{ args }}
 
 # Incremental live Upwork sync via Upwork MCP to local repository cache
 # Usage: just upwork-mcp-sync [--full] [--dry-run]
 upwork-mcp-sync *args="":
-    @cd wom7web && python3 project/scripts/upwork_mcp_sync.py {{ args }}
+    @cd w0m-web && python3 project/scripts/upwork_mcp_sync.py {{ args }}
 
 # T539 AC1: read-only probe of how Upwork pages rooms and messages and which field is a message's author (key names only, no values)
 # Usage: just upwork-messages-probe [--out FILE] [--dry-run]
 upwork-messages-probe *args="":
-    @cd wom7web && python3 project/scripts/upwork_messages_probe.py {{ args }}
+    @cd w0m-web && python3 project/scripts/upwork_messages_probe.py {{ args }}
 
 # T539: read-only check that the sync script's contracts, proposals, invitations and agency reads still match what the server returns (key names only)
 # Usage: just upwork-lists-probe [--out FILE] [--dry-run]
 upwork-lists-probe *args="":
-    @cd wom7web && python3 project/scripts/upwork_lists_probe.py {{ args }}
+    @cd w0m-web && python3 project/scripts/upwork_lists_probe.py {{ args }}
 
 # T533 AC1: read-only schema probe of which fields the Upwork MCP returns for proposals, offers, contracts, and rooms (key names only, no secrets)
 # Usage: just upwork-schema-probe [--out FILE]
 upwork-schema-probe *args="":
-    @cd wom7web && python3 project/scripts/upwork_schema_probe.py {{ args }}
+    @cd w0m-web && python3 project/scripts/upwork_schema_probe.py {{ args }}
 
 # Harvest full historical proposals and cover letters archive (~2,100+ proposals)
 # Usage: just upwork-harvest-proposals [--limit N] [--status STATUS] [--dry-run]
 upwork-harvest-proposals *args="":
-    @cd wom7web && python3 project/scripts/upwork_harvest_proposals.py {{ args }}
+    @cd w0m-web && python3 project/scripts/upwork_harvest_proposals.py {{ args }}
 
 # Export Upwork datasets into Markdown Knowledge Vault (project/data/upwork_vault/)
 # Usage: just upwork-vault-export
 upwork-vault-export:
-    @cd wom7web && python3 project/scripts/upwork_export_vault_md.py
+    @cd w0m-web && python3 project/scripts/upwork_export_vault_md.py
 
 # Full sync: Upwork API -> Supabase Storage -> Local repo
 upwork-sync-full:
     @echo "Full Upwork Sync: API -> Storage -> Local..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/scripts/sync_upwork_full.js
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/scripts/sync_upwork_full.js
 
 # Sync from Supabase Storage to local repo only
 upwork-sync-local:
     @echo "Syncing Upwork data from Supabase Storage to local..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/scripts/sync_upwork_from_storage.js
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/scripts/sync_upwork_from_storage.js
 
 # Trigger remote upwork-poller (syncs Upwork API -> Supabase Storage)
 upwork-poller-trigger:
@@ -1706,7 +1699,7 @@ upwork-poller-trigger:
 # Upload existing local contracts to Supabase Storage (one-time migration)
 upwork-upload-local:
     @echo "Uploading local contracts to Supabase Storage..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/scripts/upload_local_to_storage.js
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/scripts/upload_local_to_storage.js
 
 # Verify the ZeroClaw gateway and daemon service are running
 zeroclaw-status:
@@ -1772,8 +1765,8 @@ e2e-dbdown:
     #!/usr/bin/env bash
     set -euo pipefail
     echo "🔌 Starting web dev server with dead Supabase endpoint..."
-    cd wom7web && PUBLIC_SUPABASE_URL="http://127.0.0.1:9" SUPABASE_URL="http://127.0.0.1:9" \
-      NODE_OPTIONS='--max-old-space-size=8192' infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web dev >/tmp/wom7web-dbdown.log 2>&1 &
+    cd w0m-web && PUBLIC_SUPABASE_URL="http://127.0.0.1:9" SUPABASE_URL="http://127.0.0.1:9" \
+      NODE_OPTIONS='--max-old-space-size=8192' infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web dev >/tmp/w0m-web-dbdown.log 2>&1 &
     SERVER_PID=$!
     trap 'kill $SERVER_PID 2>/dev/null || true' EXIT
     READY=0
@@ -1782,10 +1775,10 @@ e2e-dbdown:
       sleep 1
     done
     if [ "$READY" -eq 0 ]; then
-      echo "❌ web dev server did not start within 60s"; tail -20 /tmp/wom7web-dbdown.log; exit 1
+      echo "❌ web dev server did not start within 60s"; tail -20 /tmp/w0m-web-dbdown.log; exit 1
     fi
     echo "🧪 Running resilience suite (DB unreachable by design)..."
-    cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- env E2E_BASE_URL=http://localhost:4321 SKIP_UI_AUTH=true pnpm exec gauge run specs-resilience
+    cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- env E2E_BASE_URL=http://localhost:4321 SKIP_UI_AUTH=true pnpm exec gauge run specs-resilience
 
 # Run the resilience suite against a LIVE deployed site (default: production).
 # Useful right now while Supabase is quota-restricted: proves the real site keeps
@@ -1794,7 +1787,7 @@ e2e-dbdown:
 #   BASE=https://beta.webomage.com just e2e-live-resilience
 e2e-live-resilience BASE="https://webomage.com":
     @echo "🌐 Running resilience suite against {{ BASE }} ..."
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- env E2E_BASE_URL={{ BASE }} SKIP_UI_AUTH=true pnpm exec gauge run specs-resilience
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- env E2E_BASE_URL={{ BASE }} SKIP_UI_AUTH=true pnpm exec gauge run specs-resilience
 
 # ── T23/T25: knowledge graph + tech-debt + lexicon truth ─────────────────────
 # Rebuild the code knowledge graph (graphify, zero-LLM). `just graph ..` graphs the whole workspace.
@@ -1837,20 +1830,20 @@ graph-docs-inc path=".":
       graphify extract {{ path }} --backend openai --max-concurrency 1 --api-timeout 900
 
 # Prove whether the incremental cache actually works: same path twice, timed. Read the two numbers.
-graph-docs-cache-test path="wom7web/docs/design":
+graph-docs-cache-test path="w0m-web/docs/design":
     @echo "▶ run 1 (cold)…"; time just graph-docs-inc {{ path }} >/dev/null 2>&1 || true
     @echo "▶ run 2 (should be MUCH faster if the cache works)…"; time just graph-docs-inc {{ path }} >/dev/null 2>&1 || true
     @echo "⇒ comparable times = cache broken (upstream FileSlice bug) ⇒ do NOT wire into a hook."
 
 # List TODO/FIXME in REAL source across the repos. No storage, no drift.
-# Decided tech debt lives in wom7web/TECH-DEBT.md (plain markdown, git-tracked).
+# Decided tech debt lives in w0m-web/TECH-DEBT.md (plain markdown, git-tracked).
 # Replaced the old Supabase census 2026-07-21: 78% of its 69 rows were noise from .wrangler
 # build output and generated reports, it never marked anything resolved, and the SQL the
 # w0m-sdlc-start skill told agents to run referenced four columns that don't exist.
 # Cross-repo pnpm dependency alignment (security floors + lockstep + exceptions).
-# Policy: wom7web/project/deps-policy.json. Raise a floor there once, then `just deps-apply`.
+# Policy: w0m-web/project/deps-policy.json. Raise a floor there once, then `just deps-apply`.
 # `deps-check` is the read-only gate (wired into pre-push); it fails on any repo below a floor
-# or a lockstep skew, and warns on advisory-lag. See wom7web/docs/DEPS-ALIGNMENT.md.
+# or a lockstep skew, and warns on advisory-lag. See w0m-web/docs/DEPS-ALIGNMENT.md.
 deps-check:
     @python3 scripts/deps_sync.py
 
@@ -1878,21 +1871,21 @@ tools-usage:
     @python3 scripts/tool_usage_probe.py
 
 # Structural (AST) rules for w0m-specific defects that have actually bitten us —
-# wom7web/project/ast-grep/rules/. Exits non-zero on any finding, so it can gate.
+# w0m-web/project/ast-grep/rules/. Exits non-zero on any finding, so it can gate.
 # NOT a linter (oxlint/semgrep already run) and NOT a graph (`just ask` owns that).
 # ✅ ast-grep parses .astro components via tree-sitter-astro dynamic library (T410); .svelte/.vue/.sql remain unparsed.
 sg-scan *paths:
-    @cd wom7web && ast-grep scan -c project/ast-grep/sgconfig.yml \
-        {{ if paths == "" { ". ../wom7api/supabase ../wom7api/src ../wom7func/src" } else { paths } }}
+    @cd w0m-web && ast-grep scan -c project/ast-grep/sgconfig.yml \
+        {{ if paths == "" { ". ../w0m-api/supabase ../w0m-api/src ../w0m-cf/src" } else { paths } }}
 
 # Build or rebuild tree-sitter-astro dynamic library for ast-grep custom language (T410)
 sg-build-astro-parser *args:
-    @cd wom7web && python3 project/scripts/build_tree_sitter_astro.py {{ args }}
+    @cd w0m-web && python3 project/scripts/build_tree_sitter_astro.py {{ args }}
 
 # Prove each ast-grep rule fires (must_flag) and is not over-broad (must_not_flag).
 # A rule with no test case FAILS the run — an untested rule is an unproven rule.
 sg-test:
-    @cd wom7web && python3 project/scripts/ast_grep_test.py
+    @cd w0m-web && python3 project/scripts/ast_grep_test.py
 
 # Reports tool_result bytes by tool and Read-opportunity classes. Measured 2026-08-03 over
 # 309 sessions: Bash 57.5% of bytes vs Read 34.3%, and "stale (edit after read)" alone is
@@ -1942,8 +1935,8 @@ headroom-task +task:
     curl -fsS -m3 http://127.0.0.1:8787/health >/dev/null 2>&1 || {
         echo "❌ headroom proxy is DOWN at 127.0.0.1:8787 — run \`just headroom-bootstrap\`"; exit 1; }
     before=$(stat_req)
-    # Run from the WORKSPACE ROOT (@wom), not wom7api. `just` would otherwise start the task in
-    # the justfile's directory, where a question about e.g. TECH-DEBT.md (which lives in wom7web)
+    # Run from the WORKSPACE ROOT (@wom), not w0m-api. `just` would otherwise start the task in
+    # the justfile's directory, where a question about e.g. TECH-DEBT.md (which lives in w0m-web)
     # is answered "it doesn't exist" — correct for that cwd, useless as an answer. @wom is also
     # the app's own session root, so a routed task sees what an in-app one would.
     cd "{{ justfile_directory() }}"
@@ -1980,11 +1973,11 @@ tools-reconcile *args:
 # ⚠️ A LOWER BOUND, stated in its output: 238 of 267 `.from()` receivers get their client from an
 # import or a parameter, which local analysis cannot resolve. It reports them rather than skipping.
 anon-reader-check:
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 ../wom7web/project/scripts/anon_reader_gate.py --live
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 ../w0m-web/project/scripts/anon_reader_gate.py --live
 
 # Static half only — no secrets, no network. Proves the classifier and the walker.
 anon-reader-test:
-    @cd wom7web && python3 project/scripts/tests/test_anon_reader_gate.py
+    @cd w0m-web && python3 project/scripts/tests/test_anon_reader_gate.py
 
 # T250 AC4 — the TASKS row and the ticket must not disagree about status. `CLAUDE.md` calls the
 # T-row status-of-record and 7 rows contradicted their own ticket, one of them a ✅ over a `queued`
@@ -2008,17 +2001,17 @@ tasks-row-status-test:
 #
 # `--offline` skips the gh identity probe. Pass `--json` for the machine form.
 org-migrate-plan *args:
-    @cd wom7web && python3 project/scripts/org_migrate_plan.py {{ args }}
+    @cd w0m-web && python3 project/scripts/org_migrate_plan.py {{ args }}
 
 org-migrate-plan-test:
-    @cd wom7web && python3 project/scripts/tests/test_org_migrate_plan.py
+    @cd w0m-web && python3 project/scripts/tests/test_org_migrate_plan.py
 
 # T242 AC4 — execute sequential issue creation into webomage/wom7board
 org-migrate-execute *args:
-    @cd wom7web && python3 project/scripts/org_migrate_execute.py {{ args }}
+    @cd w0m-web && python3 project/scripts/org_migrate_execute.py {{ args }}
 
 org-migrate-execute-test:
-    @cd wom7web && python3 project/scripts/tests/test_org_migrate_execute.py
+    @cd w0m-web && python3 project/scripts/tests/test_org_migrate_execute.py
 
 # T242 AC6 — enforce T<n> == gh_issue == #<n>
 ticket-id-align *args:
@@ -2044,7 +2037,7 @@ close-legacy-tracker-issues-test:
 # shadows the probe of the very recipe it protects — measured, the first run was refused. A
 # safety rule that also blocks the test of the thing it guards is how a gate goes unrun.
 migration-guard-test:
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 ../wom7web/project/scripts/tests/test_db_migrate.py
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 ../w0m-web/project/scripts/tests/test_db_migrate.py
 
 # T246 AC1 — the public consultant chat, probed the way a visitor hits it: anonymous, with a real
 # question, asserting an ANSWER rather than a status. Nothing did this before, which is how a 100%
@@ -2058,13 +2051,13 @@ migration-guard-test:
 # so it would have depended on me remembering to register it. Conform to the matcher instead of
 # relying on memory. (T247 ①, one more instance.)
 public-chat-check:
-    @cd wom7web && env -u SERVICE_ROLE_KEY -u SUPABASE_SERVICE_ROLE_KEY -u PUBLIC_SUPABASE_URL -u SUPABASE_URL \
+    @cd w0m-web && env -u SERVICE_ROLE_KEY -u SUPABASE_SERVICE_ROLE_KEY -u PUBLIC_SUPABASE_URL -u SUPABASE_URL \
       gauge run specs/api/056-w0m-consultant-api.spec
 
 # Weekly toolchain maintenance: refresh the outdated cache (so pre-push can warn instantly) then
 # apply the safe auto-upgrades with smokes. Run by hand weekly, or schedule via launchd (see
-# wom7web/docs/DEPS-ALIGNMENT.md §Weekly). Prod/cloud/non-brew tools are report-only (never touched).
-# Install / inspect / remove the LaunchAgents declared in wom7web/project/launchd/schedules.jsonc.
+# w0m-web/docs/DEPS-ALIGNMENT.md §Weekly). Prod/cloud/non-brew tools are report-only (never touched).
+# Install / inspect / remove the LaunchAgents declared in w0m-web/project/launchd/schedules.jsonc.
 # `just tools-schedule` installs+loads · `--status` reports · `--remove` unloads and deletes.
 #
 # 🔑 Exists because `auto: patch` in tools-policy.json was a CLAIM: nothing ran `tools-weekly`, so
@@ -2088,9 +2081,9 @@ tools-schedule *args:
 # Advisory by design: it reports, it does not block anything, and its output is the log.
 schema-weekly:
     @echo "→ call sites vs the live catalog..."
-    -@cd wom7web && python3 project/scripts/call_site_schema_drift.py
+    -@cd w0m-web && python3 project/scripts/call_site_schema_drift.py
     @echo "→ lookup columns vs the indexes that exist..."
-    -@cd wom7web && python3 project/scripts/lookup_index_gate.py
+    -@cd w0m-web && python3 project/scripts/lookup_index_gate.py
     @echo "→ offline suite tier — 181s, the tier no push hook can afford..."
     -@just test
 
@@ -2099,11 +2092,11 @@ tech-debt:
     set -uo pipefail
     base=.
     total=0
-    for r in wom7web wom7api wom7func wom7ext; do
+    for r in w0m-web w0m-api w0m-cf w0m-ext; do
         [ -d "$base/$r" ] || continue
         # T406 — `--no-pager` and `LC_ALL=C` are both load-bearing. Without the first, an
         # agent shell that gets a tty hangs on `less` until its own timeout, then dumps
-        # everything at once. The second is a measured 2.3x on wom7web (0.282s -> 0.123s):
+        # everything at once. The second is a measured 2.3x on w0m-web (0.282s -> 0.123s):
         # byte matching instead of UTF-8 collation. `check-guardrails` already knew the
         # first half of this; this call site did not.
         hits=$(cd "$base/$r" && LC_ALL=C git --no-pager grep -nEw 'TODO|FIXME|HACK' -- \
@@ -2114,7 +2107,7 @@ tech-debt:
         [ "$n" -gt 0 ] && { echo "── $r ($n)"; printf '%s\n' "$hits" | sed 's/^/   /'; }
     done
     echo "── $total occurrence(s) in tracked source"
-    echo "   Decided debt → wom7web/TECH-DEBT.md"
+    echo "   Decided debt → w0m-web/TECH-DEBT.md"
 
 # One deploy version across nested `just` processes (T431 run 7) — no deploy is run.
 deploy-version-inherit-test:
@@ -2122,27 +2115,27 @@ deploy-version-inherit-test:
 
 # lexicon-lint: verify docs/gamification/09-naming-lexicon.md matches the live schema (roles/tables).
 lexicon-lint:
-    @sh -c 'command -v infisical >/dev/null && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7web/project/scripts/lexicon_lint.py || python3 wom7web/project/scripts/lexicon_lint.py'
+    @sh -c 'command -v infisical >/dev/null && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-web/project/scripts/lexicon_lint.py || python3 w0m-web/project/scripts/lexicon_lint.py'
 
-# OpenSpec CLI (spec-driven dev) — real tool = @fission-ai/openspec, pinned in wom7web devDeps
+# OpenSpec CLI (spec-driven dev) — real tool = @fission-ai/openspec, pinned in w0m-web devDeps
 # (the bare `openspec` npm name is a dead placeholder). Passthrough: `just openspec list`,
 # `just openspec validate <id> --strict`, `just openspec show <id>`, etc.
 openspec *args:
-    @cd wom7web && pnpm exec openspec {{ args }}
+    @cd w0m-web && pnpm exec openspec {{ args }}
 
 # Validate an OpenSpec change strictly. `just openspec-validate <change-id>` (omit id = all changes).
 openspec-validate change="":
-    @cd wom7web && pnpm exec openspec validate {{ change }} --strict --no-interactive
+    @cd w0m-web && pnpm exec openspec validate {{ change }} --strict --no-interactive
 
 # skill: w0m skills governance CLI over `npx skills` (T127). Manifest + lockfile live in THIS
 # project's .w0m/. e.g. `just skill list`, `just skill check`, `just skill add <id>`.
 skill *args:
-    @cd wom7skills && pnpm exec tsx w0m_skill.ts --project "{{ invocation_directory() }}" {{ args }}
+    @cd w0m-skills && pnpm exec tsx w0m_skill.ts --project "{{ invocation_directory() }}" {{ args }}
 
-# skills-typecheck: type-check the wom7skills TS toolchain (skills.ts, w0m_skill.ts, scripts/*.ts).
+# skills-typecheck: type-check the w0m-skills TS toolchain (skills.ts, w0m_skill.ts, scripts/*.ts).
 # Alias for `pnpm run typecheck` there; run before committing skills-subsystem changes (T127).
 skills-typecheck:
-    @cd wom7skills && pnpm run typecheck
+    @cd w0m-skills && pnpm run typecheck
 
 # Regression proof for the skills subsystem — 69 tests, all three files named explicitly (a `tests/*`
 # glob exits 0 with ZERO tests when it matches nothing). w0m_skill.test.ts covers the governance CLI
@@ -2159,7 +2152,7 @@ skills-typecheck:
 # gate-bypass, remote-exec and exfil patterns, EXCLUDING prohibitions (a skill that says "never use
 # --no-verify" documents the rule, it does not break it). `--root=<dir>` to audit a consumer tree.
 skill-audit *args:
-    @cd wom7skills && pnpm exec tsx skill_audit.ts {{ args }}
+    @cd w0m-skills && pnpm exec tsx skill_audit.ts {{ args }}
 
 # MCP / network exposure inventory (T154 AC3-AC5). Answers three questions in order: what is
 # listening (and owned by whom), is it USABLE without credentials, and what would that get you.
@@ -2191,44 +2184,44 @@ mcp-ratchet-test:
 
 # T90 AC9: Verify platform adapter decoupling and integrations IA
 platform-decoupling-check:
-    @cd wom7web && python3 project/scripts/platform_adapter_decoupling.py
+    @cd w0m-web && python3 project/scripts/platform_adapter_decoupling.py
 
 platform-decoupling-test:
-    @cd wom7web && pytest project/scripts/tests/test_platform_adapter_decoupling.py
+    @cd w0m-web && pytest project/scripts/tests/test_platform_adapter_decoupling.py
 
 # T155: Upwork sync health test
 upwork-sync-health-test:
-    @cd wom7web && pytest project/scripts/tests/test_upwork_sync_health.py
+    @cd w0m-web && pytest project/scripts/tests/test_upwork_sync_health.py
 
 # T535 AC5: is the Upwork feed fresh? The freshness lines of the T155 gate only, live (read-only). Exits 1 when stale, failing or unmeasurable. Run by the full preflight.
 upwork-freshness:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7web/project/scripts/upwork_sync_health.py --freshness-only
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-web/project/scripts/upwork_sync_health.py --freshness-only
 
 # T539 AC3: load the Upwork data files into contracts, platform_rooms and platform_messages. A DRY RUN by default (read-only at the database); add --apply to write.
 # Usage: just upwork-loader --profile-id <uuid> [--apply] [--legs contracts,rooms,messages]
 upwork-loader *args="":
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7web/project/scripts/upwork_loader.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-web/project/scripts/upwork_loader.py {{ args }}
 
 # T539 AC3: the loader against a throwaway Postgres (needs the Homebrew PostgreSQL binaries and psycopg)
 upwork-loader-test:
-    @cd wom7web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_upwork_loader.py
+    @cd w0m-web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_upwork_loader.py
 
 # T468: load the Upwork MCP sync data into the upwork mirror schema. A DRY RUN by default; add --apply to write.
 # Usage: just upwork-mirror-loader [--apply] [--profile-id <uuid>]
 upwork-mirror-loader *args="":
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7web/project/scripts/upwork_mirror_loader.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-web/project/scripts/upwork_mirror_loader.py {{ args }}
 
 # T468: the mirror loader unit tests against a throwaway Postgres
 upwork-mirror-loader-test:
-    @cd wom7web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_upwork_mirror_loader.py
+    @cd w0m-web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_upwork_mirror_loader.py
 
 # T539: the owner-run Upwork scripts (sync rooms and messages, the two shape probes, the vault pages, the schema probe, the OAuth spike), the server-side allowlist guard and the rule for which data files git may hold
 upwork-laptop-scripts-test:
-    @cd wom7web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_upwork_messages_probe.py project/scripts/tests/test_upwork_lists_probe.py project/scripts/tests/test_upwork_mcp_sync_rooms.py project/scripts/tests/test_upwork_vault_conversations.py project/scripts/tests/test_upwork_data_tracking.py project/scripts/tests/test_upwork_schema_probe.py project/scripts/tests/test_upwork_mcp_spike.py project/scripts/tests/test_upwork_mcp_call_sites.py
+    @cd w0m-web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_upwork_messages_probe.py project/scripts/tests/test_upwork_lists_probe.py project/scripts/tests/test_upwork_mcp_sync_rooms.py project/scripts/tests/test_upwork_vault_conversations.py project/scripts/tests/test_upwork_data_tracking.py project/scripts/tests/test_upwork_schema_probe.py project/scripts/tests/test_upwork_mcp_spike.py project/scripts/tests/test_upwork_mcp_call_sites.py
 
 # T543: the project-manager migration's functions run against a throwaway Postgres (needs the Homebrew PostgreSQL binaries) and its policies do not widen hats
 t543-project-manager-rpcs-test:
-    @cd wom7web && python3 project/scripts/tests/test_t543_project_manager_rpcs.py
+    @cd w0m-web && python3 project/scripts/tests/test_t543_project_manager_rpcs.py
 
 # Regression proof for the AC checkbox parser the sdlc ranking depends on. T125 reported
 # **4/4 = 100%** while genuinely blocked because the parser saw only [x] and [ ]; this pins all
@@ -2244,51 +2237,51 @@ ac-progress-test:
 # marketingskills keeps companions in a shared repo-root `tools/` tree that B cannot see, and
 # `webapp-testing`'s missing files are linked by nothing, so A cannot see them.
 skills-vendor-audit *args:
-    @cd wom7skills && pnpm exec tsx scripts/audit_vendoring.ts --project ../wom7web {{ args }}
+    @cd w0m-skills && pnpm exec tsx scripts/audit_vendoring.ts --project ../w0m-web {{ args }}
 
 skill-test:
-    @cd wom7skills && pnpm run skill-test
+    @cd w0m-skills && pnpm run skill-test
 
 # skills-version-check: gate. Every w0m-native canonical skill carries a conforming, CURRENT version
 # — current meaning the recorded content hash still matches, so a skill edited without a re-stamp is
 # a finding rather than a version that quietly stops meaning anything (T131 AC3/AC4). Provenance
-# comes from wom7skills/skills-registry.json: `imported` skills keep UPSTREAM's version and are
+# comes from w0m-skills/skills-registry.json: `imported` skills keep UPSTREAM's version and are
 # never stamped, `unresolved` blocks. Verify-only, like state-check — it never rewrites a SKILL.md.
 # Exit 1 = findings, 2 = policy/config error. Distinct from `version-check`, which polices the
 # ESTATE's release-version producers; this one polices the skill corpus.
 skills-version-check:
-    @cd wom7skills && pnpm run version:check
+    @cd w0m-skills && pnpm run version:check
 
 # skills-version-stamp: re-stamp every w0m-native canonical skill whose content moved. Idempotent —
 # an unchanged skill is not re-versioned, so this does not churn 39 files per run. Pass names to
 # scope it: `just skills-version-stamp torvalds`. Run `just skills-sync` afterwards, or the active
-# copies in wom7web drift from canonical.
+# copies in w0m-web drift from canonical.
 skills-version-stamp *args:
-    @cd wom7skills && pnpm exec tsx version.ts stamp {{ args }}
+    @cd w0m-skills && pnpm exec tsx version.ts stamp {{ args }}
 
-# skills-install-plugin: symlink wom7skills as a machine-wide Gemini plugin (idempotent).
+# skills-install-plugin: symlink w0m-skills as a machine-wide Gemini plugin (idempotent).
 skills-install-plugin:
-    @cd wom7skills && pnpm exec tsx scripts/install.ts
+    @cd w0m-skills && pnpm exec tsx scripts/install.ts
 
 # skills-plugin-package: generate and update .claude-plugin/plugin.json and plugin.json from canonical skills (T209).
 skills-plugin-package *args:
-    @cd wom7skills && pnpm exec tsx scripts/package-plugin.ts {{ args }}
+    @cd w0m-skills && pnpm exec tsx scripts/package-plugin.ts {{ args }}
 
 # skills-plugin-check: verify .claude-plugin/plugin.json and plugin.json match canonical skills with zero drift (T209).
 skills-plugin-check:
-    @cd wom7skills && pnpm exec tsx scripts/package-plugin.ts --check
+    @cd w0m-skills && pnpm exec tsx scripts/package-plugin.ts --check
 
 # skills-plugin-verify: verify cross-client loading across Claude Code, Claude App, Antigravity, and OpenCode (T209).
 skills-plugin-verify *args:
-    @cd wom7skills && pnpm exec tsx scripts/verify-cross-client.ts {{ args }}
+    @cd w0m-skills && pnpm exec tsx scripts/verify-cross-client.ts {{ args }}
 
 # skills-plugin-lint: validate plugin manifest against schema with explicit skill enumeration (T209).
 skills-plugin-lint *args:
-    @cd wom7skills && pnpm exec tsx scripts/lint_plugin.ts {{ args }}
+    @cd w0m-skills && pnpm exec tsx scripts/lint_plugin.ts {{ args }}
 
 # skills-install-generic: install the PORTABLE skill set into a client project (T110 AC5).
 #
-# The generic set is defined by `wom7skills/skill-portability.jsonc`, and the installer DERIVES each
+# The generic set is defined by `w0m-skills/skill-portability.jsonc`, and the installer DERIVES each
 # skill's scope from its content before trusting that file — a disagreement aborts the install
 # rather than shipping a skill nobody classified. w0m-bound skills are withheld, and no `.w0m/` is
 # created (that is what switches on the enforced gates).
@@ -2298,24 +2291,24 @@ skills-plugin-lint *args:
 #
 #   just skills-install-generic ~/Projects/_self/1945/1945socialclub.com --dry-run
 skills-install-generic *args:
-    @cd wom7skills && pnpm exec tsx scripts/install_generic.ts {{ args }}
+    @cd w0m-skills && pnpm exec tsx scripts/install_generic.ts {{ args }}
 
 # skills-install-generic-test: red probes for the installer's refusals (T110 AC5). A gate nobody
 # has seen fail is not a gate — each probe builds a fixture that MUST be refused.
 skills-install-generic-test:
-    @cd wom7skills && pnpm exec tsx tests/install_generic.test.ts
+    @cd w0m-skills && pnpm exec tsx tests/install_generic.test.ts
 
 # skills-score: scaffold a Score (score.dev/v1b1) intent file. Pass through flags, e.g.
 # `just skills-score --name my-service --resources postgres,s3`.
 skills-score *args:
-    @cd wom7skills && pnpm exec tsx scripts/generate_score.ts {{ args }}
+    @cd w0m-skills && pnpm exec tsx scripts/generate_score.ts {{ args }}
 
 # deno-check: type-check every edge function (T23 AC-4). Clean as of 2026-07-17 (55/55 pass);
 # run this to keep it that way / before wiring deno-check into the deploy gate.
 deno-check:
     #!/usr/bin/env bash
     set -euo pipefail
-    cd wom7api/supabase/functions
+    cd w0m-api/supabase/functions
     # `deno check` is SILENT on success, which made this suite unreadable to run_suites: a run that
     # checked 60 functions and one that checked none printed identically (nothing). Owner 2026-08-16:
     # "if you can't parse checks from a tool then increase verbosity there" — fix the source, not
@@ -2327,13 +2320,13 @@ deno-check:
 
 # deno-test: unit tests for the edge stack (`supabase/functions/**/*.test.ts`). Introduced 2026-07-25
 # with T99(d)'s `_shared/crypto.ts` — the edge stack had NO unit tests before, only `deno-check`.
-# Registered as the `edge` stack's `test` role in ../wom7web/project/stacks-policy.json (T130: a
+# Registered as the `edge` stack's `test` role in ../w0m-web/project/stacks-policy.json (T130: a
 # stack tool needs the recipe AND the registry entry). `--allow-env` only: these tests read key
 # material from the environment and must never reach the network or the filesystem.
 deno-test:
     #!/usr/bin/env bash
     set -euo pipefail
-    cd wom7api/supabase/functions
+    cd w0m-api/supabase/functions
     # Same reason as deno-check: emit a countable summary rather than leaving the runner's own
     # format to be guessed at downstream.
     mapfile -t suites < <(find . -name '*.test.ts' -not -path './node_modules/*')
@@ -2343,46 +2336,46 @@ deno-test:
 # typecheck-worker: type-check the Cloudflare Worker in src/ (wrangler `main: src/index.ts`). T105 —
 # src/ was excluded from tsconfig.json (only tests/+scripts/), so it had ZERO type checking. Regens
 # the runtime types first (`wrangler types` → Env tracks wrangler.jsonc), then `tsc --noEmit`.
-# Needs pnpm's node_modules (a stray `deno install` at the wom7api root breaks resolution — pnpm is
+# Needs pnpm's node_modules (a stray `deno install` at the w0m-api root breaks resolution — pnpm is
 # the worker's package manager; deno is only for supabase/functions/).
 typecheck-worker:
-    @cd wom7api && pnpm exec wrangler types >/dev/null && pnpm exec tsc --noEmit -p tsconfig.worker.json
+    @cd w0m-api && pnpm exec wrangler types >/dev/null && pnpm exec tsc --noEmit -p tsconfig.worker.json
 
 # Type-check the Python that implements this estate's gates (T188 / T448 AC6).
-# Scope is declared in wom7web/mypy.ini: `project/scripts/*.py`, TOP LEVEL ONLY (201 files; was 44 at T188).
+# Scope is declared in w0m-web/mypy.ini: `project/scripts/*.py`, TOP LEVEL ONLY (201 files; was 44 at T188).
 # Note: mypy.ini does not set `disallow_untyped_defs` or `check_untyped_defs`; untyped defs and untyped
-# JSON loads across `wom7web/project/scripts/*.py` and root `scripts/*.py` are ratcheted downward by
+# JSON loads across `w0m-web/project/scripts/*.py` and root `scripts/*.py` are ratcheted downward by
 # `just py-typing-check` (T448).
 # T376 — Run Python tests via modern uv test suite (pytest runner)
 py-test *args:
-    @cd wom7web && uv run pytest {{ args }}
+    @cd w0m-web && uv run pytest {{ args }}
 
 # T376 — Run Python tests in parallel using pytest-xdist multi-core acceleration
 py-test-fast *args:
-    @cd wom7web && uv run pytest -n auto {{ args }}
+    @cd w0m-web && uv run pytest -n auto {{ args }}
 
 # T376 — Run Python tests with coverage reporting
 py-test-cov *args:
-    @cd wom7web && uv run pytest --cov=project/scripts --cov-report=term-missing {{ args }}
+    @cd w0m-web && uv run pytest --cov=project/scripts --cov-report=term-missing {{ args }}
 
 # T376 — Run a specific Python test file or pattern via uv pytest
 py-test-file file *args:
-    @cd wom7web && uv run pytest {{ file }} {{ args }}
+    @cd w0m-web && uv run pytest {{ file }} {{ args }}
 
-# T188 / T448 AC6 — wom7web/project/scripts, top level (201 files; was 44 at T188). Scope + rationale: wom7web/mypy.ini.
+# T188 / T448 AC6 — w0m-web/project/scripts, top level (201 files; was 44 at T188). Scope + rationale: w0m-web/mypy.ini.
 py-typecheck-web *args:
-    @cd wom7web && mypy {{ args }}
+    @cd w0m-web && mypy {{ args }}
 
-# T189 / T448 AC6 — wom7api/scripts, top level (49 files; was 36 at T189). Scope + rationale: wom7api/mypy.ini.
-# Split per repo ON PURPOSE: each repo's pre-commit hook calls its OWN recipe, so a wom7web
-# commit is never blocked by a wom7api finding (and vice-versa) — the not-path-scoped complaint
+# T189 / T448 AC6 — w0m-api/scripts, top level (49 files; was 36 at T189). Scope + rationale: w0m-api/mypy.ini.
+# Split per repo ON PURPOSE: each repo's pre-commit hook calls its OWN recipe, so a w0m-web
+# commit is never blocked by a w0m-api finding (and vice-versa) — the not-path-scoped complaint
 # recorded against typecheck-ratchet in D6. `py-typecheck` fronts both for `just test`.
 py-typecheck-api *args:
-    @cd wom7api && mypy {{ args }}
+    @cd w0m-api && mypy {{ args }}
 
 # Regenerate the w0m status dashboard (docs/STATUS-DASHBOARD.html) from TASKS.md + ROADMAP.md.
 status-dashboard:
-    @cd wom7web && python3 project/scripts/gen_status_dashboard.py
+    @cd w0m-web && python3 project/scripts/gen_status_dashboard.py
 
 # sync-tickets: mirror ticket .md frontmatter → GitHub Issues + the "w0m Delivery" project board.
 # Source of truth = project/tickets/*.md (built from frontmatter, not a manual manifest); GitHub is
@@ -2406,15 +2399,15 @@ hooks-install:
 # Which repos currently have the run-logging wrapper installed? Answers the question the unversioned
 # .git/hooks directory cannot: a repo can silently lose it to a re-install and nothing would say so.
 hooks-logged:
-    @for r in wom7api wom7skills wom7func wom7ext wom7sec wom7mlx/wom7mlx; do \
+    @for r in w0m-api w0m-skills w0m-cf w0m-ext w0m-sec w0m-mlx/w0m-mlx; do \
       f="$r/.git/hooks/pre-commit"; \
       if [ ! -f "$f" ]; then printf "  %-18s ❌ no hook\n" "$r"; \
       elif grep -q "w0m hook-log wrapper" "$f"; then printf "  %-18s ✅ wrapped\n" "$r"; \
       else printf "  %-18s ⚠️  NOT wrapped — run \`just hooks-install\`\n" "$r"; fi; done; \
     for h in pre-commit pre-push; do \
-      f="wom7web/.husky/$h"; \
-      if grep -q "hook_log_wrap" "$f" 2>/dev/null; then printf "  %-18s ✅ wrapped (husky %s)\n" "wom7web" "$h"; \
-      else printf "  %-18s ⚠️  NOT wrapped (husky %s)\n" "wom7web" "$h"; fi; done
+      f="w0m-web/.husky/$h"; \
+      if grep -q "hook_log_wrap" "$f" 2>/dev/null; then printf "  %-18s ✅ wrapped (husky %s)\n" "w0m-web" "$h"; \
+      else printf "  %-18s ⚠️  NOT wrapped (husky %s)\n" "w0m-web" "$h"; fi; done
 
 # Show the last git-hook run — `just hook-log` for the full output, `just hook-log 5` for the last
 # five summaries. Exists because the hooks logged NOTHING: a failure printed to a terminal and
@@ -2458,7 +2451,7 @@ preflight-test:
 # lock it in with `--save`; the check never rewrites the baseline itself. ~26s (join 6.7 + job 19.7).
 # An app that reaches 0 belongs in `just typecheck` instead — gated at zero, not ratcheted.
 typecheck-ratchet *args:
-    @cd wom7web && python3 project/scripts/typecheck_ratchet.py {{ args }}
+    @cd w0m-web && python3 project/scripts/typecheck_ratchet.py {{ args }}
 
 hooks-check:
     @python3 scripts/hooks_check.py
@@ -2483,11 +2476,11 @@ subissue-parents-test:
 # assignable to offices while nothing reads the assignment — because that is the configuration
 # indistinguishable from working. Reads the LIVE database.
 office-axis-check *args:
-    @cd wom7web && python3 project/scripts/office_axis_check.py {{args}}
+    @cd w0m-web && python3 project/scripts/office_axis_check.py {{args}}
 
 # 5 red probes over the classifier — the HALF-WIRED case is the one that must fire.
 office-axis-check-test:
-    @cd wom7web && python3 project/scripts/office_axis_check.py --selftest
+    @cd w0m-web && python3 project/scripts/office_axis_check.py --selftest
 
 # T94 AC5 — is `connections` a faithful registry of the two stores it unifies?
 # The old tables stay AUTHORITATIVE while their 12 call sites migrate, and two bridge triggers keep
@@ -2496,14 +2489,14 @@ office-axis-check-test:
 # because every reader is still on the old tables. Compares row by row, not by count.
 # 🔴 Token values are compared inside SQL and never selected out.
 connections-registry-check *args:
-    @cd wom7web && python3 project/scripts/connections_registry_check.py {{args}}
+    @cd w0m-web && python3 project/scripts/connections_registry_check.py {{args}}
 
 # T94 AC6 Task 2.2 — test suite and red probe for connections_registry_check
 connections-registry-test:
-    @cd wom7web && python3 project/scripts/tests/test_connections_registry_check.py
+    @cd w0m-web && python3 project/scripts/tests/test_connections_registry_check.py
 
 # Write `just tasks`' derived fields into every ticket's frontmatter, so Obsidian can sort and
-# filter on them — `project/tickets/` is inside the wom7web vault, but Bases reads FRONTMATTER only,
+# filter on them — `project/tickets/` is inside the w0m-web vault, but Bases reads FRONTMATTER only,
 # and AC progress, blockers and the ranking score are all computed. Entry point: project/TICKETS.md
 # and project/Tickets.base.
 # 🔴 A computed value in a file rots immediately, so this is generate-plus-gate, the same shape as
@@ -2518,22 +2511,22 @@ tickets-frontmatter-sync *args:
 tickets-frontmatter-check:
     @python3 scripts/tickets_frontmatter_sync.py --check
 
-# T94 AC3 — type-check wom7func. The `cf` stack declared ONLY a `deploy` command until
+# T94 AC3 — type-check w0m-cf. The `cf` stack declared ONLY a `deploy` command until
 # 2026-08-28, so nothing verified its TypeScript: a type error reached production or it did not,
 # and no gate could tell you which. Offline and fast (tsc --noEmit, no network, no wrangler).
 cf-typecheck:
-    @cd wom7func && pnpm exec tsc --noEmit -p tsconfig.json && echo "  [OK] cf-typecheck"
+    @cd w0m-cf && pnpm exec tsc --noEmit -p tsconfig.json && echo "  [OK] cf-typecheck"
 
 # The Connector-interface invariant tests. 🔴 Uses the workers vitest pool, which opens a REMOTE
 # connection, so this is `live` and cannot run on a machine without network — unlike cf-typecheck.
 cf-test:
-    @cd wom7func && pnpm exec vitest run
+    @cd w0m-cf && pnpm exec vitest run
 
 # Full T23 loop: rebuild graph, census debt, lint the lexicon, audit spec drift, refresh dashboard.
 # codegraph-sync: incremental re-index of the code knowledge graph (~seconds). Fast enough for
 # the pre-push hook; also part of the full knowledge loop.
 codegraph-sync:
-    @cd wom7web && codegraph sync
+    @cd w0m-web && codegraph sync
 
 # Full knowledge loop (manual): includes `graph ".."` — whole-monorepo graphify (minutes, 100% CPU).
 knowledge: (graph ".") lexicon-lint spec-drift codegraph-sync status-dashboard
@@ -2547,13 +2540,13 @@ knowledge-light: codegraph-sync lexicon-lint status-dashboard
 
 # Weekly toolchain watch (T106): has oxc shipped native .astro formatting yet?
 # If it has, oxfmt can replace prettier for .astro and we drop a formatter + a plugin.
-# Until then prettier + prettier-plugin-astro handles .astro (see wom7web/.prettierrc.json).
+# Until then prettier + prettier-plugin-astro handles .astro (see w0m-web/.prettierrc.json).
 check-oxfmt-astro:
     #!/usr/bin/env bash
     set -uo pipefail
     echo "🔎 oxfmt astro-support watch"
     latest=$(npm view oxfmt version 2>/dev/null | tail -1)
-    have=$(node -p "require('wom7web/node_modules/oxfmt/package.json').version" 2>/dev/null || echo "?")
+    have=$(node -p "require('w0m-web/node_modules/oxfmt/package.json').version" 2>/dev/null || echo "?")
     echo "   installed: $have   npm latest: $latest"
     # Authoritative test: an `astro` key in the CONFIG SCHEMA of the published package.
     # Must inspect only that file — the tarball's README/CHANGELOG mention astro and
@@ -2563,7 +2556,7 @@ check-oxfmt-astro:
        && tar -xzf "$tmp/o.tgz" -C "$tmp" package/configuration_schema.json 2>/dev/null; then
         if node -e 'const s=require(process.argv[1]);process.exit(Object.keys(s.properties||{}).some(k=>/astro/i.test(k))?0:1)' "$tmp/package/configuration_schema.json"; then
             echo "   ✅ ASTRO SUPPORT DETECTED in oxfmt $latest"
-            echo "      → add @astrojs/compiler at the wom7web root, set \"astro\": true in .oxfmtrc.json,"
+            echo "      → add @astrojs/compiler at the w0m-web root, set \"astro\": true in .oxfmtrc.json,"
             echo "        add .astro to the oxfmt hook, retire prettier + prettier-plugin-astro (T106)."
         else
             echo "   ⏳ no astro option in oxfmt $latest's config schema — nothing to do."
@@ -2574,13 +2567,13 @@ check-oxfmt-astro:
         echo "      npx oxfmt --help | grep -i astro"
     fi
 
-# Where does symbol/concept A connect to B? (graphify relationship path, wom7web)
+# Where does symbol/concept A connect to B? (graphify relationship path, w0m-web)
 ask-path a b:
-    @cd wom7web && graphify path "{{ a }}" "{{ b }}"
+    @cd w0m-web && graphify path "{{ a }}" "{{ b }}"
 
 # What breaks if I change X? (reverse traversal)
 ask-affected x depth="2":
-    @cd wom7web && graphify affected "{{ x }}" --depth {{ depth }}
+    @cd w0m-web && graphify affected "{{ x }}" --depth {{ depth }}
 
 # Alias — the SDLC contract names this `check`
 check: typecheck
@@ -2600,14 +2593,14 @@ check: typecheck
 # Convention: prefix a deliberately-unused parameter with `_` (argsIgnorePattern in .oxlintrc.json)
 # rather than silencing the rule.
 lint:
-    @cd wom7web && pnpm lint
+    @cd w0m-web && pnpm lint
 
 # Unit tests (vitest)
 # The JS unit suite alone. Was `just test` until 2026-08-02 — which meant `commands.test` in
 # .w0m/sdlc.json ran ONE test while every Python gate suite ran only when named by hand, so the
 # verify gate's own instruction produced a green run over ~110 checks that never executed (T160).
 test-js:
-    @cd wom7web && ASTRO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 pnpm test
+    @cd w0m-web && ASTRO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 pnpm test
 
 # T503 — the deploy chain's order, pinned from the real recipe graph (`just --dump`), with a red probe for the old order.
 deploy-chain-order-test:
@@ -2619,15 +2612,15 @@ run-suites-prepush-test:
 
 # T346 AC5 — Corporate verification, SSRF guard, and RFC/SAT blacklist test suite
 corporate-verify-test:
-    @cd wom7web && python3 project/scripts/tests/test_corporate_verify.py
+    @cd w0m-web && python3 project/scripts/tests/test_corporate_verify.py
 
 # T348 AC5 — Project types taxonomy and @mob mobile apps onboarding test suite
 project-types-test:
-    @cd wom7web && python3 project/scripts/tests/test_project_types.py
+    @cd w0m-web && python3 project/scripts/tests/test_project_types.py
 
 # T431 — no *.test.ts under apps/*/src/pages (Astro ships every file there as a route).
 no-tests-in-pages:
-    @cd wom7web && python3 project/scripts/tests/test_no_tests_in_pages.py
+    @cd w0m-web && python3 project/scripts/tests/test_no_tests_in_pages.py
 
 # T135 AC7 — prove the three repo-hygiene gates can FAIL. One harness, three entry points, because
 # AC7 names the gates individually and `just docs-check-test` is what someone reaches for after
@@ -2675,14 +2668,14 @@ sdlc-versioning-test:
 # than restated, so this cannot become the fifth parser holding its own copy of an anchor.
 # Zero rendered files found is a FAILURE, not a pass. Pass --require-canonical once task 2.7 lands.
 cv-validate *args:
-    @cd wom7web && python3 project/scripts/cv_validate.py {{ args }}
+    @cd w0m-web && python3 project/scripts/cv_validate.py {{ args }}
 
 # T165 task 1.4 — prove cv-validate can FAIL, at the collection layer as well as the comparison
 # layer. `state-doctor-test` passed for months while state_doctor.py matched 0 of 155 board rows,
 # because it asserted the comparison and never the collection. Runs on fixtures; never mutates
 # the real corpus.
 cv-validate-test:
-    @cd wom7web && python3 project/scripts/tests/test_cv_validate.py
+    @cd w0m-web && python3 project/scripts/tests/test_cv_validate.py
 
 # T165 Phase 2 — build the canonical project/data/cv/resume.json FROM the corpus (AC1a: imported,
 # never hand-authored). Joins the Upwork export to CV roles through the EXPLICIT alias table
@@ -2692,18 +2685,18 @@ cv-validate-test:
 # clears one by adding a key to project/data/cv/resolutions.json. Pass --strict to fail on any
 # open conflict. Re-runnable: two runs produce byte-identical output.
 cv-import *args:
-    @cd wom7web && python3 project/scripts/cv_import.py {{ args }}
+    @cd w0m-web && python3 project/scripts/cv_import.py {{ args }}
 
 # T165 task 2.7/2.3 — prove the importer is idempotent, that it REFUSES to drop a role, and that
 # the private CV's internal revision-notes block never reaches the generated document.
 cv-import-test:
-    @cd wom7web && python3 project/scripts/tests/test_cv_import.py
+    @cd w0m-web && python3 project/scripts/tests/test_cv_import.py
 
 # T165 task 3.1 — print the PUBLIC projection of the canonical CV: minus PII, minus every internal
 # `x_*` field at any depth. Writes NOTHING, deliberately — task 3.2 says the leak gate must exist
 # before any served-path write does, so the generators that write files (3.4/3.5) come after.
 cv-public:
-    @cd wom7web && python3 project/scripts/cv_public.py
+    @cd w0m-web && python3 project/scripts/cv_public.py
 
 # T165 task 2.3 — the per-role CLAIMS UNION across every CV document. Not a prose parser: Phase 0.4
 # measured 11 claims for one role across 6 documents with 3 living in NO single document, so an
@@ -2711,13 +2704,13 @@ cv-public:
 # clear duplicates (biased AGAINST merging — over-splitting is visible, under-splitting deletes),
 # and names the claims attested by exactly one document. `--json` writes project/data/cv/claims.json.
 cv-claims *args:
-    @cd wom7web && python3 project/scripts/cv_claims.py {{ args }}
+    @cd w0m-web && python3 project/scripts/cv_claims.py {{ args }}
 
 # T165 task 2.3 — cross-checks the union against Phase 0.4's independently HAND-derived claim
 # matrix: three claims must be private-only and three public-only. Two different methods agreeing
 # is evidence; it also asserts no bullet is dropped and no wording lands in two clusters.
 cv-claims-test:
-    @cd wom7web && python3 project/scripts/tests/test_cv_claims.py
+    @cd w0m-web && python3 project/scripts/tests/test_cv_claims.py
 
 # T165 task 3.2 / R7 — FAIL-CLOSED gate: no private value may appear on any served surface.
 # Scans apps/*/public/** and the content collections, PDFs included (via pdftotext — the served CV
@@ -2725,13 +2718,13 @@ cv-claims-test:
 # report a pass when it cannot prove one: missing canonical, an absent `x_private` key, zero
 # discovered surfaces, or any file it could not read all FAIL.
 cv-leak-check:
-    @cd wom7web && python3 project/scripts/cv_public.py --check
+    @cd w0m-web && python3 project/scripts/cv_public.py --check
 
 # T165 task 3.2 — prove the gate goes RED. Seeds the private value into a fixture served tree in
 # four spellings (canonical, digits-only, national, split across lines) and asserts each fails AND
 # that a failing run wrote nothing. Never touches the real corpus.
 cv-leak-check-test:
-    @cd wom7web && python3 project/scripts/tests/test_cv_public.py
+    @cd w0m-web && python3 project/scripts/tests/test_cv_public.py
 
 # E2E / browser suite. Delegates to the existing `e2e` recipe (dev-server lifecycle + Gauge).
 # Needs secrets — the gate wraps this in `infisical run`.
@@ -2870,32 +2863,32 @@ client-check *args:
 
 # T183 AC2–AC11 — Content-based Design System detector & contract gate (`claude-design`, `custom`, `docs`, `none`).
 design-system-check *args:
-    @cd wom7web && python3 project/scripts/design_system_check.py {{ args }}
+    @cd w0m-web && python3 project/scripts/design_system_check.py {{ args }}
 
 design-system-check-test:
-    @cd wom7web && pytest -q project/scripts/tests/test_t183_design_system_sdlc.py
+    @cd w0m-web && pytest -q project/scripts/tests/test_t183_design_system_sdlc.py
 
 # T118 AC1–AC6 — Content & blueprint deep-review + DS alignment audit gate.
 content-blueprint-audit *args:
-    @cd wom7web && python3 project/scripts/content_blueprint_audit_t118.py {{ args }}
+    @cd w0m-web && python3 project/scripts/content_blueprint_audit_t118.py {{ args }}
 
 content-blueprint-audit-test:
-    @cd wom7web && pytest -q project/scripts/tests/test_t118_content_blueprint_audit.py
+    @cd w0m-web && pytest -q project/scripts/tests/test_t118_content_blueprint_audit.py
 
 # T266 AC7 — does the first REAL managed client see their own rows, and ONLY their own?
 # 🔴 RED ON PURPOSE until T266 AC2 links a person to the Artemio organisation: measured 2026-08-24,
 # Artemio has zero rows anywhere in the product database. A probe that has only ever been green
 # measures nothing (T198 AC8). Read-only — every actor probe runs inside BEGIN … ROLLBACK.
 artemio-tenancy-probe:
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=dev --silent -- python3 project/scripts/artemio_tenancy_probe.py
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=dev --silent -- python3 project/scripts/artemio_tenancy_probe.py
 
 # T313 AC6 — Artemio delivery roles, hats, and tenancy probe
 artemio-roles-probe:
-    @cd wom7web && python3 project/scripts/artemio_roles_probe.py
+    @cd w0m-web && python3 project/scripts/artemio_roles_probe.py
 
 # T314 AC4 — Aleksei non-admin member & delivery roles (PM, Tech Lead, Dev) verification probe
 aleksei-member-probe:
-    @cd wom7web && python3 project/scripts/aleksei_member_probe.py
+    @cd w0m-web && python3 project/scripts/aleksei_member_probe.py
 
 # AC6/AC11 — license audit + publication safety. Classifies first-party vs VENDORED before
 # asserting anything: writing `license: UNLICENSED` into vendored third-party code would
@@ -2918,7 +2911,7 @@ dep-licenses-check-test: hygiene-test
 # policies and asserts exit codes both ways — red on a reintroduced producer, red on an empty scan
 # set, red on an unreasoned exemption, red when the producer cannot emit its own format.
 version-test:
-    @cd wom7web && python3 project/scripts/tests/test_version_doctor.py
+    @cd w0m-web && python3 project/scripts/tests/test_version_doctor.py
 
 # T232 AC14 — advisory check for index↔body divergence in auto-memory
 auto-memory-check *args:
@@ -2949,7 +2942,7 @@ overrides-check *args:
 # with these. A missing R2_* pair fails loudly below rather than letting Terraform fall back to
 # those AWS keys and produce a baffling 403 against R2.
 tf-init *args:
-    @cd wom7api/cloudflare && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
+    @cd w0m-api/cloudflare && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
       test -n "$R2_ACCESS_KEY_ID" && test -n "$R2_SECRET_ACCESS_KEY" || { \
         echo "❌ R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY are not in the vault."; \
         echo "   Create them: Cloudflare dashboard → R2 → Manage R2 API Tokens → Create."; \
@@ -2971,13 +2964,13 @@ tf-migrate-state:
 
 # Read-only: what would Terraform change on Cloudflare?
 tf-plan:
-    @cd wom7api/cloudflare && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
+    @cd w0m-api/cloudflare && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
       AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
         terraform plan -lock=false'
 
 # Refresh state against reality WITHOUT changing anything (drift detection)
 tf-drift:
-    @cd wom7api/cloudflare && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
+    @cd w0m-api/cloudflare && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
       AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
         terraform plan -refresh-only -lock=false'
 
@@ -2988,7 +2981,7 @@ tf-drift:
 # R2 bucket as cloudflare/ (its own key — see supabase-settings/versions.tf). Needs BOTH the R2
 # AWS-style keys (backend state access) and SUPABASE_ACCESS_TOKEN (provider auth).
 supabase-settings-init *args:
-    @cd wom7api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
+    @cd w0m-api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
       test -n "$R2_ACCESS_KEY_ID" && test -n "$R2_SECRET_ACCESS_KEY" && test -n "$SUPABASE_ACCESS_TOKEN" || { \
         echo "❌ R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / SUPABASE_ACCESS_TOKEN are not all in the vault."; \
         exit 1; }; \
@@ -2998,19 +2991,19 @@ supabase-settings-init *args:
 # Pull the full live auth config into state (read-only against Supabase; writes only to the
 # R2-backed .tfstate). Run once, after supabase-settings-init.
 supabase-settings-import:
-    @cd wom7api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
+    @cd w0m-api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
       AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
         terraform import supabase_settings.wom7 pqbbjgeapylcengbuvee'
 
 # Read-only: what would Terraform change on the Supabase auth config?
 supabase-settings-plan:
-    @cd wom7api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
+    @cd w0m-api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
       AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
         terraform plan -lock=false'
 
 # Refresh state against reality WITHOUT changing anything (T324 AC4 drift check)
 supabase-settings-drift:
-    @cd wom7api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
+    @cd w0m-api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
       AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
         terraform plan -refresh-only -lock=false'
 
@@ -3018,15 +3011,15 @@ supabase-settings-drift:
 # exit code whether clean, drifted, or errored), this wraps `-detailed-exitcode` and FAILS
 # CLOSED on "could not read the config" rather than printing a pass (T242 rule).
 supabase-auth-drift-check:
-    @cd wom7api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
+    @cd w0m-api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
       AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
-        python3 ../../wom7web/project/scripts/supabase_auth_drift_check.py'
+        python3 ../../w0m-web/project/scripts/supabase_auth_drift_check.py'
 
 # LIVE-MUTATING: PATCHes auth.site_url + auth.uri_allow_list on the real Supabase project.
 # -auto-approve because this runs non-interactively — the confirmation gate is a human
 # reviewing `supabase-settings-plan` BEFORE invoking this, not a terraform y/n prompt.
 supabase-settings-apply: (_confirm "supabase-settings-apply")
-    @cd wom7api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
+    @cd w0m-api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
       AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
         terraform apply -auto-approve -lock=false'
 
@@ -3038,7 +3031,7 @@ supabase-settings-apply: (_confirm "supabase-settings-apply")
 # dir — a global flip from evercred can no longer affect it. The switch is an idempotent re-assert;
 # the gate then proves it took. `env -u GITHUB_TOKEN` is defensive: a stray token would override
 # the keyring and make the switch refuse (dotenv-load was removed in T119 AC2b, so belt-and-
-# suspenders). The gate script lives in wom7api/scripts; the `ls` finds it from either repo root.
+# suspenders). The gate script lives in w0m-api/scripts; the `ls` finds it from either repo root.
 # Re-assert w0m's gh identity (casualuser) in the dedicated gh config, then prove it took.
 gh-w0m:
     @mkdir -p "$GH_CONFIG_DIR"
@@ -3047,15 +3040,15 @@ gh-w0m:
     @env -u GITHUB_TOKEN python3 scripts/check_git_identity.py
 
 # Open the w0m Obsidian vault; optional note path, e.g. `just obsidian docs/VAULT-INDEX.md`
-# T186 (2026-08-08): the vault is `wom7web` — it always carried `.obsidian/`, and the separate
+# T186 (2026-08-08): the vault is `w0m-web` — it always carried `.obsidian/`, and the separate
 # `wom7md` vault it used to open is DECOMMISSIONED. This recipe pointed at `../wom7md` for the
 # rest of that ticket and was simply broken; nothing exercises it, so no gate said so.
 obsidian note="":
-    @cd wom7api && python3 scripts/open_vault.py ../wom7web {{ note }}
+    @cd w0m-api && python3 scripts/open_vault.py ../w0m-web {{ note }}
 
 # Open a specific client project Obsidian vault (T371 AC3)
 obsidian-project project_id note="":
-    @cd wom7api && python3 scripts/open_vault.py {{ project_id }} {{ note }}
+    @cd w0m-api && python3 scripts/open_vault.py {{ project_id }} {{ note }}
 
 # Initialize a standardized Karpathy LLM Wiki project vault (T371 AC2)
 project-vault-init project_id *args="":
@@ -3066,31 +3059,31 @@ project-vault-init project_id *args="":
 # sources rather than the working tree. 🔴 Dropping the column while a deployed caller still writes
 # it is the same failure as dropping its unique index was: the connect flow broke instantly.
 t210-drop-readiness *args:
-    @cd wom7web && python3 project/scripts/t210_drop_readiness.py {{ args }}
+    @cd w0m-web && python3 project/scripts/t210_drop_readiness.py {{ args }}
 
 # T134 Phase 3 (AC11) — snapshot credential STATE across stores, never values. Runs HERE rather
 # than in a route because apps/cp is on Workers: no filesystem, no subprocesses. Supabase publishes
 # SHA-256 digests, so agreement is provable without any secret being read. Report-only unless
 # `--write`. ⚠️ An empty corpus FAILS rather than writing a confident empty table.
 credential-snapshot *args:
-    @cd wom7web && python3 project/scripts/credential_snapshot.py {{ args }}
+    @cd w0m-web && python3 project/scripts/credential_snapshot.py {{ args }}
 
 # T134 AC11 — prove the credential surface is read-only and leak-free, rather than assert it.
 # `routes` fails on ANY non-GET handler on the surface; `leak` fails if a live secret VALUE appears
 # in the snapshot the page renders. Runs under infisical because proving no value leaked requires
 # knowing the values; without them it FAILS CLOSED rather than reporting a green it cannot support.
 credential-probe *args:
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/credential_surface_probe.py {{ args }}
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/credential_surface_probe.py {{ args }}
 
 # Prove the gate above goes RED — a gate nobody has seen fail is not a gate. Fixtures only.
 credential-probe-test:
-    @cd wom7web && python3 project/scripts/tests/test_credential_surface_probe.py
+    @cd w0m-web && python3 project/scripts/tests/test_credential_surface_probe.py
 
 # T134 task 3.1 — prove the Infisical read credential is read-only, by ATTEMPTING a write. "I set
 # the role to read-only" is a claim about a UI, not about the credential. Skips cleanly when no
 # token is configured, so it is safe to run before task 3.1 lands.
 infisical-token-probe *args:
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- ./project/scripts/_infisical_token_probe.sh {{ args }}
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- ./project/scripts/_infisical_token_probe.sh {{ args }}
 
 # ⚠️ Pinned to a TAG on purpose — personaje0's v4 recipe clones the default branch, which silently
 # re-versions the engine under you on every fresh install.
@@ -3099,7 +3092,7 @@ infisical-token-probe *args:
 quartz-install:
     #!/usr/bin/env bash
     set -euo pipefail
-    cd wom7web
+    cd w0m-web
     if [ -d .quartz-engine/.quartz/plugins ] && [ "$(git -C .quartz-engine describe --tags 2>/dev/null || true)" = "{{ quartz_tag }}" ]; then
         echo "✅ Quartz {{ quartz_tag }} already installed in .quartz-engine"
         exit 0
@@ -3129,13 +3122,13 @@ quartz-install:
 # Point the engine at OUR config. Separated from install so a clobbered symlink is repairable
 # without a re-clone, and so the preflight has something to assert about.
 _quartz-link:
-    @cd wom7web/.quartz-engine && ln -sfn ../quartz.config.yaml quartz.config.yaml
+    @cd w0m-web/.quartz-engine && ln -sfn ../quartz.config.yaml quartz.config.yaml
 
 # Open the vault. Builds, serves on quartz_port (8099), opens a browser. Ctrl-C to stop.
 quartz: quartz-install _quartz-link
     #!/usr/bin/env bash
     set -euo pipefail
-    cd wom7web
+    cd w0m-web
     python3 project/scripts/quartz_preflight.py
     if lsof -nP -iTCP:{{ quartz_port }} -sTCP:LISTEN >/dev/null 2>&1; then
         echo "port {{ quartz_port }} is already in use — refusing to build for minutes and then fail to bind:"
@@ -3154,24 +3147,24 @@ quartz: quartz-install _quartz-link
 quartz-build: quartz-install _quartz-link
     #!/usr/bin/env bash
     set -euo pipefail
-    cd wom7web
+    cd w0m-web
     python3 project/scripts/quartz_preflight.py
     cd .quartz-engine && node ./quartz/bootstrap-cli.mjs build -d ..
-    echo "✅ built → wom7web/.quartz-engine/public"
+    echo "✅ built → w0m-web/.quartz-engine/public"
 
 # Prove the config in effect is ours and report the served corpus. Safe to run any time.
 quartz-check:
-    @cd wom7web && python3 project/scripts/quartz_preflight.py
+    @cd w0m-web && python3 project/scripts/quartz_preflight.py
 
 # T93 — Claude-Design sync pipeline & adherence enforcement (ds-diff, ds-bundle, ds-adherence)
 ds-diff:
-    @cd wom7web && python3 project/scripts/ds_sync_pipeline.py --diff
+    @cd w0m-web && python3 project/scripts/ds_sync_pipeline.py --diff
 
 ds-bundle:
-    @cd wom7web && python3 project/scripts/ds_sync_pipeline.py --bundle
+    @cd w0m-web && python3 project/scripts/ds_sync_pipeline.py --bundle
 
 ds-adherence *args:
-    @cd wom7web && python3 project/scripts/ds_sync_pipeline.py --lint {{ args }}
+    @cd w0m-web && python3 project/scripts/ds_sync_pipeline.py --lint {{ args }}
 
 # T279 / T280 / T351 / T364 — Client Beta Epic regression suite
 client-beta-epic-test:
@@ -3179,11 +3172,11 @@ client-beta-epic-test:
 
 # T55 AC5 — Tailwind @source cross-package purge audit & standing gate
 tailwind-source-audit-test:
-    @cd wom7web && python3 -m pytest -q project/scripts/tests/test_t55_tailwind_source_audit.py
+    @cd w0m-web && python3 -m pytest -q project/scripts/tests/test_t55_tailwind_source_audit.py
 
 # T252 AC4 — CP Agent Workspace simulator SEND regression suite
 agent-simulator-test:
-    @cd wom7web && python3 -m pytest -q project/scripts/tests/test_t252_agent_simulator.py
+    @cd w0m-web && python3 -m pytest -q project/scripts/tests/test_t252_agent_simulator.py
 
 # ── Git Hook Recipes & Commit-Msg T## Gate (T129 / T386) ─────────────────────
 deploy-in-flight-check:
@@ -3191,30 +3184,30 @@ deploy-in-flight-check:
 
 [positional-arguments]
 semgrep-staged *files:
-    @cd wom7web && semgrep --config=auto --error --quiet "$@"
+    @cd w0m-web && semgrep --config=auto --error --quiet "$@"
 
 [positional-arguments]
 lint-staged *files:
-    @cd wom7web && pnpm exec oxlint "$@"
+    @cd w0m-web && pnpm exec oxlint "$@"
 
 [positional-arguments]
 fmt-astro-staged *files:
-    @cd wom7web && pnpm exec prettier --check "$@"
+    @cd w0m-web && pnpm exec prettier --check "$@"
 
 [positional-arguments]
 fmt-staged *files:
-    @cd wom7web && pnpm exec oxfmt --write "$@" && git add -- "$@"
+    @cd w0m-web && pnpm exec oxfmt --write "$@" && git add -- "$@"
 
 [positional-arguments]
 guard-test-admin *files:
-    @cd wom7web && scripts/guard-test-admin.sh "$@"
+    @cd w0m-web && scripts/guard-test-admin.sh "$@"
 
 status-dashboard-refresh:
-    @cd wom7web && python3 project/scripts/gen_status_dashboard.py && git add docs/STATUS-DASHBOARD.html
+    @cd w0m-web && python3 project/scripts/gen_status_dashboard.py && git add docs/STATUS-DASHBOARD.html
 
 cp-feature-index-refresh:
-    @cd wom7web && python3 project/scripts/cp_feature_index.py && git add docs/CP-FEATURE-INDEX.md
+    @cd w0m-web && python3 project/scripts/cp_feature_index.py && git add docs/CP-FEATURE-INDEX.md
 
 # Astro build smoke check for apps/demo (T566 AC4 / T149 AC3)
 build-demo:
-    @cd wom7web && pnpm --filter demo build
+    @cd w0m-web && pnpm --filter demo build

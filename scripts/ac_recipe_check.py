@@ -38,7 +38,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-API = ROOT / "wom7api"
+API = ROOT / "w0m-api"
 TICKETS = ROOT / ".tasks"
 if not TICKETS.is_dir():
     sys.exit(f"FATAL: Canonical tickets directory not found at {TICKETS} (AgDR-0025: zero silent fallbacks)")
@@ -70,7 +70,7 @@ ACKNOWLEDGED: dict[tuple[str, str], str] = {
     ("T334", "skill-check"): (
         "a recipe in `artemioquierocomer.mx`'s OWN justfile (a client repo, `project/"
         "clients-policy.json` id `artemio`), not this estate's — `recipes()` only reads `just "
-        "--list` from wom7api, which cannot see it. Verified directly in that repo: `just "
+        "--list` from w0m-api, which cannot see it. Verified directly in that repo: `just "
         "skill-check` -> `node scripts/verify_skills.mjs` -> \"56 managed skill(s) match the "
         "lockfile - 0 unmanaged, 0 drift.\" A true, checked citation this gate's scope cannot reach."
     ),

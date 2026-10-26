@@ -10,11 +10,11 @@ export W0M_ROOT := env_var_or_default('W0M_ROOT', justfile_directory())
 # Deployment Version & Parameters (T131 / T421)
 project_ref := "pqbbjgeapylcengbuvee"
 # Infisical project (workspace) id, the ONE source for every `infisical run` below (T429). It is an
-# identifier, not a credential, and equals wom7api/.infisical.json `workspaceId`. Explicit, because
+# identifier, not a credential, and equals w0m-api/.infisical.json `workspaceId`. Explicit, because
 # these recipes run from @wom, which has no .infisical.json link (the T421 elevation broke that silently).
 infisical_project_id := "87a1718d-17c6-4c5e-b0c1-f8bb2fd9d13c"
 # ONE version per release, across nested `just` processes. A backtick runs once per `just` PROCESS, and
-# the chain spawns several (`supabase-redeploy-all` → wom7api → back here for `deploy-functions`), so each
+# the chain spawns several (`supabase-redeploy-all` → w0m-api → back here for `deploy-functions`), so each
 # re-ran `date`: run 7 (2026-09-24) stamped the edge functions 11 minutes after the apps, and the transcript
 # was named after a version `deploy_log` never recorded. The outermost invocation mints it and EXPORTS it;
 # every nested one inherits. Unset = a fresh standalone run, which correctly mints its own.
@@ -31,9 +31,9 @@ quartz_port := "8099"
 quartz_tag := "v5.0.0"
 
 import 'just/estate.just'
-# wom7api/supabase/config.toml reads `env(W0M_DB_MIGRATIONS)`, which has no default: unset means
+# w0m-api/supabase/config.toml reads `env(W0M_DB_MIGRATIONS)`, which has no default: unset means
 # EVERY `supabase` command fails with ProjectConfigParseError (T248). Recipes here that call the CLI
-# directly (`deploy-function`, `deploy-functions`) need the same export wom7api/justfile carries;
+# directly (`deploy-function`, `deploy-functions`) need the same export w0m-api/justfile carries;
 # without it the first `just deploy-function` failed (T431).
 export W0M_DB_MIGRATIONS := env_var_or_default('W0M_DB_MIGRATIONS', 'true')
 
@@ -44,8 +44,8 @@ default:
     @echo ""
     @echo "Primary Workflows:"
     @echo "  just tasks             Ranked task queue & triage (hot list, SDLC rank)"
-    @echo "  just prs-open          Fresh status table of open PRs in wom7pr"
-    @echo "  just forks             Status table of all upstream forks in wom7pr"
+    @echo "  just prs-open          Fresh status table of open PRs in w0m-pr"
+    @echo "  just forks             Status table of all upstream forks in w0m-pr"
     @echo "  just ask \"<symbol>\"    Query codebase knowledge graph (graph before grep)"
     @echo "  just test              Run project test suites"
     @echo "  just dev               Start local development server"
@@ -55,7 +55,7 @@ default:
     @echo "Command Discovery:"
     @echo "  just --list            List all available recipes with docstrings"
     @echo "  just <recipe> --help   Inspect arguments/flags for a specific recipe"
-    @echo "  just do <recipe>       Run any wom7web recipe from workspace root"
+    @echo "  just do <recipe>       Run any w0m-web recipe from workspace root"
     @echo ""
 
 # ── Queue & Triage (T146 / T232 / T412) ─────────────────────────────────────
@@ -71,13 +71,13 @@ eli5-test:
     @python3 scripts/tests/test_ticket_eli5.py
 
 system-one-test:
-    @python3 wom7web/project/scripts/tests/test_system_one.py
+    @python3 w0m-web/project/scripts/tests/test_system_one.py
 
 hooks-llm-check:
-    @python3 wom7web/project/scripts/hooks_llm_check.py
+    @python3 w0m-web/project/scripts/hooks_llm_check.py
 
 system-one-bench *args:
-    @python3 wom7web/project/scripts/system_one_bench.py {{ args }}
+    @python3 w0m-web/project/scripts/system_one_bench.py {{ args }}
 
 tasks-render *args:
     @python3 scripts/tasks_render.py {{ args }}
@@ -86,28 +86,28 @@ agent-concurrency-test:
     @python3 scripts/tests/test_agent_concurrency.py
 
 project-archetypes-test:
-    @python3 wom7web/project/scripts/tests/test_project_archetypes.py
+    @python3 w0m-web/project/scripts/tests/test_project_archetypes.py
 
 profile-resolve *args:
-    @python3 wom7web/project/scripts/profile_resolver.py resolve {{ args }}
+    @python3 w0m-web/project/scripts/profile_resolver.py resolve {{ args }}
 
 profile-env *args:
-    @python3 wom7web/project/scripts/profile_resolver.py env {{ args }}
+    @python3 w0m-web/project/scripts/profile_resolver.py env {{ args }}
 
 profile-run *args:
-    @python3 wom7web/project/scripts/profile_resolver.py run {{ args }}
+    @python3 w0m-web/project/scripts/profile_resolver.py run {{ args }}
 
 profile-infisical slug *args:
-    @python3 wom7web/project/scripts/profile_resolver.py infisical {{ slug }} {{ args }}
+    @python3 w0m-web/project/scripts/profile_resolver.py infisical {{ slug }} {{ args }}
 
 profile-jam slug *args:
-    @python3 wom7web/project/scripts/profile_resolver.py jam {{ slug }} {{ args }}
+    @python3 w0m-web/project/scripts/profile_resolver.py jam {{ slug }} {{ args }}
 
 profile-inject-vm slug vm *args:
-    @python3 wom7web/project/scripts/profile_resolver.py inject-vm {{ slug }} {{ vm }} {{ args }}
+    @python3 w0m-web/project/scripts/profile_resolver.py inject-vm {{ slug }} {{ vm }} {{ args }}
 
 profile-resolver-test:
-    @python3 wom7web/project/scripts/tests/test_profile_resolver.py
+    @python3 w0m-web/project/scripts/tests/test_profile_resolver.py
 
 ticket-audit *args:
     @python3 scripts/ticket_audit.py {{ args }}
@@ -259,7 +259,7 @@ prs *args:
     @python3 scripts/w0m_prs.py {{ args }}
 
 prs-open *args:
-    @python3 scripts/w0m_prs.py table --preset wom7pr {{ args }}
+    @python3 scripts/w0m_prs.py table --preset w0m-pr {{ args }}
 
 forks *args:
     @python3 scripts/w0m_prs.py forks {{ args }}
@@ -295,7 +295,7 @@ decommission-check-test:
     @python3 scripts/tests/test_decommission_check.py
 
 default-test:
-    @cd wom7web && python3 project/scripts/tests/test_just_default.py
+    @cd w0m-web && python3 project/scripts/tests/test_just_default.py
 
 # ── Ticket Duplication Checks (T403 / T414) ──────────────────────────────────
 ticket-dups *args:
@@ -320,21 +320,21 @@ npx-audit-test:
 
 # ── Authorization Admin Client Ratchet (T202 / T327) ──────────────────────────
 authz-admin-client *args:
-    @cd wom7web && python3 project/scripts/authz_admin_client_triage.py {{args}}
+    @cd w0m-web && python3 project/scripts/authz_admin_client_triage.py {{args}}
 
 # T453 — live default-deny probe (read-only; run after the owner's deploy) and its offline red probes.
 route-policy-live *args:
-    @cd wom7web && python3 project/scripts/live_route_probe.py {{ args }}
+    @cd w0m-web && python3 project/scripts/live_route_probe.py {{ args }}
 
 route-policy-live-test:
-    @cd wom7web && python3 project/scripts/tests/test_live_route_probe.py
+    @cd w0m-web && python3 project/scripts/tests/test_live_route_probe.py
 
-# T453 AC7 — cross-app route-policy check. Forwards to wom7api/justfile, where the recipe lives.
+# T453 AC7 — cross-app route-policy check. Forwards to w0m-api/justfile, where the recipe lives.
 route-policy-check:
-    @cd wom7web && ASTRO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 pnpm exec vitest run packages/lib/src/auth/route-inventory.spec.ts packages/lib/src/auth/api-default-deny.spec.ts
+    @cd w0m-web && ASTRO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 pnpm exec vitest run packages/lib/src/auth/route-inventory.spec.ts packages/lib/src/auth/api-default-deny.spec.ts
 
 authz-admin-client-test:
-    @cd wom7web && python3 project/scripts/authz_admin_client_triage.py --test
+    @cd w0m-web && python3 project/scripts/authz_admin_client_triage.py --test
 
 # ── macOS Host Security Posture (T233 / T414) ─────────────────────────────────
 host-posture *args:
@@ -371,7 +371,7 @@ debt-check-test:
     @python3 scripts/tests/test_debt_register_check.py
 
 lexicon-lint-test:
-    @python3 wom7web/project/scripts/tests/test_lexicon_lint.py
+    @python3 w0m-web/project/scripts/tests/test_lexicon_lint.py
 
 schema-check *args:
     @python3 scripts/schema_check.py {{ args }}
@@ -379,9 +379,13 @@ schema-check *args:
 schema-check-test:
     @python3 scripts/tests/test_schema_check.py
 
-# Forwarding target for running any arbitrary wom7web recipe from workspace root
+# Forwarding target for running any arbitrary w0m-web recipe from workspace root
 do recipe *args:
     @just {{ recipe }} {{ args }}
+
+# Unified w0m CLI entrypoint (tasks, status, vm, k8s, cloud, llm, spec, notify) (T567 AC6 / AgDR-0012)
+w0m *args:
+    @python3 w0m-skills/tools/w0m_portable_cli.py --project "{{ justfile_directory() }}" {{ args }}
 
 # ── Knowledge & Graph ────────────────────────────────────────────────────────
 ask question repo="":
@@ -394,7 +398,7 @@ ask question repo="":
             echo "❌ refusing to answer from a graph that may be stale — see the error above"; exit 1; }
     fi
     if command -v codegraph >/dev/null 2>&1; then
-        for r in root wom7web wom7api wom7func; do
+        for r in root w0m-web w0m-api w0m-cf; do
             [ -n "$only" ] && [ "$r" != "$only" ] && continue
             if [ "$r" = "root" ]; then d="."; else d="$r"; fi
             [ -d "$d/.codegraph" ] || continue
@@ -419,9 +423,9 @@ ask question repo="":
     elif [ -f "$HOME/.graphify/global-graph.json" ]; then
         echo "───────── graphify (united 7-repo graph) ─────────"
         (graphify query "$q" --graph "$HOME/.graphify/global-graph.json" --budget 800 2>/dev/null | head -40) || true
-    elif [ -f "wom7web/graphify-out/graph.json" ]; then
-        echo "───────── graphify (semantic/community view, wom7web) ─────────"
-        (graphify query "$q" --graph "wom7web/graphify-out/graph.json" --budget 800 2>/dev/null | head -40) || true
+    elif [ -f "w0m-web/graphify-out/graph.json" ]; then
+        echo "───────── graphify (semantic/community view, w0m-web) ─────────"
+        (graphify query "$q" --graph "w0m-web/graphify-out/graph.json" --budget 800 2>/dev/null | head -40) || true
     fi
 
 graph-global *args:
@@ -430,7 +434,7 @@ graph-global *args:
 graph-health *args:
     @python3 scripts/graph_health.py {{ args }}
 
-crg-serve repo="wom7web":
+crg-serve repo="w0m-web":
     #!/usr/bin/env bash
     set -euo pipefail
     REPO_DIR="{{ repo }}"
@@ -443,7 +447,7 @@ crg-serve repo="wom7web":
     (xdg-open "http://localhost:8765" 2>/dev/null || open "http://localhost:8765" 2>/dev/null || true)
     code-review-graph visualize --repo "$REPO_DIR" --data-dir "$DATA_DIR" --serve
 
-crg-open repo="wom7web":
+crg-open repo="w0m-web":
     #!/usr/bin/env bash
     set -euo pipefail
     REPO_DIR="{{ repo }}"
@@ -455,7 +459,7 @@ crg-open repo="wom7web":
     code-review-graph visualize --repo "$REPO_DIR" --data-dir "$DATA_DIR" --format html
     (xdg-open "$DATA_DIR/graph.html" 2>/dev/null || open "$DATA_DIR/graph.html" 2>/dev/null || true)
 
-crg-extract repo="wom7web":
+crg-extract repo="w0m-web":
     #!/usr/bin/env bash
     set -euo pipefail
     REPO_DIR="{{ repo }}"
@@ -463,7 +467,7 @@ crg-extract repo="wom7web":
     echo "🔍 Extracting code-review-graph for {{ repo }} into $DATA_DIR ..."
     code-review-graph extract --repo "$REPO_DIR" --data-dir "$DATA_DIR"
 
-graph-tree repo="wom7web":
+graph-tree repo="w0m-web":
     #!/usr/bin/env bash
     set -euo pipefail
     if [ "{{ repo }}" = "global" ]; then
@@ -477,7 +481,7 @@ graph-tree repo="wom7web":
         (xdg-open "$OUT_PATH" 2>/dev/null || open "$OUT_PATH" 2>/dev/null || true)
     fi
 
-graph-callflow repo="wom7web":
+graph-callflow repo="w0m-web":
     #!/usr/bin/env bash
     set -euo pipefail
     REPO_DIR="{{ repo }}"
@@ -485,7 +489,7 @@ graph-callflow repo="wom7web":
     OUT_PATH="$REPO_DIR/graphify-out/{{ repo }}-callflow.html"
     (xdg-open "$OUT_PATH" 2>/dev/null || open "$OUT_PATH" 2>/dev/null || true)
 
-graph-query query repo="wom7web":
+graph-query query repo="w0m-web":
     #!/usr/bin/env bash
     set -euo pipefail
     if [ "{{ repo }}" = "global" ]; then
@@ -494,7 +498,7 @@ graph-query query repo="wom7web":
         graphify query "{{ query }}" --graph "{{ repo }}/graphify-out/graph.json"
     fi
 
-graph-explain concept repo="wom7web":
+graph-explain concept repo="w0m-web":
     #!/usr/bin/env bash
     set -euo pipefail
     if [ "{{ repo }}" = "global" ]; then
@@ -503,7 +507,7 @@ graph-explain concept repo="wom7web":
         graphify explain "{{ concept }}" --graph "{{ repo }}/graphify-out/graph.json"
     fi
 
-graph-path a b repo="wom7web":
+graph-path a b repo="w0m-web":
     #!/usr/bin/env bash
     set -euo pipefail
     if [ "{{ repo }}" = "global" ]; then
@@ -512,7 +516,7 @@ graph-path a b repo="wom7web":
         graphify path "{{ a }}" "{{ b }}" --graph "{{ repo }}/graphify-out/graph.json"
     fi
 
-graph-affected x depth="2" repo="wom7web":
+graph-affected x depth="2" repo="w0m-web":
     #!/usr/bin/env bash
     set -euo pipefail
     if [ "{{ repo }}" = "global" ]; then
@@ -521,7 +525,7 @@ graph-affected x depth="2" repo="wom7web":
         graphify affected "{{ x }}" --depth {{ depth }} --graph "{{ repo }}/graphify-out/graph.json"
     fi
 
-graph-benchmark repo="wom7web":
+graph-benchmark repo="w0m-web":
     #!/usr/bin/env bash
     set -euo pipefail
     if [ "{{ repo }}" = "global" ]; then
@@ -552,7 +556,7 @@ version:
 # Consent: confirming a ROOT (`deploy`, `deploy-all`) covers the steps it chains for 45 min
 # (`ttl_seconds: 2700`), bound to the git HEAD it was granted at. Steps in `always_confirm`
 # (`db-reset`, `db-backup`, `storage-backup`, `db-psql`, `rotate`, `sync-env`,
-# `sync-wom7api-secrets`, `crawler-deploy`) re-prompt ANYWAY.
+# `sync-w0m-api-secrets`, `crawler-deploy`) re-prompt ANYWAY.
 # 🔴 `db-migrate` is NOT among them — it rides the `deploy-all` consent. That was an owner
 # decision on 2026-08-16, recorded in `confirm-policy.json -> _notes.one_yes_is_the_decision`:
 # the owner was offered the chance to put it back and declined. Re-adding it reverses a decision
@@ -563,7 +567,7 @@ version:
 _confirm step:
     @python3 scripts/confirm_step.py {{ step }}
 
-# Red probes for the confirmation gate (T161 AC3, extended by T407, T435, T471, and T541). 66 cases: it must
+# Red probes for the confirmation gate (T161 AC3, extended by T407, T435, T471, and T541). 91 cases: it must
 # withhold from an automated caller, refuse a piped "yes", refuse an agent session even with a pty
 # and a live consent, refuse when the Touch ID dialog is not confirmed, find every deploy-shaped
 # recipe without `_confirm`, fail CLOSED on an unrecognised step, honour a granted root for chained
@@ -581,69 +585,69 @@ confirm-doctor:
 confirm-enroll-totp:
     @python3 scripts/confirm_step.py --enroll-totp
 
-# Every `pnpm --filter <app> build` below runs from `wom7web`, never from @wom. @wom's package.json
+# Every `pnpm --filter <app> build` below runs from `w0m-web`, never from @wom. @wom's package.json
 # has no `packageManager` pin and is not the pnpm workspace, so from here PATH's pnpm (12.x) ran the
 # build without the workspace root's node_modules/.bin, and the first root `deploy-web` failed with
 # `astro: command not found` (T431, 2026-09-23). Guarded by `just deploy-elevation-test`.
 # Build all web workspaces and stamp release metadata
 build:
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web --filter cp --filter join --filter job --filter demo build
-    @python3 wom7web/project/scripts/stamp_build.py \
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web --filter cp --filter join --filter job --filter demo build
+    @python3 w0m-web/project/scripts/stamp_build.py \
         --version "{{ deploy_version }}" --at "{{ deploy_at }}" --commit "{{ deploy_commit }}"
 
 _assert-provisioned app:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7web/project/scripts/build_provisioning_gate.py --app {{ app }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-web/project/scripts/build_provisioning_gate.py --app {{ app }}
 
 # Deploy apps/web (webomage.com)
 deploy-web: (_confirm "deploy-web")
     @echo "Building and deploying apps/web to Cloudflare Workers (Version: {{ deploy_version }})..."
     @echo "📸 Updating static snapshots..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/apps/web/scripts/snapshot-settings.mjs || true
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/apps/web/scripts/snapshot-blueprints.mjs || true
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node wom7web/apps/web/scripts/snapshot-knowledge.mjs || true
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web build
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/apps/web/scripts/snapshot-settings.mjs || true
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/apps/web/scripts/snapshot-blueprints.mjs || true
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/apps/web/scripts/snapshot-knowledge.mjs || true
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web build
     @just _assert-provisioned web
     @echo "🔍 Building pagefind search index..."
-    @cd wom7web/apps/web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run build:search
-    @cd wom7web/apps/web/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_WEB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web/apps/web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run build:search
+    @cd w0m-web/apps/web/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_WEB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py web "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/join (join.webomage.com)
 deploy-join: (_confirm "deploy-join")
     @echo "Building and deploying apps/join to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter join build
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter join build
     @just _assert-provisioned join
-    @cd wom7web/apps/join/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOIN:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web/apps/join/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOIN:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py join "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/job (job.webomage.com)
 deploy-job: (_confirm "deploy-job")
     @echo "Building and deploying apps/job to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter job build
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter job build
     @just _assert-provisioned job
-    @cd wom7web/apps/job/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web/apps/job/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py job "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/demo (demo.webomage.com — T79 demo showcase) to Cloudflare Workers
 deploy-demo: (_confirm "deploy-demo")
     @echo "Building and deploying apps/demo to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter demo build
-    @cd wom7web/apps/demo/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_DEMO:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter demo build
+    @cd w0m-web/apps/demo/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_DEMO:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py demo "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/cp (cp.w0m.xyz)
 deploy-cp: (_confirm "deploy-cp")
     @echo "Building and deploying apps/cp to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter cp build
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter cp build
     @just _assert-provisioned cp
-    @cd wom7web/apps/cp/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_CP:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web/apps/cp/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_CP:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py cp "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
-# Deploy wom7func to Cloudflare
+# Deploy w0m-cf to Cloudflare
 deploy-workers: (_confirm "deploy-workers")
-    @echo "Deploying wom7func to Cloudflare Workflows (Version: {{ deploy_version }})..."
-    @cd wom7func && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec wrangler deploy --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py wom7func "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
+    @echo "Deploying w0m-cf to Cloudflare Workflows (Version: {{ deploy_version }})..."
+    @cd w0m-cf && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec wrangler deploy --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py w0m-cf "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy all functions in parallel using Supabase CLI
 deploy-functions: (_confirm "deploy-functions")
@@ -659,7 +663,7 @@ deploy-functions-test:
 
 # Deploy API capability layer
 # T431: deploy NAMED edge function(s): the per-function top-level helper, replacing 25 copies in
-# wom7api/justfile. Validates every name against wom7api/supabase/functions/ before deploying anything;
+# w0m-api/justfile. Validates every name against w0m-api/supabase/functions/ before deploying anything;
 # JWT posture comes from supabase/config.toml, as for the bulk deploy. `just deploy-function-list`
 # prints the names. It does not restamp DEPLOY_VERSION: a partial redeploy is not a release.
 deploy-function +names: (_confirm "deploy-function")
@@ -677,12 +681,12 @@ check-infisical:
 
 check-guardrails:
     @echo "🛡  Pre-deploy security gate (secrets + test-admin + connection-strings)..."
-    @cd wom7api && pre-commit run gitleaks --all-files
-    @cd wom7web && pre-commit run gitleaks --all-files
-    @cd wom7web && pre-commit run guard-test-admin --all-files
+    @cd w0m-api && pre-commit run gitleaks --all-files
+    @cd w0m-web && pre-commit run gitleaks --all-files
+    @cd w0m-web && pre-commit run guard-test-admin --all-files
     @echo "🔑 Inline-credential connection-string scan (gitleaks gap — T32)..."
-    @cd wom7api && if git --no-pager grep -nEI '(postgres|postgresql|mysql|mongodb|redis|amqp)://[A-Za-z0-9._%+-]+:[A-Za-z0-9._%+~!-]{6,}@' -- ':!*.md'; then echo "❌ inline credential in tracked files — remove + rotate (see T32)"; exit 1; fi
-    @cd wom7web && if git --no-pager grep -nEI '(postgres|postgresql|mysql|mongodb|redis|amqp)://[A-Za-z0-9._%+-]+:[A-Za-z0-9._%+~!-]{6,}@' -- ':!*.md'; then echo "❌ inline credential in tracked files — remove + rotate (see T32)"; exit 1; fi
+    @cd w0m-api && if git --no-pager grep -nEI '(postgres|postgresql|mysql|mongodb|redis|amqp)://[A-Za-z0-9._%+-]+:[A-Za-z0-9._%+~!-]{6,}@' -- ':!*.md'; then echo "❌ inline credential in tracked files — remove + rotate (see T32)"; exit 1; fi
+    @cd w0m-web && if git --no-pager grep -nEI '(postgres|postgresql|mysql|mongodb|redis|amqp)://[A-Za-z0-9._%+-]+:[A-Za-z0-9._%+~!-]{6,}@' -- ':!*.md'; then echo "❌ inline credential in tracked files — remove + rotate (see T32)"; exit 1; fi
     @echo "✅ security gate passed"
 
 check-warp:
@@ -727,23 +731,23 @@ check-supabase:
 supabase-redeploy-all: (_confirm "supabase-redeploy-all") sync-secrets ensure-cv-bucket deploy-functions
 
 db-migrate: (_confirm "db-migrate") db-drift-check
-    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 ../wom7web/project/scripts/db_migrate.py
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 ../w0m-web/project/scripts/db_migrate.py
 
-# T551 AC4 — allocate the next free 14-digit migration version from origin/beta + local migrations and create wom7api/supabase/migrations/<version>_<name>.sql.
+# T551 AC4 — allocate the next free 14-digit migration version from origin/beta + local migrations and create w0m-api/supabase/migrations/<version>_<name>.sql.
 migration-new name:
-    @python3 wom7web/project/scripts/db_drift_check.py --new "{{ name }}"
+    @python3 w0m-web/project/scripts/db_drift_check.py --new "{{ name }}"
 
 # T529 — clients & client_users retirement verification and offline tests
 clients-retirement-verify *args:
-    @cd wom7web && python3 project/scripts/clients_retirement_verify.py {{args}}
+    @cd w0m-web && python3 project/scripts/clients_retirement_verify.py {{args}}
 
 clients-retirement-verify-test:
-    @cd wom7web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_clients_retirement_verify.py
+    @cd w0m-web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_clients_retirement_verify.py
 
 goldens:
     #!/usr/bin/env bash
     set -euo pipefail
-    cd wom7web
+    cd w0m-web
     # ALWAYS kill whatever is on :4321 first, then boot our own known-good server. Reusing a
     # server left over from an interactive `redev` session (T222 original design) seemed cheaper,
     # but a leftover server can be hung — mid-recompile, HMR-wedged — and `curl -sf` against it
@@ -755,7 +759,7 @@ goldens:
     # accidental side effect discovered 60s later.
     lsof -ti tcp:4321 -sTCP:LISTEN 2>/dev/null | xargs -r kill 2>/dev/null || true
     echo "🎨 Visual goldens — booting a dev server..."
-    ASTRO_DEV_BACKGROUND=1 infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web dev > /tmp/wom7web-goldens-dev.log 2>&1 &
+    ASTRO_DEV_BACKGROUND=1 infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web dev > /tmp/w0m-web-goldens-dev.log 2>&1 &
     DEV_PID=$!
     # Kill it on ANY exit path, including the gauge failure this gate exists to produce.
     # ⚠️ Kill by PORT, not by the PID we spawned. `infisical run -- pnpm dev` puts astro two
@@ -765,7 +769,7 @@ goldens:
     trap 'lsof -ti tcp:4321 -sTCP:LISTEN 2>/dev/null | xargs -r kill 2>/dev/null || true; kill $DEV_PID 2>/dev/null || true' EXIT
     for i in $(seq 1 60); do
       if curl -sf -o /dev/null http://localhost:4321/; then echo "✅ server ready after ${i}s"; break; fi
-      if [ "$i" -eq 60 ]; then echo "❌ dev server did not start in 60s"; tail -20 /tmp/wom7web-goldens-dev.log; exit 1; fi
+      if [ "$i" -eq 60 ]; then echo "❌ dev server did not start in 60s"; tail -20 /tmp/w0m-web-goldens-dev.log; exit 1; fi
       sleep 1
     done
     # ⚠️ WARM UP UNTIL STABLE — a 200 is not readiness.
@@ -795,11 +799,11 @@ goldens:
 
 smoke-live url="https://webomage.com":
     @echo "🔎 Live smoke against {{ url }} (non-blocking — reports, does not gate)..."
-    -@cd wom7web && E2E_BASE_URL={{ url }} gauge run specs/web/live-smoke.spec
+    -@cd w0m-web && E2E_BASE_URL={{ url }} gauge run specs/web/live-smoke.spec
     -@python3 scripts/live_verify_helper.py crawler-smoke --url {{ url }}
 
 _assert-clean-tree:
-    @pnpm --dir wom7api exec tsx dagger/pipeline.ts assert-clean-tree
+    @pnpm --dir w0m-api exec tsx dagger/pipeline.ts assert-clean-tree
 
 _log-deploy:
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py release "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
@@ -828,17 +832,17 @@ name-refs *args:
 name-refs-test:
     @python3 scripts/tests/test_name_refs.py
 
-# CP feature index (see wom7api/justfile).
+# CP feature index (see w0m-api/justfile).
 cp-feature-index *args:
-    @cd wom7web && python3 project/scripts/cp_feature_index.py {{ args }}
+    @cd w0m-web && python3 project/scripts/cp_feature_index.py {{ args }}
 
 cp-feature-index-test:
-    @cd wom7web && python3 project/scripts/tests/test_cp_feature_index.py
+    @cd w0m-web && python3 project/scripts/tests/test_cp_feature_index.py
 
 cp-feature-index-check:
-    @cd wom7web && python3 project/scripts/cp_feature_index.py --check
+    @cd w0m-web && python3 project/scripts/cp_feature_index.py --check
 
-# T244 — secret flow gate (see wom7api/justfile).
+# T244 — secret flow gate (see w0m-api/justfile).
 secret-flow-check *args:
     @python3 scripts/secret_flow_check.py {{ args }}
 
@@ -848,7 +852,7 @@ secret-flow-check-test:
 secret-flow-check-enforce:
     @python3 scripts/secret_flow_check.py --enforce
 
-# T335 — validated setter for `.w0m/sdlc.json -> current_plan` (see wom7api/justfile).
+# T335 — validated setter for `.w0m/sdlc.json -> current_plan` (see w0m-api/justfile).
 plan-set *args:
     @python3 scripts/plan_set.py {{ args }}
 
@@ -864,7 +868,7 @@ plan-set-check:
 # work in them at once); a release cannot see that. Inside the release worktree W0M_RELEASE_WORKTREE=1 is set and this
 # recipe runs the chain itself. Forcing a deploy of the local working tree is explicit: `just deploy-local`.
 deploy:
-    @pnpm --dir wom7api exec tsx dagger/pipeline.ts entrypoint --mode deploy
+    @pnpm --dir w0m-api exec tsx dagger/pipeline.ts entrypoint --mode deploy
 
 # T473 — FORCE: deploy the local working tree as it is (uncommitted edits of anyone included). Not the default.
 deploy-local:
@@ -881,7 +885,7 @@ deploy-local:
 _deploy-chain: _deploy-preflight (_confirm "deploy") _deploy-gates _deploy-ship
 
 # The fast tier of the suite registry (`"prepush": true`) plus the STATE.md drift gate: everything that is deterministic, offline and takes seconds.
-# Pre-push runs the same set (wom7web/.husky/pre-push), so a red ratchet is normally found where the change is made, not at deploy time.
+# Pre-push runs the same set (w0m-web/.husky/pre-push), so a red ratchet is normally found where the change is made, not at deploy time.
 _deploy-preflight:
     @python3 scripts/run_suites.py --prepush
     @just state-check
@@ -895,21 +899,21 @@ _deploy-ship:
     @just _assert-clean-tree
     @just _log-deploy
 
-# T473 D2 & T64 AC1/AC3: deploy each app via the TypeScript Dagger pipeline module (`wom7api/dagger/pipeline.ts`).
+# T473 D2 & T64 AC1/AC3: deploy each app via the TypeScript Dagger pipeline module (`w0m-api/dagger/pipeline.ts`).
 # W0M_RELEASE_APPS (set by a release deploy) lists the apps whose fingerprint changed since the last deployed release;
 # the others are skipped and keep serving their previous version. Unset (a local deploy) = every app.
 _deploy-apps:
-    @pnpm --dir wom7api exec tsx dagger/pipeline.ts deploy-apps
+    @pnpm --dir w0m-api exec tsx dagger/pipeline.ts deploy-apps
 
 deploy-all:
-    @pnpm --dir wom7api exec tsx dagger/pipeline.ts entrypoint --mode deploy-all
+    @pnpm --dir w0m-api exec tsx dagger/pipeline.ts entrypoint --mode deploy-all
 
-# T64 AC1 & AC3 — Dagger TypeScript pipeline plan preview & unit/typecheck suite (`wom7api/dagger/`).
+# T64 AC1 & AC3 — Dagger TypeScript pipeline plan preview & unit/typecheck suite (`w0m-api/dagger/`).
 dagger-plan:
-    @pnpm --dir wom7api exec tsx dagger/pipeline.ts plan
+    @pnpm --dir w0m-api exec tsx dagger/pipeline.ts plan
 
 dagger-test:
-    @cd wom7api && pnpm exec tsc --noEmit -p dagger/tsconfig.json && pnpm exec vitest run dagger/__tests__/pipeline.test.ts
+    @cd w0m-api && pnpm exec tsc --noEmit -p dagger/tsconfig.json && pnpm exec vitest run dagger/__tests__/pipeline.test.ts
 
 # T473 — FORCE: deploy-all from the local working tree. Not the default.
 deploy-all-local:
@@ -953,27 +957,27 @@ release-record-test:
 
 # T531 AC6 — agent trees: one COMPLETE, private copy of the estate per agent (the umbrella with every member repo nested inside), on local branch agent/<name> cut from origin/beta.
 # No pull requests and no remote branch: commit in your tree, then `agent-tree-land` fetches, rebases onto origin/beta, checks ticket ids (a collision or a gap is refused) and pushes
-# HEAD:beta, members first and the umbrella last. Never forces. See wom7web/project/scripts/agent_tree.py.
+# HEAD:beta, members first and the umbrella last. Never forces. See w0m-web/project/scripts/agent_tree.py.
 agent-tree name:
-    @python3 wom7web/project/scripts/agent_tree.py new {{ name }}
+    @python3 w0m-web/project/scripts/agent_tree.py new {{ name }}
 
 agent-tree-list:
-    @python3 wom7web/project/scripts/agent_tree.py list
+    @python3 w0m-web/project/scripts/agent_tree.py list
 
 agent-tree-land *args:
-    @python3 wom7web/project/scripts/agent_tree.py land {{ args }}
+    @python3 w0m-web/project/scripts/agent_tree.py land {{ args }}
 
 agent-tree-remove name *args:
-    @python3 wom7web/project/scripts/agent_tree.py remove {{ name }} {{ args }}
+    @python3 w0m-web/project/scripts/agent_tree.py remove {{ name }} {{ args }}
 
 agent-tree-prune:
-    @python3 wom7web/project/scripts/agent_tree.py prune
+    @python3 w0m-web/project/scripts/agent_tree.py prune
 
 agent-tree-test:
-    @python3 -m pytest wom7web/project/scripts/tests/test_agent_tree.py -q -p no:cacheprovider
+    @python3 -m pytest w0m-web/project/scripts/tests/test_agent_tree.py -q -p no:cacheprovider
 
 t531-layers-test:
-    @python3 -m pytest wom7web/project/scripts/tests/test_t531_layers.py -q -p no:cacheprovider
+    @python3 -m pytest w0m-web/project/scripts/tests/test_t531_layers.py -q -p no:cacheprovider
 
 [no-cd]
 [positional-arguments]
@@ -986,25 +990,25 @@ ticket-new *args:
 
 # T564 — virtual agent identity (`agent_id`) and cross-worktree ticket claim/tagging system.
 agent-id *args:
-    @python3 wom7web/project/scripts/agent_identity.py whoami {{ args }}
+    @python3 w0m-web/project/scripts/agent_identity.py whoami {{ args }}
 
 agent-id-set agent_id *args:
-    @python3 wom7web/project/scripts/agent_identity.py set {{ agent_id }} {{ args }}
+    @python3 w0m-web/project/scripts/agent_identity.py set {{ agent_id }} {{ args }}
 
 ticket-claim ticket *args:
-    @python3 wom7web/project/scripts/agent_identity.py claim {{ ticket }} {{ args }}
+    @python3 w0m-web/project/scripts/agent_identity.py claim {{ ticket }} {{ args }}
 
 ticket-release ticket *args:
-    @python3 wom7web/project/scripts/agent_identity.py release {{ ticket }} {{ args }}
+    @python3 w0m-web/project/scripts/agent_identity.py release {{ ticket }} {{ args }}
 
 ticket-tag ticket *args:
-    @python3 wom7web/project/scripts/agent_identity.py tag {{ ticket }} {{ args }}
+    @python3 w0m-web/project/scripts/agent_identity.py tag {{ ticket }} {{ args }}
 
 agent-claims *args:
-    @python3 wom7web/project/scripts/agent_identity.py claims {{ args }}
+    @python3 w0m-web/project/scripts/agent_identity.py claims {{ args }}
 
 agent-identity-test:
-    @python3 -m pytest wom7web/project/scripts/tests/test_agent_identity.py -q -p no:cacheprovider
+    @python3 -m pytest w0m-web/project/scripts/tests/test_agent_identity.py -q -p no:cacheprovider
 
 # T481 — Persistent isolated STABLE and CONFIRMED worktrees: full local regression runs in stable, stable-promote advances confirmed
 stable-sync *args:
@@ -1024,9 +1028,9 @@ e2e-local *specs:
       echo "  ❌ local Supabase is not up. Run: just db-local-up && just db-local-env && just db-local-seed"
       exit 2
     fi
-    gen=wom7web/env/local/generated.properties
+    gen=w0m-web/env/local/generated.properties
     [ -f "$gen" ] || { echo "  ❌ no $gen — run \`just db-local-env\`"; exit 2; }
-    team=wom7web/env/local/test-team.properties
+    team=w0m-web/env/local/test-team.properties
     [ -f "$team" ] || { echo "  ❌ no $team — run \`just test-team-local\`"; exit 2; }
     # T478 — without the functions, every AI/API spec fails on a refused connection and reads as a product
     # defect. Refuse to run instead; `just edge-local` in another terminal.
@@ -1057,10 +1061,10 @@ e2e-local *specs:
     done
     # T478 — the corpus once wrote 12 rows into LIVE contact_messages from a local run: ~25 steps hardcoded live
     # URLs. tests/support/liveGuard.ts now refuses live hosts in-process; prove it works before any spec runs.
-    ( cd wom7web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 pnpm exec tsx tests/support/liveGuard.probe.mts ) \
+    ( cd w0m-web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 pnpm exec tsx tests/support/liveGuard.probe.mts ) \
       || { echo "  ❌ the live guard is not holding — refusing to run a local suite that could reach live."; exit 2; }
     echo "  ▶ starting Astro against LOCAL Supabase…"
-    cd wom7web
+    cd w0m-web
     infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- env \
       W0M_E2E_LOCAL=1 \
       E2E_LOCAL=true \
@@ -1101,11 +1105,11 @@ e2e-local *specs:
 
 # T532 — Run live-guard proof test
 live-guard-test:
-    @cd wom7web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 pnpm exec tsx tests/support/liveGuard.probe.mts
+    @cd w0m-web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 pnpm exec tsx tests/support/liveGuard.probe.mts
 
 # T532 — unit tests for the E2E sandbox isolation guard
 e2e-sandbox-guard-test:
-    @cd wom7web && python3 project/scripts/tests/test_e2e_sandbox_guard.py
+    @cd w0m-web && python3 project/scripts/tests/test_e2e_sandbox_guard.py
 
 _deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp check-infisical _deploy-gates db-migrate _deploy-ship _post-deploy-knowledge
 
@@ -1117,7 +1121,7 @@ _post-deploy-knowledge:
     just knowledge-light || true
 
 # Every bare `just <recipe>` in a recipe body must name a recipe that justfile defines — the
-# `-`-prefixed call above named one that only wom7api has, silently, from T421 to T431 run 7.
+# `-`-prefixed call above named one that only w0m-api has, silently, from T421 to T431 run 7.
 justfile-calls-check *args:
     @python3 scripts/justfile_calls_check.py {{ args }}
 
@@ -1186,34 +1190,34 @@ decisions-test:
 
 # ── Skills Platform (Level 1 & Level 2) ──────────────────────────────────────
 skills-sync mode="":
-    @cd wom7skills && pnpm exec tsx skills.ts {{ if mode == "check" { "--check" } else { mode } }}
+    @cd w0m-skills && pnpm exec tsx skills.ts {{ if mode == "check" { "--check" } else { mode } }}
 
 skills-test *args:
-    @cd wom7skills && pnpm run skill-test {{ args }}
+    @cd w0m-skills && pnpm run skill-test {{ args }}
 
 skills-update *args:
-    @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" update --canonical {{ args }}
+    @cd w0m-skills && pnpm run skill --project "{{ invocation_directory() }}" update --canonical {{ args }}
 
 skills-diff *args:
-    @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" diff {{ args }}
+    @cd w0m-skills && pnpm run skill --project "{{ invocation_directory() }}" diff {{ args }}
 
 skills-backport *args:
-    @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" backport {{ args }}
+    @cd w0m-skills && pnpm run skill --project "{{ invocation_directory() }}" backport {{ args }}
 
 skills-audit-tools *args:
-    @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" audit-tools {{ args }}
+    @cd w0m-skills && pnpm run skill --project "{{ invocation_directory() }}" audit-tools {{ args }}
 
 skills-chips *args:
-    @cd wom7skills && pnpm run skill --project "{{ invocation_directory() }}" chips {{ args }}
+    @cd w0m-skills && pnpm run skill --project "{{ invocation_directory() }}" chips {{ args }}
 
 skills-catalog *args:
-    @python3 wom7web/project/scripts/skills_catalog_gen.py --write {{ args }}
+    @python3 w0m-web/project/scripts/skills_catalog_gen.py --write {{ args }}
 
 skills-catalog-check *args:
-    @python3 wom7web/project/scripts/skills_catalog_gen.py --check {{ args }}
+    @python3 w0m-web/project/scripts/skills_catalog_gen.py --check {{ args }}
 
 skills-catalog-test:
-    @PYTHONPATH=wom7web python3 -m pytest wom7web/project/scripts/tests/test_t24_skills_expansion.py -q -p no:cacheprovider
+    @PYTHONPATH=w0m-web python3 -m pytest w0m-web/project/scripts/tests/test_t24_skills_expansion.py -q -p no:cacheprovider
 
 # ── SkillOpt Self-Evolution & Nightly Sleep Loop (T482) ──────────────────────
 sleep *args:
@@ -1241,7 +1245,7 @@ vm command="list" name="macos-mini-sandbox":
             echo "[OK] {{ name }} cleanly reset to mint state" ;; \
         prune) tart prune ;; \
         doctor) just vm-doctor ;; \
-        install-guest) wom7pr/tart-guest-agent/packaging/install-darwin.sh {{ name }} ;; \
+        install-guest) w0m-pr/tart-guest-agent/packaging/install-darwin.sh {{ name }} ;; \
         *) \
             echo "Unknown VM command: '{{ command }}'"; \
             echo "Usage: just vm [list|run|isolated|headless|ip|stop|reset|prune|doctor|install-guest] [name]"; \
@@ -1283,12 +1287,12 @@ vm-prune:
 
 # Install and verify enhanced w0m tart-guest-agent inside guest VM (T296)
 vm-install-guest name="macos-mini-sandbox":
-    @wom7pr/tart-guest-agent/packaging/install-darwin.sh {{ name }}
+    @w0m-pr/tart-guest-agent/packaging/install-darwin.sh {{ name }}
 
 
 # ── Core Plan & Queue Tests ──────────────────────────────────────────────────
 plan-verdict-test:
-    @cd wom7web && python3 project/scripts/tests/test_plan_verdict.py
+    @cd w0m-web && python3 project/scripts/tests/test_plan_verdict.py
 
 tasks-render-test:
     @python3 scripts/tests/test_tasks_render.py
@@ -1349,7 +1353,7 @@ emoji-check-test:
     @python3 scripts/tests/test_emoji_policy_check.py
 
 emoji-text-dialects-test:
-    @python3 wom7web/project/scripts/tests/test_emoji_text_dialects.py
+    @python3 w0m-web/project/scripts/tests/test_emoji_text_dialects.py
 
 doc-format-check *args:
     @python3 scripts/doc_format_check.py {{ args }}
@@ -1445,13 +1449,13 @@ test-all:
     @python3 scripts/run_suites.py --tier all --level full
 
 typecheck:
-    @cd wom7web && ASTRO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 python3 ../scripts/prepush_runner.py run-typecheck
+    @cd w0m-web && ASTRO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 python3 ../scripts/prepush_runner.py run-typecheck
 
 svelte-typecheck-ratchet *args:
-    @cd wom7web && python3 project/scripts/svelte_typecheck_ratchet.py {{ args }}
+    @cd w0m-web && python3 project/scripts/svelte_typecheck_ratchet.py {{ args }}
 
 svelte-typecheck-ratchet-test:
-    @cd wom7web && pytest -q project/scripts/tests/test_svelte_typecheck_ratchet.py
+    @cd w0m-web && pytest -q project/scripts/tests/test_svelte_typecheck_ratchet.py
 
 suites-drift *args:
     @python3 scripts/run_suites.py --drift {{ args }}
@@ -1499,99 +1503,99 @@ dev-stack: stop-dev
     @python3 scripts/hosts_check.py || true
     @echo "Starting Caddy SSL reverse proxy on port 443..."
     @caddy start --config Caddyfile.local
-    @echo "Starting wom7func worker on port 8790..."
-    @sh -c 'cd wom7func && nohup infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec wrangler dev --port 8790 --show-interactive-dev-session=false > /tmp/wom7func-dev.log 2>&1 < /dev/null &'
+    @echo "Starting w0m-cf worker on port 8790..."
+    @sh -c 'cd w0m-cf && nohup infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec wrangler dev --port 8790 --show-interactive-dev-session=false > /tmp/w0m-cf-dev.log 2>&1 < /dev/null &'
     @echo "Starting 5 Astro apps with subdomain root bases..."
-    cd wom7web && SUBDOMAIN_DEV=1 infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev
+    cd w0m-web && SUBDOMAIN_DEV=1 infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev
 
 # ── TypeSafe System One & Jev Image Processing (T558 / T556 / T434) ─────────
 jev-image *args:
-    @python3 wom7web/project/scripts/jev_system_one.py {{ args }}
+    @python3 w0m-web/project/scripts/jev_system_one.py {{ args }}
 
 jev-system-one-test:
-    @python3 wom7web/project/scripts/tests/test_jev_system_one.py
+    @python3 w0m-web/project/scripts/tests/test_jev_system_one.py
 
 # ── Google Research Harness² ContextTree & SurfaceSpec (T556) ───────────────
 context-tree *args:
-    @python3 wom7web/project/scripts/context_tree.py {{ args }}
+    @python3 w0m-web/project/scripts/context_tree.py {{ args }}
 
 context-tree-test:
-    @python3 wom7web/project/scripts/tests/test_context_tree.py
+    @python3 w0m-web/project/scripts/tests/test_context_tree.py
 
 harness2-surface-check *args:
-    @python3 wom7web/project/scripts/harness2_surface.py {{ args }}
+    @python3 w0m-web/project/scripts/harness2_surface.py {{ args }}
 
 harness2-surface-test:
-    @python3 wom7web/project/scripts/tests/test_harness2_surface.py
+    @python3 w0m-web/project/scripts/tests/test_harness2_surface.py
 
 # ── Org Model S7, Secret History Audit & Resume Vault (T458 / T504 / T510) ──
 engagements-hats-verify *args:
-    @cd wom7web && python3 project/scripts/engagements_hats_verify.py {{args}}
+    @cd w0m-web && python3 project/scripts/engagements_hats_verify.py {{args}}
 
 engagements-hats-verify-test:
-    @cd wom7web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_engagements_hats_verify.py
+    @cd w0m-web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_engagements_hats_verify.py
 
 secret-history-check *args:
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/secret_history_check.py {{args}}
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/secret_history_check.py {{args}}
 
 secret-history-check-test:
-    @cd wom7web && python3 project/scripts/secret_history_check.py --test
+    @cd w0m-web && python3 project/scripts/secret_history_check.py --test
 
 resume-vault-verify *args:
-    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/resume_vault_verify.py {{args}}
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/resume_vault_verify.py {{args}}
 
 resume-vault-verify-test:
-    @cd wom7web && python3 project/scripts/resume_vault_verify.py --test
+    @cd w0m-web && python3 project/scripts/resume_vault_verify.py --test
 
 # ── External Project Work Report Ingestion (T357) ────────────────────────────
 project-report-ingest *args:
-    @python3 wom7web/project/scripts/report_ingest.py {{ args }}
+    @python3 w0m-web/project/scripts/report_ingest.py {{ args }}
 
 project-report-ingest-test:
-    @python3 wom7web/project/scripts/tests/test_report_ingest.py -v
+    @python3 w0m-web/project/scripts/tests/test_report_ingest.py -v
 
 # ── Estate Port Governance & Interactive Status Dashboard (T402 / T394) ─────
 ports-check *args:
-    @python3 wom7web/project/scripts/ports_check.py {{ args }}
+    @python3 w0m-web/project/scripts/ports_check.py {{ args }}
 
 ports-check-test:
-    @python3 wom7web/project/scripts/tests/test_ports_check.py
+    @python3 w0m-web/project/scripts/tests/test_ports_check.py
 
 status-dashboard-test:
-    @python3 wom7web/project/scripts/tests/test_gen_status_dashboard.py
+    @python3 w0m-web/project/scripts/tests/test_gen_status_dashboard.py
 
 # ── Estate File Hygiene & _in Tray Disposition (T446 / T447) ────────────────
 layout-check *args:
-    @python3 wom7web/project/scripts/layout_check.py {{ args }}
+    @python3 w0m-web/project/scripts/layout_check.py {{ args }}
 
 layout-check-test:
-    @python3 wom7web/project/scripts/tests/test_layout_check.py
+    @python3 w0m-web/project/scripts/tests/test_layout_check.py
 
 in-triage *args:
-    @python3 wom7web/project/scripts/in_tray.py triage {{ args }}
+    @python3 w0m-web/project/scripts/in_tray.py triage {{ args }}
 
 in-check *args:
-    @python3 wom7web/project/scripts/in_tray.py check {{ args }}
+    @python3 w0m-web/project/scripts/in_tray.py check {{ args }}
 
 in-sync *args:
-    @python3 wom7web/project/scripts/in_tray.py sync {{ args }}
+    @python3 w0m-web/project/scripts/in_tray.py sync {{ args }}
 
 in-check-test:
-    @python3 wom7web/project/scripts/tests/test_in_tray.py
+    @python3 w0m-web/project/scripts/tests/test_in_tray.py
 
 # ── Universal System Standards & SSOT Adherence (T214) ──────────────────────
 standards-check *args:
-    @python3 wom7web/project/scripts/standards_check.py {{ args }}
+    @python3 w0m-web/project/scripts/standards_check.py {{ args }}
 
 standards-check-test:
-    @python3 wom7web/project/scripts/tests/test_standards_check.py
+    @python3 w0m-web/project/scripts/tests/test_standards_check.py
 
 # ── Client Project Services, Cost Attribution & Scoped Settings (T272) ──────
 client-services-check *args:
-    @python3 wom7web/project/scripts/client_services_check.py {{ args }}
+    @python3 w0m-web/project/scripts/client_services_check.py {{ args }}
 
 client-services-check-test:
-    @python3 wom7web/project/scripts/tests/test_client_services_check.py
+    @python3 w0m-web/project/scripts/tests/test_client_services_check.py
 
 # ── Typed Python Ratchet, Backstage Catalog & DORA/DevEx Cockpit (T448 / T64 / T432) ──
 py-typecheck-root *args:
@@ -1603,19 +1607,19 @@ py-typecheck *args:
     @just py-typecheck-api {{ args }}
 
 py-typing-check *args:
-    @python3 wom7web/project/scripts/py_typing_check.py {{ args }}
+    @python3 w0m-web/project/scripts/py_typing_check.py {{ args }}
 
 py-typing-check-test:
-    @python3 wom7web/project/scripts/py_typing_check_test.py
+    @python3 w0m-web/project/scripts/py_typing_check_test.py
 
 catalog-sync *args:
-    @python3 wom7web/project/scripts/catalog_sync.py --write {{ args }}
+    @python3 w0m-web/project/scripts/catalog_sync.py --write {{ args }}
 
 catalog-check:
-    @python3 wom7web/project/scripts/catalog_sync.py --check
+    @python3 w0m-web/project/scripts/catalog_sync.py --check
 
 catalog-check-test:
-    @python3 wom7web/project/scripts/catalog_sync_test.py
+    @python3 w0m-web/project/scripts/catalog_sync_test.py
 
 dora *args:
     @python3 scripts/dora_metrics.py {{ args }}
@@ -1635,44 +1639,44 @@ branch-hygiene-test:
 
 # ── Codegraph Codemap Generator & Serena Config Reconciliation (T193 / T172) ─
 codemap-gen *args:
-    @python3 wom7web/project/scripts/codemap_gen.py --write {{ args }}
+    @python3 w0m-web/project/scripts/codemap_gen.py --write {{ args }}
 
 codemap-check *args:
-    @python3 wom7web/project/scripts/codemap_gen.py --check {{ args }}
+    @python3 w0m-web/project/scripts/codemap_gen.py --check {{ args }}
 
 codemap-check-test:
-    @python3 wom7web/project/scripts/tests/test_codemap_gen.py
+    @python3 w0m-web/project/scripts/tests/test_codemap_gen.py
 
 serena-config-check *args:
-    @python3 wom7web/project/scripts/serena_config_check.py {{ args }}
+    @python3 w0m-web/project/scripts/serena_config_check.py {{ args }}
 
 serena-config-check-test:
-    @python3 wom7web/project/scripts/tests/test_serena_config_check.py
+    @python3 w0m-web/project/scripts/tests/test_serena_config_check.py
 
 # ── Delivery Record, Spec Policy, Consumer Gate, Lessons & OpenCode (T245 / T185 / T177 / T178 / T270 / T152) ──
 ac-trace-test:
     @python3 scripts/tests/test_ac_trace_check.py
 
 spec-policy-check *args:
-    @python3 wom7web/project/scripts/spec_policy_check.py {{ args }}
+    @python3 w0m-web/project/scripts/spec_policy_check.py {{ args }}
 
 spec-policy-test:
-    @python3 wom7web/project/scripts/tests/test_spec_policy_check.py
+    @python3 w0m-web/project/scripts/tests/test_spec_policy_check.py
 
 consumer-skill-gate *args:
-    @python3 wom7web/project/scripts/consumer_skill_gate.py {{ args }}
+    @python3 w0m-web/project/scripts/consumer_skill_gate.py {{ args }}
 
 consumer-skill-gate-test:
-    @python3 wom7web/project/scripts/tests/test_consumer_skill_gate.py
+    @python3 w0m-web/project/scripts/tests/test_consumer_skill_gate.py
 
 lessons-check *args:
-    @python3 wom7web/project/scripts/lessons_check.py {{ args }}
+    @python3 w0m-web/project/scripts/lessons_check.py {{ args }}
 
 lessons-check-test:
-    @python3 wom7web/project/scripts/tests/test_lessons_check.py
+    @python3 w0m-web/project/scripts/tests/test_lessons_check.py
 
 eli5-governance-test:
-    @python3 -m unittest wom7web/project/scripts/tests/test_t270_eli5_governance.py
+    @python3 -m unittest w0m-web/project/scripts/tests/test_t270_eli5_governance.py
 
 opencode-health *args:
     @python3 scripts/opencode_config.py --check {{ args }}
@@ -1685,10 +1689,10 @@ opencode-config-test:
 
 # ── Stripe Reconciliation, Cloud Compute & 4-Identity Selector (T290 / T305 / T306) ──
 stripe-reconcile *args:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 wom7api/scripts/stripe_reconcile.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/stripe_reconcile.py {{ args }}
 
 stripe-reconcile-test:
-    @python3 -m pytest wom7api/scripts/tests/test_stripe_reconcile.py -q
+    @python3 -m pytest w0m-api/scripts/tests/test_stripe_reconcile.py -q
 
 cloud-compute-check *args:
     @python3 scripts/cloud_compute_check.py {{ args }}
@@ -1716,22 +1720,22 @@ tools-check-test:
     @python3 scripts/tests/test_tools_check.py
 
 deploy-drift *args:
-    @python3 wom7web/project/scripts/deploy_drift_check.py {{ args }}
+    @python3 w0m-web/project/scripts/deploy_drift_check.py {{ args }}
 
 deploy-drift-test:
-    @python3 wom7web/project/scripts/tests/test_deploy_drift_check.py
+    @python3 w0m-web/project/scripts/tests/test_deploy_drift_check.py
 
 suppression-ratchet *args:
-    @python3 wom7web/project/scripts/suppression_ratchet.py {{ args }}
+    @python3 w0m-web/project/scripts/suppression_ratchet.py {{ args }}
 
 suppression-ratchet-test:
-    @python3 wom7web/project/scripts/tests/test_suppression_ratchet.py
+    @python3 w0m-web/project/scripts/tests/test_suppression_ratchet.py
 
 ci-workflow-check *args:
-    @python3 wom7web/project/scripts/ci_workflow_check.py {{ args }}
+    @python3 w0m-web/project/scripts/ci_workflow_check.py {{ args }}
 
 ci-workflow-check-test:
-    @python3 wom7web/project/scripts/tests/test_ci_workflow_check.py
+    @python3 w0m-web/project/scripts/tests/test_ci_workflow_check.py
 
 ai-memory-pin-check *args:
     @python3 scripts/ai_memory_pin_check.py {{ args }}
@@ -1747,10 +1751,10 @@ stale-path-check-test:
 
 # ── Biometric Hardware Anchor for @wom/kyc & profile_identity (T475) ─────────
 kyc-bio-probe *args:
-    @python3 wom7api/scripts/kyc_bio_probe.py {{ args }}
+    @python3 w0m-api/scripts/kyc_bio_probe.py {{ args }}
 
 kyc-bio-probe-test:
-    @python3 -m pytest wom7api/scripts/tests/test_kyc_bio_probe.py -q
+    @python3 -m pytest w0m-api/scripts/tests/test_kyc_bio_probe.py -q
 
 # ── Cloudflare Binding Inventory & Rust->WASM Worker Toolchain (T271 / T273) ──
 cf-bindings-inventory *args:
@@ -1766,19 +1770,19 @@ wasm-worker-check-test:
     @python3 -m pytest scripts/tests/test_wasm_worker_check.py -q
 
 wasm-build:
-    @just --justfile wom7func/justfile wasm-build
+    @just --justfile w0m-cf/justfile wasm-build
 
 wasm-test:
-    @just --justfile wom7func/justfile wasm-test
+    @just --justfile w0m-cf/justfile wasm-test
 
 wasm-lint:
-    @just --justfile wom7func/justfile wasm-lint
+    @just --justfile w0m-cf/justfile wasm-lint
 
 wasm-fmt:
-    @just --justfile wom7func/justfile wasm-fmt
+    @just --justfile w0m-cf/justfile wasm-fmt
 
 wasm-fmt-check:
-    @just --justfile wom7func/justfile wasm-fmt-check
+    @just --justfile w0m-cf/justfile wasm-fmt-check
 
 # ── Script Consolidation & Regular CLI Tools (T516 / T517 / T518) ─────────────
 zeroclaw *args:
@@ -1788,7 +1792,7 @@ zeroclaw-manage-test:
     @python3 scripts/tests/test_zeroclaw_manage.py
 
 ai-eval *args:
-    @deno run --no-check --allow-env --allow-net --allow-read wom7api/scripts/ai-eval.ts {{ args }}
+    @deno run --no-check --allow-env --allow-net --allow-read w0m-api/scripts/ai-eval.ts {{ args }}
 
 hygiene-docs-sync *args:
     @python3 scripts/write_hygiene_docs.py {{ args }}
@@ -1800,7 +1804,7 @@ status-truth *args:
     @python3 scripts/status_truth.py {{ args }}
 
 resume-assist-eval *args:
-    @deno run --no-check --allow-env --allow-net --allow-read wom7api/scripts/resume-assist-eval.ts {{ args }}
+    @deno run --no-check --allow-env --allow-net --allow-read w0m-api/scripts/resume-assist-eval.ts {{ args }}
 
 zc-compression-measure *args:
     @python3 scripts/zc_compression_measure.py {{ args }}
@@ -1809,7 +1813,7 @@ compression-measure *args:
     @python3 scripts/zc_compression_measure.py {{ args }}
 
 ds-inventory *args:
-    @python3 wom7web/project/scripts/ds_inventory.py {{ args }}
+    @python3 w0m-web/project/scripts/ds_inventory.py {{ args }}
 
 infisical-set-prod *args:
     @python3 scripts/infisical_set_prod.py {{ args }}
@@ -1821,16 +1825,16 @@ keys-verify *args:
     @python3 scripts/get_keys.py {{ args }}
 
 upwork-auth-check *args:
-    @deno run --no-check --allow-env --allow-read wom7api/scripts/get_upwork_auth.ts {{ args }}
+    @deno run --no-check --allow-env --allow-read w0m-api/scripts/get_upwork_auth.ts {{ args }}
 
 graph-callsites *args:
     @python3 scripts/graph_callsites.py {{ args }}
 
 tinybird-schemas-init *args:
-    @python3 wom7api/scripts/init_tinybird_schemas.py {{ args }}
+    @python3 w0m-api/scripts/init_tinybird_schemas.py {{ args }}
 
 tinybird-init *args:
-    @python3 wom7api/scripts/init_tinybird_schemas.py {{ args }}
+    @python3 w0m-api/scripts/init_tinybird_schemas.py {{ args }}
 
 t516-tools-test:
     @python3 scripts/tests/test_t516_tools.py

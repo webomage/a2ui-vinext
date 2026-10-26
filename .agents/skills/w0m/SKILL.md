@@ -3,7 +3,7 @@ name: w0m
 description: >
   The Grand Orchestrator and entrypoint for the w0m ecosystem. Trigger when starting a new task, making architectural decisions, or needing guidance. Manages access to the deployed w0m-sdlc-* lifecycle gates (new/research/start/spec/build/review/security/verify/deploy/archive) and to whichever optional persona skills a project has declared in its .w0m/skills.json.
 metadata:
-  version: "2026.09.24-1790232259"
+  version: "2026.10.26-1793009642"
 ---
 
 # w0m: Ecosystem Orchestrator
@@ -14,7 +14,7 @@ You are the master orchestrator for the `w0m` ecosystem. Your job is not to exec
 
 ### Native SDLC Skills (`w0m-sdlc-*` namespace) — full cycle ✅
 The core workflow gates, in lifecycle order. **Project-agnostic**: every gate reads
-`.w0m/sdlc.json` (schema in `wom7web/.w0m/README.md`), so the same pipeline drives w0m itself and
+`.w0m/sdlc.json` (schema in `w0m-web/.w0m/README.md`), so the same pipeline drives w0m itself and
 any project that drops in a `.w0m/` config. Start every ticket at the first gate; each routes to
 its successor per the config's `lifecycle`:
 - **`w0m-sdlc-new`**: Creation — draft a well-formed ticket from the template, then ground it via research before it enters the queue.
@@ -29,7 +29,7 @@ its successor per the config's `lifecycle`:
 - **`w0m-sdlc-archive`**: Close — mark done across surfaces, archive spec, refresh tech-debt, capture lessons.
 
 For ad-hoc work on projects that don't adopt the config/pipeline, route to the **curated generic
-("anon") SDLC set** instead — `wom7skills/GENERIC-SDLC-SET.md` — same lifecycle, standalone skills,
+("anon") SDLC set** instead — `w0m-skills/GENERIC-SDLC-SET.md` — same lifecycle, standalone skills,
 no config.
 
 ### Persona Skills (Mental Operating Systems)

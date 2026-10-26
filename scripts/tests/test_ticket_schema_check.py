@@ -23,7 +23,7 @@ import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parent.parent / "wom7web"
+ROOT = HERE.parent.parent / "w0m-web"
 SCHEMA = ROOT.parent / "scripts/ticket_schema_check.py"
 SYNC = ROOT.parent / "scripts/sync_github.py"
 
@@ -199,7 +199,7 @@ def main() -> int:
     e, _, _ = run(GOOD.replace("- [ ] AC1 — something observable",
                                "- [ ] **Not yet written.** Derive them from the Summary above."))
     p.check("the 'Not yet written' placeholder does NOT trip it", not any("not countable" in x for x in e))
-    # The live corpus moved to the estate .tasks/ (T411); the old wom7web path globbed NOTHING, so
+    # The live corpus moved to the estate .tasks/ (T411); the old w0m-web path globbed NOTHING, so
     # this check passed vacuously on an empty corpus (T430). Resolve it canonically and refuse empty.
     sys.path.insert(0, str(ROOT.parent / "scripts"))
     from tasks_query import resolve_tickets_dir

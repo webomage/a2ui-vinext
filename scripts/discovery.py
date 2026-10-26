@@ -42,7 +42,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve()
 ROOT = HERE.parent.parent                   # …/@wom
-CANONICAL = ROOT / "wom7web"                 # …/wom7web
+CANONICAL = ROOT / "w0m-web"                 # …/w0m-web
 SDLC_JSON = ROOT / ".w0m" / "sdlc.json"
 
 # ── project scoping (T182) ────────────────────────────────────────────────────
@@ -66,7 +66,7 @@ def sdlc_json() -> Path:
 def stack_base() -> Path:
     """Where a stack's `repo` / `justfile` paths resolve from.
 
-    For w0m that is the workspace root (`repo: "wom7web"` ⇒ `@wom/wom7web`). For a scoped client
+    For w0m that is the workspace root (`repo: "w0m-web"` ⇒ `@wom/w0m-web`). For a scoped client
     it is the client's OWN root, so a single-repo client declares `repo: "."` and `justfile:
     "justfile"` and means its own. Leaving this at ROOT was the remaining reason `stacks` could
     not really be enforced at a client: the registry would validate and then every path in it
@@ -229,7 +229,7 @@ COMMAND_ROLES = frozenset({
     "hooks-check",
     # T149 / D6 — type-error ratchet for apps not yet gated at zero. The count may fall, never rise.
     "typecheck-ratchet",
-    # T278 — downward-only .svelte type-error ratchet across all 5 wom7web apps via svelte-check.
+    # T278 — downward-only .svelte type-error ratchet across all 5 w0m-web apps via svelte-check.
     "svelte-typecheck-ratchet",
     # T154 — HOST exposure, not stack build: `mcp-exposure` inventories every listening socket and
     # asks whether it is usable WITHOUT credentials; `mcp-ratchet` gates that against the declared
@@ -269,7 +269,7 @@ def check_exemptions(reg: dict, problems: list[str]) -> None:
 
     An exemption is a decision. Recorded as a bare name it cannot be re-evaluated, so it
     outlives the condition that justified it — which is exactly how the stale
-    wom7ext/wom7sec standing condition survived. The reason must also say something the key
+    w0m-ext/w0m-sec standing condition survived. The reason must also say something the key
     does not, so a prose-only repo mapped to itself fails rather than technically satisfying the rule.
     """
     exempt = reg.get("exempt")

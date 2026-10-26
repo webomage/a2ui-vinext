@@ -328,11 +328,11 @@ class Structure(unittest.TestCase):
     def test_the_cli_exposes_the_retry_and_the_recipes_exist_where_the_runner_reads_them(self):
         self.assertIn('cmd == "record"', self.SRC)
         root = SCRIPTS.parent
-        jf_path = root / "just" / "estate.just" if (root / "just" / "estate.just").exists() else root / "wom7api" / "justfile"
+        jf_path = root / "justfile" if (root / "justfile").exists() else root / "w0m-api" / "justfile"
         jf = jf_path.read_text()
         self.assertRegex(jf, r"(?m)^release-record \*args:\n    @")
         self.assertRegex(jf, r"(?m)^release-record-test:\n    @")
-        reg = json.loads((root / "wom7web" / "project" / "test-suites.json").read_text())["suites"]
+        reg = json.loads((root / "w0m-web" / "project" / "test-suites.json").read_text())["suites"]
         entry = next((s for s in reg if s["name"] == "release-record"), None)
         self.assertIsNotNone(entry, "suite 'release-record' is not registered")
         self.assertTrue(entry.get("blocking", True))

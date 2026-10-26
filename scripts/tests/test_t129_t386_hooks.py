@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 ESTATE_ROOT = Path(__file__).resolve().parents[2]
-WEB_ROOT = ESTATE_ROOT / "wom7web"
+WEB_ROOT = ESTATE_ROOT / "w0m-web"
 SCRIPTS_DIR = ESTATE_ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
@@ -71,7 +71,7 @@ class TestT129CommitMsgGate(unittest.TestCase):
 
         ok_body, err_body = cc.validate_commit_message(
             "fix(api): prevent null deref\n\nCloses T129 and T386.",
-            staged_files=["wom7api/src/index.ts"],
+            staged_files=["w0m-api/src/index.ts"],
         )
         self.assertTrue(ok_body, err_body)
 
@@ -137,8 +137,8 @@ class TestT129CommitMsgGate(unittest.TestCase):
         for rel_surface in (
             "AGENTS.md",
             ".agents/rules/sdlc.md",
-            "wom7web/CLAUDE.md",
-            "wom7web/AGENTS.md",
+            "w0m-web/CLAUDE.md",
+            "w0m-web/AGENTS.md",
         ):
             text = (ESTATE_ROOT / rel_surface).read_text(encoding="utf-8")
             self.assertIn(
@@ -172,12 +172,12 @@ class TestT129CommitMsgGate(unittest.TestCase):
         pre_commit_configs = [
             ESTATE_ROOT / ".pre-commit-config.yaml",
             WEB_ROOT / ".pre-commit-config.yaml",
-            ESTATE_ROOT / "wom7api" / ".pre-commit-config.yaml",
-            ESTATE_ROOT / "wom7func" / ".pre-commit-config.yaml",
-            ESTATE_ROOT / "wom7ext" / ".pre-commit-config.yaml",
-            ESTATE_ROOT / "wom7sec" / ".pre-commit-config.yaml",
-            ESTATE_ROOT / "wom7skills" / ".pre-commit-config.yaml",
-            ESTATE_ROOT / "wom7mlx" / "wom7mlx" / ".pre-commit-config.yaml",
+            ESTATE_ROOT / "w0m-api" / ".pre-commit-config.yaml",
+            ESTATE_ROOT / "w0m-cf" / ".pre-commit-config.yaml",
+            ESTATE_ROOT / "w0m-ext" / ".pre-commit-config.yaml",
+            ESTATE_ROOT / "w0m-sec" / ".pre-commit-config.yaml",
+            ESTATE_ROOT / "w0m-skills" / ".pre-commit-config.yaml",
+            ESTATE_ROOT / "w0m-mlx" / "w0m-mlx" / ".pre-commit-config.yaml",
         ]
         for cfg_path in pre_commit_configs:
             self.assertTrue(cfg_path.is_file(), f"Missing {cfg_path}")
@@ -196,8 +196,8 @@ class TestT129CommitMsgGate(unittest.TestCase):
 class TestT386UnifiedHooksContract(unittest.TestCase):
     """T386 AC1–AC6: Single just runner contract across .pre-commit-config.yaml + stacks-policy.json."""
 
-    def test_ac1_ac2_wom7web_pre_commit_hooks_all_route_through_just(self) -> None:
-        """Every local hook in wom7web/.pre-commit-config.yaml invokes `just <recipe>`."""
+    def test_ac1_ac2_w0m_web_pre_commit_hooks_all_route_through_just(self) -> None:
+        """Every local hook in w0m-web/.pre-commit-config.yaml invokes `just <recipe>`."""
         hooks = parse_local_hooks(WEB_ROOT / ".pre-commit-config.yaml")
         justfile_text = (ESTATE_ROOT / "justfile").read_text(encoding="utf-8") + "\n" + (ESTATE_ROOT / "just" / "estate.just").read_text(encoding="utf-8")
         recipes = set(JUSTFILE_RECIPE_RE.findall(justfile_text))
@@ -209,14 +209,14 @@ class TestT386UnifiedHooksContract(unittest.TestCase):
             m = JUST_ENTRY_RE.match(entry)
             self.assertIsNotNone(
                 m,
-                f"wom7web hook `{h['id']}` has raw entry `{entry!r}` instead of `just <recipe>`",
+                f"w0m-web hook `{h['id']}` has raw entry `{entry!r}` instead of `just <recipe>`",
             )
             assert m is not None
             recipe_name = m.group(1)
             self.assertIn(
                 recipe_name,
                 recipes,
-                f"wom7web hook `{h['id']}` calls `just {recipe_name}` which is missing from wom7api/justfile",
+                f"w0m-web hook `{h['id']}` calls `just {recipe_name}` which is missing from w0m-api/justfile",
             )
             checked += 1
         self.assertGreaterEqual(checked, 15)

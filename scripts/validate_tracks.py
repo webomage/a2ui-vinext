@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""validate_tracks — Validate `wom7api/design/tracks.yml` schema and stage offerings (T518 AC3)."""
+"""validate_tracks — Validate `w0m-api/design/tracks.yml` schema and stage offerings (T518 AC3)."""
 from __future__ import annotations
 
 import argparse
@@ -10,7 +10,7 @@ from typing import Any, cast
 import yaml
 
 ESTATE_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_TRACKS_FILE = ESTATE_ROOT / "wom7api" / "design" / "tracks.yml"
+DEFAULT_TRACKS_FILE = ESTATE_ROOT / "w0m-api" / "design" / "tracks.yml"
 
 
 def validate_track(track: dict[str, Any]) -> None:
@@ -69,13 +69,13 @@ def validate_tracks_file(tracks_file: Path = DEFAULT_TRACKS_FILE) -> tuple[bool,
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="validate_tracks.py",
-        description="Validate `wom7api/design/tracks.yml` schema and stage offerings (T518 AC3).",
+        description="Validate `w0m-api/design/tracks.yml` schema and stage offerings (T518 AC3).",
     )
     parser.add_argument(
         "--file",
         type=Path,
         default=DEFAULT_TRACKS_FILE,
-        help="Path to tracks.yml (default: wom7api/design/tracks.yml)",
+        help="Path to tracks.yml (default: w0m-api/design/tracks.yml)",
     )
     return parser
 

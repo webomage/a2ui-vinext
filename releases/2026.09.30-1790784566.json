@@ -3,15 +3,15 @@
   "branch": "beta",
   "repos": {
     ".": "de8addc8cd7afcc0e5879f6a6ccf0c05f987ae6d",
-    "wom7api": "25a47bdd1df869ad9d4d94ed6b0d7621ccc04c08",
-    "wom7ava": "220bb8d4984d07bbddc14dc3b1cf0adfc7a6f942",
-    "wom7clips": "5e591abe40d83ca7404ace9ff280145097d10512",
-    "wom7ext": "89ed566e09ba96f6f3b26c8d9a72faf2a6c7dee1",
-    "wom7func": "7f20bb82a78abf46d5a0270afc71f259a7e85ff3",
-    "wom7mlx/wom7mlx": "d55402ec3297ad975f323eff4f31a3a2c968c465",
-    "wom7sec": "9b858317309c5ffcf3545541fdae3c8def503e25",
-    "wom7skills": "fd3a232e966b449314c64302789e7836151a3aea",
-    "wom7web": "d484c6d6cd82a2bcdd7b3ac673a100c2a9655aa2"
+    "w0m-api": "25a47bdd1df869ad9d4d94ed6b0d7621ccc04c08",
+    "w0m-ava": "220bb8d4984d07bbddc14dc3b1cf0adfc7a6f942",
+    "w0m-clips": "5e591abe40d83ca7404ace9ff280145097d10512",
+    "w0m-ext": "89ed566e09ba96f6f3b26c8d9a72faf2a6c7dee1",
+    "w0m-cf": "7f20bb82a78abf46d5a0270afc71f259a7e85ff3",
+    "w0m-mlx/w0m-mlx": "d55402ec3297ad975f323eff4f31a3a2c968c465",
+    "w0m-sec": "9b858317309c5ffcf3545541fdae3c8def503e25",
+    "w0m-skills": "fd3a232e966b449314c64302789e7836151a3aea",
+    "w0m-web": "d484c6d6cd82a2bcdd7b3ac673a100c2a9655aa2"
   },
   "apps": {
     "api": {

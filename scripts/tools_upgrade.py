@@ -59,7 +59,7 @@ UPGRADABLE = {"brew", "gcloud"}  # sources this script knows how to upgrade in-p
 
 ROOT = Path(__file__).resolve().parent.parent
 POLICY = ROOT / "project" / "policies" / "tools-policy.json"
-WEB = ROOT / "wom7web"  # wom7web dir — smokes run here
+WEB = ROOT / "w0m-web"  # w0m-web dir — smokes run here
 RANK = {"patch": 0, "minor": 1, "major": 2}
 ALLOW_RANK = {"none": -1, "patch": 0, "minor": 1, "major": 2}  # max bump a tool's `auto` permits
 

@@ -61,8 +61,9 @@ with tempfile.TemporaryDirectory() as td:
 
 # end-to-end through the real entrypoint, against a temp policy dir
 with tempfile.TemporaryDirectory() as td:
-    logs = Path(td) / "deploy-logs"
-    logs.mkdir()
+    tmp_repo = Path(td) / "repo"
+    logs = tmp_repo / "deploy-logs"
+    logs.mkdir(parents=True)
     _stamp = f"{_today.year:04d}.{_today.month:02d}.{_today.day:02d}"
     keep_name = logs / f"deploy-{_stamp}-1786767541.log"
     keep_name.write_text("current month")
@@ -82,7 +83,6 @@ with tempfile.TemporaryDirectory() as td:
 
     env = dict(os.environ)
     # point the policy's dir at the temp tree by copying sdlc.json with an overridden dir
-    tmp_repo = Path(td) / "repo"
     (tmp_repo / ".w0m").mkdir(parents=True)
     pol2 = json.loads((REPO / ".w0m/sdlc.json").read_text())
     pol2["deploy_logs"]["dir"] = "deploy-logs"

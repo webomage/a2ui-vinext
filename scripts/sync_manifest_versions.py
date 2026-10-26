@@ -3,7 +3,7 @@
 
 Checks and synchronizes versions across governed package.json manifests:
 - Workspace root: @wom/package.json
-- Monorepo: wom7web/package.json
+- Monorepo: w0m-web/package.json
 - Astro apps: apps/web, apps/cp, apps/demo, apps/job, apps/join
 
 Standard library only. Python per w0m tool ladder.
@@ -20,18 +20,18 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve()
 ROOT = HERE.parents[1]                 # .../@wom
-CANONICAL = ROOT / "wom7web"           # .../wom7web
+CANONICAL = ROOT / "w0m-web"           # .../w0m-web
 
 VERSION_RE = re.compile(r"^\d{4}\.\d{2}\.\d{2}-\d{9,11}$")
 
 GOVERNED_MANIFEST_RELPATHS = [
     Path("package.json"),                     # @wom root workspace
-    Path("wom7web/package.json"),             # wom7web monorepo
-    Path("wom7web/apps/web/package.json"),    # Astro web app
-    Path("wom7web/apps/cp/package.json"),     # Astro cp app
-    Path("wom7web/apps/demo/package.json"),   # Astro demo app
-    Path("wom7web/apps/job/package.json"),    # Astro job app
-    Path("wom7web/apps/join/package.json"),   # Astro join app
+    Path("w0m-web/package.json"),             # w0m-web monorepo
+    Path("w0m-web/apps/web/package.json"),    # Astro web app
+    Path("w0m-web/apps/cp/package.json"),     # Astro cp app
+    Path("w0m-web/apps/demo/package.json"),   # Astro demo app
+    Path("w0m-web/apps/job/package.json"),    # Astro job app
+    Path("w0m-web/apps/join/package.json"),   # Astro join app
 ]
 
 

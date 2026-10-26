@@ -51,8 +51,8 @@ def resolve_w0m_root(
     if here.is_file():
         here = here.parent
 
-    # Fixed structural depth: either `<root>/scripts` (depth 1) or `<root>/wom7web/project/scripts` (depth 3).
-    if here.name == "scripts" and here.parent.name == "project" and here.parent.parent.name == "wom7web":
+    # Fixed structural depth: either `<root>/scripts` (depth 1) or `<root>/w0m-web/project/scripts` (depth 3).
+    if here.name == "scripts" and here.parent.name == "project" and here.parent.parent.name == "w0m-web":
         candidate = here.parents[2]
     elif here.name == "scripts":
         candidate = here.parent
@@ -110,7 +110,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if args.check_symlinks is not None:
-        repos = args.check_symlinks or ["wom7api", "wom7func"]
+        repos = args.check_symlinks or ["w0m-api", "w0m-cf"]
         violations: list[str] = []
         for repo in repos:
             repo_path = (root / repo) if not Path(repo).is_absolute() else Path(repo)

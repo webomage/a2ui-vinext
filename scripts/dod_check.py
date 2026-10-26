@@ -43,13 +43,13 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
     for parent in [cur] + list(cur.parents):
         if (parent / ".tasks").is_dir() and (parent / ".w0m").is_dir():
             return parent
-        if (parent / ".git").exists() and (parent / "wom7web").is_dir():
+        if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return Path(__file__).resolve().parents[1]
 
 
 ROOT = find_workspace_root()
-WEB = ROOT / "wom7web" if (ROOT / "wom7web").is_dir() else ROOT
+WEB = ROOT / "w0m-web" if (ROOT / "w0m-web").is_dir() else ROOT
 TICKETS = WEB / "project" / "tickets"
 BASELINE = WEB / "project" / "dod-baseline.json"
 

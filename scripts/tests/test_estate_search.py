@@ -61,9 +61,9 @@ def test_git_failure_raises_rather_than_returning_zero(tmp_path: Path) -> None:
 def test_unsearchable_repo_is_not_reported_as_zero_hits(tmp_path: Path, capsys, monkeypatch) -> None:
     """🔴 THE PROBE THIS TOOL EXISTS FOR. A directory with no .git must land in UNMEASURABLE and
     make the run exit non-zero — never in the 'searched and matched nothing' bucket."""
-    (tmp_path / "wom7web").mkdir()          # exists, but is not a repo
+    (tmp_path / "w0m-web").mkdir()          # exists, but is not a repo
     monkeypatch.setattr(S, "ESTATE", tmp_path)
-    monkeypatch.setattr(S, "OWNED", ("wom7web",))
+    monkeypatch.setattr(S, "OWNED", ("w0m-web",))
     rc = S.main(["needle"])
     out = capsys.readouterr().out
     assert rc == 1, out
@@ -73,9 +73,9 @@ def test_unsearchable_repo_is_not_reported_as_zero_hits(tmp_path: Path, capsys, 
 
 def test_a_real_zero_says_so(tmp_path: Path, capsys, monkeypatch) -> None:
     """The other half of the same distinction — it must be possible to report a trustworthy zero."""
-    _repo(tmp_path / "wom7web", {"a.ts": "nothing\n"})
+    _repo(tmp_path / "w0m-web", {"a.ts": "nothing\n"})
     monkeypatch.setattr(S, "ESTATE", tmp_path)
-    monkeypatch.setattr(S, "OWNED", ("wom7web",))
+    monkeypatch.setattr(S, "OWNED", ("w0m-web",))
     rc = S.main(["needle"])
     out = capsys.readouterr().out
     assert rc == 0 and "real zero" in out
@@ -83,9 +83,9 @@ def test_a_real_zero_says_so(tmp_path: Path, capsys, monkeypatch) -> None:
 
 def test_output_cap_announces_what_it_hid(tmp_path: Path, capsys, monkeypatch) -> None:
     """Truncation that does not say it truncated is the console-spam fix turning into a data loss."""
-    _repo(tmp_path / "wom7web", {"a.ts": "needle\n" * 50})
+    _repo(tmp_path / "w0m-web", {"a.ts": "needle\n" * 50})
     monkeypatch.setattr(S, "ESTATE", tmp_path)
-    monkeypatch.setattr(S, "OWNED", ("wom7web",))
+    monkeypatch.setattr(S, "OWNED", ("w0m-web",))
     S.main(["needle", "--cap", "5"])
     out = capsys.readouterr().out
     assert "45 more line(s) NOT SHOWN" in out
@@ -120,7 +120,7 @@ def test_vendored_forks_are_off_by_default() -> None:
     """They are larger than the rest of the estate combined; including them silently would make
     every search slower and noisier for results nobody asked for."""
     assert set(S.OWNED).isdisjoint(S.VENDORED)
-    assert "wom7pr" in S.VENDORED and "wom7web" in S.OWNED and "root" in S.OWNED
+    assert "w0m-pr" in S.VENDORED and "w0m-web" in S.OWNED and "root" in S.OWNED
 
 
 def test_root_repo_search_is_supported_and_scoped_to_root_paths(tmp_path: Path, capsys, monkeypatch) -> None:
@@ -139,4 +139,4 @@ def test_root_repo_search_is_supported_and_scoped_to_root_paths(tmp_path: Path, 
         out = capsys.readouterr().out
         assert rc == 0, out
         assert "scripts/stale_path_check.py" in out
-        assert "wom7web/leak.py" not in out
+        assert "w0m-web/leak.py" not in out

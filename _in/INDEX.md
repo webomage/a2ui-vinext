@@ -7,7 +7,7 @@ reason: "Generated disposition board (`just in-sync`) showing what is new vs ado
 
 # `_in` Disposition Ledger (`INDEX.md`)
 
-> **Generated mechanically by `just in-sync` (`wom7web/project/scripts/in_tray.py`).**
+> **Generated mechanically by `just in-sync` (`w0m-web/project/scripts/in_tray.py`).**
 > Do not hand-edit this file; update YAML front-matter on dropped `.md` files or `_in/ledger.json`, then run `just in-sync`.
 
 ## Summary
@@ -37,27 +37,27 @@ _No untriaged `new` items currently in `_in/`._
 | File | Author | Dropped | Adopted To |
 |---|---|---|---|
 | `Lahore_Prospect_Proposal_2026-06.md` | `owner` | `2026-09-02` | client-projects/lahore-prospect (client-projects tier; excluded from public KB per KB content policy) |
-| `orca` | `owner` | `2026-09-02` | [[T377]] · [[T409]] · [[T423]] · wom7pr/orca |
-| `2026-09-03-projects-inventory-audit.md` | `antigravity` | `2026-09-03` | [[T308]] · wom7web/docs/reports/PROJECTS_CATALOG_AND_CLEANUP_AUDIT_2026.md · wom7web/docs/reports/2026-10-22-projects-inventory-audit-followup-t308.md |
-| `2026-10-22-projects-inventory-audit-followup-t308.md` | `antigravity` | `2026-10-22` | [[T308]] · wom7web/docs/reports/2026-10-22-projects-inventory-audit-followup-t308.md |
-| `2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md` | `antigravity` | `2026-09-04` | [[T312]] · wom7web/docs/reports/2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md |
+| `orca` | `owner` | `2026-09-02` | [[T377]] · [[T409]] · [[T423]] · w0m-pr/orca |
+| `2026-09-03-projects-inventory-audit.md` | `antigravity` | `2026-09-03` | [[T308]] · w0m-web/docs/reports/PROJECTS_CATALOG_AND_CLEANUP_AUDIT_2026.md · w0m-web/docs/reports/2026-10-22-projects-inventory-audit-followup-t308.md |
+| `2026-10-22-projects-inventory-audit-followup-t308.md` | `antigravity` | `2026-10-22` | [[T308]] · w0m-web/docs/reports/2026-10-22-projects-inventory-audit-followup-t308.md |
+| `2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md` | `antigravity` | `2026-09-04` | [[T312]] · w0m-web/docs/reports/2026-09-04-agent-parity-skills-tools-and-d32-p0-report.md |
 | `2026-09-05-project-roles-hats-offices-and-resource-access-architecture.md` | `antigravity` | `2026-09-05` | [[T319]] · [[T313]] · [[T315]] |
-| `2026-09-06-login-logout-role-change-audit-and-suggested-actions.md` | `antigravity` | `2026-09-06` | [[T320]] · [[T159]] · wom7web/docs/reports/2026-09-06-login-logout-session-audit.md |
-| `2026-09-07-client-registration-and-projects-readiness-measured.md` | `claude` | `2026-09-07` | [[T328]] · wom7web/docs/reports/2026-09-07-client-registration-and-projects-readiness-measured.md |
-| `2026-09-09-proposal-w0m-slim-vm-universal-sandboxing.md` | `antigravity` | `2026-09-09` | [[T296]] · [[T297]] · wom7web/docs/reports/2026-09-09-proposal-w0m-slim-vm-universal-sandboxing.md |
-| `2026-09-11-analysis-orca-vs-zeroclaw-unification.md` | `antigravity` | `2026-09-11` | [[AgDR-0012]] · [[T180]] · wom7web/docs/reports/2026-09-11-analysis-orca-vs-zeroclaw-unification.md |
-| `2026-09-11-proposal-unified-one-button-platform-connectors.md` | `antigravity` | `2026-09-11` | [[T94]] · [[T442]] · wom7web/docs/reports/2026-09-11-proposal-unified-one-button-platform-connectors.md |
-| `2026-09-11-proposal-w0m-resource-governance.md` | `antigravity` | `2026-09-11` | [[T343]] · wom7web/openspec/changes/2026-09-11-resource-governance |
-| `2026-09-11-research-ios-app-store-sandbox-audit.md` | `antigravity` | `2026-09-11` | [[T336]] · [[T337]] · wom7web/docs/reports/2026-09-11-research-ios-app-store-sandbox-audit.md |
-| `2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md` | `antigravity` | `2026-09-11` | [[AgDR-0012]] · [[T180]] · wom7web/docs/reports/2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md |
-| `2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md` | `antigravity` | `2026-09-11` | [[AgDR-0012]] · [[T345]] · wom7web/docs/reports/2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md |
+| `2026-09-06-login-logout-role-change-audit-and-suggested-actions.md` | `antigravity` | `2026-09-06` | [[T320]] · [[T159]] · w0m-web/docs/reports/2026-09-06-login-logout-session-audit.md |
+| `2026-09-07-client-registration-and-projects-readiness-measured.md` | `claude` | `2026-09-07` | [[T328]] · w0m-web/docs/reports/2026-09-07-client-registration-and-projects-readiness-measured.md |
+| `2026-09-09-proposal-w0m-slim-vm-universal-sandboxing.md` | `antigravity` | `2026-09-09` | [[T296]] · [[T297]] · w0m-web/docs/reports/2026-09-09-proposal-w0m-slim-vm-universal-sandboxing.md |
+| `2026-09-11-analysis-orca-vs-zeroclaw-unification.md` | `antigravity` | `2026-09-11` | [[AgDR-0012]] · [[T180]] · w0m-web/docs/reports/2026-09-11-analysis-orca-vs-zeroclaw-unification.md |
+| `2026-09-11-proposal-unified-one-button-platform-connectors.md` | `antigravity` | `2026-09-11` | [[T94]] · [[T442]] · w0m-web/docs/reports/2026-09-11-proposal-unified-one-button-platform-connectors.md |
+| `2026-09-11-proposal-w0m-resource-governance.md` | `antigravity` | `2026-09-11` | [[T343]] · w0m-web/openspec/changes/2026-09-11-resource-governance |
+| `2026-09-11-research-ios-app-store-sandbox-audit.md` | `antigravity` | `2026-09-11` | [[T336]] · [[T337]] · w0m-web/docs/reports/2026-09-11-research-ios-app-store-sandbox-audit.md |
+| `2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md` | `antigravity` | `2026-09-11` | [[AgDR-0012]] · [[T180]] · w0m-web/docs/reports/2026-09-11-spec-w0m-fullsize-orca-zeroclaw-and-rebranding-research.md |
+| `2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md` | `antigravity` | `2026-09-11` | [[AgDR-0012]] · [[T345]] · w0m-web/docs/reports/2026-09-11-strategy-unified-w0m-ecosystem-orca-rebranding.md |
 | `2026-09-15-artemio-delivery-report.md` | `agent-delivery` | `2026-09-15` | [[T357]] · client-projects/artemio (_arch/artemio_reports_2026-09-15/) |
-| `w0m_agent_integration.md` | `antigravity` | `2026-09-16` | [[T367]] · wom7web/openspec/changes/archive/2026-09-17-2026-09-16-siri-shortcuts-zeroclaw-orca/proposal.md |
-| `2026-09-17-claude-obsidian-project-vaults-cp-embedding.md` | `claude` | `2026-09-17` | [[T370]] · wom7web/docs/reports/2026-09-17-claude-obsidian-project-vaults-cp-embedding.md |
-| `2026-09-21-audit-design-system-vs-shipping-code-and-update-proposal.md` | `antigravity` | `2026-09-21` | [[T420]] · wom7web/openspec/changes/archive/2026-09-22-design-system-reconciliation/proposal.md |
+| `w0m_agent_integration.md` | `antigravity` | `2026-09-16` | [[T367]] · w0m-web/openspec/changes/archive/2026-09-17-2026-09-16-siri-shortcuts-zeroclaw-orca/proposal.md |
+| `2026-09-17-claude-obsidian-project-vaults-cp-embedding.md` | `claude` | `2026-09-17` | [[T370]] · w0m-web/docs/reports/2026-09-17-claude-obsidian-project-vaults-cp-embedding.md |
+| `2026-09-21-audit-design-system-vs-shipping-code-and-update-proposal.md` | `antigravity` | `2026-09-21` | [[T420]] · w0m-web/openspec/changes/archive/2026-09-22-design-system-reconciliation/proposal.md |
 | `2026-09-22-t165-member-resume-web-tool-architecture.md` | `claude` | `2026-09-22` | [[T165]] · .agents/reports/2026-09-22-t165-member-resume-web-tool-architecture.md |
 | `2026-09-22-t420-design-system-reconciliation-brief.md` | `claude` | `2026-09-22` | [[T420]] · .agents/reports/2026-09-22-t420-design-system-reconciliation-brief.md |
-| `2026-09-23-recheck-design-system-post-t420-and-react-free-component-plan.md` | `antigravity` | `2026-09-23` | [[T422]] · wom7web/openspec/changes/archive/2026-09-23-2026-09-23-design-system-react-elimination-and-tokens-ssot/proposal.md |
+| `2026-09-23-recheck-design-system-post-t420-and-react-free-component-plan.md` | `antigravity` | `2026-09-23` | [[T422]] · w0m-web/openspec/changes/archive/2026-09-23-2026-09-23-design-system-react-elimination-and-tokens-ssot/proposal.md |
 | `2026-09-23-cowork-research-parallel-agents-isolation-and-merge.md` | `claude` | `2026-09-23` | [[T423]] · .agents/reports/2026-09-23-cowork-research-parallel-agents-isolation-and-merge.md |
 | `2026-09-23-parallel-agents-isolation-and-merge-proposal.md` | `claude` | `2026-09-23` | [[T423]] · [[T424]] · [[T425]] · [[T426]] · .agents/reports/2026-09-23-parallel-agents-isolation-and-merge-proposal.md |
 | `2026-09-23-t432-research-dora-space-devex-for-w0m.md` | `claude` | `2026-09-23` | [[T432]] · .agents/reports/2026-09-23-t432-research-dora-space-devex-for-w0m.md |

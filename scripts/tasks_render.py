@@ -26,16 +26,16 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
     for parent in [cur] + list(cur.parents):
         if (parent / ".tasks").is_dir() and (parent / ".w0m").is_dir():
             return parent
-        if (parent / ".git").exists() and (parent / "wom7web").is_dir():
+        if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return Path(__file__).resolve().parents[1]
 
 
 WORKSPACE_ROOT = find_workspace_root()
 MONO_ROOT = WORKSPACE_ROOT
-WEB_ROOT = WORKSPACE_ROOT / "wom7web" if (WORKSPACE_ROOT / "wom7web").is_dir() else WORKSPACE_ROOT
+WEB_ROOT = WORKSPACE_ROOT / "w0m-web" if (WORKSPACE_ROOT / "w0m-web").is_dir() else WORKSPACE_ROOT
 
-# Allow importing tasks_query from root scripts or wom7web
+# Allow importing tasks_query from root scripts or w0m-web
 sys.path.insert(0, str(WORKSPACE_ROOT / "scripts"))
 sys.path.insert(0, str(WEB_ROOT / "project" / "scripts"))
 

@@ -18,7 +18,7 @@ import sys
 from typing import TypedDict
 
 ESTATE = Path(__file__).resolve().parent.parent
-WEB = ESTATE / "wom7web"
+WEB = ESTATE / "w0m-web"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tasks_query import resolve_tickets_dir  # noqa: E402 — canonical .tasks/ resolver (T411)
 

@@ -12,8 +12,8 @@ from typing import Any
 
 HERE = Path(__file__).resolve()
 ESTATE_ROOT = HERE.parents[2]
-WEB_ROOT = ESTATE_ROOT / "wom7web"
-API_ROOT = ESTATE_ROOT / "wom7api"
+WEB_ROOT = ESTATE_ROOT / "w0m-web"
+API_ROOT = ESTATE_ROOT / "w0m-api"
 
 
 class TestClientBetaEpic(unittest.TestCase):

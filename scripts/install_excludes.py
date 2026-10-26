@@ -4,8 +4,8 @@
 WHY NOT .gitignore
 ------------------
 🔴 Because a directory pattern in a parent `.gitignore` is read by tools running BELOW it. Git stops
-applying `.gitignore` at a repo root; osv-scanner does not. With `/wom7web/` in the estate
-`.gitignore`, osv walked up from inside wom7web, applied the pattern, decided the entire repo was
+applying `.gitignore` at a repo root; osv-scanner does not. With `/w0m-web/` in the estate
+`.gitignore`, osv walked up from inside w0m-web, applied the pattern, decided the entire repo was
 ignored, and returned **exit 128 — "No package sources found" — in all seven repos at once.** One
 line in a parent file silently disabled a security gate across the whole estate.
 
@@ -21,8 +21,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MARK = "# w0m: nested repos — installed by scripts/install_excludes.py"
-NESTED = ["wom7api", "wom7authz", "wom7ava", "wom7func", "wom7ext", "wom7mlx",
-          "wom7sec", "wom7skills", "wom7web", "wom7pr", "wom7clips", "k7"]
+NESTED = ["w0m-api", "wom7authz", "w0m-ava", "w0m-cf", "w0m-ext", "w0m-mlx",
+          "w0m-sec", "w0m-skills", "w0m-web", "w0m-pr", "w0m-clips", "k7"]
 BLOCK = "\n".join([MARK] + [f"/{n}/" if n != "k7" else f"/{n}" for n in NESTED]) + "\n"
 
 

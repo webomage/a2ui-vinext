@@ -2,7 +2,7 @@
 """T144 AC1, AC2, AC6 — Regression proof for Obsidian MCP bridge & MCP-first transport declarations.
 
 Proves:
-  1. `.w0m/sdlc.json → mcp` declares `obsidian-wom7web`, `wom7func-mcp`, and explicit `directions`.
+  1. `.w0m/sdlc.json → mcp` declares `obsidian-w0m-web`, `w0m-cf-mcp`, and explicit `directions`.
   2. `obsidian_mcp_bridge.load_config` fails closed on missing config, missing apiKey, disabled HTTP,
      or malformed/SSRF port values (`file:///etc/passwd`, `0`, `70000`).
   3. AC6 RED proof: when an MCP listener is unreachable, `forward()` returns a loud JSON-RPC `-32000`
@@ -17,7 +17,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 BRIDGE_PATH = ROOT / "scripts" / "obsidian_mcp_bridge.py"
 SDLC_PATH = ROOT / ".w0m" / "sdlc.json"
 
@@ -43,17 +43,17 @@ mcp = sdlc.get("mcp") or {}
 servers = mcp.get("servers") or {}
 directions = mcp.get("directions") or {}
 
-obs = servers.get("obsidian-wom7web") or {}
-func_mcp = servers.get("wom7func-mcp") or {}
+obs = servers.get("obsidian-w0m-web") or {}
+func_mcp = servers.get("w0m-cf-mcp") or {}
 
-check("AC1: obsidian-wom7web is declared in .w0m/sdlc.json -> mcp.servers",
+check("AC1: obsidian-w0m-web is declared in .w0m/sdlc.json -> mcp.servers",
       obs.get("enabled") is True and obs.get("transport") == "local-http")
-check("AC2: obsidian-wom7web records direction and stdio bridge path",
+check("AC2: obsidian-w0m-web records direction and stdio bridge path",
       obs.get("direction") == "agent_to_obsidian"
       and obs.get("bridge") == "scripts/obsidian_mcp_bridge.py")
 check("AC2: mcp.directions records agent_to_obsidian, obsidian_to_w0m, and browser_to_agent",
       all(k in directions for k in ("agent_to_obsidian", "obsidian_to_w0m", "browser_to_agent")))
-check("AC7: wom7func-mcp HTTP MCP server is declared in .w0m/sdlc.json -> mcp.servers",
+check("AC7: w0m-cf-mcp HTTP MCP server is declared in .w0m/sdlc.json -> mcp.servers",
       func_mcp.get("enabled") is True and func_mcp.get("endpoint") == "/mcp")
 
 # ── 2. load_config validation & SSRF guard ───────────────────────────────────

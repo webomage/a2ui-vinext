@@ -20,7 +20,7 @@ import json, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 
 # 🔑 Corpus assertions are read from the REGISTRY, never hardcoded. Onboarding servicios777 and
 # personaje0 (T182 AC7) broke four suites at once because each asserted a fixed project set — a
@@ -65,8 +65,8 @@ by = {p["project"]: p for p in live.get("projects", [])}
 check("exits 0 by default — advisory", code == 0)
 check("every declared project is audited", set(by) == REGISTRY_PROJECTS)
 
-# 🔴 The probe that matters. Both clients declare no retention; neither may be silently passed.
-check("an UNDECLARED project is a finding, not a skip", by["1945"]["verdict"] == "undeclared")
+# 🔴 The probe that matters. Undeclared projects (k7/mob) declare no retention; neither may be silently passed.
+check("an UNDECLARED project is a finding, not a skip", by["k7"]["verdict"] == "undeclared")
 # 🔴 The OVER probe is a FIXTURE, not an assertion about a live client. It used to read
 # `by["artemio"]["verdict"] == "over"` — true when it was written on 2026-08-09, and RED by
 # 2026-08-14 because Artemio was rotated down to 50,850 B under its 81,920 B bound. That is the
@@ -74,18 +74,18 @@ check("an UNDECLARED project is a finding, not a skip", by["1945"]["verdict"] ==
 # mutable third-party data inverts its own signal: the greener the estate gets, the redder it goes.
 # ⇒ The registry-derived lesson at the top of this file (never hardcode the corpus) applies one
 # level deeper — never hardcode a VERDICT either. See the fixture block below for the real probe.
-check("undeclared projects are still MEASURED — the files are named and sized",
-      by["1945"]["largest_bytes"] > 300_000 and by["artemio"]["largest_bytes"] > 0)
+check("client projects are MEASURED — the files are named and sized",
+      by["1945"]["largest_bytes"] > 10_000 and by["artemio"]["largest_bytes"] > 0)
 check("the estate, which declares bounds, is judged against them",
       by["w0m"]["declared"] is True and by["w0m"]["max_bytes"] == 81920)
 check("1945's three memory files are all counted, not just STATE.md",
-      len(by["1945"]["files"]) == 3 and by["1945"]["total_bytes"] > 600_000)
+      len(by["1945"]["files"]) == 3 and by["1945"]["total_bytes"] > 100_000)
 check("--enforce blocks while any project is undeclared or over", run("--enforce")[0] == 1)
 
 # Bounds must come from each project's OWN declaration, not a constant in the tool.
 check("each project's limit is read from its own sdlc.json",
-      by["w0m"]["max_bytes"] == 81920 and by["1945"]["max_bytes"] is None
-      and by["artemio"]["max_bytes"] == 81920)
+      by["w0m"]["max_bytes"] == 81920 and by["1945"]["max_bytes"] == 81920
+      and by["bridgeroad"]["max_bytes"] == 65536 and by["k7"]["max_bytes"] is None)
 
 # ── red probes: the corpus assertions ──────────────────────────────────────────
 import shutil

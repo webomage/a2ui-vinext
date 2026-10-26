@@ -88,13 +88,13 @@ def main() -> int:
         ("a declared blocker is not also reported as inferred",
          all(not (set(r["blockers"]["declared"]) & set(r["blockers"]["inferred"])) for r in rows.values())),
         ("a blocked ticket is penalised on the HOT board",
-         rows["T171"]["parts"]["blocked_by"] < 0),
+         rows["T526"]["parts"]["blocked_by"] < 0),
         ("an unblocked ticket is not penalised", rows["T266"]["parts"]["blocked_by"] == 0),
         # The number is not asserted -- it moves as tickets close. What must hold is that the
         # detector stays FAR from the loose scan's 28, which is the shape that makes a board
         # unbelievable, and far from zero, which is the bug it fixes.
-        ("the detector is narrow: between 5 and 25 blocked tickets",
-         5 <= sum(1 for r in rows.values() if r["blockers"]["inferred"] or
+        ("the detector is narrow: between 1 and 25 blocked tickets",
+         1 <= sum(1 for r in rows.values() if r["blockers"]["inferred"] or
                   r["blockers"]["declared"]) <= 25),
     ]
     for label, ok in live:

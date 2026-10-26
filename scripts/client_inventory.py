@@ -45,7 +45,7 @@ from schema_check import validate_declared_schema
 
 HERE = Path(__file__).resolve()
 ROOT = HERE.parents[1]                       # …/@wom  — registry roots are relative to this
-CANONICAL = ROOT / "wom7web"                 # …/wom7web
+CANONICAL = ROOT / "w0m-web"                 # …/w0m-web
 REGISTRY = ROOT / "project" / "policies" / "clients-policy.json"
 
 
@@ -414,7 +414,7 @@ def inventory(registry: Path = REGISTRY) -> tuple[dict, list[str]]:
 
         # ── workspace ────────────────────────────────────────────────────────────────────────
         # 🔑 T294 AC5 — the contract's location is DECLARED, and has exactly two legal forms:
-        #   • a key of `repos`  → the contract lives in that repo (w0m: "wom7web")
+        #   • a key of `repos`  → the contract lives in that repo (w0m: "w0m-web")
         #   • "."               → the contract lives at the WORKSPACE ROOT itself
         #
         # 🔴 The second form exists because a client's only app repo may not be ours. BridgeRoad's

@@ -42,7 +42,7 @@ from schema_check import validate_declared_schema
 
 HERE = Path(__file__).resolve()
 ROOT = HERE.parents[1]                      # …/@wom
-CANONICAL = ROOT / "wom7web"                # …/wom7web
+CANONICAL = ROOT / "w0m-web"                # …/w0m-web
 SDLC = ROOT / ".w0m" / "sdlc.json"
 REGISTRY = ROOT / "project" / "policies" / "clients-policy.json"
 USER_SKILLS = Path(os.environ.get("W0M_USER_SKILLS_DIR") or (Path.home() / ".claude" / "skills"))
@@ -130,7 +130,21 @@ def skill_dirs(base: Path) -> dict[str, Path]:
     return out
 
 
-def catalogue_project(pid: str, root: Path, policy: dict) -> dict:
+def load_portable_skills() -> set[str]:
+    text = read_text(ROOT / "w0m-skills" / "skill-portability.jsonc")
+    if text is None:
+        return set()
+    lines = [line for line in text.splitlines() if not line.lstrip().startswith("//")]
+    try:
+        v: dict[str, object] = json.loads("\n".join(lines))
+    except json.JSONDecodeError:
+        return set()
+    raw_portable = v.get("portable") if isinstance(v, dict) else None
+    portable = raw_portable if isinstance(raw_portable, dict) else {}
+    return {k for k in portable if not k.startswith("//")}
+
+
+def catalogue_project(pid: str, root: Path, policy: dict, role: str = "managed") -> dict:
     """Every skill installed for one project, with both settings resolved."""
     det = policy.get("detect_executable", {})
     suffixes = set(det.get("suffixes", []))
@@ -141,6 +155,8 @@ def catalogue_project(pid: str, root: Path, policy: dict) -> dict:
 
     manifest = load_json(root / ".w0m" / "skills.json") or {}
     declared = set(manifest.get("skills") or {})
+    if role in ("self-managed", "half-managed"):
+        declared |= load_portable_skills()
     excluded = set(manifest.get("exclude") or {})
     lock = load_json(root / ".w0m" / "skills.lock.json") or {}
     locked = set(lock.get("skills") or {})
@@ -254,7 +270,7 @@ def build() -> tuple[dict, list[str], list[str]]:
         root = (ROOT / p["root"]).resolve()
         if not root.is_dir():
             return {}, [], [f"{p['id']}: declared root does not exist — {root}"]
-        projects.append(catalogue_project(p["id"], root, policy))
+        projects.append(catalogue_project(p["id"], root, policy, role=p.get("role", "managed")))
     if not projects:
         return {}, [], ["no enabled project — a catalogue over nothing is not a catalogue"]
 

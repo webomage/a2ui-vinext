@@ -43,13 +43,13 @@ def test_categories_detection() -> None:
     print("\n▶ test_categories_detection — verify detection of each annotation category")
     with tempfile.TemporaryDirectory(prefix="w0m-annotations-test-") as tmp:
         base = Path(tmp)
-        web = base / "wom7web"
+        web = base / "w0m-web"
         web_project = web / "project"
         web_project.mkdir(parents=True)
 
         policy = {
             "repos": [
-                {"path": "wom7web"}
+                {"path": "w0m-web"}
             ]
         }
         (web_project / "hygiene-policy.json").write_text(json.dumps(policy, indent=2))
@@ -88,7 +88,7 @@ const y = 1;
 """
         (web / "test.ts").write_text(sample_code)
 
-        env = {**os.environ, "W0M_HYGIENE_ROOT": str(web)}
+        env = {**os.environ, "W0M_HYGIENE_ROOT": str(base)}
         res = run_doctor(["--json"], env=env)
         check("exit 0 on valid scan", res.returncode == 0, res.stderr)
 
@@ -106,11 +106,11 @@ def test_skip_directories() -> None:
     print("\n▶ test_skip_directories — verify excluded trees are ignored")
     with tempfile.TemporaryDirectory(prefix="w0m-annotations-skip-") as tmp:
         base = Path(tmp)
-        web = base / "wom7web"
+        web = base / "w0m-web"
         web_project = web / "project"
         web_project.mkdir(parents=True)
 
-        policy = {"repos": [{"path": "wom7web"}]}
+        policy = {"repos": [{"path": "w0m-web"}]}
         (web_project / "hygiene-policy.json").write_text(json.dumps(policy, indent=2))
 
         # Root file with 1 TODO
@@ -126,7 +126,7 @@ def test_skip_directories() -> None:
         (web / ".superpowers").mkdir()
         (web / ".superpowers" / "scratch.ts").write_text("// TODO: agent scratch\n")
 
-        env = {**os.environ, "W0M_HYGIENE_ROOT": str(web)}
+        env = {**os.environ, "W0M_HYGIENE_ROOT": str(base)}
         res = run_doctor(["--json"], env=env)
         data = json.loads(res.stdout)
 
@@ -138,15 +138,15 @@ def test_empty_input_set_fails() -> None:
     print("\n▶ test_empty_input_set_fails — verify empty corpus rule")
     with tempfile.TemporaryDirectory(prefix="w0m-annotations-empty-") as tmp:
         base = Path(tmp)
-        web = base / "wom7web"
+        web = base / "w0m-web"
         web_project = web / "project"
         web_project.mkdir(parents=True)
 
-        policy = {"repos": [{"path": "wom7web"}]}
+        policy = {"repos": [{"path": "w0m-web"}]}
         (web_project / "hygiene-policy.json").write_text(json.dumps(policy, indent=2))
 
         # Empty repo with no code files
-        env = {**os.environ, "W0M_HYGIENE_ROOT": str(web)}
+        env = {**os.environ, "W0M_HYGIENE_ROOT": str(base)}
         res = run_doctor([], env=env)
         check("empty corpus exits non-zero", res.returncode != 0)
         check("reports EMPTY CORPUS error", "EMPTY CORPUS" in res.stderr or "EMPTY CORPUS" in res.stdout)
@@ -156,16 +156,16 @@ def test_enforce_mode() -> None:
     print("\n▶ test_enforce_mode — verify --enforce flag fails on annotations")
     with tempfile.TemporaryDirectory(prefix="w0m-annotations-enforce-") as tmp:
         base = Path(tmp)
-        web = base / "wom7web"
+        web = base / "w0m-web"
         web_project = web / "project"
         web_project.mkdir(parents=True)
 
-        policy = {"repos": [{"path": "wom7web"}]}
+        policy = {"repos": [{"path": "w0m-web"}]}
         (web_project / "hygiene-policy.json").write_text(json.dumps(policy, indent=2))
 
         (web / "code.ts").write_text("// TODO: must fail enforce\n")
 
-        env = {**os.environ, "W0M_HYGIENE_ROOT": str(web)}
+        env = {**os.environ, "W0M_HYGIENE_ROOT": str(base)}
         res = run_doctor(["--enforce"], env=env)
         check("--enforce exits 1 on finding", res.returncode == 1)
         check("names ENFORCE failure", "ENFORCE" in res.stderr)

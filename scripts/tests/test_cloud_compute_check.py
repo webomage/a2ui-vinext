@@ -47,8 +47,8 @@ class TestCloudComputeCheck(unittest.TestCase):
     def test_fails_on_undeclared_disk_surface_or_missing_spend_monitor(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "wom7func").mkdir(parents=True)
-            (root / "wom7func" / "wrangler.toml").write_text("name = 'wom7func'\n", encoding="utf-8")
+            (root / "w0m-cf").mkdir(parents=True)
+            (root / "w0m-cf" / "wrangler.toml").write_text("name = 'w0m-cf'\n", encoding="utf-8")
             justfile = root / "justfile"
             justfile.write_text("deploy-workers:\n    @echo ok\n", encoding="utf-8")
             sdlc = root / "sdlc.json"
@@ -74,7 +74,7 @@ class TestCloudComputeCheck(unittest.TestCase):
                 estate_root=root,
                 justfile_path=justfile,
                 expected_disk_surfaces={
-                    "cloudflare-workers-wom7func": "wom7func/wrangler.toml"
+                    "cloudflare-workers-w0m-cf": "w0m-cf/wrangler.toml"
                 },
             )
             self.assertFalse(report.ok)

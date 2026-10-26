@@ -37,7 +37,7 @@ import sys
 from pathlib import Path
 
 WORKSPACE = Path(__file__).resolve().parents[1]  # @wom (estate root)
-REPO = WORKSPACE / "wom7web"                     # wom7web/
+REPO = WORKSPACE / "w0m-web"                     # w0m-web/
 # 🔴 Overridable, and it must be. This directory is the ESTATE'S RECORD of real deploys, and the
 # probe suite writes here too — so on 2026-08-16 it held 33 files of which 32 were fixtures
 # (`just __t210_no_such_recipe__`), the newest real transcript was two days old, and the monthly
@@ -204,7 +204,7 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Run a deploy recipe and keep the whole transcript")
     ap.add_argument("recipe", nargs="*", default=["deploy"],
-                    help="just recipe(s) to run from wom7api (default: deploy)")
+                    help="just recipe(s) to run from w0m-api (default: deploy)")
     ap.add_argument("--keep-raw", action="store_true",
                     help="also keep the unprocessed pty capture next to the clean log")
     args = ap.parse_args()
@@ -217,7 +217,7 @@ def main() -> int:
     raw_path = LOGS / "_in-progress.raw"
     log_path = LOGS / "_in-progress.log"
 
-    print(f"▶ logging `just {' '.join(recipe)}` (from wom7api) → {log_path}")
+    print(f"▶ logging `just {' '.join(recipe)}` (from w0m-api) → {log_path}")
 
     # 🔴 `script(1)` REQUIRES a real terminal — without one it dies with
     # `tcgetattr/ioctl: Operation not supported on socket`, leaving an empty log and an exit code

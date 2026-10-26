@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 ESTATE_ROOT = Path(__file__).resolve().parents[1]
-WEB = ESTATE_ROOT / "wom7web"
+WEB = ESTATE_ROOT / "w0m-web"
 DEFAULT_POLICY_PATH = ESTATE_ROOT / "project" / "policies" / "clients-policy.json"
 
 SECRET_PATTERNS = [
@@ -331,7 +331,7 @@ def main() -> int:
     args = parser.parse_args()
 
     policy_path = args.policy or Path(os.environ.get("W0M_CLIENTS_REGISTRY") or DEFAULT_POLICY_PATH)
-    estate_root = args.estate_root or (policy_path.parent.parent.parent if "wom7web" in str(policy_path) else ESTATE_ROOT)
+    estate_root = args.estate_root or (policy_path.parent.parent.parent if "w0m-web" in str(policy_path) else ESTATE_ROOT)
 
     try:
         results = inspect_all(policy_path, estate_root)

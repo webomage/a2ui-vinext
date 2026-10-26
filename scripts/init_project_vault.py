@@ -17,7 +17,7 @@ from typing import Optional
 
 HERE = Path(__file__).resolve().parent
 ESTATE = HERE.parent
-ROOT = ESTATE / "wom7web"  # wom7web
+ROOT = ESTATE / "w0m-web"  # w0m-web
 DEFAULT_POLICY = ESTATE / "project" / "policies" / "clients-policy.json"
 
 

@@ -34,7 +34,7 @@ from pathlib import Path
 ESTATE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ESTATE / "scripts"))  # estate root scripts/ (T419)
 from tasks_query import resolve_tickets_dir  # noqa: E402 — canonical .tasks/ resolver (T411)
-REPOS = ["wom7web", "wom7api", "wom7func", "wom7ext", "wom7mlx", "wom7sec", "wom7skills"]
+REPOS = ["w0m-web", "w0m-api", "w0m-cf", "w0m-ext", "w0m-mlx", "w0m-sec", "w0m-skills"]
 TICKET = re.compile(r"\bT(\d{1,4})\b")
 HOME = Path.home()
 

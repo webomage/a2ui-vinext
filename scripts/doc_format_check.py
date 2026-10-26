@@ -29,7 +29,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 POLICY = ROOT / "project" / "policies" / "doc-format-policy.json"
-REPOS = ["wom7web", "wom7api", "wom7ext", "wom7skills", "wom7func", "wom7sec"]
+REPOS = ["w0m-web", "w0m-api", "w0m-ext", "w0m-skills", "w0m-cf", "w0m-sec"]
 
 
 def tracked(repo: Path) -> list[str]:

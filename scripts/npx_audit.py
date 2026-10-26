@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]  # /Users/proto/Projects/@self/@wom
-REPOS = ["wom7web", "wom7api", "wom7skills", "wom7ext", "wom7sec", "wom7func"]
+REPOS = ["w0m-web", "w0m-api", "w0m-skills", "w0m-ext", "w0m-sec", "w0m-cf"]
 
 # Paths that are allowed to mention npx in documentation, rules, tests, or legacy definitions
 ALLOWLIST_SUBSTRINGS = [

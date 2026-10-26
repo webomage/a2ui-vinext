@@ -20,7 +20,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 SCRIPT = ROOT / "scripts" / "mcp_ratchet.py"
 TMP = Path(tempfile.mkdtemp(prefix="t154-"))
 

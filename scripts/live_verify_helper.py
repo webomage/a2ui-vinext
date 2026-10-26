@@ -26,7 +26,7 @@ import urllib.error
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-WEB_SCRIPTS = ROOT / "wom7web" / "project" / "scripts"
+WEB_SCRIPTS = ROOT / "w0m-web" / "project" / "scripts"
 if str(WEB_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(WEB_SCRIPTS))
 

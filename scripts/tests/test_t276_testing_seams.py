@@ -27,17 +27,17 @@ import sys
 from pathlib import Path
 
 ESTATE_ROOT = Path(__file__).resolve().parents[2]
-WEB_ROOT = ESTATE_ROOT / "wom7web"
+WEB_ROOT = ESTATE_ROOT / "w0m-web"
 SPEC_STANDARD = WEB_ROOT / "openspec" / "SPEC-AUTHORING-STANDARD.md"
 SPEC_CHECK_SCRIPT = ESTATE_ROOT / "scripts" / "spec_standard_check.py"
 
-CANONICAL_SKILL = ESTATE_ROOT / "wom7skills" / "skills" / "w0m-sdlc-spec" / "SKILL.md"
+CANONICAL_SKILL = ESTATE_ROOT / "w0m-skills" / "skills" / "w0m-sdlc-spec" / "SKILL.md"
 WEB_ACTIVE_SKILL = WEB_ROOT / ".agents" / "skills" / "w0m-sdlc-spec" / "SKILL.md"
 ROOT_ACTIVE_SKILL = ESTATE_ROOT / ".agents" / "skills" / "w0m-sdlc-spec" / "SKILL.md"
 
 ROOT_SKILLS_JSON = ESTATE_ROOT / ".w0m" / "skills.json"
 WEB_SKILLS_JSON = WEB_ROOT / ".w0m" / "skills.json"
-SKILLS_REGISTRY_JSON = ESTATE_ROOT / "wom7skills" / "skills-registry.json"
+SKILLS_REGISTRY_JSON = ESTATE_ROOT / "w0m-skills" / "skills-registry.json"
 
 
 def _extract_enriched_template(standard_text: str) -> str:
@@ -135,8 +135,8 @@ def test_ac5_w0m_sdlc_spec_requires_testing_seams_and_stays_in_sync() -> None:
     web_active = WEB_ACTIVE_SKILL.read_text(encoding="utf-8")
     root_active = ROOT_ACTIVE_SKILL.read_text(encoding="utf-8")
 
-    assert canon == web_active, "wom7web active w0m-sdlc-spec/SKILL.md drifted from canonical wom7skills"
-    assert canon == root_active, "root active w0m-sdlc-spec/SKILL.md drifted from canonical wom7skills"
+    assert canon == web_active, "w0m-web active w0m-sdlc-spec/SKILL.md drifted from canonical w0m-skills"
+    assert canon == root_active, "root active w0m-sdlc-spec/SKILL.md drifted from canonical w0m-skills"
 
     normalized = _norm(canon)
     assert "Testing seams" in canon

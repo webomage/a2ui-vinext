@@ -50,14 +50,14 @@ CURATED_ELI5: dict[str, str] = {
         "the tool schema descriptions and system prompt instructions (with unit/eval tests) so volunteered fields are never dropped."
     ),
     "T14": (
-        "A parked Apple-Silicon-only spike in `wom7mlx` to compare two Rust machine-learning libraries (`mlx-rs` vs "
+        "A parked Apple-Silicon-only spike in `w0m-mlx` to compare two Rust machine-learning libraries (`mlx-rs` vs "
         "HuggingFace `candle`) for launching local Gemma models in Rust. Because the owner decided on 2026-08-08 that "
         "`omlx` (Python Apple MLX) is our production local LLM server and `Tart` is our Mac VM tool, this ticket stays "
         "parked at P3 under T184 unless custom Rust MLX work is explicitly revived."
     ),
     "T17": (
         "Months ago an old `.env.bak` backup file was accidentally committed and later deleted, meaning its contents still "
-        "live inside old git history snapshots in `wom7web`. After rotating any affected credentials, this ticket runs "
+        "live inside old git history snapshots in `w0m-web`. After rotating any affected credentials, this ticket runs "
         "`git filter-repo` during a scheduled quiet window to scrub `.env.bak` from every historical commit across all clones."
     ),
     "T28": (
@@ -66,7 +66,7 @@ CURATED_ELI5: dict[str, str] = {
         "against code references and documents the exact setup for provisioning and testing `@webomage.com` addresses."
     ),
     "T37": (
-        "Today our browser extension (`wom7ext`) calls Mistral or Gemini directly from the user's browser using client-side "
+        "Today our browser extension (`w0m-ext`) calls Mistral or Gemini directly from the user's browser using client-side "
         "API keys in `llmService.ts`. This ticket moves the extension's cloud AI calls behind our own Cloudflare Worker "
         "`/ai/chat` proxy (matching T36's rule: Cloudflare primary, no third-party keys in client code), keeps the local "
         "on-device LLM option for strict privacy, and updates the extension's privacy docs to explain that cloud AI requests "
@@ -74,7 +74,7 @@ CURATED_ELI5: dict[str, str] = {
     ),
     "T56": (
         "Our cross-repo dependency checker (`deps_sync.py`) currently only inspects root `package.json` files and leaves "
-        "`@supabase/supabase-js` lagging on an older major version inside `wom7ext`. This ticket upgrades `deps_sync.py` "
+        "`@supabase/supabase-js` lagging on an older major version inside `w0m-ext`. This ticket upgrades `deps_sync.py` "
         "to scan every workspace `package.json`, aligns `@supabase/supabase-js` across all repos, and assigns an explicit "
         "owner check for dependency currency."
     ),
@@ -87,7 +87,7 @@ CURATED_ELI5: dict[str, str] = {
     ),
     "T66": (
         "Indeed has no public API for updating a resume profile, so filling out `my.indeed.com/resume/edit/*` by hand is "
-        "tedious. This ticket adds Indeed support to the `wom7ext` browser extension using our declarative `specEngine.ts` "
+        "tedious. This ticket adds Indeed support to the `w0m-ext` browser extension using our declarative `specEngine.ts` "
         "and `formFillerService.ts`: when you open your Indeed resume page, the extension popup shows 4 one-click helper "
         "buttons (Fill Summary, Fill Experience Bullet, Fill Skills, Fill Education) that pull canonical career data and "
         "type it cleanly into Indeed's React form fields."
@@ -116,7 +116,7 @@ CURATED_ELI5: dict[str, str] = {
     ),
     "T82": (
         "A parked P3 ticket to rewrite a full Gemma 4 text+vision (`SigLIP`) model loader and transformer decoder from "
-        "scratch in Rust inside `wom7mlx/wom7mlx` using `mlx-rs`. Like T14, it stays parked under T184 because `omlx` and "
+        "scratch in Rust inside `w0m-mlx/w0m-mlx` using `mlx-rs`. Like T14, it stays parked under T184 because `omlx` and "
         "`mlx-vlm` already serve Gemma 4 on macOS and Apple Metal (`mlx-rs`) does not run on Linux `x86_64` hosts."
     ),
     "T83": (
@@ -154,9 +154,9 @@ CURATED_ELI5: dict[str, str] = {
         "This ticket aligns all `wrangler.jsonc` `compatibility_date` values and Node build pins under a single governed check."
     ),
     "T128": (
-        "The `wom7skills` repository holds our canonical agent skills and sync tooling, but its top-level architecture, "
+        "The `w0m-skills` repository holds our canonical agent skills and sync tooling, but its top-level architecture, "
         "propagation flow diagrams, and manifest schema docs need a clean revision after the recent estate skill expansions. "
-        "This ticket updates `wom7skills` documentation, flow diagrams, and schema references to match the live registry."
+        "This ticket updates `w0m-skills` documentation, flow diagrams, and schema references to match the live registry."
     ),
     "T132": (
         "Building a UI replica from a reference screenshot or live web page by hand takes many visual tweak cycles. "
@@ -170,14 +170,14 @@ CURATED_ELI5: dict[str, str] = {
         "playbook for converting WordPress sites onto the fast `vinext` (Vite + React/Next-compatible) Cloudflare stack."
     ),
     "T143": (
-        "Right now `wom7ext` has an old, untracked `extension-ff/` folder from an abandoned Manifest V2 Firefox experiment "
+        "Right now `w0m-ext` has an old, untracked `extension-ff/` folder from an abandoned Manifest V2 Firefox experiment "
         "that rotted while the main `extension/` moved to Manifest V3. This ticket deletes the dead `extension-ff/` fork, "
         "records our target browsers (Chromium + Firefox MV3), and adds a single-source build target switch (`manifest.json` "
         "`background.scripts` vs `service_worker` + `browser.*` polyfill + `just` recipes) so one codebase builds cleanly "
         "for both Chrome and Firefox."
     ),
     "T152": (
-        "A paused Apple-Silicon/OpenCode SDLC ticket to verify that every `wom7skills` command and OpenSpec workflow "
+        "A paused Apple-Silicon/OpenCode SDLC ticket to verify that every `w0m-skills` command and OpenSpec workflow "
         "runs identically inside OpenCode as well as Claude Code, with small routine subtasks offloaded to a local Gemma 4 "
         "model via `omlx`."
     ),
@@ -211,9 +211,9 @@ CURATED_ELI5: dict[str, str] = {
     ),
     "T184": (
         "This is the master umbrella ticket (5/8 done) that recorded the owner's toolchain decision ('Tart = VMs, omlx = "
-        "local LLM serving, custom Rust wom7mlx = optional P3') so that `wom7mlx`'s vendored `mlx-rs` build errors never "
+        "local LLM serving, custom Rust w0m-mlx = optional P3') so that `w0m-mlx`'s vendored `mlx-rs` build errors never "
         "block the rest of the estate. The remaining items record the exact revival trigger (`mistral.rs` vs custom "
-        "`mlx-rs` bindings) and remove the 3-line `[patch.crates-io]` override in `wom7mlx/wom7mlx/Cargo.toml`."
+        "`mlx-rs` bindings) and remove the 3-line `[patch.crates-io]` override in `w0m-mlx/w0m-mlx/Cargo.toml`."
     ),
     "T226": (
         "Two older advisory test suites still check hardcoded facts about external client folders (`bridgeroad`, etc.) "
@@ -279,7 +279,7 @@ CURATED_ELI5: dict[str, str] = {
     "T365": (
         "When launching a GUI sandbox browser for testing or clip capture, manually installing and configuring browser "
         "extensions every time is slow. This ticket provisions Chromium in our GUI sandbox with managed enterprise policies "
-        "that pre-install Jam.dev, Obsidian Web Clipper, and the `wom7ext` extension automatically."
+        "that pre-install Jam.dev, Obsidian Web Clipper, and the `w0m-ext` extension automatically."
     ),
     "T368": (
         "A paused Apple-Silicon infrastructure research ticket evaluating Apple's native `apple/container` microVM framework "
@@ -301,7 +301,7 @@ CURATED_ELI5: dict[str, str] = {
         "our local pre-push verification gates."
     ),
     "T400": (
-        "Our background Cloudflare Workflows in `wom7func` (crawlers, enrichment, digests) need explicit per-step retry "
+        "Our background Cloudflare Workflows in `w0m-cf` (crawlers, enrichment, digests) need explicit per-step retry "
         "policies, Dead-Letter Queue (DLQ) capture when a workflow exhausts its retries, and structured health logging "
         "into `public.automation_runs` so failed background jobs never vanish silently."
     ),
@@ -374,7 +374,7 @@ CURATED_ELI5: dict[str, str] = {
         "non-admin session is refused by RLS."
     ),
     "T491": (
-        "The `wom7func` repository actually holds our Cloudflare Workers, Workflows, and cron dispatchers rather than "
+        "The `w0m-cf` repository actually holds our Cloudflare Workers, Workflows, and cron dispatchers rather than "
         "generic functions, and the owner decided in AgDR-0012 / T567 to rename it to `w0m-cf` as part of the unified "
         "`w0m-*` estate rebrand verified by `just name-refs --gate`."
     ),
@@ -398,12 +398,12 @@ CURATED_ELI5: dict[str, str] = {
     ),
     "T509": (
         "When governance scripts moved to the `@wom` workspace root (T414/T419), cross-repo relative symlinks like "
-        "`wom7web/justfile -> ../wom7api/justfile` were left behind as transitional bridges. This ticket finishes the "
+        "`w0m-web/justfile -> ../w0m-api/justfile` were left behind as transitional bridges. This ticket finishes the "
         "root-first layout migration in staged units behind a stale-path probe that verifies every path referenced by a "
         "recipe, hook, or profile actually exists."
     ),
     "T512": (
-        "Syncing agent skills currently requires separate steps across `wom7skills`, `@wom` root, `wom7web`, and `wom7api`. "
+        "Syncing agent skills currently requires separate steps across `w0m-skills`, `@wom` root, `w0m-web`, and `w0m-api`. "
         "This ticket unifies skill propagation so a single command syncs and relocks every consumer across the estate, "
         "backed by one drift gate covering all repos."
     ),
@@ -430,7 +430,7 @@ CURATED_ELI5: dict[str, str] = {
     "T521": (
         "Our Mermaid diagram validator (`mmd-validate`) currently has hardcoded `@wom` workspace paths, preventing client "
         "`-w0m` workspaces from installing it cleanly as a portable skill tool. This paused ticket removes the hardcoded "
-        "paths and packages `mmd-validate` as a portable skill in `wom7skills`."
+        "paths and packages `mmd-validate` as a portable skill in `w0m-skills`."
     ),
     "T522": (
         "Twenty-three user-scope skills in `~/.claude/skills` / `~/.agents/skills` load into every agent session without "
@@ -661,7 +661,7 @@ def synthesize_eli5_paragraph(ticket: dict, ticket_path: pathlib.Path | None = N
 
 
 def _is_shell_expanded_root_t_files(selectors: list[str]) -> bool:
-    """Detect when unquoted `just eli5 T*` in `@wom` or `wom7web` was expanded by bash into
+    """Detect when unquoted `just eli5 T*` in `@wom` or `w0m-web` was expanded by bash into
     root filenames starting with `T` (e.g. `TASKS.md`, `TECH-DEBT.md`).
     """
     if not selectors:

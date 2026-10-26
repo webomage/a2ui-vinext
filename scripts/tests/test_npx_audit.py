@@ -11,10 +11,10 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]  # /Users/proto/Projects/@self/@wom
-WEB = ROOT / "wom7web"
-API = ROOT / "wom7api"
-SKILLS = ROOT / "wom7skills"
-EXT = ROOT / "wom7ext"
+WEB = ROOT / "w0m-web"
+API = ROOT / "w0m-api"
+SKILLS = ROOT / "w0m-skills"
+EXT = ROOT / "w0m-ext"
 
 
 class TestPackageManifestsNoNpx(unittest.TestCase):
@@ -104,10 +104,10 @@ class TestJustfilesNoRunnableNpx(unittest.TestCase):
                 f"{justfile_path.name}:{line_no} contains runnable npx invocation: {stripped}",
             )
 
-    def test_wom7api_justfile(self):
+    def test_w0m_api_justfile(self):
         self._assert_no_runnable_npx(API / "justfile")
 
-    def test_wom7ext_justfile(self):
+    def test_w0m_ext_justfile(self):
         self._assert_no_runnable_npx(EXT / "justfile")
 
 

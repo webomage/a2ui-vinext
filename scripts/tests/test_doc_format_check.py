@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import doc_format_check as g  # noqa: E402
@@ -38,7 +38,7 @@ def fake(paths: list[str], ack: dict | None = None):
     """scan() over a fixture file list rather than the real repos."""
     orig_tracked, orig_repos = g.tracked, g.REPOS
     g.tracked = lambda _repo: paths
-    g.REPOS = ["wom7web"]
+    g.REPOS = ["w0m-web"]
     try:
         return g.scan({**POL, "acknowledged": POL["acknowledged"] if ack is None else ack})
     finally:

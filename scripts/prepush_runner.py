@@ -114,7 +114,7 @@ def resolve_repo() -> str:
         )
         return Path(out.stdout.strip()).name
     except Exception:
-        return "wom7web"
+        return "w0m-web"
 
 
 def checkpoint_file_path(repo: str, commit_hash: str) -> Path:
@@ -403,7 +403,7 @@ def cmd_step_fail(repo: str, commit_hash: str, args: argparse.Namespace) -> int:
 
 
 def discover_typecheck_apps(web_root: Path) -> list[str]:
-    """Read the ordered list of apps gated by `scripts.typecheck` in `wom7web/package.json`."""
+    """Read the ordered list of apps gated by `scripts.typecheck` in `w0m-web/package.json`."""
     pkg = web_root / "package.json"
     data = json.loads(pkg.read_text(encoding="utf-8"))
     script = data.get("scripts", {}).get("typecheck", "")
@@ -483,7 +483,7 @@ def cmd_run_typecheck(args: argparse.Namespace) -> int:
         web_root = Path(args.web_root).resolve()
     else:
         cwd = Path.cwd().resolve()
-        web_root = (cwd / "wom7web") if (cwd / "wom7web" / "package.json").is_file() else cwd
+        web_root = (cwd / "w0m-web") if (cwd / "w0m-web" / "package.json").is_file() else cwd
     ram_gib = host_total_ram_gib()
     raw_conc = getattr(args, "concurrency", None)
     env_conc = os.environ.get("W0M_TYPECHECK_CONCURRENCY")
@@ -660,7 +660,7 @@ def main() -> int:
     # run-typecheck (T477 AC2 / T573)
     p_tc = subparsers.add_parser("run-typecheck", parents=[common], help="Run astro check across gated apps with host-RAM-aware concurrency")
     p_tc.add_argument("--concurrency", type=int, default=None, help="Max concurrent astro check processes (1-4, defaults to host RAM auto-scale)")
-    p_tc.add_argument("--web-root", default=None, help="Path to wom7web root (defaults to cwd)")
+    p_tc.add_argument("--web-root", default=None, help="Path to w0m-web root (defaults to cwd)")
 
     # status
     subparsers.add_parser("status", parents=[common], help="Print checkpoint status for current commit")

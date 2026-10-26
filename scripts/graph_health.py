@@ -40,22 +40,22 @@ from pathlib import Path
 ESTATE = Path(__file__).resolve().parents[1]
 
 # tag -> path, relative to the estate root. The tag is what the global graph knows
-# the repo as; for wom7mlx the directory name alone is ambiguous, hence explicit tags.
+# the repo as; for w0m-mlx the directory name alone is ambiguous, hence explicit tags.
 REPOS = {
-    "wom7web": "wom7web",
-    "wom7api": "wom7api",
-    "wom7func": "wom7func",
-    "wom7skills": "wom7skills",
-    "wom7ext": "wom7ext",
-    "wom7sec": "wom7sec",
-    "wom7mlx": "wom7mlx/wom7mlx",
+    "w0m-web": "w0m-web",
+    "w0m-api": "w0m-api",
+    "w0m-cf": "w0m-cf",
+    "w0m-skills": "w0m-skills",
+    "w0m-ext": "w0m-ext",
+    "w0m-sec": "w0m-sec",
+    "w0m-mlx": "w0m-mlx/w0m-mlx",
 }
 
 # Repos deliberately absent from the union, with the reason shown in the report so
 # "missing" is never confused with "forgotten".
 # T186 (2026-08-08): wom7md was removed from REPOS and from here — the repo is
 # decommissioned, not merely excluded. Its 51 documents live in wom7web (docs/design,
-# docs/research), so the union now covers them via wom7web itself rather than skipping
+# docs/research), so the union now covers them via w0m-web itself rather than skipping
 # a repo. Leaving a stale EXCLUDED entry would keep reporting a reason for the absence
 # of something that no longer exists. See DECOMMISSIONED.md.
 EXCLUDED: dict[str, str] = {}
@@ -92,7 +92,7 @@ def global_members() -> dict[str, int]:
 def hook_status(repo: Path) -> str:
     """post-commit/post-checkout install state, via graphify's own checker.
 
-    Run from inside the repo: it resolves core.hooksPath, which wom7web redirects to
+    Run from inside the repo: it resolves core.hooksPath, which w0m-web redirects to
     .husky/_ while every other repo uses the default. Asking graphify beats guessing
     a path per repo.
 
@@ -156,7 +156,7 @@ def inspect(tag: str, rel: str, members: dict[str, int], manifest: dict) -> dict
 
     # The union holds a SNAPSHOT taken at `global add` time.
     # 🔴 Do NOT compare node counts to detect staleness: `global add` deduplicates
-    # against nodes already in the union, so wom7api's 1,665-node graph merged as
+    # against nodes already in the union, so w0m-api's 1,665-node graph merged as
     # 1,657 and a count comparison called that 8-node gap STALE when nothing had
     # changed. Compare the recorded merge commit instead — that is exact.
     if row["in_union"]:
@@ -191,7 +191,7 @@ def main() -> int:
                     help="exit 1 when any repo is stale, unhooked, or out of the union")
     args = ap.parse_args()
 
-    if not (ESTATE / "wom7web").is_dir():
+    if not (ESTATE / "w0m-web").is_dir():
         print(f"error: estate root not found at {ESTATE}", file=sys.stderr)
         return 2
     if not REPOS:

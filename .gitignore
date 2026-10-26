@@ -11,8 +11,8 @@
 
 # ── the seven repos are excluded via .git/info/exclude, NOT here ─────────────
 # 🔴 A directory pattern here is read by tools BELOW this repo. Git stops applying .gitignore at a
-# repo root, but osv-scanner does not: with `/wom7web/` in this file it walked up from inside
-# wom7web, applied the pattern, concluded the whole repo was ignored, and reported "No package
+# repo root, but osv-scanner does not: with `/w0m-web/` in this file it walked up from inside
+# w0m-web, applied the pattern, concluded the whole repo was ignored, and reported "No package
 # sources found" — exit 128 in ALL SEVEN repos at once. A security gate, silently disabled estate-wide
 # by one line in a parent .gitignore.
 #
@@ -31,7 +31,7 @@
 # negation effective. Same for /_msg/*.
 /_in/*
 # …but track its README: `_in` was ALREADY the inbound tray before it was named one — it holds a
-# June prospect proposal and a symlink into wom7pr/orca. A convention nobody can discover is not a
+# June prospect proposal and a symlink into w0m-pr/orca. A convention nobody can discover is not a
 # convention, so the README is versioned while the tray's contents stay out (client material, and
 # a tray is not an archive).
 !/_in/README.md

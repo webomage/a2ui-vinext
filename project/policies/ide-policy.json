@@ -1,6 +1,6 @@
 {
   "$schema": "./ide-policy.schema.json",
-  "_comment": "T192 — the connected-IDE contract. `openspec init --tools` writes a SEPARATE instruction surface per IDE; the estate has been governing exactly one of them. Read by scripts/ide_trace.py (`just ide-trace` / `--enforce`); the per-project declaration of WHICH IDEs are connected lives in `.w0m/sdlc.json -> ide_surfaces`, never here. 🔴 THE DESIGN RULE, learned by getting it wrong in this ticket's own filing: an IDE surface is identified by its MARKER, never by its directory name. The first filing called `servicios777/.kilocode` (a node package dir holding `@kilocode/plugin`) and `wom7ext/.agent` (untracked scratch, no rules.md) 'IDE surfaces found by scanning' purely because the names matched — the estate's own recorded *never match on a name the inspected thing supplies* trap, committed in the ticket written to catch it. ⚠️ The name trap is not hypothetical for the wider set either: openspec's skillsDir for `github-copilot` is `.github`, which exists in nearly every repo on earth.",
+  "_comment": "T192 — the connected-IDE contract. `openspec init --tools` writes a SEPARATE instruction surface per IDE; the estate has been governing exactly one of them. Read by scripts/ide_trace.py (`just ide-trace` / `--enforce`); the per-project declaration of WHICH IDEs are connected lives in `.w0m/sdlc.json -> ide_surfaces`, never here. 🔴 THE DESIGN RULE, learned by getting it wrong in this ticket's own filing: an IDE surface is identified by its MARKER, never by its directory name. The first filing called `servicios777/.kilocode` (a node package dir holding `@kilocode/plugin`) and `w0m-ext/.agent` (untracked scratch, no rules.md) 'IDE surfaces found by scanning' purely because the names matched — the estate's own recorded *never match on a name the inspected thing supplies* trap, committed in the ticket written to catch it. ⚠️ The name trap is not hypothetical for the wider set either: openspec's skillsDir for `github-copilot` is `.github`, which exists in nearly every repo on earth.",
   "project": "w0m",
   "canonical": {
     "_comment": "The instruction surface that IS the contract. Every other connected IDE's autoload file is measured against it. Claude Code's CLAUDE.md is canonical because it is the one the estate actually maintains — 16,320 B and current, versus Antigravity's 1,646 B copied from another repo.",
@@ -26,10 +26,10 @@
       "AGENTS.md",
       "copilot-instructions.md"
     ],
-    "instruction_note": "A surface can be REAL without being openspec's. `wom7ext/.windsurf/workflows/speckit.*` is GitHub Spec Kit — a second spec framework, generating Windsurf workflows nobody declared — and `artemio/.gemini/commands/*.toml` is a hand-built command set in a client repo. Both autoload. So presence of instruction-shaped content in a tool dir makes it a surface that must be DECLARED, whoever generated it; the openspec marker only decides who maintains it."
+    "instruction_note": "A surface can be REAL without being openspec's. `w0m-ext/.windsurf/workflows/speckit.*` is GitHub Spec Kit — a second spec framework, generating Windsurf workflows nobody declared — and `artemio/.gemini/commands/*.toml` is a hand-built command set in a client repo. Both autoload. So presence of instruction-shaped content in a tool dir makes it a surface that must be DECLARED, whoever generated it; the openspec marker only decides who maintains it."
   },
   "delegation": {
-    "_comment": "🔑 A surface satisfies the contract by CARRYING the rules or by POINTING at the file that does — and pointing is what this estate actually chose: five of six sibling repos open with `Canonical conventions live in ../wom7web/CLAUDE.md`, which is the *one fact, one home* rule applied correctly. A parity gate with no concept of delegation scores all five at 1/6 and demands they duplicate the canonical text, i.e. it would enforce exactly the drift it exists to prevent. 🔴 But the pointer must RESOLVE: a dangling reference is the `$schema` defect recorded in project/client-profile.json, where two declarations passed every presence check while validating against nothing. It also follows the chain (`max_hops`, with cycle detection) and requires the file it ENDS at to carry every rule — wom7mlx points at a local AGENTS.md hub *\"that every agent (Claude, Cursor, Windsurf, Gemini) shares\"*, so one hop is not enough to model this estate. Delegating to a file that carries the rules no better than you do is delegation to nowhere. So the gate extracts the path and stats it, and a pointer to a file that does not exist is a HARDER finding than no pointer at all — it looks like compliance.",
+    "_comment": "🔑 A surface satisfies the contract by CARRYING the rules or by POINTING at the file that does — and pointing is what this estate actually chose: five of six sibling repos open with `Canonical conventions live in ../w0m-web/CLAUDE.md`, which is the *one fact, one home* rule applied correctly. A parity gate with no concept of delegation scores all five at 1/6 and demands they duplicate the canonical text, i.e. it would enforce exactly the drift it exists to prevent. 🔴 But the pointer must RESOLVE: a dangling reference is the `$schema` defect recorded in project/client-profile.json, where two declarations passed every presence check while validating against nothing. It also follows the chain (`max_hops`, with cycle detection) and requires the file it ENDS at to carry every rule — w0m-mlx points at a local AGENTS.md hub *\"that every agent (Claude, Cursor, Windsurf, Gemini) shares\"*, so one hop is not enough to model this estate. Delegating to a file that carries the rules no better than you do is delegation to nowhere. So the gate extracts the path and stats it, and a pointer to a file that does not exist is a HARDER finding than no pointer at all — it looks like compliance.",
     "pattern": "(?:conventions live in|conventions are in|read (?:it|them) first[^\\n]{0,40}in)\\s*\\**\\s*\\[?[`\\\"]?([^`\\\"\\n\\]\\(\\)]*(?:CLAUDE|AGENTS)\\.md)",
     "must_resolve": true,
     "target": "CLAUDE.md | AGENTS.md",
@@ -78,19 +78,19 @@
         "GEMINI.md",
         ".gemini/rules/*"
       ],
-      "autoload_note": "Two surfaces: a root GEMINI.md and `.gemini/rules/*`. Evidenced globally by ~/.gemini/GEMINI.md (2,238 B, carrying w0m SDLC rules) and per-project by wom7mlx/.gemini/rules/openspec.toml — hand-written, not generated."
+      "autoload_note": "Two surfaces: a root GEMINI.md and `.gemini/rules/*`. Evidenced globally by ~/.gemini/GEMINI.md (2,238 B, carrying w0m SDLC rules) and per-project by w0m-mlx/.gemini/rules/openspec.toml — hand-written, not generated."
     },
     "cursor": {
       "skills_dir": ".cursor",
       "autoload": [
         ".cursor/rules/*.md"
       ],
-      "autoload_note": "Cursor loads a rules DIRECTORY, not a root file — `.cursor/rules/*`. Declared as a glob because that is what the IDE actually reads; pinning one filename would measure an artefact the tool never opens. Observed: wom7mlx/.cursor/rules/openspec.md."
+      "autoload_note": "Cursor loads a rules DIRECTORY, not a root file — `.cursor/rules/*`. Declared as a glob because that is what the IDE actually reads; pinning one filename would measure an artefact the tool never opens. Observed: w0m-mlx/.cursor/rules/openspec.md."
     },
     "github-copilot": {
       "skills_dir": ".github",
       "autoload": ".github/copilot-instructions.md",
-      "autoload_note": "🔴 The sharpest name trap in openspec's registry: `.github` exists in nearly every repo and almost never means Copilot. Only the marker or a real copilot-instructions.md makes it a surface — none exists in this estate; wom7ext/.github and wom7sec/.github are EMPTY directories."
+      "autoload_note": "🔴 The sharpest name trap in openspec's registry: `.github` exists in nearly every repo and almost never means Copilot. Only the marker or a real copilot-instructions.md makes it a surface — none exists in this estate; w0m-ext/.github and w0m-sec/.github are EMPTY directories."
     },
     "windsurf": {
       "skills_dir": ".windsurf",

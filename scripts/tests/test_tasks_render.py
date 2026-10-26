@@ -40,7 +40,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import tasks_query as tq  # noqa: E402
@@ -203,7 +203,7 @@ check("markdown mode emits pipe tables and no escapes",
       "|---|" in md and "\033" not in md)
 check("markdown mode keeps the ABSOLUTE live-root ticket path (never .w0m/work/)",
       f"]({LIVE_ROOT}/" in md and "/.w0m/work/" not in md,
-      "a relative path resolves only for a reader already inside wom7web; an agent-tree path dies on removal")
+      "a relative path resolves only for a reader already inside w0m-web; an agent-tree path dies on removal")
 
 # ── emphasis is stripped only when PAIRED ──────────────────────────────────────────────────────
 check("paired **bold** becomes SGR, not asterisks",

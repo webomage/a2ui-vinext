@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 
 WORKSPACE = Path(__file__).resolve().parents[1]
-REPO = WORKSPACE / "wom7web"
+REPO = WORKSPACE / "w0m-web"
 POLICY = WORKSPACE / ".w0m" / "sdlc.json"
 MONTH_DIR = re.compile(r"^\d{4}-\d{2}$")
 

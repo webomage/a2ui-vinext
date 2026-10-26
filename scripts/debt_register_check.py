@@ -41,8 +41,8 @@ the ticket that noticed them. ⇒ **Give the column a grammar before gating on i
 
 Citation & Disambiguation Grammar (T331 AC3):
   · **Scanned surfaces:** `TECH-DEBT.md`, `CLAUDE.md`, `AGENTS.md`, `ROADMAP.md`,
-    `wom7web/docs/**/*.md`, `.agents/skills/*/SKILL.md`, `wom7web/.agents/skills/*/SKILL.md`,
-    `.w0m/sdlc.json`, `wom7web/project/test-suites.json`.
+    `w0m-web/docs/**/*.md`, `.agents/skills/*/SKILL.md`, `w0m-web/.agents/skills/*/SKILL.md`,
+    `.w0m/sdlc.json`, `w0m-web/project/test-suites.json`.
   · **Candidate token:** `\\bD([1-9]\\d*)\\b` (matches `[[D\\d+]]`, `` `D\\d+` ``, `debt row D\\d+`,
     `TECH-DEBT D\\d+`, and bare `D\\d+`; word boundaries reject `3D`, hex strings, UUIDs, and `D0`).
   · **Non-debt exclusions:**
@@ -83,7 +83,7 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
     for parent in [cur] + list(cur.parents):
         if (parent / ".tasks").is_dir() and (parent / ".w0m").is_dir():
             return parent
-        if (parent / ".git").exists() and (parent / "wom7web").is_dir():
+        if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return Path(__file__).resolve().parents[1]
 
@@ -209,7 +209,7 @@ def collect_citation_surfaces(root: Path, register: Path) -> tuple[dict[str, str
         "AGENTS.md",
         "ROADMAP.md",
         ".w0m/sdlc.json",
-        "wom7web/project/test-suites.json",
+        "w0m-web/project/test-suites.json",
     )
     for rel in fixed_rel_paths:
         p = root / rel
@@ -221,7 +221,7 @@ def collect_citation_surfaces(root: Path, register: Path) -> tuple[dict[str, str
         elif require_estate_surfaces:
             unmeasurable.append(f"{rel} (missing)")
 
-    docs_dir = root / "wom7web/docs"
+    docs_dir = root / "w0m-web/docs"
     if docs_dir.is_dir():
         for p in sorted(docs_dir.rglob("*.md")):
             rel = str(p.relative_to(root))
@@ -230,9 +230,9 @@ def collect_citation_surfaces(root: Path, register: Path) -> tuple[dict[str, str
             except OSError:
                 unmeasurable.append(f"{rel} (unreadable)")
     elif require_estate_surfaces:
-        unmeasurable.append("wom7web/docs (missing)")
+        unmeasurable.append("w0m-web/docs (missing)")
 
-    for sdir_rel in (".agents/skills", "wom7web/.agents/skills"):
+    for sdir_rel in (".agents/skills", "w0m-web/.agents/skills"):
         sdir = root / sdir_rel
         if sdir.is_dir():
             for p in sorted(sdir.glob("*/SKILL.md")):
@@ -293,7 +293,7 @@ def main() -> int:
             r"\b(deleted|removed|retired|dropped|decommission|does not exist|absent|missing|"
             r"no longer|orphan)", prose, re.I)
         for pth in PATH.findall(body):
-            if not (ROOT / pth).exists() and not (ROOT / "wom7web" / pth).exists():
+            if not (ROOT / pth).exists() and not (ROOT / "w0m-web" / pth).exists():
                 if not says_removed:
                     findings["dead_path"].append({"id": did, "detail": pth})
 

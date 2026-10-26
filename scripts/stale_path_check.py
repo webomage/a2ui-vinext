@@ -4,12 +4,12 @@
 Verifies that every script file or delegated recipe referenced across the 5 estate carriers
 actually exists on disk:
   1. `justfile` recipe bodies (`just --dump --dump-format json` on root `justfile` and
-     `wom7api/justfile`): every invoked script (`python3`, `bash`, `sh`, `node`, `tsx`) and
+     `w0m-api/justfile`): every invoked script (`python3`, `bash`, `sh`, `node`, `tsx`) and
      every `--justfile <path> <recipe>` / `-f <path> <recipe>` target exists.
   2. JSON/JSONC policy and profile files (`project/policies/*.json`, `.w0m/sdlc.json`,
-     `wom7web/project/*.json`), scanning both keys and string values.
-  3. Hook configs (`.pre-commit-config.yaml`, `wom7web/.husky/*`, `scripts/hooks/*`).
-  4. Test-runner config (`wom7web/project/test-suites.json`).
+     `w0m-web/project/*.json`), scanning both keys and string values.
+  3. Hook configs (`.pre-commit-config.yaml`, `w0m-web/.husky/*`, `scripts/hooks/*`).
+  4. Test-runner config (`w0m-web/project/test-suites.json`).
   5. Host-level launch agents (`~/Library/LaunchAgents/com.w0m.*.plist`, conditional on
      `sys.platform == "darwin"` or explicit `--launchd-dir`).
 
@@ -130,7 +130,7 @@ def resolve_script_in_estate(path_str: str, base_dir: Path, root: Path = ROOT) -
     if (base_dir / path_str).is_file() or (root / path_str).is_file():
         return True
     if not path_str.startswith(("wom7", "../", "/")):
-        if (root / "wom7web" / path_str).is_file() or (root / "wom7api" / path_str).is_file():
+        if (root / "w0m-web" / path_str).is_file() or (root / "w0m-api" / path_str).is_file():
             return True
     return False
 
@@ -371,10 +371,10 @@ def scan_hooks(
             continue
         rel = hf.resolve().relative_to(root) if hf.resolve().is_relative_to(root) else hf
         rel_str = str(rel)
-        if rel_str.startswith("wom7web/"):
-            base = root / "wom7web"
-        elif rel_str.startswith("wom7api/"):
-            base = root / "wom7api"
+        if rel_str.startswith("w0m-web/"):
+            base = root / "w0m-web"
+        elif rel_str.startswith("w0m-api/"):
+            base = root / "w0m-api"
         else:
             base = root
 
@@ -403,7 +403,7 @@ def scan_test_suites(
     *,
     root: Path = ROOT,
 ) -> tuple[int, list[str], bool]:
-    """Scan Carrier 4: Test-runner config (`wom7web/project/test-suites.json`)."""
+    """Scan Carrier 4: Test-runner config (`w0m-web/project/test-suites.json`)."""
     if not suites_file.is_file():
         return 0, [f"[test-suites {suites_file}] file does not exist"], True
     try:
@@ -498,17 +498,17 @@ def check_exemptions(
 
 
 def default_carriers(root: Path = ROOT) -> tuple[list[Path], list[Path], list[Path], Path]:
-    justfiles = [root / "justfile", root / "wom7api" / "justfile"]
+    justfiles = [root / "justfile", root / "w0m-api" / "justfile"]
     json_files = sorted(
         set(root.glob("project/policies/*.json"))
         | {root / ".w0m" / "sdlc.json"}
-        | set(root.glob("wom7web/project/*.json"))
+        | set(root.glob("w0m-web/project/*.json"))
         | {
             p
             for p in (
                 root / ".mcp.json",
                 root / ".claude" / "settings.local.json",
-                root / "wom7skills" / "skills-registry.json",
+                root / "w0m-skills" / "skills-registry.json",
             )
             if p.is_file()
         }
@@ -518,15 +518,15 @@ def default_carriers(root: Path = ROOT) -> tuple[list[Path], list[Path], list[Pa
             p
             for p in (
                 root / ".pre-commit-config.yaml",
-                root / "wom7web" / ".pre-commit-config.yaml",
-                root / "wom7api" / ".pre-commit-config.yaml",
+                root / "w0m-web" / ".pre-commit-config.yaml",
+                root / "w0m-api" / ".pre-commit-config.yaml",
             )
             if p.is_file()
         ]
-        + [p for p in sorted(root.glob("wom7web/.husky/*")) if p.is_file() and not p.name.startswith("_")]
+        + [p for p in sorted(root.glob("w0m-web/.husky/*")) if p.is_file() and not p.name.startswith("_")]
         + [p for p in sorted(root.glob("scripts/hooks/*")) if p.is_file()]
     )
-    suites_file = root / "wom7web" / "project" / "test-suites.json"
+    suites_file = root / "w0m-web" / "project" / "test-suites.json"
     return justfiles, json_files, hook_files, suites_file
 
 

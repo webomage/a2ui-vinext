@@ -1,9 +1,9 @@
 # Security & Vulnerability Disclosure Policy — Webomage (`w0m` Estate)
 
 **Canonical Public Policy URL:** `https://webomage.com/security`
-**Repository Mirror:** [`wom7sec/SECURITY.md`](../wom7sec/SECURITY.md)
+**Repository Mirror:** [`w0m-sec/SECURITY.md`](../w0m-sec/SECURITY.md)
 **Governance Record:** [`AgDR-0047`](decisions/AgDR-0047-vulnerability-disclosure-and-bug-bounty-hunting-governance.md) (`T433`)
-**RFC 9116 `security.txt`:** Published at `/.well-known/security.txt` on every public Webomage property (`webomage.com`, `cp.webomage.com`, `job.webomage.com`, `join.webomage.com`, `demo.webomage.com`) and validated by `wom7sec/scripts/check_security_txt.py`.
+**RFC 9116 `security.txt`:** Published at `/.well-known/security.txt` on every public Webomage property (`webomage.com`, `cp.webomage.com`, `job.webomage.com`, `join.webomage.com`, `demo.webomage.com`) and validated by `w0m-sec/scripts/check_security_txt.py`.
 **Safe Harbor Standard:** [disclose.io Core Terms (`dioterms`) — Full Safe Harbor](https://github.com/disclose/dioterms).
 
 ---
@@ -36,15 +36,15 @@ Webomage operates a self-hosted **Vulnerability Disclosure Program (VDP)** with 
 
 ### In Scope (First-Party Webomage Properties & Repositories)
 
-1. **Public Web Applications (`wom7web/apps/*`)**:
+1. **Public Web Applications (`w0m-web/apps/*`)**:
    - `https://webomage.com` (`apps/web`)
    - `https://cp.webomage.com` (`apps/cp`)
    - `https://job.webomage.com` (`apps/job`)
    - `https://join.webomage.com` (`apps/join`)
    - `https://demo.webomage.com` (`apps/demo`)
-2. **Backend APIs, Supabase Edge Functions & Cloudflare Workers (`wom7api`, `wom7func`)**
-3. **Browser Extensions (`wom7ext`)**
-4. **Security Toolchain, Agent Skills & Inference Subsystems (`wom7sec`, `wom7skills`, `wom7mlx`)**
+2. **Backend APIs, Supabase Edge Functions & Cloudflare Workers (`w0m-api`, `w0m-cf`)**
+3. **Browser Extensions (`w0m-ext`)**
+4. **Security Toolchain, Agent Skills & Inference Subsystems (`w0m-sec`, `w0m-skills`, `w0m-mlx`)**
 
 ### Out of Scope
 

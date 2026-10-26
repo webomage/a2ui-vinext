@@ -18,8 +18,8 @@ from typing import Any, Callable, cast
 from urllib import request
 
 ESTATE_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_POSTS_DIR = ESTATE_ROOT / "wom7web" / "apps" / "web" / "src" / "content" / "posts"
-DEFAULT_GENERATOR_SCRIPT = ESTATE_ROOT / "wom7api" / "scripts" / "generate_news_post.py"
+DEFAULT_POSTS_DIR = ESTATE_ROOT / "w0m-web" / "apps" / "web" / "src" / "content" / "posts"
+DEFAULT_GENERATOR_SCRIPT = ESTATE_ROOT / "w0m-api" / "scripts" / "generate_news_post.py"
 
 HnFetcher = Callable[[datetime.date, int], list[dict[str, Any]]]
 
@@ -197,7 +197,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if "WEBOMAGE_SITE_PATH" not in os.environ:
-        os.environ["WEBOMAGE_SITE_PATH"] = str(ESTATE_ROOT / "wom7web")
+        os.environ["WEBOMAGE_SITE_PATH"] = str(ESTATE_ROOT / "w0m-web")
 
     try:
         start_d = datetime.date.fromisoformat(str(args.start_date))

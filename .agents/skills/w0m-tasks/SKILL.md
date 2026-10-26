@@ -2,14 +2,14 @@
 name: w0m-tasks
 description: Show and triage the ranked w0m ticket queue, active epics, and plan progress — HOT (what can be started), SDLC (closest to done), and PLAN (current progressing scope with linked Mermaid diagrams). Trigger when the user asks "how about current plan progress?", "plan progress", "what to work on next", "project tasks", "ticket queue", or "triage". Passes arguments through to `just tasks`.
 metadata:
-  version: "2026.09.28-1790589022"
+  version: "2026.10.26-1793009642"
 ---
 
 # /w0m:tasks — the w0m ticket queue
 
 Show the w0m ticket queue, ranked.
 
-**Run this directly from the workspace root `@wom` or from `wom7web`:**
+**Run this directly from the workspace root `@wom` or from `w0m-web`:**
 
 ```bash
 just tasks $ARGUMENTS
@@ -46,7 +46,7 @@ When the user asks "how about current plan progress?", "plan progress", or reque
 2. **Generate the Artifact & Linked `.mmd` Diagram**:
    - Write a permanent report to `.agents/reports/YYYY-MM-DD-t{id}-plan-progress.md` (citing the active primary ticket like `T478`).
    - Write the companion diagram to `.agents/reports/YYYY-MM-DD-t{id}-plan-progress.mmd` with full topology across the three planes.
-   - Validate the Mermaid diagram with `node wom7skills/skills/mmd-validate/validate.mjs <file.mmd>` to ensure clean parsing.
+   - Validate the Mermaid diagram with `node w0m-skills/skills/mmd-validate/validate.mjs <file.mmd>` to ensure clean parsing.
    - In Antigravity sessions, emit a user-facing Artifact (`UserFacing: true`) containing the Markdown report with interactive SVG Mermaid graphics.
 3. **Anti-Terminal-Overflow Presentation**:
    - Render a structured, concise summary in terminal/chat (Shipped, Canonical Plan, In-Flight Critical Path, Dependencies).

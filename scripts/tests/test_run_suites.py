@@ -19,7 +19,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 SCRIPT = ROOT / "scripts" / "run_suites.py"
 TMP = Path(tempfile.mkdtemp(prefix="t160-"))
 
@@ -277,16 +277,16 @@ check("a bare 'N passed' summary is read",
 check("pytest's ==== banner-padded summary is read too",
       run_suites.count_checks("==== 14 passed in 0.17s ====") == 14)
 
-print("\n── T549 AC1: suites-drift resolves every registered recipe against wom7api/justfile ──")
+print("\n── T549 AC1: suites-drift resolves every registered recipe against w0m-api/justfile ──")
 _real_reg_data = json.loads((WEB / "project" / "test-suites.json").read_text(encoding="utf-8"))
 _real_suites = _real_reg_data.get("suites", [])
-check("T549 AC1: unmutated tree resolves every registered recipe in wom7api/justfile",
+check("T549 AC1: unmutated tree resolves every registered recipe in w0m-api/justfile",
       run_suites.unresolved_suites(_real_suites) == [])
 
 with tempfile.TemporaryDirectory() as _t549_dir:
-    _t549_api = Path(_t549_dir) / "wom7api"
+    _t549_api = Path(_t549_dir) / "w0m-api"
     _t549_api.mkdir()
-    # Mutate wom7api/justfile by removing a registered recipe (`ac-progress-test`), even if root justfile has it.
+    # Mutate w0m-api/justfile by removing a registered recipe (`ac-progress-test`), even if root justfile has it.
     _mutated_jf = "\n".join(
         line for line in real_jf.splitlines()
         if not line.startswith("ac-progress-test:")
@@ -309,7 +309,7 @@ with tempfile.TemporaryDirectory() as _t549_dir:
         capture_output=True, text=True, env=_env_t549,
     )
     _out_t549 = _r_t549.stdout + _r_t549.stderr
-    check("T549 AC1 (mutation): removing a registered recipe from wom7api/justfile fails --drift",
+    check("T549 AC1 (mutation): removing a registered recipe from w0m-api/justfile fails --drift",
           _r_t549.returncode != 0, _out_t549[-200:])
     check("T549 AC1: failure names the suite, recipe, registry entry, and justfile searched",
           "ac-progress" in _out_t549
@@ -355,7 +355,7 @@ with tempfile.TemporaryDirectory() as _t549_log_dir:
 
 print("\n── T328 AC5 & AC6: UNMEASURABLE vs FAIL distinction and [tier/blocking|advisory] tags ──")
 with tempfile.TemporaryDirectory() as _t328_dir:
-    _t328_api = Path(_t328_dir) / "wom7api"
+    _t328_api = Path(_t328_dir) / "w0m-api"
     _t328_api.mkdir()
     (_t328_api / "justfile").write_text(
         "unmeasurable-probe:\n"

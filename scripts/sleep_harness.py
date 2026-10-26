@@ -704,10 +704,10 @@ def evaluate_held_out_validation_gate(
     )
 
 
-# ── Local MLX Backend Support (wom7mlx / Ollama / OpenAI-compatible) ─────────
+# ── Local MLX Backend Support (w0m-mlx / Ollama / OpenAI-compatible) ─────────
 
 class LocalMLXBackend:
-    """Air-gapped, zero-cost local LLM backend for wom7mlx / Ollama / oMLX.
+    """Air-gapped, zero-cost local LLM backend for w0m-mlx / Ollama / oMLX.
     
     Communicates via OpenAI-compatible /v1/chat/completions endpoint.
     Default endpoint: http://127.0.0.1:8888/v1 or http://127.0.0.1:8000/v1
@@ -906,7 +906,7 @@ def build_parser() -> argparse.ArgumentParser:
     # adopt
     p_adopt = sub.add_parser("adopt", help="Apply staged proposal into canonical LESSONS.md and skills")
     p_adopt.add_argument("--proposal", type=str, help="Specific proposal timestamp folder to adopt")
-    p_adopt.add_argument("--skill", type=str, help="Target skill name to reconcile into wom7skills")
+    p_adopt.add_argument("--skill", type=str, help="Target skill name to reconcile into w0m-skills")
 
     return p
 
@@ -1023,7 +1023,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Adopting skill update for {skill_name}...")
             cand_files = list(target_dir.glob(f"candidate_*{skill_name}*"))
             local_skill_dir = ROOT / ".agents" / "skills" / skill_name
-            canonical_skill_dir = ROOT / "wom7skills" / "skills" / skill_name
+            canonical_skill_dir = ROOT / "w0m-skills" / "skills" / skill_name
 
             if cand_files and local_skill_dir.is_dir():
                 shutil.copy2(cand_files[0], local_skill_dir / "SKILL.md")

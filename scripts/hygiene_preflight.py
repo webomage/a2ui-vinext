@@ -30,19 +30,19 @@ from pathlib import Path
 # The estate root, relative to this file: scripts/ -> ..
 ROOT = Path(__file__).resolve().parents[1]
 
-# Candidate repo paths. `wom7mlx` (outer) is listed ON PURPOSE: it is NOT a git
+# Candidate repo paths. `w0m-mlx` (outer) is listed ON PURPOSE: it is NOT a git
 # repo but a workspace of upstream clones, and an earlier matrix reported
-# "wom7mlx has zero hooks" by measuring it. Keeping it here makes that visible
+# "w0m-mlx has zero hooks" by measuring it. Keeping it here makes that visible
 # instead of assumed.
 CANDIDATES = (
-    "wom7web",
-    "wom7api",
-    "wom7func",
-    "wom7skills",
-    "wom7ext",
-    "wom7sec",
-    "wom7mlx",
-    "wom7mlx/wom7mlx",
+    "w0m-web",
+    "w0m-api",
+    "w0m-cf",
+    "w0m-skills",
+    "w0m-ext",
+    "w0m-sec",
+    "w0m-mlx",
+    "w0m-mlx/w0m-mlx",
 )
 
 SKIP_DIRS = frozenset(
@@ -82,7 +82,7 @@ def find_manifests(repo: Path) -> list[dict]:
     """Every TRACKED package.json in the repo, excluding build/dependency output.
 
     ⚠️ Tracked, not just present. The first version of this function globbed the filesystem and
-    reported 19 manifests; one of them (`wom7ext/extension-ff/package.json`) is GITIGNORED, so
+    reported 19 manifests; one of them (`w0m-ext/extension-ff/package.json`) is GITIGNORED, so
     the real number is 18. This function was written to stop exactly that class of error and
     then committed it — measuring the filesystem when the question was about the repo.
     """

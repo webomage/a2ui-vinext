@@ -1,13 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "./wom7ext"
+			"path": "./w0m-ext"
 		},
 		{
 			"path": "wom7job"
 		},
 		{
-			"path": "wom7api"
+			"path": "w0m-api"
 		}
 	],
 	"settings": {}

@@ -7,7 +7,7 @@ EXPLICIT tag, and records what was merged in a sidecar manifest.
 Why the manifest exists (this is the load-bearing part):
     `graphify global list` reports a node count and a date. Node count CANNOT be used
     to detect staleness, because `global add` deduplicates against nodes already in
-    the union — wom7api's 1,665-node graph merged as 1,657, and a naive count
+    the union — w0m-api's 1,665-node graph merged as 1,657, and a naive count
     comparison reported that 8-node gap as "STALE" when nothing was wrong. The
     manifest records each repo's `built_at_commit` AT MERGE TIME, so
     `graph_health.py` can compare commits, which is exact.
@@ -36,18 +36,18 @@ ESTATE = Path(__file__).resolve().parents[1]
 MANIFEST = Path.home() / ".graphify" / "w0m-union-manifest.json"
 
 REPOS = {
-    "wom7web": "wom7web",
-    "wom7api": "wom7api",
-    "wom7func": "wom7func",
-    "wom7skills": "wom7skills",
-    "wom7ext": "wom7ext",
-    "wom7sec": "wom7sec",
-    "wom7mlx": "wom7mlx/wom7mlx",
+    "w0m-web": "w0m-web",
+    "w0m-api": "w0m-api",
+    "w0m-cf": "w0m-cf",
+    "w0m-skills": "w0m-skills",
+    "w0m-ext": "w0m-ext",
+    "w0m-sec": "w0m-sec",
+    "w0m-mlx": "w0m-mlx/w0m-mlx",
 }
 
 # Not a failure — an excluded repo is a recorded decision. See T151 AC2.
 # T186 (2026-08-08): emptied. wom7md is DECOMMISSIONED, not excluded — its 51 documents
-# live in wom7web (docs/design, docs/research) and reach the union through it. The entry
+# live in w0m-web (docs/design, docs/research) and reach the union through it. The entry
 # survived the first pass of that ticket and kept printing "wom7md excluded by decision"
 # on every union refresh, which is the exact failure the ticket was written to avoid: a
 # recorded reason outliving the thing it explains.
@@ -130,7 +130,7 @@ def main() -> int:
                          "hook passes a budget because post-commit rebuilds in background.")
     args = ap.parse_args()
 
-    if not (ESTATE / "wom7web").is_dir():
+    if not (ESTATE / "w0m-web").is_dir():
         print(f"error: estate root not found at {ESTATE}", file=sys.stderr)
         return 2
 
@@ -196,7 +196,7 @@ def main() -> int:
             continue
 
         # 🔴 `graphify extract` does NOT stamp built_at_commit — only `graphify update`
-        # does (verified: wom7web, built by update, has it; every extract-built graph
+        # does (verified: w0m-web, built by update, has it; every extract-built graph
         # lacks it). So the staleness signal AC3 relies on is absent in 6 of 7 repos
         # until a post-commit rebuild has fired once. Record the repo HEAD at merge
         # time as a labelled fallback so staleness is measurable NOW, and say which

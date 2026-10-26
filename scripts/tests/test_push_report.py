@@ -26,15 +26,15 @@ class TestPushReport(unittest.TestCase):
 
     def test_clean_log(self) -> None:
         clean_text = """
-⏳ [wom7web] Pre-push: type checks (astro check)...
+⏳ [w0m-web] Pre-push: type checks (astro check)...
 Result (5 files): 
 - 0 errors
 - 0 warnings
 - 0 hints
-⏳ [wom7web] Pre-push: w0m audit (scoped drift + openspec)...
+⏳ [w0m-web] Pre-push: w0m audit (scoped drift + openspec)...
   ✅ PASS  [git] working tree — clean
   ✅ PASS  [spec] spec-drift gate — clean
-✅ [wom7web] Pre-push checks passed.
+✅ [w0m-web] Pre-push checks passed.
 """
         findings = push_report.parse_log_text(clean_text)
         self.assertEqual(findings, {})
@@ -106,7 +106,7 @@ Result (194 files):
 
     def test_deps_and_cli_tools(self) -> None:
         log_text = """
-  ⚠  advisory @supabase/supabase-js: wom7ext @ ^2.87.1 (target ^2.110.7) — 23 minors behind
+  ⚠  advisory @supabase/supabase-js: w0m-ext @ ^2.87.1 (target ^2.110.7) — 23 minors behind
   ⚠  1 CLI tool update(s) available (1 auto): gcloud
      `just tools-upgrade --apply` (auto subset)
 """
@@ -133,18 +133,18 @@ Result (194 files):
     def test_ratchets_and_hooks(self) -> None:
         log_text = """
   ·  join: 12 errors, at baseline
-  ℹ  web/typecheck (pre-push) wired from ANOTHER repo: wom7ext/.pre-commit-config.yaml
+  ℹ  web/typecheck (pre-push) wired from ANOTHER repo: w0m-ext/.pre-commit-config.yaml
 """
         findings = push_report.parse_log_text(log_text)
         self.assertIn("ratchets", findings)
         self.assertIn("hooks", findings)
         self.assertTrue(any("join: 12 errors" in item for item in findings["ratchets"]))
-        self.assertTrue(any("wom7ext/.pre-commit-config.yaml" in item for item in findings["hooks"]))
+        self.assertTrue(any("w0m-ext/.pre-commit-config.yaml" in item for item in findings["hooks"]))
 
     def test_format_report_banner(self) -> None:
         findings = {
             "astro-check": ["src/pages/jobs/[id].astro: unused 'res', 'error'"],
-            "dependencies": ["@supabase/supabase-js: wom7ext @ ^2.87.1 (23 minors behind)"],
+            "dependencies": ["@supabase/supabase-js: w0m-ext @ ^2.87.1 (23 minors behind)"],
         }
         report = push_report.format_report(findings)
         self.assertIn("PRE-PUSH FINAL REPORT", report)

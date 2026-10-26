@@ -42,9 +42,9 @@ def _redact_pg(s):
 
 # ── repo layout (self-locating: this file is @wom/scripts/w0m_audit.py) ──
 MONO_ROOT = Path(__file__).resolve().parents[1]         # …/@wom
-WEB_ROOT = MONO_ROOT / "wom7web"                        # wom7web/
+WEB_ROOT = MONO_ROOT / "w0m-web"                        # w0m-web/
 SDLC_JSON = MONO_ROOT / ".w0m" / "sdlc.json"
-API_ROOT = MONO_ROOT / "wom7api"
+API_ROOT = MONO_ROOT / "w0m-api"
 
 APPS = {  # app → public host serving /api/health
     "web": "https://webomage.com",
@@ -357,9 +357,9 @@ def check_health():
             add(FAIL, "health", app, f"unreachable ({type(e).__name__})")
     try:
         status, _ = http_json(WORKER_HEALTH)
-        add(PASS if status == 200 else FAIL, "health", "wom7func", f"HTTP {status}")
+        add(PASS if status == 200 else FAIL, "health", "w0m-cf", f"HTTP {status}")
     except Exception as e:  # noqa: BLE001
-        add(FAIL, "health", "wom7func", f"unreachable ({type(e).__name__})")
+        add(FAIL, "health", "w0m-cf", f"unreachable ({type(e).__name__})")
 
 
 # ── SECURITY: browser-reputation state (T120 AC6) ──────────────────────────────────
@@ -594,7 +594,7 @@ def check_platform_security():
 
 
 # ── DEEP (DB / infisical-backed, optional) ─────────────────────────────────────────
-REPOS = ("wom7web", "wom7api", "wom7func", "wom7ext")
+REPOS = ("w0m-web", "w0m-api", "w0m-cf", "w0m-ext")
 
 
 def check_migrations():

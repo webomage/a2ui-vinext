@@ -55,30 +55,30 @@ class TestStalePathCheck(unittest.TestCase):
     def test_red_dangling_justfile_delegate_target(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            sub = root / "wom7web"
+            sub = root / "w0m-web"
             sub.mkdir()
             (sub / "justfile").write_text("existing-recipe:\n    @echo ok\n", encoding="utf-8")
             jf = root / "justfile"
             jf.write_text(
                 "forward-missing:\n"
-                "    @just --justfile wom7web/justfile missing-target\n",
+                "    @just --justfile w0m-web/justfile missing-target\n",
                 encoding="utf-8",
             )
             buf = io.StringIO()
             with redirect_stdout(buf):
                 rc = spc.main(["--root", str(root), "--justfile", str(jf), "--strict-forwarders"])
             self.assertEqual(rc, 1, buf.getvalue())
-            self.assertIn("dangling `--justfile wom7web/justfile missing-target`", buf.getvalue())
+            self.assertIn("dangling `--justfile w0m-web/justfile missing-target`", buf.getvalue())
 
     def test_green_justfile_with_continuations_cd_and_echo_prose(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "scripts").mkdir()
             (root / "scripts" / "real_tool.py").write_text("#!/usr/bin/env python3\n", encoding="utf-8")
-            sub = root / "wom7web" / "project" / "scripts"
+            sub = root / "w0m-web" / "project" / "scripts"
             sub.mkdir(parents=True)
             (sub / "web_tool.py").write_text("#!/usr/bin/env python3\n", encoding="utf-8")
-            (root / "wom7web" / "justfile").write_text("sub-ok:\n    @echo ok\n", encoding="utf-8")
+            (root / "w0m-web" / "justfile").write_text("sub-ok:\n    @echo ok\n", encoding="utf-8")
 
             jf = root / "justfile"
             jf.write_text(
@@ -86,9 +86,9 @@ class TestStalePathCheck(unittest.TestCase):
                 "    # comment mentioning python3 scripts/comment_only.py\n"
                 "    @echo \"Run python3 scripts/prose_only.py; then check\"\n"
                 "    @python3 scripts/real_tool.py\n"
-                "    @cd wom7web \\\n"
+                "    @cd w0m-web \\\n"
                 "      && python3 project/scripts/web_tool.py\n"
-                "    @just --justfile wom7web/justfile sub-ok\n",
+                "    @just --justfile w0m-web/justfile sub-ok\n",
                 encoding="utf-8",
             )
             buf = io.StringIO()

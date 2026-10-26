@@ -126,7 +126,7 @@ def main() -> int:
     # 4. validate_content: green against real blueprints + red probe on forbidden layout / missing title
     real_bp_errors = validate_content.validate_blueprints(validate_content.DEFAULT_BLUEPRINTS_DIR)
     if not _check(
-        "validate_content passes against tracked wom7web blueprints",
+        "validate_content passes against tracked w0m-web blueprints",
         len(real_bp_errors) == 0,
         f"errors={real_bp_errors[:2]}",
     ):
@@ -144,10 +144,10 @@ def main() -> int:
         ):
             failures += 1
 
-    # 5. validate_tracks: green against real wom7api/design/tracks.yml + red probe on malformed track
+    # 5. validate_tracks: green against real w0m-api/design/tracks.yml + red probe on malformed track
     ok_tracks, track_ids = validate_tracks.validate_tracks_file()
     if not _check(
-        "validate_tracks passes against tracked wom7api/design/tracks.yml",
+        "validate_tracks passes against tracked w0m-api/design/tracks.yml",
         ok_tracks and len(track_ids) >= 3,
         f"tracks={track_ids}",
     ):

@@ -12,17 +12,17 @@
       "runtime": {
         "substrate": "host"
       },
-      "note": "T294 \u2014 the estate is a WORKSPACE of seven repos, not the single repo `wom7web` it was declared as until 2026-09-02. Declaring it as one repo made the estate's own shape invisible to its own registry, and left T268's workspace mode with zero production users despite ten passing probes. `repos` is imported from graph_health.REPOS rather than retyped \u2014 mlx is nested at wom7mlx/wom7mlx, so a hand-written list gets it wrong in the one place that hard-fails. `canonical_repo: wom7web` keeps the contract (.w0m/sdlc.json) where its readers already expect it \u2014 wom7api/scripts/supabase_limits.py resolves it from a hardcoded wom7web path.",
+      "note": "T294 \u2014 the estate is a WORKSPACE of seven repos, not the single repo `wom7web` it was declared as until 2026-09-02. Declaring it as one repo made the estate's own shape invisible to its own registry, and left T268's workspace mode with zero production users despite ten passing probes. `repos` is imported from graph_health.REPOS rather than retyped \u2014 mlx is nested at w0m-mlx/w0m-mlx, so a hand-written list gets it wrong in the one place that hard-fails. `canonical_repo: w0m-web` keeps the contract (.w0m/sdlc.json) where its readers already expect it \u2014 w0m-api/scripts/supabase_limits.py resolves it from a hardcoded w0m-web path.",
       "repos": {
-        "wom7api": "wom7api",
-        "wom7func": "wom7func",
-        "wom7ext": "wom7ext",
-        "wom7mlx": "wom7mlx/wom7mlx",
-        "wom7sec": "wom7sec",
-        "wom7skills": "wom7skills",
-        "wom7web": "wom7web"
+        "w0m-api": "w0m-api",
+        "w0m-cf": "w0m-cf",
+        "w0m-ext": "w0m-ext",
+        "w0m-mlx": "w0m-mlx/w0m-mlx",
+        "w0m-sec": "w0m-sec",
+        "w0m-skills": "w0m-skills",
+        "w0m-web": "w0m-web"
       },
-      "canonical_repo": "wom7web",
+      "canonical_repo": ".",
       "identity": {
         "git_user_name": "Aleksei Tcelishchev",
         "git_user_email": "casualuser@gmail.com",
@@ -39,7 +39,7 @@
       "org_slug": "1945-social-club",
       "knowledge_hub": {
         "vault_slug": "1945",
-        "corpus_root": "wom7web/projects/1945/vault",
+        "corpus_root": "w0m-web/projects/1945/vault",
         "allowed_prefixes": [
           "index.md",
           "mocs/",
@@ -105,7 +105,7 @@
       "project_slug": "artemio-quiero-comer",
       "knowledge_hub": {
         "vault_slug": "artemio",
-        "corpus_root": "wom7web/projects/artemio/vault",
+        "corpus_root": "w0m-web/projects/artemio/vault",
         "allowed_prefixes": [
           "index.md",
           "mocs/",
@@ -707,7 +707,7 @@
         },
         "supabase_limits": {
           "status": "out",
-          "reason": "Estate-only and provably so: wom7api/scripts/supabase_limits.py reads it from a HARDCODED wom7web path, so a client's declaration could not be read even if written."
+          "reason": "Estate-only and provably so: w0m-api/scripts/supabase_limits.py reads it from a HARDCODED w0m-web path, so a client's declaration could not be read even if written."
         },
         "milestones": {
           "status": "out",
@@ -724,6 +724,10 @@
         "cloud_compute": {
           "status": "out",
           "reason": "Governs the w0m estate's remote cloud compute and agent execution environments (T305); client compute is tracked via external_services (T272)."
+        },
+        "change_classification": {
+          "status": "out",
+          "reason": "Governs the estate T-id commit-msg ticket gate (T129 AC3/AC4 in scripts/conventional_commit.py); ticketing does not apply to this tier."
         }
       },
       "non_contract_surfaces": {
@@ -874,7 +878,7 @@
         },
         "supabase_limits": {
           "status": "out",
-          "reason": "Estate-only and provably so: wom7api/scripts/supabase_limits.py reads it from a HARDCODED wom7web path, so a client's declaration could not be read even if written."
+          "reason": "Estate-only and provably so: w0m-api/scripts/supabase_limits.py reads it from a HARDCODED w0m-web path, so a client's declaration could not be read even if written."
         },
         "milestones": {
           "status": "out",
@@ -891,6 +895,10 @@
         "cloud_compute": {
           "status": "out",
           "reason": "Governs the w0m estate's remote cloud compute and agent execution environments (T305); client compute is tracked via external_services (T272)."
+        },
+        "change_classification": {
+          "status": "out",
+          "reason": "Governs the estate T-id commit-msg ticket gate (T129 AC3/AC4 in scripts/conventional_commit.py); ticketing does not apply to this tier."
         }
       },
       "non_contract_surfaces": {

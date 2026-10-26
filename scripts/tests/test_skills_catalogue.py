@@ -20,7 +20,7 @@ import json, os, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 
 # 🔑 Corpus assertions are read from the REGISTRY, never hardcoded. Onboarding servicios777 and
 # personaje0 (T182 AC7) broke four suites at once because each asserted a fixed project set — a

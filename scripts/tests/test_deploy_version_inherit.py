@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ONE deploy version across nested `just` processes (T431 run 7).
 
-deploy-all spawns several `just` processes (root → `wom7api/justfile supabase-redeploy-all` → root
+deploy-all spawns several `just` processes (root → `w0m-api/justfile supabase-redeploy-all` → root
 `deploy-functions`). `deploy_version` was a bare backtick, which runs once per PROCESS, so each hop
 re-ran `date`: the functions were stamped 11 minutes after the apps and the transcript was named after
 a version `deploy_log` never recorded. The fix exports the version from the outermost invocation.
@@ -33,19 +33,19 @@ class DeployVersionInherit(unittest.TestCase):
 
     def test_nested_just_inherits_the_outer_version(self):
         out = just("--justfile", "justfile", "--command", "sh", "-c",
-                   'echo "$W0M_DEPLOY_VERSION"; sleep 1.2; just --justfile wom7api/justfile --evaluate deploy_version').split("\n")
+                   'echo "$W0M_DEPLOY_VERSION"; sleep 1.2; just --justfile w0m-api/justfile --evaluate deploy_version').split("\n")
         outer, inner = out[0].strip(), out[-1].strip()
         self.assertRegex(outer, VERSION_RE)
         self.assertEqual(outer, inner, "a nested `just` minted its own version — the run-7 split")
 
     def test_both_justfiles_honour_an_inherited_version(self):
         v = "2026.01.01-1767225600"
-        for jf in ("justfile", "wom7api/justfile"):
+        for jf in ("justfile", "w0m-api/justfile"):
             self.assertEqual(just("--justfile", jf, "--evaluate", "deploy_version",
                                   env={"W0M_DEPLOY_VERSION": v}), v, jf)
 
     def test_a_standalone_run_still_mints_a_valid_version(self):
-        for jf in ("justfile", "wom7api/justfile"):
+        for jf in ("justfile", "w0m-api/justfile"):
             self.assertRegex(just("--justfile", jf, "--evaluate", "deploy_version"), VERSION_RE)
 
 

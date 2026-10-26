@@ -75,7 +75,7 @@
     },
     "exempt": {
       "type": "object",
-      "description": "Stacks/repos with no build or tool interface at all (prose-only) — skipped by enforcement AND discovery. This is the TOOLCHAIN-dimension exempt, distinct from .w0m/sdlc.json toolchain.exempt (which is secrets-scoped): a repo can be secrets-exempt yet still have a real tool-driven stack here (e.g. wom7skills, wom7ext, wom7sec). T135: the value is a REQUIRED, substantive reason — an exemption is a decision and a decision without a recorded reason cannot be re-evaluated. A bare repo name, an empty string or a restatement of the key fails validation.",
+      "description": "Stacks/repos with no build or tool interface at all (prose-only) — skipped by enforcement AND discovery. This is the TOOLCHAIN-dimension exempt, distinct from .w0m/sdlc.json toolchain.exempt (which is secrets-scoped): a repo can be secrets-exempt yet still have a real tool-driven stack here (e.g. w0m-skills, w0m-ext, w0m-sec). T135: the value is a REQUIRED, substantive reason — an exemption is a decision and a decision without a recorded reason cannot be re-evaluated. A bare repo name, an empty string or a restatement of the key fails validation.",
       "additionalProperties": {
         "type": "string",
         "minLength": 25,
@@ -119,7 +119,7 @@
           },
           "justfile": {
             "type": "string",
-            "description": "The justfile hosting this stack's recipes, relative to the workspace root. web/worker/edge/skills/cf resolve against the canonical wom7api/justfile; ext/sec/mlx have their own."
+            "description": "The justfile hosting this stack's recipes, relative to the workspace root. web/worker/edge/skills/cf resolve against the canonical w0m-api/justfile; ext/sec/mlx have their own."
           },
           "techs": {
             "type": "array",

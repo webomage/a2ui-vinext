@@ -6,9 +6,9 @@
       "runtimeExecutable": "just",
       "runtimeArgs": [
         "--justfile",
-        "wom7api/justfile",
+        "w0m-api/justfile",
         "--working-directory",
-        "wom7api",
+        "w0m-api",
         "dev"
       ],
       "port": 4321
@@ -18,7 +18,7 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [
         "-C",
-        "wom7web",
+        "w0m-web",
         "--filter",
         "demo",
         "dev"
@@ -30,9 +30,9 @@
       "runtimeExecutable": "just",
       "runtimeArgs": [
         "--justfile",
-        "wom7api/justfile",
+        "w0m-api/justfile",
         "--working-directory",
-        "wom7api",
+        "w0m-api",
         "dev-cp"
       ],
       "port": 4325
@@ -45,7 +45,7 @@
         "http.server",
         "4399",
         "--directory",
-        "wom7web/docs"
+        "w0m-web/docs"
       ],
       "port": 4399
     }

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""T527 — state-check at root push, repointed wom7web pre-push, hook scope probe, and ticket row check.
+"""T527 — state-check at root push, repointed w0m-web pre-push, hook scope probe, and ticket row check.
 
 Verifies all 4 acceptance criteria of T527:
   - AC1: The root repo's push runs `state-check` when its range touches `STATE.md`, `TASKS.md`,
          `.tasks/`, or `ROADMAP.md`, and fails the push on drift.
          Red probe: a root push range that adds a ticket with no board row is refused.
-  - AC2: `wom7web/.husky/pre-push` step 17 (`state-check`) and ticket-sync trigger are repointed
+  - AC2: `w0m-web/.husky/pre-push` step 17 (`state-check`) and ticket-sync trigger are repointed
          to `@wom` (`git -C ..`), contain no dead `project/tickets/` branch (AgDR-0025), and name
          the repo they inspect (`@wom`).
   - AC3: `hooks_check.check_hook_scope_paths` pins hook path scopes against the real repo layout
@@ -26,7 +26,7 @@ import unittest
 from pathlib import Path
 
 MONO_ROOT = Path(__file__).resolve().parents[2]
-WEB_ROOT = MONO_ROOT / "wom7web"
+WEB_ROOT = MONO_ROOT / "w0m-web"
 
 sys.path.insert(0, str(MONO_ROOT / "scripts"))
 
@@ -195,11 +195,11 @@ class TestT527StateCheckPush(unittest.TestCase):
 
     # ── AC2 ───────────────────────────────────────────────────────────────────────
 
-    def test_ac2_wom7web_pre_push_repointed_to_root_and_no_dead_project_tickets_branch(self) -> None:
-        """AC2: wom7web/.husky/pre-push has no dead project/tickets/ branch and names @wom (`git -C ..`)."""
+    def test_ac2_w0m_web_pre_push_repointed_to_root_and_no_dead_project_tickets_branch(self) -> None:
+        """AC2: w0m-web/.husky/pre-push has no dead project/tickets/ branch and names @wom (`git -C ..`)."""
         pre_push_text = (WEB_ROOT / ".husky" / "pre-push").read_text(encoding="utf-8")
 
-        # No dead `project/tickets/` branch anywhere in wom7web/.husky/pre-push (AgDR-0025)
+        # No dead `project/tickets/` branch anywhere in w0m-web/.husky/pre-push (AgDR-0025)
         self.assertNotIn("project/tickets", pre_push_text)
 
         # Step 17 (`state-check`) explicitly inspects `..` (@wom root repo) and names `@wom`
@@ -221,10 +221,10 @@ class TestT527StateCheckPush(unittest.TestCase):
         real_findings = hc.check_hook_scope_paths(MONO_ROOT)
         self.assertEqual(real_findings, [], f"Unexpected findings on real estate: {real_findings}")
 
-        # Red probe 1: wom7web/.husky/pre-push grepping wom7web's own diff for project/tickets/
+        # Red probe 1: w0m-web/.husky/pre-push grepping w0m-web's own diff for project/tickets/
         fx_web = self.tmp / "fx_web"
-        (fx_web / "wom7web" / ".husky").mkdir(parents=True, exist_ok=True)
-        (fx_web / "wom7web" / ".husky" / "pre-push").write_text(
+        (fx_web / "w0m-web" / ".husky").mkdir(parents=True, exist_ok=True)
+        (fx_web / "w0m-web" / ".husky" / "pre-push").write_text(
             "#!/bin/sh\n"
             '_pushed_files=$(git diff --name-only "origin/$_branch" HEAD)\n'
             'if echo "$_pushed_files" | grep -qE "^(STATE\\.md|TASKS\\.md|project/tickets/|\\.tasks/|ROADMAP\\.md)"; then\n'
@@ -234,14 +234,14 @@ class TestT527StateCheckPush(unittest.TestCase):
         )
         findings_1 = hc.check_hook_scope_paths(fx_web)
         self.assertTrue(
-            any("project/tickets" in f and "wom7web" in f for f in findings_1),
-            f"Expected project/tickets finding in wom7web, got: {findings_1}",
+            any("project/tickets" in f and "w0m-web" in f for f in findings_1),
+            f"Expected project/tickets finding in w0m-web, got: {findings_1}",
         )
 
-        # Red probe 2: pre-commit files: filter targeting ^project/tickets/ in wom7web
+        # Red probe 2: pre-commit files: filter targeting ^project/tickets/ in w0m-web
         fx_pc = self.tmp / "fx_pc"
-        (fx_pc / "wom7web").mkdir(parents=True, exist_ok=True)
-        (fx_pc / "wom7web" / ".pre-commit-config.yaml").write_text(
+        (fx_pc / "w0m-web").mkdir(parents=True, exist_ok=True)
+        (fx_pc / "w0m-web" / ".pre-commit-config.yaml").write_text(
             "repos:\n"
             "  - repo: local\n"
             "    hooks:\n"
@@ -254,16 +254,16 @@ class TestT527StateCheckPush(unittest.TestCase):
         )
         findings_2 = hc.check_hook_scope_paths(fx_pc)
         self.assertTrue(
-            any("project/tickets" in f and "wom7web" in f for f in findings_2),
+            any("project/tickets" in f and "w0m-web" in f for f in findings_2),
             f"Expected pre-commit scope finding, got: {findings_2}",
         )
 
-        # Green probe: wom7web/.husky/pre-push using `git -C .. diff` when @wom has the tracking surfaces
+        # Green probe: w0m-web/.husky/pre-push using `git -C .. diff` when @wom has the tracking surfaces
         (fx_web / "STATE.md").write_text("# STATE\n", encoding="utf-8")
         (fx_web / "TASKS.md").write_text("# TASKS\n", encoding="utf-8")
         (fx_web / ".tasks").mkdir(parents=True, exist_ok=True)
         (fx_web / "ROADMAP.md").write_text("# ROADMAP\n", encoding="utf-8")
-        (fx_web / "wom7web" / ".husky" / "pre-push").write_text(
+        (fx_web / "w0m-web" / ".husky" / "pre-push").write_text(
             "#!/bin/sh\n"
             '_pushed_files=$(git -C .. diff --name-only "origin/$_branch" HEAD)\n'
             'if echo "$_pushed_files" | grep -qE "^(STATE\\.md|TASKS\\.md|\\.tasks/|ROADMAP\\.md)"; then\n'

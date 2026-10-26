@@ -26,7 +26,7 @@ from typing import Any
 
 ESTATE_ROOT = Path(__file__).resolve().parent.parent
 POLICY_PATH = ESTATE_ROOT / "project" / "policies" / "clients-policy.json"
-MIGRATIONS_DIR = ESTATE_ROOT / "wom7api" / "supabase" / "migrations"
+MIGRATIONS_DIR = ESTATE_ROOT / "w0m-api" / "supabase" / "migrations"
 
 REQUIRED_IDENTITIES = (
     "aleksei-personal",

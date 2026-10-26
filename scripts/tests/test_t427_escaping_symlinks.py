@@ -35,19 +35,19 @@ def test_w0m_root_fails_closed_when_env_points_to_invalid_dir() -> None:
             w0m_root.resolve_w0m_root(require_env=True, env={"W0M_ROOT": tmpdir})
 
 
-def test_wom7api_and_wom7func_have_zero_escaping_tracked_symlinks() -> None:
-    for repo in ("wom7api", "wom7func", "wom7ext", "wom7sec", "wom7skills", "wom7mlx/wom7mlx"):
+def test_w0m_api_and_w0m_cf_have_zero_escaping_tracked_symlinks() -> None:
+    for repo in ("w0m-api", "w0m-cf", "w0m-ext", "w0m-sec", "w0m-skills", "w0m-mlx/w0m-mlx"):
         repo_path = ROOT / repo
         escaping = w0m_root.find_escaping_tracked_symlinks(repo_path)
         assert escaping == [], f"{repo} still contains escaping tracked symlinks: {escaping}"
 
 
-def test_justfiles_export_w0m_root_and_wom7func_justfile_is_not_symlink() -> None:
-    func_justfile = ROOT / "wom7func" / "justfile"
+def test_justfiles_export_w0m_root_and_w0m_cf_justfile_is_not_symlink() -> None:
+    func_justfile = ROOT / "w0m-cf" / "justfile"
     assert func_justfile.is_file()
-    assert not func_justfile.is_symlink(), "wom7func/justfile must be a real file, not a symlink"
+    assert not func_justfile.is_symlink(), "w0m-cf/justfile must be a real file, not a symlink"
 
-    for jf in (ROOT / "justfile", ROOT / "wom7api" / "justfile", func_justfile):
+    for jf in (ROOT / "justfile", ROOT / "w0m-api" / "justfile", func_justfile):
         content = jf.read_text(encoding="utf-8")
         assert "export W0M_ROOT :=" in content, f"{jf} must export W0M_ROOT"
 
@@ -55,8 +55,8 @@ def test_justfiles_export_w0m_root_and_wom7func_justfile_is_not_symlink() -> Non
 def test_removed_escaping_symlinks_remain_absent() -> None:
     removed_api = [".agent", ".codex", ".gemini", ".kilocode"]
     for rel in removed_api:
-        p = ROOT / "wom7api" / rel
-        assert not p.exists() and not p.is_symlink(), f"wom7api/{rel} must remain removed"
+        p = ROOT / "w0m-api" / rel
+        assert not p.exists() and not p.is_symlink(), f"w0m-api/{rel} must remain removed"
 
     removed_web = [
         "project/doc-format-policy.json",
@@ -69,5 +69,5 @@ def test_removed_escaping_symlinks_remain_absent() -> None:
         "project/templates/ticket.md",
     ]
     for rel in removed_web:
-        p = ROOT / "wom7web" / rel
-        assert not p.exists() and not p.is_symlink(), f"wom7web/{rel} must remain removed"
+        p = ROOT / "w0m-web" / rel
+        assert not p.exists() and not p.is_symlink(), f"w0m-web/{rel} must remain removed"

@@ -32,13 +32,13 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
     for parent in [cur] + list(cur.parents):
         if (parent / ".tasks").is_dir() and (parent / ".w0m").is_dir():
             return parent
-        if (parent / ".git").exists() and (parent / "wom7web").is_dir():
+        if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return Path(__file__).resolve().parents[1]
 
 
 WOM = find_workspace_root()
-CANONICAL = WOM / "wom7web"
+CANONICAL = WOM / "w0m-web"
 SDLC_JSON = WOM / ".w0m" / "sdlc.json"
 
 # A path token: has a slash and a file-ish extension. Deliberately conservative —
@@ -63,7 +63,7 @@ IGNORE = re.compile(r"^(https?:|node_modules/|package\.json$)")
 def repos() -> list[Path]:
     """Resolve every estate repo from `sdlc.json → repos`.
 
-    🔴 **`repos` maps ALIAS → DIRECTORY** — `{"web": "wom7web", "mlx": "wom7mlx/wom7mlx", …}`.
+    🔴 **`repos` maps ALIAS → DIRECTORY** — `{"web": "w0m-web", "mlx": "w0m-mlx/w0m-mlx", …}`.
     Iterating it yields the ALIASES, and `@wom/web` is not a directory, so the original
     `for name in cfg.get("repos")` matched **nothing** and fell through to a silent
     `return out or [CANONICAL]`. ⇒ **This checker searched 1 repo of 7 while printing
@@ -101,7 +101,7 @@ def tracked(repo: Path) -> set[str]:
     """Git-tracked paths, repo-relative.
 
     ⚠️ `-z` and `splitlines()`-free parsing are deliberate: `git ls-files` separates with
-    newlines and **filenames may contain spaces** (15 do in `wom7web`). The original
+    newlines and **filenames may contain spaces** (15 do in `w0m-web`). The original
     `stdout.split()` shredded those into fragments, so they could never resolve *and* their
     pieces polluted the basename index.
     """
@@ -127,17 +127,17 @@ def main() -> int:
     index: dict[str, set[str]] = {r.name: tracked(r) for r in repo_paths}
     roots: dict[str, Path] = {r.name: r for r in repo_paths}
     # Two accepted qualifiers per repo: its estate-relative directory AND its bare name. They
-    # differ only for the nested `wom7mlx/wom7mlx`, and tickets legitimately use both — T135
-    # writes `wom7mlx/Cargo.toml` and says so explicitly ("relative to the declared repo root").
-    # Longest first so `wom7mlx/wom7mlx` is stripped before the bare `wom7mlx` would swallow it.
+    # differ only for the nested `w0m-mlx/w0m-mlx`, and tickets legitimately use both — T135
+    # writes `w0m-mlx/Cargo.toml` and says so explicitly ("relative to the declared repo root").
+    # Longest first so `w0m-mlx/w0m-mlx` is stripped before the bare `w0m-mlx` would swallow it.
     prefixes = sorted(
         {(str(r.relative_to(WOM)), r.name) for r in repo_paths}
         | {(r.name, r.name) for r in repo_paths},
         key=lambda t: -len(t[0]),
     )
 
-    # Display with the estate-relative directory, never the bare name: for `wom7mlx` the bare
-    # name yields `wom7mlx/Cargo.toml`, which is not a path that exists on disk.
+    # Display with the estate-relative directory, never the bare name: for `w0m-mlx` the bare
+    # name yields `w0m-mlx/Cargo.toml`, which is not a path that exists on disk.
     reldir = {r.name: str(r.relative_to(WOM)) for r in repo_paths}
     by_basename: dict[str, list[str]] = {}
     if (WOM / ".git").exists():
@@ -161,7 +161,7 @@ def main() -> int:
         """Tracked anywhere, as written or repo-qualified?
 
         🔑 The index is **repo-relative**, but tickets routinely cite repo-QUALIFIED paths
-        (`wom7web/project/scripts/w0m_audit.py`). Testing the qualified string against
+        (`w0m-web/project/scripts/w0m_audit.py`). Testing the qualified string against
         repo-relative entries never matched, so an exact hit fell through to the basename
         lookup — which returned the identical path and printed it as `DRIFT`. A tool that
         reports a correct path as drift teaches you to ignore it.

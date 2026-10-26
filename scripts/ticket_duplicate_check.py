@@ -52,7 +52,7 @@ STOPWORDS = {
     "acceptance", "criteria", "verify", "verification", "implement", "update",
     "author", "ensure", "check", "cleanly", "organically", "passes", "pass",
     "per", "spec", "standard", "filed", "directive", "owner", "summary",
-    "ticket", "tickets", "wom7web", "wom7api", "w0m", "task", "work", "delivers",
+    "ticket", "tickets", "w0m-web", "w0m-api", "w0m", "task", "work", "delivers",
 }
 
 # Technical distinct phrases that strongly signal identity when co-occurring
@@ -60,7 +60,7 @@ TECHNICAL_KEY_PHRASES = [
     "aes-256-gcm", "withservicerole", "client-profile-check", "client-inventory-test",
     "status-dashboard", "push_report", "sync_manifest_versions", "ticket_id_align_check",
     "dead-code", "admin-guard", "upwork-poller", "cloud-proxy", "headroom",
-    "openrouter", "wom7func", "wom7cfworkers", "code-review-graph", "crg-serve",
+    "openrouter", "w0m-cf", "w0m-cf", "code-review-graph", "crg-serve",
     "social_integrations", "ports-policy", "ticket_duplicate_check",
 ]
 

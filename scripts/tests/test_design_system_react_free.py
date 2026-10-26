@@ -26,7 +26,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB_ROOT = ROOT / "wom7web"
+WEB_ROOT = ROOT / "w0m-web"
 DS_ROOT = WEB_ROOT / "design-system"
 COMPONENTS_DIR = DS_ROOT / "components"
 

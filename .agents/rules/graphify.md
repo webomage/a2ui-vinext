@@ -9,8 +9,8 @@ This project maintains pre-built, high-performance AST and semantic knowledge gr
 **Entrypoint for graph tools: `docs/KNOWLEDGE-GRAPH.md` (or run `just ask "<question>"`).**
 
 Rules & Fast Query Commands:
-- **Default first action before Grep:** Run `just ask "<symbols>"` to query `codegraph` across all repos + `graphify` in `wom7web`.
-- **Semantic entity search:** Run `just graph-query "<query>" [repo|global]` to query graph nodes and relationships (defaults to `wom7web`, or pass `global` for all 7 estate repos).
+- **Default first action before Grep:** Run `just ask "<symbols>"` to query `codegraph` across all repos + `graphify` in `w0m-web`.
+- **Semantic entity search:** Run `just graph-query "<query>" [repo|global]` to query graph nodes and relationships (defaults to `w0m-web`, or pass `global` for all 7 estate repos).
 - **Concept explanations:** Run `just graph-explain "<concept>" [repo|global]` to inspect community, degrees, and immediate incoming/outgoing edges.
 - **Relationship paths:** Run `just graph-path "<A>" "<B>" [repo|global]` to find direct connection paths between symbols/concepts.
 - **Blast radius & impact analysis:** Run `just graph-affected "<symbol>" [depth] [repo|global]` to inspect upstream dependents before refactoring.

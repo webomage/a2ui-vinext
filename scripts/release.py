@@ -398,15 +398,15 @@ def provision_worktree_fixtures(root: Path) -> None:
             if not df.exists():
                 shutil.copy2(f, df)
 
-    # 3. Credential snapshot (gitignored in wom7web/.gitignore)
-    cred_src = Repo("wom7web").abs() / "project" / "credential-snapshot.json"
-    cred_dst = Repo("wom7web").abs(root) / "project" / "credential-snapshot.json"
+    # 3. Credential snapshot (gitignored in w0m-web/.gitignore)
+    cred_src = Repo("w0m-web").abs() / "project" / "credential-snapshot.json"
+    cred_dst = Repo("w0m-web").abs(root) / "project" / "credential-snapshot.json"
     if cred_src.exists() and not cred_dst.exists():
         shutil.copy2(cred_src, cred_dst)
 
-    # 4. Audit reports (gitignored in wom7web/.gitignore)
-    audit_src = Repo("wom7web").abs() / "docs" / "audit_and_research"
-    audit_dst = Repo("wom7web").abs(root) / "docs" / "audit_and_research"
+    # 4. Audit reports (gitignored in w0m-web/.gitignore)
+    audit_src = Repo("w0m-web").abs() / "docs" / "audit_and_research"
+    audit_dst = Repo("w0m-web").abs(root) / "docs" / "audit_and_research"
     if audit_src.exists():
         audit_dst.mkdir(parents=True, exist_ok=True)
         for f in audit_src.glob("W0M-STATUS-*.md"):
@@ -414,15 +414,15 @@ def provision_worktree_fixtures(root: Path) -> None:
             if not df.exists():
                 shutil.copy2(f, df)
 
-    # 5. mmd-validate node_modules (gitignored in wom7skills/.gitignore)
-    mmd_src = Repo("wom7skills").abs() / "skills" / "mmd-validate" / "node_modules"
-    mmd_dst = Repo("wom7skills").abs(root) / "skills" / "mmd-validate" / "node_modules"
+    # 5. mmd-validate node_modules (gitignored in w0m-skills/.gitignore)
+    mmd_src = Repo("w0m-skills").abs() / "skills" / "mmd-validate" / "node_modules"
+    mmd_dst = Repo("w0m-skills").abs(root) / "skills" / "mmd-validate" / "node_modules"
     if mmd_src.exists() and not mmd_dst.exists():
         mmd_dst.symlink_to(mmd_src)
 
-    # 6. apps/web/src/.generated snapshots (gitignored in wom7web/.gitignore)
-    gen_src = Repo("wom7web").abs() / "apps" / "web" / "src" / ".generated"
-    gen_dst = Repo("wom7web").abs(root) / "apps" / "web" / "src" / ".generated"
+    # 6. apps/web/src/.generated snapshots (gitignored in w0m-web/.gitignore)
+    gen_src = Repo("w0m-web").abs() / "apps" / "web" / "src" / ".generated"
+    gen_dst = Repo("w0m-web").abs(root) / "apps" / "web" / "src" / ".generated"
     if gen_src.exists():
         gen_dst.mkdir(parents=True, exist_ok=True)
         for f in gen_src.glob("*.json"):
@@ -476,11 +476,11 @@ def drift(v: str) -> list[str]:
         if dirty:
             # Expected deploy/test artifacts:
             # 1. root: deploy_logged regenerates CHANGELOG.md upon successful deploy
-            # 2. wom7web: smoke-live / goldens generate or update Gauge audit screenshots
+            # 2. w0m-web: smoke-live / goldens generate or update Gauge audit screenshots
             real_dirty = [
                 ln for ln in dirty.splitlines()
                 if not (path == "." and ln.strip().endswith("CHANGELOG.md"))
-                and not (path == "wom7web" and ("screenshots/audit/" in ln or "screenshots/" in ln))
+                and not (path == "w0m-web" and ("screenshots/audit/" in ln or "screenshots/" in ln))
             ]
             if real_dirty:
                 problems.append(f"{path}: changed since checkout: " + ", ".join(real_dirty[:5]))
@@ -1035,11 +1035,11 @@ def self_test() -> int:
             cases.append((f"rejects version {bad!r}", False))
         except SystemExit:
             cases.append((f"rejects version {bad!r}", True))
-    m = manifest_text(v, {".": "a" * 40, "wom7web": "b" * 40})
-    cases.append(("the tag message names every repo and its commit", "wom7web" in m and "b" * 40 in m and "a" * 40 in m))
+    m = manifest_text(v, {".": "a" * 40, "w0m-web": "b" * 40})
+    cases.append(("the tag message names every repo and its commit", "w0m-web" in m and "b" * 40 in m and "a" * 40 in m))
     repos = estate_repos()
     cases.append(("the umbrella is always part of a release, first", repos[0].path == "."))
-    cases.append(("declared repos are included (web, api)", {"wom7web", "wom7api"} <= {r.path for r in repos}))
+    cases.append(("declared repos are included (web, api)", {"w0m-web", "w0m-api"} <= {r.path for r in repos}))
     cases.append(("the release root is under ~/.w0m/releases, never a main checkout",
                   str(root_of(v)).startswith(str(RELEASES)) and not str(root_of(v)).startswith(str(Path.home() / "Projects"))))
     cases.append(("cut reads origin/beta, never HEAD or the working tree", "refs/remotes/origin/" in HERE.read_text()
@@ -1213,12 +1213,12 @@ def self_test() -> int:
         changed, _ = check_lockfile_changed("test", fake_repo, {"test": h1})
         cases.append(("lockfile detector detects modified lockfile content", changed is True))
 
-    manifest_shas = {".": "aaa", "wom7web": "bbb"}
+    manifest_shas = {".": "aaa", "w0m-web": "bbb"}
     e1 = evaluate_e2e(manifest_shas, None)
     cases.append(("evaluate_e2e reports untested when no result", e1["tested"] is False))
-    e2 = evaluate_e2e(manifest_shas, {"repos": {".": "aaa", "wom7web": "bbb"}, "passed": 50, "failed": 0})
+    e2 = evaluate_e2e(manifest_shas, {"repos": {".": "aaa", "w0m-web": "bbb"}, "passed": 50, "failed": 0})
     cases.append(("evaluate_e2e reports tested when repos match", e2["tested"] is True and e2["passed"] == 50))
-    e3 = evaluate_e2e(manifest_shas, {"repos": {".": "aaa", "wom7web": "ccc"}, "passed": 50, "failed": 0})
+    e3 = evaluate_e2e(manifest_shas, {"repos": {".": "aaa", "w0m-web": "ccc"}, "passed": 50, "failed": 0})
     cases.append(("evaluate_e2e reports untested when repos differ", e3["tested"] is False and "commits differ" in e3["reason"]))
 
     # Owner 2026-09-30: e2e-stable syncs first by default, and deploy-all can run e2e first (off by default).
@@ -1300,9 +1300,9 @@ def self_test() -> int:
                   str(confirmed_root()).startswith(str(CONFIRMED)) and not str(confirmed_root()).startswith(str(Path.home() / "Projects"))))
     c1 = evaluate_confirmed(manifest_shas, None)
     cases.append(("evaluate_confirmed reports unpromoted when no promoted.json", c1["confirmed"] is False and "stable-promote" in c1["reason"]))
-    c2 = evaluate_confirmed(manifest_shas, {"repos": {".": "aaa", "wom7web": "bbb"}, "promoted_at": "2026-10-18T00:00:00Z"})
+    c2 = evaluate_confirmed(manifest_shas, {"repos": {".": "aaa", "w0m-web": "bbb"}, "promoted_at": "2026-10-18T00:00:00Z"})
     cases.append(("evaluate_confirmed reports confirmed when repos match", c2["confirmed"] is True))
-    c3 = evaluate_confirmed(manifest_shas, {"repos": {".": "aaa", "wom7web": "ccc"}, "promoted_at": "2026-10-18T00:00:00Z"})
+    c3 = evaluate_confirmed(manifest_shas, {"repos": {".": "aaa", "w0m-web": "ccc"}, "promoted_at": "2026-10-18T00:00:00Z"})
     cases.append(("evaluate_confirmed reports behind origin/beta when repos differ", c3["confirmed"] is False and "behind origin/beta" in c3["reason"]))
     cases.append(("check_e2e_gate under require refuses when confirmed is behind origin/beta even if e2e passed",
                   raises(lambda: check_e2e_gate({"tested": True, "failed": 0}, "2026.10.18-1", c3, cfg={"e2e_gate": "require"}))))
@@ -1324,21 +1324,21 @@ def self_test() -> int:
             me, STABLE=fake_c, STABLE_LOCK=fake_c / ".lock", STABLE_E2E_RESULT=fake_e2e,
             CONFIRMED=fake_conf, CONFIRMED_ROOT=fake_conf / "w0m",
             CONFIRMED_LOCKFILES=fake_conf / ".lockfiles.json", CONFIRMED_PROMOTED=fake_promoted,
-            estate_repos=lambda: [Repo("."), Repo("wom7web")],
+            estate_repos=lambda: [Repo("."), Repo("w0m-web")],
             provision_worktree_fixtures=lambda root: None,
             git=fake_git))
 
         cases.append(("stable-promote refuses when no e2e-stable result exists", raises(lambda: stable_promote(install=False))))
-        fake_e2e.write_text(json.dumps({"repos": {".": "aaa", "wom7web": "bbb"}, "passed": 10, "failed": 1, "exit_code": 1}))
+        fake_e2e.write_text(json.dumps({"repos": {".": "aaa", "w0m-web": "bbb"}, "passed": 10, "failed": 1, "exit_code": 1}))
         cases.append(("stable-promote refuses when last e2e-stable result failed", raises(lambda: stable_promote(install=False))))
         fake_e2e.write_text(json.dumps({"repos": {".": "aaa"}, "passed": 10, "failed": 0, "exit_code": 0}))
         cases.append(("stable-promote refuses when e2e-stable result is missing a repo SHA", raises(lambda: stable_promote(install=False))))
-        fake_e2e.write_text(json.dumps({"repos": {".": "aaa", "wom7web": "bbb"}, "passed": 10, "failed": 0, "exit_code": 0, "timestamp": "2026-10-18T00:00:00Z"}))
+        fake_e2e.write_text(json.dumps({"repos": {".": "aaa", "w0m-web": "bbb"}, "passed": 10, "failed": 0, "exit_code": 0, "timestamp": "2026-10-18T00:00:00Z"}))
         with contextlib.redirect_stdout(io.StringIO()):
             promoted_path = stable_promote(install=False)
         promoted_data = json.loads(fake_promoted.read_text()) if fake_promoted.exists() else {}
         cases.append(("stable-promote advances confirmed worktree and writes promoted.json when e2e-stable passed",
-                      promoted_path == fake_conf / "w0m" and promoted_data.get("repos") == {".": "aaa", "wom7web": "bbb"}))
+                      promoted_path == fake_conf / "w0m" and promoted_data.get("repos") == {".": "aaa", "w0m-web": "bbb"}))
 
     for name, ok in cases:
         print(f"  {'✅' if ok else '❌'} {name}")

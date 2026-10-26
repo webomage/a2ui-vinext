@@ -7,7 +7,7 @@
     "managed": "project",
     "sandboxed": true,
     "_why_managed_project": "A project-scope skill is vendored into the repo, declared in the manifest and content-hashed in the lockfile — so a change to it shows up in review and in `w0m skill check`. A user-scope skill (~/.claude/skills) loads into sessions for that developer ONLY, is invisible to the repo, and is invisible to every gate: it cannot be diffed, hashed, or reviewed. Two developers can therefore run the same prompt against different instructions with nothing to detect it.",
-    "_why_sandboxed": "A skill can ship runnable files, and something else then invokes them by path — Artemio's `just idea-refine-init` did, and broke when upstream swapped the helper's language. `sandboxed: true` asserts that a skill's shipped code is only executed in an isolated environment, never directly on the host. Same meaning wom7sec already uses: no audited code executes on the host."
+    "_why_sandboxed": "A skill can ship runnable files, and something else then invokes them by path — Artemio's `just idea-refine-init` did, and broke when upstream swapped the helper's language. `sandboxed: true` asserts that a skill's shipped code is only executed in an isolated environment, never directly on the host. Same meaning w0m-sec already uses: no audited code executes on the host."
   },
 
   "defaults": {
@@ -49,7 +49,7 @@
     },
     "artemio:mmd-validate": {
       "sandboxed": false,
-      "reason": "Declared false because it IS false: the client recipe `lint-mmd` runs w0m's canonical `mmd-validate/validate.mjs` with `node` on the host, by an absolute path into the wom7skills checkout (not the vendored copy). The skill only parses diagrams and writes nothing (read 2026-09-30). The absolute path is a finding for the owner to repair in the client repo, which this policy does not touch (T521 AC8)."
+      "reason": "Declared false because it IS false: the client recipe `lint-mmd` runs w0m's canonical `mmd-validate/validate.mjs` with `node` on the host, by an absolute path into the w0m-skills checkout (not the vendored copy). The skill only parses diagrams and writes nothing (read 2026-09-30). The absolute path is a finding for the owner to repair in the client repo, which this policy does not touch (T521 AC8)."
     }
   }
 }

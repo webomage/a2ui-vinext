@@ -1,10 +1,10 @@
 flowchart TD
   subgraph SSOT["Authoritative Single Sources of Truth (SSOT)"]
-    DDL["PostgreSQL Migrations<br/>(wom7api/supabase/migrations/*.sql)"]
+    DDL["PostgreSQL Migrations<br/>(w0m-api/supabase/migrations/*.sql)"]
     TOKENS["CSS Design Tokens<br/>(packages/ui/src/styles/tokens.css)"]
-    SKILLS["Canonical Agent Skills<br/>(wom7skills/skills/*/SKILL.md)"]
+    SKILLS["Canonical Agent Skills<br/>(w0m-skills/skills/*/SKILL.md)"]
     META["Ticket & SDLC Meta-Assets<br/>(.tasks/T*.md · .w0m/sdlc.json)"]
-    SPECS["OpenSpec & Declarative Specs<br/>(openspec/ · wom7ext/extension/specs/*.json)"]
+    SPECS["OpenSpec & Declarative Specs<br/>(openspec/ · w0m-ext/extension/specs/*.json)"]
   end
 
   subgraph COMPILERS["Unidirectional Generators & Validation Gates"]

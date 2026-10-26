@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import spec_drift_gate as g  # noqa: E402

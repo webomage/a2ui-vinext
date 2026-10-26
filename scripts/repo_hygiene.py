@@ -43,8 +43,8 @@ from pathlib import Path
 # were therefore run once by hand and written into the ticket body, which means a regression in
 # their ability to FAIL would be invisible. `state_doctor.py` solved the same problem with
 # `W0M_STATE_MD`; this is that pattern, one layer up.
-# Point it at a directory that STANDS IN FOR wom7web — ROOT and the policy path both derive from
-# it exactly as they do in the real layout, so a fixture is `<tmp>/wom7web` with sibling repo dirs.
+# Point it at a directory that STANDS IN FOR w0m-web — ROOT and the policy path both derive from
+# it exactly as they do in the real layout, so a fixture is `<tmp>/w0m-web` with sibling repo dirs.
 ROOT = Path(os.environ.get("W0M_HYGIENE_ROOT") or Path(__file__).resolve().parent.parent)
 POLICY_PATH = ROOT / "project" / "policies" / "hygiene-policy.json"
 
@@ -209,7 +209,7 @@ def discover_manifests(repo: Path, markers: list[str]) -> list[dict]:
     A hardcoded list of 4 (later 'corrected' to 7) missed most of the ones that exist.
 
     ⚠️ Tracked, not merely present on disk. Globbing the filesystem picked up
-    `wom7ext/extension-ff/package.json`, which is GITIGNORED (.gitignore:62) — so the gate
+    `w0m-ext/extension-ff/package.json`, which is GITIGNORED (.gitignore:62) — so the gate
     would have demanded `private: true` and a licence in a file that is not part of the repo
     and whose edits could never be committed. Asking git what is in the repo, rather than
     asking the filesystem what is on disk, is the same lesson as resolving the git boundary
@@ -383,7 +383,7 @@ def check_license(policy: dict) -> tuple[list[str], dict]:
 
     checked_trees = 0
     # ONE `seen` set across every repo. Deduping per-repo cannot catch the case that actually
-    # bit here: `wom7api/.claude` is a symlink to `wom7web/.claude`, so the identical 86 skill
+    # bit here: `w0m-api/.claude` is a symlink to `w0m-web/.claude`, so the identical 86 skill
     # directories were reported once under each repo name — 86 of 211 findings were the same
     # files twice, and no amount of per-repo care would have noticed.
     seen_trees: set[Path] = set()
@@ -425,7 +425,7 @@ def _first_party_skills(repo: Path, spec: dict) -> set[str]:
     if raw is None:
         # FAIL LOUD, not open-into-noise. Returning an empty set here means "nothing is ours",
         # so every skill in the tree gets reported as a third-party drop owing an upstream
-        # notice — including ones we wrote this week. That is exactly what happened to wom7api,
+        # notice — including ones we wrote this week. That is exactly what happened to w0m-api,
         # which has no `.w0m/` at all: 86 false findings, indistinguishable from real ones.
         raise ProvenanceUnavailable(
             f"{spec['provenance']} is missing in {repo.name} — provenance cannot be resolved, "
@@ -450,7 +450,7 @@ def vendored_trees(repo: Path, specs: list[dict], seen: set[Path] | None = None)
     """
     found: list[tuple[Path, str]] = []
     # Deduplicate on the RESOLVED path, the same discipline `check_secrets` already applies to the
-    # symlinked justfiles. `wom7api/.claude` is a symlink to `wom7web/.claude`, and wom7web's own
+    # symlinked justfiles. `w0m-api/.claude` is a symlink to `w0m-web/.claude`, and w0m-web's own
     # `.claude/skills` entries are symlinks into `.agents/skills` — so without this the identical
     # file is reported two or three times over. That both inflates the count and makes ONE fix
     # look like three, which is how a gate stops being read.
@@ -466,8 +466,8 @@ def vendored_trees(repo: Path, specs: list[dict], seen: set[Path] | None = None)
         if not parent.is_dir():
             continue
         # A tree that resolves OUTSIDE this repo belongs to another repo, which checks it under
-        # its own provenance manifest. `wom7api/.claude` is a symlink to `wom7web/.claude`:
-        # classifying it here asks wom7api for a `.w0m/skills.json` it has no reason to own, and
+        # its own provenance manifest. `w0m-api/.claude` is a symlink to `w0m-web/.claude`:
+        # classifying it here asks w0m-api for a `.w0m/skills.json` it has no reason to own, and
         # answering that question wrongly is what produced 86 false "third-party" findings against
         # skills we wrote ourselves. Ownership follows the real path, not the symlink.
         try:
@@ -506,7 +506,7 @@ def check_secrets(policy: dict) -> tuple[list[str], dict]:
         return problems + ["policy declares no forbidden patterns — refusing to pass vacuously"], {}
 
     scanned = 0
-    # wom7web/justfile and wom7cfworkers/justfile are SYMLINKS to wom7api/justfile. Scanning by
+    # w0m-web/justfile and w0m-cf/justfile are SYMLINKS to w0m-api/justfile. Scanning by
     # path reported the same three findings three times over, which both inflates the count and
     # makes one fix look like three. Deduplicate on the resolved inode.
     seen: set[Path] = set()
@@ -695,7 +695,7 @@ def pnpm_licenses(repo: Path, prod_only: bool) -> tuple[dict, str | None]:
                     "to report a clean licence set from a command that did not run")
     out = r.stdout.strip()
     # ⚠️ A workspace with no PRODUCTION dependencies is a real empty set, not a broken run: pnpm
-    # exits 0 and prints "No licenses in packages found" as prose. wom7skills is exactly this
+    # exits 0 and prints "No licenses in packages found" as prose. w0m-skills is exactly this
     # (devDeps only). The distinction matters in both directions — treating it as an error makes
     # the gate permanently red on a conformant repo, and treating a genuine failure as empty
     # reports a clean licence set for a scan that never happened.
@@ -806,7 +806,7 @@ def check_annotations(policy: dict) -> tuple[list[str], dict]:
         audit_fn = annotations_doctor.audit_annotations
     except ImportError:
         import importlib.util
-        script_path = ROOT / "wom7web" / "project" / "scripts" / "annotations_doctor.py"
+        script_path = ROOT / "w0m-web" / "project" / "scripts" / "annotations_doctor.py"
         spec = importlib.util.spec_from_file_location("annotations_doctor", script_path)
         if spec is None or spec.loader is None:
             return ["cannot load annotations_doctor"], {}

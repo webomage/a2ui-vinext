@@ -38,7 +38,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve()
 ROOT = HERE.parents[1]                       # …/@wom
-CANONICAL = ROOT / "wom7web"                 # …/wom7web
+CANONICAL = ROOT / "w0m-web"                 # …/w0m-web
 PROFILE = CANONICAL / "project" / "client-profile.json"
 PROFILE_SCHEMA = CANONICAL / "project" / "client-profile.schema.json"
 REGISTRY = ROOT / "project" / "policies" / "clients-policy.json"
@@ -74,8 +74,8 @@ def just_recipes() -> set[str]:
 
 
 def resolve_script(rel: str) -> Path:
-    """Profile scripts are recorded estate-relative (`wom7api/scripts/x.py`) or
-    wom7web-relative (`project/scripts/x.py`). Try both, so the profile can name a gate in
+    """Profile scripts are recorded estate-relative (`w0m-api/scripts/x.py`) or
+    w0m-web-relative (`project/scripts/x.py`). Try both, so the profile can name a gate in
     either repo without encoding a repo prefix it would then have to keep in sync."""
     for base in (ROOT, CANONICAL):
         p = base / rel

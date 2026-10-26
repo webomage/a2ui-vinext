@@ -21,7 +21,7 @@ UNVERSIONED, so nothing in a diff would ever show you why.
 because it walks `node_modules` in every repo. Neither default is right; the unit of search is a
 REPO.
 
-**Trap 2 — history, not the working tree, is what costs minutes.** Measured on wom7web:
+**Trap 2 — history, not the working tree, is what costs minutes.** Measured on w0m-web:
 
     working tree (6,900 tracked files)   0.28s
     git grep over    20 commits          4.06s /  76,330 lines
@@ -33,7 +33,7 @@ the console. This tool refuses to do it; `--history N` bounds it and says what i
 
 ## What the speedup guide is worth here — measured, not assumed
 
-| technique | wom7web working tree | verdict |
+| technique | w0m-web working tree | verdict |
 |---|---|---|
 | bare `git grep` | 0.282s | baseline |
 | `LC_ALL=C git grep` | 0.123s | ✅ **2.3× — the one that pays.** Always on here |
@@ -68,18 +68,18 @@ def find_estate_root() -> Path:
     for parent in [cur] + list(cur.parents):
         if (parent / ".tasks").is_dir() and (parent / ".w0m").is_dir():
             return parent
-        if (parent / ".git").exists() and (parent / "wom7web").is_dir():
+        if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return Path("/Users/proto/Projects/@self/@wom")
 
 
 ESTATE = find_estate_root()
 
-# The repos w0m OWNS. `wom7pr` and `k7` hold vendored forks (orca alone is larger than the entire
-# rest of the estate) and `wom7mlx` nests its real repo one level down — including them by default
+# The repos w0m OWNS. `w0m-pr` and `k7` hold vendored forks (orca alone is larger than the entire
+# rest of the estate) and `w0m-mlx` nests its real repo one level down — including them by default
 # would make every search slower and noisier for results nobody asked for. `--all` opts in.
-OWNED = ("root", "wom7web", "wom7api", "wom7func", "wom7ext", "wom7sec", "wom7skills")
-VENDORED = ("wom7pr", "wom7mlx", "k7")
+OWNED = ("root", "w0m-web", "w0m-api", "w0m-cf", "w0m-ext", "w0m-sec", "w0m-skills")
+VENDORED = ("w0m-pr", "w0m-mlx", "k7")
 
 # Explicit top-level pathspecs when searching the `@wom` root repo (`root == ESTATE`) with no `--path`,
 # so searching `"root"` is fast, deterministic, and never traverses nested repos even if `.git/info/exclude` differs.
@@ -108,7 +108,7 @@ DEFAULT_CAP = 200
 
 
 def _resolve_repo_arg(r: str) -> str:
-    """Normalise a `--repo` argument (`root`/`@wom`/`w0m`, short `web`, or full `wom7web`)."""
+    """Normalise a `--repo` argument (`root`/`@wom`/`w0m`, short `web`, or full `w0m-web`)."""
     if r in ("root", "@wom", "w0m"):
         return "root"
     if r.startswith(("wom7", "k7")):
@@ -127,7 +127,7 @@ def search_tree(root: Path, pattern: str, fixed: bool, paths: list[str]) -> tupl
 
     🔑 `--no-pager` is not style. `git grep` attaches a pager when stdout is a terminal, and an
     agent shell that gets one hangs until its own timeout and then dumps everything at once — the
-    exact symptom that started T406. The wom7api justfile already carried this warning at one call
+    exact symptom that started T406. The w0m-api justfile already carried this warning at one call
     site (`check-guardrails`) and not at the other (`tech-debt`).
     🔑 `LC_ALL=C` is the measured 2.3× win: byte matching instead of UTF-8 collation.
     """
@@ -167,8 +167,8 @@ def search_history(root: Path, pattern: str, fixed: bool, depth: int) -> tuple[l
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("pattern")
-    ap.add_argument("--repo", action="append", help="repo short name (root, web, api, …) or full (wom7web). Repeatable.")
-    ap.add_argument("--all", action="store_true", help="include the vendored forks (wom7pr, wom7mlx, k7)")
+    ap.add_argument("--repo", action="append", help="repo short name (root, web, api, …) or full (w0m-web). Repeatable.")
+    ap.add_argument("--all", action="store_true", help="include the vendored forks (w0m-pr, w0m-mlx, k7)")
     ap.add_argument("-F", "--fixed", action="store_true", help="literal string, not a regex")
     ap.add_argument("--history", type=int, metavar="N", help="also search the last N commits per repo")
     ap.add_argument("--cap", type=int, default=DEFAULT_CAP, help=f"max lines printed per repo (default {DEFAULT_CAP})")

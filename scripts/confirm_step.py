@@ -110,7 +110,7 @@ from typing import Any, Mapping
 import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
-WEB_ROOT = ROOT / "wom7web"
+WEB_ROOT = ROOT / "w0m-web"
 POLICY = ROOT / "project" / "policies" / "confirm-policy.json"
 # 🔴 Overridable, and it has to be. The consent file is REAL, shared state: whatever grants or
 # clears it affects a deploy that may be running right now. The confirm-step probe suite grants and
@@ -780,7 +780,7 @@ def prompt(step: str, describe: str, reason: str) -> str | None:
         f"   {DIM}Neither /dev/tty nor an interactive stdin is available, so there is no way to "
         f"ask a person. This is the gate working, not a bug — an automated caller cannot answer "
         f"it.{OFF}\n"
-        f"   {BOLD}Run it yourself in a terminal:{OFF} just {step}   {DIM}(from wom7api/){OFF}\n"
+        f"   {BOLD}Run it yourself in a terminal:{OFF} just {step}   {DIM}(from w0m-api/){OFF}\n"
         f"   {DIM}If you ARE in a terminal and still see this, run `just confirm-doctor` — it "
         f"prints which channels your shell exposes.{OFF}\n",
         file=sys.stderr,

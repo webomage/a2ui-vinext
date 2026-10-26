@@ -10,7 +10,7 @@ were not reproducible across machines/clones and duplicated the framework.
 Resolves `$GIT_COMMON_DIR/hooks` via `git rev-parse --git-common-dir` (T408) so
 running `install_hooks.py` from either the primary checkout or a `git worktree`
 installs and wraps hooks in the shared common hooks directory, while verifying
-that repos with `core.hooksPath = .husky/_` (`wom7web`) have tracked, executable
+that repos with `core.hooksPath = .husky/_` (`w0m-web`) have tracked, executable
 dispatcher shims (`pre-commit`, `commit-msg`, `pre-push`) present on disk.
 
 Run from anywhere:  python3 scripts/install_hooks.py
@@ -25,13 +25,13 @@ from pathlib import Path
 # Repo root is one level up from this file (…/@wom/scripts/…).
 ROOT = Path(__file__).resolve().parents[1]
 
-# First-party repos to standardize. The nested wom7mlx/wom7mlx is the real repo;
-# the wom7mlx/ parent is a workspace of vendored upstream clones and is skipped.
+# First-party repos to standardize. The nested w0m-mlx/w0m-mlx is the real repo;
+# the w0m-mlx/ parent is a workspace of vendored upstream clones and is skipped.
 # The estate workspace repo itself (T294). It is not a `wom7*` directory, so the glob above cannot
 # find it — and it is the one repo whose first commit ran through no hooks at all, because
 # `.git/hooks` did not exist when it was created. Listing it here is what makes that a one-time
 # condition rather than a standing one.
-EXPLICIT = [ROOT / "wom7mlx" / "wom7mlx", ROOT]
+EXPLICIT = [ROOT / "w0m-mlx" / "w0m-mlx", ROOT]
 
 REQUIRED_HUSKY_SHIMS = ("pre-commit", "commit-msg", "pre-push")
 
@@ -41,8 +41,8 @@ REQUIRED_HUSKY_SHIMS = ("pre-commit", "commit-msg", "pre-push")
 # 🔴 NO ABSOLUTE PATHS. The installer's own docstring records why the previous approach was
 # replaced — "pointing at an absolute path — those were not reproducible across machines/clones".
 # The path is resolved at RUN time from the repo root (or `$GIT_COMMON_DIR` for standalone
-# worktrees), trying the sibling layout (…/@wom/wom7api) and then the nested one
-# (…/@wom/wom7mlx/wom7mlx).
+# worktrees), trying the sibling layout (…/@wom/w0m-api) and then the nested one
+# (…/@wom/w0m-mlx/w0m-mlx).
 #
 # ⚠️ `|| true` and `2>/dev/null`: a missing wrapper must degrade to NO LOGGING, never to a broken
 # hook. Losing the log is an inconvenience; losing the gate is an incident.
@@ -52,12 +52,17 @@ WRAP_TEMPLATE = """# {mark} — injected by scripts/install_hooks.py, re-applied
 # versioned surface and re-running it is what makes this reproducible.
 W0M_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"
 W0M_COMMON="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"
-W0M_WRAP="$W0M_ROOT/../wom7web/scripts/hook_log_wrap.sh"
-[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_ROOT/../../wom7web/scripts/hook_log_wrap.sh"
-[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_ROOT/wom7web/scripts/hook_log_wrap.sh"
-[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_COMMON/../../wom7web/scripts/hook_log_wrap.sh"
-[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_COMMON/../../../wom7web/scripts/hook_log_wrap.sh"
-[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_COMMON/../wom7web/scripts/hook_log_wrap.sh"
+W0M_WRAP="$W0M_ROOT/scripts/hook_log_wrap.sh"
+[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_ROOT/../scripts/hook_log_wrap.sh"
+[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_ROOT/../../scripts/hook_log_wrap.sh"
+[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_ROOT/../w0m-web/scripts/hook_log_wrap.sh"
+[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_ROOT/../../w0m-web/scripts/hook_log_wrap.sh"
+[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_ROOT/w0m-web/scripts/hook_log_wrap.sh"
+[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_COMMON/../scripts/hook_log_wrap.sh"
+[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_COMMON/../../scripts/hook_log_wrap.sh"
+[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_COMMON/../../w0m-web/scripts/hook_log_wrap.sh"
+[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_COMMON/../../../w0m-web/scripts/hook_log_wrap.sh"
+[ -f "$W0M_WRAP" ] || W0M_WRAP="$W0M_COMMON/../w0m-web/scripts/hook_log_wrap.sh"
 [ -f "$W0M_WRAP" ] && W0M_HOOK_NAME={hook} . "$W0M_WRAP" 2>/dev/null || true
 """
 
@@ -121,11 +126,10 @@ def ensure_root_pre_push(repo: Path) -> str:
     f = hooks_dir / "pre-push"
     try:
         hooks_dir.mkdir(parents=True, exist_ok=True)
-        if not f.exists() or "root_pre_push.py" not in f.read_text():
+        if not f.exists() or f.read_text() != ROOT_PRE_PUSH_SCRIPT:
             f.write_text(ROOT_PRE_PUSH_SCRIPT)
             f.chmod(0o755)
             return "pre-push installed"
-        inject_logging(repo, hook="pre-push")
         f.chmod(0o755)
         return "pre-push verified"
     except OSError as exc:
@@ -134,11 +138,11 @@ def ensure_root_pre_push(repo: Path) -> str:
 
 def discover_repos() -> list[Path]:
     repos: list[Path] = []
-    for d in sorted(ROOT.glob("wom7*")):
-        if (d / ".git").exists() and (d / ".pre-commit-config.yaml").exists():
+    for d in sorted(list(ROOT.glob("w0m-*")) + list(ROOT.glob("wom7*"))):
+        if (d / ".git").exists() and (d / ".pre-commit-config.yaml").exists() and d not in repos:
             repos.append(d)
     for d in EXPLICIT:
-        if (d / ".git").exists() and (d / ".pre-commit-config.yaml").exists():
+        if (d / ".git").exists() and (d / ".pre-commit-config.yaml").exists() and d not in repos:
             repos.append(d)
     return repos
 
@@ -229,7 +233,7 @@ def main() -> int:
             note = inject_logging(repo, "pre-commit")
             commit_msg_note = inject_logging(repo, "commit-msg")
             extra = ""
-            if repo in (ROOT, ROOT / "wom7api"):
+            if repo in (ROOT, ROOT / "w0m-api"):
                 extra = f" · {ensure_root_pre_push(repo)}"
             print(
                 f"✅ {name}: {res.stdout.strip() or 'installed'} · pre-commit:{note} · commit-msg:{commit_msg_note}{extra}"

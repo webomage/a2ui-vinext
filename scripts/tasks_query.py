@@ -45,14 +45,14 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
     for parent in [cur] + list(cur.parents):
         if (parent / ".tasks").is_dir() and (parent / ".w0m").is_dir():
             return parent
-        if (parent / ".git").exists() and (parent / "wom7web").is_dir():
+        if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return Path(__file__).resolve().parents[1]
 
 
 WORKSPACE_ROOT = find_workspace_root()
 MONO_ROOT = WORKSPACE_ROOT
-WEB_ROOT = WORKSPACE_ROOT / "wom7web" if (WORKSPACE_ROOT / "wom7web").is_dir() else WORKSPACE_ROOT
+WEB_ROOT = WORKSPACE_ROOT / "w0m-web" if (WORKSPACE_ROOT / "w0m-web").is_dir() else WORKSPACE_ROOT
 
 
 def resolve_tickets_dir(search_root: Path | None = None) -> Path:
@@ -457,7 +457,7 @@ def _ticket_link(t: dict) -> str:
     The label is the bare id — `[T135](…)`, NOT ``[`T135`](…)``. A code span inside link text is
     valid CommonMark but several renderers (the Claude Code chat surface among them) fail to build
     the label from it and fall back to displaying the raw href, so every row read
-    `wom7web/project/tickets/T135.md` instead of `T135` — the path repeated 20 times, crowding out
+    `w0m-web/project/tickets/T135.md` instead of `T135` — the path repeated 20 times, crowding out
     the titles the column exists to sit beside. `_issue_link` never had backticks and always
     rendered correctly as `#94`, which is what isolated the cause.
     """
@@ -655,7 +655,7 @@ def terminalise(block: str) -> str:
     re-tripped the gate the first time.
 
     The first attempt aligned first: the widths were then computed over
-    `[T2](/Users/proto/Projects/@self/@wom/wom7web/project/tickets/T2.md)`, a 70-column cell for a
+    `[T2](/Users/proto/Projects/@self/@wom/w0m-web/project/tickets/T2.md)`, a 70-column cell for a
     2-column label, so the fitter spent the terminal on paths and then TRUNCATED INTO the link
     text — every board came out as `[T2](/Users/proto/Projects/@self/@wo…`, unaligned and with the
     links destroyed. Converting first makes the cell 2 columns wide and makes it detectably
@@ -800,11 +800,11 @@ def _ticket_href(tid: str) -> str:
 
     This went through two wrong answers before landing here, both of which *looked* right:
 
-    1. `project/tickets/T2.md` — relative to the script's cwd. The recipe does `cd ../wom7web`, so
-       this resolved only for a reader already inside `wom7web`. From the estate root it opened
+    1. `project/tickets/T2.md` — relative to the script's cwd. The recipe does `cd ../w0m-web`, so
+       this resolved only for a reader already inside `w0m-web`. From the estate root it opened
        nothing.
     2. Relative to just's `invocation_directory()`. Correct by construction, and still wrong in
-       practice: run from `wom7api` it emits `../wom7web/project/tickets/T2.md`, which resolves
+       practice: run from `w0m-api` it emits `../w0m-web/project/tickets/T2.md`, which resolves
        only for a reader whose cwd matches the *invoker's*. The output outlives the invocation —
        it gets pasted into STATE.md, into tickets, into chat — and at that point the base
        directory it was computed against is gone.
@@ -1589,15 +1589,15 @@ def run_exit_checks(plan: dict) -> dict[str, list[dict]]:
                 # surface. These commands are `just <recipe> [flags]` — no shell features needed,
                 # so the shell buys nothing and costs the whole class. (Caught by semgrep's
                 # subprocess-shell-true rule, which was right to block it.)
-                # 🔴 `just` MUST run from wom7api, not wom7web. The justfile is a SYMLINK to
-                # wom7api's and many recipes use bare `scripts/…` / `supabase/…` paths that only
-                # resolve there — the same rule CLAUDE.md states for deploy. Running from wom7web
+                # 🔴 `just` MUST run from w0m-api, not w0m-web. The justfile is a SYMLINK to
+                # w0m-api's and many recipes use bare `scripts/…` / `supabase/…` paths that only
+                # resolve there — the same rule CLAUDE.md states for deploy. Running from w0m-web
                 # made `just db-restore-verify` exit 1 with "can't open file
-                # wom7web/scripts/db_restore_verify.py", and the plan reported stage-0 NOT MET on
+                # w0m-web/scripts/db_restore_verify.py", and the plan reported stage-0 NOT MET on
                 # a check that passes everywhere else. ⚠️ A false RED here is as damaging as a
                 # false green: it would have sent someone to debug a working backup.
                 # w0m_audit.py already uses cwd=API_ROOT for exactly this reason.
-                api_root = WORKSPACE_ROOT / "wom7api"
+                api_root = WORKSPACE_ROOT / "w0m-api"
                 argv = shlex.split(cmd)
                 # 🔴 shell=False means a shell OPERATOR is not an operator here — it arrives as a
                 # literal argument. stage-1 declared `just A && just B`, so `just` was handed a

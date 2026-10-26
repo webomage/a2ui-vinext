@@ -1,4 +1,4 @@
-# Antigravity rules — `wom7web` **and** `wom7api`
+# Antigravity rules — `w0m-web` **and** `w0m-api`
 
 > 📍 **Moved 2026-08-30 from `.agent/rules.md` to `.agents/rules/w0m.md`.** Antigravity now
 > defaults to the `.agents/` root and keeps `.agent/` only for backward compatibility, and
@@ -6,19 +6,19 @@
 > rather than scan the old path — *"the registry moved; fix the policy rather than scan a
 > path that no longer exists"*.
 
-> ⚠️ **GOVERNED ACROSS REPOS.** `.agents/rules/w0m.md` is synchronized across `@wom`, `wom7web`, and
-> `wom7api` as real tracked files (cross-repo `.agent` symlinks were removed in T427 / AgDR-0025).
+> ⚠️ **GOVERNED ACROSS REPOS.** `.agents/rules/w0m.md` is synchronized across `@wom`, `w0m-web`, and
+> `w0m-api` as real tracked files (cross-repo `.agent` symlinks were removed in T427 / AgDR-0025).
 > Keep all copies aligned with the canonical rules in `@wom/AGENTS.md` and `CLAUDE.md`.
 
-**Canonical conventions live in [`../CLAUDE.md`](../CLAUDE.md)** (i.e. `wom7web/CLAUDE.md`).
+**Canonical conventions live in [`../CLAUDE.md`](../CLAUDE.md)** (i.e. `w0m-web/CLAUDE.md`).
 Read it first. This file exists because Antigravity does **not** autoload `CLAUDE.md` — it loads
 *this* file — so the rules that must never be missed are restated here in full, and everything
 else is a pointer.
 
 > 🔴 **Rewritten 2026-08-10 ([[T192]]).** The previous version carried **0 of 6** non-negotiables,
-> described only `wom7api` while governing both repos, and instructed agents to read `ADMIN_EMAIL`
-> / `ADMIN_PASSWORD` from **`wom7web/.env`** — a file **T119 AC2b deleted**, whose absence is
-> itself a standing rule. ⚠️ T192's filing recorded this file as *"byte-identical to wom7api's —
+> described only `w0m-api` while governing both repos, and instructed agents to read `ADMIN_EMAIL`
+> / `ADMIN_PASSWORD` from **`w0m-web/.env`** — a file **T119 AC2b deleted**, whose absence is
+> itself a standing rule. ⚠️ T192's filing recorded this file as *"byte-identical to w0m-api's —
 > one repo's rules copied into the other"*. That was wrong about the mechanism: it is **not a
 > copy, it is a symlink**. Identical bytes had a structural cause, not a careless one, and the fix
 > is a file written to serve **both** repos — not two files. `just ide-trace` now checks it against
@@ -26,14 +26,14 @@ else is a pointer.
 
 ## The two repos this governs
 
-- **`wom7web`** — the **canonical** repo: the Astro workspace (5 apps, 5 packages), SDLC config
+- **`w0m-web`** — the **canonical** repo: the Astro workspace (5 apps, 5 packages), SDLC config
   (`.w0m/sdlc.json`), the ticket queue (`TASKS.md`), specs (`openspec/`), the design system, and
   this `.agent/` surface.
-- **`wom7api`** — the **backend capability layer**: the Supabase project (migrations, edge
+- **`w0m-api`** — the **backend capability layer**: the Supabase project (migrations, edge
   functions, RLS), the Cloudflare Worker (`src/`), and **the `justfile` every other repo symlinks**.
 
 Say which one you are in before you act. Tickets, specs and SDLC config are always read from
-`wom7web`; deploy always runs from `wom7api`.
+`w0m-web`; deploy always runs from `w0m-api`.
 
 ## Non-negotiables
 
@@ -46,14 +46,14 @@ These are not style preferences. Each exists because breaking it has already cos
   calls it / what depends on this* — not Grep. Name symbols; the query tokenizes, so prose
   returns confident noise.
 - **The database is managed by migrations. No exceptions.** Every DDL, RLS policy, grant, bucket
-  flag, trigger and function reaches the DB as a committed file in `wom7api/supabase/migrations/`,
+  flag, trigger and function reaches the DB as a committed file in `w0m-api/supabase/migrations/`,
   applied with `just db-migrate`. Never `psql`, the Supabase SQL editor, the dashboard, or an MCP
   write — those are for **reading**. `wom_ddl_guard` is a Postgres event trigger that *refuses*
   out-of-band DDL.
   ⚠️ **Never `supabase migration repair --status reverted` to unblock a push** — that is how six
   orphan migrations were created.
 - **Secrets reach a command only by process injection** — `infisical run --env=<env> --silent --
-  <cmd>`. **Do not add a `.env` or `.dev.vars` dependency.** `wom7web/.env` is gone; re-introducing
+  <cmd>`. **Do not add a `.env` or `.dev.vars` dependency.** `w0m-web/.env` is gone; re-introducing
   one is a regression, not a migration.
 - **No `Co-Authored-By` / attribution trailers** in commits. Conventional Commits, referencing the
   ticket.
@@ -63,19 +63,19 @@ These are not style preferences. Each exists because breaking it has already cos
 - **Zero silent fallbacks, clean cutovers over shims, zero shadow symlinks (AgDR-0025).** Fail fast and fail closed (`docs/ANTI-PATTERNS.md`). Multi-path fallback search ladders and backward-compatibility shims are strictly prohibited. 100% of callers must be updated atomically when a path or contract changes.
 - **Use `@webomage/ui` Design System primitives from the very beginning (`ds-conformance`, T207 AC5/AC6).** Never write raw `<button>`, `<input>`, or `<select>` controls or hardcoded `#hex` colors in `apps/cp` (`.astro` or `.svelte`) — even when editing legacy files that still contain native HTML controls. Always import and use `@webomage/ui` primitives (`Button`, `Input`, `Select`, `Badge`, `Card`, `PageHeader`) and CSS custom property tokens (`var(--...)`) from the start, and convert touched legacy controls when editing a file.
 - **Upstream PR & issue pre-flight discovery.** Before opening any new PR or filing an issue in an external/upstream repository (`wom7pr/*` or open-source dependencies), search open AND closed PRs and issues (`gh pr list --state all --search "<q>"`, `gh issue list --state all --search "<q>"`). If an active PR exists, do not duplicate it — contribute QA, verification proof, or targeted patches to that PR. If stalled/closed PRs exist, inspect why they stalled and cite them in the PR body, explaining why they are superseded and contrasting architectural trade-offs upfront.
-- **Visual & architectural reports via Artifacts (anti-terminal-overflow).** Complex architectural reports, broad system audits, and wide Mermaid (`.mmd`) diagrams must NEVER be dumped as raw multiline markdown in terminal chat (which causes terminal width overflow / ASCII diagram fallback warnings). Output them as Antigravity **artifacts** (`UserFacing: true`), preserve a permanent copy in `.agents/reports/` (mirrored to `wom7web/docs/reports/` when relevant), and present only concise summaries with clickable links in terminal responses.
+- **Visual & architectural reports via Artifacts (anti-terminal-overflow).** Complex architectural reports, broad system audits, and wide Mermaid (`.mmd`) diagrams must NEVER be dumped as raw multiline markdown in terminal chat (which causes terminal width overflow / ASCII diagram fallback warnings). Output them as Antigravity **artifacts** (`UserFacing: true`), preserve a permanent copy in `.agents/reports/` (mirrored to `w0m-web/docs/reports/` when relevant), and present only concise summaries with clickable links in terminal responses.
 
 ## Working here
 
 - **Ticket work (`T##`) runs through the w0m SDLC gates** — entry `w0m-sdlc-start <id>`; every path
-  is read from `wom7web/.w0m/sdlc.json`, never hardcoded.
+  is read from `w0m-web/.w0m/sdlc.json`, never hardcoded.
 - **Commands go through `just`**, not raw `pnpm`/`npx`/`tsc`/`deno`/`wrangler`/`supabase`.
   `just discovery` gates it.
-- **Deploy runs from `wom7api/`** (`just deploy` from `@wom`) — recipes use bare `supabase/` paths.
+- **Deploy runs from `w0m-api/`** (`just deploy` from `@wom`) — recipes use bare `supabase/` paths.
 - **Local dev**: `just redev`, then test on `http://localhost:4321`.
-- ⚠️ **wom7api is a hybrid runtime**: pnpm for the Worker, Deno for edge functions. `deno install`
+- ⚠️ **w0m-api is a hybrid runtime**: pnpm for the Worker, Deno for edge functions. `deno install`
   at its root clobbers the pnpm `node_modules`.
-- Ecosystem map: `wom7web/docs/ECOSYSTEM.md`. Long-form reference: `wom7web/AGENTS.md`.
+- Ecosystem map: `w0m-web/docs/ECOSYSTEM.md`. Long-form reference: `w0m-web/AGENTS.md`.
 
 ## Fast Project Info & Indexed Data References
 

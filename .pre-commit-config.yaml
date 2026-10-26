@@ -42,11 +42,11 @@ repos:
         pass_filenames: false
         always_run: true
 
-      # T430 — moved from wom7web: `.tasks/`, TASKS.md and scripts/tasks_query.py live HERE since
-      # T411/T419, so wom7web's copy of this hook could never fire and the derived `x_*` fields drifted
+      # T430 — moved from w0m-web: `.tasks/`, TASKS.md and scripts/tasks_query.py live HERE since
+      # T411/T419, so w0m-web's copy of this hook could never fire and the derived `x_*` fields drifted
       # (46 tickets, measured 2026-09-23). Stages ONLY what it rewrote (`--porcelain` + `xargs -r`),
       # never other tickets a person left unstaged. The filter mirrors the generator's inputs in THIS
-      # repo; the script itself still lives in wom7web.
+      # repo; the script itself still lives in w0m-web.
       # T503 — a TICKED acceptance criterion may not cite a `just` recipe that does not exist (T255). It failed a deploy on 2026-09-30 because a ticket edit
       # in THIS repo (which has no pre-push hook) named a recipe the same session had deleted; the gate then ran for the first time inside the deploy.
       # Under half a second, no secrets, no network.
@@ -77,13 +77,13 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
-      # T335 follow-up. `docs/DECISIONS.md` lives in wom7web but is GENERATED from files that live HERE (.tasks/,
-      # .w0m/sdlc.json, TECH-DEBT.md, ROADMAP.md, the confirm policy). wom7web's own hook cannot see a commit in this
+      # T335 follow-up. `docs/DECISIONS.md` lives in w0m-web but is GENERATED from files that live HERE (.tasks/,
+      # .w0m/sdlc.json, TECH-DEBT.md, ROADMAP.md, the confirm policy). w0m-web's own hook cannot see a commit in this
       # repo (T430), so adding 6 lines to sdlc.json shifted every later `file:line` anchor, went in green, and failed the
       # next deploy on `decisions-index-fresh`. CHECK-ONLY on purpose: the index belongs to another repo, so this hook
       # cannot stage it, and silently rewriting a file in a sibling checkout from a commit hook is worse than saying so.
       # 🔴 The `files:` filter MIRRORS the ESTATE-based entries of decisions_index.py SOURCES, and
-      # wom7web's test_decisions_index.py asserts it still does.
+      # w0m-web's test_decisions_index.py asserts it still does.
       - id: decisions-index-fresh
         name: decisions index (docs/DECISIONS.md) is current
         entry: python3 scripts/decisions_index.py --check

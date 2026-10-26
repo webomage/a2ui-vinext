@@ -21,13 +21,13 @@ script is the join. Each tombstone now carries an ```absent``` block naming what
 and that block is the ONLY source — adding a tombstone without one is reported, not ignored.
 
 Giving the log a reader is also what settles [[D15]]. Its recorded blocker was *"deciding this
-means choosing a repo"*; a gate must read a versioned file, and the gate lives in `wom7web`, so
+means choosing a repo"*; a gate must read a versioned file, and the gate lives in `w0m-web`, so
 the file moved here and became versioned as a consequence rather than as a preference.
 
 WHAT AN ASSERTION MAY SAY
 -------------------------
     code:  ["SWARM_URL"]        symbols that must not reappear in tracked source
-    repos: ["wom7api"]          which repos `code` is searched in (default: wom7web)
+    repos: ["w0m-api"]          which repos `code` is searched in (default: w0m-web)
     path:  ["wom7md"]           paths that must not exist; estate-relative, or ~ for host files
     except: [{path, why}]       a file that may legitimately name it, AND WHY
 
@@ -62,10 +62,10 @@ from pathlib import Path
 import yaml
 
 ESTATE = Path(__file__).resolve().parents[1]
-WEB_ROOT = ESTATE / "wom7web"
+WEB_ROOT = ESTATE / "w0m-web"
 LOG = WEB_ROOT / "DECOMMISSIONED.md"
 
-# wom7web-relative code roots, matching w0m_audit.py's CODE_PATHS.
+# w0m-web-relative code roots, matching w0m_audit.py's CODE_PATHS.
 CODE_PATHS = ("apps", "packages")
 
 GREEN, RED, YELLOW, DIM, RESET = "\033[32m", "\033[31m", "\033[33m", "\033[2m", "\033[0m"
@@ -94,7 +94,7 @@ def load_assertions(path: Path = LOG) -> tuple[list[dict], list[str]]:
         out.append({
             "tombstone": name,
             "code": list(spec.get("code") or []),
-            "repos": list(spec.get("repos") or ["wom7web"]),
+            "repos": list(spec.get("repos") or ["w0m-web"]),
             "path": list(spec.get("path") or []),
             "except": list(spec.get("except") or []),
         })
@@ -102,11 +102,11 @@ def load_assertions(path: Path = LOG) -> tuple[list[dict], list[str]]:
 
 
 def _grep_repo(term: str, repo: str) -> list[str]:
-    """Tracked files in `repo` matching `term`. Only code roots for wom7web, whole repo elsewhere."""
+    """Tracked files in `repo` matching `term`. Only code roots for w0m-web, whole repo elsewhere."""
     root = ESTATE / repo
     if not (root / ".git").exists() and not (root / ".git").is_file():
         return []
-    paths = [p for p in CODE_PATHS if (root / p).exists()] if repo == "wom7web" else []
+    paths = [p for p in CODE_PATHS if (root / p).exists()] if repo == "w0m-web" else []
     cmd = ["git", "grep", "-liE", term]
     if paths:
         cmd += ["--", *paths]

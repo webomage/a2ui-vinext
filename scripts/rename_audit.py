@@ -85,7 +85,7 @@ DEFAULT_EXEMPT_SUBSTRINGS = [
     "project/tickets.json",
     "project/policies/emoji-policy.json",
     "RESEARCH-ZEROCLAW-ORCA.md",
-    "wom7pr/README.md",
+    "w0m-pr/README.md",
     "TASKS.md",
     "ROADMAP.md",
     "STATE.md",

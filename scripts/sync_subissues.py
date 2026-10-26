@@ -28,7 +28,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 TICKETS = ROOT / ".tasks"
 # Read from `.w0m/sdlc.json → vcs.repo`, not hardcoded — see the note in sync_github.py. Three
 # scripts held their own copy of this string; a repo transfer would have broken all three silently.

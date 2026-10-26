@@ -13,8 +13,8 @@ diverging copy of files whose real home has its own history, remote and hooks.
 import sys
 from pathlib import Path
 
-NESTED = {"wom7api", "wom7authz", "wom7ava", "wom7func", "wom7ext", "wom7mlx",
-          "wom7sec", "wom7skills", "wom7web", "wom7pr", "wom7clips", "k7"}
+NESTED = {"w0m-api", "wom7authz", "w0m-ava", "w0m-cf", "w0m-ext", "w0m-mlx",
+          "w0m-sec", "w0m-skills", "w0m-web", "w0m-pr", "w0m-clips", "k7"}
 
 bad = [f for f in sys.argv[1:] if Path(f).parts and Path(f).parts[0] in NESTED]
 if bad:

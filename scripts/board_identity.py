@@ -26,7 +26,7 @@ import json
 import pathlib
 import sys
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "wom7web" / "project" / "scripts"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "w0m-web" / "project" / "scripts"))
 from authz_blanket_gate import strip_jsonc as _strip_jsonc  # noqa: E402  (one JSONC reader, not two)
 
 CONFIG = pathlib.Path(__file__).resolve().parents[1] / ".w0m" / "sdlc.json"

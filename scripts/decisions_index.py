@@ -46,7 +46,7 @@ SOURCES = [
     ("config", ESTATE, ".w0m/sdlc.json"),
     ("debt", ESTATE, "TECH-DEBT.md"),
     ("roadmap", ESTATE, "ROADMAP.md"),
-    ("cv", ROOT, "wom7web/project/data/cv/resolutions.json"),
+    ("cv", ROOT, "w0m-web/project/data/cv/resolutions.json"),
     ("policy", ESTATE, "project/policies/confirm-policy.json"),
 ]
 
@@ -94,7 +94,7 @@ def agdr_records() -> list[dict]:
 
 
 def harvest_repo_decisions() -> list[dict]:
-    """T392 AC2 — widen harvest beyond wom7web across all repos declared in .w0m/sdlc.json."""
+    """T392 AC2 — widen harvest beyond w0m-web across all repos declared in .w0m/sdlc.json."""
     out: list[dict] = []
     sdlc_file = ROOT / ".w0m" / "sdlc.json"
     if not sdlc_file.is_file():

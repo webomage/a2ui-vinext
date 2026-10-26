@@ -154,7 +154,7 @@ def main(argv: list[str] | None = None) -> int:
     elif case == "wrong-id":
         print("❌ Infisical project id is wrong — the CLI can't find that project. This is NOT a login problem.")
         print(f"   CLI said: {first}")
-        print("   Fix: correct `infisical_project_id` in the root justfile (it must equal wom7api/.infisical.json workspaceId).")
+        print("   Fix: correct `infisical_project_id` in the root justfile (it must equal w0m-api/.infisical.json workspaceId).")
     elif case == "auth":
         print("❌ Infisical session invalid/expired — every deploy step that injects secrets will fail.")
         print(f"   CLI said: {first}")

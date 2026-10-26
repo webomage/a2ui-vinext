@@ -2,14 +2,14 @@
 name: w0m-prs
 description: GitHub PR discovery, health audit, background polling, and visual reporting tool for w0m and open-source estate. Use when tracking upstream open-source PRs, auditing review decisions and mergeability, monitoring background status updates, or generating publication-grade Markdown reports with validated Mermaid charts.
 metadata:
-  version: "2026.09.21-1790048274"
+  version: "2026.10.26-1793009642"
 ---
 
 # w0m-prs
 
 ## Overview
 
-`w0m-prs` is the canonical w0m developer tool and agent skill for discovering, auditing, polling, and reporting on GitHub Pull Requests across internal repos, upstream dependencies (`wom7pr`), and contributor portfolios.
+`w0m-prs` is the canonical w0m developer tool and agent skill for discovering, auditing, polling, and reporting on GitHub Pull Requests across internal repos, upstream dependencies (`w0m-pr`), and contributor portfolios.
 
 It provides deterministic CLI interfaces via `just prs`, outputs structured JSON or formatted terminal output, and generates publication-grade Markdown reports with headless `mmd-validate`-compliant Mermaid graphs.
 
@@ -18,14 +18,14 @@ It provides deterministic CLI interfaces via `just prs`, outputs structured JSON
 ### 1. Discovery & Search
 Search PRs by author username, repository target, or preset:
 ```bash
-# Search PRs across active wom7pr dependencies (stablyai/orca, openai/tart-guest-agent, bulwarkid/virtual-fido)
-just prs search --preset wom7pr
+# Search PRs across active w0m-pr dependencies (stablyai/orca, openai/tart-guest-agent, bulwarkid/virtual-fido)
+just prs search --preset w0m-pr
 
 # Search PRs authored by a specific user
 just prs search --author casualuser --limit 20
 
 # Output machine-readable JSON
-just prs search --preset wom7pr --json
+just prs search --preset w0m-pr --json
 ```
 
 ### 2. Deep Health & Mergeability Audit
@@ -34,15 +34,15 @@ Audit merge status (`MERGEABLE` vs `CONFLICTING`), review decisions (`REVIEW_REQ
 # Audit a specific PR in a repository
 just prs audit --repo openai/tart-guest-agent --pr 62
 
-# Audit all open PRs in wom7pr preset
-just prs audit --preset wom7pr
+# Audit all open PRs in w0m-pr preset
+just prs audit --preset w0m-pr
 ```
 
 ### 3. Autonomous Background Watch Poller
 Monitor active PRs on a schedule without busy-waiting. Emits delta alerts on state changes (review submissions, CI completion, merge status transitions):
 ```bash
-# Watch wom7pr PRs every 5 minutes for 30 minutes with terminal notification on change
-just prs watch --preset wom7pr --interval 5 --duration 30 --notify
+# Watch w0m-pr PRs every 5 minutes for 30 minutes with terminal notification on change
+just prs watch --preset w0m-pr --interval 5 --duration 30 --notify
 
 # Watch a single critical PR
 just prs watch --repo stablyai/orca --pr 16597 --interval 2 --duration 60
@@ -60,21 +60,21 @@ just prs report --author casualuser --out docs/reports/github_prs_report.md
 ```
 
 ### 5. Fresh Status Table (`just prs-open` / T369 / T417)
-Instantly query, audit, and display an aligned terminal or Markdown table of active PRs across all managed `wom7pr` dependencies (`jundot/omlx`, `Blaizzy/mlx-vlm`, `stablyai/orca`, `openai/tart-guest-agent`, `cirruslabs/tart`, `bulwarkid/virtual-fido`, `headroomlabs-ai/headroom`, `oraios/serena`).
+Instantly query, audit, and display an aligned terminal or Markdown table of active PRs across all managed `w0m-pr` dependencies (`jundot/omlx`, `Blaizzy/mlx-vlm`, `stablyai/orca`, `openai/tart-guest-agent`, `cirruslabs/tart`, `bulwarkid/virtual-fido`, `headroomlabs-ai/headroom`, `oraios/serena`).
 Includes active feedback inspection (`Feedback` column) displaying reviewer questions (`❓`), suggestions (`💡`), comment volume (`💬`), and reviewer attribution (`opcode81`, `AmirF194`).
 
 ```bash
-# Print fresh report table for active PRs in wom7pr dependencies
+# Print fresh report table for active PRs in w0m-pr dependencies
 just prs-open
 
 # Or via explicit subcommands and flags
-just prs table --preset wom7pr
-just prs table --preset wom7pr --all
-just prs table --preset wom7pr --markdown
+just prs table --preset w0m-pr
+just prs table --preset w0m-pr --all
+just prs table --preset w0m-pr --markdown
 ```
 
 ### 6. Continuous Fork Synchronization Verification (`just forks` / T377)
-Audit all local open-source forks under `wom7pr/` against upstream and origin remotes:
+Audit all local open-source forks under `w0m-pr/` against upstream and origin remotes:
 
 ```bash
 # Fast cached inspection of all forks (ahead/behind counts, dirty worktree)
@@ -94,7 +94,7 @@ just forks --no-fetch --json
 ```
 
 ### 7. Fork Remote Management & Synchronization (`just forks-fetch`, `forks-info`, `forks-update`)
-Granular management of external fork repositories in `wom7pr/`:
+Granular management of external fork repositories in `w0m-pr/`:
 
 ```bash
 # Explicitly fetch upstream and origin remotes for all forks (or a single fork)
@@ -118,6 +118,6 @@ just forks-sync       # alias to forks-update
   - If stalled/closed PRs exist, inspect why they stalled (unmerged dependency abstractions, CLA blocks, merge conflicts, architecture). Citing them in the PR body is mandatory: state what is superseded, contrast architectural trade-offs upfront (e.g. single vs. companion server), and preemptively address maintainer design concerns.
   - If an open issue exists, link it in the PR description (`Fixes #123` / `Addresses #123`) and notify the issue thread.
 - **Verify upstream health**: Always run `just prs-open` or `just prs audit` before marking tickets depending on upstream PRs as complete.
-- **Audit fork alignment**: Regularly run `just forks` or `just forks-check` to confirm local feature branches in `wom7pr/` are not lagging behind `upstream/main`.
+- **Audit fork alignment**: Regularly run `just forks` or `just forks-check` to confirm local feature branches in `w0m-pr/` are not lagging behind `upstream/main`.
 - **Check for conflicts**: Run `just prs-open` to proactively catch merge conflicts across upstream contributions.
 - **Diagram validation**: All Mermaid diagrams generated by `just prs report` conform to the estate's `mmd-validate` pre-commit gate.

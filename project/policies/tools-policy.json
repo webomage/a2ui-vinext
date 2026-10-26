@@ -1,5 +1,5 @@
 {
-  "_comment": "Host CLI tools the w0m workflow depends on. Unlike npm deps (deps-policy.json) these are installed per-machine, so version checks are ADVISORY. Per tool: `min` (floor the workflow needs), `known_good` (last verified working), `source` (how it updates — tools-upgrade knows `brew` and `gcloud` in-place; others report-only), `auto` (max bump tools-upgrade may auto-apply: patch|minor|major|none), optional `smoke` (a cheap post-upgrade compatibility command, run from the wom7web dir). `auto:none` = detected + reported but NEVER auto-updated (prod-gating / behavior-sensitive). Checked by project/scripts/tools_check.py (`just tools-check`, `--outdated`) and project/scripts/tools_upgrade.py (`just tools-upgrade`).",
+  "_comment": "Host CLI tools the w0m workflow depends on. Unlike npm deps (deps-policy.json) these are installed per-machine, so version checks are ADVISORY. Per tool: `min` (floor the workflow needs), `known_good` (last verified working), `source` (how it updates — tools-upgrade knows `brew` and `gcloud` in-place; others report-only), `auto` (max bump tools-upgrade may auto-apply: patch|minor|major|none), optional `smoke` (a cheap post-upgrade compatibility command, run from the w0m-web dir). `auto:none` = detected + reported but NEVER auto-updated (prod-gating / behavior-sensitive). Checked by project/scripts/tools_check.py (`just tools-check`, `--outdated`) and project/scripts/tools_upgrade.py (`just tools-upgrade`).",
   "tools": {
     "ast-grep": {
       "min": "0.38.0",
@@ -8,7 +8,7 @@
       "source": "brew",
       "auto": "minor",
       "smoke": "ast-grep --version",
-      "note": "Structural (AST) search-and-rewrite. 🔴 required:false and HONESTLY SO — measured 2026-08-05, the estate has **ZERO** command-position uses of it: no sgconfig.yml, no rule files, no just recipe, only 2 prose mentions in what is now wom7web/docs/research/ (was wom7md/50-research/ until T186). It is governed because it is installed and can rewrite the tree at scale (the serena lesson: an unpinned tool with tree-wide write access is the combination that matters), not because anything depends on it. Give it a job or remove it — do not let it sit here as decoration. 🔑 FIXED 2026-08-05: was `ast-grep-cli` via pip inside pyenv 3.12.9, so it vanished with any interpreter switch and the host resolved it through a pyenv shim while the Evercred guest got it from linuxbrew — two managers, one tool. Now brew on both. ⚠️ Does NOT support .astro, .svelte, .vue or .sql, so it cannot cover serena's .astro blind spot (T166); it handles ts/tsx/js/html/css/json/yaml/python/rust. ⚠️ `ast-grep` exits NON-ZERO on no-match, so an exit-code test reports a supported language as unsupported — check stderr for `is not supported` instead. ⚠️ On Linux `/usr/bin/sg` is newgrp, not ast-grep; the `sg` alias is only safe on this host."
+      "note": "Structural (AST) search-and-rewrite. 🔴 required:false and HONESTLY SO — measured 2026-08-05, the estate has **ZERO** command-position uses of it: no sgconfig.yml, no rule files, no just recipe, only 2 prose mentions in what is now w0m-web/docs/research/ (was wom7md/50-research/ until T186). It is governed because it is installed and can rewrite the tree at scale (the serena lesson: an unpinned tool with tree-wide write access is the combination that matters), not because anything depends on it. Give it a job or remove it — do not let it sit here as decoration. 🔑 FIXED 2026-08-05: was `ast-grep-cli` via pip inside pyenv 3.12.9, so it vanished with any interpreter switch and the host resolved it through a pyenv shim while the Evercred guest got it from linuxbrew — two managers, one tool. Now brew on both. ⚠️ Does NOT support .astro, .svelte, .vue or .sql, so it cannot cover serena's .astro blind spot (T166); it handles ts/tsx/js/html/css/json/yaml/python/rust. ⚠️ `ast-grep` exits NON-ZERO on no-match, so an exit-code test reports a supported language as unsupported — check stderr for `is not supported` instead. ⚠️ On Linux `/usr/bin/sg` is newgrp, not ast-grep; the `sg` alias is only safe on this host."
     },
     "aws": {
       "min": "2.20.0",
@@ -16,7 +16,7 @@
       "required": false,
       "source": "brew",
       "auto": "none",
-      "note": "cloud CLI; wom7sec deep-audit (§30). Manual."
+      "note": "cloud CLI; w0m-sec deep-audit (§30). Manual."
     },
     "az": {
       "min": "2.60.0",
@@ -67,7 +67,7 @@
       "source": "brew",
       "auto": "none",
       "smoke": "docker --version",
-      "note": "T164 AC1 — container CLI invoked by `wom7api/scripts/db_baseline.py` (4 subprocess calls: `docker info`, `docker run -d ... postgres:15`, `docker rm -f`) for ephemeral Postgres 15 baseline verification (`just db-baseline-verify` / `just db-baseline-build`). `required: false` because commit/push gates never spin up containers; `auto: none` so engine upgrades stay deliberate."
+      "note": "T164 AC1 — container CLI invoked by `w0m-api/scripts/db_baseline.py` (4 subprocess calls: `docker info`, `docker run -d ... postgres:15`, `docker rm -f`) for ephemeral Postgres 15 baseline verification (`just db-baseline-verify` / `just db-baseline-build`). `required: false` because commit/push gates never spin up containers; `auto: none` so engine upgrades stay deliberate."
     },
     "gauge": {
       "min": "1.6.0",
@@ -112,7 +112,7 @@
       "required": false,
       "source": "uv",
       "auto": "none",
-      "note": "uv tool (`graphifyy`). Install EXACTLY: `uv tool install \"graphifyy[mcp,sql]==0.9.15\" --with \"mcp<2\"`. Three constraints, each verified 2026-07-28 (T151 AC8): [mcp] provides the MCP server (graphify-mcp) — without it `graphify-mcp` dies with ModuleNotFoundError: No module named 'mcp'. `mcp<2` is REQUIRED: 0.9.15 imports AnyUrl from mcp.types, which mcp 2.x dropped (ImportError). [sql] carries tree-sitter-sql — a plain `uv tool install graphifyy[mcp]` REPLACES the extras set and silently drops SQL parsing, which matters for wom7api's supabase/migrations. ⚠️ `uv tool upgrade` may move off 0.9.15 and re-break the MCP import — re-run `just graph-health` and the MCP handshake after any upgrade."
+      "note": "uv tool (`graphifyy`). Install EXACTLY: `uv tool install \"graphifyy[mcp,sql]==0.9.15\" --with \"mcp<2\"`. Three constraints, each verified 2026-07-28 (T151 AC8): [mcp] provides the MCP server (graphify-mcp) — without it `graphify-mcp` dies with ModuleNotFoundError: No module named 'mcp'. `mcp<2` is REQUIRED: 0.9.15 imports AnyUrl from mcp.types, which mcp 2.x dropped (ImportError). [sql] carries tree-sitter-sql — a plain `uv tool install graphifyy[mcp]` REPLACES the extras set and silently drops SQL parsing, which matters for w0m-api's supabase/migrations. ⚠️ `uv tool upgrade` may move off 0.9.15 and re-break the MCP import — re-run `just graph-health` and the MCP handshake after any upgrade."
     },
     "headroom": {
       "min": "0.37.0",
@@ -157,7 +157,7 @@
       "source": "pyenv",
       "auto": "minor",
       "smoke": "mypy --version",
-      "note": "T188 — type-checks the Python that implements this estate's gates (`just py-typecheck`, scope in wom7web/mypy.ini). `required: false` because the gate is scoped to one repo's scripts, not to building or shipping anything. ⚠️ SOURCE RISK, recorded rather than discovered later: this resolves through a **pyenv shim** (/Users/proto/.pyenv/shims/mypy), so it vanishes on an interpreter switch — the exact failure that forced `ast-grep` from pip-inside-pyenv to brew (two managers, one tool). A pre-commit hook that disappears with a `pyenv global` change fails confusingly. Move to brew if this bites; until then the risk is written down here, not assumed away."
+      "note": "T188 — type-checks the Python that implements this estate's gates (`just py-typecheck`, scope in w0m-web/mypy.ini). `required: false` because the gate is scoped to one repo's scripts, not to building or shipping anything. ⚠️ SOURCE RISK, recorded rather than discovered later: this resolves through a **pyenv shim** (/Users/proto/.pyenv/shims/mypy), so it vanishes on an interpreter switch — the exact failure that forced `ast-grep` from pip-inside-pyenv to brew (two managers, one tool). A pre-commit hook that disappears with a `pyenv global` change fails confusingly. Move to brew if this bites; until then the risk is written down here, not assumed away."
     },
     "node": {
       "min": "22.0.0",
@@ -192,7 +192,7 @@
       "source": "brew",
       "auto": "none",
       "smoke": "psql --version",
-      "note": "T164 AC1 — PostgreSQL interactive/batch client (`libpq` / `postgresql@18`). Measured 33 command/subprocess invocations across 18 files (40 raw before symlink deduplication): `wom7api/justfile` (`db-psql`, `db-psql-ssl`, `tracks-report`, `upwork-sync-check`, `db-audit-log`), `wom7api/scripts/db_baseline.py`, `db_local_migrate.py`, `db_local_seed.py`, `stage2_schema_check.py`, `wom7web/project/scripts/lexicon_lint.py`, and `wom7web/apps/web/scripts/snapshot-*.mjs`, plus declared in `.w0m/sdlc.json` (`mcp.servers.supabase`) as the primary CLI fallback when the Supabase MCP server is disconnected. `required: false` because commit/push hooks do not require a local `psql` binary; floor `15.0` matches the estate's Supabase Postgres 15 baseline."
+      "note": "T164 AC1 — PostgreSQL interactive/batch client (`libpq` / `postgresql@18`). Measured 33 command/subprocess invocations across 18 files (40 raw before symlink deduplication): `w0m-api/justfile` (`db-psql`, `db-psql-ssl`, `tracks-report`, `upwork-sync-check`, `db-audit-log`), `w0m-api/scripts/db_baseline.py`, `db_local_migrate.py`, `db_local_seed.py`, `stage2_schema_check.py`, `w0m-web/project/scripts/lexicon_lint.py`, and `w0m-web/apps/web/scripts/snapshot-*.mjs`, plus declared in `.w0m/sdlc.json` (`mcp.servers.supabase`) as the primary CLI fallback when the Supabase MCP server is disconnected. `required: false` because commit/push hooks do not require a local `psql` binary; floor `15.0` matches the estate's Supabase Postgres 15 baseline."
     },
     "python3": {
       "min": "3.11.0",
@@ -209,7 +209,7 @@
       "source": "rustup",
       "auto": "none",
       "smoke": "rustc --version",
-      "note": "T235 AC1 — the compiler itself. 🔒 **Floor RAISED 1.85.0 → 1.95.0 on 2026-08-19 (owner: \"rize rust version\").** It is not a round number: the floor is the **highest requirement declared by Rust code actually present in this estate**, and both ends were measured, not guessed. `_ext/ai-memory` declares `rust-version = \"1.95\"` AND pins `rust-toolchain.toml` `channel = \"1.95\"`; `wom7mlx` needs ≥1.85 (`edition = \"2024\"`). max(1.95, 1.85) = **1.95**. ⚠️ ai-memory is EVALUATED, NOT ADOPTED (T235 AC7 / T234) — the floor tracks code **present and buildable**, so if ai-memory leaves `_ext/`, this may drop back to 1.85.0. Installed default is 1.97.1, so the floor is satisfied with room; `rustup check` confirms 1.97.1 IS current stable. ⚠️ `required: false` deliberately: nothing in the commit/push path compiles Rust today (the `mlx` stack holds build/test at `phase: manual` because the VENDORED mlx-rs/candle trees exit 101). Flip to `required: true` the day a Rust gate joins pre-push — not before, or a Rust-less machine fails a check it cannot cause to fail."
+      "note": "T235 AC1 — the compiler itself. 🔒 **Floor RAISED 1.85.0 → 1.95.0 on 2026-08-19 (owner: \"rize rust version\").** It is not a round number: the floor is the **highest requirement declared by Rust code actually present in this estate**, and both ends were measured, not guessed. `_ext/ai-memory` declares `rust-version = \"1.95\"` AND pins `rust-toolchain.toml` `channel = \"1.95\"`; `w0m-mlx` needs ≥1.85 (`edition = \"2024\"`). max(1.95, 1.85) = **1.95**. ⚠️ ai-memory is EVALUATED, NOT ADOPTED (T235 AC7 / T234) — the floor tracks code **present and buildable**, so if ai-memory leaves `_ext/`, this may drop back to 1.85.0. Installed default is 1.97.1, so the floor is satisfied with room; `rustup check` confirms 1.97.1 IS current stable. ⚠️ `required: false` deliberately: nothing in the commit/push path compiles Rust today (the `mlx` stack holds build/test at `phase: manual` because the VENDORED mlx-rs/candle trees exit 101). Flip to `required: true` the day a Rust gate joins pre-push — not before, or a Rust-less machine fails a check it cannot cause to fail."
     },
     "rustfmt": {
       "min": "1.9.0",
@@ -227,7 +227,7 @@
       "source": "rustup",
       "auto": "none",
       "smoke": "rustup --version",
-      "note": "T235 AC1 / T273 AC1 — the toolchain manager, and the reason the other Rust entries carry `auto: none`: it self-updates via `rustup update`, so wiring them to any package manager would fight it. It is the upgrade path for this whole group and provisions the `wasm32-unknown-unknown` target (`rustup target add wasm32-unknown-unknown`) required by `wom7func/crates/w0m-wasm-utils` (T273)."
+      "note": "T235 AC1 / T273 AC1 — the toolchain manager, and the reason the other Rust entries carry `auto: none`: it self-updates via `rustup update`, so wiring them to any package manager would fight it. It is the upgrade path for this whole group and provisions the `wasm32-unknown-unknown` target (`rustup target add wasm32-unknown-unknown`) required by `w0m-cf/crates/w0m-wasm-utils` (T273)."
     },
     "semgrep": {
       "min": "1.100.0",
@@ -265,7 +265,7 @@
       "source": "brew",
       "auto": "patch",
       "note": "PROD-GATING: edge-fn deploy + migrations. A CLI bump changed prod behavior before (2026-07-10), which is WHY it now carries a real smoke rather than staying auto:none — `migration list` against the live ledger exercises the connection + migration-parsing path a bump would break, and is non-mutating. Same posture as infisical: patch auto-applies IF the smoke passes; minor/major stay manual. The pending 2.109.1 -> 2.113.0 is a MINOR, so this policy deliberately does NOT take it — review + deploy smoke by hand.",
-      "smoke": "cd ../wom7api && infisical run --env=beta --silent -- sh -c 'supabase migration list --db-url \"$DATABASE_URL\" >/dev/null'"
+      "smoke": "cd ../w0m-api && infisical run --env=beta --silent -- sh -c 'supabase migration list --db-url \"$DATABASE_URL\" >/dev/null'"
     },
     "tart": {
       "min": "2.0.0",
@@ -309,7 +309,7 @@
       "source": "rustup",
       "auto": "none",
       "smoke": "worker-build --version",
-      "note": "T273 AC1 — Cloudflare `workers-rs` build tool (`wasm32-unknown-unknown` target). `required: false` on multi-OS hosts; `wom7func/crates/w0m-wasm-utils` compiles as `#![no_std]` `cdylib` (`550` B raw / `389` B gzip) to avoid pulling the `worker` crate's allocator into the 1 MiB Cloudflare Workers Free tier bundle budget (`AgDR-0044`)."
+      "note": "T273 AC1 — Cloudflare `workers-rs` build tool (`wasm32-unknown-unknown` target). `required: false` on multi-OS hosts; `w0m-cf/crates/w0m-wasm-utils` compiles as `#![no_std]` `cdylib` (`550` B raw / `389` B gzip) to avoid pulling the `worker` crate's allocator into the 1 MiB Cloudflare Workers Free tier bundle budget (`AgDR-0044`)."
     },
     "zeroclaw": {
       "min": "0.8.3",
@@ -332,9 +332,9 @@
   },
   "_out_of_scope_comment": "T164 AC1 — host CLIs probed by `scripts/tool_usage_probe.py` (`just tools-usage`) that have ZERO command-position / subprocess invocations across the estate's justfiles, scripts, and git hooks, and are deliberately excluded from `tools` so the policy governs real workflow dependencies rather than whatever happens to be installed on a workstation.",
   "out_of_scope": {
-    "ansible": "0 command-position uses across the estate; IaC is managed via Terraform (`wom7api/cloudflare`, `wom7api/monitoring`) and Cloudflare Wrangler, with no Ansible playbooks.",
+    "ansible": "0 command-position uses across the estate; IaC is managed via Terraform (`w0m-api/cloudflare`, `w0m-api/monitoring`) and Cloudflare Wrangler, with no Ansible playbooks.",
     "bat": "0 command-position uses; interactive terminal pager/cat replacement, never invoked by scripts, recipes, or git hooks.",
-    "cmake": "0 command-position uses; native C/C++ build generator not invoked directly by any estate recipe (`wom7mlx` compiles via `cargo`).",
+    "cmake": "0 command-position uses; native C/C++ build generator not invoked directly by any estate recipe (`w0m-mlx` compiles via `cargo`).",
     "direnv": "0 command-position uses; `.env` and `.envrc` files are prohibited across the estate in favour of `infisical run` process injection (T119 AC2b / T135 §6).",
     "fd": "0 command-position uses; interactive file finder (`fd = os.open(...)` in Python scripts is a local file-descriptor variable, not a CLI call).",
     "go": "0 command-position uses; no Go stack or module exists in the estate (`stacks-policy.json` runtimes are `node`, `deno`, `python`, `rust`).",
@@ -343,7 +343,7 @@
     "kubectl": "0 command-position uses; no Kubernetes cluster or manifest exists in the estate.",
     "ncdu": "0 command-position uses; interactive disk-usage TUI, never invoked by scripts, recipes, or git hooks.",
     "pip3": "0 command-position uses; Python package management in estate recipes uses `uv` (`uv pip install`, `uv run`, `uv tool install`), never raw `pip3`.",
-    "podman": "0 command-position uses; ephemeral container verification (`wom7api/scripts/db_baseline.py`) invokes `docker`, not `podman`.",
+    "podman": "0 command-position uses; ephemeral container verification (`w0m-api/scripts/db_baseline.py`) invokes `docker`, not `podman`.",
     "redis-cli": "0 command-position uses; no Redis instance or client workflow exists in the estate.",
     "rg": "0 command-position uses; `just search` (`scripts/estate_search.py`) runs `LC_ALL=C git --no-pager grep` per repo, and agent harnesses bundle their own ripgrep.",
     "ruff": "0 command-position uses; retired from TS/Rust repos in T135 task 3.1 and not wired into any recipe or hook (`py-typecheck` uses `mypy`).",

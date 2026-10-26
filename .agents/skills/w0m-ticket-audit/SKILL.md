@@ -2,7 +2,7 @@
 name: w0m-ticket-audit
 description: Audit a w0m ticket's recorded state — status, acceptance criteria, claims in its body — against current reality instead of trusting its checkboxes. Trigger when asked to review/audit a ticket, verify whether a ticket is "really" done, reconcile a ticket's claims against the codebase or live infra, or explain why a ticket looks stale/contradictory. Read-only: it produces evidence, it never edits the ticket, TASKS.md, or flips status.
 metadata:
-  version: "2026.09.22-1790054019"
+  version: "2026.10.26-1793009642"
 ---
 
 # w0m-ticket-audit — verify a ticket against reality, not its own checkboxes
@@ -33,7 +33,7 @@ in-progress/done split was found by diffing exactly these surfaces:
 cd /Users/proto/Projects/@self/@wom
 grep -n "${TICKET}\b" TASKS.md
 gh issue view <gh_issue-from-frontmatter> --repo webomage/wom7board
-python3 -c "import json; d=json.load(open('wom7web/project/tickets.json')); print(d.get('${TICKET}'))"
+python3 -c "import json; d=json.load(open('w0m-web/project/tickets.json')); print(d.get('${TICKET}'))"
 git log -3 -- .tasks/${TICKET}.md
 git status --short .tasks/${TICKET}.md TASKS.md   # staged-but-uncommitted flips hide here
 ```

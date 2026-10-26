@@ -5,7 +5,7 @@ Usage (via the TTY-gated recipe only):
     just deploy-function <name> [<name> ...]
     e.g. `just deploy-function get-bot-status hume-token linkedin-share`
 
-Replaces 26 hand-written per-function `deploy-*` recipes in wom7api/justfile. They were all the
+Replaces 26 hand-written per-function `deploy-*` recipes in w0m-api/justfile. They were all the
 same line with a different name. Two could never run (their confirm steps were missing from
 confirm-policy.json, and the gate fails closed), and one targeted a function with no source
 (`deploy-log` → `log-event`). One parameterised recipe keeps the list in ONE place: the
@@ -32,7 +32,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FUNCTIONS = ROOT / "wom7api" / "supabase" / "functions"
+FUNCTIONS = ROOT / "w0m-api" / "supabase" / "functions"
 
 
 def available() -> list[str]:
@@ -69,7 +69,7 @@ def _git_output(*args: str) -> str:
     try:
         res = subprocess.run(
             ["git", *args],
-            cwd=ROOT / "wom7api",
+            cwd=ROOT / "w0m-api",
             capture_output=True,
             text=True,
             timeout=5,
@@ -118,7 +118,7 @@ def main(argv: list[str] | None = None) -> int:
         print("DRY RUN:", " ".join(cmd))
         return 0
 
-    deploy_res = subprocess.run(cmd, cwd=ROOT / "wom7api")
+    deploy_res = subprocess.run(cmd, cwd=ROOT / "w0m-api")
     outcome = "success" if deploy_res.returncode == 0 else "failed"
     trigger = os.environ.get("W0M_DEPLOY_TRIGGER", "planned")
     incident_ref = os.environ.get("W0M_DEPLOY_INCIDENT_REF", "")

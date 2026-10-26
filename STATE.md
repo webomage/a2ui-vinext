@@ -15,16 +15,16 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T567](/home/aleksei/Projects/!self/w0m/.tasks/T567.md) | ⚠️ not mirrored | P1 | in-progress | tools | 85 | Rebrand wom7*/k7* to w0m-* and migrate all estate repositories from casualuser/* to gith |
-| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 35 | Purge .env.bak from wom7web git history |
-| 3 | [T28](/home/aleksei/Projects/!self/w0m/.tasks/T28.md) | [#28](https://github.com/webomage/wom7board/issues/28) | P2 | queued | infra | 35 | @webomage.com mailbox provisioning |
-| 4 | [T70](/home/aleksei/Projects/!self/w0m/.tasks/T70.md) | [#70](https://github.com/webomage/wom7board/issues/70) | P2 | queued | schemas | 35 | DB collation-version refresh |
-| 5 | [T109](/home/aleksei/Projects/!self/w0m/.tasks/T109.md) | [#109](https://github.com/webomage/wom7board/issues/109) | P2 | queued | knowledge | 35 | Research: knowledge integration — make the .md corpus RAG/skills-accessible |
-| 6 | [T128](/home/aleksei/Projects/!self/w0m/.tasks/T128.md) | [#128](https://github.com/webomage/wom7board/issues/128) | P2 | queued | knowledge | 35 | wom7skills library revision + architecture/flows/schemas documentation |
-| 7 | [T132](/home/aleksei/Projects/!self/w0m/.tasks/T132.md) | [#132](https://github.com/webomage/wom7board/issues/132) | P2 | queued | skills | 35 | w0m-pixel-clone — a lightweight pixel-perfect parse-and-copy skill (visual source → Svel |
-| 8 | [T171](/home/aleksei/Projects/!self/w0m/.tasks/T171.md) | [#171](https://github.com/webomage/wom7board/issues/171) | P2 | queued | sdlc | 35 | w0m planner/scheduler for batched Claude Code tasks in dev sandboxes — prove the unit be |
-| 9 | [T181](/home/aleksei/Projects/!self/w0m/.tasks/T181.md) | [#181](https://github.com/webomage/wom7board/issues/181) | P2 | queued | tools | 35 | GUI workstation VMs — Claude Desktop + Slack in a Tart guest; the second VM type, and th |
-| 10 | [T226](/home/aleksei/Projects/!self/w0m/.tasks/T226.md) | [#226](https://github.com/webomage/wom7board/issues/226) | P2 | queued | infra | 35 | Two advisory suites assert facts about CLIENT repos that have since changed — and nobody |
+| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 35 | Purge .env.bak from wom7web git history |
+| 2 | [T28](/home/aleksei/Projects/!self/w0m/.tasks/T28.md) | [#28](https://github.com/webomage/wom7board/issues/28) | P2 | queued | infra | 35 | @webomage.com mailbox provisioning |
+| 3 | [T70](/home/aleksei/Projects/!self/w0m/.tasks/T70.md) | [#70](https://github.com/webomage/wom7board/issues/70) | P2 | queued | schemas | 35 | DB collation-version refresh |
+| 4 | [T109](/home/aleksei/Projects/!self/w0m/.tasks/T109.md) | [#109](https://github.com/webomage/wom7board/issues/109) | P2 | queued | knowledge | 35 | Research: knowledge integration — make the .md corpus RAG/skills-accessible |
+| 5 | [T128](/home/aleksei/Projects/!self/w0m/.tasks/T128.md) | [#128](https://github.com/webomage/wom7board/issues/128) | P2 | queued | knowledge | 35 | wom7skills library revision + architecture/flows/schemas documentation |
+| 6 | [T132](/home/aleksei/Projects/!self/w0m/.tasks/T132.md) | [#132](https://github.com/webomage/wom7board/issues/132) | P2 | queued | skills | 35 | w0m-pixel-clone — a lightweight pixel-perfect parse-and-copy skill (visual source → Svel |
+| 7 | [T171](/home/aleksei/Projects/!self/w0m/.tasks/T171.md) | [#171](https://github.com/webomage/wom7board/issues/171) | P2 | queued | sdlc | 35 | w0m planner/scheduler for batched Claude Code tasks in dev sandboxes — prove the unit be |
+| 8 | [T181](/home/aleksei/Projects/!self/w0m/.tasks/T181.md) | [#181](https://github.com/webomage/wom7board/issues/181) | P2 | queued | tools | 35 | GUI workstation VMs — Claude Desktop + Slack in a Tart guest; the second VM type, and th |
+| 9 | [T226](/home/aleksei/Projects/!self/w0m/.tasks/T226.md) | [#226](https://github.com/webomage/wom7board/issues/226) | P2 | queued | infra | 35 | Two advisory suites assert facts about CLIENT repos that have since changed — and nobody |
+| 10 | [T227](/home/aleksei/Projects/!self/w0m/.tasks/T227.md) | [#227](https://github.com/webomage/wom7board/issues/227) | P2 | queued | infra | 35 | Serve the BUILT artifact locally (wrangler dev --remote) so gates can test what actually |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,24 +32,24 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 38 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **38** are
+> ⚠️ **0 of 36 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **36** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T567](/home/aleksei/Projects/!self/w0m/.tasks/T567.md) | ⚠️ not mirrored | P1 | in-progress | tools | 2/6 | `███░░░░░░░` 33% | — | Rebrand wom7*/k7* to w0m-* and migrate all estate repositori |
-| 2 | [T491](/home/aleksei/Projects/!self/w0m/.tasks/T491.md) | [#491](https://github.com/webomage/wom7board/issues/491) | P2 | queued | tools | 1/5 | `██░░░░░░░░` 20% | — | Name the Cloudflare repo by its content, then rename it once |
-| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | — | Purge .env.bak from wom7web git history |
-| 4 | [T28](/home/aleksei/Projects/!self/w0m/.tasks/T28.md) | [#28](https://github.com/webomage/wom7board/issues/28) | P2 | queued | infra | 0/2 | `░░░░░░░░░░` 0% | — | @webomage.com mailbox provisioning |
-| 5 | [T70](/home/aleksei/Projects/!self/w0m/.tasks/T70.md) | [#70](https://github.com/webomage/wom7board/issues/70) | P2 | queued | schemas | 0/5 | `░░░░░░░░░░` 0% | — | DB collation-version refresh |
-| 6 | [T109](/home/aleksei/Projects/!self/w0m/.tasks/T109.md) | [#109](https://github.com/webomage/wom7board/issues/109) | P2 | queued | knowledge | 0/5 | `░░░░░░░░░░` 0% | — | Research: knowledge integration — make the .md corpus RAG/sk |
-| 7 | [T128](/home/aleksei/Projects/!self/w0m/.tasks/T128.md) | [#128](https://github.com/webomage/wom7board/issues/128) | P2 | queued | knowledge | 0/8 | `░░░░░░░░░░` 0% | — | wom7skills library revision + architecture/flows/schemas doc |
-| 8 | [T132](/home/aleksei/Projects/!self/w0m/.tasks/T132.md) | [#132](https://github.com/webomage/wom7board/issues/132) | P2 | queued | skills | 0/7 | `░░░░░░░░░░` 0% | — | w0m-pixel-clone — a lightweight pixel-perfect parse-and-copy |
-| 9 | [T171](/home/aleksei/Projects/!self/w0m/.tasks/T171.md) | [#171](https://github.com/webomage/wom7board/issues/171) | P2 | queued | sdlc | 0/8 | `░░░░░░░░░░` 0% | — | w0m planner/scheduler for batched Claude Code tasks in dev s |
-| 10 | [T181](/home/aleksei/Projects/!self/w0m/.tasks/T181.md) | [#181](https://github.com/webomage/wom7board/issues/181) | P2 | queued | tools | 0/8 | `░░░░░░░░░░` 0% | — | GUI workstation VMs — Claude Desktop + Slack in a Tart guest |
+| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | — | Purge .env.bak from wom7web git history |
+| 2 | [T28](/home/aleksei/Projects/!self/w0m/.tasks/T28.md) | [#28](https://github.com/webomage/wom7board/issues/28) | P2 | queued | infra | 0/2 | `░░░░░░░░░░` 0% | — | @webomage.com mailbox provisioning |
+| 3 | [T70](/home/aleksei/Projects/!self/w0m/.tasks/T70.md) | [#70](https://github.com/webomage/wom7board/issues/70) | P2 | queued | schemas | 0/5 | `░░░░░░░░░░` 0% | — | DB collation-version refresh |
+| 4 | [T109](/home/aleksei/Projects/!self/w0m/.tasks/T109.md) | [#109](https://github.com/webomage/wom7board/issues/109) | P2 | queued | knowledge | 0/5 | `░░░░░░░░░░` 0% | — | Research: knowledge integration — make the .md corpus RAG/sk |
+| 5 | [T128](/home/aleksei/Projects/!self/w0m/.tasks/T128.md) | [#128](https://github.com/webomage/wom7board/issues/128) | P2 | queued | knowledge | 0/8 | `░░░░░░░░░░` 0% | — | wom7skills library revision + architecture/flows/schemas doc |
+| 6 | [T132](/home/aleksei/Projects/!self/w0m/.tasks/T132.md) | [#132](https://github.com/webomage/wom7board/issues/132) | P2 | queued | skills | 0/7 | `░░░░░░░░░░` 0% | — | w0m-pixel-clone — a lightweight pixel-perfect parse-and-copy |
+| 7 | [T171](/home/aleksei/Projects/!self/w0m/.tasks/T171.md) | [#171](https://github.com/webomage/wom7board/issues/171) | P2 | queued | sdlc | 0/8 | `░░░░░░░░░░` 0% | — | w0m planner/scheduler for batched Claude Code tasks in dev s |
+| 8 | [T181](/home/aleksei/Projects/!self/w0m/.tasks/T181.md) | [#181](https://github.com/webomage/wom7board/issues/181) | P2 | queued | tools | 0/8 | `░░░░░░░░░░` 0% | — | GUI workstation VMs — Claude Desktop + Slack in a Tart guest |
+| 9 | [T226](/home/aleksei/Projects/!self/w0m/.tasks/T226.md) | [#226](https://github.com/webomage/wom7board/issues/226) | P2 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Two advisory suites assert facts about CLIENT repos that hav |
+| 10 | [T227](/home/aleksei/Projects/!self/w0m/.tasks/T227.md) | [#227](https://github.com/webomage/wom7board/issues/227) | P2 | queued | infra | 0/6 | `░░░░░░░░░░` 0% | — | Serve the BUILT artifact locally (wrangler dev --remote) so  |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `65f9aa1b` |
-| `wom7api` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `b806096` |
-| `wom7func` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `4f93c30` |
-| `wom7skills` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `a98e473` |
-| `wom7ext` | `agent/agy-ext-t567` | **1** | **n/a — NO UPSTREAM** | `f7be2cd` |
-| `wom7sec` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `639d97f` |
-| `wom7mlx/wom7mlx` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `9bc454f` |
+| `w0m-web` | `beta` | 0 | 0 | `e89dd82d` |
+| `w0m-api` | `beta` | 0 | 0 | `f803a2c` |
+| `w0m-cf` | `beta` | 0 | 0 | `69314a5` |
+| `w0m-skills` | `beta` | 0 | 0 | `0199a02` |
+| `w0m-ext` | `beta` | 0 | 0 | `d647ab9` |
+| `w0m-sec` | `beta` | 0 | 0 | `7e803d2` |
+| `w0m-mlx/w0m-mlx` | `beta` | 0 | 0 | `4dcccc1` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 38 open · 574 TASKS.md rows · 218/574 specced (5/38 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 36 open · 574 TASKS.md rows · 218/574 specced (5/36 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T567","T17","T28","T70","T109","T128","T132","T171","T181","T226"],"repos":{"wom7api":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"b806096","unpushed":null},"wom7ext":{"branch":"agent/agy-ext-t567","dirty":1,"has_upstream":true,"head":"f7be2cd","unpushed":null},"wom7func":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"4f93c30","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"9bc454f","unpushed":null},"wom7sec":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"639d97f","unpushed":null},"wom7skills":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"a98e473","unpushed":null},"wom7web":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"65f9aa1b","unpushed":null}},"tickets":{"open":38,"rowless_open":[],"rows":574,"specced":218,"specced_open":5,"total":574,"unmirrored_open":3}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17","T28","T70","T109","T128","T132","T171","T181","T226","T227"],"repos":{"w0m-api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"f803a2c","unpushed":0},"w0m-cf":{"branch":"beta","dirty":0,"has_upstream":true,"head":"69314a5","unpushed":0},"w0m-ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d647ab9","unpushed":0},"w0m-mlx/w0m-mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":0},"w0m-sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"7e803d2","unpushed":0},"w0m-skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"0199a02","unpushed":0},"w0m-web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"e89dd82d","unpushed":0}},"tickets":{"open":36,"rowless_open":[],"rows":574,"specced":218,"specced_open":5,"total":574,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -129,14 +129,13 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-#### In-flight tickets (1):
+No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-- **T567** — Rebrand wom7*/k7* to w0m-* and migrate all estate repositories from casualuser/* to github.com/webomage/w0m-*
-  - **2026-10-23** (3d ago): Stage 1 (AC2) completed & public fork naming convention locked. Following casualuser promotion to admin (Owner) in github.com/orgs/webomage, transferred and renamed all 10 first-party repositories (webomage/w0m, webomage/w0m-web, webomage/w0m-api, webomage/w0m-cf, webomage/w0m-ext, webomage/w0m-sec, webomage/w0m-skills, webomage/w0m-mlx, webomage/w0m-ava, webomage/w0m-clips) and consolidated all 11 public open-source forks under webomage/<repo> (orca, harness2, headroom, webtorrent-desktop, omlx, mlx-vlm, tart, tart-guest-agent, virtual-fido, serena, zeroclaw) keeping their upstream repository names (or <upstream-org>-<repo> on collision). Updated origin remotes across all local checkouts ([remote] 0 in name-refs) and updated w0m-skills schema URLs.
+#### Completed today (4):
 
-#### Completed today (2):
-
+- **T491** — Name the Cloudflare repo by its content, then rename it once — with `name-refs --gate` as the done-check (Completed as part of [[T567]] (done). wom7func renamed once to w0m-cf (github.com/webomage/w0m-cf); just name-refs wom7func --gate (0 live) and just name-refs wom7cfworkers --gate (0 live) both exit 0; deployed Cloudflare Worker script name (wom7func in w0m-cf/wrangler.jsonc) and WORKERS_WEBHOOK_URL preserved for uninterrupted cron/Workflow/AI-guard operation.)
 - **T509** — Root-first layout: finish the T414 move in staged units, behind a stale-path probe that checks the file a recipe, hook or profile runs actually exists (Completed AC3, AC5, AC6, AC7, AC9, AC10, AC13, AC16 (17/17 ACs) + AgDR-0050 — ticket DONE)
+- **T567** — Rebrand wom7*/k7* to w0m-* and migrate all estate repositories from casualuser/* to github.com/webomage/w0m-* (Stages 2, 3, and 4 (AC3–AC6) completed and verified (done). Following [[T509]] root-first cutover, atomically renamed all local repositories (w0m-web, w0m-api, w0m-cf, w0m-ext, w0m-sec, w0m-skills, w0m-mlx, w0m-ava, w0m-clips, w0m-pr), consolidated k7 TUIs into w0m CLI subcommands (w0m vm, w0m k8s, w0m cloud, w0m llm, w0m spec, w0m notify) via w0m-skills/tools/w0m_portable_cli.py, and verified just name-refs <name> --gate exits 0 across all 11 legacy names (wom7web, wom7api, wom7func, wom7cfworkers, wom7ext, wom7sec, wom7skills, wom7mlx, wom7ava, wom7clips, wom7pr), plus just preflight, just check-guardrails, and full estate + member test suites. Deployed Cloudflare Worker script identifiers (wom7api, wom7func in wrangler.jsonc) remain pinned for zero-downtime cron/DO/Workflow continuity.)
 - **T574** — Extension: auto-sync Webomage/Google browser session from .webomage.com cookies and wire Antigravity Bridge status to HTTPS/Realtime transport (Completed (4/4 ACs). Implemented .webomage.com chunked @supabase/ssr cookie auto-sync (parseSupabaseCookiesToSession + syncSessionFromWebomageCookies), added "Continue with Google / Sync Webomage" button (SUPABASE_SYNC_BROWSER_SESSION) + chrome.cookies.onChanged listener, fixed "Anitgravity Bridge" → "Antigravity Bridge" and wired MCP_GET_STATUS / MCP_CONNECT / MCP_DISCONNECT to live HTTPS Cloud + extension_commands Realtime status; verified by just test-unit (18/18 passed), just typecheck (0 errors), just lint-gate (0 warnings/errors), and just build-chrome.)
 
 ## 3. Other open threads (in TASKS.md)

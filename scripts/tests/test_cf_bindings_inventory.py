@@ -78,8 +78,8 @@ def test_live_estate_inventory_matches_measured_wrangler_configs() -> None:
 
     by_name = {w["worker_name"]: w for w in inventory["workers"]}
     assert set(by_name.keys()) == {
-        "wom7api",
-        "wom7func",
+        "wom7api",  # pinned worker script name
+        "wom7func",  # pinned worker script name
         "webomage",
         "webomage-cp",
         "webomage-demo",
@@ -87,18 +87,18 @@ def test_live_estate_inventory_matches_measured_wrangler_configs() -> None:
         "webomage-join",
     }
 
-    # wom7api has 19 workflows, AI binding, and CHAT_MEMORY Durable Object, 0 crons
-    assert len(by_name["wom7api"]["bindings"]["workflows"]) == 19
-    assert by_name["wom7api"]["bindings"]["ai"] == ["AI"]
-    assert by_name["wom7api"]["bindings"]["durable_objects"] == ["CHAT_MEMORY->ChatMemoryDO"]
-    assert by_name["wom7api"]["crons"] == []
+    # pinned worker wom7api has 19 workflows, AI binding, and CHAT_MEMORY Durable Object, 0 crons
+    assert len(by_name["wom7api"]["bindings"]["workflows"]) == 19  # pinned worker
+    assert by_name["wom7api"]["bindings"]["ai"] == ["AI"]  # pinned worker
+    assert by_name["wom7api"]["bindings"]["durable_objects"] == ["CHAT_MEMORY->ChatMemoryDO"]  # pinned worker
+    assert by_name["wom7api"]["crons"] == []  # pinned worker
 
-    # wom7func has AI, BROWSER, and all 5 account cron triggers
-    assert by_name["wom7func"]["bindings"]["ai"] == ["AI"]
-    assert by_name["wom7func"]["bindings"]["browser"] == ["BROWSER"]
-    assert len(by_name["wom7func"]["crons"]) == 5
+    # pinned worker wom7func has AI, BROWSER, and all 5 account cron triggers
+    assert by_name["wom7func"]["bindings"]["ai"] == ["AI"]  # pinned worker
+    assert by_name["wom7func"]["bindings"]["browser"] == ["BROWSER"]  # pinned worker
+    assert len(by_name["wom7func"]["crons"]) == 5  # pinned worker
 
-    # webomage (apps/web) has SESSION + SETTINGS KV namespaces, CF_WORKERS + WOM7API services, and PUBLIC_ASSETS R2
+    # webomage (apps/web) has SESSION + SETTINGS KV namespaces, CF_WORKERS + W0M_API services, and PUBLIC_ASSETS R2
     assert len(by_name["webomage"]["bindings"]["kv_namespaces"]) == 2
     assert by_name["webomage"]["bindings"]["r2_buckets"] == ["PUBLIC_ASSETS->wom-public-assets"]
 
@@ -117,5 +117,5 @@ def test_live_estate_inventory_matches_measured_wrangler_configs() -> None:
         assert expected_absent in unconfigured
 
     md = cbi.format_markdown_table(inventory)
-    assert "| `wom7api/wrangler.jsonc` | `wom7api` |" in md
-    assert "| `wom7func/wrangler.jsonc` | `wom7func` |" in md
+    assert "| `w0m-api/wrangler.jsonc` | `wom7api` |" in md  # pinned worker
+    assert "| `w0m-cf/wrangler.jsonc` | `wom7func` |" in md  # pinned worker

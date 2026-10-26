@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 ESTATE_ROOT = Path(__file__).resolve().parents[2]
-WEB_ROOT = ESTATE_ROOT / "wom7web"
+WEB_ROOT = ESTATE_ROOT / "w0m-web"
 sys.path.insert(0, str(ESTATE_ROOT / "scripts"))
 
 import mcp_declared  # noqa: E402
@@ -66,7 +66,7 @@ def test_ac2_when_to_use_documented_in_sdlc_and_docs() -> None:
         assert required in doc_text, f"Missing {required!r} in PACKAGE-DISCOVERY-MCP.md"
 
     for skill_path in (
-        ESTATE_ROOT / "wom7skills" / "skills" / "w0m-sdlc-research" / "SKILL.md",
+        ESTATE_ROOT / "w0m-skills" / "skills" / "w0m-sdlc-research" / "SKILL.md",
         WEB_ROOT / ".agents" / "skills" / "w0m-sdlc-research" / "SKILL.md",
         ESTATE_ROOT / ".agents" / "skills" / "w0m-sdlc-research" / "SKILL.md",
     ):

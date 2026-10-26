@@ -2,7 +2,7 @@
 """worktree_agent.py (T411 AC5) — Coordinated Worktree Orchestrator for Parallel AI Agents.
 
 Eliminates the "Root-Only Worktree Illusion" where parallel agents created in root worktrees
-unintentionally share the same unbranched working directory in sub-repos (wom7web, wom7api).
+unintentionally share the same unbranched working directory in sub-repos (w0m-web, w0m-api).
 
 Commands:
   create <agent_id> [--subrepos web,api] [--branch <name>]
@@ -24,20 +24,20 @@ if not (ROOT / ".git").exists() and (ROOT.parent / ".git").exists():
     ROOT = ROOT.parent
 
 SUBREPO_MAP = {
-    "web": "wom7web",
-    "wom7web": "wom7web",
-    "api": "wom7api",
-    "wom7api": "wom7api",
-    "func": "wom7func",
-    "wom7func": "wom7func",
-    "ext": "wom7ext",
-    "wom7ext": "wom7ext",
-    "sec": "wom7sec",
-    "wom7sec": "wom7sec",
-    "skills": "wom7skills",
-    "wom7skills": "wom7skills",
-    "pr": "wom7pr",
-    "wom7pr": "wom7pr",
+    "web": "w0m-web",
+    "w0m-web": "w0m-web",
+    "api": "w0m-api",
+    "w0m-api": "w0m-api",
+    "func": "w0m-cf",
+    "w0m-cf": "w0m-cf",
+    "ext": "w0m-ext",
+    "w0m-ext": "w0m-ext",
+    "sec": "w0m-sec",
+    "w0m-sec": "w0m-sec",
+    "skills": "w0m-skills",
+    "w0m-skills": "w0m-skills",
+    "pr": "w0m-pr",
+    "w0m-pr": "w0m-pr",
 }
 
 
@@ -58,7 +58,7 @@ def cmd_create(agent_id: str, subrepos_raw: list[str], base_branch: str | None =
     # Determine subrepos to isolate
     selected_subrepos: list[str] = []
     if not subrepos_raw:
-        selected_subrepos = ["wom7web"]
+        selected_subrepos = ["w0m-web"]
     else:
         for s in subrepos_raw:
             for item in s.split(","):
@@ -200,7 +200,7 @@ def main() -> int:
     # create
     p_create = subparsers.add_parser("create", help="Create linked worktrees for an agent.")
     p_create.add_argument("agent_id", help="Identifier for the agent (e.g. alpha, task-123)")
-    p_create.add_argument("--subrepos", "-s", nargs="*", default=["wom7web"], help="Target subrepos (e.g. web, api)")
+    p_create.add_argument("--subrepos", "-s", nargs="*", default=["w0m-web"], help="Target subrepos (e.g. web, api)")
     p_create.add_argument("--branch", "-b", default=None, help="Base branch (default: current branch)")
 
     # remove

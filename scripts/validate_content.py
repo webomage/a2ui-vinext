@@ -14,8 +14,8 @@ from typing import Any, cast
 import yaml
 
 ESTATE_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_BLUEPRINTS_DIR = ESTATE_ROOT / "wom7web" / "apps" / "web" / "src" / "content" / "blueprints"
-DEFAULT_POSTS_DIR = ESTATE_ROOT / "wom7web" / "apps" / "web" / "src" / "content" / "posts"
+DEFAULT_BLUEPRINTS_DIR = ESTATE_ROOT / "w0m-web" / "apps" / "web" / "src" / "content" / "blueprints"
+DEFAULT_POSTS_DIR = ESTATE_ROOT / "w0m-web" / "apps" / "web" / "src" / "content" / "posts"
 
 
 def parse_frontmatter(md_path: Path) -> dict[str, Any]:

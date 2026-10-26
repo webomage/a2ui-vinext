@@ -36,7 +36,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, ".."))
-WEB = os.path.join(ROOT, "wom7web")
+WEB = os.path.join(ROOT, "w0m-web")
 CHANGES = os.path.join(WEB, "openspec/changes")
 TICKETS = os.path.join(ROOT, ".tasks")
 

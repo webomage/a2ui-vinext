@@ -32,12 +32,12 @@ import sys
 from pathlib import Path
 
 ESTATE = Path(__file__).resolve().parents[1]
-W0M_REPOS = ["wom7web", "wom7api", "wom7func", "wom7ext", "wom7mlx", "wom7sec", "wom7skills"]
+W0M_REPOS = ["w0m-web", "w0m-api", "w0m-cf", "w0m-ext", "w0m-mlx", "w0m-sec", "w0m-skills"]
 
 # Exact paths, never directories — see the docstring's `.agent/` warning.
 RETIRED = [
-    ("wom7web/.agent/specs/system_v1.md", "the system_v1 DSL (cites a nonexistent `src/lib/models`)"),
-    ("wom7ext/.windsurf", "the speckit workflows (all 9 referenced a `.specify/` scaffold that is gone)"),
+    ("w0m-web/.agent/specs/system_v1.md", "the system_v1 DSL (cites a nonexistent `src/lib/models`)"),
+    ("w0m-ext/.windsurf", "the speckit workflows (all 9 referenced a `.specify/` scaffold that is gone)"),
 ]
 SKIP = {"node_modules", "dist", ".git", "build", ".astro", ".wrangler", ".svelte-kit"}
 
@@ -65,25 +65,25 @@ def selftest() -> int:
 
     with tempfile.TemporaryDirectory() as tmp:
         fake = Path(tmp)
-        (fake / "wom7web/.agent/specs").mkdir(parents=True)
-        (fake / "wom7web/.agent/specs/system_v1.md").write_text("# resurrected")
-        (fake / "wom7ext").mkdir(parents=True)
-        (fake / "wom7ext/x.feature").write_text("Feature: drift")
-        (fake / "wom7web/specs").mkdir(parents=True)
-        (fake / "wom7web/specs/keeper.spec").write_text("# Gauge spec — MUST NOT be flagged")
+        (fake / "w0m-web/.agent/specs").mkdir(parents=True)
+        (fake / "w0m-web/.agent/specs/system_v1.md").write_text("# resurrected")
+        (fake / "w0m-ext").mkdir(parents=True)
+        (fake / "w0m-ext/x.feature").write_text("Feature: drift")
+        (fake / "w0m-web/specs").mkdir(parents=True)
+        (fake / "w0m-web/specs/keeper.spec").write_text("# Gauge spec — MUST NOT be flagged")
 
         global ESTATE
         real, ESTATE = ESTATE, fake
         try:
             found = [rel for rel, _ in RETIRED if (ESTATE / rel).exists()]
             check("a resurrected `system_v1.md` is caught",
-                  "wom7web/.agent/specs/system_v1.md" in found)
+                  "w0m-web/.agent/specs/system_v1.md" in found)
             g = gherkin_in_w0m()
             check("a `.feature` inside a w0m repo is caught", len(g) == 1)
             check("🔑 a Gauge `.spec` raises NOTHING — it is the test corpus, not a rival",
                   not any(p.suffix == ".spec" for p in g))
-            (ESTATE / "wom7ext/x.feature").unlink()
-            (ESTATE / "wom7web/.agent/specs/system_v1.md").unlink()
+            (ESTATE / "w0m-ext/x.feature").unlink()
+            (ESTATE / "w0m-web/.agent/specs/system_v1.md").unlink()
             check("a clean tree reports clean",
                   not gherkin_in_w0m() and not [r for r, _ in RETIRED if (ESTATE / r).exists()])
         finally:
@@ -112,7 +112,7 @@ def main() -> int:
     # An empty corpus means the scan is broken, not that the estate is clean.
     spec_count = sum(1 for r in W0M_REPOS
                      for p in (ESTATE / r).rglob("*.spec") if not (SKIP & set(p.parts))) \
-        if (ESTATE / "wom7web").is_dir() else 0
+        if (ESTATE / "w0m-web").is_dir() else 0
     if spec_count == 0:
         print("  🔴 EMPTY CORPUS — 0 Gauge `.spec` files found across the estate. The scan is "
               "broken; do not read this as 'no spec systems'.")
@@ -142,7 +142,7 @@ def main() -> int:
         print("  ✅ no Gherkin inside any w0m repo")
 
     print(f"\n── {len(resurrected)} resurrection(s), {len(gherkin)} Gherkin file(s).")
-    # T142 AC7: all 10 remaining .feature files in wom7ext (7) and wom7mlx (3) have been migrated
+    # T142 AC7: all 10 remaining .feature files in w0m-ext (7) and w0m-mlx (3) have been migrated
     # to Gauge .spec files. Both retired spec-system resurrections and any new .feature file inside
     # a w0m7* repo now block unconditionally.
     return 1 if (resurrected or gherkin) else 0

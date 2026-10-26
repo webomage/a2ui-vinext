@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """upwork-poller-status — Inspect Upwork poller state and Storage `upwork` bucket objects (T517 AC5).
 
-Replaces `wom7api/scripts/fetch-upwork.js` (archived to `_arch/fetch-upwork/`) without hardcoded
+Replaces `w0m-api/scripts/fetch-upwork.js` (archived to `_arch/fetch-upwork/`) without hardcoded
 contract file paths. Reads credentials from environment (`SUPABASE_URL` / `PUBLIC_SUPABASE_URL`
 and `SUPABASE_SERVICE_ROLE_KEY`).
 """

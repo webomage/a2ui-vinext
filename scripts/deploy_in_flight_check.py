@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 SDLC = ROOT / ".w0m" / "sdlc.json"
 
 # The recipes whose consent a commit would invalidate — `just deploy-web` counts too, being a
@@ -105,7 +105,7 @@ def running_deploys() -> tuple[list[str], list[str]]:
     repo-scoped: `confirm_step.py:148` pins `head_sha()` to `cwd=WEB_ROOT`.
 
     🔑 And the OBVIOUS narrowing is wrong. "Block only if the deploy's git toplevel is this repo"
-    would UNBLOCK the case the hook exists for, because a w0m deploy runs from `wom7api/` — a
+    would UNBLOCK the case the hook exists for, because a w0m deploy runs from `w0m-api/` — a
     different repo under the same estate. The boundary is the ESTATE, which `.w0m/sdlc.json`
     already declares.
     """

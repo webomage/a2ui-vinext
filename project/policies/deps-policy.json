@@ -1,47 +1,47 @@
 {
   "_comment": "Canonical cross-repo pnpm dependency policy for the w0m TS repos. ONE source of truth for security floors, lockstep groups, and documented per-repo exceptions. Enforced by scripts/deps_sync.py (--check / --apply) and wired into `just deps-check` + pre-push. Raise a floor or pin a lockstep dep HERE, once, then --apply. See docs/DEPS-ALIGNMENT.md.",
   "repos": {
-    "wom7web": "wom7web/package.json",
-    "wom7api": "wom7api/package.json",
-    "wom7func": "wom7func/package.json",
-    "wom7ext": "wom7ext/extension/package.json",
-    "wom7skills": "wom7skills/package.json"
+    "w0m-web": "w0m-web/package.json",
+    "w0m-api": "w0m-api/package.json",
+    "w0m-cf": "w0m-cf/package.json",
+    "w0m-ext": "w0m-ext/extension/package.json",
+    "w0m-skills": "w0m-skills/package.json"
   },
   "toolchain": {
     "_comment": "Pinned build toolchain, enforced identical across all repos (corepack reads packageManager). Bump here once.",
     "packageManager": "pnpm@10.32.0"
   },
   "lockstep": {
-    "_comment": "Must be byte-identical across the listed repos — cross-repo type/ABI coupling. hono: wom7web types its RPC client against the worker's AppType, so a skew breaks `astro check`.",
+    "_comment": "Must be byte-identical across the listed repos — cross-repo type/ABI coupling. hono: w0m-web types its RPC client against the worker's AppType, so a skew breaks `astro check`.",
     "_hono_upper_bound": "SUPERSEDED 2026-09-08 — the bound is LIFTED to '>=4.13.5', with the real astro check the old note demanded. Three MODERATE advisories affect 4.12.34 (GHSA-crvj-82cr-hjcx query-parser cache-key confusion, GHSA-g6gw-parsebody parseBody memory exhaustion, GHSA-gqvv-2mrq-wpjv toSSG path traversal, incomplete fix for CVE-2026-39408) and ALL THREE are fixed only in 4.13.5 — there is no 4.12.x backport, so the old bound could not be kept without carrying three advisories. 🔴 THE OLD NOTE'S 3 ERRORS WERE A PARTIAL-BUMP ARTEFACT, NOT A 4.13 REGRESSION: apps/web/src/lib/rpc.ts imports AppType across repos from wom7cfworkers/src/index, so bumping wom7web alone types hc from 4.13 against an AppType built by 4.12 and the variance mismatch surfaces as Hono<...> does not satisfy Hono<any,any,any> at rpc.ts:16/:27 plus rpc is unknown at linkedin.ts:128. Reproduced those exact 3 errors on 2026-09-08 by bumping wom7web only; moved wom7cfworkers to 4.13.7 as well and just typecheck returned 0 errors across all 4 projects (153+175+5+7 files). THAT is what lockstep means — the entry lists three repos precisely so they move together, and measuring one of them is the failure mode the bound recorded. wom7api reached >=4.13.5 first in cde8149; the deps gate correctly flagged the resulting skew, which is how this was found.",
     "hono": {
       "version": ">=4.13.11",
       "repos": [
-        "wom7web",
-        "wom7api",
-        "wom7func"
+        "w0m-web",
+        "w0m-api",
+        "w0m-cf"
       ]
     },
     "_wrangler_note": "Added 2026-08-11. wrangler is NOT a tools-policy entry and correctly so — it is not on PATH at all (no brew, no global npm), only a devDependency. But it was in NO policy either: three repos carried ^4.112.0 and nothing asserted they agreed. All three deploy Workers to the same Cloudflare account, so a skew means two repos deploying with different compat/bundling behaviour. That is the same cross-repo coupling hono has, so it uses the same mechanism.",
     "wrangler": {
       "version": "^4.151.0",
       "repos": [
-        "wom7web",
-        "wom7api",
-        "wom7func"
+        "w0m-web",
+        "w0m-api",
+        "w0m-cf"
       ],
       "_reason_2026_08_13": "Raised ^4.112.0 → ^4.123.0 for the Astro 6→7 upgrade (T103 AC7), and ^4.123.0 → ^4.151.0 for @astrojs/cloudflare@14.3.4 / @cloudflare/vite-plugin@1.64.0 (T566). @cloudflare/vite-plugin ASSERTS wrangler ^4.151.0 at config-load time and throws — it is a hard failure, not the peer WARNING it was under Astro 6. Raised HERE once rather than in three lockfiles, which is what this lockstep entry exists for."
     }
   },
   "floors": {
     "_comment": "Security floors as pnpm.overrides plus tracked lockfile verification (pnpm-lock.yaml and tracked npm package-lock.json). Every listed repo that ALREADY has an override must satisfy both the lower bound (>=x.y.z) and optional upper ceiling (<a.b.c or <a); any repo whose pnpm-lock.yaml or tracked package-lock.json resolves a package in `floors` must resolve >= lower and < upper (T140, T298). Repos where zero floors land (neither in pnpm.overrides nor in tracked lockfiles) are reported as `no floor applies` rather than counted as aligned.",
-    "_comment_npm_lockfiles": "T298 AC3 — Tracked npm `package-lock.json` files (discovered via `git ls-files` inside each listed repo, e.g. `wom7skills/skills/mmd-validate/package-lock.json`) are inspected against `floors` alongside `pnpm-lock.yaml`. Untracked vendored trees (`wom7web`'s 43 and `wom7ext`'s 1 untracked package-lock.json files) are excluded by `git ls-files`.",
+    "_comment_npm_lockfiles": "T298 AC3 — Tracked npm `package-lock.json` files (discovered via `git ls-files` inside each listed repo, e.g. `w0m-skills/skills/mmd-validate/package-lock.json`) are inspected against `floors` alongside `pnpm-lock.yaml`. Untracked vendored trees (`w0m-web`'s 43 and `w0m-ext`'s 1 untracked package-lock.json files) are excluded by `git ls-files`.",
     "_comment_osv_division_of_labour": "T298 AC6 — Preventive vs detective division of labour: `deps-check` (`deps_sync.py`) is PREVENTIVE and authoritative for cross-repo version alignment (`lockstep`, `toolchain`) and preventing regression below established security floors (`floors`) across `package.json`, `pnpm-lock.yaml`, and tracked `package-lock.json`. `osv-scanner` is DETECTIVE and authoritative for discovering newly published CVEs/GHSAs across all lockfiles before a floor exists in `deps-policy.json`. A green `deps-check` proves floor & lockstep compliance on checked repos, never absence of uncatalogued CVEs.",
     "_ceiling_audit_t140": {
       "sharp": "no ceiling needed — direct/Astro image consumer compatible across 0.35.x",
       "fast-uri": "no ceiling needed — transitive schema validator URI parser on 4.x",
       "@hono/node-server": "no ceiling needed — Hono 4 dev/node adapter on 2.x",
-      "undici": "<8 required on wom7web & wom7ext — jsdom@29 imports internal undici 7 'lib/handler/wrap-handler.js' removed in undici 8 (wom7api & wom7func exempted onto >=8.11.2 via repo_floors + exceptions.undici)",
+      "undici": "<8 required on w0m-web & w0m-ext — jsdom@29 imports internal undici 7 'lib/handler/wrap-handler.js' removed in undici 8 (w0m-api & w0m-cf exempted onto >=8.11.2 via repo_floors + exceptions.undici)",
       "esbuild": "no ceiling needed — Vite/Astro/Wrangler bundler compatible with >=0.28.1",
       "ip-address": "no ceiling needed — transitive network parser compatible on >=10.3.1",
       "uuid": "no ceiling needed — RFC4122/v7 generator compatible on >=11.1.1",
@@ -53,10 +53,10 @@
       "postcss-selector-parser": "no ceiling needed — Tailwind/PostCSS selector AST parser on >=7.1.3",
       "browserslist": "no ceiling needed — target query parser on >=4.28.7",
       "qs": "no ceiling needed — query string parser on >=6.16.0",
-      "vitest": "no ceiling needed at estate level — wom7web & wom7func run Vitest 4.1.x",
+      "vitest": "no ceiling needed at estate level — w0m-web & w0m-cf run Vitest 4.1.x",
       "@vitest/mocker": "no ceiling needed at estate level — paired with vitest >=4.1.11",
       "smol-toml": "no ceiling needed — TOML parser compatible on >=1.7.1",
-      "markdown-it": "<15 required — wom7ext transitive consumer requires 14.x API",
+      "markdown-it": "<15 required — w0m-ext transitive consumer requires 14.x API",
       "dompurify": "no ceiling needed — HTML sanitizer compatible on >=3.4.16",
       "mermaid": "no ceiling needed — mmd-validate CLI and web renderer compatible across mermaid 11.x (T298 AC4)",
       "@grpc/grpc-js": "no ceiling needed — gRPC client compatible on >=1.14.5",
@@ -91,23 +91,23 @@
   "repo_floors": {
     "_comment": "T140 — Per-repo floor overrides for packages documented in `exceptions` where specific repos intentionally run a higher/different major line.",
     "undici": {
-      "wom7api": ">=8.11.2",
-      "wom7func": ">=8.11.2"
+      "w0m-api": ">=8.11.2",
+      "w0m-cf": ">=8.11.2"
     }
   },
   "exceptions": {
     "_comment": "Intentional per-repo divergences — NOT drift. Documented so --check never flags them and nobody 'fixes' them by mistake.",
-    "protobufjs": "wom7api pins '>=7.6.5 <8' (its @grpc/grpc-js needs protobufjs 7); wom7web is on 8. Different majors on purpose.",
-    "ws": "wom7web on the 7.x line ('>=7.5.11', DoS-patched in 7.5.10); wom7api/cfworkers on 8.x ('>=8.21.0'). Both patched — different transitive consumers, not a gap.",
-    "undici": "wom7web pins '>=7.28.0 <8'; wom7api/cfworkers are on the 8.x line and were raised to '>=8.9.0' on 2026-08-04 for GHSA-8xcm-r25x-g524 / jr45-8vmc-qm54 / m8rv-5g2x-5cg5 / v3r7-h72x-cjcm (all fixed in 8.9.0). ⚠️ Their old open-ended '>=7.28.0' override was RESOLVING BELOW their own direct dependency — package.json asked for '^8.8.0' and the lockfile carried 8.5.0, because a range override wins over the dependency range. A '>=' override is not a no-op; it re-resolves. The floors entry stays at '>=7.28.0' because it is shared with wom7web, which cannot cross into 8.x — REASON: the floor is a lower bound only, so it let wom7web resolve undici 8.7.0 — but jsdom@29 (vitest's DOM env) requires undici's internal 'lib/handler/wrap-handler.js', which exists in 7.x and is gone in 8.x. Result: `just test` collected ZERO tests and died with MODULE_NOT_FOUND, i.e. the whole vitest suite was silently not running. 7.29.0 is still >= the security floor, so bounding costs no patch level. api/cfworkers have no jsdom and are fine on 8.x — do NOT 'align' them back to 7."
+    "protobufjs": "w0m-api pins '>=7.6.5 <8' (its @grpc/grpc-js needs protobufjs 7); w0m-web is on 8. Different majors on purpose.",
+    "ws": "w0m-web on the 7.x line ('>=7.5.11', DoS-patched in 7.5.10); w0m-api/cfworkers on 8.x ('>=8.21.0'). Both patched — different transitive consumers, not a gap.",
+    "undici": "w0m-web pins '>=7.28.0 <8'; w0m-api/cfworkers are on the 8.x line and were raised to '>=8.9.0' on 2026-08-04 for GHSA-8xcm-r25x-g524 / jr45-8vmc-qm54 / m8rv-5g2x-5cg5 / v3r7-h72x-cjcm (all fixed in 8.9.0). ⚠️ Their old open-ended '>=7.28.0' override was RESOLVING BELOW their own direct dependency — package.json asked for '^8.8.0' and the lockfile carried 8.5.0, because a range override wins over the dependency range. A '>=' override is not a no-op; it re-resolves. The floors entry stays at '>=7.28.0' because it is shared with w0m-web, which cannot cross into 8.x — REASON: the floor is a lower bound only, so it let w0m-web resolve undici 8.7.0 — but jsdom@29 (vitest's DOM env) requires undici's internal 'lib/handler/wrap-handler.js', which exists in 7.x and is gone in 8.x. Result: `just test` collected ZERO tests and died with MODULE_NOT_FOUND, i.e. the whole vitest suite was silently not running. 7.29.0 is still >= the security floor, so bounding costs no patch level. api/cfworkers have no jsdom and are fine on 8.x — do NOT 'align' them back to 7."
   },
   "aligned_advisory": {
-    "_comment": "T56 AC1–AC5 — Every workspace package.json not listed in `lagging` must declare `target`, and all non-lagging lockfiles must resolve a single version (`resolved_target`). Remaining per-site exceptions are keyed by workspace path (e.g. `wom7ext/extension`, `wom7web/apps/join`) with `declared`, `installed`, `reason`, and `recheck_by`; minor-version lag is computed dynamically at check time.",
+    "_comment": "T56 AC1–AC5 — Every workspace package.json not listed in `lagging` must declare `target`, and all non-lagging lockfiles must resolve a single version (`resolved_target`). Remaining per-site exceptions are keyed by workspace path (e.g. `w0m-ext/extension`, `w0m-web/apps/join`) with `declared`, `installed`, `reason`, and `recheck_by`; minor-version lag is computed dynamically at check time.",
     "@supabase/supabase-js": {
       "target": "^2.110.7",
       "resolved_target": "2.110.7",
       "lagging": {
-        "wom7ext/extension": {
+        "w0m-ext/extension": {
           "declared": "^2.87.1",
           "installed": "2.98.0",
           "reason": "Pinned pending extension E2E auth/realtime smoke coverage (T55); MV3 service-worker bundle requires dedicated verification before bump",
@@ -117,33 +117,33 @@
     }
   },
   "runtime": {
-    "_comment": "T113 AC1/AC2/AC5 — Deployed Cloudflare workerd runtime (`compatibility_date` + `nodejs_compat`) and build-time Node.js engine pin (`.nvmrc` + `engines.node`). Enforced across all 5 wom7web Astro apps, wom7api, and wom7func.",
+    "_comment": "T113 AC1/AC2/AC5 — Deployed Cloudflare workerd runtime (`compatibility_date` + `nodejs_compat`) and build-time Node.js engine pin (`.nvmrc` + `engines.node`). Enforced across all 5 w0m-web Astro apps, w0m-api, and w0m-cf.",
     "nvmrc": "22.23.3",
     "nvmrc_files": [
       ".nvmrc",
-      "wom7web/.nvmrc"
+      "w0m-web/.nvmrc"
     ],
     "engines": {
       "node": ">=22.23.3 <23",
       "pnpm": ">=10.32.0"
     },
     "engines_repos": [
-      "wom7web",
-      "wom7api",
-      "wom7func"
+      "w0m-web",
+      "w0m-api",
+      "w0m-cf"
     ],
     "compatibility_date": "2026-05-06",
     "required_compatibility_flags": [
       "nodejs_compat"
     ],
     "wrangler_configs": [
-      "wom7web/apps/web/wrangler.jsonc",
-      "wom7web/apps/cp/wrangler.jsonc",
-      "wom7web/apps/join/wrangler.jsonc",
-      "wom7web/apps/job/wrangler.jsonc",
-      "wom7web/apps/demo/wrangler.jsonc",
-      "wom7api/wrangler.jsonc",
-      "wom7func/wrangler.jsonc"
+      "w0m-web/apps/web/wrangler.jsonc",
+      "w0m-web/apps/cp/wrangler.jsonc",
+      "w0m-web/apps/join/wrangler.jsonc",
+      "w0m-web/apps/job/wrangler.jsonc",
+      "w0m-web/apps/demo/wrangler.jsonc",
+      "w0m-api/wrangler.jsonc",
+      "w0m-cf/wrangler.jsonc"
     ]
   },
   "licenses": {

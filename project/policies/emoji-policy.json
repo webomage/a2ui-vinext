@@ -69,10 +69,10 @@
       "TASKS.md",
       "CLAUDE.md",
       "AGENTS.md",
-      "wom7web/CONTRIBUTING.md",
-      "wom7web/README.md",
-      "wom7web/docs/PROJECT-TOOLING.md",
-      "wom7web/openspec/SPEC-AUTHORING-STANDARD.md"
+      "w0m-web/CONTRIBUTING.md",
+      "w0m-web/README.md",
+      "w0m-web/docs/PROJECT-TOOLING.md",
+      "w0m-web/openspec/SPEC-AUTHORING-STANDARD.md"
     ]
   },
   "protocol": {
@@ -108,7 +108,7 @@
         "why": "summarises a probe by its leading marker, over subprocess stdout+stderr. Reads the cross glyph and warning indicator as well as the pair."
       },
       {
-        "parser": "wom7web/project/scripts/authz_grant_gate_test.py",
+        "parser": "w0m-web/project/scripts/authz_grant_gate_test.py",
         "reads": "🔴🟡",
         "why": "counts findings by severity marker"
       },
@@ -144,7 +144,7 @@
       "2026-08-23 (T261) -- md_headings_estate 3012 -> 476. CORPUS CORRECTED, NO WORK DONE.",
       "  `authored()` globbed the FILESYSTEM and called the result authored, so every file on disk",
       "  counted -- including 1,801 markdown files under the gitignored `project/data/upwork_vault/`",
-      "  and 652 more written by the scheduled Supabase Storage backup into `wom7api/supabase/",
+      "  and 652 more written by the scheduled Supabase Storage backup into `w0m-api/supabase/",
       "  backups/`. 2,536 of the 3,012 were in trees the repos are configured never to keep.",
       "  Found when a backup ran at 09:00 and moved this BLOCKING ratchet by +1, leaving only two",
       "  apparent remedies: raise the baseline (prohibited) or delete a backup. The measured number",
@@ -164,14 +164,14 @@
       "  its own once the poison path left the glob; no work was done and none was needed.",
       "2026-09-05 (T312 follow-up) -- measured 480, baseline held at 475, NOT raised. A different bug",
       "  than the k7 incident, though the same family: T312's own commit the day before linked",
-      "  `@wom/.agents` -> `wom7web/.agents` for multi-agent parity. `.agents` is a dot-directory but",
+      "  `@wom/.agents` -> `w0m-web/.agents` for multi-agent parity. `.agents` is a dot-directory but",
       "  the glob DOES traverse it, so every skill under it is walked a SECOND time at a second path,",
       "  and `authored()` had no dedup by real path -- two distinct `Path` objects, same inode,",
       "  counted twice. 3 SKILL.md files carrying a heading emoji were double-counted, +5 exactly.",
-      "  Confirmed: `.agents/skills/mcp-builder/SKILL.md` and `wom7web/.agents/skills/mcp-builder/",
+      "  Confirmed: `.agents/skills/mcp-builder/SKILL.md` and `w0m-web/.agents/skills/mcp-builder/",
       "  SKILL.md` share an inode. Excluding `.agents` in `exclude_paths` was tried and REJECTED --",
       "  that filter matches a bare component ANYWHERE in the path, so it also silently dropped",
-      "  `wom7web/.agents/...` itself (the real, non-symlinked content) and under-shot to 470, hiding",
+      "  `w0m-web/.agents/...` itself (the real, non-symlinked content) and under-shot to 470, hiding",
       "  5 legitimate headings rather than 5 duplicates. Fixed at the root instead: `authored()` now",
       "  dedups by `Path.resolve()`, so ANY symlink alias -- this one, `.claude/skills`, or a future",
       "  one -- collapses to the one file it actually is, without a per-symlink entry to maintain.",
@@ -190,7 +190,7 @@
     ],
     "zones": {
       "md_headings_estate": {
-        "baseline": 230,
+        "baseline": 219,
         "what": "DECORATIVE (non-protocol) emoji in markdown headings, whole estate, AUTHORED files only -- see the dated move of 2026-08-23 for why this is not 3012"
       },
       "script_output": {
@@ -233,7 +233,7 @@
     "mob",
     "wom7authz",
     "wom7open",
-    "wom7pr",
+    "w0m-pr",
     "_ext",
     "_in",
     "ext",

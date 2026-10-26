@@ -9,5 +9,5 @@
   "resolution_deploy_version": "2026.10.06-1791315000",
   "affected_services": ["release", "db"],
   "tickets": ["T549", "T551"],
-  "summary": "Release deploy preflight discovered duplicate migration version prefix and suite recipes missing from wom7api/justfile. Remediated via T549 (suite-recipe-check) and T551 (offline duplicate migration version gate and migration-new allocator)."
+  "summary": "Release deploy preflight discovered duplicate migration version prefix and suite recipes missing from w0m-api/justfile. Remediated via T549 (suite-recipe-check) and T551 (offline duplicate migration version gate and migration-new allocator)."
 }

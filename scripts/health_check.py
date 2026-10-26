@@ -19,14 +19,14 @@ WHY THIS EXISTS
 WHAT COUNTS AS HEALTHY
     200 + JSON + `status == "ok"` + a non-empty `version` and `commit`. The version fields are not
     decoration: a deploy that half-lands leaves an app answering 200 with a stale build, which is
-    exactly the shape of the wom7api/wom7cfworkers script collision that left 19 Workflows
+    exactly the shape of the w0m-api/w0m-cf script collision that left 19 Workflows
     orphaned for two weeks while everything still returned 200 (T156).
 
 DIVISION OF LABOUR — TWO HEALTH SURFACES, NO THIRD (T164 AC3)
     1. `just health-check` (`scripts/health_check.py`, T22 AC3 — THIS SCRIPT):
        Probes deployed Astro app `/api/health` endpoints (`web`, `cp`, `join`, `job`, `demo`) and
        verifies HTTP 200 + `status == "ok"` + non-empty build `version` and `commit`.
-    2. `just health` / `just check-status` (`wom7api/scripts/healthcheck.py`, T164 AC2):
+    2. `just health` / `just check-status` (`w0m-api/scripts/healthcheck.py`, T164 AC2):
        Full platform diagnostic dashboard — live CDN/Edge/Supabase/Workers SLA latency, deep
        recurrent dependencies, external API connectivity, AND Host CLI Toolchain Health (`T164`)
        read from `project/policies/tools-policy.json` via `scripts/tools_check.py`.
@@ -114,7 +114,7 @@ def main() -> int:
         description=(
             "Deployed-app /api/health & build-identity probe (T22 AC3, `just health-check`). "
             "For platform endpoint SLA latency and host CLI toolchain health (T164 AC2/AC3), "
-            "use `just health` (`wom7api/scripts/healthcheck.py`)."
+            "use `just health` (`w0m-api/scripts/healthcheck.py`)."
         )
     )
     ap.add_argument("--json", action="store_true", help="machine-readable output")

@@ -127,7 +127,7 @@
       "assigned_developer": null,
       "attached_agent": null,
       "worktree": null,
-      "summary": "37 open quests (6 P1, 21 P2, 10 P3; T12, T81, T116, T167, T293, T374, T395, T401, T492 closed): host CLI governance, deploy ledger recording, wom7api workflows reliability, and root-first layout."
+      "summary": "37 open quests (6 P1, 21 P2, 10 P3; T12, T81, T116, T167, T293, T374, T395, T401, T492 closed): host CLI governance, deploy ledger recording, w0m-api workflows reliability, and root-first layout."
     },
     {
       "id": "area-4",
@@ -245,7 +245,7 @@
       "assigned_developer": "aleksei@webomage.com",
       "attached_agent": "antigravity",
       "worktree": "agent/ant-area8",
-      "summary": "All 14 quests completed on agent/ant-area8: T275 layout ratchet, T42 DS sync, T55 Tailwind @source gate, T97 tours/KB allowlist, T133 DS export recovery, T252 CP simulator fix, T322 wom7clips, T323 wom7ava, T494 public profiles, T495 brand claims, T496 Job/Join UI, T502 resume parser, T514 contact import, T511 avatar management."
+      "summary": "All 14 quests completed on agent/ant-area8: T275 layout ratchet, T42 DS sync, T55 Tailwind @source gate, T97 tours/KB allowlist, T133 DS export recovery, T252 CP simulator fix, T322 w0m-clips, T323 w0m-ava, T494 public profiles, T495 brand claims, T496 Job/Join UI, T502 resume parser, T514 contact import, T511 avatar management."
     },
     {
       "id": "area-9",

@@ -6,7 +6,7 @@
     "to own the management of it'. The instruction was earned three times in a single session:",
     "`.turbo/` and `scratch/` were reported as an Obsidian-vs-Quartz divergence when the real",
     "cause was that both are TRACKED despite matching .gitignore; `check_final*.txt` were 2,792",
-    "lines of build log tracked despite `check*.txt`; and `wom7ext/docs/ARCHITECTURE.md` turned",
+    "lines of build log tracked despite `check*.txt`; and `w0m-ext/docs/ARCHITECTURE.md` turned",
     "out to be a gitignored document, so an edit to it would never survive a clone.",
     "",
     "The through-line is one failure mode: A RULE AND THE INDEX DISAGREE, AND NOTHING NOTICES.",
@@ -14,13 +14,13 @@
     "the fact is silently inert for what already exists. Measured 2026-08-31: 540 such files.",
     "",
     "Scope is declared rather than discovered, because most ignore files in this estate are not",
-    "ours: 11 third-party repos under _ext/, 10 vendored MLX repos under wom7mlx/ext/, orca under",
+    "ours: 11 third-party repos under _ext/, 10 vendored MLX repos under w0m-mlx/ext/, orca under",
     "_in/, and a dozen written by tools (.codegraph, .mypy_cache, .ruff_cache, .pytest_cache,",
     "husky, serena). Auditing those would be auditing other people's decisions."
   ],
   "governed": {
     "_comment": "w0m-authored ignore files. An ignore file inside a governed repo that is not listed here is DRIFT — add it, or record it under `generated`.",
-    "wom7web": [
+    "w0m-web": [
       ".gitignore",
       ".graphifyignore",
       ".ignore",
@@ -30,28 +30,28 @@
       "design-system/.gitignore",
       "project/authz-probe/.gitignore"
     ],
-    "wom7api": [
+    "w0m-api": [
       ".gitignore",
       ".graphifyignore",
       ".dockerignore"
     ],
-    "wom7func": [
+    "w0m-cf": [
       ".gitignore",
       ".graphifyignore"
     ],
-    "wom7ext": [
+    "w0m-ext": [
       ".gitignore",
       ".graphifyignore"
     ],
-    "wom7skills": [
+    "w0m-skills": [
       ".gitignore",
       ".graphifyignore"
     ],
-    "wom7sec": [
+    "w0m-sec": [
       ".gitignore",
       ".graphifyignore"
     ],
-    "wom7mlx/wom7mlx": [
+    "w0m-mlx/w0m-mlx": [
       ".gitignore",
       ".graphifyignore"
     ]
@@ -73,7 +73,7 @@
     "prefixes": [
       "_ext/",
       "_in/",
-      "wom7mlx/ext/",
+      "w0m-mlx/ext/",
       "node_modules/",
       ".quartz-engine/",
       ".obsidian/plugins/"
@@ -94,7 +94,7 @@
       {
         "pattern": ".env",
         "match": "^\\.env",
-        "why": "The estate removed wom7web/.env (86 plaintext keys) under T119 and forbids re-introducing one. A repo with no rule invites the file back."
+        "why": "The estate removed w0m-web/.env (86 plaintext keys) under T119 and forbids re-introducing one. A repo with no rule invites the file back."
       },
       {
         "pattern": "node_modules",
@@ -104,7 +104,7 @@
       {
         "pattern": "*.pem",
         "match": "\\*\\.pem",
-        "why": "Private keys and certificates. Only wom7api carried this rule as of 2026-08-31."
+        "why": "Private keys and certificates. Only w0m-api carried this rule as of 2026-08-31."
       },
       {
         "pattern": "*.key",
@@ -114,7 +114,7 @@
     ],
     "exempt": [
       {
-        "repo": "wom7mlx/wom7mlx",
+        "repo": "w0m-mlx/w0m-mlx",
         "pattern": "node_modules",
         "why": "Rust + Python repo (Cargo, uv). It has no JS toolchain, so the rule would guard against nothing. `.env`, `*.pem` and `*.key` still apply and are still required."
       }
@@ -129,31 +129,31 @@
     ],
     "entries": [
       {
-        "repo": "wom7web",
+        "repo": "w0m-web",
         "path": ".vscode/",
         "count": 3,
         "why": "Shared editor config committed on purpose; the rule ignores the rest of .vscode/. The rule is right and so is the exception."
       },
       {
-        "repo": "wom7api",
+        "repo": "w0m-api",
         "path": ".env.example",
         "count": 1,
         "why": "A TEMPLATE, and the reason the rule is `.env.*` rather than `.env`. Keeping it tracked is the point; it carries no values. The rule is right and so is the exception."
       },
       {
-        "repo": "wom7api",
+        "repo": "w0m-api",
         "path": ".vscode/settings.json",
         "count": 1,
-        "why": "Shared editor config committed on purpose, same decision as wom7web's. The rule ignores the rest of .vscode/."
+        "why": "Shared editor config committed on purpose, same decision as w0m-web's. The rule ignores the rest of .vscode/."
       },
       {
-        "repo": "wom7func",
+        "repo": "w0m-cf",
         "path": ".vscode/settings.json",
         "count": 1,
-        "why": "As wom7api — shared editor config, deliberately tracked."
+        "why": "As w0m-api — shared editor config, deliberately tracked."
       },
       {
-        "repo": "wom7api",
+        "repo": "w0m-api",
         "path": "cloudflare/terraform.tfvars",
         "count": 1,
         "why": "An EXAMPLE wearing the real name: its own first line reads 'Example overrides for Cloudflare Terraform... You can copy it to terraform.tfvars'. Inspected 2026-08-31 — it holds zone_name and one boolean, no credentials. Left tracked rather than renamed because terraform AUTO-LOADS terraform.tfvars, so renaming it changes behaviour rather than just tidying a name."
@@ -168,37 +168,37 @@
     ],
     "entries": [
       {
-        "repo": "wom7web",
+        "repo": "w0m-web",
         "path": ".agent/deployments/",
         "count": 502,
         "note": "502 tiny status/env txt files (~30 KB tracked; the 35 MB on disk is the UNTRACKED build/deploy logs, which the rule correctly excludes). Committed 2026-03-05 in b4556926; the ignore rule came later and is inert for them. Untrack, or drop the rule."
       },
       {
-        "repo": "wom7web",
+        "repo": "w0m-web",
         "path": ".turbo/",
         "count": 18,
         "note": "Turborepo cache, tracked despite `.turbo/`. Reported as an Obsidian/Quartz divergence before the real cause was found."
       },
       {
-        "repo": "wom7web",
+        "repo": "w0m-web",
         "path": "TEST_REPORT.md",
         "count": 1,
         "note": "Tracked despite an explicit rule at .gitignore:90."
       },
       {
-        "repo": "wom7api",
+        "repo": "w0m-api",
         "path": "monitoring/terraform.tfstate.1782126158.backup",
         "count": 1,
         "note": "A tfstate BACKUP, tracked despite `*.tfstate.*.backup`. Scanned 2026-08-31: 24 KB, 11 resources, ZERO sensitive-looking keys — so this is debris rather than exposure. tfstate normally does carry secrets, which is why the rule exists; untracking is the likely answer."
       },
       {
-        "repo": "wom7api",
+        "repo": "w0m-api",
         "path": "logo_check.svg",
         "count": 1,
         "note": "Rule `.gitignore:54` names this ONE file, yet it is tracked — someone wrote a rule for it and committed it anyway. 2.6 KB SVG from 2025-12-23. One of the two must go."
       },
       {
-        "repo": "wom7ext",
+        "repo": "w0m-ext",
         "path": "extension/trigger_connect.js",
         "count": 1,
         "note": "A Playwright script (`require('playwright')`), matched by `trigger_*.js` — a rule that clearly targets exactly these. Not referenced by manifest.json, so it is a dev utility rather than shipped code."

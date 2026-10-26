@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: research
-  version: "2026.10.21-1792622813"
+  version: "2026.10.26-1793009642"
 ---
 
 # w0m-sdlc-research — the deep grounding gate
@@ -79,7 +79,7 @@ Run all that apply; record what each *actually* shows with a citation:
   `project/stacks-policy.json` still match what the stack actually uses?
 - **Vetted OSS package discovery (`awesome-repositories` MCP, T26).** When a ticket or spec proposes
   introducing a new third-party dependency, replacing a custom module with an open-source library, or
-  evaluating upstream candidates (`wom7open` / `wom7pr`), query the read-only `awesome-repositories`
+  evaluating upstream candidates (`wom7open` / `w0m-pr`), query the read-only `awesome-repositories`
   MCP server (`search_repositories`, `search_metadata_tags`, `get_repository`, `list_curated_searches`,
   `list_repository_docs`; see `docs/PACKAGE-DISCOVERY-MCP.md`) and verify the chosen package's license
   against `project/policies/deps-policy.json` before drafting the spec.
@@ -88,7 +88,7 @@ Run all that apply; record what each *actually* shows with a citation:
 - **UI/UX surface & design system (MANDATORY for tickets with UI/UX changes).**
   Trigger condition: ticket `repos` includes `web` or `cp`, tags include `ui`/`ux`/`frontend`/`cp`/`design`, or the ticket touches `.astro`, `.svelte`, `.css`, `packages/ui`, or `apps/*`.
   **Enforce and launch UI skills:**
-  - **`webomage-design`** (`wom7web/design-system/`): Check canonical tokens (`tokens/*.css` — slate-950 canvas, `#38bdf8` primary, glassmorphic white 3–5% fill + white/10 hairline border, Inter font), guidelines, and existing component specifications (`packages/ui` and `design-system/components/`). Reusing existing tokens and components is mandatory; ad-hoc hex codes and un-mastered inline utilities are strictly prohibited.
+  - **`webomage-design`** (`w0m-web/design-system/`): Check canonical tokens (`tokens/*.css` — slate-950 canvas, `#38bdf8` primary, glassmorphic white 3–5% fill + white/10 hairline border, Inter font), guidelines, and existing component specifications (`packages/ui` and `design-system/components/`). Reusing existing tokens and components is mandatory; ad-hoc hex codes and un-mastered inline utilities are strictly prohibited.
   - **`steve-jobs`**: Critique product UX, simplicity, visual hierarchy, ergonomics, and touch targets. Challenge unnecessary forms, buttons, or navigation friction.
   - **`modern-web-guidance`**: Audit against modern browser APIs, responsive layouts, View Transitions, container queries, `:has()`, accessible dialogs/popovers, and modern frontend best practices.
   - **`a11y-debugging`**: Check semantic HTML, ARIA landmarks and attributes, keyboard focus order, contrast compliance, and touch target sizing.

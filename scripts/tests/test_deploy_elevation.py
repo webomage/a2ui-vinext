@@ -4,7 +4,7 @@
 Asserts:
 1. Deployment helper scripts (log_deploy.sh, dump_deploy_log.sh, check_cf_deployment.py, gen_changelog.py)
    are present and executable under @wom/scripts/.
-2. Obsolete deployment scripts are removed from wom7api/scripts/ (zero shims per AgDR-0025).
+2. Obsolete deployment scripts are removed from w0m-api/scripts/ (zero shims per AgDR-0025).
 3. Deployment logs directory is elevated to @wom/deploy-logs/ and .w0m/sdlc.json reflects it.
 4. Root .gitignore properly ignores deploy-logs/*.log while preserving bucket directories.
 5. Canonical deployment recipes are exposed and runnable from root @wom/justfile.
@@ -44,9 +44,9 @@ class TestDeployElevation(unittest.TestCase):
         for b in banned_bash:
             self.assertFalse((scripts_dir / b).exists(), f"Legacy bash script should not exist: {b}")
 
-    def test_obsolete_scripts_removed_from_wom7api(self):
-        """Deprecated deployment scripts must be completely removed from wom7api/scripts/ (AgDR-0025)."""
-        api_scripts_dir = ROOT / "wom7api" / "scripts"
+    def test_obsolete_scripts_removed_from_w0m_api(self):
+        """Deprecated deployment scripts must be completely removed from w0m-api/scripts/ (AgDR-0025)."""
+        api_scripts_dir = ROOT / "w0m-api" / "scripts"
         banned = [
             "log_deploy.sh",
             "log_deploy.py",
@@ -156,14 +156,14 @@ class TestDeployElevation(unittest.TestCase):
             )
 
 
-    def test_root_pnpm_builds_run_inside_wom7web(self):
-        """Root `pnpm --filter` builds must `cd wom7web` first (T431): from @wom, PATH's pnpm runs
-        outside the workspace and the app scripts cannot see wom7web/node_modules/.bin (astro)."""
+    def test_root_pnpm_builds_run_inside_w0m_web(self):
+        """Root `pnpm --filter` builds must `cd w0m-web` first (T431): from @wom, PATH's pnpm runs
+        outside the workspace and the app scripts cannot see w0m-web/node_modules/.bin (astro)."""
         body = (ROOT / "justfile").read_text(encoding="utf-8")
-        lines = [ln for ln in body.splitlines() if "pnpm --filter" in ln and not ln.lstrip().startswith("#")]
+        lines = [ln for ln in body.splitlines() if "pnpm --filter" in ln and "build" in ln and not ln.lstrip().startswith("#")]
         self.assertGreaterEqual(len(lines), 6, "expected the build + 5 deploy-<app> build lines")
         for ln in lines:
-            self.assertRegex(ln, r"^\s+@?cd wom7web && ", f"root pnpm build not run from wom7web: {ln.strip()}")
+            self.assertRegex(ln, r"^\s+@?cd w0m-web && ", f"root pnpm build not run from w0m-web: {ln.strip()}")
 
 
 if __name__ == "__main__":

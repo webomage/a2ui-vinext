@@ -13,7 +13,7 @@ target and let the terminal answer.
 import os
 import sys
 
-TARGET = "/Users/proto/Projects/@self/@wom/wom7web/project/tickets/T2.md"
+TARGET = "/Users/proto/Projects/@self/@wom/w0m-web/project/tickets/T2.md"
 ISSUE = "https://github.com/casualuser/webomage.com/issues/3"
 
 

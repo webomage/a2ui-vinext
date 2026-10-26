@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: start
-  version: "2026.09.24-1790250554"
+  version: "2026.10.26-1793009642"
 ---
 
 # w0m-sdlc-start — the ticket kickoff gate
@@ -25,7 +25,7 @@ field — the whole reason this gate exists is that ticket/spec status drifts fr
 ## Step 0 — Load the project config (always first)
 Discover **`.w0m/sdlc.json`**: first walk **up** from the current working directory to the first
 match (git-style). If none is found, also look **one level down** into immediate child
-directories — a monorepo root holds the config in its canonical repo (e.g. `wom7web/.w0m/`), so
+directories — a monorepo root holds the config in its canonical repo (e.g. `w0m-web/.w0m/`), so
 `ls */.w0m/sdlc.json` catches it. Read it once; every path/command below comes from it. All paths
 in the config are relative to the config's own repo, resolved through `root`/`repos`. Key fields:
 `tickets` (source/board/dir/pattern/template/id_prefix), `specs` (system/dir/verify_skill),
@@ -63,7 +63,7 @@ and note that a command in `commands.needs_secrets` WILL fail until the session 
 
 ## Step 1 — Resolve the ticket
 - If the user gave an id, use it (prefix from `tickets.id_prefix`, e.g. `T37`).
-- If not: **run `just tasks`** (from `wom7api/`) and present its ranked candidates. Do **not**
+- If not: **run `just tasks`** (from `w0m-api/`) and present its ranked candidates. Do **not**
   hand-read the board's NOW/NEXT sections — that was the instruction here until 2026-08-02 and it
   saw **40 of 119** open tickets (NOW 23 + NEXT 17), with the other 79 in nine sections it never
   read. The top-ranked ticket was in none of them. `just tasks` ranks across the whole queue and
@@ -148,4 +148,4 @@ Tool ladder MCP > CLI > Python > TS > bash-oneliner (no complex multiline bash).
 ## Where this sits
 First gate of the `w0m-sdlc-*` family (advances **T23**). Successors are defined by the config's
 `lifecycle`. The `w0m` orchestrator routes into this gate. For projects that don't want the full
-opinionated pipeline, see the curated generic set in `wom7skills/GENERIC-SDLC-SET.md`.
+opinionated pipeline, see the curated generic set in `w0m-skills/GENERIC-SDLC-SET.md`.

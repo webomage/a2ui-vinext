@@ -15,7 +15,7 @@ It surfaced three times in one session before anyone went looking:
   · `.turbo/` and `scratch/` were reported as an Obsidian-vs-Quartz corpus divergence. The real
     cause was that both are TRACKED while matching .gitignore.
   · `check_final{,2,3}.txt` -- 2,792 lines of Astro build log -- were tracked despite `check*.txt`.
-  · `wom7ext/docs/ARCHITECTURE.md` turned out to be gitignored, so an edit to it could never
+  · `w0m-ext/docs/ARCHITECTURE.md` turned out to be gitignored, so an edit to it could never
     survive a clone. That one was found only because a doc link happened to point at it.
 
 Measured across the estate on 2026-08-31: **540 tracked-but-ignored files**, 502 of them under a
@@ -47,7 +47,7 @@ import sys
 from pathlib import Path
 
 ESTATE = Path(__file__).resolve().parents[1]
-WEB_ROOT = ESTATE / "wom7web"
+WEB_ROOT = ESTATE / "w0m-web"
 POLICY = ESTATE / "project/policies/ignore-policy.json"
 
 GREEN, RED, YELLOW, DIM, RESET = "\033[32m", "\033[31m", "\033[33m", "\033[2m", "\033[0m"

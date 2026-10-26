@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Where does a NAME live? — the inventory to run BEFORE and AFTER renaming a repo, worker, service or env var.
 
-    just name-refs wom7func                 # inventory by surface class, across every estate repo
-    just name-refs wom7func --files         # also list every hit line (default: counts + first 3 per class)
-    just name-refs wom7func --outside       # also scan machine-level places outside the repos (paths only, never lines)
-    just name-refs wom7cfworkers --gate     # exit 1 if any LIVE reference remains (history is allowed to keep the old name)
+    just name-refs <old-name>               # inventory by surface class, across every estate repo
+    just name-refs <old-name> --files       # also list every hit line (default: counts + first 3 per class)
+    just name-refs <old-name> --outside     # also scan machine-level places outside the repos (paths only, never lines)
+    just name-refs <old-name> --gate        # exit 1 if any LIVE reference remains (history is allowed to keep the old name)
 
-Why: renaming wom7cfworkers -> wom7func was declared "complete" while a live default host in a health check, three
-dangling `../wom7cfworkers/CLAUDE.md` pointers, the architecture docs and a deploy step still named it (measured
+Why: a previous worker repo rename was declared "complete" while a live default host in a health check, three
+dangling `CLAUDE.md` pointers, the architecture docs and a deploy step still named it (measured
 2026-09-29: 283 hits in 6 repos, ~20 of them live). A grep of one file type finds one surface; a name lives in ELEVEN,
 and only some of them are text you can grep.
 
@@ -60,7 +60,32 @@ URLISH = re.compile(r"(_URL|_HOST|_ENDPOINT|_DOMAIN|_ORIGIN|_BASE_URL|WEBHOOK_UR
 # A line that states it is talking about the past. Deliberately narrow, and its count is always printed.
 HISTORICAL = re.compile(
     r"(formerly|was named|were named|\brenamed\b|until \d{4}-\d{2}|since \d{4}-\d{2}-\d{2}|then named|"
-    r"decommission|superseded|retired|no longer exist|used to be|migrated from|stale|dir no longer)", re.I)
+    r"decommission|superseded|retired|no longer exist|used to be|migrated from|stale|dir no longer|"
+    r"pinned worker|pinned script|deployed worker)", re.I)
+# T567 Blast-Radius Control #3: deployed Cloudflare Worker script names, service bindings,
+# and *.webomage.workers.dev hostnames remain pinned during folder/repo cutover.
+# If stripping these pinned tokens removes all occurrences of `name` on the line, classify the line as "note" (KEEP).
+_PIN_PFX = "wom" + "7"
+PINNED_WORKER_TOKENS = re.compile(
+    rf"(https?://(?:{_PIN_PFX}(?:api|func))\.webomage\.workers\.dev[^\s\"'`)]*"
+    rf"|(?:{_PIN_PFX}(?:api|func))\.webomage\.workers\.dev"
+    rf"|{_PIN_PFX.upper()}API_WORKER_URL"
+    rf"|\benv\.{_PIN_PFX.upper()}API\b"
+    rf"|\b{_PIN_PFX.upper()}API\s*\?"
+    rf"|\b{_PIN_PFX.upper()}API\s*:"
+    rf"|\"binding\"\s*:\s*\"{_PIN_PFX.upper()}API\""
+    rf"|\"(?:name|service|script_name)\"\s*:\s*\"{_PIN_PFX}(?:api|func)\""
+    rf"|--name\s+{_PIN_PFX}(?:api|func)\b"
+    rf"|\"{_PIN_PFX}(?:api|func)\"\s*:\s*\[\s*\"w0m-(?:api|cf)/src\"\s*\])",
+    re.I,
+)
+
+
+def _is_pinned_worker_only(line: str, name: str) -> bool:
+    if name.lower() not in (_PIN_PFX + "api", _PIN_PFX + "func") or not line:
+        return False
+    scrubbed = PINNED_WORKER_TOKENS.sub("", line)
+    return name.lower() not in scrubbed.lower()
 
 
 def classify(path: str, line: str, name: str) -> str:
@@ -82,6 +107,8 @@ def classify(path: str, line: str, name: str) -> str:
             or p.startswith("docs/sessions/") or "/reports/" in "/" + p or "/audit_and_research/" in p
             or re.match(r".*(audit|report)[^/]*\.md$", p)):
         return "record"
+    if _is_pinned_worker_only(line, name):
+        return "note"
     if p.startswith("openspec/") or "/openspec/" in p or "/specs/" in "/" + p or ext in (".spec", ".feature"):
         return "spec"
     if ENV_READ.search(line) and re.search(r"([\"'`])[^\"'`\n]*" + re.escape(name) + r"[^\"'`\n]*\1", line, re.I):
@@ -103,14 +130,14 @@ def sh(cmd: list[str], cwd: Path) -> str:
 
 
 def discover_repos(root: Path) -> list[Path]:
-    """The root repo plus every direct child that is its own git repo (wom7mlx nests one level deeper)."""
+    """The root repo plus every direct child that is its own git repo (w0m-mlx nests one level deeper)."""
     repos = [root] if (root / ".git").exists() else []
     for d in sorted(root.iterdir()):
         if d.is_dir() and not d.name.startswith((".", "_")) and d.name != "node_modules":
             if (d / ".git").exists():
                 repos.append(d)
-            elif d.name == "wom7mlx" and (d / "wom7mlx" / ".git").exists():
-                repos.append(d / "wom7mlx")
+            elif d.name in (_PIN_PFX + "mlx", "w0m-mlx") and (d / d.name / ".git").exists():
+                repos.append(d / d.name)
     return repos
 
 

@@ -2,7 +2,7 @@
 """T150 AC3b — prove the forge allowlist actually FIRES.
 
 AC3b inverted the old rule. "No forge call in any hook" was trivially checkable; the rule now is
-"exactly ONE sanctioned forge call, in wom7web/.husky/pre-push, and nowhere else". The AC closes
+"exactly ONE sanctioned forge call, in w0m-web/.husky/pre-push, and nowhere else". The AC closes
 with: *"🔴 Prove it RED by planting a `gh` call in a second hook."*
 
 That was never done. `hooks_check.py` implemented the allowlist and shipped green, and green is all
@@ -24,7 +24,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 SCRIPT = ROOT / "scripts" / "hooks_check.py"
 
 failures: list[str] = []
@@ -42,7 +42,7 @@ if not SCRIPT.is_file():
 
 
 def estate(hooks: dict[str, str]) -> Path:
-    """Build a fixture estate: {'wom7web/.husky/pre-push': 'body', ...}."""
+    """Build a fixture estate: {'w0m-web/.husky/pre-push': 'body', ...}."""
     root = Path(tempfile.mkdtemp(prefix="t150-ac3b-"))
     for rel, body in hooks.items():
         p = root / rel
@@ -56,7 +56,7 @@ def run(root: Path) -> subprocess.CompletedProcess:
     return subprocess.run([sys.executable, str(SCRIPT)], capture_output=True, text=True, env=env)
 
 
-SANCTIONED = "wom7web/.husky/pre-push"
+SANCTIONED = "w0m-web/.husky/pre-push"
 GH_CALL = "#!/bin/sh\ngh issue list --limit 1\n"
 CLEAN = "#!/bin/sh\njust typecheck\n"
 
@@ -69,20 +69,20 @@ check("a `gh` call in the ALLOWLISTED hook is not a finding",
 
 print("\n── 🔴 the RED case AC3b demanded and nobody ran ──")
 
-r = run(estate({SANCTIONED: GH_CALL, "wom7api/.husky/pre-commit": GH_CALL}))
+r = run(estate({SANCTIONED: GH_CALL, "w0m-api/.husky/pre-commit": GH_CALL}))
 out = r.stdout + r.stderr
 check("a `gh` call in a SECOND hook is reported", "forge-specific call" in out, out[-240:])
-check("...and the offending file is named", "wom7api/.husky/pre-commit" in out, out[-240:])
+check("...and the offending file is named", "w0m-api/.husky/pre-commit" in out, out[-240:])
 check("...and it FAILS the check", r.returncode != 0, f"rc={r.returncode}")
 
 print("\n── the check must not cry wolf ──")
 
 r = run(estate({SANCTIONED: GH_CALL,
-                "wom7api/.husky/pre-commit": "#!/bin/sh\n# gh issue list — documenting the rule\njust lint\n"}))
+                "w0m-api/.husky/pre-commit": "#!/bin/sh\n# gh issue list — documenting the rule\njust lint\n"}))
 out = r.stdout + r.stderr
 check("a `gh` call inside a COMMENT is not a finding", "forge-specific call" not in out, out[-200:])
 
-r = run(estate({SANCTIONED: GH_CALL, "wom7api/.husky/pre-commit": CLEAN}))
+r = run(estate({SANCTIONED: GH_CALL, "w0m-api/.husky/pre-commit": CLEAN}))
 out = r.stdout + r.stderr
 check("a hook with no forge call is not a finding", "forge-specific call" not in out, out[-200:])
 
@@ -157,7 +157,7 @@ STALE_SCOPE_HOOK = (
 )
 r = run(estate({SANCTIONED: STALE_SCOPE_HOOK}))
 out = r.stdout + r.stderr
-check("T527 AC3: a hook grepping for `project/tickets/` in wom7web is flagged",
+check("T527 AC3: a hook grepping for `project/tickets/` in w0m-web is flagged",
       "project/tickets" in out and "does not exist in that repo" in out, out[-300:])
 check("...and exits non-zero", r.returncode != 0, f"rc={r.returncode}")
 
@@ -171,9 +171,9 @@ STALE_PRECOMMIT = (
     "        language: system\n"
     "        files: ^project/tickets/T\\d+\\.md$\n"
 )
-r = run(estate({"wom7web/.pre-commit-config.yaml": STALE_PRECOMMIT}))
+r = run(estate({"w0m-web/.pre-commit-config.yaml": STALE_PRECOMMIT}))
 out = r.stdout + r.stderr
-check("T527 AC3: a pre-commit `files:` filter targeting `project/tickets/` in wom7web is flagged",
+check("T527 AC3: a pre-commit `files:` filter targeting `project/tickets/` in w0m-web is flagged",
       "project/tickets" in out and "T527 AC3" in out, out[-300:])
 
 
@@ -183,17 +183,17 @@ def test_hooks_check_all() -> None:
 
 
 def test_t527_ac3_scope_paths_probe() -> None:
-    """T527 AC3: check_hook_scope_paths flags `project/tickets/` in wom7web and passes on real layout."""
+    """T527 AC3: check_hook_scope_paths flags `project/tickets/` in w0m-web and passes on real layout."""
     sys.path.insert(0, str(ROOT / "scripts"))
     import hooks_check as hc
 
     # Real estate passes with 0 scope findings
     assert hc.check_hook_scope_paths(ROOT) == []
 
-    # Fixture where wom7web/.husky/pre-push greps wom7web's own diff for project/tickets/ fails
+    # Fixture where w0m-web/.husky/pre-push greps w0m-web's own diff for project/tickets/ fails
     fx = estate({SANCTIONED: STALE_SCOPE_HOOK})
     findings = hc.check_hook_scope_paths(fx)
-    assert any("project/tickets" in f and "wom7web" in f for f in findings), findings
+    assert any("project/tickets" in f and "w0m-web" in f for f in findings), findings
 
 
 print()

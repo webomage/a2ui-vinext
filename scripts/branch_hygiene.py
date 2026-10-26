@@ -7,7 +7,7 @@ and `git rev-list --left-right --count` (never `git log @{u}..`), and reports:
   - Per repo, per branch: ahead/behind vs canonical stage branch (`refs/remotes/origin/beta`),
     last commit ISO timestamp, upstream configuration, merged status, and staleness.
   - Stage-branch (`main` <-> `beta`) alignment or divergence classification.
-  - Excluded repositories (`wom7mlx/wom7mlx`) reported as informational / excluded.
+  - Excluded repositories (`w0m-mlx/w0m-mlx`) reported as informational / excluded.
 
 Strictly read-only (T148 AC1, AC5, AC6, AC7):
   - Never mutates any ref (no fetch, push, merge, reset, or branch deletion).
@@ -306,9 +306,9 @@ def build_report(
     else:
         governed = model.get(
             "governed_repos",
-            ["@wom", "wom7web", "wom7api", "wom7func", "wom7skills", "wom7ext", "wom7sec"],
+            ["@wom", "w0m-web", "w0m-api", "w0m-cf", "w0m-skills", "w0m-ext", "w0m-sec"],
         )
-        excluded_list = model.get("excluded_repos", ["wom7mlx/wom7mlx"])
+        excluded_list = model.get("excluded_repos", ["w0m-mlx/w0m-mlx"])
         for rname in governed:
             rpath = resolve_repo_dir(root, rname)
             repo_reports.append(

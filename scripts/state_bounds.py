@@ -35,7 +35,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve()
 ROOT = HERE.parents[1]                      # …/@wom
-CANONICAL = ROOT / "wom7web"                # …/wom7web
+CANONICAL = ROOT / "w0m-web"                # …/w0m-web
 REGISTRY = ROOT / "project" / "policies" / "clients-policy.json"
 
 

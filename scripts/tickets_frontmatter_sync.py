@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Materialise `just tasks`' derived fields into each ticket's frontmatter, for Obsidian.
 
-WHY AT ALL. `project/tickets/` sits inside the wom7web Obsidian vault, so all 292 tickets are
+WHY AT ALL. `project/tickets/` sits inside the w0m-web Obsidian vault, so all 292 tickets are
 already notes — but Obsidian can only sort and filter on FRONTMATTER, and the three things that make
 the queue readable are computed, not stored: acceptance-criteria progress, blockers, and the two
 ranking scores. Without them a Base over the vault can show status and priority and nothing that

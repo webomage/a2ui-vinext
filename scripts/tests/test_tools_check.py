@@ -6,7 +6,7 @@ Proves both layers (per the T164 AC6 anti-vacuity lesson):
      and `tool_usage_probe.scan_usage` command-position vs variable-assignment discrimination).
   2. Gate evaluation & RED failure proofs (`min: "999.9.9"`, missing required tool, malformed or
      violated `out_of_scope` coverage, advisory default vs `--strict` exit codes, and
-     `wom7api/scripts/healthcheck.py --toolchain-only` rendering and failure propagation).
+     `w0m-api/scripts/healthcheck.py --toolchain-only` rendering and failure propagation).
 """
 from __future__ import annotations
 
@@ -24,15 +24,15 @@ from unittest import mock
 SCRIPTS = Path(__file__).resolve().parents[1]
 ROOT = SCRIPTS.parent
 sys.path.insert(0, str(SCRIPTS))
-sys.path.insert(0, str(ROOT / "wom7web" / "project" / "scripts"))
+sys.path.insert(0, str(ROOT / "w0m-web" / "project" / "scripts"))
 
 import tool_usage_probe  # noqa: E402
 import tools_check  # noqa: E402
 
 
 def _load_healthcheck() -> Any:
-    hc_path = ROOT / "wom7api" / "scripts" / "healthcheck.py"
-    spec = importlib.util.spec_from_file_location("wom7api_healthcheck", hc_path)
+    hc_path = ROOT / "w0m-api" / "scripts" / "healthcheck.py"
+    spec = importlib.util.spec_from_file_location("w0m_api_healthcheck", hc_path)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -224,7 +224,7 @@ class ProbeAndOutOfScopeCoverageTests(unittest.TestCase):
         }
         hits = {
             "jq": [(1, "justfile")],
-            "psql": [(5, "wom7api/justfile")],
+            "psql": [(5, "w0m-api/justfile")],
             "bat": [],
             "ncdu": [],
         }
@@ -295,7 +295,7 @@ class HealthcheckIntegrationTests(unittest.TestCase):
             self.assertIn("FAIL (<min)", out_bad)
 
     def test_two_health_surfaces_document_division_of_labour_and_cross_reference(self) -> None:
-        hc_api = (ROOT / "wom7api" / "scripts" / "healthcheck.py").read_text(encoding="utf-8")
+        hc_api = (ROOT / "w0m-api" / "scripts" / "healthcheck.py").read_text(encoding="utf-8")
         hc_web = (ROOT / "scripts" / "health_check.py").read_text(
             encoding="utf-8"
         )
@@ -304,7 +304,7 @@ class HealthcheckIntegrationTests(unittest.TestCase):
         self.assertIn("Toolchain Health (T164", hc_api)
 
         self.assertIn("just health", hc_web)
-        self.assertIn("wom7api/scripts/healthcheck.py", hc_web)
+        self.assertIn("w0m-api/scripts/healthcheck.py", hc_web)
         self.assertIn("T164", hc_web)
 
     def test_t517_cf_workers_ai_probe_resolves_w0m_llm_personnel_and_rejects_retired_model(self) -> None:

@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 SCRIPT = ROOT / "scripts" / "project_identity_check.py"
 
 sys.path.insert(0, str(SCRIPT.parent))

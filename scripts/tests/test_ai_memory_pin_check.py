@@ -2,7 +2,7 @@
 """Offline red/green unit tests for T234 (`ai_memory_pin_check.py`).
 
 Verifies all three independent drift axes plus fail-closed exit-2 probes:
-1. Live tree (`wom7web/project/ai-memory-pin.json` against `_ext/ai-memory`) passes (`0`).
+1. Live tree (`w0m-web/project/ai-memory-pin.json` against `_ext/ai-memory`) passes (`0`).
 2. Validated temp git checkout + binary sha256 + `--version` output passes (`0`).
 3. Commit mismatch (`git HEAD` differs from `pin.commit`) fails (`1`).
 4. Binary SHA-256 mismatch (`target/release/ai-memory` bytes modified) fails (`1`).

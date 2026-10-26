@@ -20,7 +20,7 @@ CANONICAL_FORK_ORG = "webomage"
 CANONICAL_CONTRIBUTOR = "casualuser"
 
 PRESET_REPOS = {
-    "wom7pr": [
+    "w0m-pr": [
         "jundot/omlx",
         "Blaizzy/mlx-vlm",
         "stablyai/orca",
@@ -286,7 +286,7 @@ def cmd_audit(args: argparse.Namespace) -> None:
     targets: List[tuple[str, int]] = []
     if args.repo and args.pr:
         targets.append((args.repo, args.pr))
-    elif args.preset in ("wom7pr", "wom7open"):
+    elif args.preset in ("w0m-pr", "wom7open"):
         open_prs = search_prs(preset=args.preset, limit=20)
         for p in open_prs:
             repo_name = p.get("repository", {}).get("nameWithOwner")
@@ -294,7 +294,7 @@ def cmd_audit(args: argparse.Namespace) -> None:
             if repo_name and num:
                 targets.append((repo_name, num))
     else:
-        print("Error: Specify --repo and --pr, or --preset wom7pr", file=sys.stderr)
+        print("Error: Specify --repo and --pr, or --preset w0m-pr", file=sys.stderr)
         sys.exit(1)
 
     audits = []
@@ -327,7 +327,7 @@ def cmd_watch(args: argparse.Namespace) -> None:
         if args.repo and args.pr:
             targets.append((args.repo, args.pr))
         else:
-            open_prs = search_prs(preset=args.preset or "wom7pr", limit=10)
+            open_prs = search_prs(preset=args.preset or "w0m-pr", limit=10)
             for p in open_prs:
                 repo_name = p.get("repository", {}).get("nameWithOwner")
                 num = p.get("number")
@@ -435,7 +435,7 @@ def cmd_report(args: argparse.Namespace) -> None:
 
 def cmd_table(args: argparse.Namespace) -> None:
     author = None if getattr(args, "all", False) else (getattr(args, "author", None) or "casualuser")
-    preset = getattr(args, "preset", "wom7pr")
+    preset = getattr(args, "preset", "w0m-pr")
     repo = getattr(args, "repo", None)
     limit = getattr(args, "limit", 30)
 
@@ -618,7 +618,7 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
     for parent in [cur] + list(cur.parents):
         if (parent / ".tasks").is_dir() and (parent / ".w0m").is_dir():
             return parent
-        if (parent / ".git").exists() and (parent / "wom7web").is_dir():
+        if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return Path(__file__).resolve().parents[1]
 
@@ -629,7 +629,7 @@ def resolve_forks_dir(specified: Optional[str] = None) -> Optional[Path]:
         if p.exists():
             return p
     workspace_root = find_workspace_root()
-    for name in ("wom7pr", "wom7open"):
+    for name in ("w0m-pr", "wom7open"):
         candidate = workspace_root / name
         if candidate.exists():
             return candidate
@@ -639,7 +639,7 @@ def resolve_forks_dir(specified: Optional[str] = None) -> Optional[Path]:
         Path.home() / "Projects" / "@self" / "@wom",
         Path.home() / "Projects" / "w0m",
     ):
-        for name in ("wom7pr", "wom7open"):
+        for name in ("w0m-pr", "wom7open"):
             candidate = host_estate / name
             if candidate.exists():
                 return candidate
@@ -828,7 +828,7 @@ def update_fork(repo_path: Path, rebase: bool = False, fetch: bool = True) -> Di
 def cmd_forks(args: argparse.Namespace) -> None:
     forks_dir = resolve_forks_dir(args.dir)
     if not forks_dir or not forks_dir.exists():
-        print("✗ Could not locate wom7pr directory.")
+        print("✗ Could not locate w0m-pr directory.")
         sys.exit(1)
 
     subdirs = sorted([d for d in forks_dir.iterdir() if d.is_dir() and (d / ".git").exists()])
@@ -889,7 +889,7 @@ def cmd_forks(args: argparse.Namespace) -> None:
 def cmd_fetch(args: argparse.Namespace) -> None:
     forks_dir = resolve_forks_dir(args.dir)
     if not forks_dir or not forks_dir.exists():
-        print("✗ Could not locate wom7pr directory.")
+        print("✗ Could not locate w0m-pr directory.")
         sys.exit(1)
 
     if args.repo:
@@ -919,7 +919,7 @@ def cmd_fetch(args: argparse.Namespace) -> None:
 def cmd_info(args: argparse.Namespace) -> None:
     forks_dir = resolve_forks_dir(args.dir)
     if not forks_dir or not forks_dir.exists():
-        print("✗ Could not locate wom7pr directory.")
+        print("✗ Could not locate w0m-pr directory.")
         sys.exit(1)
 
     target = forks_dir / args.repo
@@ -973,7 +973,7 @@ def cmd_info(args: argparse.Namespace) -> None:
 def cmd_update(args: argparse.Namespace) -> None:
     forks_dir = resolve_forks_dir(args.dir)
     if not forks_dir or not forks_dir.exists():
-        print("✗ Could not locate wom7pr directory.")
+        print("✗ Could not locate w0m-pr directory.")
         sys.exit(1)
 
     if args.repo:
@@ -1023,7 +1023,7 @@ def main() -> None:
     p_watch = subparsers.add_parser("watch", help="Monitor PRs on a background polling interval")
     p_watch.add_argument("--repo", type=str, help="GitHub repository (owner/name)")
     p_watch.add_argument("--pr", type=int, help="PR number")
-    p_watch.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="wom7pr", help="Preset target (default: wom7pr)")
+    p_watch.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target (default: w0m-pr)")
     p_watch.add_argument("--interval", type=float, default=5.0, help="Interval in minutes")
     p_watch.add_argument("--duration", type=float, default=30.0, help="Total duration in minutes")
     p_watch.add_argument("--notify", action="store_true", help="Send terminal bell/notification on delta")
@@ -1040,14 +1040,14 @@ def main() -> None:
     p_table.add_argument("--author", type=str, default="casualuser", help="Filter by author (default: casualuser)")
     p_table.add_argument("--all", action="store_true", help="Show all authors across preset/repo")
     p_table.add_argument("--repo", type=str, help="GitHub repository (owner/name)")
-    p_table.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="wom7pr", help="Preset target (default: wom7pr)")
+    p_table.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target (default: w0m-pr)")
     p_table.add_argument("--limit", type=int, default=30, help="Maximum number of PRs")
     p_table.add_argument("--markdown", action="store_true", help="Format output as Markdown table")
     p_table.set_defaults(func=cmd_table)
 
     # Forks
     p_forks = subparsers.add_parser("forks", help="Audit local fork synchronization against upstream remotes")
-    p_forks.add_argument("--dir", type=str, help="Path to wom7pr directory")
+    p_forks.add_argument("--dir", type=str, help="Path to w0m-pr directory")
     p_forks.add_argument("--no-fetch", action="store_true", help="Skip fetching remotes before checking")
     p_forks.add_argument("--strict", action="store_true", help="Exit non-zero if any fork is behind or dirty")
     p_forks.add_argument("--markdown", action="store_true", help="Format output as Markdown table")
@@ -1056,24 +1056,24 @@ def main() -> None:
 
     # Fetch
     p_fetch = subparsers.add_parser("fetch", help="Fetch remotes for all forks or a specific repo")
-    p_fetch.add_argument("repo", nargs="?", default=None, help="Specific repository name in wom7pr")
-    p_fetch.add_argument("--dir", type=str, help="Path to wom7pr directory")
+    p_fetch.add_argument("repo", nargs="?", default=None, help="Specific repository name in w0m-pr")
+    p_fetch.add_argument("--dir", type=str, help="Path to w0m-pr directory")
     p_fetch.add_argument("--json", action="store_true", help="Output structured JSON")
     p_fetch.set_defaults(func=cmd_fetch)
 
     # Info
     p_info = subparsers.add_parser("info", help="Deep inspection of a specific fork repository")
-    p_info.add_argument("repo", type=str, help="Specific repository name in wom7pr")
-    p_info.add_argument("--dir", type=str, help="Path to wom7pr directory")
+    p_info.add_argument("repo", type=str, help="Specific repository name in w0m-pr")
+    p_info.add_argument("--dir", type=str, help="Path to w0m-pr directory")
     p_info.add_argument("--json", action="store_true", help="Output structured JSON")
     p_info.set_defaults(func=cmd_info)
 
     # Update
     p_update = subparsers.add_parser("update", help="Safely fast-forward or rebase forks with upstream")
-    p_update.add_argument("repo", nargs="?", default=None, help="Specific repository name in wom7pr")
+    p_update.add_argument("repo", nargs="?", default=None, help="Specific repository name in w0m-pr")
     p_update.add_argument("--rebase", action="store_true", help="Allow rebasing feature branches onto upstream")
     p_update.add_argument("--no-fetch", action="store_true", help="Skip fetching remotes before updating")
-    p_update.add_argument("--dir", type=str, help="Path to wom7pr directory")
+    p_update.add_argument("--dir", type=str, help="Path to w0m-pr directory")
     p_update.add_argument("--json", action="store_true", help="Output structured JSON")
     p_update.set_defaults(func=cmd_update)
 

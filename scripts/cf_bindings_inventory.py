@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """T271 AC8 — Re-measurable Cloudflare Wrangler binding inventory across the w0m estate.
 
-Scans `wom7api/wrangler.jsonc`, `wom7func/wrangler.jsonc`, and `wom7web/apps/*/wrangler.*`,
+Scans `w0m-api/wrangler.jsonc`, `w0m-cf/wrangler.jsonc`, and `w0m-web/apps/*/wrangler.*`,
 strips JSONC comments (`//` and `/* ... */`) and trailing commas safely without corrupting
 URLs inside string literals, and emits either a deterministic Markdown table (default) or
 `--json` report of all configured and unconfigured Cloudflare bindings.
@@ -23,10 +23,10 @@ from typing import Any
 ESTATE_ROOT = Path(__file__).resolve().parent.parent
 
 DEFAULT_WRANGLER_GLOBS: tuple[str, ...] = (
-    "wom7api/wrangler.jsonc",
-    "wom7func/wrangler.jsonc",
-    "wom7web/apps/*/wrangler.jsonc",
-    "wom7web/apps/*/wrangler.json",
+    "w0m-api/wrangler.jsonc",
+    "w0m-cf/wrangler.jsonc",
+    "w0m-web/apps/*/wrangler.jsonc",
+    "w0m-web/apps/*/wrangler.json",
 )
 
 CATALOGUE_BINDING_KEYS: tuple[str, ...] = (

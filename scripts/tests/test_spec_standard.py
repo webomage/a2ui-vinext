@@ -19,7 +19,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 SCRIPT = ROOT / "scripts" / "spec_standard_check.py"
 
 failures: list[str] = []

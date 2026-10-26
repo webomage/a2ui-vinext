@@ -34,7 +34,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 CHANGELOG = ROOT / "CHANGELOG.md"
 LOGDIR = ROOT / "deploy-logs"
 

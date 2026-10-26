@@ -22,5 +22,5 @@ devpod up . --provider tart
 ## Verification
 
 ```bash
-python3 -m unittest wom7web/project/scripts/tests/test_devpod_tart_provider.py
+python3 -m unittest w0m-web/project/scripts/tests/test_devpod_tart_provider.py
 ```

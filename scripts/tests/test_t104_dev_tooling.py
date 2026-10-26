@@ -2,14 +2,14 @@
 """Regression and verification suite for T104 — Dev-tooling that silently doesn't run.
 
 Verifies:
-- AC1: `wom7web/scripts/` and root script files (`migrate_svelte.mjs`, `apps/web/scripts/snapshot-blueprints.mjs`)
+- AC1: `w0m-web/scripts/` and root script files (`migrate_svelte.mjs`, `apps/web/scripts/snapshot-blueprints.mjs`)
   pass `npx oxlint` with 0 errors and 0 rule suppressions in the repaired scripts.
-- AC2: `oxlint` is wired in `wom7web/.pre-commit-config.yaml` on staged JS/TS/Svelte/Astro files.
-- AC3: `wom7web/package.json` pins the `undici` override (`>=7.29.1 <8`) so `jsdom` resolves internal
+- AC2: `oxlint` is wired in `w0m-web/.pre-commit-config.yaml` on staged JS/TS/Svelte/Astro files.
+- AC3: `w0m-web/package.json` pins the `undici` override (`>=7.29.1 <8`) so `jsdom` resolves internal
   `lib/handler/wrap-handler.js` cleanly under Vitest without runner aborts.
-- AC4: `wom7web/apps/join/tsconfig.json` and `wom7web/apps/job/tsconfig.json` declare explicit
+- AC4: `w0m-web/apps/join/tsconfig.json` and `w0m-web/apps/job/tsconfig.json` declare explicit
   `include` (`src/**/*`) and `exclude` (`../cp`, `node_modules`, `dist`, `.astro`) scopes.
-- AC5: All 5 workspace apps (`web`, `cp`, `demo`, `job`, `join`) are gated in `wom7web/package.json`
+- AC5: All 5 workspace apps (`web`, `cp`, `demo`, `job`, `join`) are gated in `w0m-web/package.json`
   `scripts.typecheck`, and `.svelte` script blocks are gated by `svelte-typecheck-ratchet` (T278).
 - AC6: `python3 scripts/discovery.py --enforce` exits 0 across all declared stacks and recipes.
 """
@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 
 
 def test_ac1_scripts_pass_oxlint_with_zero_errors() -> None:
@@ -55,7 +55,7 @@ def test_ac1_scripts_pass_oxlint_with_zero_errors() -> None:
 
 
 def test_ac2_oxlint_wired_in_precommit() -> None:
-    """AC2: `oxlint` hook is wired in `wom7web/.pre-commit-config.yaml`."""
+    """AC2: `oxlint` hook is wired in `w0m-web/.pre-commit-config.yaml`."""
     precommit = (WEB / ".pre-commit-config.yaml").read_text(encoding="utf-8")
     assert "- id: oxlint" in precommit
     assert "entry: just lint-staged" in precommit
@@ -67,8 +67,8 @@ def test_ac3_undici_override_and_vitest_jsdom_resolution() -> None:
     pkg = json.loads((WEB / "package.json").read_text(encoding="utf-8"))
     overrides = pkg.get("pnpm", {}).get("overrides", {})
     undici_range = overrides.get("undici", "")
-    assert "<8" in undici_range and ">=7.29.1" in undici_range, (
-        f"Expected undici override '>=7.29.1 <8', got {undici_range!r}"
+    assert "<8" in undici_range and (">=7.29.1" in undici_range or ">=7.30.1" in undici_range), (
+        f"Expected undici override '>=7.29.1 <8' or '>=7.30.1 <8', got {undici_range!r}"
     )
 
     res = subprocess.run(

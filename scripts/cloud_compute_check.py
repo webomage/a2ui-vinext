@@ -9,8 +9,8 @@ and agent execution surfaces against the estate on disk:
     `deploy_recipe` (verified in root `justfile`), and `spend_monitor`.
   * Every `retired-unused-or-unlinked` surface must declare `rationale` and
     `cost_ceiling_usd == 0`.
-  * Disk discovery ensures `wom7func/wrangler.toml`, `wom7api/supabase/config.toml`,
-    and `wom7web/.github/workflows` are all covered by a governed declaration.
+  * Disk discovery ensures `w0m-cf/wrangler.toml`, `w0m-api/supabase/config.toml`,
+    and `w0m-web/.github/workflows` are all covered by a governed declaration.
 """
 
 from __future__ import annotations
@@ -30,9 +30,9 @@ JUSTFILE_PATH = ESTATE_ROOT / "justfile"
 VALID_STATUSES = {"governed", "retired-unused-or-unlinked"}
 
 EXPECTED_DISK_SURFACES: dict[str, str] = {
-    "cloudflare-workers-wom7func": "wom7func/wrangler.jsonc",
-    "supabase-edge-functions-wom7api": "wom7api/supabase/config.toml",
-    "github-actions-estate": "wom7api/dagger/pipeline.ts",
+    "cloudflare-workers-w0m-cf": "w0m-cf/wrangler.jsonc",
+    "supabase-edge-functions-w0m-api": "w0m-api/supabase/config.toml",
+    "github-actions-estate": "w0m-api/dagger/pipeline.ts",
 }
 
 

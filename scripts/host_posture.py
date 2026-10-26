@@ -463,7 +463,7 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.test:
-        test_file = ROOT / "wom7web" / "project" / "scripts" / "tests" / "test_host_posture.py"
+        test_file = ROOT / "w0m-web" / "project" / "scripts" / "tests" / "test_host_posture.py"
         proc = subprocess.run([sys.executable, str(test_file)])
         return proc.returncode
 

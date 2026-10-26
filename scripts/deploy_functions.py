@@ -29,7 +29,7 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FUNCTIONS = ROOT / "wom7api" / "supabase" / "functions"
+FUNCTIONS = ROOT / "w0m-api" / "supabase" / "functions"
 ROUNDS = 3
 BACKOFF_S = (20, 60, 120)
 CLOCK_SKEW_S = 90      # local clock vs Supabase's: an update stamped this much before our start still counts as stale
@@ -61,7 +61,7 @@ def stale(wanted: list[str], live: dict[str, float], started: float) -> list[str
 
 def deploy(names: list[str] | None, project_ref: str, jobs: int) -> int:
     cmd = ["supabase", "functions", "deploy", *(names or []), "--use-api", "-j", str(jobs), "--project-ref", project_ref]
-    return subprocess.run(cmd, cwd=str(ROOT / "wom7api"), check=False).returncode
+    return subprocess.run(cmd, cwd=str(ROOT / "w0m-api"), check=False).returncode
 
 
 def self_test() -> int:

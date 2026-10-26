@@ -215,7 +215,7 @@ def t_reasoned_exemption_suppresses():
 def t_group_keys_on_directory_not_prefix():
     """🔴 REGRESSION PROBE. `_group` first returned the path's first two segments, which made
     every file sitting directly in `scripts/` its own 'group' — the live run printed 40 rows of
-    `wom7web/scripts/<file>` that read as 40 findings for what is one directory and one
+    `w0m-web/scripts/<file>` that read as 40 findings for what is one directory and one
     decision. A worklist that inflates its own row count is precisely the defect this scan
     exists to find. Reverting `_group` to `parts[:2]` turns this case red."""
     with tempfile.TemporaryDirectory() as d:
@@ -229,7 +229,7 @@ def t_group_keys_on_directory_not_prefix():
 
 
 def t_nested_repo_path_resolves():
-    """`mlx` declares the nested `wom7mlx/wom7mlx`; a claim keyed on the whole string would
+    """`mlx` declares the nested `w0m-mlx/w0m-mlx`; a claim keyed on the whole string would
     match no repo and silently report the entire repo as uncovered."""
     with tempfile.TemporaryDirectory() as d:
         tmp = Path(d)

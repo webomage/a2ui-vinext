@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Offline unit & subprocess integration test for `obsidian_mcp_bridge.py` (T517 AC6).
 
-Relocated and expanded from `wom7web/project/scripts/test_obsidian_mcp.py` (archived to
+Relocated and expanded from `w0m-web/project/scripts/test_obsidian_mcp.py` (archived to
 `_arch/test-obsidian-mcp/`):
-- Uses repo-relative paths (`ROOT / "wom7web" / "project" / "scripts" / "obsidian_mcp_bridge.py"`).
+- Uses repo-relative paths (`ROOT / "w0m-web" / "project" / "scripts" / "obsidian_mcp_bridge.py"`).
 - Spins up an ephemeral localhost HTTP server and asserts real JSON-RPC 2.0 `initialize` +
   `tools/call` responses and `Mcp-Session-Id` propagation through the stdio bridge.
 - Verifies clear failure when the bridge cannot start (missing vault or invalid plugin config)

@@ -56,7 +56,7 @@ with tempfile.TemporaryDirectory() as d:
     sh("git", "-C", str(repo), "worktree", "add", "-q", "--detach", str(far / "wt2"), "HEAD")
     check("...and DANGLES when the worktree is placed anywhere else",
           not (far / "wt2" / "link_out").exists(),
-          "this is the wom7api case: ../wom7web/ does not exist beside a scratch worktree")
+          "this is the w0m-api case: ../w0m-web/ does not exist beside a scratch worktree")
 
     state, why = a.reachable_in_worktree(repo, "link_out")
     check("...and the message says it is placement-dependent, not simply broken",

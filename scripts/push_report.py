@@ -93,7 +93,7 @@ def parse_log_text(text: str) -> dict[str, list[str]]:
             continue
 
         # 3. Dependencies
-        # Example: advisory @supabase/supabase-js: wom7ext @ ^2.87.1 (target ^2.110.7) — 23 minors behind
+        # Example: advisory @supabase/supabase-js: w0m-ext @ ^2.87.1 (target ^2.110.7) — 23 minors behind
         if "advisory @" in stripped or "advisory " in stripped and "target" in stripped:
             clean_adv = re.sub(r"^[⚠ℹ️\s*]+advisory\s+", "", stripped)
             add("dependencies", clean_adv)
@@ -146,7 +146,7 @@ def parse_log_text(text: str) -> dict[str, list[str]]:
             continue
 
         # 8. Hook Hygiene
-        # Example: web/typecheck (pre-push) wired from ANOTHER repo: wom7ext/.pre-commit-config.yaml
+        # Example: web/typecheck (pre-push) wired from ANOTHER repo: w0m-ext/.pre-commit-config.yaml
         if "wired from ANOTHER repo" in stripped:
             clean_hook = re.sub(r"^[ℹ️\s*]+", "", stripped)
             add("hooks", clean_hook)
@@ -202,7 +202,7 @@ def resolve_log_path(explicit_path: str | None = None) -> Path | None:
 
     # Check default cache dir
     cache_dir = Path.home() / ".cache" / "w0m" / "hooks"
-    latest_symlink = cache_dir / "wom7web-pre-push-latest.log"
+    latest_symlink = cache_dir / "w0m-web-pre-push-latest.log"
     if latest_symlink.is_file():
         return latest_symlink
 

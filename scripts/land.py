@@ -31,20 +31,20 @@ ROOT = Path(__file__).resolve().parents[1]
 # Estate topological order
 TOPOLOGICAL_ORDER = [
     "api",
-    "wom7api",
+    "w0m-api",
     "cf",
     "func",
-    "wom7func",
+    "w0m-cf",
     "web",
-    "wom7web",
+    "w0m-web",
     "ext",
-    "wom7ext",
+    "w0m-ext",
     "sec",
-    "wom7sec",
+    "w0m-sec",
     "skills",
-    "wom7skills",
+    "w0m-skills",
     "mlx",
-    "wom7mlx",
+    "w0m-mlx",
     "root",
     "@wom",
 ]
@@ -209,6 +209,18 @@ def check_conflicts(repo_root: Path, target_ref: str, base_ref: str = "beta") ->
     mt = run_git(["merge-tree", "--write-tree", base_ref, target_ref], cwd=repo_root)
     if mt.returncode == 0:
         return True, []  # Clean merge tree
+
+    # Fallback for older git (< 2.38) where `git merge-tree --write-tree` is unsupported
+    if "unknown rev --write-tree" in mt.stderr or "usage: git merge-tree" in mt.stderr:
+        mt3 = run_git(["merge-tree", base_commit, base_ref, target_ref], cwd=repo_root)
+        if mt3.returncode == 0 and "<<<<<<<" not in mt3.stdout and "changed in both" not in mt3.stdout:
+            return True, []
+        conflicts = [
+            line.strip()
+            for line in mt3.stdout.splitlines()
+            if "changed in both" in line or "conflict" in line.lower() or "<<<<<<<" in line
+        ]
+        return False, conflicts or ["Unclean merge tree detected"]
 
     # Parse conflicting files from merge-tree or diff
     conflicts = []

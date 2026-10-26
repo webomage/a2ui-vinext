@@ -3,7 +3,7 @@
 
 Why this exists:
 `STATE.md`, `TASKS.md`, `.tasks/`, and `ROADMAP.md` moved to the estate root repo (`@wom`) in T414,
-while `wom7web/.husky/pre-push` continued looking for them inside `wom7web`'s own push range and
+while `w0m-web/.husky/pre-push` continued looking for them inside `w0m-web`'s own push range and
 `@wom` had no pre-push hook at all. As a result, `state-check` never ran on any push and only failed
 inside `just deploy-all` preflight (2026-10-01).
 

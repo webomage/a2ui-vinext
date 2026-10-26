@@ -45,7 +45,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 POLICY = ROOT / "project" / "policies" / "emoji-policy.json"
 ESTATE = ROOT
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 
 
 def load() -> dict:
@@ -82,7 +82,7 @@ def _ignored(paths: list[Path]) -> set[Path]:
     🔴 This exists because the docstring below used to be a claim, not a filter. `authored()`
     globbed the FILESYSTEM and named the result "authored", so anything sitting on disk counted --
     including 652 markdown files written by the scheduled Supabase Storage backup into
-    `wom7api/supabase/backups/`, a path that repo's own `.gitignore` excludes on line 117. One of
+    `w0m-api/supabase/backups/`, a path that repo's own `.gitignore` excludes on line 117. One of
     them carried an emoji heading, so a backup running at 09:00 moved a BLOCKING ratchet by +1 and
     the only apparent remedies were to raise the baseline (prohibited) or to delete a backup. The
     measured number was never stable: it rose and fell with whether a backup had run.
@@ -144,12 +144,12 @@ def authored(pol: dict, pattern: str):
     """Every authored file matching `pattern` -- generated, vendored and IGNORED trees excluded.
 
     🔴 Dedup by REAL path, not by the `Path` the glob happened to yield. `@wom/.agents` is a
-    symlink to `wom7web/.agents` (T312, multi-agent parity) and the glob traverses it, so the
+    symlink to `w0m-web/.agents` (T312, multi-agent parity) and the glob traverses it, so the
     same inode is walked twice under two different-looking paths -- the estate root's alias and
-    wom7web's own copy. Without this, 3 SKILL.md files with a heading emoji were counted TWICE,
+    w0m-web's own copy. Without this, 3 SKILL.md files with a heading emoji were counted TWICE,
     moving the ratchet +5 with no new content. Excluding `.agents` in `exclude_paths` (the k7
     remedy) was tried and rejected: that filter matches a bare component anywhere in the path, so
-    it also dropped wom7web's real, non-symlinked copy and under-counted. Resolving and deduping
+    it also dropped w0m-web's real, non-symlinked copy and under-counted. Resolving and deduping
     here fixes this alias and any future one -- `.claude/skills`, or a symlink not yet added --
     without a per-symlink entry to maintain.
     """
@@ -157,7 +157,7 @@ def authored(pol: dict, pattern: str):
     candidates = [
         p
         for p in _pruned_glob(pattern, skip)
-        # `wom7ext/extension/export.md` is a DIRECTORY named .md
+        # `w0m-ext/extension/export.md` is a DIRECTORY named .md
         if not any(s in p.parts for s in skip) and p.is_file()
     ]
     ignored = _ignored(candidates)
@@ -200,7 +200,7 @@ def staged_files() -> list[Path] | None:
     # `git diff --cached` there exits non-zero and this returns None. Written with cwd=ESTATE the
     # first time and it did exactly that: the fallback fired on every run and the staged mode never
     # executed. The estate's own documented trap, walked into while fixing a scoping bug.
-    # ⚠️ This measures WOM7WEB's index, which is where `.husky/pre-commit` lives and where the
+    # ⚠️ This measures W0M_WEB's index, which is where `.husky/pre-commit` lives and where the
     # corpus's governance docs are. A commit in a sibling repo falls back to the whole-tree run.
     try:
         r = subprocess.run(["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR", "-z"],
@@ -322,17 +322,20 @@ def discovered_couplings(pol: dict, E: re.Pattern) -> dict[str, set[str]]:
     cannot be added without declaring it, and no future sweep can find something the policy missed.
     """
     out: dict[str, set[str]] = {}
-    for p in sorted((WEB / "project" / "scripts").rglob("*.py")):
-        for i, line in enumerate(p.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
-            if not MATCHER_CTX.search(line):
-                continue
-            if line.lstrip().startswith("#"):
-                # A comment naming a glyph is documentation, not a matcher. Excluding it is what
-                # keeps this from flagging the very comments that explain the couplings.
-                continue
-            glyphs = {c for c in E.findall(line)}
-            if glyphs:
-                out[f"{p.relative_to(WEB)}:{i}"] = glyphs
+    for base, sub in ((ESTATE, ESTATE / "scripts"), (WEB, WEB / "project" / "scripts")):
+        if not sub.is_dir():
+            continue
+        for p in sorted(sub.rglob("*.py")):
+            for i, line in enumerate(p.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                if not MATCHER_CTX.search(line):
+                    continue
+                if line.lstrip().startswith("#"):
+                    # A comment naming a glyph is documentation, not a matcher. Excluding it is what
+                    # keeps this from flagging the very comments that explain the couplings.
+                    continue
+                glyphs = {c for c in E.findall(line)}
+                if glyphs:
+                    out[f"{p.relative_to(base)}:{i}"] = glyphs
     return out
 
 

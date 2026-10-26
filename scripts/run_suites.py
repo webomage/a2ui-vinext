@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 API = Path(os.environ.get("W0M_SUITES_API") or ROOT)
 
 # Overridable so the runner can be driven against a fixture registry — the tests need to
@@ -116,7 +116,7 @@ def _read_justfile_text(jf_path: Path) -> str:
         if imp.is_file():
             out.append(imp.read_text(encoding="utf-8"))
     if jf_path.parent.resolve() == ROOT.resolve():
-        api_jf = ROOT / "wom7api" / "justfile"
+        api_jf = ROOT / "w0m-api" / "justfile"
         if api_jf.is_file():
             out.append(api_jf.read_text(encoding="utf-8"))
     return "\n".join(out)
@@ -580,7 +580,7 @@ def main() -> int:
         if missing:
             print("\n❌ undeclared suites exist — add them (or record why they are excluded)")
             return 1
-        print("  ✅ every recipe that behaves like a suite is declared and resolves in wom7api/justfile")
+        print("  ✅ every recipe that behaves like a suite is declared and resolves in w0m-api/justfile")
         return 0
 
     problems = prepush_problems(suites)
@@ -657,7 +657,7 @@ def main() -> int:
     # 🔑 Keep the RAW OUTPUT OF EVERY SUITE, not just the summary line.
     #
     # Owner ask 2026-08-16: "preserve not only the full deploy log but also raw output from each
-    # step/tool." The full transcript already exists (wom7api/deploy-logs/run-*.log); what was
+    # step/tool." The full transcript already exists (w0m-api/deploy-logs/run-*.log); what was
     # missing is the per-tool detail behind each one-line verdict, which is exactly what you need
     # when a suite says something surprising and the transcript has already scrolled past it.
     #

@@ -5,7 +5,7 @@ Proves all 6 ACs of T241:
   - AC1: `check_drift(scope_diff=...)` wires `scope_diff` to BOTH `spec_drift_gate.py` and
     `openspec validate` (covering tracked `openspec/changes/<id>`, tracked `openspec/specs/<id>`,
     and `.tasks/T*.md` ticket-linked specs/changes), ignoring untracked directories on disk.
-  - AC2: `wom7web/.husky/pre-push` (`w0m audit (scoped drift + openspec)`) and `scripts/w0m_audit.py`
+  - AC2: `w0m-web/.husky/pre-push` (`w0m audit (scoped drift + openspec)`) and `scripts/w0m_audit.py`
     (`--scope-diff` CLI help + `check_drift`) agree on scoped behaviour.
   - AC3: Scoped OpenSpec output explicitly prints both the count validated and the count skipped
     (`validated K touched item(s), skipped M untouched item(s) (scope: <ref>); N untracked ignored`),
@@ -31,7 +31,7 @@ import unittest
 from pathlib import Path
 
 MONO_ROOT = Path(__file__).resolve().parents[2]
-WEB_ROOT = MONO_ROOT / "wom7web"
+WEB_ROOT = MONO_ROOT / "w0m-web"
 SCRIPTS_DIR = MONO_ROOT / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
@@ -121,9 +121,9 @@ class TestT241ScopedOpenSpec(unittest.TestCase):
         self.orig_results = list(wa.results)
 
         self.mono = self.tmpdir / "mono"
-        self.web = self.mono / "wom7web"
+        self.web = self.mono / "w0m-web"
         _init_git_repo(self.mono)
-        (self.mono / ".gitignore").write_text("wom7web/\n", encoding="utf-8")
+        (self.mono / ".gitignore").write_text("w0m-web/\n", encoding="utf-8")
 
         # Provide minimal spec_drift_gate.py in self.mono/scripts so check_drift runs cleanly
         (self.mono / "scripts").mkdir(parents=True, exist_ok=True)

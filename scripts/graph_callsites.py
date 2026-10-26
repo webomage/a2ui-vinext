@@ -6,8 +6,8 @@ what is currently wired to call each one?*
 
 Three things this deliberately does that a naive grep does not:
 
-1. **Dedupes by RESOLVED path.** `wom7web/justfile` and `wom7cfworkers/justfile` are both
-   symlinks to `wom7api/justfile`. `git ls-files` lists all three and reading them follows
+1. **Dedupes by RESOLVED path.** `w0m-web/justfile` and `w0m-cf/justfile` are both
+   symlinks to `w0m-api/justfile`. `git ls-files` lists all three and reading them follows
    the link, so a tracked-path scan reports three call sites where there is one. The first
    pass of this audit made exactly that error — the estate's signature failure mode,
    committed by the tool hunting it.
@@ -40,8 +40,8 @@ from typing import Any, cast
 # .../@wom/scripts/graph_callsites.py -> parents[1] is the ESTATE root (relocated in T516).
 ESTATE = Path(__file__).resolve().parents[1]
 REPOS = [
-    "wom7web", "wom7api", "wom7func",
-    "wom7skills", "wom7ext", "wom7sec", "wom7mlx/wom7mlx",
+    "w0m-web", "w0m-api", "w0m-cf",
+    "w0m-skills", "w0m-ext", "w0m-sec", "w0m-mlx/w0m-mlx",
 ]
 
 TOOLS = {
@@ -101,7 +101,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     estate_root = Path(args.estate_root).resolve() if args.estate_root else ESTATE
-    if not (estate_root / "wom7web").is_dir():
+    if not (estate_root / "w0m-web").is_dir():
         print(f"error: estate root not found at {estate_root}", file=sys.stderr)
         return 2
 

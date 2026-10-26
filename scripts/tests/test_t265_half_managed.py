@@ -26,7 +26,7 @@ if str(SCRIPT_DIR) not in sys.path:
 import client_inventory as ci
 
 ESTATE_ROOT = SCRIPT_DIR.parent
-WEB_ROOT = ESTATE_ROOT / "wom7web"
+WEB_ROOT = ESTATE_ROOT / "w0m-web"
 CLIENTS_POLICY = ESTATE_ROOT / "project" / "policies" / "clients-policy.json"
 
 
@@ -109,11 +109,11 @@ class TestT265HalfManagedTier(unittest.TestCase):
             schema_src = ESTATE_ROOT / "project" / "policies" / "clients-policy.schema.json"
             (tmp_path / "clients-policy.schema.json").symlink_to(schema_src)
 
-            # Create a workspace with 2 symlinks to real git repo roots (wom7web, wom7api) and no .w0m/ contract
+            # Create a workspace with 2 symlinks to real git repo roots (w0m-web, w0m-api) and no .w0m/ contract
             hm_root = tmp_path / "half_managed_ws"
             hm_root.mkdir()
             (hm_root / "app").symlink_to(WEB_ROOT)
-            (hm_root / "api").symlink_to(ESTATE_ROOT / "wom7api")
+            (hm_root / "api").symlink_to(ESTATE_ROOT / "w0m-api")
 
             w0m_proj = next(dict(p) for p in policy["projects"] if p["id"] == "w0m")
             w0m_proj["root"] = str(ESTATE_ROOT)

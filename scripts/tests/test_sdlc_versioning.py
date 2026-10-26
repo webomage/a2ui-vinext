@@ -28,7 +28,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-REPO = ROOT / "wom7web"
+REPO = ROOT / "w0m-web"
 DOCTOR = ROOT / "scripts" / "sdlc_doctor.py"
 
 

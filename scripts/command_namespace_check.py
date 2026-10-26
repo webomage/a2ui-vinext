@@ -37,7 +37,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 
 # Surfaces that carry SLASH-COMMANDS, declared rather than globbed. A new agent surface appearing
 # here must be added deliberately — silently widening the scan would change the baseline's meaning.

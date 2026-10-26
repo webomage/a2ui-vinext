@@ -36,7 +36,7 @@ from pathlib import Path
 from typing import Any
 
 ESTATE = Path(__file__).resolve().parents[1]
-WEB_ROOT = ESTATE / "wom7web"
+WEB_ROOT = ESTATE / "w0m-web"
 SCHEDULES = WEB_ROOT / "project" / "launchd" / "schedules.jsonc"
 AGENT_DIR = Path.home() / "Library" / "LaunchAgents"
 

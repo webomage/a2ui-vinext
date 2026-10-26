@@ -15,7 +15,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = ROOT / "wom7web"
+REPO = ROOT / "w0m-web"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tasks_query import resolve_tickets_dir  # noqa: E402 — canonical .tasks/ resolver (T411)
 TICKETS = resolve_tickets_dir()

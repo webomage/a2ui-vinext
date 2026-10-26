@@ -7,7 +7,7 @@ description: >
 metadata:
   author: w0m
   namespace: w0m
-  version: "2026.09.24-1790282807"
+  version: "2026.10.26-1793009642"
 ---
 
 # w0m-state-load — the pickup gate
@@ -34,7 +34,7 @@ and prints the synthesized **⭐ PICK UP HERE** block (0.2s):
   truth for where each session stopped ([[T428]]).
 - **completed today**: tickets closed today.
 
-Then read the root `STATE.md` (it moved out of `wom7web/` under [[T421]]) only for standing editorial context:
+Then read the root `STATE.md` (it moved out of `w0m-web/` under [[T421]]) only for standing editorial context:
 - **Gotchas the next agent MUST know** — the expensive lessons
 - **Owner actions** — what is waiting on the human
 
@@ -45,7 +45,7 @@ Do not yet accept a single number, count, gate result, or branch state from the 
 
 `STATE.md` is **bounded** as of 2026-08-07 ([[T174]]) — ~450 lines, budgeted at 900 lines / 80 KiB
 and gated at pre-push. Before that it was **4,141 lines / ~83k tokens**, of which **93.9% was dated
-history**, and this skill's instruction to *"read `wom7web/STATE.md`"* was therefore an instruction
+history**, and this skill's instruction to *"read `w0m-web/STATE.md`"* was therefore an instruction
 to spend 83k tokens before doing any work. It no longer is. Keep it that way:
 
 - **Superseded history lives in `project/state-archive/`** (estate root), indexed by the generated
@@ -86,7 +86,7 @@ starting on it because the file said so.
 
 ```bash
 just test                     # what is actually green right now (from the estate root)
-git status --short && git -C wom7web status --short && git -C wom7api status --short
+git status --short && git -C w0m-web status --short && git -C w0m-api status --short
 ```
 
 Uncommitted work in a repo means a previous session ended mid-flight. Read that diff **before**

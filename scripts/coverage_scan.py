@@ -13,7 +13,7 @@ This walks the CODE instead and asks the question no registry walk can: what is 
 declared? Measured on the estate's first run, the answer was **4,235 of 8,905 tracked files** —
 against a registry reporting fully green.
 
-REPORTS, NEVER GATES (AC5). Uncovered is not a failure. `wom7web/src` is 352 markdown content
+REPORTS, NEVER GATES (AC5). Uncovered is not a failure. `w0m-web/src` is 352 markdown content
 files; the design-system export is prose and PNGs; screenshots are screenshots. None of that wants
 a stack, and a scan that called it drift would be routed around inside a week. Exit is 0 whether
 the worklist is empty or long. `skill check`, `discovery --enforce` and `state-check` own the
@@ -53,7 +53,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))  # discovery lives in e
 from discovery import load_jsonc  # noqa: E402  — the JSONC parser with the `https://` guard
 
 ESTATE = Path(__file__).resolve().parents[1]
-ROOT = ESTATE / "wom7web"  # wom7web/
+ROOT = ESTATE / "w0m-web"  # w0m-web/
 SDLC = ESTATE / ".w0m" / "sdlc.json"
 STACKS = ESTATE / "project" / "policies" / "stacks-policy.json"
 
@@ -98,7 +98,7 @@ def _claims(stacks: dict) -> dict[str, list[tuple[str, str]]]:
 
     The registry types `path` as a single string and models one stack = one repo (T189 chose a
     second `tooling-api` entry over a path list for exactly this reason), so a claim is one
-    prefix. `mlx` declares the nested `wom7mlx/wom7mlx`, so the repo key is split off the front
+    prefix. `mlx` declares the nested `w0m-mlx/w0m-mlx`, so the repo key is split off the front
     rather than assumed to be a bare directory name.
     """
     out: dict[str, list[tuple[str, str]]] = {}
@@ -151,7 +151,7 @@ def _group(rel: str) -> str:
     Deep enough to separate `packages/ui` from `packages/crawler`, shallow enough to stay
     readable. 🔴 It must key on the dirname, not on the first two segments of the path: doing the
     latter turned every file directly inside `scripts/` into its own one-line "group" and printed
-    40 rows of `wom7web/scripts/<file>` reading as 40 findings, when it is one directory and one
+    40 rows of `w0m-web/scripts/<file>` reading as 40 findings, when it is one directory and one
     decision. A worklist that inflates its own row count is the defect this scan exists to find,
     committed by the scan — caught only by reading its first real output.
     """

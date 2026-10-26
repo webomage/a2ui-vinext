@@ -21,7 +21,7 @@ from pathlib import Path
 
 # Estate paths
 ROOT_WORKSPACE = Path(__file__).resolve().parents[2]
-WEB_ROOT = ROOT_WORKSPACE / "wom7web"
+WEB_ROOT = ROOT_WORKSPACE / "w0m-web"
 
 SCRIPTS = ROOT_WORKSPACE / "scripts"
 sys.path.insert(0, str(SCRIPTS))

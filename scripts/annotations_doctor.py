@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(os.environ.get("W0M_HYGIENE_ROOT") or Path(__file__).resolve().parents[1])
-CANONICAL = ROOT / "wom7web"
+CANONICAL = ROOT / "w0m-web"
 POLICY_PATH = ROOT / "project" / "policies" / "hygiene-policy.json"
 
 SKIP_DIRS = frozenset({
@@ -63,7 +63,7 @@ PATTERNS = {
 
 def load_policy() -> dict:
     if not POLICY_PATH.is_file():
-        return {"repos": [{"path": "wom7web"}]}
+        return {"repos": [{"path": "w0m-web"}]}
     try:
         return json.loads(POLICY_PATH.read_text(encoding="utf-8"))
     except Exception as exc:

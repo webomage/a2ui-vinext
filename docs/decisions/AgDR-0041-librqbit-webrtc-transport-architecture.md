@@ -1,17 +1,26 @@
 ---
 id: AgDR-0041
 title: "librqbit WebRTC / WebTorrent Transport Architecture and Tauri Desktop Path"
+timestamp: 2026-10-22T18:00:00-05:00
+agent: antigravity
+model: claude-opus-4-6
+trigger: user-prompt
 status: accepted
 date: 2026-10-22
 deciders: ["owner", "agent:antigravity"]
 scope: oss
-repos: ["wom7web"]
+repos: ["w0m-web"]
+ticket: T438
 tickets: ["T437", "T438"]
 supersedes: []
 superseded_by:
 ---
 
 # AgDR-0041: librqbit WebRTC / WebTorrent Transport Architecture and Tauri Desktop Path
+
+## Y-statement
+
+> In the context of **native Apple Silicon (`darwin-arm64`) BitTorrent and WebTorrent desktop client modernization (`T437` / `T438`)**, facing **the `~180 MB` bundle size and `320–450 MB` idle RAM overhead of Electron + Node.js alongside `librqbit`'s lack of WebRTC DataChannel peer transport**, we decided for **keeping `T437` (Electron 33 + `node-datachannel`) as the immediate compatibility release while adopting a feature-gated pure-Rust WebRTC transport (`#[cfg(feature = "webrtc")]`) + Tauri v2 (`WKWebView`) architecture for `librqbit` (`T438`)**, and neglected **bundling C/C++ `libdatachannel` FFI into `rqbit` or maintaining Electron long-term**, to achieve **a `~14 MB` memory-safe Rust desktop client with opt-in WebTorrent swarming**, accepting **the maintenance cost of a dedicated `wss://` SDP tracker signaling and 16 KiB SCTP DataChannel framing layer**.
 
 ## Context
 

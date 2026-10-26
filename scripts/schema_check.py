@@ -25,7 +25,7 @@ from typing import Any
 
 HERE = Path(__file__).resolve()
 ROOT = HERE.parents[1]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 
 SKIP_DIRS = {
     "node_modules",
@@ -49,8 +49,8 @@ SKIP_DIRS = {
     "mob",
     "wom7authz",
     "wom7open",
-    "wom7pr",
-    "wom7skills",
+    "w0m-pr",
+    "w0m-skills",
 }
 
 SCHEMA_REF_RE = re.compile(r'"\$schema"\s*:\s*"([^"]+)"')

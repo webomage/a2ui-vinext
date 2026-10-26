@@ -4,7 +4,7 @@
 AC3 asks for one thing in particular, in the ticket's own words: *"a red probe must prove the
 check fails on today's `.agent/rules.md` (0 of 6) — a parity gate that passes on the known-bad
 case is worthless."* So the first case below runs the real parity function against the real,
-unmodified `wom7web/.agent/rules.md` and asserts it comes back at ZERO. If someone fixes that
+unmodified `w0m-web/.agent/rules.md` and asserts it comes back at ZERO. If someone fixes that
 file, this case fails and must be replaced by a frozen copy — the probe is deliberately bound to
 the artefact that motivated the gate, not to a synthetic string that always fails.
 
@@ -55,7 +55,7 @@ BAD = "agent-rules-2026-08-10-before.md"
 def red_probe_the_frozen_known_bad_file() -> None:
     """The artefact that motivated the whole ticket, frozen at 1,646 B.
 
-    This probe ran against the LIVE `wom7web/.agent/rules.md` until that file was rewritten to
+    This probe ran against the LIVE `w0m-web/.agent/rules.md` until that file was rewritten to
     6/6 — at which point it failed and said exactly what to do: *"if it was FIXED, freeze a copy
     of the original as the fixture"*. That is the fixture. Binding a red probe to a file you
     intend to repair guarantees the probe stops proving anything the moment you succeed; binding
@@ -81,7 +81,7 @@ def the_live_file_is_now_fixed() -> None:
     # `.agent/rules.md` to the directory `.agents/rules/*.md` (ide-policy.json's `tools.antigravity`
     # records the move). Not a regression — check the surface Antigravity actually reads today.
     r = ide_trace.parity(ide_trace.CANONICAL, ".agents/rules/*.md", RULES, DELEG)
-    assert r["present"], "wom7web/.agents/rules/*.md is gone — it is a declared Antigravity surface"
+    assert r["present"], "w0m-web/.agents/rules/*.md is gone — it is a declared Antigravity surface"
     assert not r["missing"], f"the live Antigravity surface regressed; missing {r['missing']}"
 
 
@@ -135,7 +135,7 @@ def name_alone_is_not_a_surface() -> None:
 def a_file_named_openspec_is_not_openspec_output() -> None:
     """The correction that cost the most: I widened the marker on a FILENAME.
 
-    Seeing `wom7mlx/.cursor/rules/openspec.md` reported as an unruled lookalike, I added an
+    Seeing `w0m-mlx/.cursor/rules/openspec.md` reported as an unruled lookalike, I added an
     `openspec*` glob and wrote "the earlier openspec layout" into the policy, the ticket, STATE.md
     and a commit message. It is hand-written — landed by a feature commit, pointing at a
     `specs/meta/` layout, in a repo with no `openspec/` directory, and the installed CLI contains
@@ -160,7 +160,7 @@ def delegation_satisfies_parity_only_when_the_chain_ENDS_somewhere_real() -> Non
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
         full = "\n".join(f"rule {n}" for n in RULES if not n.startswith("_"))
-        # a target carrying every rule — the wom7api → wom7web/CLAUDE.md shape
+        # a target carrying every rule — the w0m-api → w0m-web/CLAUDE.md shape
         (root / "CLAUDE.md").write_text("\n".join(
             [RULES[n].split("|")[0] for n in RULES if not n.startswith("_")]))
         (root / "good.md").write_text("Canonical conventions live in `CLAUDE.md`\n")
@@ -181,12 +181,12 @@ def delegation_satisfies_parity_only_when_the_chain_ENDS_somewhere_real() -> Non
         assert dead["delegated"] and dead["delegated"]["resolves"], "the target exists"
         assert not dead["delegated"]["satisfied"], (
             "delegating to a file that carries the rules no better than you do is delegation to "
-            "nowhere — wom7mlx's CLAUDE.md → AGENTS.md was exactly this, and it looked compliant")
+            "nowhere — w0m-mlx's CLAUDE.md → AGENTS.md was exactly this, and it looked compliant")
 
 
 def a_rules_directory_is_read_as_the_autoload() -> None:
     # Cursor and Windsurf load `.cursor/rules/*`, not a root file. Modelling every tool as one
-    # path made three of wom7mlx's declared surfaces report `[file absent]` against a path they
+    # path made three of w0m-mlx's declared surfaces report `[file absent]` against a path they
     # never open — measuring the wrong artefact and calling the result a finding.
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
@@ -211,7 +211,7 @@ def current_openspec_layout_marks_on_a_directory() -> None:
 
 
 def a_foreign_generator_still_makes_a_real_surface() -> None:
-    # wom7ext/.windsurf/workflows/speckit.* — GitHub Spec Kit. Not openspec's, and it autoloads
+    # w0m-ext/.windsurf/workflows/speckit.* — GitHub Spec Kit. Not openspec's, and it autoloads
     # exactly as hard. Reporting only openspec-generated surfaces would have missed it entirely.
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)
@@ -223,7 +223,7 @@ def a_foreign_generator_still_makes_a_real_surface() -> None:
 
 def an_empty_directory_autoloads_nothing() -> None:
     # `.github` is openspec's skillsDir for Copilot and exists in nearly every repo on earth.
-    # wom7ext/.github and wom7sec/.github are empty; reporting them would train people to ignore
+    # w0m-ext/.github and w0m-sec/.github are empty; reporting them would train people to ignore
     # this gate's output, which is how a real finding gets lost.
     with tempfile.TemporaryDirectory() as d:
         root = Path(d)

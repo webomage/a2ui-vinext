@@ -216,7 +216,7 @@ class TestPrepushRunner(unittest.TestCase):
         self.assertEqual(self.run_cmd("step-begin", "license-check", "--commit", self.commit_a).returncode, 0)
 
     def test_run_typecheck_bounded_concurrency_and_fixed_order(self):
-        web_root = ROOT / "wom7web"
+        web_root = ROOT / "w0m-web"
         # Pass case: prints all 5 apps in fixed package.json order (web, cp, demo, job, join)
         res_ok = self.run_cmd(
             "run-typecheck",
@@ -281,7 +281,7 @@ class TestHookMatchesRegistry(unittest.TestCase):
     """T503: a step registered in prepush_runner.py but absent from the hook is certified without ever running (`step-pass` is only reached through the
     hook), and a step in the hook that is not registered is invisible to `status`. Both directions, and the fast-ratchet step must run the registry's tier."""
 
-    HOOK = Path(__file__).resolve().parents[2] / "wom7web" / ".husky" / "pre-push"
+    HOOK = Path(__file__).resolve().parents[2] / "w0m-web" / ".husky" / "pre-push"
 
     def setUp(self):
         from prepush_runner import STEP_IDS

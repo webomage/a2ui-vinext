@@ -3,8 +3,8 @@
 
 `openspec init --tools` writes a SEPARATE instruction surface per IDE. The estate has been
 governing exactly one of them, and a second is already autoloading rules that contradict it:
-`wom7web/.agent/rules.md` is 1,646 B carrying **none** of CLAUDE.md's six non-negotiables, is
-byte-identical to wom7api's, and points at a `.env` that T119 deleted.
+`w0m-web/.agent/rules.md` is 1,646 B carrying **none** of CLAUDE.md's six non-negotiables, is
+byte-identical to w0m-api's, and points at a `.env` that T119 deleted.
 
 Four questions, in order:
 
@@ -20,7 +20,7 @@ Four questions, in order:
 
 🔴 **A surface is identified by its MARKER, never by its directory name.** This ticket's own
 filing got that wrong twice — it reported `servicios777/.kilocode` (a node package dir holding
-`@kilocode/plugin`, untracked) and `wom7ext/.agent` (untracked scratch, no rules.md) as IDE
+`@kilocode/plugin`, untracked) and `w0m-ext/.agent` (untracked scratch, no rules.md) as IDE
 surfaces because the names matched. The marker is openspec's own `opsx` command family, which it
 generates into every tool's skillsDir (`.claude/commands/opsx/`, `.agent/workflows/opsx-*.md`) —
 one content marker for all 31 tools, needing no per-tool knowledge that could go stale. A
@@ -49,7 +49,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve()
 ROOT = HERE.parent.parent                   # …/@wom
-CANONICAL = ROOT / "wom7web"                 # …/wom7web
+CANONICAL = ROOT / "w0m-web"                 # …/w0m-web
 SDLC = ROOT / ".w0m" / "sdlc.json"
 REGISTRY = ROOT / "project" / "policies" / "clients-policy.json"
 HOME = Path.home()
@@ -234,7 +234,7 @@ def read_autoload(root: Path, autoload: str | list) -> tuple[str | None, str]:
 
     Cursor and Windsurf load a rules DIRECTORY (`.cursor/rules/*.md`), not a root file, and Gemini
     reads both a root `GEMINI.md` and `.gemini/rules/`. Modelling every tool as a single path made
-    three of wom7mlx's four declared surfaces report `[file absent]` against a path they never
+    three of w0m-mlx's four declared surfaces report `[file absent]` against a path they never
     use — measuring the wrong artefact and calling it a finding. So an entry may be a path or a
     glob, and a list of them is concatenated: what the IDE loads is what gets checked.
     """
@@ -259,7 +259,7 @@ def delegates(start: Path, text: str, rules: dict, deleg: dict | None) -> dict |
     """Does this surface point at a file that carries the contract, instead of restating it?
 
     Satisfying a contract by REFERENCE is what the estate actually chose — five of six sibling
-    repos open with *"Canonical conventions live in `../wom7web/CLAUDE.md`"*, and wom7mlx points
+    repos open with *"Canonical conventions live in `../w0m-web/CLAUDE.md`"*, and w0m-mlx points
     at a local `AGENTS.md` hub *"that every agent (Claude, Cursor, Windsurf, Gemini) shares"*.
     A gate with no concept of that scores them all 1/6 and demands they duplicate the canonical
     text, which is the drift it exists to prevent.
@@ -269,7 +269,7 @@ def delegates(start: Path, text: str, rules: dict, deleg: dict | None) -> dict |
         defect in project/client-profile.json, where two declarations validated against nothing);
       • the TARGET must actually carry the rules. A chain that ends at a file which carries none
         of them is delegation to nowhere, which is how `.agent/rules.md` came to point at
-        `wom7web/.env` — a file T119 deleted. Followed one hop at a time, `max_hops` deep, with
+        `w0m-web/.env` — a file T119 deleted. Followed one hop at a time, `max_hops` deep, with
         cycle detection, because "read X" where X says "read Y" is a real shape here.
     """
     if not deleg:
@@ -505,10 +505,10 @@ def trace() -> tuple[dict, list[str], list[str]]:
                      "foreign": foreign, "autoload_only": loose, "name_only": nameonly,
                      "surfaces": surfaces, "parity": pars})
 
-    # 🔑 Two units can be ONE surface. `wom7api/.claude` and `wom7api/.agent` are SYMLINKS to
-    # wom7web's (set 2026-02-12, same shape as the shared justfile), so a per-unit scan reports one
+    # 🔑 Two units can be ONE surface. `w0m-api/.claude` and `w0m-api/.agent` are SYMLINKS to
+    # w0m-web's (set 2026-02-12, same shape as the shared justfile), so a per-unit scan reports one
     # directory twice and a per-unit parity failure twice. This is also the real explanation of
-    # T192's founding observation — `.agent/rules.md` was called "byte-identical to wom7api's, one
+    # T192's founding observation — `.agent/rules.md` was called "byte-identical to w0m-api's, one
     # repo's rules copied into the other". It was never a copy. Identical bytes had a STRUCTURAL
     # cause, and a gate that cannot see the link will keep proposing to fix it twice.
     shared: dict[str, list[str]] = {}

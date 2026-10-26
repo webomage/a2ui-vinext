@@ -14,7 +14,7 @@ WHY A FIXTURE
     Proving these red on the real estate means committing a real violation — a missing README, a
     `dotenv-load` in a tracked justfile, a manifest without `private: true`. So the whole scan is
     retargeted at a throwaway tree via `W0M_HYGIENE_ROOT`, the same hook `state_doctor.py` uses via
-    `W0M_STATE_MD`. The fixture stands in for `wom7web`; ROOT and the policy path derive from it
+    `W0M_STATE_MD`. The fixture stands in for `w0m-web`; ROOT and the policy path derive from it
     exactly as they do in the real layout.
 
 THE DISCIPLINE THIS FILE INHERITS (T135 AC7 · T174's review gate)
@@ -39,7 +39,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]    # …/@wom
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 SCRIPT = ROOT / "scripts" / "repo_hygiene.py"
 REAL_POLICY = ROOT / "project" / "policies" / "hygiene-policy.json"
 
@@ -62,7 +62,7 @@ if not SCRIPT.is_file():
 
 
 def run(root: Path, check_name: str) -> subprocess.CompletedProcess:
-    """Drive the gate against a fixture. `root` is the stand-in for wom7web."""
+    """Drive the gate against a fixture. `root` is the stand-in for w0m-web."""
     env = {**os.environ, "W0M_HYGIENE_ROOT": str(root)}
     return subprocess.run([sys.executable, str(SCRIPT), check_name],
                           capture_output=True, text=True, env=env)
@@ -98,8 +98,8 @@ def build_fixture(name: str) -> tuple[Path, Path]:
         json.dumps({"name": "repo-a", "private": True, "license": "UNLICENSED"}, indent=2))
     (repo / "justfile").write_text("hello:\n\techo hi\n")
 
-    # The corpus half of secrets-check reads `wom7skills/skills` relative to ROOT.
-    skill = base / "wom7skills" / "skills" / "demo"
+    # The corpus half of secrets-check reads `w0m-skills/skills` relative to ROOT.
+    skill = base / "w0m-skills" / "skills" / "demo"
     skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text(
         "# demo\n\nRuns with `infisical run --env=beta --` and reads $API_KEY from the injected env.\n")
@@ -211,7 +211,7 @@ check("an EMPTY scan_globs refuses to pass on 'ran nothing'", r.returncode != 0,
 check("...and says it scanned 0 files", "scanned 0" in out(r), out(r)[-300:])
 
 web, repo = build_fixture("secrets-corpus")
-(TMP / "secrets-corpus" / "wom7skills" / "skills" / "demo" / "SKILL.md").write_text(
+(TMP / "secrets-corpus" / "w0m-skills" / "skills" / "demo" / "SKILL.md").write_text(
     "# demo\n\nExport $DATABASE_PASSWORD directly into the shell before running.\n")
 r = run(web, "secrets")
 check("a skill CONSUMING a secret without naming the manager fails", r.returncode != 0, f"rc={r.returncode}")

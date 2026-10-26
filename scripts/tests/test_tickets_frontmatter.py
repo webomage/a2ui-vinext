@@ -24,7 +24,7 @@ from pathlib import Path
 from unittest import mock
 
 MONO_ROOT = Path(__file__).resolve().parents[2]
-WEB_ROOT = MONO_ROOT / "wom7web"
+WEB_ROOT = MONO_ROOT / "w0m-web"
 
 sys.path.insert(0, str(MONO_ROOT / "scripts"))
 

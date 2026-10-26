@@ -7,7 +7,7 @@ non-negotiable rules. Both inspect the working checkout. Neither asks the questi
     🔑 is that surface REACHABLE in the context the agent actually runs in?
 
 Orca is not an ADE with its own rules — it is a RUNNER. It provisions a git worktree and executes a
-CLI agent (`opencode`) inside it (`wom7web/ORCA_INTEGRATION.md`). A worktree contains TRACKED files
+CLI agent (`opencode`) inside it (`w0m-web/ORCA_INTEGRATION.md`). A worktree contains TRACKED files
 only, so a rule surface reaches it iff:
 
   1. git tracks it, AND
@@ -19,7 +19,7 @@ one that was never given it. That is the difference between "the rules are writt
 agent read them", and only the second one governs anything.
 
 Computed statically from git — no worktree is created — and validated against real worktrees of
-wom7web and wom7api on 2026-08-29.
+w0m-web and w0m-api on 2026-08-29.
 """
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ import subprocess
 import sys
 
 ESTATE = pathlib.Path(__file__).resolve().parents[1]
-REPO = ESTATE / "wom7web"
+REPO = ESTATE / "w0m-web"
 POLICY = ESTATE / "project" / "policies" / "ide-policy.json"
 SDLC = ESTATE / ".w0m" / "sdlc.json"
 
@@ -72,12 +72,12 @@ def reachable_in_worktree(repo: pathlib.Path, rel: str) -> tuple[str, str]:
                                f"ONLY if the worktree is placed beside it, and dangles anywhere else")
         return "reach", f"symlink inside the repo ({n} tracked)"
     # 🔴 Reaching the worktree is not the same as reaching it WHOLE. A directory surface can be
-    # tracked and still deliver a fraction of itself: measured 2026-08-29, wom7web/.agent holds
+    # tracked and still deliver a fraction of itself: measured 2026-08-29, w0m-web/.agent holds
     # 1,644 files on disk and git carries 515 — an Antigravity agent in a worktree gets the
     # directory and 31% of the rules in it. Partial delivery is the same failure as none, quieter.
     if p.is_dir():
         # 🔴 Compare against untracked-and-NOT-IGNORED only. A first version counted every file on
-        # disk and reported wom7web/.agent as 31% delivered — all 1,129 "missing" files were
+        # disk and reported w0m-web/.agent as 31% delivered — all 1,129 "missing" files were
         # `.agent/deployments/` build logs, deliberately gitignored. Deliberate exclusion is not a
         # delivery failure, and a gate that calls it one is the kind nobody reads for long.
         stray = [x for x in git(repo, "ls-files", "--others", "--exclude-standard", "--", rel).splitlines() if x]
@@ -139,8 +139,8 @@ def main() -> int:
 
     # ── delegation targets ──────────────────────────────────────────────────────────────────
     # 🔑 The estate satisfies the contract by POINTING: five of six repos open with "Canonical
-    # conventions live in ../wom7web/CLAUDE.md", and `ide-trace` correctly counts that as carrying
-    # the rules. It does — for an agent in the normal checkout. In a WORKTREE `../wom7web/` does not
+    # conventions live in ../w0m-web/CLAUDE.md", and `ide-trace` correctly counts that as carrying
+    # the rules. It does — for an agent in the normal checkout. In a WORKTREE `../w0m-web/` does not
     # exist, so the agent gets the 1-2 rules its own file states plus a pointer to nothing. This is
     # the estate's deliberate design failing silently in the one context Orca creates.
     import re
@@ -155,8 +155,8 @@ def main() -> int:
             if not f.exists():
                 continue
             for m in set(ESCAPE.findall(f.read_text(encoding="utf-8", errors="replace"))):
-                # Skip a file naming its OWN path. wom7web/CLAUDE.md is the canonical file and
-                # quotes `../wom7web/CLAUDE.md` when telling sibling repos where to point — that
+                # Skip a file naming its OWN path. w0m-web/CLAUDE.md is the canonical file and
+                # quotes `../w0m-web/CLAUDE.md` when telling sibling repos where to point — that
                 # resolves to itself, so reporting it as a broken delegation is a false finding.
                 if (repo / m).resolve() == f.resolve():
                     continue

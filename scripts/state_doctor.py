@@ -36,12 +36,12 @@ WHY THE STALENESS RULE IGNORES TRANSIENT FACTS (AC5 — the load-bearing subtlet
 
     ⚠️ I got this wrong once inside this file. The first version excluded HEAD for that reason and
     then made the DIRTY-REPO SET blocking — which is transient in exactly the same way: `state-save`
-    records "wom7web is dirty", you commit, the set changes, and save → commit → push can never
+    records "w0m-web is dirty", you commit, the set changes, and save → commit → push can never
     pass. Dirtiness and unpushed counts are now RENDERED but never COMPARED.
 
     BLOCKING (material — only moves when the handoff is genuinely wrong):
         gate exit codes · rowless-OPEN ticket set · repo set · top-10 hot ORDER ·
-        wom7web ancestry + >10 commit distance
+        w0m-web ancestry + >10 commit distance
     RENDERED ONLY (transient):
         dirty counts · unpushed counts · per-repo HEADs · hot-list scores
 """
@@ -61,13 +61,13 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
     for parent in [cur] + list(cur.parents):
         if (parent / ".tasks").is_dir() and (parent / ".w0m").is_dir():
             return parent
-        if (parent / ".git").exists() and (parent / "wom7web").is_dir():
+        if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return Path(__file__).resolve().parents[1]
 
 
 MONO_ROOT = find_workspace_root()
-WEB_ROOT = MONO_ROOT / "wom7web"
+WEB_ROOT = MONO_ROOT / "w0m-web"
 import os
 # Overridable so the gate can be driven against a FIXTURE file. AC9 requires proving this
 # check RED — hand-edit a recorded exit code, observe exit 1 — which cannot be done against
@@ -118,7 +118,7 @@ def repo_facts(rel: str) -> dict | None:
     _, porcelain = sh(["git", "status", "--porcelain"], repo)
     dirty = len([l for l in porcelain.splitlines() if l.strip()])
     # `git log @{u}..` returns 0 SPURIOUSLY when no upstream is configured — it errors instead of
-    # reporting, which is how wom7mlx read as "0 unpushed" while holding 3. Always name the remote
+    # reporting, which is how w0m-mlx read as "0 unpushed" while holding 3. Always name the remote
     # ref explicitly, and record when there is no upstream so the number can be read honestly.
     rc_up, _ = sh(["git", "rev-parse", "--abbrev-ref", "@{u}"], repo)
     rc, out = sh(["git", "log", "--oneline", f"origin/{branch}..HEAD"], repo)
@@ -909,7 +909,7 @@ def recorded(text: str) -> dict | None:
 
 
 def ancestry_drift(rec_head: str) -> str | None:
-    """None = fine. Otherwise the reason wom7web's recorded head is materially wrong.
+    """None = fine. Otherwise the reason w0m-web's recorded head is materially wrong.
 
     Two distinct failures, and they are not the same thing:
       * NOT AN ANCESTOR — the recorded commit is not in current history at all, so the file
@@ -918,7 +918,7 @@ def ancestry_drift(rec_head: str) -> str | None:
     """
     rc, _ = sh(["git", "merge-base", "--is-ancestor", rec_head, "HEAD"], WEB_ROOT)
     if rc != 0:
-        return (f"recorded wom7web head `{rec_head}` is NOT an ancestor of HEAD — STATE.md describes "
+        return (f"recorded w0m-web head `{rec_head}` is NOT an ancestor of HEAD — STATE.md describes "
                 "a diverged or rewritten branch")
     rc, out = sh(["git", "rev-list", "--count", f"{rec_head}..HEAD"], WEB_ROOT)
     if rc == 0 and out.isdigit() and int(out) > MAX_COMMIT_DRIFT:
@@ -987,7 +987,7 @@ def check() -> tuple[list[str], dict]:
     # 3. The dirty-repo set is INFORMATIONAL, never blocking.
     #
     # 🔴 This was blocking in the first version and it was wrong for the same reason raw HEAD
-    # comparison is wrong: dirtiness is TRANSIENT. `state-save` records "wom7web is dirty", you then
+    # comparison is wrong: dirtiness is TRANSIENT. `state-save` records "w0m-web is dirty", you then
     # commit, and the set changes — so the save → commit → push sequence could never pass. The rule
     # written to avoid an always-red gate reintroduced one via a different transient fact.
     # Blocking facts must be ones that change only when the HANDOFF genuinely goes out of date.
@@ -1016,7 +1016,7 @@ def check() -> tuple[list[str], dict]:
         problems.append("top-10 hot list is out of date (" + " · ".join(detail) + ")")
 
     # 6. ancestry / distance for the repo that OWNS this file
-    rec_head = rec.get("repos", {}).get("wom7web", {}).get("head")
+    rec_head = rec.get("repos", {}).get("w0m-web", {}).get("head")
     if rec_head:
         drift = ancestry_drift(rec_head)
         if drift:

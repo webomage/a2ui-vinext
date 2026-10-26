@@ -1,7 +1,7 @@
 # Serena project configuration — VERSIONED (T166 / T172).
 # Authoritative umbrella config for sessions rooted at @wom (casualuser/w0m).
-# Its language_servers list MUST equal the exact union of member repo configs (wom7web ∪ wom7api),
-# enforced by wom7web/project/scripts/serena_config_check.py (T172).
+# Its language_servers list MUST equal the exact union of member repo configs (w0m-web ∪ w0m-api),
+# enforced by w0m-web/project/scripts/serena_config_check.py (T172).
 # ⚠️ serena MIGRATED this file in place on 2026-08-06 and 2026-08-13 (D33), stripping its header.
 #    serena_config_check.py (T172) enforces that this governance header remains present.
 # the name by which the project can be referenced within Serena/when chatting with the LLM.

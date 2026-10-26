@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REGISTRY = ROOT / "wom7web" / "project" / "co-tenancy.json"
+REGISTRY = ROOT / "w0m-web" / "project" / "co-tenancy.json"
 
 
 def staged_files() -> list[str]:

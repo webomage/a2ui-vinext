@@ -1,4 +1,4 @@
-"""Tests for T212: Portable w0m Core CLI Toolchain & just Recipe Distribution via wom7skills Plugin."""
+"""Tests for T212: Portable w0m Core CLI Toolchain & just Recipe Distribution via w0m-skills Plugin."""
 
 from __future__ import annotations
 
@@ -14,11 +14,11 @@ import pytest
 
 # scripts/tests/test_t212_portable_toolchain.py -> estate root is 2 parents up
 ESTATE_ROOT = Path(__file__).resolve().parents[2]
-WOM7SKILLS_ROOT = ESTATE_ROOT / "wom7skills"
-PORTABLE_CLI = WOM7SKILLS_ROOT / "tools" / "w0m_portable_cli.py"
-TEMPLATE_JUST = WOM7SKILLS_ROOT / "templates" / "w0m.just"
-TS_CLI = WOM7SKILLS_ROOT / "src" / "cli.ts"
-W0M_SKILL_CLI = WOM7SKILLS_ROOT / "w0m_skill.ts"
+W0M_SKILLS_ROOT = ESTATE_ROOT / "w0m-skills"
+PORTABLE_CLI = W0M_SKILLS_ROOT / "tools" / "w0m_portable_cli.py"
+TEMPLATE_JUST = W0M_SKILLS_ROOT / "templates" / "w0m.just"
+TS_CLI = W0M_SKILLS_ROOT / "src" / "cli.ts"
+W0M_SKILL_CLI = W0M_SKILLS_ROOT / "w0m_skill.ts"
 BRIDGEROAD_ROOT = Path("/home/aleksei/Projects/!proj/bridgeroad")
 
 
@@ -53,8 +53,8 @@ def test_t212_ac1_template_just_exists_and_has_no_monorepo_hardcoding() -> None:
     for recipe in ("tasks", "sync-tickets", "skill-check", "state-bounds", "w0m-status"):
         assert f"{recipe}" in content, f"Missing recipe {recipe} in templates/w0m.just"
 
-    # Must not hardcode the 7-repo w0m estate member names or casualuser/wom7*
-    forbidden = ("wom7web", "wom7api", "wom7func", "wom7ext", "wom7sec", "wom7mlx", "casualuser/wom7")
+    # Must not hardcode the 7-repo w0m estate member names or retired wom7* names
+    forbidden = ("w0m-web", "w0m-api", "w0m-cf", "w0m-ext", "w0m-sec", "w0m-mlx", "wom7web", "wom7api", "wom7func", "wom7ext", "wom7sec", "wom7mlx", "casualuser/wom7")  # retired wom7* names
     for token in forbidden:
         assert token not in content, f"templates/w0m.just must not hardcode '{token}'"
 
@@ -64,26 +64,26 @@ def test_t212_ac2_portable_cli_has_no_monorepo_hardcoding() -> None:
     assert PORTABLE_CLI.is_file(), f"Missing {PORTABLE_CLI}"
     content = PORTABLE_CLI.read_text(encoding="utf-8")
 
-    forbidden = ("wom7web", "wom7api", "wom7func", "wom7ext", "wom7sec", "wom7mlx", "casualuser/wom7")
+    forbidden = ("w0m-web", "w0m-api", "w0m-cf", "w0m-ext", "w0m-sec", "w0m-mlx", "wom7web", "wom7api", "wom7func", "wom7ext", "wom7sec", "wom7mlx", "casualuser/wom7")  # retired wom7* names
     for token in forbidden:
         assert token not in content, f"w0m_portable_cli.py must not hardcode '{token}'"
 
 
 def test_t212_ac3_claude_plugin_manifests_expose_commands() -> None:
-    """AC3: wom7skills plugin manifests register commands/status.md, sync-tickets.md, tasks.md."""
+    """AC3: w0m-skills plugin manifests register commands/status.md, sync-tickets.md, tasks.md."""
     expected_commands = [
         "./commands/status.md",
         "./commands/sync-tickets.md",
         "./commands/tasks.md",
     ]
     for rel_cmd in expected_commands:
-        cmd_file = WOM7SKILLS_ROOT / rel_cmd[2:]
+        cmd_file = W0M_SKILLS_ROOT / rel_cmd[2:]
         assert cmd_file.is_file(), f"Missing command markdown file: {cmd_file}"
         text = cmd_file.read_text(encoding="utf-8")
         assert text.startswith("---\n"), f"Command file {cmd_file} must have YAML frontmatter"
 
     for manifest_rel in (".claude-plugin/plugin.json", "plugin.json"):
-        manifest_path = WOM7SKILLS_ROOT / manifest_rel
+        manifest_path = W0M_SKILLS_ROOT / manifest_rel
         assert manifest_path.is_file(), f"Missing {manifest_path}"
         manifest: Any = json.loads(manifest_path.read_text(encoding="utf-8"))
         assert manifest.get("commands") == expected_commands, (
@@ -216,7 +216,7 @@ def test_t212_ac4_and_ac5_client_project_install_and_just_execution(tmp_path: Pa
     # Run `tsx src/cli.ts init-tools --project <client_repo>` (AC4)
     init_res = subprocess.run(
         ["pnpm", "exec", "tsx", str(TS_CLI), "init-tools", "--project", str(client_repo)],
-        cwd=WOM7SKILLS_ROOT,
+        cwd=W0M_SKILLS_ROOT,
         env=env,
         capture_output=True,
         text=True,
@@ -231,7 +231,7 @@ def test_t212_ac4_and_ac5_client_project_install_and_just_execution(tmp_path: Pa
     # Re-running init-tools via w0m_skill.ts is idempotent and does not duplicate the import line
     init_res2 = subprocess.run(
         ["pnpm", "exec", "tsx", str(W0M_SKILL_CLI), "init-tools", "--project", str(client_repo)],
-        cwd=WOM7SKILLS_ROOT,
+        cwd=W0M_SKILLS_ROOT,
         env=env,
         capture_output=True,
         text=True,
@@ -351,3 +351,22 @@ def test_t212_ac5_readonly_discovery_against_real_bridgeroad_client_repo() -> No
     payload: Any = json.loads(res.stdout)
     assert Path(payload["project_root"]).resolve() == BRIDGEROAD_ROOT.resolve()
     assert payload["state_bounds"]["ok"] is True
+
+
+def test_t567_ac6_unified_w0m_cli_subcommands_replace_k7_tuis(tmp_path: Path) -> None:
+    """T567 AC6: Verify `w0m` CLI subcommands (`vm`, `k8s`, `cloud`, `llm`, `spec`, `notify`) work cleanly."""
+    env = _env_with_brew()
+    for subcmd in ("vm", "k8s", "cloud", "llm", "spec", "notify"):
+        res = subprocess.run(
+            ["python3", str(PORTABLE_CLI), "--project", str(tmp_path), subcmd, "--json"],
+            cwd=tmp_path,
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert res.returncode == 0, f"w0m {subcmd} failed: {res.stderr}\n{res.stdout}"
+        payload: Any = json.loads(res.stdout)
+        assert payload["ok"] is True
+        assert payload["subcommand"] == subcmd
+

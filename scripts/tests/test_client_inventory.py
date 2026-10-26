@@ -22,7 +22,7 @@ import json, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEB = ROOT / "wom7web"
+WEB = ROOT / "w0m-web"
 
 # 🔑 Corpus assertions are read from the REGISTRY, never hardcoded. Onboarding servicios777 and
 # personaje0 (T182 AC7) broke four suites at once because each asserted a fixed project set — a
@@ -93,11 +93,10 @@ check("1945 has deploys disabled with reason",
       and "Owner-write-only" in by_id["1945"]["services"].get("deploys", {}).get("reason", ""))
 check("bridgeroad role is self-managed with 4 enabled services",
       by_id["bridgeroad"]["role"] == "self-managed" and by_id["bridgeroad"].get("services_enabled") == 4)
-# `skills` was one of 1945's 5 "divergent" keys until the estate adopted its shape (T182), so
-# 1945 now has 4 extras — a divergence closed by CONVERGING, not by retiring the key.
-check("1945 reports 4 divergent keys and no $schema",
-      len(by_id["1945"]["declaration"]["extra"]) == 4
-      and by_id["1945"]["declaration"]["has_schema"] is False)
+# 1945 was remediated to full client-profile conformance in T279/T280 (0 divergent keys, $schema present).
+check("1945 reports 0 divergent keys and has $schema",
+      len(by_id["1945"]["declaration"]["extra"]) == 0
+      and by_id["1945"]["declaration"]["has_schema"] is True)
 # T182 AC9: every shared client gap must be accounted for in client-profile.json
 profile_data = json.loads((WEB / "project" / "client-profile.json").read_text())
 accounted = set(profile_data.get("keys", {})) | set(profile_data.get("excluded", {}))
@@ -148,11 +147,11 @@ check("artemio now matches the estate layout — 56 governed, 56 symlinks + 10 r
       and by_id["artemio"]["skills"]["claude_skills"]["real_dirs"] == 10)
 
 # ── red probes: every integrity check observed FAILING ─────────────────────────
-# The subdirectory trap. `project/` sits inside wom7web, a real repo — git answers about
+# The subdirectory trap. `project/` sits inside w0m-web, a real repo — git answers about
 # the parent. Measuring it would look authoritative and describe nothing declared.
 sub = dict(base)
 sub["projects"] = projects(base)
-sub["projects"][0]["root"] = "wom7web/project"
+sub["projects"][0]["root"] = "w0m-web/project"
 code, out = run(write("subdir.json", sub))
 check("SUBDIRECTORY root hard-fails (does not measure the parent repo)", code == 2)
 check("  …and the error names it as a subdirectory",
@@ -203,7 +202,7 @@ ws_non_repo.mkdir(exist_ok=True)
 if not (ws_non_repo / "web").exists():
     (ws_non_repo / "web").symlink_to(WEB)
 if not (ws_non_repo / "api").exists():
-    (ws_non_repo / "api").symlink_to(WEB.parent / "wom7api")
+    (ws_non_repo / "api").symlink_to(WEB.parent / "w0m-api")
 
 def ws_project(**over):
     """A workspace-shaped entry pointing at a real non-repo workspace root."""

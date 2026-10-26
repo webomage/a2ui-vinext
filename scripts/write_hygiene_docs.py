@@ -72,7 +72,7 @@ BRANCH = "beta"
 # no build interface at all, that is stated rather than papered over.
 
 REPO_FACTS: dict[str, dict] = {
-    "wom7web": {
+    "w0m-web": {
         "what": "the canonical monorepo — five Astro apps plus the shared packages, "
         "and the home of the SDLC tracking surfaces (`TASKS.md`, `ROADMAP.md`, "
         "`TECH-DEBT.md`, `openspec/`, `project/tickets/`)",
@@ -101,14 +101,14 @@ REPO_FACTS: dict[str, dict] = {
             "`core.hooksPath` is redirected to `.husky/_` here — and **only** here. "
             "`.git/hooks/pre-commit` in this repo is inert; do not read it and "
             "conclude anything about what runs.",
-            "The `justfile` is a **symlink** to `wom7api/justfile`, the canonical one. "
+            "The `justfile` is a **symlink** to `w0m-api/justfile`, the canonical one. "
             "Edit it there.",
         ],
     },
-    "wom7api": {
+    "w0m-api": {
         "what": "the API tier — the Cloudflare worker plus the Supabase edge functions, "
         "migrations and Drizzle schema. It owns the **canonical `justfile`** that "
-        "`wom7web` and `wom7func` symlink to",
+        "`w0m-web` and `w0m-cf` symlink to",
         "gates": [
             "gitleaks",
             "osv-scanner",
@@ -135,7 +135,7 @@ REPO_FACTS: dict[str, dict] = {
             "Running `deno install` at the root clobbers the pnpm `node_modules`.",
         ],
     },
-    "wom7func": {
+    "w0m-cf": {
         "what": "the Cloudflare Workflows worker — the durable, long-running half of the "
         "platform, deployed separately from the API worker",
         "gates": [
@@ -153,12 +153,12 @@ REPO_FACTS: dict[str, dict] = {
             ("just deploy", "deploy via wrangler — outward-facing, confirm first"),
         ],
         "notes": [
-            "The `justfile` is a **symlink** to `wom7api/justfile`. Edit it there.",
+            "The `justfile` is a **symlink** to `w0m-api/justfile`. Edit it there.",
             "Worker secrets are write-only: you can set one but never read it back, so "
             "the only way to verify a secret landed is a behavioural check.",
         ],
     },
-    "wom7skills": {
+    "w0m-skills": {
         "what": "the canonical agent-skills library and its TypeScript toolchain (T127). "
         "Skills are edited **here** and synced outward; the copies installed in "
         "other repos are generated",
@@ -179,14 +179,14 @@ REPO_FACTS: dict[str, dict] = {
         "notes": [
             "**Never edit an installed skill copy.** Edit the canonical one under "
             "`skills/`, then sync. An edit to a copy is overwritten without warning.",
-            "The recipes live in the canonical `wom7api/justfile` and `cd` back here "
-            "themselves, which is why the hooks invoke them from `../wom7api`.",
+            "The recipes live in the canonical `w0m-api/justfile` and `cd` back here "
+            "themselves, which is why the hooks invoke them from `../w0m-api`.",
             "`ruff` was retired from this repo's hook stack in T135: `git ls-files "
             "'*.py'` returns **0**, so it could never fire. A wrong-stack linter reads "
             "as coverage while checking nothing.",
         ],
     },
-    "wom7ext": {
+    "w0m-ext": {
         "what": "the browser extension — LinkedIn and Upwork integration, AI-assisted. "
         "There are **two** extension surfaces: `extension/` (tracked, gated) and "
         "`extension-ff/` (gitignored, zero tracked files)",
@@ -219,7 +219,7 @@ REPO_FACTS: dict[str, dict] = {
             "dead message handlers, not annotation work — they have their own ticket.",
         ],
     },
-    "wom7sec": {
+    "w0m-sec": {
         "what": "the security / code-audit toolchain — a standalone scanner that audits "
         "*other* repos. **Early-stage**: `src/` and `specs/` are still empty",
         "gates": [
@@ -247,7 +247,7 @@ REPO_FACTS: dict[str, dict] = {
             "moment it grows one.",
         ],
     },
-    "wom7mlx/wom7mlx": {
+    "w0m-mlx/w0m-mlx": {
         "what": "`wom7-mlx-rs` — the Rust port of the MLX multimodal serving stack "
         "(Gemma 4 on Apple Silicon), built on `mlx-rs`",
         "gates": [
@@ -265,7 +265,7 @@ REPO_FACTS: dict[str, dict] = {
             ("just serve-gpu", "serve the model on the GPU (port 1340)"),
         ],
         "notes": [
-            "⚠️ **This repo is the INNER directory.** The outer `wom7mlx/` is a workspace "
+            "⚠️ **This repo is the INNER directory.** The outer `w0m-mlx/` is a workspace "
             "of upstream clones and is **not a git repo**. Measuring at the outer level "
             "is a mistake this estate has made repeatedly — it once reported *'this repo "
             "has zero hooks'* when it has six.",
@@ -464,7 +464,7 @@ Work on **`{BRANCH}`**. ⚠️ More than one agent commits to this branch, so
 **`git pull` before you start and before you push** — a stale local branch is
 the most common source of avoidable conflict here.
 
-If the work maps to a ticket (`T##` in `wom7web/TASKS.md`), run it through the
+If the work maps to a ticket (`T##` in `w0m-web/TASKS.md`), run it through the
 **w0m SDLC gates** rather than editing ad hoc:
 
 ```
@@ -477,7 +477,7 @@ code. Update the tracking surfaces **in the same commit as the work** — a stal
 row misleads whoever picks it up next.
 
 *(Client and non-w0m projects do not use these gates — see
-`wom7skills/GENERIC-SDLC-SET.md`.)*
+`w0m-skills/GENERIC-SDLC-SET.md`.)*
 
 ## Commands
 
@@ -548,9 +548,9 @@ Record both exit codes. A check with only a green run recorded does not ship.
 
 - `README.md` — what this repo is and how to run it
 - `CLAUDE.md` / `AGENTS.md` — the agent-facing conventions (where present)
-- `wom7web/TASKS.md` — the live queue; the `T##` row is status-of-record
-- `wom7web/TECH-DEBT.md` — decided debt; delete the rows your ticket pays down
-- `wom7web/openspec/` — specs and in-flight changes
+- `w0m-web/TASKS.md` — the live queue; the `T##` row is status-of-record
+- `w0m-web/TECH-DEBT.md` — decided debt; delete the rows your ticket pays down
+- `w0m-web/openspec/` — specs and in-flight changes
 """
 
 
@@ -651,9 +651,9 @@ def main(argv: list[str] | None = None) -> int:
     for repo in repos:
         facts = REPO_FACTS[repo]
         for name, render in GENERATED.items():
-            # T433 / T52 / AgDR-0047: wom7sec/SECURITY.md is the canonical estate Vulnerability
+            # T433 / T52 / AgDR-0047: w0m-sec/SECURITY.md is the canonical estate Vulnerability
             # Disclosure Policy + T52 password policy mirror and is authored directly.
-            if repo == "wom7sec" and name == "SECURITY.md":
+            if repo == "w0m-sec" and name == "SECURITY.md":
                 continue
             target = estate / repo / name
             body = render(repo, facts)
