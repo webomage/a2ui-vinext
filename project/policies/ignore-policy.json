@@ -23,6 +23,7 @@
     "wom7web": [
       ".gitignore",
       ".graphifyignore",
+      ".ignore",
       ".prettierignore",
       ".mcpignore",
       "apps/web/.gitignore",
@@ -177,12 +178,6 @@
         "path": ".turbo/",
         "count": 18,
         "note": "Turborepo cache, tracked despite `.turbo/`. Reported as an Obsidian/Quartz divergence before the real cause was found."
-      },
-      {
-        "repo": "wom7web",
-        "path": "scratch/",
-        "count": 5,
-        "note": "Includes scratch/Someone_Awesome_CV.md."
       },
       {
         "repo": "wom7web",

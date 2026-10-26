@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 45 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **45** are
+> ⚠️ **0 of 39 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **39** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -43,13 +43,13 @@
 | 1 | [T509](/home/aleksei/Projects/!self/w0m/.tasks/T509.md) | [#509](https://github.com/webomage/wom7board/issues/509) | P1 | in-progress | sdlc | 9/17 | `█████░░░░░` 53% | — | Root-first layout: finish the T414 move in staged units, beh |
 | 2 | [T567](/home/aleksei/Projects/!self/w0m/.tasks/T567.md) | ⚠️ not mirrored | P1 | in-progress | tools | 2/6 | `███░░░░░░░` 33% | 🔴 [T509](/home/aleksei/Projects/!self/w0m/.tasks/T509.md) | Rebrand wom7*/k7* to w0m-* and migrate all estate repositori |
 | 3 | [T491](/home/aleksei/Projects/!self/w0m/.tasks/T491.md) | [#491](https://github.com/webomage/wom7board/issues/491) | P2 | queued | tools | 1/5 | `██░░░░░░░░` 20% | — | Name the Cloudflare repo by its content, then rename it once |
-| 4 | [T518](/home/aleksei/Projects/!self/w0m/.tasks/T518.md) | [#518](https://github.com/webomage/wom7board/issues/518) | P3 | queued | product | 1/6 | `██░░░░░░░░` 17% | — | Group C, seven scripts waiting on an owner decision: the new |
-| 5 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | — | Purge .env.bak from wom7web git history |
-| 6 | [T28](/home/aleksei/Projects/!self/w0m/.tasks/T28.md) | [#28](https://github.com/webomage/wom7board/issues/28) | P2 | queued | infra | 0/2 | `░░░░░░░░░░` 0% | — | @webomage.com mailbox provisioning |
-| 7 | [T70](/home/aleksei/Projects/!self/w0m/.tasks/T70.md) | [#70](https://github.com/webomage/wom7board/issues/70) | P2 | queued | schemas | 0/5 | `░░░░░░░░░░` 0% | — | DB collation-version refresh |
-| 8 | [T109](/home/aleksei/Projects/!self/w0m/.tasks/T109.md) | [#109](https://github.com/webomage/wom7board/issues/109) | P2 | queued | knowledge | 0/5 | `░░░░░░░░░░` 0% | — | Research: knowledge integration — make the .md corpus RAG/sk |
-| 9 | [T128](/home/aleksei/Projects/!self/w0m/.tasks/T128.md) | [#128](https://github.com/webomage/wom7board/issues/128) | P2 | queued | knowledge | 0/8 | `░░░░░░░░░░` 0% | — | wom7skills library revision + architecture/flows/schemas doc |
-| 10 | [T132](/home/aleksei/Projects/!self/w0m/.tasks/T132.md) | [#132](https://github.com/webomage/wom7board/issues/132) | P2 | queued | skills | 0/7 | `░░░░░░░░░░` 0% | — | w0m-pixel-clone — a lightweight pixel-perfect parse-and-copy |
+| 4 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | — | Purge .env.bak from wom7web git history |
+| 5 | [T28](/home/aleksei/Projects/!self/w0m/.tasks/T28.md) | [#28](https://github.com/webomage/wom7board/issues/28) | P2 | queued | infra | 0/2 | `░░░░░░░░░░` 0% | — | @webomage.com mailbox provisioning |
+| 6 | [T70](/home/aleksei/Projects/!self/w0m/.tasks/T70.md) | [#70](https://github.com/webomage/wom7board/issues/70) | P2 | queued | schemas | 0/5 | `░░░░░░░░░░` 0% | — | DB collation-version refresh |
+| 7 | [T109](/home/aleksei/Projects/!self/w0m/.tasks/T109.md) | [#109](https://github.com/webomage/wom7board/issues/109) | P2 | queued | knowledge | 0/5 | `░░░░░░░░░░` 0% | — | Research: knowledge integration — make the .md corpus RAG/sk |
+| 8 | [T128](/home/aleksei/Projects/!self/w0m/.tasks/T128.md) | [#128](https://github.com/webomage/wom7board/issues/128) | P2 | queued | knowledge | 0/8 | `░░░░░░░░░░` 0% | — | wom7skills library revision + architecture/flows/schemas doc |
+| 9 | [T132](/home/aleksei/Projects/!self/w0m/.tasks/T132.md) | [#132](https://github.com/webomage/wom7board/issues/132) | P2 | queued | skills | 0/7 | `░░░░░░░░░░` 0% | — | w0m-pixel-clone — a lightweight pixel-perfect parse-and-copy |
+| 10 | [T171](/home/aleksei/Projects/!self/w0m/.tasks/T171.md) | [#171](https://github.com/webomage/wom7board/issues/171) | P2 | queued | sdlc | 0/8 | `░░░░░░░░░░` 0% | — | w0m planner/scheduler for batched Claude Code tasks in dev s |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/batch-b` | 0 | **n/a — NO UPSTREAM** | `d0657748` |
-| `wom7api` | `agent/batch-b` | 0 | **n/a — NO UPSTREAM** | `67eb643` |
-| `wom7func` | `agent/batch-b` | 0 | **n/a — NO UPSTREAM** | `f2790af` |
-| `wom7skills` | `agent/batch-b` | 0 | **n/a — NO UPSTREAM** | `8b1244d` |
-| `wom7ext` | `agent/batch-b` | 0 | **n/a — NO UPSTREAM** | `afe29aa` |
-| `wom7sec` | `agent/batch-b` | 0 | **n/a — NO UPSTREAM** | `44912de` |
-| `wom7mlx/wom7mlx` | `agent/batch-b` | 0 | **n/a — NO UPSTREAM** | `26843d8` |
+| `wom7web` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `bdb7e36b` |
+| `wom7api` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `f89b362` |
+| `wom7func` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `b516c39` |
+| `wom7skills` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `8b1244d` |
+| `wom7ext` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `afe29aa` |
+| `wom7sec` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `44912de` |
+| `wom7mlx/wom7mlx` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `26843d8` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 45 open · 572 TASKS.md rows · 217/572 specced (5/45 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 39 open · 572 TASKS.md rows · 217/572 specced (5/39 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T509","T567","T17","T28","T70","T109","T128","T132","T171","T181"],"repos":{"wom7api":{"branch":"agent/batch-b","dirty":0,"has_upstream":true,"head":"67eb643","unpushed":null},"wom7ext":{"branch":"agent/batch-b","dirty":0,"has_upstream":true,"head":"afe29aa","unpushed":null},"wom7func":{"branch":"agent/batch-b","dirty":0,"has_upstream":true,"head":"f2790af","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/batch-b","dirty":0,"has_upstream":true,"head":"26843d8","unpushed":null},"wom7sec":{"branch":"agent/batch-b","dirty":0,"has_upstream":true,"head":"44912de","unpushed":null},"wom7skills":{"branch":"agent/batch-b","dirty":0,"has_upstream":true,"head":"8b1244d","unpushed":null},"wom7web":{"branch":"agent/batch-b","dirty":0,"has_upstream":true,"head":"d0657748","unpushed":null}},"tickets":{"open":45,"rowless_open":[],"rows":572,"specced":217,"specced_open":5,"total":572,"unmirrored_open":3}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T509","T567","T17","T28","T70","T109","T128","T132","T171","T181"],"repos":{"wom7api":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"f89b362","unpushed":null},"wom7ext":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"afe29aa","unpushed":null},"wom7func":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"b516c39","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"26843d8","unpushed":null},"wom7sec":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"44912de","unpushed":null},"wom7skills":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"8b1244d","unpushed":null},"wom7web":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"bdb7e36b","unpushed":null}},"tickets":{"open":39,"rowless_open":[],"rows":572,"specced":217,"specced_open":5,"total":572,"unmirrored_open":3}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
