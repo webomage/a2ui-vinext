@@ -2,6 +2,24 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.26-1793049239
+_First deployed: 2026-10-26 21:26:52.515061+00_
+
+### Features
+- **sdlc**: built-artifact local gate recipes, canonical 3-level epic tags, and ticket spec disposition (T227, T355, T565) ([T227](file:///.tasks/T227.md), [T355](file:///.tasks/T355.md), [T565](file:///.tasks/T565.md))
+- **connectors**: record T576 Telegram and Threads channel/group discovery ([T576](file:///.tasks/T576.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `b31793f` | 2026-10-26 21:26:52.515061+00 |
+| demo | `b31793f` | 2026-10-26 21:26:04.328103+00 |
+| job | `b31793f` | 2026-10-26 21:25:14.378455+00 |
+| join | `b31793f` | 2026-10-26 21:23:57.862234+00 |
+| cp | `b31793f` | 2026-10-26 21:22:53.553316+00 |
+| web | `b31793f` | 2026-10-26 21:20:49.053766+00 |
+| release | `b31793f` | 2026-10-26 21:18:25.119167+00 |
+| api | `b31793f` | 2026-10-26 21:18:19.811186+00 |
+
 ## 2026.10.26-1793036162
 _First deployed: 2026-10-26 17:56:20.996155+00_
 
