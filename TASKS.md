@@ -66,6 +66,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T574](.tasks/T574.md) | **P1** | **Extension: auto-sync Webomage/Google browser session from .webomage.com cookies and wire Antigravity Bridge status to HTTPS/Realtime transport** | ext | openspec/specs/wom7ext-browser-extension/spec.md | ✅ **done** |
 | [T573](.tasks/T573.md) | **P1** | **Pre-push typecheck host-RAM auto-scaling, V8 heap sizing & global flock serialization (Load 70 swap-thrash fix)** | web | — | ✅ **done** |
 | [T572](.tasks/T572.md) | **P1** | **Chrome-style icons-only collapsed side panel rail for AppShell, SideNav, ContextSwitcher, SidebarHatSwitcher, and AuthWidget** | web | openspec/specs/cp-context-shell/spec.md | ✅ **done** |
 | [T571](.tasks/T571.md) | **P1** | **Portal sidebar separation, Admin full-org/capability access, Client/PM side switcher, and Gamification Mode naming for w0m units** | web, api | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |

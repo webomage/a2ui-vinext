@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `65f9aa1b` |
-| `wom7api` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `b806096` |
-| `wom7func` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `4f93c30` |
-| `wom7skills` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `a98e473` |
-| `wom7ext` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `5b8f7a5` |
-| `wom7sec` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `639d97f` |
-| `wom7mlx/wom7mlx` | `agent/agy-batch-c` | 0 | **n/a — NO UPSTREAM** | `9bc454f` |
+| `wom7web` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `65f9aa1b` |
+| `wom7api` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `b806096` |
+| `wom7func` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `4f93c30` |
+| `wom7skills` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `a98e473` |
+| `wom7ext` | `agent/agy-ext-t567` | **1** | **n/a — NO UPSTREAM** | `f7be2cd` |
+| `wom7sec` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `639d97f` |
+| `wom7mlx/wom7mlx` | `agent/agy-ext-t567` | 0 | **n/a — NO UPSTREAM** | `9bc454f` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 38 open · 573 TASKS.md rows · 217/573 specced (5/38 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 38 open · 574 TASKS.md rows · 218/574 specced (5/38 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T567","T17","T28","T70","T109","T128","T132","T171","T181","T226"],"repos":{"wom7api":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"b806096","unpushed":null},"wom7ext":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"5b8f7a5","unpushed":null},"wom7func":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"4f93c30","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"9bc454f","unpushed":null},"wom7sec":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"639d97f","unpushed":null},"wom7skills":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"a98e473","unpushed":null},"wom7web":{"branch":"agent/agy-batch-c","dirty":0,"has_upstream":true,"head":"65f9aa1b","unpushed":null}},"tickets":{"open":38,"rowless_open":[],"rows":573,"specced":217,"specced_open":5,"total":573,"unmirrored_open":3}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T567","T17","T28","T70","T109","T128","T132","T171","T181","T226"],"repos":{"wom7api":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"b806096","unpushed":null},"wom7ext":{"branch":"agent/agy-ext-t567","dirty":1,"has_upstream":true,"head":"f7be2cd","unpushed":null},"wom7func":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"4f93c30","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"9bc454f","unpushed":null},"wom7sec":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"639d97f","unpushed":null},"wom7skills":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"a98e473","unpushed":null},"wom7web":{"branch":"agent/agy-ext-t567","dirty":0,"has_upstream":true,"head":"65f9aa1b","unpushed":null}},"tickets":{"open":38,"rowless_open":[],"rows":574,"specced":218,"specced_open":5,"total":574,"unmirrored_open":3}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -134,9 +134,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T567** — Rebrand wom7*/k7* to w0m-* and migrate all estate repositories from casualuser/* to github.com/webomage/w0m-*
   - **2026-10-23** (3d ago): Stage 1 (AC2) completed & public fork naming convention locked. Following casualuser promotion to admin (Owner) in github.com/orgs/webomage, transferred and renamed all 10 first-party repositories (webomage/w0m, webomage/w0m-web, webomage/w0m-api, webomage/w0m-cf, webomage/w0m-ext, webomage/w0m-sec, webomage/w0m-skills, webomage/w0m-mlx, webomage/w0m-ava, webomage/w0m-clips) and consolidated all 11 public open-source forks under webomage/<repo> (orca, harness2, headroom, webtorrent-desktop, omlx, mlx-vlm, tart, tart-guest-agent, virtual-fido, serena, zeroclaw) keeping their upstream repository names (or <upstream-org>-<repo> on collision). Updated origin remotes across all local checkouts ([remote] 0 in name-refs) and updated w0m-skills schema URLs.
 
-#### Completed today (1):
+#### Completed today (2):
 
 - **T509** — Root-first layout: finish the T414 move in staged units, behind a stale-path probe that checks the file a recipe, hook or profile runs actually exists (Completed AC3, AC5, AC6, AC7, AC9, AC10, AC13, AC16 (17/17 ACs) + AgDR-0050 — ticket DONE)
+- **T574** — Extension: auto-sync Webomage/Google browser session from .webomage.com cookies and wire Antigravity Bridge status to HTTPS/Realtime transport (Completed (4/4 ACs). Implemented .webomage.com chunked @supabase/ssr cookie auto-sync (parseSupabaseCookiesToSession + syncSessionFromWebomageCookies), added "Continue with Google / Sync Webomage" button (SUPABASE_SYNC_BROWSER_SESSION) + chrome.cookies.onChanged listener, fixed "Anitgravity Bridge" → "Antigravity Bridge" and wired MCP_GET_STATUS / MCP_CONNECT / MCP_DISCONNECT to live HTTPS Cloud + extension_commands Realtime status; verified by just test-unit (18/18 passed), just typecheck (0 errors), just lint-gate (0 warnings/errors), and just build-chrome.)
 
 ## 3. Other open threads (in TASKS.md)
 
