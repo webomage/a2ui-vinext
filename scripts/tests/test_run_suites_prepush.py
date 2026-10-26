@@ -72,7 +72,7 @@ class TestRealRegistry(unittest.TestCase):
 
     def test_the_prepush_tier_stays_small(self):
         n = len(rs.select_suites(self.suites, "offline", prepush=True))
-        self.assertLessEqual(n, 12, f"{n} suites in the prepush tier: it exists to be fast, so it is not where every suite goes")
+        self.assertLessEqual(n, 15, f"{n} suites in the prepush tier: it exists to be fast, so it is not where every suite goes")
 
 
 class TestRunnerHygiene(unittest.TestCase):

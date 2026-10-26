@@ -121,6 +121,7 @@ def main() -> int:
     parser.add_argument("--check", action="store_true", help="Validate manifest parity without modifying files")
     parser.add_argument("--version", default=None, help="Explicit target version (defaults to date +%%Y.%%m.%%d-%%s)")
     parser.add_argument("--json", action="store_true", help="Output status as JSON")
+    parser.add_argument("--quiet", "-q", action="store_true", help="Suppress verbose output")
     args = parser.parse_args()
 
     files = get_governed_files()

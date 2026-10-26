@@ -66,6 +66,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T573](.tasks/T573.md) | **P1** | **Pre-push typecheck host-RAM auto-scaling, V8 heap sizing & global flock serialization (Load 70 swap-thrash fix)** | web | — | ✅ **done** |
 | [T572](.tasks/T572.md) | **P1** | **Chrome-style icons-only collapsed side panel rail for AppShell, SideNav, ContextSwitcher, SidebarHatSwitcher, and AuthWidget** | web | openspec/specs/cp-context-shell/spec.md | ✅ **done** |
 | [T571](.tasks/T571.md) | **P1** | **Portal sidebar separation, Admin full-org/capability access, Client/PM side switcher, and Gamification Mode naming for w0m units** | web, api | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T570](.tasks/T570.md) | **P1** | **Upstream PR to Graphify-Labs/graphify: commit-provenance manifest, settle guard, and global status/sync subcommands** | tooling | — | ✅ **done** |

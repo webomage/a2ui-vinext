@@ -1445,7 +1445,7 @@ test-all:
     @python3 scripts/run_suites.py --tier all --level full
 
 typecheck:
-    @cd wom7web && ASTRO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 python3 ../scripts/prepush_runner.py run-typecheck --concurrency 3
+    @cd wom7web && ASTRO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 python3 ../scripts/prepush_runner.py run-typecheck
 
 svelte-typecheck-ratchet *args:
     @cd wom7web && python3 project/scripts/svelte_typecheck_ratchet.py {{ args }}

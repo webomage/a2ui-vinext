@@ -122,10 +122,10 @@ CODE_PATHS = ("apps", "packages")  # git grep recurses; dist/node_modules are gi
 
 
 def _load_decommission():
-    """Module loaded by path — project/scripts is not an importable package."""
+    """Module loaded by path — scripts is not an importable package."""
     import importlib.util
     spec = importlib.util.spec_from_file_location(
-        "decommission_check", WEB_ROOT / "project" / "scripts" / "decommission_check.py")
+        "decommission_check", MONO_ROOT / "scripts" / "decommission_check.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod

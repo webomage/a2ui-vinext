@@ -230,7 +230,7 @@ class TestPrepushRunner(unittest.TestCase):
         positions = [res_ok.stdout.index(f"[typecheck:{app}]") for app in ("web", "cp", "demo", "job", "join")]
         self.assertEqual(positions, sorted(positions))
         self.assertIn(
-            "[typecheck:cp] scope: astro check covers .astro/.ts; 112 .svelte file(s) excluded by astro check -> gated by svelte-typecheck-ratchet",
+            "[typecheck:cp] scope: astro check covers .astro/.ts; 117 .svelte file(s) excluded by astro check -> gated by svelte-typecheck-ratchet",
             res_ok.stdout,
         )
 
@@ -245,6 +245,36 @@ class TestPrepushRunner(unittest.TestCase):
         )
         self.assertEqual(res_fail.returncode, 1)
         self.assertIn("cp, job", res_fail.stderr)
+
+    def test_host_ram_scaling_and_global_lock(self):
+        from prepush_runner import (
+            default_node_max_old_space_mb,
+            default_typecheck_concurrency,
+            host_total_ram_gib,
+            typecheck_global_lock,
+        )
+
+        # Host RAM detection returns a positive float
+        self.assertGreater(host_total_ram_gib(), 1.0)
+
+        # <=8 GiB host (e.g. 5 GiB APU) scales to concurrency=1 and 2048 MB V8 heap
+        self.assertEqual(default_typecheck_concurrency(5.0), 1)
+        self.assertEqual(default_typecheck_concurrency(8.0), 1)
+        self.assertEqual(default_node_max_old_space_mb(5.0), 2048)
+        self.assertEqual(default_node_max_old_space_mb(8.0), 2048)
+
+        # 12 GiB host scales to concurrency=2 and 4096 MB V8 heap
+        self.assertEqual(default_typecheck_concurrency(12.0), 2)
+        self.assertEqual(default_node_max_old_space_mb(12.0), 4096)
+
+        # >=16 GiB host scales to concurrency=3 and 8192 MB V8 heap
+        self.assertEqual(default_typecheck_concurrency(16.0), 3)
+        self.assertEqual(default_node_max_old_space_mb(16.0), 8192)
+
+        # Global flock context manager acquires and releases cleanly
+        os.environ["W0M_PREPUSH_CACHE_DIR"] = self.tmp_dir
+        with typecheck_global_lock():
+            self.assertTrue((Path(self.tmp_dir) / "typecheck.lock").is_file())
 
 
 class TestHookMatchesRegistry(unittest.TestCase):

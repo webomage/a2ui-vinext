@@ -413,18 +413,88 @@ def discover_typecheck_apps(web_root: Path) -> list[str]:
     return apps
 
 
+def host_total_ram_gib() -> float:
+    """Detect total usable system memory in GiB via /proc/meminfo or sysconf (T573)."""
+    try:
+        meminfo = Path("/proc/meminfo")
+        if meminfo.is_file():
+            for line in meminfo.read_text(encoding="utf-8").splitlines():
+                if line.startswith("MemTotal:"):
+                    kb = int(line.split()[1])
+                    return kb / (1024.0 * 1024.0)
+    except (OSError, ValueError, IndexError):
+        pass
+    try:
+        pages = os.sysconf("SC_PHYS_PAGES")
+        page_size = os.sysconf("SC_PAGE_SIZE")
+        if isinstance(pages, int) and isinstance(page_size, int) and pages > 0 and page_size > 0:
+            return (pages * page_size) / (1024.0**3)
+    except (AttributeError, ValueError, OSError):
+        pass
+    return 16.0
+
+
+def default_typecheck_concurrency(ram_gib: float | None = None) -> int:
+    """Choose safe astro check concurrency from host RAM so <=8 GiB hosts never swap-thrash (T573)."""
+    total_gib = host_total_ram_gib() if ram_gib is None else ram_gib
+    if total_gib <= 8.0:
+        return 1
+    if total_gib <= 14.0:
+        return 2
+    return 3
+
+
+def default_node_max_old_space_mb(ram_gib: float | None = None) -> int:
+    """Choose V8 heap ceiling (--max-old-space-size) proportional to host RAM so GC runs before swap (T573)."""
+    total_gib = host_total_ram_gib() if ram_gib is None else ram_gib
+    if total_gib <= 8.0:
+        return 2048
+    if total_gib <= 14.0:
+        return 4096
+    return 8192
+
+
+@contextlib.contextmanager
+def typecheck_global_lock() -> Iterator[None]:
+    """Serialize run-typecheck invocations across concurrent worktrees/hooks via flock (T573)."""
+    lock_path = get_cache_dir() / "typecheck.lock"
+    try:
+        fd = os.open(str(lock_path), os.O_CREAT | os.O_RDWR, 0o600)
+    except OSError:
+        yield
+        return
+    try:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            print("  ⏳ [typecheck] waiting for another active typecheck run to finish...", flush=True)
+            fcntl.flock(fd, fcntl.LOCK_EX)
+        yield
+    finally:
+        with contextlib.suppress(OSError):
+            fcntl.flock(fd, fcntl.LOCK_UN)
+        with contextlib.suppress(OSError):
+            os.close(fd)
+
+
 def cmd_run_typecheck(args: argparse.Namespace) -> int:
-    """Run `astro check` across all gated apps with bounded concurrency (3-4), deterministic buffered output (T477 AC2)."""
+    """Run `astro check` across all gated apps with host-RAM-aware concurrency and deterministic buffered output (T477 AC2 / T573)."""
     if getattr(args, "web_root", None):
         web_root = Path(args.web_root).resolve()
     else:
         cwd = Path.cwd().resolve()
         web_root = (cwd / "wom7web") if (cwd / "wom7web" / "package.json").is_file() else cwd
-    concurrency = int(
-        getattr(args, "concurrency", None)
-        or os.environ.get("W0M_TYPECHECK_CONCURRENCY", "3")
-    )
+    ram_gib = host_total_ram_gib()
+    raw_conc = getattr(args, "concurrency", None)
+    env_conc = os.environ.get("W0M_TYPECHECK_CONCURRENCY")
+    if raw_conc is not None:
+        concurrency = int(raw_conc)
+    elif env_conc:
+        concurrency = int(env_conc)
+    else:
+        concurrency = default_typecheck_concurrency(ram_gib)
     concurrency = max(1, min(concurrency, 4))
+    max_old_space = default_node_max_old_space_mb(ram_gib)
     try:
         apps = discover_typecheck_apps(web_root)
     except Exception as exc:
@@ -437,7 +507,7 @@ def cmd_run_typecheck(args: argparse.Namespace) -> int:
         t0 = time.monotonic()
         env = {
             **os.environ,
-            "NODE_OPTIONS": os.environ.get("NODE_OPTIONS", "--max-old-space-size=8192"),
+            "NODE_OPTIONS": os.environ.get("NODE_OPTIONS", f"--max-old-space-size={max_old_space}"),
             "ASTRO_TELEMETRY_DISABLED": "1",
             "DO_NOT_TRACK": "1",
         }
@@ -449,13 +519,14 @@ def cmd_run_typecheck(args: argparse.Namespace) -> int:
         dur = time.monotonic() - t0
         return app, proc.returncode, dur, (proc.stdout or "") + (proc.stderr or "")
 
-    t_start = time.monotonic()
-    results_by_app: dict[str, tuple[int, float, str]] = {}
-    with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as pool:
-        future_map = {pool.submit(_check_one, app): app for app in apps}
-        for fut in concurrent.futures.as_completed(future_map):
-            app_name, rc, dur, out = fut.result()
-            results_by_app[app_name] = (rc, dur, out)
+    with typecheck_global_lock():
+        t_start = time.monotonic()
+        results_by_app: dict[str, tuple[int, float, str]] = {}
+        with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as pool:
+            future_map = {pool.submit(_check_one, app): app for app in apps}
+            for fut in concurrent.futures.as_completed(future_map):
+                app_name, rc, dur, out = fut.result()
+                results_by_app[app_name] = (rc, dur, out)
 
     failed_apps: list[str] = []
     total_svelte = 0
@@ -586,9 +657,9 @@ def main() -> int:
     p_fail.add_argument("--exit-code", type=int, default=1, help="Process exit code")
     p_fail.add_argument("--duration", type=float, default=0.0, help="Step duration in seconds")
 
-    # run-typecheck (T477 AC2)
-    p_tc = subparsers.add_parser("run-typecheck", parents=[common], help="Run astro check across gated apps with bounded concurrency")
-    p_tc.add_argument("--concurrency", type=int, default=3, help="Max concurrent astro check processes (1-4, default 3)")
+    # run-typecheck (T477 AC2 / T573)
+    p_tc = subparsers.add_parser("run-typecheck", parents=[common], help="Run astro check across gated apps with host-RAM-aware concurrency")
+    p_tc.add_argument("--concurrency", type=int, default=None, help="Max concurrent astro check processes (1-4, defaults to host RAM auto-scale)")
     p_tc.add_argument("--web-root", default=None, help="Path to wom7web root (defaults to cwd)")
 
     # status
