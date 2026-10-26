@@ -17,6 +17,9 @@ Exit codes:
   0 = clean (every checked script path and `--justfile` recipe target exists)
   1 = stale script path, dangling `--justfile` target, or unreasoned/stale exemption found
   2 = could not measure (corrupt/unreadable carrier or empty scan set)
+
+Usage:
+  python3 scripts/stale_path_check.py [--root <path>] [--launchd-dir <path>] [--json]
 """
 from __future__ import annotations
 
@@ -439,7 +442,7 @@ def scan_launchd(
 ) -> tuple[int, list[str], bool]:
     """Scan Carrier 5: Host-level launch agents (conditional on Darwin or explicit `--launchd-dir`)."""
     if launchd_dir is None:
-        if sys.platform != "darwin":
+        if getattr(sys, "platform", "") != "darwin":
             return 0, [], False
         launchd_dir = Path.home() / "Library" / "LaunchAgents"
         if not launchd_dir.is_dir():
@@ -500,6 +503,15 @@ def default_carriers(root: Path = ROOT) -> tuple[list[Path], list[Path], list[Pa
         set(root.glob("project/policies/*.json"))
         | {root / ".w0m" / "sdlc.json"}
         | set(root.glob("wom7web/project/*.json"))
+        | {
+            p
+            for p in (
+                root / ".mcp.json",
+                root / ".claude" / "settings.local.json",
+                root / "wom7skills" / "skills-registry.json",
+            )
+            if p.is_file()
+        }
     )
     hook_files = (
         [
@@ -579,8 +591,8 @@ def main(argv: list[str] | None = None) -> int:
         unmeasured |= u
 
     if unmeasured or total_checked == 0:
-        for f in all_findings:
-            print(f"  ✗ {f}")
+        for finding in all_findings:
+            print(f"  ✗ {finding}")
         print("❌ stale-path-check: could not measure one or more carriers — exit 2 (not passing).")
         return 2
 
@@ -593,8 +605,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if final_findings:
         print(f"❌ stale-path-check: {len(final_findings)} stale path / dangling target finding(s) across {total_checked} check(s):")
-        for f in final_findings:
-            print(f"  ✗ {f}")
+        for finding in final_findings:
+            print(f"  ✗ {finding}")
         return 1
 
     print(f"✅ stale-path-check: {total_checked} reference(s) verified across active carriers, 0 stale paths.")

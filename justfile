@@ -57,7 +57,7 @@ tasks-render *args:
     @python3 scripts/tasks_render.py {{ args }}
 
 agent-concurrency-test:
-    @python3 wom7web/project/scripts/tests/test_agent_concurrency.py
+    @python3 scripts/tests/test_agent_concurrency.py
 
 project-archetypes-test:
     @python3 wom7web/project/scripts/tests/test_project_archetypes.py
@@ -212,7 +212,7 @@ search *args:
     @python3 scripts/estate_search.py "$@"
 
 search-test:
-    @python3 -m pytest wom7web/project/scripts/tests/test_estate_search.py -q
+    @python3 -m pytest scripts/tests/test_estate_search.py -q
 
 # ── Coordinated Multi-Agent Worktrees (T411 AC5) ─────────────────────────────
 worktree-agent id *args:
@@ -358,8 +358,8 @@ do recipe *args:
     @just --justfile wom7web/justfile {{ recipe }} {{ args }}
 
 # ── Knowledge & Graph ────────────────────────────────────────────────────────
-ask *args:
-    @just --justfile wom7web/justfile ask "{{ args }}"
+ask question repo="":
+    @just --justfile wom7web/justfile ask "{{ question }}" "{{ repo }}"
 
 graph-global *args:
     @just --justfile wom7web/justfile graph-global {{ args }}
@@ -1281,6 +1281,12 @@ client-services-check-test:
     @python3 wom7web/project/scripts/tests/test_client_services_check.py
 
 # ── Typed Python Ratchet, Backstage Catalog & DORA/DevEx Cockpit (T448 / T64 / T432) ──
+py-typecheck-root *args:
+    @mypy --config-file mypy.ini {{ args }}
+
+py-typecheck *args:
+    @just --justfile wom7api/justfile py-typecheck {{ args }}
+
 py-typing-check *args:
     @python3 wom7web/project/scripts/py_typing_check.py {{ args }}
 

@@ -20,11 +20,12 @@ import unittest
 from pathlib import Path
 
 # Estate paths
-WEB_ROOT = Path(__file__).resolve().parents[3]
-ROOT_WORKSPACE = WEB_ROOT.parent
+ROOT_WORKSPACE = Path(__file__).resolve().parents[2]
+WEB_ROOT = ROOT_WORKSPACE / "wom7web"
 
-SCRIPTS = WEB_ROOT / "project" / "scripts"
+SCRIPTS = ROOT_WORKSPACE / "scripts"
 sys.path.insert(0, str(SCRIPTS))
+sys.path.insert(1, str(WEB_ROOT / "project" / "scripts"))
 
 
 class TestAgentConcurrency(unittest.TestCase):
@@ -180,6 +181,8 @@ class TestAgentConcurrency(unittest.TestCase):
         subprocess.run(["git", "init", "-q", "-b", "main"], cwd=repo, check=True)
         subprocess.run(["git", "config", "user.email", "audit@w0m.io"], cwd=repo, check=True)
         subprocess.run(["git", "config", "user.name", "w0m Audit"], cwd=repo, check=True)
+        subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=repo, check=True)
+        subprocess.run(["git", "config", "tag.gpgsign", "false"], cwd=repo, check=True)
 
         (repo / "file.txt").write_text("initial\n")
         subprocess.run(["git", "add", "."], cwd=repo, check=True)

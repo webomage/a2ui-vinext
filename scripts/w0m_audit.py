@@ -56,7 +56,7 @@ APPS = {  # app → public host serving /api/health
 WORKER_HEALTH = "https://wom7func.webomage.workers.dev/health"
 
 PASS, WARN, FAIL, SKIP, INFO = "✅ PASS", "⚠️  WARN", "❌ FAIL", "⏭️  SKIP", "ℹ️  INFO"
-results = []  # (level, section, name, detail)
+results: list[tuple[str, str, str, str]] = []  # (level, section, name, detail)
 
 
 def add(level, section, name, detail=""):

@@ -232,7 +232,7 @@ def main(argv: list[str] | None = None) -> int:
         rows = by.get(cls, [])
         tag = "MUST FIX" if cls in LIVE else ("regenerate" if cls in REGENERATE else "may keep")
         print(f"\n[{cls}] {len(rows)}  ({tag})")
-        files = defaultdict(int)
+        files: dict[tuple[str, str], int] = defaultdict(int)
         for h in rows:
             files[(h["repo"], h["path"])] += 1
         shown = 0

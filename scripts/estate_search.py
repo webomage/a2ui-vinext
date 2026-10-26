@@ -78,8 +78,20 @@ ESTATE = find_estate_root()
 # The repos w0m OWNS. `wom7pr` and `k7` hold vendored forks (orca alone is larger than the entire
 # rest of the estate) and `wom7mlx` nests its real repo one level down — including them by default
 # would make every search slower and noisier for results nobody asked for. `--all` opts in.
-OWNED = ("wom7web", "wom7api", "wom7func", "wom7ext", "wom7sec", "wom7skills")
+OWNED = ("root", "wom7web", "wom7api", "wom7func", "wom7ext", "wom7sec", "wom7skills")
 VENDORED = ("wom7pr", "wom7mlx", "k7")
+
+# Explicit top-level pathspecs when searching the `@wom` root repo (`root == ESTATE`) with no `--path`,
+# so searching `"root"` is fast, deterministic, and never traverses nested repos even if `.git/info/exclude` differs.
+ROOT_PATHS = (
+    "scripts/",
+    "project/",
+    "docs/",
+    ".tasks/",
+    "justfile",
+    "AGENTS.md",
+    "CLAUDE.md",
+)
 
 # Generated trees that are tracked in at least one repo and would otherwise dominate every result.
 NOISE = (
@@ -95,9 +107,18 @@ NOISE = (
 DEFAULT_CAP = 200
 
 
+def _resolve_repo_arg(r: str) -> str:
+    """Normalise a `--repo` argument (`root`/`@wom`/`w0m`, short `web`, or full `wom7web`)."""
+    if r in ("root", "@wom", "w0m"):
+        return "root"
+    if r.startswith(("wom7", "k7")):
+        return r
+    return f"wom7{r}"
+
+
 def repo_root(name: str) -> Path | None:
     """The git root for a repo name, or None when there is nothing searchable there."""
-    d = ESTATE / name
+    d = ESTATE if name == "root" else ESTATE / name
     return d if (d / ".git").exists() else None
 
 
@@ -112,7 +133,8 @@ def search_tree(root: Path, pattern: str, fixed: bool, paths: list[str]) -> tupl
     """
     cmd = ["git", "--no-pager", "grep", "-nI"]
     cmd.append("-F" if fixed else "-E")
-    cmd += [pattern, "--"] + (paths or []) + list(NOISE)
+    effective_paths = list(paths) if paths else (list(ROOT_PATHS) if root == ESTATE else [])
+    cmd += [pattern, "--"] + effective_paths + list(NOISE)
     env = dict(os.environ, LC_ALL="C")
     t = time.perf_counter()
     p = subprocess.run(cmd, cwd=root, env=env, capture_output=True, text=True, timeout=120)
@@ -131,8 +153,9 @@ def search_history(root: Path, pattern: str, fixed: bool, depth: int) -> tuple[l
     # ⚠️ The same NOISE pathspec as the working-tree search. Omitting it here was a real bug in the
     # first version: a history search returned the generated STATUS-DASHBOARD.html once per commit,
     # so the result grew with the depth bound rather than with the code.
+    effective_paths = list(ROOT_PATHS) if root == ESTATE else []
     cmd = (["git", "--no-pager", "grep", "-nI", "-F" if fixed else "-E", pattern]
-           + revs + ["--"] + list(NOISE))
+           + revs + ["--"] + effective_paths + list(NOISE))
     env = dict(os.environ, LC_ALL="C")
     t = time.perf_counter()
     p = subprocess.run(cmd, cwd=root, env=env, capture_output=True, text=True, timeout=600)
@@ -144,7 +167,7 @@ def search_history(root: Path, pattern: str, fixed: bool, depth: int) -> tuple[l
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("pattern")
-    ap.add_argument("--repo", action="append", help="repo short name (web, api, …) or full (wom7web). Repeatable.")
+    ap.add_argument("--repo", action="append", help="repo short name (root, web, api, …) or full (wom7web). Repeatable.")
     ap.add_argument("--all", action="store_true", help="include the vendored forks (wom7pr, wom7mlx, k7)")
     ap.add_argument("-F", "--fixed", action="store_true", help="literal string, not a regex")
     ap.add_argument("--history", type=int, metavar="N", help="also search the last N commits per repo")
@@ -154,7 +177,7 @@ def main(argv: list[str] | None = None) -> int:
 
     names = list(OWNED) + (list(VENDORED) if args.all else [])
     if args.repo:
-        want = {r if r.startswith(("wom7", "k7")) else f"wom7{r}" for r in args.repo}
+        want = {_resolve_repo_arg(r) for r in args.repo}
         names = [n for n in names + list(VENDORED) if n in want]
         if not names:
             print(f"[BLOCKED] no such repo in {ESTATE}: {', '.join(sorted(want))}")
@@ -166,7 +189,8 @@ def main(argv: list[str] | None = None) -> int:
         root = repo_root(name)
         if root is None:
             # 🔴 Its own state, never folded into "0 hits" — see the module docstring.
-            unmeasurable.append(f"{name}: no git repo at {ESTATE / name}")
+            target = ESTATE if name == "root" else ESTATE / name
+            unmeasurable.append(f"{name}: no git repo at {target}")
             continue
         try:
             hits, secs = search_tree(root, args.pattern, args.fixed, args.path)

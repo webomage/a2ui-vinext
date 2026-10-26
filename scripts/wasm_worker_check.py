@@ -574,7 +574,7 @@ def check_crate_lint_and_abi(
 
     if not wasm_path.is_file():
         problems.append(f"Missing compiled WASM binary: {wasm_path}")
-        parsed = {"valid_header": False, "sections": [], "exports": {}, "error": "file missing"}
+        parsed: dict[str, Any] = {"valid_header": False, "sections": [], "exports": {}, "error": "file missing"}
     else:
         parsed = parse_wasm_binary(wasm_path.read_bytes())
         if not parsed["valid_header"] or parsed["error"]:

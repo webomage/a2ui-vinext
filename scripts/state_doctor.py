@@ -1078,7 +1078,8 @@ def generate_pickup_block(tickets_dir: Path) -> str:
                 lines.append("  - ⚠️ NO status note recorded where this stopped")
             else:
                 age = (date.today() - date.fromisoformat(it["date"])).days
-                note_text = re.sub(r"[*`]", "", it["note"][2:])
+                note_raw = str(it.get("note") or "")
+                note_text = re.sub(r"[*`]", "", note_raw[2:])
                 note_text = _NOTE_DATE.sub("", note_text, count=1).strip(" —-:")
                 age_str = f"{age}d ago" if age > 0 else "today"
                 lines.append(f"- **{tid}** — {title}")

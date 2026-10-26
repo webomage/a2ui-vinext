@@ -64,13 +64,13 @@ def check_firewall() -> Dict[str, Any]:
 
     except Exception as e:
         status = NOT_MEASURED if (isinstance(e, FileNotFoundError) and sys.platform != "darwin") else FAIL
-        detail = "NOT MEASURED — socketfilterfw not available on Linux host" if status == NOT_MEASURED else f"Error running socketfilterfw: {e}"
+        detail_msg = "NOT MEASURED — socketfilterfw not available on Linux host" if status == NOT_MEASURED else f"Error running socketfilterfw: {e}"
         return {
             "name": "Firewall & Stealth",
             "status": status,
             "enabled": False,
             "stealth": False,
-            "detail": detail
+            "detail": detail_msg
         }
 
     status = PASS if (enabled and stealth) else FAIL
@@ -463,7 +463,7 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.test:
-        test_file = SCRIPT_DIR / "tests" / "test_host_posture.py"
+        test_file = ROOT / "wom7web" / "project" / "scripts" / "tests" / "test_host_posture.py"
         proc = subprocess.run([sys.executable, str(test_file)])
         return proc.returncode
 

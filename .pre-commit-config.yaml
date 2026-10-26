@@ -99,3 +99,12 @@ repos:
         files: ^CHANGELOG\.md$
         pass_filenames: false
         stages: [pre-commit]
+
+      # T509 AC14 — pre-push gate on pushes from the estate root (@wom)
+      - id: root-pre-push
+        name: Estate root pre-push gate (ticket-row-check + state-check + stale-path-check + justfile-calls-check, T527 / T509 AC14)
+        entry: sh -c 'python3 scripts/root_pre_push.py && python3 scripts/stale_path_check.py && python3 scripts/justfile_calls_check.py'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
