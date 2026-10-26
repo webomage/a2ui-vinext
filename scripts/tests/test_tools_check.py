@@ -307,6 +307,27 @@ class HealthcheckIntegrationTests(unittest.TestCase):
         self.assertIn("wom7api/scripts/healthcheck.py", hc_web)
         self.assertIn("T164", hc_web)
 
+    def test_t517_cf_workers_ai_probe_resolves_w0m_llm_personnel_and_rejects_retired_model(self) -> None:
+        hc = _load_healthcheck()
+        model_id = hc.resolve_cf_ai_model("w0m-llm-personnel")
+        self.assertEqual(model_id, "@cf/meta/llama-4-scout-17b-16e-instruct")
+        with tempfile.TemporaryDirectory() as d:
+            bad_just = Path(d) / "bad-ai-models.json"
+            bad_just.write_text(
+                json.dumps(
+                    {
+                        "chat_models": {
+                            "w0m-llm-personnel": {
+                                "model_id": "@cf/meta/llama-2-7b-chat-int8",
+                            }
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                hc.resolve_cf_ai_model("w0m-llm-personnel", justifications_path=bad_just)
+
 
 class _Result(unittest.TextTestResult):
     """House style (scripts/run_suites.py counts them): one ✅/❌ line per check on stdout."""

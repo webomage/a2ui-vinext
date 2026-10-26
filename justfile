@@ -1465,6 +1465,95 @@ wasm-fmt:
 wasm-fmt-check:
     @just --justfile wom7func/justfile wasm-fmt-check
 
+# ── Script Consolidation & Regular CLI Tools (T516 / T517 / T518) ─────────────
+zeroclaw *args:
+    @python3 scripts/zeroclaw_manage.py {{ args }}
+
+zeroclaw-manage-test:
+    @python3 scripts/tests/test_zeroclaw_manage.py
+
+ai-eval *args:
+    @deno run --no-check --allow-env --allow-net --allow-read wom7api/scripts/ai-eval.ts {{ args }}
+
+hygiene-docs-sync *args:
+    @python3 scripts/write_hygiene_docs.py {{ args }}
+
+hygiene-docs *args:
+    @python3 scripts/write_hygiene_docs.py {{ args }}
+
+status-truth *args:
+    @python3 scripts/status_truth.py {{ args }}
+
+resume-assist-eval *args:
+    @deno run --no-check --allow-env --allow-net --allow-read wom7api/scripts/resume-assist-eval.ts {{ args }}
+
+zc-compression-measure *args:
+    @python3 scripts/zc_compression_measure.py {{ args }}
+
+compression-measure *args:
+    @python3 scripts/zc_compression_measure.py {{ args }}
+
+ds-inventory *args:
+    @python3 wom7web/project/scripts/ds_inventory.py {{ args }}
+
+infisical-set-prod *args:
+    @python3 scripts/infisical_set_prod.py {{ args }}
+
+secrets-push *args:
+    @python3 scripts/infisical_set_prod.py {{ args }}
+
+keys-verify *args:
+    @python3 scripts/get_keys.py {{ args }}
+
+upwork-auth-check *args:
+    @deno run --no-check --allow-env --allow-read wom7api/scripts/get_upwork_auth.ts {{ args }}
+
+graph-callsites *args:
+    @python3 scripts/graph_callsites.py {{ args }}
+
+tinybird-schemas-init *args:
+    @python3 wom7api/scripts/init_tinybird_schemas.py {{ args }}
+
+tinybird-init *args:
+    @python3 wom7api/scripts/init_tinybird_schemas.py {{ args }}
+
+t516-tools-test:
+    @python3 scripts/tests/test_t516_tools.py
+
+live-verify *args:
+    @python3 scripts/live_verify_helper.py {{ args }}
+
+live-verify-test:
+    @python3 scripts/tests/test_live_verify_helper.py
+
+upwork-poller-status *args:
+    @python3 scripts/upwork_poller_status.py {{ args }}
+
+upwork-poller-status-test:
+    @python3 scripts/tests/test_upwork_poller_status.py
+
+obsidian-mcp-bridge-test:
+    @python3 scripts/tests/test_obsidian_mcp.py
+
+news-backfill *args:
+    @python3 scripts/backfill_news.py {{ args }}
+
+news-backfill-images *args:
+    @python3 scripts/backfill_post_images.py {{ args }}
+
+content-validate *args:
+    @python3 scripts/validate_content.py {{ args }}
+
+tracks-validate *args:
+    @python3 scripts/validate_tracks.py {{ args }}
+
+tracks-check *args:
+    @python3 scripts/validate_tracks.py {{ args }}
+
+content-tools-test:
+    @python3 scripts/tests/test_content_tools.py
+
+
 
 
 
