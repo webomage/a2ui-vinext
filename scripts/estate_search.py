@@ -111,9 +111,11 @@ def _resolve_repo_arg(r: str) -> str:
     """Normalise a `--repo` argument (`root`/`@wom`/`w0m`, short `web`, or full `w0m-web`)."""
     if r in ("root", "@wom", "w0m"):
         return "root"
-    if r.startswith(("wom7", "k7")):
+    if r.startswith(("w0m-", "k7")):
         return r
-    return f"wom7{r}"
+    if r.startswith("wom7"):
+        return f"w0m-{r[4:]}"
+    return f"w0m-{r}"
 
 
 def repo_root(name: str) -> Path | None:
