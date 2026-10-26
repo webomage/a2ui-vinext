@@ -2,6 +2,24 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.25-1792983664
+_First deployed: 2026-10-26 03:17:33.810524+00_
+
+### Features
+- **estate**: complete T571 portal sidebar & side switcher and T509 root search/mypy/pre-push (T571, T509) ([T571](file:///.tasks/T571.md), [T509](file:///.tasks/T509.md))
+- **estate**: complete Wave 1 Phase 1 tickets (T136, T271, T273, T365, T454, T475) ([T136](file:///.tasks/T136.md), [T271](file:///.tasks/T271.md), [T273](file:///.tasks/T273.md), [T365](file:///.tasks/T365.md), [T454](file:///.tasks/T454.md), [T475](file:///.tasks/T475.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `1f1a9f8` | 2026-10-26 03:17:33.810524+00 |
+| demo | `1f1a9f8` | 2026-10-26 03:16:49.28044+00 |
+| job | `1f1a9f8` | 2026-10-26 03:16:00.436633+00 |
+| join | `1f1a9f8` | 2026-10-26 03:14:46.749692+00 |
+| cp | `1f1a9f8` | 2026-10-26 03:13:42.000226+00 |
+| web | `1f1a9f8` | 2026-10-26 03:11:41.096059+00 |
+| release | `1f1a9f8` | 2026-10-26 03:09:20.938302+00 |
+| api | `1f1a9f8` | 2026-10-26 03:09:15.325787+00 |
+
 ## 2026.10.23-1792798998
 _First deployed: 2026-10-23 23:52:39.980812+00_
 
