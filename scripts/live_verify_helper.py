@@ -121,7 +121,7 @@ def _eval_json_keys(required_keys: tuple[str, ...]) -> Callable[[str], tuple[boo
         if not text:
             return False, "empty output"
         try:
-            parsed: dict[str, Any] = cast(dict[str, Any], json.loads(text))
+            parsed: Any = json.loads(text)
         except (ValueError, TypeError) as exc:
             return False, f"invalid JSON: {exc}"
         if not isinstance(parsed, dict):

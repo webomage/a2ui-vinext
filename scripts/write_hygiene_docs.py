@@ -23,7 +23,7 @@ IDEMPOTENT. Re-running overwrites the generated files with identical bytes.
 Files not listed here are never touched.
 
 Usage:
-    python3 project/scripts/write_hygiene_docs.py [--dry-run]
+    python3 scripts/write_hygiene_docs.py [--dry-run]
 """
 
 from __future__ import annotations
@@ -129,7 +129,7 @@ REPO_FACTS: dict[str, dict] = {
         ],
         "notes": [
             "**Deploy runs from here.** The recipes use bare `supabase/` paths, so "
-            "`cd wom7api && just deploy` is required — running it from another repo "
+            "`just deploy` from `@wom` is required — running it from another repo "
             "resolves the wrong tree.",
             "This is a hybrid repo: pnpm owns the worker, Deno owns the edge functions. "
             "Running `deno install` at the root clobbers the pnpm `node_modules`.",

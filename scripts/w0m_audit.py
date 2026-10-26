@@ -14,10 +14,10 @@ DB-dependent checks (lexicon-lint) are optional and only run with
 `--deep` (they need infisical/DATABASE_URL); everything else needs only git + network.
 
 Usage:
-  python3 project/scripts/w0m_audit.py            # full sweep, writes a report, prints summary
-  python3 project/scripts/w0m_audit.py --quick    # skip network (diff/health) — fast git+spec only
-  python3 project/scripts/w0m_audit.py --deep      # + markers/lexicon + migrations drift + unused-secrets (infisical; DB needs WARP)
-  python3 project/scripts/w0m_audit.py --no-report # don't write the md report
+  python3 scripts/w0m_audit.py            # full sweep, writes a report, prints summary
+  python3 scripts/w0m_audit.py --quick    # skip network (diff/health) — fast git+spec only
+  python3 scripts/w0m_audit.py --deep      # + markers/lexicon + migrations drift + unused-secrets (infisical; DB needs WARP)
+  python3 scripts/w0m_audit.py --no-report # don't write the md report
 
 Exit code: non-zero if any check FAILs (so a fast subset can gate a git hook); WARN never fails.
 Manual: `just audit`. Fast subset intended for the pre-push hook.

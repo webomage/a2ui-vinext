@@ -1,6 +1,6 @@
 {
   "$schema": "./hygiene-policy.schema.json",
-  "_comment": "T135 — repo-hygiene policy. The declarative half of `just docs-check` / `license-check` / `secrets-check` (project/scripts/repo_hygiene.py), the tech-agnostic sibling of stacks-policy.json (per-stack tools), deps-policy.json (npm floors + licenses) and tools-policy.json (host CLI floors). The `repos` list is DECLARED, not discovered: a gate whose scope is inferred from whatever happens to be on disk silently shrinks when a checkout is missing, so a declared repo that is absent is a HARD FAILURE, not a skip. Manifests inside each repo ARE discovered (T135 task 5.9) because a hardcoded manifest list missed 15 of 19.",
+  "_comment": "T135 — repo-hygiene policy. The declarative half of `just docs-check` / `license-check` / `secrets-check` (scripts/repo_hygiene.py), the tech-agnostic sibling of stacks-policy.json (per-stack tools), deps-policy.json (npm floors + licenses) and tools-policy.json (host CLI floors). The `repos` list is DECLARED, not discovered: a gate whose scope is inferred from whatever happens to be on disk silently shrinks when a checkout is missing, so a declared repo that is absent is a HARD FAILURE, not a skip. Manifests inside each repo ARE discovered (T135 task 5.9) because a hardcoded manifest list missed 15 of 19.",
   "project": "w0m",
   "repos": [
     {

@@ -33,7 +33,7 @@ def _default_requester(url: str, headers: dict[str, str]) -> tuple[int, str]:
         return int(exc.code), exc.read().decode("utf-8", errors="replace")
 
 
-def redact_and_hash_keys(raw_keys: list[dict[str, Any]]) -> list[dict[str, str]]:
+def redact_and_hash_keys(raw_keys: list[Any]) -> list[dict[str, str]]:
     """Convert raw Supabase `/api-keys` items into safe `{name, type, sha256}` records."""
     safe_rows: list[dict[str, str]] = []
     for item in raw_keys:
@@ -77,7 +77,7 @@ def verify_supabase_keys(
     code, body = requester(url, headers)
     if code != 200:
         return False, [], f"Failed to retrieve keys (HTTP {code})"
-    raw_list: list[dict[str, Any]] = cast(list[dict[str, Any]], json.loads(body))
+    raw_list: Any = json.loads(body)
     if not isinstance(raw_list, list):
         return False, [], "Unexpected non-list response from Supabase /api-keys"
     return True, redact_and_hash_keys(raw_list), ""

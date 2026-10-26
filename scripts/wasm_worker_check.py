@@ -413,7 +413,8 @@ def check_toolchain_policies(
         problems.append(f"Missing tools-policy.json: {tools_policy_path}")
         tools_data: dict[str, Any] = {}
     else:
-        tools_data = json.loads(tools_policy_path.read_text(encoding="utf-8")).get("tools", {})
+        raw_tools: dict[str, Any] = json.loads(tools_policy_path.read_text(encoding="utf-8"))
+        tools_data = raw_tools.get("tools", {})
 
     for tool_name in ("wasm-pack", "worker-build"):
         spec = tools_data.get(tool_name)
@@ -439,7 +440,8 @@ def check_toolchain_policies(
         problems.append(f"Missing stacks-policy.json: {stacks_policy_path}")
         stacks_data: dict[str, Any] = {}
     else:
-        stacks_data = json.loads(stacks_policy_path.read_text(encoding="utf-8")).get("stacks", {})
+        raw_stacks: dict[str, Any] = json.loads(stacks_policy_path.read_text(encoding="utf-8"))
+        stacks_data = raw_stacks.get("stacks", {})
 
     wasm_stack = stacks_data.get("wasm-worker")
     if not isinstance(wasm_stack, dict):
@@ -455,7 +457,8 @@ def check_toolchain_policies(
                 problems.append(f"stacks-policy.json `wasm-worker` missing command role `{role}`")
 
     if suites_path.is_file():
-        suites = json.loads(suites_path.read_text(encoding="utf-8")).get("suites", [])
+        raw_suites: dict[str, Any] = json.loads(suites_path.read_text(encoding="utf-8"))
+        suites = raw_suites.get("suites", [])
         has_suite = any(
             isinstance(s, dict) and s.get("recipe") == "wasm-worker-check" for s in suites
         )
@@ -733,7 +736,7 @@ console.log(JSON.stringify({
             "problems": [f"WASM runtime execution failed: {(res.stderr or res.stdout).strip()}"],
         }
     try:
-        payload = json.loads(res.stdout.strip())
+        payload: dict[str, Any] = json.loads(res.stdout.strip())
     except ValueError:
         payload = {"raw": res.stdout.strip()}
     return {

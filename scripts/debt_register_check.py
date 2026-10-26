@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """The tech-debt register against reality — does a row still describe something true?
 
-    python3 project/scripts/debt_register_check.py             # advisory, exits 0
-    python3 project/scripts/debt_register_check.py --enforce   # exits 1 on a rotted row
+    python3 scripts/debt_register_check.py             # advisory, exits 0
+    python3 scripts/debt_register_check.py --enforce   # exits 1 on a rotted row
 
 `CLAUDE.md` instructs *"read before building, delete rows the ticket pays down"* — and **nothing
 checks that either half happened**. The markers side is automated (`just tech-debt` greps

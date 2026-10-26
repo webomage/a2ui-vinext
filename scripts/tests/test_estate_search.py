@@ -15,10 +15,7 @@ import sys
 from pathlib import Path
 
 _HERE = Path(__file__).resolve()
-for _cand in (_HERE.parents[1], _HERE.parents[4] / "scripts"):
-    if (_cand / "estate_search.py").is_file():
-        sys.path.insert(0, str(_cand))
-        break
+sys.path.insert(0, str(_HERE.parents[1]))
 import estate_search as S  # noqa: E402
 
 

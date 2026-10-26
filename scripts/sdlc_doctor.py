@@ -384,8 +384,8 @@ def check_ticket_parity(problems: list[str], notes: list[str]) -> None:
         return
 
 
-    # ⚠️ Keep in lockstep with wom7web/project/scripts/state_doctor.py::TASKS_ROW_RE and
-    #    wom7web/project/scripts/backfill_tickets.py. FIXED 2026-08-05: the board moved to markdown
+    # ⚠️ Keep in lockstep with scripts/state_doctor.py::TASKS_ROW_RE and
+    #    scripts/backfill_tickets.py. FIXED 2026-08-05: the board moved to markdown
     #    links (`| [T12](…) |`) and this pattern — which only tolerated bare or emphasised ids —
     #    matched 0 of 155 rows, so every open ticket read as missing a row.
     rows = set(re.findall(r"^\|\s*[*_`]*\s*\[?\s*(T\d+[a-z]?)\s*\]?", tasks_md.read_text(), re.M))
@@ -404,7 +404,7 @@ def check_ticket_parity(problems: list[str], notes: list[str]) -> None:
         problems.append(
             f"{len(missing_files)} TASKS.md row(s) have no ticket file — invisible to the "
             f"SDLC gates AND to the GitHub mirror: {shown}. "
-            "Fix: python3 project/scripts/backfill_tickets.py"
+            "Fix: python3 scripts/backfill_tickets.py"
         )
 
     # file -> row: only OPEN tickets matter; a done ticket may have been archived off the board.

@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-SDLC_JSON = ROOT / "wom7web" / ".w0m" / "sdlc.json"
+SDLC_JSON = ROOT / ".w0m" / "sdlc.json"
 
 FORBIDDEN_GIT_SUBCOMMANDS = frozenset({
     "fetch",
@@ -62,9 +62,8 @@ def run_git_readonly(repo_path: Path, args: list[str]) -> subprocess.CompletedPr
 
 
 def load_branch_model(root: Path) -> dict[str, Any]:
-    """Load the branch_model contract from wom7web/.w0m/sdlc.json (or root/.w0m/sdlc.json)."""
+    """Load the branch_model contract from .w0m/sdlc.json."""
     candidates = [
-        root / "wom7web" / ".w0m" / "sdlc.json",
         root / ".w0m" / "sdlc.json",
         SDLC_JSON,
     ]

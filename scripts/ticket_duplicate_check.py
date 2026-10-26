@@ -6,11 +6,11 @@ summaries, and acceptance criteria to detect duplicate tasks and scope overlap
 before or after entering the queue.
 
 Usage:
-    python3 project/scripts/ticket_duplicate_check.py                   # audit active corpus
-    python3 project/scripts/ticket_duplicate_check.py --enforce         # exit 1 if duplicates found
-    python3 project/scripts/ticket_duplicate_check.py --check-ticket T397  # check specific ticket
-    python3 project/scripts/ticket_duplicate_check.py --check-draft draft.md # pre-flight check
-    python3 project/scripts/ticket_duplicate_check.py --json            # JSON output
+    python3 scripts/ticket_duplicate_check.py                   # audit active corpus
+    python3 scripts/ticket_duplicate_check.py --enforce         # exit 1 if duplicates found
+    python3 scripts/ticket_duplicate_check.py --check-ticket T397  # check specific ticket
+    python3 scripts/ticket_duplicate_check.py --check-draft draft.md # pre-flight check
+    python3 scripts/ticket_duplicate_check.py --json            # JSON output
 """
 
 from __future__ import annotations

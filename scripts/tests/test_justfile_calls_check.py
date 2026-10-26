@@ -57,6 +57,26 @@ class JustfileCallsCheck(unittest.TestCase):
         self.assertEqual(r.returncode, 2, r.stdout)
         self.assertIn("cannot measure", r.stdout)
 
+    def test_reverse_forwarder_fails(self):
+        r = run("deploy:\n    @just --justfile ../justfile deploy\n")
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn("reverse forwarder", r.stdout)
+
+    def test_duplicate_recipe_across_justfiles_fails(self):
+        d = Path(tempfile.mkdtemp(prefix="jcc-dup-"))
+        jf1 = d / "justfile"
+        jf2 = d / "sub" / "justfile"
+        jf2.parent.mkdir(parents=True)
+        jf1.write_text("tasks:\n    @echo root\n")
+        jf2.write_text("tasks:\n    @echo sub\n")
+        r = subprocess.run(
+            [sys.executable, str(SCRIPT), "--justfile", str(jf1), "--justfile", str(jf2)],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn("duplicate recipe name", r.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

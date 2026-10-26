@@ -73,7 +73,7 @@ def resolve_tickets_dir(search_root: Path | None = None) -> Path:
 
 
 TICKETS = resolve_tickets_dir()
-TASKS_MD = WORKSPACE_ROOT / "TASKS.md" if (WORKSPACE_ROOT / "TASKS.md").is_file() else WEB_ROOT / "TASKS.md"
+TASKS_MD = WORKSPACE_ROOT / "TASKS.md"
 
 # ── the scoring model, stated in one place so it can be argued with ──────────
 PRIORITY_WEIGHT = {"P0": 100, "P1": 60, "P2": 25, "P3": 10, "": 15}
@@ -445,7 +445,7 @@ def fmt_table(rows: list[dict], show_parts: bool) -> str:
 def _repo_slug() -> str:
     """The forge repo, read from config — never hardcoded (CLAUDE.md: read it from `.w0m/sdlc.json`)."""
     try:
-        cfg = json.loads(((WORKSPACE_ROOT / ".w0m" / "sdlc.json") if (WORKSPACE_ROOT / ".w0m" / "sdlc.json").is_file() else (WEB_ROOT / ".w0m" / "sdlc.json")).read_text(encoding="utf-8"))
+        cfg = json.loads((WORKSPACE_ROOT / ".w0m" / "sdlc.json").read_text(encoding="utf-8"))
         return cfg.get("vcs", {}).get("repo", "") or ""
     except (OSError, ValueError):
         return ""
@@ -1367,7 +1367,7 @@ def load_plan(epic: str | None = None,
       4. Dynamic Ticket Set: `--tickets T232,T192` builds a plan for those tickets
       5. Dynamic Tag: `--tag <name>` builds a plan for all tickets with that tag
     """
-    f = ((WORKSPACE_ROOT / ".w0m" / "sdlc.json") if (WORKSPACE_ROOT / ".w0m" / "sdlc.json").is_file() else (WEB_ROOT / ".w0m" / "sdlc.json"))
+    f = WORKSPACE_ROOT / ".w0m" / "sdlc.json"
     conf = {}
     try:
         conf = json.loads(f.read_text())

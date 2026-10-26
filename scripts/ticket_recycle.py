@@ -5,8 +5,8 @@ Repurposes closed duplicate ticket IDs with new task content while strictly
 preserving the T<n> == gh_issue == #<n> 1:1 invariant across local files and GitHub.
 
 Usage:
-    python3 project/scripts/ticket_recycle.py --list
-    python3 project/scripts/ticket_recycle.py --recycle T398 --draft draft.md [--no-sync]
+    python3 scripts/ticket_recycle.py --list
+    python3 scripts/ticket_recycle.py --recycle T398 --draft draft.md [--no-sync]
 """
 
 from __future__ import annotations

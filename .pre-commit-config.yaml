@@ -71,7 +71,7 @@ repos:
 
       - id: tickets-frontmatter
         name: Refresh ticket frontmatter (derived x_* fields)
-        entry: sh -c 'python3 wom7web/project/scripts/tickets_frontmatter_sync.py --porcelain | xargs -r git add'
+        entry: sh -c 'python3 scripts/tickets_frontmatter_sync.py --porcelain | xargs -r git add'
         language: system
         files: ^(\.tasks/T\d+\.md|TASKS\.md|scripts/tasks_query\.py)$
         pass_filenames: false

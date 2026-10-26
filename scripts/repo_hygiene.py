@@ -6,10 +6,10 @@ clean and 1 on any violation. Reached through `just docs-check` / `just license-
 `just secrets-check`, declared in `project/stacks-policy.json` under the matching `commands` role
 with an explicit `gates` phase.
 
-    python3 project/scripts/repo_hygiene.py docs
-    python3 project/scripts/repo_hygiene.py license
-    python3 project/scripts/repo_hygiene.py secrets
-    python3 project/scripts/repo_hygiene.py all --json
+    python3 scripts/repo_hygiene.py docs
+    python3 scripts/repo_hygiene.py license
+    python3 scripts/repo_hygiene.py secrets
+    python3 scripts/repo_hygiene.py all --json
 
 THE EMPTY-INPUT-SET RULE (AC7 / tasks.md 7.2)
 ---------------------------------------------

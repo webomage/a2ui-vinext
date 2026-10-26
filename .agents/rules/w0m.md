@@ -71,7 +71,7 @@ These are not style preferences. Each exists because breaking it has already cos
   is read from `wom7web/.w0m/sdlc.json`, never hardcoded.
 - **Commands go through `just`**, not raw `pnpm`/`npx`/`tsc`/`deno`/`wrangler`/`supabase`.
   `just discovery` gates it.
-- **Deploy runs from `wom7api/`** (`cd wom7api && just deploy`) — recipes use bare `supabase/` paths.
+- **Deploy runs from `wom7api/`** (`just deploy` from `@wom`) — recipes use bare `supabase/` paths.
 - **Local dev**: `just redev`, then test on `http://localhost:4321`.
 - ⚠️ **wom7api is a hybrid runtime**: pnpm for the Worker, Deno for edge functions. `deno install`
   at its root clobbers the pnpm `node_modules`.

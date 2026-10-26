@@ -66,12 +66,17 @@ def executable(line: str) -> str:
     return re.sub(r"'[^']*'|\"[^\"]*\"", "''", s)
 
 
+REVERSE_FORWARDER_RE = re.compile(r"(?<![\w./-])just\s+(?:--justfile|-f)\s+\.\./justfile\b")
+
+
 def scan(data: dict) -> tuple[int, int, int, list[str]]:
     names = set(data["recipes"]) | set(data.get("aliases", {}))
     calls = dynamic = 0
     bad: list[str] = []
     for rname, recipe in sorted(data["recipes"].items()):
         for line in map(executable, body_lines(recipe)):
+            if REVERSE_FORWARDER_RE.search(line):
+                bad.append(f"{rname}: reverse forwarder `--justfile ../justfile` is prohibited (T509 AC3)")
             for m in CALL_RE.finditer(line):
                 flags, target = m.group(1), m.group(2).strip()
                 if any(f in flags.split() for f in DELEGATING_FLAGS):
@@ -96,6 +101,7 @@ def main() -> int:
     targets = args.justfile or [ROOT / "justfile", ROOT / "wom7api" / "justfile"]
 
     failed = unmeasured = False
+    seen_recipes: dict[str, Path] = {}
     for jf in targets:
         data = dump(jf)
         if not data or not data.get("recipes"):
@@ -103,6 +109,13 @@ def main() -> int:
             unmeasured = True
             continue
         n, calls, dynamic, bad = scan(data)
+        for rname in sorted(data["recipes"]):
+            if rname in seen_recipes:
+                prev = seen_recipes[rname]
+                prev_rel = prev.relative_to(ROOT) if prev.is_relative_to(ROOT) else prev
+                bad.append(f"{rname}: duplicate recipe name across {prev_rel} and {jf.relative_to(ROOT) if jf.is_relative_to(ROOT) else jf} (T509 AC3)")
+            else:
+                seen_recipes[rname] = jf
         for b in bad:
             print(f"  ✗ {b}")
         verdict = "❌" if bad else "✅"

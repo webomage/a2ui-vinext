@@ -150,7 +150,7 @@ def _strip_trailing_commas(text: str) -> str:
 def parse_wrangler_config(path: Path, root: Path = ESTATE_ROOT) -> dict[str, Any]:
     """Parse a single wrangler.jsonc / wrangler.json file and summarize its bindings."""
     raw = path.read_text(encoding="utf-8")
-    data = json.loads(strip_jsonc(raw))
+    data: dict[str, Any] = json.loads(strip_jsonc(raw))
     rel_path = str(path.resolve().relative_to(root.resolve()))
 
     bindings: dict[str, list[str]] = {}

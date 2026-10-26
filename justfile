@@ -23,6 +23,14 @@ export W0M_DEPLOY_AT := env_var_or_default('W0M_DEPLOY_AT', `date -u +%Y-%m-%dT%
 deploy_version := W0M_DEPLOY_VERSION
 deploy_at := W0M_DEPLOY_AT
 deploy_commit := `git rev-parse --short HEAD`
+
+export GH_CONFIG_DIR := env_var_or_default("GH_CONFIG_DIR", env_var("HOME") + "/.config/gh-w0m")
+OMLX_URL := env_var_or_default("OMLX_URL", "http://127.0.0.1:8888/v1")
+OMLX_MODEL := env_var_or_default("OMLX_MODEL", "gemma-4-e4b-it-4bit")
+quartz_port := "8099"
+quartz_tag := "v5.0.0"
+
+import 'just/estate.just'
 # wom7api/supabase/config.toml reads `env(W0M_DB_MIGRATIONS)`, which has no default: unset means
 # EVERY `supabase` command fails with ProjectConfigParseError (T248). Recipes here that call the CLI
 # directly (`deploy-function`, `deploy-functions`) need the same export wom7api/justfile carries;
@@ -30,7 +38,25 @@ deploy_commit := `git rev-parse --short HEAD`
 export W0M_DB_MIGRATIONS := env_var_or_default('W0M_DB_MIGRATIONS', 'true')
 
 default:
-    @just --justfile wom7web/justfile default
+    @echo "================================================================================"
+    @echo "w0m — Webomage Estate Command Runner"
+    @echo "================================================================================"
+    @echo ""
+    @echo "Primary Workflows:"
+    @echo "  just tasks             Ranked task queue & triage (hot list, SDLC rank)"
+    @echo "  just prs-open          Fresh status table of open PRs in wom7pr"
+    @echo "  just forks             Status table of all upstream forks in wom7pr"
+    @echo "  just ask \"<symbol>\"    Query codebase knowledge graph (graph before grep)"
+    @echo "  just test              Run project test suites"
+    @echo "  just dev               Start local development server"
+    @echo "  just status-dashboard  Show current estate & roadmap status dashboard"
+    @echo "  just preflight         Verify environment, MCP, and estate reachability"
+    @echo ""
+    @echo "Command Discovery:"
+    @echo "  just --list            List all available recipes with docstrings"
+    @echo "  just <recipe> --help   Inspect arguments/flags for a specific recipe"
+    @echo "  just do <recipe>       Run any wom7web recipe from workspace root"
+    @echo ""
 
 # ── Queue & Triage (T146 / T232 / T412) ─────────────────────────────────────
 # Hot list, SDLC rank, dynamic epic/ticket-set plan projections, and triage tools
@@ -42,7 +68,7 @@ eli5 *args:
     @python3 scripts/ticket_eli5.py "$@"
 
 eli5-test:
-    @python3 wom7web/project/scripts/tests/test_ticket_eli5.py
+    @python3 scripts/tests/test_ticket_eli5.py
 
 system-one-test:
     @python3 wom7web/project/scripts/tests/test_system_one.py
@@ -87,13 +113,13 @@ ticket-audit *args:
     @python3 scripts/ticket_audit.py {{ args }}
 
 ticket-audit-test:
-    @python3 wom7web/project/scripts/tests/test_ticket_audit.py
+    @python3 scripts/tests/test_ticket_audit.py
 
 sync-tickets *args:
     @python3 scripts/sync_github.py {{ args }}
 
 sync-tickets-test:
-    @python3 wom7web/project/scripts/tests/test_ticket_sync.py
+    @python3 scripts/tests/test_ticket_sync.py
 
 [positional-arguments]
 diagram *args:
@@ -128,19 +154,19 @@ tasks-bounds *args:
     @python3 scripts/tasks_bounds.py {{ args }}
 
 tasks-bounds-test:
-    @python3 wom7web/project/scripts/tests/test_tasks_bounds.py
+    @python3 scripts/tests/test_tasks_bounds.py
 
 tasks-rotate *args:
     @python3 scripts/tasks_rotate.py {{ args }}
 
 tasks-rotate-test:
-    @python3 wom7web/project/scripts/tests/test_tasks_rotate.py
+    @python3 scripts/tests/test_tasks_rotate.py
 
 ticket-schema-check *args:
     @python3 scripts/ticket_schema_check.py {{ args }}
 
 ticket-schema-check-test:
-    @python3 wom7web/project/scripts/tests/test_ticket_schema_check.py
+    @python3 scripts/tests/test_ticket_schema_check.py
 
 ticket-deps *args:
     @python3 scripts/ticket_deps.py {{ args }}
@@ -149,7 +175,7 @@ ticket-deps-test:
     @python3 scripts/ticket_deps.py --test
 
 blocker-detection-test:
-    @python3 wom7web/project/scripts/tests/test_blocker_detection.py
+    @python3 scripts/tests/test_blocker_detection.py
 
 ticket-graph *args:
     @python3 scripts/ticket_graph.py {{ args }}
@@ -158,7 +184,7 @@ ac-recipe-check *args:
     @python3 scripts/ac_recipe_check.py {{ args }}
 
 ac-recipe-check-test:
-    @python3 wom7web/project/scripts/tests/test_ac_recipe_check.py
+    @python3 scripts/tests/test_ac_recipe_check.py
 
 ac-trace-check *args:
     @python3 scripts/ac_trace_check.py {{ args }}
@@ -168,7 +194,7 @@ spec-drift *args:
     @python3 scripts/spec_drift_gate.py {{ args }}
 
 spec-drift-ownership-test:
-    @python3 wom7web/project/scripts/tests/test_spec_drift_ownership.py
+    @python3 scripts/tests/test_spec_drift_ownership.py
 
 spec-reality *args:
     @python3 scripts/spec_reality_check.py {{ args }}
@@ -177,7 +203,7 @@ spec-standard *args:
     @python3 scripts/spec_standard_check.py {{ args }}
 
 spec-standard-test:
-    @python3 wom7web/project/scripts/tests/test_spec_standard.py
+    @python3 scripts/tests/test_spec_standard.py
 
 spec-systems *args:
     @python3 scripts/spec_systems_gate.py {{ args }}
@@ -189,14 +215,14 @@ sdlc-trace *args:
     @python3 scripts/sdlc_trace.py {{ args }}
 
 sdlc-trace-test:
-    @python3 wom7web/project/scripts/tests/test_sdlc_trace.py
+    @python3 scripts/tests/test_sdlc_trace.py
 
 # ── Design System & Shipping Code Reconciliation (T420) ──────────────────────
 ds-check *args:
     @python3 scripts/ds_check.py {{ args }}
 
 ds-check-test:
-    @python3 wom7web/project/scripts/tests/test_ds_check.py
+    @python3 scripts/tests/test_ds_check.py
 
 ds-react-free-test:
     @python3 -m unittest scripts/tests/test_design_system_react_free.py
@@ -254,61 +280,61 @@ forks-sync *args:
     @python3 scripts/w0m_prs.py update {{ args }}
 
 prs-test:
-    @python3 wom7web/project/scripts/tests/test_w0m_prs.py
+    @python3 scripts/tests/test_w0m_prs.py
 
 rename-audit *args:
-    @just --justfile wom7web/justfile rename-audit {{ args }}
+    @python3 scripts/rename_audit.py {{ args }}
 
 rename-audit-test:
-    @just --justfile wom7web/justfile rename-audit-test
+    @python3 scripts/tests/test_rename_audit.py
 
 decommission-check *args:
-    @just --justfile wom7web/justfile decommission-check {{ args }}
+    @python3 scripts/decommission_check.py {{ args }}
 
 decommission-check-test:
-    @just --justfile wom7web/justfile decommission-check-test
+    @python3 scripts/tests/test_decommission_check.py
 
 default-test:
-    @just --justfile wom7web/justfile default-test
+    @cd wom7web && python3 project/scripts/tests/test_just_default.py
 
 # ── Ticket Duplication Checks (T403 / T414) ──────────────────────────────────
 ticket-dups *args:
     @python3 scripts/ticket_duplicate_check.py {{ args }}
 
 ticket-dups-test:
-    @python3 wom7web/project/scripts/tests/test_ticket_duplicate_check.py
+    @python3 scripts/tests/test_ticket_duplicate_check.py
 
 # ── Automated Ticket Recycling (T397 / T414) ─────────────────────────────────
 ticket-recycle *args:
     @python3 scripts/ticket_recycle.py {{ args }}
 
 ticket-recycle-test:
-    @python3 wom7web/project/scripts/tests/test_ticket_recycle.py
+    @python3 scripts/tests/test_ticket_recycle.py
 
 # ── Zero-NPX Invariant Audit (T398 / T414) ───────────────────────────────────
 npx-audit *args:
     @python3 scripts/npx_audit.py {{ args }}
 
 npx-audit-test:
-    @python3 wom7web/project/scripts/tests/test_npx_audit.py
+    @python3 scripts/tests/test_npx_audit.py
 
 # ── Authorization Admin Client Ratchet (T202 / T327) ──────────────────────────
 authz-admin-client *args:
-    @just --justfile wom7web/justfile authz-admin-client {{ args }}
+    @cd wom7web && python3 project/scripts/authz_admin_client_triage.py {{args}}
 
 # T453 — live default-deny probe (read-only; run after the owner's deploy) and its offline red probes.
 route-policy-live *args:
-    @just --justfile wom7web/justfile route-policy-live {{ args }}
+    @cd wom7web && python3 project/scripts/live_route_probe.py {{ args }}
 
 route-policy-live-test:
-    @just --justfile wom7web/justfile route-policy-live-test
+    @cd wom7web && python3 project/scripts/tests/test_live_route_probe.py
 
 # T453 AC7 — cross-app route-policy check. Forwards to wom7api/justfile, where the recipe lives.
 route-policy-check:
-    @just --justfile wom7web/justfile route-policy-check
+    @cd wom7web && ASTRO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 pnpm exec vitest run packages/lib/src/auth/route-inventory.spec.ts packages/lib/src/auth/api-default-deny.spec.ts
 
 authz-admin-client-test:
-    @just --justfile wom7web/justfile authz-admin-client-test
+    @cd wom7web && python3 project/scripts/authz_admin_client_triage.py --test
 
 # ── macOS Host Security Posture (T233 / T414) ─────────────────────────────────
 host-posture *args:
@@ -318,11 +344,11 @@ host-posture-check:
     @python3 scripts/host_posture.py --enforce
 
 host-posture-test:
-    @python3 wom7web/project/scripts/tests/test_host_posture.py
+    @python3 scripts/tests/test_host_posture.py
 
 # ── Preflight & SDLC Doctor (T414) ───────────────────────────────────────────
 preflight *args:
-    @just --justfile wom7web/justfile preflight {{ args }}
+    @python3 scripts/preflight.py {{ args }}
 
 sdlc-doctor *args:
     @python3 scripts/sdlc_doctor.py {{ args }}
@@ -335,67 +361,174 @@ ticket-paths ticket:
     @python3 scripts/check_ticket_paths.py {{ ticket }}
 
 ticket-paths-test:
-    @python3 wom7api/scripts/tests/test_check_ticket_paths.py
+    @python3 scripts/tests/test_check_ticket_paths.py
 
 # ── Tech Debt Register (T228 / T414) ─────────────────────────────────────────
 debt-check *args:
     @python3 scripts/debt_register_check.py {{ args }}
 
 debt-check-test:
-    @python3 wom7web/project/scripts/tests/test_debt_register_check.py
+    @python3 scripts/tests/test_debt_register_check.py
 
 lexicon-lint-test:
     @python3 wom7web/project/scripts/tests/test_lexicon_lint.py
 
 schema-check *args:
-    @python3 wom7web/project/scripts/schema_check.py {{ args }}
+    @python3 scripts/schema_check.py {{ args }}
 
 schema-check-test:
-    @python3 wom7web/project/scripts/tests/test_schema_check.py
+    @python3 scripts/tests/test_schema_check.py
 
 # Forwarding target for running any arbitrary wom7web recipe from workspace root
 do recipe *args:
-    @just --justfile wom7web/justfile {{ recipe }} {{ args }}
+    @just {{ recipe }} {{ args }}
 
 # ── Knowledge & Graph ────────────────────────────────────────────────────────
 ask question repo="":
-    @just --justfile wom7web/justfile ask "{{ question }}" "{{ repo }}"
+    #!/usr/bin/env bash
+    set -uo pipefail
+    q="{{ question }}"; only="{{ repo }}"
+    [ -z "$q" ] && { echo "usage: just ask \"<question>\" [repo]"; exit 1; }
+    if [ "${W0M_SKIP_GRAPH_FRESH:-0}" != "1" ]; then
+        python3 scripts/graph_fresh.py --quiet || {
+            echo "❌ refusing to answer from a graph that may be stale — see the error above"; exit 1; }
+    fi
+    if command -v codegraph >/dev/null 2>&1; then
+        for r in root wom7web wom7api wom7func; do
+            [ -n "$only" ] && [ "$r" != "$only" ] && continue
+            if [ "$r" = "root" ]; then d="."; else d="$r"; fi
+            [ -d "$d/.codegraph" ] || continue
+            echo "───────── codegraph: $r ─────────"
+            (cd "$d" && codegraph explore "$q" 2>/dev/null | head -60) || echo "  (no result)"
+        done
+    fi
+    if [ -z "$only" ] || [ "$only" = "root" ]; then
+        echo "───────── root symbols (estate_search --repo root) ─────────"
+        python3 scripts/estate_search.py "$q" --repo root --cap 20 || true
+    fi
+    if [ "$only" = "root" ]; then
+        if [ -f "scripts/graphify-out/graph.json" ]; then
+            echo "───────── graphify (root) ─────────"
+            (graphify query "$q" --graph "scripts/graphify-out/graph.json" --budget 800 2>/dev/null | head -40) || true
+        fi
+    elif [ -n "$only" ]; then
+        if [ -f "$only/graphify-out/graph.json" ]; then
+            echo "───────── graphify ($only) ─────────"
+            (graphify query "$q" --graph "$only/graphify-out/graph.json" --budget 800 2>/dev/null | head -40) || true
+        fi
+    elif [ -f "$HOME/.graphify/global-graph.json" ]; then
+        echo "───────── graphify (united 7-repo graph) ─────────"
+        (graphify query "$q" --graph "$HOME/.graphify/global-graph.json" --budget 800 2>/dev/null | head -40) || true
+    elif [ -f "wom7web/graphify-out/graph.json" ]; then
+        echo "───────── graphify (semantic/community view, wom7web) ─────────"
+        (graphify query "$q" --graph "wom7web/graphify-out/graph.json" --budget 800 2>/dev/null | head -40) || true
+    fi
 
 graph-global *args:
-    @just --justfile wom7web/justfile graph-global {{ args }}
+    @python3 scripts/graph_global.py {{ args }}
 
 graph-health *args:
-    @just --justfile wom7web/justfile graph-health {{ args }}
+    @python3 scripts/graph_health.py {{ args }}
 
-crg-serve *args:
-    @just --justfile wom7web/justfile crg-serve {{ args }}
+crg-serve repo="wom7web":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    REPO_DIR="{{ repo }}"
+    DATA_DIR="$HOME/.cache/code-review-graph/{{ repo }}"
+    if [ ! -d "$REPO_DIR" ]; then
+        echo "❌ Repo directory $REPO_DIR does not exist."
+        exit 1
+    fi
+    echo "🌐 Starting Code-Review-Graph live visualizer for {{ repo }} on http://localhost:8765 ..."
+    (xdg-open "http://localhost:8765" 2>/dev/null || open "http://localhost:8765" 2>/dev/null || true)
+    code-review-graph visualize --repo "$REPO_DIR" --data-dir "$DATA_DIR" --serve
 
-crg-open *args:
-    @just --justfile wom7web/justfile crg-open {{ args }}
+crg-open repo="wom7web":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    REPO_DIR="{{ repo }}"
+    DATA_DIR="$HOME/.cache/code-review-graph/{{ repo }}"
+    if [ ! -d "$REPO_DIR" ]; then
+        echo "❌ Repo directory $REPO_DIR does not exist."
+        exit 1
+    fi
+    code-review-graph visualize --repo "$REPO_DIR" --data-dir "$DATA_DIR" --format html
+    (xdg-open "$DATA_DIR/graph.html" 2>/dev/null || open "$DATA_DIR/graph.html" 2>/dev/null || true)
 
-crg-extract *args:
-    @just --justfile wom7web/justfile crg-extract {{ args }}
+crg-extract repo="wom7web":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    REPO_DIR="{{ repo }}"
+    DATA_DIR="$HOME/.cache/code-review-graph/{{ repo }}"
+    echo "🔍 Extracting code-review-graph for {{ repo }} into $DATA_DIR ..."
+    code-review-graph extract --repo "$REPO_DIR" --data-dir "$DATA_DIR"
 
-graph-tree *args:
-    @just --justfile wom7web/justfile graph-tree {{ args }}
+graph-tree repo="wom7web":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ "{{ repo }}" = "global" ]; then
+        graphify tree --graph "$HOME/.graphify/global-graph.json" --output "$HOME/.graphify/GLOBAL_TREE.html" --label "w0m-global"
+        (xdg-open "$HOME/.graphify/GLOBAL_TREE.html" 2>/dev/null || open "$HOME/.graphify/GLOBAL_TREE.html" 2>/dev/null || true)
+    else
+        REPO_DIR="{{ repo }}"
+        GRAPH_PATH="$REPO_DIR/graphify-out/graph.json"
+        OUT_PATH="$REPO_DIR/graphify-out/GRAPH_TREE.html"
+        graphify tree --graph "$GRAPH_PATH" --output "$OUT_PATH" --label "{{ repo }}"
+        (xdg-open "$OUT_PATH" 2>/dev/null || open "$OUT_PATH" 2>/dev/null || true)
+    fi
 
-graph-callflow *args:
-    @just --justfile wom7web/justfile graph-callflow {{ args }}
+graph-callflow repo="wom7web":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    REPO_DIR="{{ repo }}"
+    graphify export callflow-html "$REPO_DIR"
+    OUT_PATH="$REPO_DIR/graphify-out/{{ repo }}-callflow.html"
+    (xdg-open "$OUT_PATH" 2>/dev/null || open "$OUT_PATH" 2>/dev/null || true)
 
-graph-query *args:
-    @just --justfile wom7web/justfile graph-query {{ args }}
+graph-query query repo="wom7web":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ "{{ repo }}" = "global" ]; then
+        graphify query "{{ query }}" --graph "$HOME/.graphify/global-graph.json"
+    else
+        graphify query "{{ query }}" --graph "{{ repo }}/graphify-out/graph.json"
+    fi
 
-graph-explain *args:
-    @just --justfile wom7web/justfile graph-explain {{ args }}
+graph-explain concept repo="wom7web":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ "{{ repo }}" = "global" ]; then
+        graphify explain "{{ concept }}" --graph "$HOME/.graphify/global-graph.json"
+    else
+        graphify explain "{{ concept }}" --graph "{{ repo }}/graphify-out/graph.json"
+    fi
 
-graph-path *args:
-    @just --justfile wom7web/justfile graph-path {{ args }}
+graph-path a b repo="wom7web":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ "{{ repo }}" = "global" ]; then
+        graphify path "{{ a }}" "{{ b }}" --graph "$HOME/.graphify/global-graph.json"
+    else
+        graphify path "{{ a }}" "{{ b }}" --graph "{{ repo }}/graphify-out/graph.json"
+    fi
 
-graph-affected *args:
-    @just --justfile wom7web/justfile graph-affected {{ args }}
+graph-affected x depth="2" repo="wom7web":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ "{{ repo }}" = "global" ]; then
+        graphify affected "{{ x }}" --depth {{ depth }} --graph "$HOME/.graphify/global-graph.json"
+    else
+        graphify affected "{{ x }}" --depth {{ depth }} --graph "{{ repo }}/graphify-out/graph.json"
+    fi
 
-graph-benchmark *args:
-    @just --justfile wom7web/justfile graph-benchmark {{ args }}
+graph-benchmark repo="wom7web":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ "{{ repo }}" = "global" ]; then
+        graphify benchmark "$HOME/.graphify/global-graph.json"
+    else
+        graphify benchmark "{{ repo }}/graphify-out/graph.json"
+    fi
 
 # ── Deployment Machinery & Elevation (T131 / T161 / T421) ─────────────────────
 # One producer for the estate's release-version schema (T131 AC1).
@@ -428,7 +561,7 @@ version:
 # because what had rotted was the description, not the gate.
 # Policy is DATA: project/confirm-policy.json. Unrecognised step => confirm (fail closed).
 _confirm step:
-    @python3 wom7web/project/scripts/confirm_step.py {{ step }}
+    @python3 scripts/confirm_step.py {{ step }}
 
 # Red probes for the confirmation gate (T161 AC3, extended by T407, T435, T471, and T541). 66 cases: it must
 # withhold from an automated caller, refuse a piped "yes", refuse an agent session even with a pty
@@ -438,15 +571,15 @@ _confirm step:
 # gate still matches `confirm-policy.json`, in both directions, with an unreadable surface failing
 # as UNMEASURABLE rather than passing on zero bytes.
 confirm-test:
-    @python3 wom7web/project/scripts/tests/test_confirm_step.py
+    @python3 scripts/tests/test_confirm_step.py
 
 # Which confirmation channels does THIS shell expose?
 confirm-doctor:
-    @python3 wom7web/project/scripts/confirm_step.py --doctor
+    @python3 scripts/confirm_step.py --doctor
 
 # Enroll or rotate a 6-digit TOTP secret for cross-device confirmation
 confirm-enroll-totp:
-    @python3 wom7web/project/scripts/confirm_step.py --enroll-totp
+    @python3 scripts/confirm_step.py --enroll-totp
 
 # Every `pnpm --filter <app> build` below runs from `wom7web`, never from @wom. @wom's package.json
 # has no `packageManager` pin and is not the pnpm workspace, so from here PATH's pnpm (12.x) ran the
@@ -553,19 +686,48 @@ check-guardrails:
     @echo "✅ security gate passed"
 
 check-warp:
-    @just --justfile wom7api/justfile check-warp
+    @echo "Checking Cloudflare WARP and deploy-host reachability..."
+    @status=$(warp-cli --accept-tos status 2>/dev/null | head -1); \
+    if ! echo "$status" | grep -q "Connected"; then \
+    	echo "  WARP not connected ($status) — connecting..."; \
+    	warp-cli --accept-tos connect >/dev/null 2>&1 || true; \
+    	for i in $(seq 1 45); do \
+    		sleep 1; \
+    		status=$(warp-cli --accept-tos status 2>/dev/null | head -1); \
+    		if echo "$status" | grep -q "Connected"; then break; fi; \
+    	done; \
+    fi; \
+    if ! echo "$status" | grep -q "Connected"; then \
+    	echo "❌ WARP never reached Connected (last: $status)."; \
+    	echo "   A half-connected WARP intercepts traffic without routing it — deploying through it"; \
+    	echo "   fails at the first network call. Wait for it, or 'warp-cli disconnect' and retry."; \
+    	exit 1; \
+    fi; \
+    echo "  ✅ WARP $status"
+    @for host in app.infisical.com {{ project_ref }}.supabase.co; do \
+    	code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 12 "https://$host"); rc=$?; \
+    	if [ "$rc" -ne 0 ] || [ "$code" = "000" ] || [ -z "$code" ]; then \
+    		echo "❌ $host unreachable (curl timed out). Deploy would fail at the first call."; \
+    		echo "   Usually a half-up WARP or a dropped link. Check 'warp-cli status', then retry."; \
+    		exit 1; \
+    	fi; \
+    	echo "  ✅ $host reachable (HTTP $code)"; \
+    done
+    @python3 scripts/check_db_host.py --host db.{{ project_ref }}.supabase.co
 
 check-auth:
-    @just --justfile wom7api/justfile check-auth
+    @echo "Verifying Supabase project access for {{ project_ref }}..."
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'supabase projects list | grep -q "{{ project_ref }}" || (echo "❌ Error: Project {{ project_ref }} not found." && exit 1)'
+    @echo "✅ Authorized for project {{ project_ref }}"
 
 check-supabase:
-    @just --justfile wom7api/justfile check-supabase
+    @echo "Supabase functions for project {{ project_ref }}"
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- supabase functions list --project-ref {{ project_ref }} || true
 
-supabase-redeploy-all:
-    @just --justfile wom7api/justfile supabase-redeploy-all
+supabase-redeploy-all: (_confirm "supabase-redeploy-all") sync-secrets ensure-cv-bucket deploy-functions
 
-db-migrate *args:
-    @just --justfile wom7api/justfile db-migrate {{ args }}
+db-migrate: (_confirm "db-migrate") db-drift-check
+    @cd wom7api && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 ../wom7web/project/scripts/db_migrate.py
 
 # T551 AC4 — allocate the next free 14-digit migration version from origin/beta + local migrations and create wom7api/supabase/migrations/<version>_<name>.sql.
 migration-new name:
@@ -573,16 +735,68 @@ migration-new name:
 
 # T529 — clients & client_users retirement verification and offline tests
 clients-retirement-verify *args:
-    @just --justfile wom7api/justfile clients-retirement-verify {{ args }}
+    @cd wom7web && python3 project/scripts/clients_retirement_verify.py {{args}}
 
 clients-retirement-verify-test:
-    @just --justfile wom7api/justfile clients-retirement-verify-test
+    @cd wom7web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_clients_retirement_verify.py
 
-goldens *args:
-    @just --justfile wom7api/justfile goldens {{ args }}
+goldens:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd wom7web
+    # ALWAYS kill whatever is on :4321 first, then boot our own known-good server. Reusing a
+    # server left over from an interactive `redev` session (T222 original design) seemed cheaper,
+    # but a leftover server can be hung — mid-recompile, HMR-wedged — and `curl -sf` against it
+    # fails just like a real absence. This recipe then tries to boot a second instance, Astro's own
+    # single-instance lock correctly refuses it, the 60s wait against the still-hung original never
+    # gets a healthy response, and the EXIT trap (which must kill by PORT — see below) takes down
+    # that original server as a side effect (2026-09-06: killed the owner's own `just redev`).
+    # Killing it up front makes that outcome the deliberate, visible first line instead of an
+    # accidental side effect discovered 60s later.
+    lsof -ti tcp:4321 -sTCP:LISTEN 2>/dev/null | xargs -r kill 2>/dev/null || true
+    echo "🎨 Visual goldens — booting a dev server..."
+    ASTRO_DEV_BACKGROUND=1 infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web dev > /tmp/wom7web-goldens-dev.log 2>&1 &
+    DEV_PID=$!
+    # Kill it on ANY exit path, including the gauge failure this gate exists to produce.
+    # ⚠️ Kill by PORT, not by the PID we spawned. `infisical run -- pnpm dev` puts astro two
+    # levels down, so neither `kill $DEV_PID` nor `pkill -P $DEV_PID` reaches it — both were
+    # tried and both leaked, leaving a dev server holding :4321 (one orphan was still listening
+    # 2h43m later, reparented to launchd).
+    trap 'lsof -ti tcp:4321 -sTCP:LISTEN 2>/dev/null | xargs -r kill 2>/dev/null || true; kill $DEV_PID 2>/dev/null || true' EXIT
+    for i in $(seq 1 60); do
+      if curl -sf -o /dev/null http://localhost:4321/; then echo "✅ server ready after ${i}s"; break; fi
+      if [ "$i" -eq 60 ]; then echo "❌ dev server did not start in 60s"; tail -20 /tmp/wom7web-goldens-dev.log; exit 1; fi
+      sleep 1
+    done
+    # ⚠️ WARM UP UNTIL STABLE — a 200 is not readiness.
+    #
+    # A cold Astro dev server answers, then RE-OPTIMIZES dependencies and reloads, which aborts
+    # any navigation in flight. Measured on the owner's deploy 2026-08-16: the first two golden
+    # rows died with `net::ERR_ABORTED at http://localhost:4321/` and the remaining five passed —
+    # a gate failing for a reason that has nothing to do with the page, which is the "cries wolf"
+    # outcome this whole ticket exists to avoid. Two throwaway curls were not enough, because
+    # each of them can itself be the request that triggers the reload.
+    #
+    # So: require THREE consecutive successful loads spaced 2s apart. A restart in between resets
+    # the streak, so the loop only exits once the server has stopped reloading.
+    echo "🔥 warming the server until it stops reloading (a 200 is not readiness)..."
+    streak=0
+    for i in $(seq 1 45); do
+      if curl -sf -o /dev/null --max-time 10 http://localhost:4321/; then
+        streak=$((streak + 1))
+      else
+        streak=0
+      fi
+      if [ "$streak" -ge 3 ]; then echo "✅ stable after ${i} probe(s)"; break; fi
+      if [ "$i" -eq 45 ]; then echo "❌ server never stabilised"; exit 1; fi
+      sleep 2
+    done
+    E2E_BASE_URL=http://localhost:4321 gauge run specs/web/goldens.spec:40
 
-smoke-live *args:
-    @just --justfile wom7api/justfile smoke-live {{ args }}
+smoke-live url="https://webomage.com":
+    @echo "🔎 Live smoke against {{ url }} (non-blocking — reports, does not gate)..."
+    -@cd wom7web && E2E_BASE_URL={{ url }} gauge run specs/web/live-smoke.spec
+    -@python3 scripts/live_verify_helper.py crawler-smoke --url {{ url }}
 
 _assert-clean-tree:
     @pnpm --dir wom7api exec tsx dagger/pipeline.ts assert-clean-tree
@@ -594,10 +808,10 @@ changelog:
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/gen_changelog.py
 
 changelog-drift *args:
-    @python3 wom7web/project/scripts/changelog_drift.py {{ args }}
+    @python3 scripts/changelog_drift.py {{ args }}
 
 changelog-drift-test:
-    @python3 wom7web/project/scripts/tests/test_changelog_drift.py
+    @python3 scripts/tests/test_changelog_drift.py
 
 changelog-check *args:
     @python3 scripts/changelog_check.py {{ args }}
@@ -616,23 +830,23 @@ name-refs-test:
 
 # CP feature index (see wom7api/justfile).
 cp-feature-index *args:
-    @just --justfile wom7web/justfile cp-feature-index {{ args }}
+    @cd wom7web && python3 project/scripts/cp_feature_index.py {{ args }}
 
 cp-feature-index-test:
-    @just --justfile wom7web/justfile cp-feature-index-test
+    @cd wom7web && python3 project/scripts/tests/test_cp_feature_index.py
 
 cp-feature-index-check:
-    @just --justfile wom7web/justfile cp-feature-index-check
+    @cd wom7web && python3 project/scripts/cp_feature_index.py --check
 
 # T244 — secret flow gate (see wom7api/justfile).
 secret-flow-check *args:
-    @just --justfile wom7web/justfile secret-flow-check {{ args }}
+    @python3 scripts/secret_flow_check.py {{ args }}
 
 secret-flow-check-test:
-    @just --justfile wom7web/justfile secret-flow-check-test
+    @python3 scripts/secret_flow_check.py --test
 
 secret-flow-check-enforce:
-    @just --justfile wom7web/justfile secret-flow-check-enforce
+    @python3 scripts/secret_flow_check.py --enforce
 
 # T335 — validated setter for `.w0m/sdlc.json -> current_plan` (see wom7api/justfile).
 plan-set *args:
@@ -654,7 +868,7 @@ deploy:
 
 # T473 — FORCE: deploy the local working tree as it is (uncommitted edits of anyone included). Not the default.
 deploy-local:
-    @python3 wom7web/project/scripts/release.py local-warning
+    @python3 scripts/release.py local-warning
     @env W0M_DEPLOY_LOCAL=1 just deploy
 
 # T503 (2026-09-30). The chain used to be `check-warp check-infisical db-migrate deploy`, and the test gate sat INSIDE `deploy`: the schema was written to
@@ -699,43 +913,43 @@ dagger-test:
 
 # T473 — FORCE: deploy-all from the local working tree. Not the default.
 deploy-all-local:
-    @python3 wom7web/project/scripts/release.py local-warning
+    @python3 scripts/release.py local-warning
     @env W0M_DEPLOY_LOCAL=1 just deploy-all
 
 # T473 — release helpers. `release-cut` + `release-worktree` + `release-deploy` is what `just deploy` does in one go;
 # use them to inspect a release before deploying it, or to retry a failed one without cutting a new version.
 release-cut *args:
-    @python3 wom7web/project/scripts/release.py cut {{ args }}
+    @python3 scripts/release.py cut {{ args }}
 
 release-worktree version:
-    @python3 wom7web/project/scripts/release.py worktree {{ version }}
+    @python3 scripts/release.py worktree {{ version }}
 
 release-verify version:
-    @python3 wom7web/project/scripts/release.py verify {{ version }}
+    @python3 scripts/release.py verify {{ version }}
 
 release-deploy version mode="deploy":
-    @python3 wom7web/project/scripts/release.py deploy {{ version }} {{ mode }}
+    @python3 scripts/release.py deploy {{ version }} {{ mode }}
 
 release-publish version:
-    @python3 wom7web/project/scripts/release.py publish {{ version }}
+    @python3 scripts/release.py publish {{ version }}
 
 release-list:
-    @python3 wom7web/project/scripts/release.py list
+    @python3 scripts/release.py list
 
 release-prune keep="":
-    @python3 wom7web/project/scripts/release.py prune {{ keep }}
+    @python3 scripts/release.py prune {{ keep }}
 
 release-test:
-    @python3 wom7web/project/scripts/release.py --test
+    @python3 scripts/release.py --test
 
 # T554 — land (or re-land) a release's record on origin/beta without touching this checkout: a parked one first, else built from the release manifest. Run it when a deploy
 # printed "release record is NOT on origin/beta".
 release-record *args:
-    @python3 wom7web/project/scripts/release.py record {{ args }}
+    @python3 scripts/release.py record {{ args }}
 
 # T554 — offline proof (27 checks, throwaway git repositories: a lost race is retried, a record never strands on the live checkout, records are read from origin/beta).
 release-record-test:
-    @python3 wom7web/project/scripts/tests/test_release_record.py
+    @python3 scripts/tests/test_release_record.py
 
 # T531 AC6 — agent trees: one COMPLETE, private copy of the estate per agent (the umbrella with every member repo nested inside), on local branch agent/<name> cut from origin/beta.
 # No pull requests and no remote branch: commit in your tree, then `agent-tree-land` fetches, rebases onto origin/beta, checks ticket ids (a collision or a gap is refused) and pushes
@@ -794,34 +1008,113 @@ agent-identity-test:
 
 # T481 — Persistent isolated STABLE and CONFIRMED worktrees: full local regression runs in stable, stable-promote advances confirmed
 stable-sync *args:
-    @python3 wom7web/project/scripts/release.py stable-sync {{ args }}
+    @python3 scripts/release.py stable-sync {{ args }}
 
 stable-promote *args:
-    @python3 wom7web/project/scripts/release.py stable-promote {{ args }}
+    @python3 scripts/release.py stable-promote {{ args }}
 
 e2e-stable *args:
-    @python3 wom7web/project/scripts/release.py e2e-stable {{ args }}
+    @python3 scripts/release.py e2e-stable {{ args }}
 
 # T532 — Run E2E tests against local sandbox environment
 e2e-local *specs:
-    @cd wom7web && just e2e-local {{ specs }}
+    #!/usr/bin/env bash
+    set -uo pipefail
+    if ! curl -s -o /dev/null "http://127.0.0.1:54321/rest/v1/"; then
+      echo "  ❌ local Supabase is not up. Run: just db-local-up && just db-local-env && just db-local-seed"
+      exit 2
+    fi
+    gen=wom7web/env/local/generated.properties
+    [ -f "$gen" ] || { echo "  ❌ no $gen — run \`just db-local-env\`"; exit 2; }
+    team=wom7web/env/local/test-team.properties
+    [ -f "$team" ] || { echo "  ❌ no $team — run \`just test-team-local\`"; exit 2; }
+    # T478 — without the functions, every AI/API spec fails on a refused connection and reads as a product
+    # defect. Refuse to run instead; `just edge-local` in another terminal.
+    if [ "$(curl -s -o /dev/null -w '%{http_code}' -X OPTIONS http://127.0.0.1:54321/functions/v1/w0m-consultant)" = "000" ] \
+       || ! lsof -nP -iTCP:8791 -sTCP:LISTEN >/dev/null 2>&1; then
+      echo "  ❌ edge functions are not served locally — run \`just edge-local\` in another terminal first."; exit 2
+    fi
+    # T478 — sign in as the LOCAL test team, never beta's ADMIN_EMAIL (a Google-only login that 17 specs
+    # could not use). Only *_EMAIL / *_PASSWORD / *_TOTP_SECRET keys; token_urlsafe and base32 carry no shell metacharacters.
+    creds=$(grep -E '^[A-Z_]+_(EMAIL|PASSWORD|TOTP_SECRET) = ' "$team" | sed 's/ = /=/')
+    anon=$(grep '^PUBLIC_SUPABASE_ANON_KEY' "$gen" | cut -d= -f2- | tr -d ' ')
+    svc=$(grep '^SERVICE_ROLE_KEY' "$gen" | cut -d= -f2- | tr -d ' ')
+    db=$(grep '^DATABASE_URL' "$gen" | cut -d= -f2- | tr -d ' ')
+    # T478 — measured 2026-09-28, beta injects FIVE values that point at live: PUBLIC_SUPABASE_URL,
+    # SUPABASE_URL, PUBLIC_CP_URL, UPWORK_CALLBACK_URL, WORKERS_WEBHOOK_URL — and DATABASE_URL is the live
+    # superuser. The first two were overridden; the rest reached live (ats.steps.ts connects with
+    # DATABASE_URL; the dev server dispatches to the live worker). All are pinned to loopback below, in BOTH
+    # env blocks. The worker URL points at a port nothing listens on: a dispatch fails loudly, not live.
+    local_urls="DATABASE_URL=$db PUBLIC_CP_URL=http://localhost:4325 PUBLIC_WEB_URL=http://localhost:4321 PUBLIC_JOIN_URL=http://localhost:4323 WORKERS_WEBHOOK_URL=http://127.0.0.1:1 UPWORK_CALLBACK_URL=http://127.0.0.1:1"
+    # T478 — every app port must be FREE, or the run is not local. Measured 2026-09-28: `pnpm run dev`
+    # SKIPS an app whose port is taken, so four dev servers left running since 2026-09-25 against the LIVE
+    # project answered this suite's /cp, /join and /job requests. A server we did not start is refused, not reused.
+    for p in 4321 4322 4323 4324 4325; do
+      if lsof -nP -iTCP:$p -sTCP:LISTEN >/dev/null 2>&1; then
+        echo "  ❌ port $p is already in use (pid $(lsof -nP -tiTCP:$p -sTCP:LISTEN | head -1)) — this run would not be local."
+        echo "     Stop it first (\`just stop-dev\`), then rerun."; exit 2
+      fi
+    done
+    # T478 — the corpus once wrote 12 rows into LIVE contact_messages from a local run: ~25 steps hardcoded live
+    # URLs. tests/support/liveGuard.ts now refuses live hosts in-process; prove it works before any spec runs.
+    ( cd wom7web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 pnpm exec tsx tests/support/liveGuard.probe.mts ) \
+      || { echo "  ❌ the live guard is not holding — refusing to run a local suite that could reach live."; exit 2; }
+    echo "  ▶ starting Astro against LOCAL Supabase…"
+    cd wom7web
+    infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- env \
+      W0M_E2E_LOCAL=1 \
+      E2E_LOCAL=true \
+      PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 \
+      PUBLIC_SUPABASE_ANON_KEY="$anon" \
+      SUPABASE_SERVICE_ROLE_KEY="$svc" \
+      SERVICE_ROLE_KEY="$svc" \
+      $local_urls \
+      pnpm run dev > /tmp/w0m-e2e-local-dev.log 2>&1 &
+    DEV=$!
+    # Kill by PORT, not only the parent pid: `pnpm -r --parallel` children outlive $DEV, and the first T478 run
+    # left web listening on :4321 after the recipe exited.
+    trap 'kill $DEV 2>/dev/null || true; for p in 4321 4322 4323 4324 4325; do lsof -nP -tiTCP:$p -sTCP:LISTEN 2>/dev/null | xargs kill 2>/dev/null || true; done' EXIT
+    for i in $(seq 1 60); do curl -s -f http://localhost:4321 >/dev/null 2>&1 && break; sleep 1; done
+    if ! curl -s -f http://localhost:4321 >/dev/null 2>&1; then
+      echo "  ❌ dev server never came up:"; tail -15 /tmp/w0m-e2e-local-dev.log; exit 1
+    fi
+    echo "  ✅ dev server up on :4321 (database: 127.0.0.1:54321)"
+    # 🔴 gauge needs ADMIN_EMAIL / ADMIN_PASSWORD (tests/helpers/auth.ts) or 99 scenarios fail on
+    # "ADMIN_EMAIL and ADMIN_PASSWORD must be set" — 36% of the first full run, and none of it a
+    # product defect. But injecting the estate's secrets wholesale is DANGEROUS: the teardown in
+    # tests/support/hooks.ts runs pattern-matched DELETEs against PUBLIC_SUPABASE_URL /
+    # SERVICE_ROLE_KEY, so beta's values would point that purge at PRODUCTION.
+    # ⇒ take the two credentials, then OVERRIDE every Supabase pointer back to loopback. The
+    # override comes AFTER the injection deliberately: last writer wins, so a new Supabase-shaped
+    # secret appearing in beta cannot silently redirect the purge.
+    infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- env \
+      W0M_E2E_LOCAL=1 \
+      E2E_LOCAL=true \
+      PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 \
+      SUPABASE_URL=http://127.0.0.1:54321 \
+      PUBLIC_SUPABASE_ANON_KEY="$anon" \
+      SUPABASE_SERVICE_ROLE_KEY="$svc" \
+      SERVICE_ROLE_KEY="$svc" \
+      $local_urls \
+      $creds \
+      gauge run --env local {{ if specs == "" { "specs" } else { specs } }}
 
 # T532 — Run live-guard proof test
 live-guard-test:
-    @cd wom7web && just live-guard-test
+    @cd wom7web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 pnpm exec tsx tests/support/liveGuard.probe.mts
 
 # T532 — unit tests for the E2E sandbox isolation guard
 e2e-sandbox-guard-test:
-    @cd wom7web && just e2e-sandbox-guard-test
+    @cd wom7web && python3 project/scripts/tests/test_e2e_sandbox_guard.py
 
 _deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp check-infisical _deploy-gates db-migrate _deploy-ship _post-deploy-knowledge
 
 _post-deploy-knowledge:
     #!/usr/bin/env bash
     # A release worktree is a throwaway snapshot: indexing it would register its paths in the code graphs. The
-    # main estate refreshes its own knowledge (`just --justfile wom7api/justfile knowledge-light`).
+    # main estate refreshes its own knowledge (`just knowledge-light`).
     if [ -n "${W0M_RELEASE_WORKTREE:-}" ]; then echo "knowledge refresh skipped in a release worktree (T473)"; exit 0; fi
-    just --justfile wom7api/justfile knowledge-light || true
+    just knowledge-light || true
 
 # Every bare `just <recipe>` in a recipe body must name a recipe that justfile defines — the
 # `-`-prefixed call above named one that only wom7api has, silently, from T421 to T431 run 7.
@@ -839,19 +1132,19 @@ reports-ticket-check-test:
     @python3 -m pytest scripts/tests/test_reports_ticket_check.py -q -p no:cacheprovider
 
 deploy-logged *args:
-    @python3 wom7web/project/scripts/deploy_logged.py {{ args }}
+    @python3 scripts/deploy_logged.py {{ args }}
 
 deploy-logged-test:
-    @python3 wom7web/project/scripts/tests/test_deploy_logged.py
+    @python3 scripts/tests/test_deploy_logged.py
 
 deploy-logs-rotate *args:
-    @python3 wom7web/project/scripts/deploy_logs_rotate.py {{ args }}
+    @python3 scripts/deploy_logs_rotate.py {{ args }}
 
 deploy-logs-rotate-test:
-    @python3 wom7web/project/scripts/tests/test_deploy_logs_rotate.py
+    @python3 scripts/tests/test_deploy_logs_rotate.py
 
 deploy-in-flight-test:
-    @python3 wom7web/project/scripts/tests/test_deploy_in_flight.py
+    @python3 scripts/tests/test_deploy_in_flight.py
 
 deploy-elevation-test:
     @python3 scripts/tests/test_deploy_elevation.py
@@ -872,7 +1165,7 @@ state-brief:
     @python3 scripts/state_doctor.py --brief
 
 state-doctor-test:
-    @python3 wom7web/project/scripts/tests/test_state_doctor.py
+    @python3 scripts/tests/test_state_doctor.py
 
 # ── Lessons Register (T232 / T414) ───────────────────────────────────────────
 lessons *args:
@@ -892,8 +1185,8 @@ decisions-test:
     @python3 scripts/tests/test_decisions_index.py
 
 # ── Skills Platform (Level 1 & Level 2) ──────────────────────────────────────
-skills-sync *args:
-    @cd wom7skills && pnpm run skills:sync {{ args }}
+skills-sync mode="":
+    @cd wom7skills && pnpm exec tsx skills.ts {{ if mode == "check" { "--check" } else { mode } }}
 
 skills-test *args:
     @cd wom7skills && pnpm run skill-test {{ args }}
@@ -947,7 +1240,7 @@ vm command="list" name="macos-mini-sandbox":
             tart set {{ name }} --cpu 4 --memory 6144 --display 1440x900pt; \
             echo "[OK] {{ name }} cleanly reset to mint state" ;; \
         prune) tart prune ;; \
-        doctor) just --justfile wom7web/justfile vm-doctor ;; \
+        doctor) just vm-doctor ;; \
         install-guest) wom7pr/tart-guest-agent/packaging/install-darwin.sh {{ name }} ;; \
         *) \
             echo "Unknown VM command: '{{ command }}'"; \
@@ -961,7 +1254,7 @@ vm-list:
 
 # Run VM doctor: inspect host hypervisor, VM states, runaway CPU, and guest agents
 vm-doctor *args:
-    @just --justfile wom7web/justfile vm-doctor {{ args }}
+    @python3 scripts/vm_supervisor.py doctor {{ args }}
 
 vm-run name="macos-mini-sandbox":
     @tart run {{ name }}
@@ -995,46 +1288,46 @@ vm-install-guest name="macos-mini-sandbox":
 
 # ── Core Plan & Queue Tests ──────────────────────────────────────────────────
 plan-verdict-test:
-    @just --justfile wom7web/justfile plan-verdict-test
+    @cd wom7web && python3 project/scripts/tests/test_plan_verdict.py
 
 tasks-render-test:
-    @python3 wom7web/project/scripts/tests/test_tasks_render.py
+    @python3 scripts/tests/test_tasks_render.py
 
 # ── oMLX Service Lifecycle (T374) ────────────────────────────────────────────
 omlx-status:
-    @just --justfile wom7web/justfile omlx-status
+    @python3 scripts/omlx_service.py status
 
 omlx-start:
-    @just --justfile wom7web/justfile omlx-start
+    @python3 scripts/omlx_service.py start
 
 omlx-stop:
-    @just --justfile wom7web/justfile omlx-stop
+    @python3 scripts/omlx_service.py stop
 
 omlx-restart:
-    @just --justfile wom7web/justfile omlx-restart
+    @python3 scripts/omlx_service.py restart
 
 # ── Headroom Proxy Service Lifecycle (T456) ──────────────────────────────────
 headroom-status *args:
-    @just --justfile wom7web/justfile headroom-status {{ args }}
+    @python3 scripts/headroom_service.py status {{ args }}
 
 
 headroom-start:
-    @just --justfile wom7web/justfile headroom-start
+    @python3 scripts/headroom_service.py start
 
 headroom-stop:
-    @just --justfile wom7web/justfile headroom-stop
+    @python3 scripts/headroom_service.py stop
 
 headroom-restart:
-    @just --justfile wom7web/justfile headroom-restart
+    @python3 scripts/headroom_service.py restart
 
 headroom-logs *args:
-    @just --justfile wom7web/justfile headroom-logs {{ args }}
+    @python3 scripts/headroom_service.py logs {{ args }}
 
 headroom-service-test:
-    @just --justfile wom7web/justfile headroom-service-test
+    @python3 scripts/tests/test_headroom_service.py
 
 headroom-bootstrap-status *args:
-    @just --justfile wom7web/justfile headroom-bootstrap-status {{ args }}
+    @python3 scripts/headroom_bootstrap.py {{ args }}
 
 
 
@@ -1046,14 +1339,14 @@ version-check *args:
     @python3 scripts/sync_manifest_versions.py --check {{ args }}
 
 sync-manifest-versions-test:
-    @python3 wom7web/project/scripts/tests/test_sync_manifest_versions.py
+    @python3 scripts/tests/test_sync_manifest_versions.py
 
 # ── Estate Policies & Standards (T130 / T135 / T192 / T256 / T419) ───────────
 emoji-check *args:
     @python3 scripts/emoji_policy_check.py {{ args }}
 
 emoji-check-test:
-    @python3 wom7web/project/scripts/tests/test_emoji_policy_check.py
+    @python3 scripts/tests/test_emoji_policy_check.py
 
 emoji-text-dialects-test:
     @python3 wom7web/project/scripts/tests/test_emoji_text_dialects.py
@@ -1062,7 +1355,7 @@ doc-format-check *args:
     @python3 scripts/doc_format_check.py {{ args }}
 
 doc-format-check-test:
-    @python3 wom7web/project/scripts/tests/test_doc_format_check.py
+    @python3 scripts/tests/test_doc_format_check.py
 
 hygiene *args:
     @python3 scripts/repo_hygiene.py all {{ args }}
@@ -1074,7 +1367,7 @@ repo-hygiene *args:
     @python3 scripts/repo_hygiene.py all {{ args }}
 
 hygiene-check-test:
-    @python3 wom7web/project/scripts/tests/test_repo_hygiene.py
+    @python3 scripts/tests/test_repo_hygiene.py
 
 docs-check *args:
     @python3 scripts/repo_hygiene.py docs {{ args }}
@@ -1092,13 +1385,13 @@ ide-trace *args:
     @python3 scripts/ide_trace.py {{ args }}
 
 ide-trace-test:
-    @python3 wom7web/project/scripts/tests/test_ide_trace.py
+    @python3 scripts/tests/test_ide_trace.py
 
 discovery *args:
     @python3 scripts/discovery.py {{ args }}
 
 discovery-test:
-    @python3 wom7web/project/scripts/tests/test_discovery.py
+    @python3 scripts/tests/test_discovery.py
 
 # ── Tool & MCP Governance (T112 / T154 / T247 / T419) ────────────────────────
 tools *args:
@@ -1123,10 +1416,10 @@ tools-upgrade-test:
     @python3 scripts/tests/test_tools_upgrade.py
 
 toolchain-chain-test:
-    @python3 wom7web/project/scripts/tests/test_toolchain_chain.py
+    @python3 scripts/tests/test_toolchain_chain.py
 
 mcp-declared-test:
-    @python3 wom7web/project/scripts/tests/test_mcp_declared.py
+    @python3 scripts/tests/test_mcp_declared.py
 
 mcp-health *args:
     @python3 scripts/mcp_health.py {{ args }}
@@ -1151,8 +1444,8 @@ test-full:
 test-all:
     @python3 scripts/run_suites.py --tier all --level full
 
-typecheck *args:
-    @just --justfile wom7web/justfile typecheck {{ args }}
+typecheck:
+    @cd wom7web && ASTRO_TELEMETRY_DISABLED=1 DO_NOT_TRACK=1 python3 ../scripts/prepush_runner.py run-typecheck --concurrency 3
 
 svelte-typecheck-ratchet *args:
     @cd wom7web && python3 project/scripts/svelte_typecheck_ratchet.py {{ args }}
@@ -1164,7 +1457,7 @@ suites-drift *args:
     @python3 scripts/run_suites.py --drift {{ args }}
 
 run-suites-test:
-    @python3 wom7web/project/scripts/tests/test_run_suites.py
+    @python3 scripts/tests/test_run_suites.py
 
 prepush-status *args:
     @python3 scripts/prepush_runner.py status {{ args }}
@@ -1176,7 +1469,7 @@ prepush-run *args:
     @python3 scripts/prepush_runner.py {{ args }}
 
 prepush-test:
-    @python3 wom7web/project/scripts/tests/test_prepush_runner.py
+    @python3 scripts/tests/test_prepush_runner.py
 
 # ── Local Development Stack (T449) ──────────────────────────────────────────
 # Check local /etc/hosts for *.w0m.local development domains
@@ -1185,11 +1478,31 @@ hosts-check:
 
 # Stop all local development servers (web, workers, and caddy reverse proxy)
 stop-dev:
-    @just --justfile wom7api/justfile stop-dev
+    - caddy stop 2>/dev/null || true
+    - lsof -ti:443 -ti:80 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
+    - lsof -ti:4321 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
+    - lsof -ti:4322 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
+    - lsof -ti:4323 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
+    - lsof -ti:4324 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
+    - lsof -ti:4325 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
+    - lsof -ti:8790 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
+    - lsof -ti:9229 -ti:9230 -ti:9231 -ti:9232 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
+    - pkill -f "astro dev" || true
+    - pkill -f "wrangler dev" || true
+    - pkill -f "caddy run" || true
+    - pkill -f "tsx watch src/index.ts" || true
+    @echo "Local development servers stopped."
 
 # Start the full local estate stack with *.w0m.local SSL reverse proxy (T449)
-dev-stack:
-    @just --justfile wom7api/justfile dev-stack
+dev-stack: stop-dev
+    @sh -c 'if [ ! -f "$HOME/.w0m/certs/w0m.local.pem" ]; then mkdir -p "$HOME/.w0m/certs" && mkcert -cert-file "$HOME/.w0m/certs/w0m.local.pem" -key-file "$HOME/.w0m/certs/w0m.local-key.pem" "*.w0m.local" "w0m.local" "web.localhost" "cp.localhost" "admin.localhost" "job.localhost" "join.localhost" "demo.localhost" "func.localhost" "*.localhost" "localhost" "127.0.0.1"; fi'
+    @python3 scripts/hosts_check.py || true
+    @echo "Starting Caddy SSL reverse proxy on port 443..."
+    @caddy start --config Caddyfile.local
+    @echo "Starting wom7func worker on port 8790..."
+    @sh -c 'cd wom7func && nohup infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec wrangler dev --port 8790 --show-interactive-dev-session=false > /tmp/wom7func-dev.log 2>&1 < /dev/null &'
+    @echo "Starting 5 Astro apps with subdomain root bases..."
+    cd wom7web && SUBDOMAIN_DEV=1 infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev
 
 # ── TypeSafe System One & Jev Image Processing (T558 / T556 / T434) ─────────
 jev-image *args:
@@ -1213,22 +1526,22 @@ harness2-surface-test:
 
 # ── Org Model S7, Secret History Audit & Resume Vault (T458 / T504 / T510) ──
 engagements-hats-verify *args:
-    @just --justfile wom7api/justfile engagements-hats-verify {{ args }}
+    @cd wom7web && python3 project/scripts/engagements_hats_verify.py {{args}}
 
 engagements-hats-verify-test:
-    @just --justfile wom7api/justfile engagements-hats-verify-test
+    @cd wom7web && python3 -m pytest -q -p no:cacheprovider project/scripts/tests/test_engagements_hats_verify.py
 
 secret-history-check *args:
-    @just --justfile wom7api/justfile secret-history-check {{ args }}
+    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/secret_history_check.py {{args}}
 
 secret-history-check-test:
-    @just --justfile wom7api/justfile secret-history-check-test
+    @cd wom7web && python3 project/scripts/secret_history_check.py --test
 
 resume-vault-verify *args:
-    @just --justfile wom7api/justfile resume-vault-verify {{ args }}
+    @cd wom7web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/resume_vault_verify.py {{args}}
 
 resume-vault-verify-test:
-    @just --justfile wom7api/justfile resume-vault-verify-test
+    @cd wom7web && python3 project/scripts/resume_vault_verify.py --test
 
 # ── External Project Work Report Ingestion (T357) ────────────────────────────
 project-report-ingest *args:
@@ -1285,7 +1598,9 @@ py-typecheck-root *args:
     @mypy --config-file mypy.ini {{ args }}
 
 py-typecheck *args:
-    @just --justfile wom7api/justfile py-typecheck {{ args }}
+    @just py-typecheck-root {{ args }}
+    @just py-typecheck-web {{ args }}
+    @just py-typecheck-api {{ args }}
 
 py-typing-check *args:
     @python3 wom7web/project/scripts/py_typing_check.py {{ args }}
@@ -1316,7 +1631,7 @@ branch-hygiene *args:
     @python3 scripts/branch_hygiene.py {{ args }}
 
 branch-hygiene-test:
-    @python3 wom7web/project/scripts/tests/test_branch_hygiene.py
+    @python3 scripts/tests/test_branch_hygiene.py
 
 # ── Codegraph Codemap Generator & Serena Config Reconciliation (T193 / T172) ─
 codemap-gen *args:
@@ -1336,7 +1651,7 @@ serena-config-check-test:
 
 # ── Delivery Record, Spec Policy, Consumer Gate, Lessons & OpenCode (T245 / T185 / T177 / T178 / T270 / T152) ──
 ac-trace-test:
-    @python3 wom7web/project/scripts/tests/test_ac_trace_check.py
+    @python3 scripts/tests/test_ac_trace_check.py
 
 spec-policy-check *args:
     @python3 wom7web/project/scripts/spec_policy_check.py {{ args }}
@@ -1366,7 +1681,7 @@ opencode-sync *args:
     @python3 scripts/opencode_config.py --generate {{ args }}
 
 opencode-config-test:
-    @python3 -m unittest wom7web/project/scripts/tests/test_opencode_config.py
+    @python3 -m unittest scripts/tests/test_opencode_config.py
 
 # ── Stripe Reconciliation, Cloud Compute & 4-Identity Selector (T290 / T305 / T306) ──
 stripe-reconcile *args:
@@ -1394,7 +1709,7 @@ commit-msg-check *args:
     @python3 "{{justfile_directory()}}/scripts/conventional_commit.py" "$@"
 
 t129-t386-hooks-test:
-    @python3 wom7web/project/scripts/tests/test_t129_t386_hooks.py
+    @python3 scripts/tests/test_t129_t386_hooks.py
 
 # ── Toolchain Governance, Deploy Drift, Suppression Ratchet, Remote CI, AI Memory & Stale-Path Probe (T164 / T259 / T384 / T387 / T234 / T509) ──
 tools-check-test:
@@ -1419,10 +1734,10 @@ ci-workflow-check-test:
     @python3 wom7web/project/scripts/tests/test_ci_workflow_check.py
 
 ai-memory-pin-check *args:
-    @python3 wom7web/project/scripts/ai_memory_pin_check.py {{ args }}
+    @python3 scripts/ai_memory_pin_check.py {{ args }}
 
 ai-memory-pin-test:
-    @python3 wom7web/project/scripts/tests/test_ai_memory_pin_check.py
+    @python3 scripts/tests/test_ai_memory_pin_check.py
 
 stale-path-check *args:
     @python3 scripts/stale_path_check.py {{ args }}

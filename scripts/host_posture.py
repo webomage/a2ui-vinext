@@ -8,10 +8,10 @@ a declared baseline, audits TCC permissions (failing closed to NOT MEASURED when
 Full Disk Access is absent), and explicitly records unmeasured blind spots per T96 AC3.
 
 Usage:
-  python3 project/scripts/host_posture.py             # Human-readable report
-  python3 project/scripts/host_posture.py --enforce   # Exit 1 on any FAIL
-  python3 project/scripts/host_posture.py --json      # Structured JSON output
-  python3 project/scripts/host_posture.py --test      # Run offline test suite
+  python3 scripts/host_posture.py             # Human-readable report
+  python3 scripts/host_posture.py --enforce   # Exit 1 on any FAIL
+  python3 scripts/host_posture.py --json      # Structured JSON output
+  python3 scripts/host_posture.py --test      # Run offline test suite
 """
 import argparse
 import json

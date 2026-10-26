@@ -33,7 +33,7 @@ class DeployVersionInherit(unittest.TestCase):
 
     def test_nested_just_inherits_the_outer_version(self):
         out = just("--justfile", "justfile", "--command", "sh", "-c",
-                   'echo "$W0M_DEPLOY_VERSION"; sleep 1.2; just --justfile wom7api/justfile version').split("\n")
+                   'echo "$W0M_DEPLOY_VERSION"; sleep 1.2; just --justfile wom7api/justfile --evaluate deploy_version').split("\n")
         outer, inner = out[0].strip(), out[-1].strip()
         self.assertRegex(outer, VERSION_RE)
         self.assertEqual(outer, inner, "a nested `just` minted its own version — the run-7 split")

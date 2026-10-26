@@ -1,6 +1,6 @@
 {
   "$schema": "./stacks-policy.schema.json",
-  "_comment": "T130 — per-stack tech/tools registry. Declares, per live stack, the runtime + defining techs + the justfile COMMAND CONTRACT (SDLC canonical roles → the `just` recipe that fulfills each). Read by project/scripts/discovery.py (`just discovery` / `--enforce`). Adjust a stack's declared set HERE; run `just discovery` to see drift vs code, `just discovery --enforce` to gate. Tech-aware layer above tools-policy.json (host CLIs) + deps-policy.json (npm floors). See openspec/changes/2026-07-24-stack-registry-and-discovery. NOTE `enforce_raw:false` — raw tool-invocation findings are ADVISORY (reported, never block) until flipped true (the scan is heuristic + there is pre-existing debt, e.g. wom7web/.husky/pre-push:25 `pnpm … astro check`); the declared-command→recipe check and drift block regardless.",
+  "_comment": "T130 — per-stack tech/tools registry. Declares, per live stack, the runtime + defining techs + the justfile COMMAND CONTRACT (SDLC canonical roles → the `just` recipe that fulfills each). Read by scripts/discovery.py (`just discovery` / `--enforce`). Adjust a stack's declared set HERE; run `just discovery` to see drift vs code, `just discovery --enforce` to gate. Tech-aware layer above tools-policy.json (host CLIs) + deps-policy.json (npm floors). See openspec/changes/2026-07-24-stack-registry-and-discovery. NOTE `enforce_raw:false` — raw tool-invocation findings are ADVISORY (reported, never block) until flipped true (the scan is heuristic + there is pre-existing debt, e.g. wom7web/.husky/pre-push:25 `pnpm … astro check`); the declared-command→recipe check and drift block regardless.",
   "project": "w0m",
   "enforce_raw": false,
   "exempt": {},
@@ -9,7 +9,7 @@
       "repo": "wom7web",
       "path": "apps",
       "runtime": "node",
-      "justfile": "wom7api/justfile",
+      "justfile": "justfile",
       "techs": [
         {
           "name": "astro",
@@ -194,7 +194,7 @@
       "repo": "wom7api",
       "path": "src",
       "runtime": "node",
-      "justfile": "wom7api/justfile",
+      "justfile": "justfile",
       "techs": [
         {
           "name": "hono",
@@ -263,7 +263,7 @@
       "repo": "wom7api",
       "path": "supabase/functions",
       "runtime": "deno",
-      "justfile": "wom7api/justfile",
+      "justfile": "justfile",
       "techs": [
         {
           "name": "deno",
@@ -325,7 +325,7 @@
       "repo": "wom7skills",
       "path": ".",
       "runtime": "node",
-      "justfile": "wom7api/justfile",
+      "justfile": "justfile",
       "techs": [
         {
           "name": "typescript",
@@ -367,7 +367,7 @@
       "repo": "wom7func",
       "path": ".",
       "runtime": "node",
-      "justfile": "wom7api/justfile",
+      "justfile": "justfile",
       "techs": [
         {
           "name": "wrangler",
@@ -568,7 +568,7 @@
       "repo": "wom7web",
       "path": "project/scripts",
       "runtime": "python",
-      "justfile": "wom7api/justfile",
+      "justfile": "justfile",
       "techs": [],
       "commands": {
         "typecheck": "py-typecheck",
@@ -595,7 +595,7 @@
       "repo": "wom7api",
       "path": "scripts",
       "runtime": "python",
-      "justfile": "wom7api/justfile",
+      "justfile": "justfile",
       "techs": [],
       "commands": {
         "typecheck": "py-typecheck-api"

@@ -281,8 +281,8 @@ class Structure(unittest.TestCase):
         self.assertFalse(tu.is_agent_tree(Path.home() / ".w0m" / "workaround" / "w0m"), "a prefix match is not a path match")
 
     def test_the_justfiles_have_the_promote_recipe_and_no_weekly_recipe_promotes(self):
-        """The root justfile duplicates these recipes, but the LAUNCHD job runs `cd wom7api && just tools-weekly`, so the wom7api recipe is the one that must be right."""
-        for rel, forward in (("justfile", "scripts/tools_upgrade.py"), ("wom7api/justfile", "../scripts/tools_upgrade.py")):
+        """The root justfile duplicates these recipes, but the LAUNCHD job runs `just tools-weekly` from `@wom`, so the wom7api recipe is the one that must be right."""
+        for rel, forward in (("justfile", "scripts/tools_upgrade.py"),):
             jf = (REPO / rel).read_text()
             self.assertIn(f"tools-promote *args:\n    @python3 {forward} --promote {{{{ args }}}}", jf, rel)
             m = re.search(r"(?m)^tools-weekly[^\n]*:\n((?:[ \t]+[^\n]*\n?)+)", jf)  # the recipe definition, not a comment that names it
@@ -296,8 +296,8 @@ class Structure(unittest.TestCase):
         """The registry lives in wom7web and runs recipes through wom7api's justfile (wom7web/justfile is a symlink to it). A recipe only in the root justfile reads as 'recipe not found', 0 checks."""
         reg = json.loads((REPO / "wom7web" / "project" / "test-suites.json").read_text())["suites"]
         entry = next(s for s in reg if s["name"] == "tools-upgrade")
-        jf = (REPO / "wom7api" / "justfile").read_text()
-        self.assertRegex(jf, rf"(?m)^{entry['recipe']}:\n    @python3 \.\./scripts/tests/test_tools_upgrade\.py")
+        jf = (REPO / "justfile").read_text()
+        self.assertRegex(jf, rf"(?m)^{entry['recipe']}:\n    @python3 scripts/tests/test_tools_upgrade\.py")
 
     def test_compound_shell_smoke_uses_sh_c_and_missing_binary_returns_failure_without_crashing(self):
         """supabase's smoke starts with `cd ../wom7api && ...`; splitting on spaces raises FileNotFoundError('cd') and aborts before proposals are saved."""

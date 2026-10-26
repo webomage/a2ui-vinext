@@ -22,8 +22,8 @@ Three things this deliberately does that a naive grep does not:
    distinguished from "no input" — this estate has shipped that confusion five times.
 
 Usage:
-    python3 project/scripts/graph_callsites.py            # the enumeration
-    python3 project/scripts/graph_callsites.py --corpus   # + corpus sizes (anti-vacuity)
+    python3 scripts/graph_callsites.py            # the enumeration
+    python3 scripts/graph_callsites.py --corpus   # + corpus sizes (anti-vacuity)
 
 Exit codes: 0 = enumerated, 2 = configuration/environment error (never a "finding" count).
 """

@@ -31,8 +31,8 @@ If the server is down, or its counters do not move, this exits non-zero and says
 a 0 that could be read as "no change".
 
 Usage:
-    python3 zc_compression_measure.py --reps 2 --turns 7
-    python3 zc_compression_measure.py --reps 1 --turns 5 --agent measure --profile measure
+    python3 scripts/zc_compression_measure.py --reps 2 --turns 7
+    python3 scripts/zc_compression_measure.py --reps 1 --turns 5 --agent measure --profile measure
 """
 
 from __future__ import annotations

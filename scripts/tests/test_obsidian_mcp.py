@@ -21,7 +21,7 @@ import threading
 from typing import Any, cast
 
 ROOT = Path(__file__).resolve().parents[2]
-BRIDGE_SCRIPT = ROOT / "wom7web" / "project" / "scripts" / "obsidian_mcp_bridge.py"
+BRIDGE_SCRIPT = ROOT / "scripts" / "obsidian_mcp_bridge.py"
 
 
 def _check(name: str, ok: bool, detail: str = "") -> bool:

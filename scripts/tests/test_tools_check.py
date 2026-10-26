@@ -296,11 +296,11 @@ class HealthcheckIntegrationTests(unittest.TestCase):
 
     def test_two_health_surfaces_document_division_of_labour_and_cross_reference(self) -> None:
         hc_api = (ROOT / "wom7api" / "scripts" / "healthcheck.py").read_text(encoding="utf-8")
-        hc_web = (ROOT / "wom7web" / "project" / "scripts" / "health_check.py").read_text(
+        hc_web = (ROOT / "scripts" / "health_check.py").read_text(
             encoding="utf-8"
         )
         self.assertIn("just health-check", hc_api)
-        self.assertIn("wom7web/project/scripts/health_check.py", hc_api)
+        self.assertIn("scripts/health_check.py", hc_api)
         self.assertIn("Toolchain Health (T164", hc_api)
 
         self.assertIn("just health", hc_web)

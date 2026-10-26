@@ -13,15 +13,15 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]  # /Users/proto/Projects/@self/@wom
+ROOT = Path(__file__).resolve().parents[1]  # /Users/proto/Projects/@self/@wom
 REPOS = ["wom7web", "wom7api", "wom7skills", "wom7ext", "wom7sec", "wom7func"]
 
 # Paths that are allowed to mention npx in documentation, rules, tests, or legacy definitions
 ALLOWLIST_SUBSTRINGS = [
-    "project/scripts/discovery.py",
-    "project/scripts/tests/test_discovery.py",
-    "project/scripts/tests/test_npx_audit.py",
-    "project/scripts/npx_audit.py",
+    "scripts/discovery.py",
+    "scripts/tests/test_discovery.py",
+    "scripts/tests/test_npx_audit.py",
+    "scripts/npx_audit.py",
     "project/scripts/quartz_patch_ofm.py",
     "openspec/",
     "docs/",

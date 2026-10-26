@@ -7,10 +7,10 @@ audits referenced file paths across estate repos, and classifies each acceptance
 into confirmed (✅), contradicted (🔴), stale (⚠️), or unmeasurable (❔).
 
 Usage:
-    python3 project/scripts/ticket_audit.py T382
-    python3 project/scripts/ticket_audit.py T382 --strict
-    python3 project/scripts/ticket_audit.py T382 --json
-    python3 project/scripts/ticket_audit.py T382 --offline
+    python3 scripts/ticket_audit.py T382
+    python3 scripts/ticket_audit.py T382 --strict
+    python3 scripts/ticket_audit.py T382 --json
+    python3 scripts/ticket_audit.py T382 --offline
 """
 
 from __future__ import annotations
@@ -43,9 +43,9 @@ SKILLS = ROOT / "wom7skills"
 TICKETS_DIR = ROOT / ".tasks"
 if not TICKETS_DIR.is_dir():
     sys.exit(f"❌ Canonical tickets directory not found at {TICKETS_DIR} (AgDR-0025: zero silent fallbacks)")
-TASKS_FILE = ROOT / "TASKS.md" if (ROOT / "TASKS.md").is_file() else WEB / "TASKS.md"
+TASKS_FILE = ROOT / "TASKS.md"
 TICKETS_JSON = WEB / "project" / "tickets.json"
-SDLC_JSON = ROOT / ".w0m" / "sdlc.json" if (ROOT / ".w0m" / "sdlc.json").is_file() else WEB / ".w0m" / "sdlc.json"
+SDLC_JSON = ROOT / ".w0m" / "sdlc.json"
 
 # File path token regex
 PATH_RE = re.compile(
@@ -230,7 +230,7 @@ def check_git_working_tree(ticket_id: str) -> list[str]:
             uncommitted.extend([line.strip() for line in res.stdout.splitlines() if line.strip()])
 
         # Also check if TASKS.md has uncommitted diff touching this ticket
-        tasks_cwd = ROOT if (ROOT / "TASKS.md").is_file() else WEB
+        tasks_cwd = ROOT
         res_diff = subprocess.run(
             ["git", "diff", "HEAD", "--", "TASKS.md"],
             cwd=str(tasks_cwd),

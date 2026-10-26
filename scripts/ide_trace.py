@@ -34,9 +34,9 @@ policy pins, the trace FAILS rather than scanning a stale path — a vendored co
 else's registry is the stale-pin shape.
 
 Usage:
-    python3 project/scripts/ide_trace.py            # the trace, advisory
-    python3 project/scripts/ide_trace.py --enforce  # parity + drift block
-    python3 project/scripts/ide_trace.py --json
+    python3 scripts/ide_trace.py            # the trace, advisory
+    python3 scripts/ide_trace.py --enforce  # parity + drift block
+    python3 scripts/ide_trace.py --json
 """
 from __future__ import annotations
 

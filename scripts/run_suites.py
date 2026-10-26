@@ -37,7 +37,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "wom7web"
-API = Path(os.environ.get("W0M_SUITES_API") or (ROOT / "wom7api"))
+API = Path(os.environ.get("W0M_SUITES_API") or ROOT)
 
 # Overridable so the runner can be driven against a fixture registry — the tests need to
 # prove the failure paths without executing real suites.
@@ -108,6 +108,20 @@ UNMEASURABLE_RE = re.compile(
 )
 
 
+def _read_justfile_text(jf_path: Path) -> str:
+    txt = jf_path.read_text(encoding="utf-8")
+    out: list[str] = [txt]
+    for m in re.finditer(r"^import\??\s+['\"]([^'\"]+)['\"]", txt, re.M):
+        imp = (jf_path.parent / m.group(1)).resolve()
+        if imp.is_file():
+            out.append(imp.read_text(encoding="utf-8"))
+    if jf_path.parent.resolve() == ROOT.resolve():
+        api_jf = ROOT / "wom7api" / "justfile"
+        if api_jf.is_file():
+            out.append(api_jf.read_text(encoding="utf-8"))
+    return "\n".join(out)
+
+
 def _known_recipes() -> dict[str, str]:
     jf_path = API / "justfile"
     try:
@@ -117,7 +131,7 @@ def _known_recipes() -> dict[str, str]:
         return {}
     if key not in _RECIPE_CACHE:
         try:
-            _RECIPE_CACHE[key] = recipes(jf_path.read_text(encoding="utf-8"))
+            _RECIPE_CACHE[key] = recipes(_read_justfile_text(jf_path))
         except OSError:
             _RECIPE_CACHE[key] = {}
     return _RECIPE_CACHE[key]
@@ -426,7 +440,7 @@ def drift(suites: list[dict]) -> dict[str, str]:
     "*-test/*-check" when 14 were, and one (`suites-drift`) had matched on its body. A drift
     report that misdescribes its own reasoning is the thing it exists to catch.
     """
-    jf = (API / "justfile").read_text(encoding="utf-8")
+    jf = _read_justfile_text(API / "justfile")
     scheduled = scheduled_recipes()
     found: dict[str, str] = {}
     for n, body in recipes(jf).items():

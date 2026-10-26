@@ -33,13 +33,13 @@ promoted, and one WITHOUT a smoke is upgraded but flagged UNVERIFIED (verify it 
 whose `source` has no upgrade path here (node/python via nvs/pyenv, terraform via tfenv, graphify
 via uv, codegraph via npm) are listed with their real update command instead.
 
-Usage (from wom7web/):
-    python3 project/scripts/tools_upgrade.py                   # plan only (auto subset)
-    python3 project/scripts/tools_upgrade.py --apply           # upgrade the auto subset, verify, PROPOSE (no policy write)
-    python3 project/scripts/tools_upgrade.py --promote         # list the proposals (dry run)
-    python3 project/scripts/tools_upgrade.py --promote --apply # re-verify and write known_good (agent tree only)
-    python3 project/scripts/tools_upgrade.py --force           # plan incl. auto:none brew tools
-    python3 project/scripts/tools_upgrade.py --apply --force   # upgrade all brew tools, smoke, promote
+Usage:
+    python3 scripts/tools_upgrade.py                   # plan only (auto subset)
+    python3 scripts/tools_upgrade.py --apply           # upgrade the auto subset, verify, PROPOSE (no policy write)
+    python3 scripts/tools_upgrade.py --promote         # list the proposals (dry run)
+    python3 scripts/tools_upgrade.py --promote --apply # re-verify and write known_good (agent tree only)
+    python3 scripts/tools_upgrade.py --force           # plan incl. auto:none brew tools
+    python3 scripts/tools_upgrade.py --apply --force   # upgrade all brew tools, smoke, promote
 """
 from __future__ import annotations
 

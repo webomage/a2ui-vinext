@@ -3,7 +3,7 @@
 
 Turns TASKS.md into a 100% generated / synchronised projection from individual ticket files.
 Agents edit .tasks/T##.md directly and never have to resolve markdown table merge conflicts.
-Compiles to @wom/TASKS.md and maintains a symlink at wom7web/TASKS.md.
+Compiles to @wom/TASKS.md.
 
 Usage:
   python3 scripts/tasks_render.py          # Regenerates TASKS.md
@@ -251,22 +251,6 @@ def render_tasks_md(
     result = "\n".join(lines) + "\n"
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(result, encoding="utf-8")
-
-    # Maintain backward-compatible symlink at wom7web/TASKS.md if compiling to root TASKS.md
-    if (
-        WEB_ROOT != WORKSPACE_ROOT
-        and output_path.resolve() == (WORKSPACE_ROOT / "TASKS.md").resolve()
-        and WEB_ROOT.is_dir()
-    ):
-        web_tasks = WEB_ROOT / "TASKS.md"
-        if not web_tasks.is_symlink() or not web_tasks.resolve().is_file():
-            if web_tasks.exists() or web_tasks.is_symlink():
-                web_tasks.unlink()
-            try:
-                rel = os.path.relpath(output_path, WEB_ROOT)
-                web_tasks.symlink_to(rel)
-            except OSError:
-                pass
 
     return result
 

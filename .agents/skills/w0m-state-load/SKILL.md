@@ -85,7 +85,7 @@ The hot list in the payload is a snapshot; this is current. If a ticket the pick
 starting on it because the file said so.
 
 ```bash
-cd wom7api && just test       # what is actually green right now (from the estate root)
+just test                     # what is actually green right now (from the estate root)
 git status --short && git -C wom7web status --short && git -C wom7api status --short
 ```
 

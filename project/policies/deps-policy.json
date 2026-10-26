@@ -1,5 +1,5 @@
 {
-  "_comment": "Canonical cross-repo pnpm dependency policy for the w0m TS repos. ONE source of truth for security floors, lockstep groups, and documented per-repo exceptions. Enforced by project/scripts/deps_sync.py (--check / --apply) and wired into `just deps-check` + pre-push. Raise a floor or pin a lockstep dep HERE, once, then --apply. See docs/DEPS-ALIGNMENT.md.",
+  "_comment": "Canonical cross-repo pnpm dependency policy for the w0m TS repos. ONE source of truth for security floors, lockstep groups, and documented per-repo exceptions. Enforced by scripts/deps_sync.py (--check / --apply) and wired into `just deps-check` + pre-push. Raise a floor or pin a lockstep dep HERE, once, then --apply. See docs/DEPS-ALIGNMENT.md.",
   "repos": {
     "wom7web": "wom7web/package.json",
     "wom7api": "wom7api/package.json",

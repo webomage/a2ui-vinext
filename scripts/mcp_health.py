@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Do the declared MCP servers actually START and SERVE TOOLS? (health / integration)
 
-    python3 project/scripts/mcp_health.py             # report
-    python3 project/scripts/mcp_health.py --enforce   # exit 1 if a governed server is dead
-    python3 project/scripts/mcp_health.py --only serena
+    python3 scripts/mcp_health.py             # report
+    python3 scripts/mcp_health.py --enforce   # exit 1 if a governed server is dead
+    python3 scripts/mcp_health.py --only serena
 
 THE GAP THIS CLOSES
 -------------------

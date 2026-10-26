@@ -27,10 +27,10 @@ by default, exit non-zero under --enforce (the gate). Honors the registry `exemp
 and per-stack `enabled`. Reuses sdlc_doctor's report shape.
 
 Usage:
-    python3 project/scripts/discovery.py            # drift report, advisory (exit 0)
-    python3 project/scripts/discovery.py --enforce  # gate: drift + raw-invocations block
-    python3 project/scripts/discovery.py --json      # machine-readable summary (grounding)
-    python3 project/scripts/discovery.py --quiet     # only problems
+    python3 scripts/discovery.py            # drift report, advisory (exit 0)
+    python3 scripts/discovery.py --enforce  # gate: drift + raw-invocations block
+    python3 scripts/discovery.py --json      # machine-readable summary (grounding)
+    python3 scripts/discovery.py --quiet     # only problems
 """
 from __future__ import annotations
 

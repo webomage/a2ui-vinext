@@ -1,0 +1,215 @@
+#!/usr/bin/env python3
+"""Offline test suite for T345: w0m-prs tool (AC1-AC6)."""
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+ROOT = Path(__file__).resolve().parents[2]
+SCRIPTS = ROOT / "scripts"
+sys.path.insert(0, str(SCRIPTS))
+
+import w0m_prs
+
+checks = 0
+fails = []
+
+def check(label: str, cond: bool) -> None:
+    global checks
+    checks += 1
+    if not cond:
+        fails.append(label)
+    print(f"  {'✓' if cond else '✗'} {label}")
+
+def main() -> int:
+    print("w0m-prs Test Suite (T345)")
+    print("─" * 60)
+
+    # 1. Existence and presets
+    check("w0m_prs.py exists", (SCRIPTS / "w0m_prs.py").is_file())
+    check("preset wom7pr defined", "wom7pr" in w0m_prs.PRESET_REPOS)
+    check("preset wom7open alias defined", "wom7open" in w0m_prs.PRESET_REPOS)
+    check("preset includes orca", "stablyai/orca" in w0m_prs.PRESET_REPOS["wom7pr"])
+    check("preset includes tart-guest-agent", "openai/tart-guest-agent" in w0m_prs.PRESET_REPOS["wom7pr"])
+    check("preset includes omlx", "jundot/omlx" in w0m_prs.PRESET_REPOS["wom7pr"])
+    check("preset includes mlx-vlm", "Blaizzy/mlx-vlm" in w0m_prs.PRESET_REPOS["wom7pr"])
+    check("preset includes tart", "cirruslabs/tart" in w0m_prs.PRESET_REPOS["wom7pr"])
+    check("preset includes harness2", "google-research/harness2" in w0m_prs.PRESET_REPOS["wom7pr"])
+
+    # 2. Search mock
+    mock_res = MagicMock()
+    mock_res.returncode = 0
+    mock_res.stdout = json.dumps([
+        {"number": 1, "title": "Test PR", "state": "OPEN", "url": "https://github.com/a/b/pull/1"}
+    ])
+    with patch("w0m_prs.run_cmd", return_value=mock_res):
+        results = w0m_prs.search_prs(author="casualuser", limit=1)
+        check("search_prs returns items", len(results) == 1)
+        check("search_prs item title matches", results[0].get("title") == "Test PR")
+
+    # 3. Audit mock
+    mock_audit = MagicMock()
+    mock_audit.returncode = 0
+    mock_audit.stdout = json.dumps({
+        "number": 62,
+        "title": "feat: clipboard",
+        "state": "OPEN",
+        "mergeable": "MERGEABLE",
+        "reviewDecision": "REVIEW_REQUIRED",
+        "comments": [],
+        "reviews": [{"state": "COMMENTED"}],
+        "statusCheckRollup": [{"conclusion": "SUCCESS"}],
+        "url": "https://github.com/openai/tart-guest-agent/pull/62"
+    })
+    with patch("w0m_prs.run_cmd", return_value=mock_audit):
+        info = w0m_prs.audit_pr("openai/tart-guest-agent", 62)
+        check("audit_pr extracts mergeable", info.get("mergeable") == "MERGEABLE")
+        check("audit_pr extracts reviewDecision", info.get("reviewDecision") == "REVIEW_REQUIRED")
+        check("audit_pr extracts ciStatus", info.get("ciStatus") == "PASS")
+        check("audit_pr extracts feedback", "feedback" in info)
+
+    # 3b. Feedback parsing tests
+    comments_sample = [
+        {"author": {"login": "casualuser"}, "body": "My own PR update?"},
+        {"author": {"login": "opcode81"}, "body": "Does this support JSX? Also consider this."},
+        {"author": {"login": "coderabbitai"}, "body": "```suggestion\nconst x = 1;\n```"},
+    ]
+    reviews_sample = [
+        {"author": {"login": "AmirF194"}, "body": "I suggest replacing asserts with exceptions.", "state": "COMMENTED"}
+    ]
+    fb = w0m_prs.parse_feedback(comments_sample, reviews_sample, author="casualuser")
+    check("parse_feedback detects human questions", fb["human_questions"] == 1)
+    check("parse_feedback detects human suggestions", fb["human_suggestions"] == 1)
+    check("parse_feedback detects human reviewers", "opcode81" in fb["human_reviewers"] and "AmirF194" in fb["human_reviewers"])
+    check("parse_feedback detects bot suggestions", fb["bot_suggestions"] == 1)
+    check("parse_feedback formats summary with badges", "❓ 1" in fb["summary"] and "💡 1" in fb["summary"])
+
+    # 4. Report generation with Mermaid checks
+    mock_report_prs = [
+        {"repository": {"nameWithOwner": "stablyai/orca"}, "number": 100, "title": "Open PR", "state": "open", "createdAt": "2026-09-01T00:00:00Z"},
+        {"repository": {"nameWithOwner": "openai/tart-guest-agent"}, "number": 62, "title": "Merged PR", "state": "merged", "createdAt": "2026-08-20T00:00:00Z"},
+        {"repository": {"nameWithOwner": "bulwarkid/virtual-fido"}, "number": 10, "title": "Closed PR", "state": "closed", "createdAt": "2026-08-10T00:00:00Z"},
+    ]
+    with patch("w0m_prs.search_prs", return_value=mock_report_prs):
+        captured_out = []
+        args = MagicMock()
+        args.author = "testuser"
+        args.out = None
+        with patch("builtins.print", side_effect=lambda x="": captured_out.append(str(x))):
+            w0m_prs.cmd_report(args)
+        report_text = "\n".join(captured_out)
+        check("report contains flowchart TD", "flowchart TD" in report_text)
+        check("report contains xychart-beta", "xychart-beta" in report_text)
+        check("report contains flowchart LR", "flowchart LR" in report_text)
+        check("report contains master table", "| Repository | # | Title | State | Created |" in report_text)
+
+    # 5. Table generation check
+    with patch("w0m_prs.search_prs", return_value=mock_report_prs):
+        with patch("w0m_prs.audit_pr", return_value={"title": "Open PR", "state": "OPEN", "mergeable": "MERGEABLE", "reviewDecision": "NONE", "ciStatus": "PASS", "feedback": "❓ 1 💬 2", "url": "https://github.com/stablyai/orca/pull/100"}):
+            captured_table = []
+            args_table = MagicMock()
+            args_table.author = "testuser"
+            args_table.preset = "w0m7open"
+            args_table.repo = None
+            args_table.all = False
+            args_table.limit = 10
+            args_table.markdown = False
+            with patch("builtins.print", side_effect=lambda x="": captured_table.append(str(x))):
+                w0m_prs.cmd_table(args_table)
+            table_text = "\n".join(captured_table)
+            check("table contains headers", "Repository" in table_text and "Mergeable" in table_text and "Feedback" in table_text)
+            check("table contains entry", "stablyai/orca" in table_text and "#100" in table_text and "❓ 1 💬 2" in table_text)
+
+            # Test Markdown table mode
+            captured_md = []
+            args_table.markdown = True
+            with patch("builtins.print", side_effect=lambda x="": captured_md.append(str(x))):
+                w0m_prs.cmd_table(args_table)
+            md_text = "\n".join(captured_md)
+            check("markdown table contains Feedback column", "| Feedback |" in md_text)
+
+    # 6. Fork inspection & cmd_forks mock
+    mock_fork_info = {
+        "repo": "orca",
+        "branch": "feat/worktree",
+        "upstream_ref": "upstream/main",
+        "ahead_upstream": 2,
+        "behind_upstream": 0,
+        "has_origin_branch": True,
+        "ahead_origin": 0,
+        "behind_origin": 0,
+        "dirty_count": 0,
+        "status": "ahead upstream +2",
+        "is_synced": True,
+    }
+    with patch("w0m_prs.inspect_fork", return_value=mock_fork_info):
+        captured_forks = []
+        args_forks = MagicMock()
+        args_forks.dir = None
+        args_forks.no_fetch = True
+        args_forks.strict = False
+        args_forks.markdown = False
+        args_forks.json = False
+        with patch("builtins.print", side_effect=lambda x="": captured_forks.append(str(x))):
+            w0m_prs.cmd_forks(args_forks)
+        forks_output = "\n".join(captured_forks)
+        check("cmd_forks prints table header", "Repository" in forks_output and "vs Upstream" in forks_output)
+        check("cmd_forks prints repo status", "orca" in forks_output and "ahead upstream +2" in forks_output)
+
+    # 7. Fork helpers mock: fetch_fork, get_fork_info, update_fork
+    mock_fetch_res = MagicMock()
+    mock_fetch_res.returncode = 0
+    mock_fetch_res.stdout = "origin\nupstream"
+    with patch("w0m_prs.run_cmd", return_value=mock_fetch_res):
+        fetch_result = w0m_prs.fetch_fork(Path("/fake/repo"))
+        check("fetch_fork runs without errors", fetch_result["success"] is True)
+        check("fetch_fork records remotes", "origin" in fetch_result["fetched"])
+
+    mock_info_dict = {
+        "repo": "testrepo",
+        "branch": "main",
+        "upstream_ref": "upstream/main",
+        "ahead_upstream": 0,
+        "behind_upstream": 3,
+        "has_origin_branch": True,
+        "ahead_origin": 0,
+        "behind_origin": 0,
+        "dirty_count": 0,
+        "status": "behind upstream by 3",
+        "is_synced": False,
+    }
+    with patch("w0m_prs.inspect_fork", return_value=mock_info_dict):
+        with patch("w0m_prs.run_cmd", return_value=mock_fetch_res):
+            info_res = w0m_prs.get_fork_info(Path("/fake/repo"))
+            check("get_fork_info returns repo name", info_res["repo"] == "testrepo")
+            check("get_fork_info has remotes dict", isinstance(info_res["remotes"], dict))
+
+    # Test update_fork: dirty rejection
+    mock_dirty_dict = dict(mock_info_dict, dirty_count=2)
+    with patch("w0m_prs.inspect_fork", return_value=mock_dirty_dict):
+        up_dirty = w0m_prs.update_fork(Path("/fake/repo"), fetch=False)
+        check("update_fork rejects dirty worktree", up_dirty["success"] is False and up_dirty["action"] == "skipped_dirty")
+
+    # Test update_fork: fast-forward on clean main
+    with patch("w0m_prs.inspect_fork", return_value=mock_info_dict):
+        with patch("w0m_prs.run_cmd", return_value=mock_fetch_res):
+            up_clean = w0m_prs.update_fork(Path("/fake/repo"), fetch=False)
+            check("update_fork fast-forwards clean branch", up_clean["success"] is True and up_clean["action"] == "fast_forwarded")
+
+    # 8. Skill check
+    skill_md = ROOT / "wom7skills/skills/w0m-prs/SKILL.md"
+    check("w0m-prs SKILL.md exists in wom7skills", skill_md.is_file())
+
+    print("─" * 60)
+    print(f"Results: {checks - len(fails)}/{checks} passed")
+    if fails:
+        print("\nFailed checks:")
+        for f in fails:
+            print(f"  ✗ {f}")
+        return 1
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

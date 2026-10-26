@@ -31,10 +31,10 @@ drift permanent — the exact freeze this design avoids.
 board fields; without the bump its new fields would ship into an index reporting everything synced.
 
 Usage:
-    python3 project/scripts/sync_github.py            # indexed sync (skips unchanged)
-    python3 project/scripts/sync_github.py --all      # force a full sweep
-    python3 project/scripts/sync_github.py --dry-run  # print planned actions only, mutate nothing
-    python3 project/scripts/sync_github.py --verify    # audit recorded gh_issue numbers, no mutation
+    python3 scripts/sync_github.py            # indexed sync (skips unchanged)
+    python3 scripts/sync_github.py --all      # force a full sweep
+    python3 scripts/sync_github.py --dry-run  # print planned actions only, mutate nothing
+    python3 scripts/sync_github.py --verify    # audit recorded gh_issue numbers, no mutation
 
 Exit codes: 0 ok · 1 one or more tickets failed to sync · 2 configuration/auth error.
 
@@ -70,7 +70,7 @@ sys.path.insert(0, str(WEB_ROOT / "project" / "scripts"))
 
 from authz_blanket_gate import strip_jsonc as _strip_jsonc  # noqa: E402  (one JSONC reader, not two)
 
-_sdlc_file = (WORKSPACE_ROOT / ".w0m" / "sdlc.json") if (WORKSPACE_ROOT / ".w0m" / "sdlc.json").is_file() else (WEB_ROOT / ".w0m" / "sdlc.json")
+_sdlc_file = WORKSPACE_ROOT / ".w0m" / "sdlc.json"
 _VCS = json.loads(_strip_jsonc(_sdlc_file.read_text()))["vcs"]
 REPO = _VCS["repo"]
 BRANCH = _VCS.get("default_branch", "beta")
