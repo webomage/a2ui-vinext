@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/agy-wave1` | 0 | **n/a — NO UPSTREAM** | `a4c5980f` |
-| `wom7api` | `agent/agy-wave1` | 0 | **n/a — NO UPSTREAM** | `fe3be19` |
-| `wom7func` | `agent/agy-wave1` | 0 | **n/a — NO UPSTREAM** | `7f52546` |
-| `wom7skills` | `agent/agy-wave1` | 0 | **n/a — NO UPSTREAM** | `8b1244d` |
-| `wom7ext` | `agent/agy-wave1` | 0 | **n/a — NO UPSTREAM** | `afe29aa` |
-| `wom7sec` | `agent/agy-wave1` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
-| `wom7mlx/wom7mlx` | `agent/agy-wave1` | 0 | **n/a — NO UPSTREAM** | `26843d8` |
+| `wom7web` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `234865d9` |
+| `wom7api` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `fe3be19` |
+| `wom7func` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `7f52546` |
+| `wom7skills` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `8b1244d` |
+| `wom7ext` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `afe29aa` |
+| `wom7sec` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `44912de` |
+| `wom7mlx/wom7mlx` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `26843d8` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 51 open · 571 TASKS.md rows · 216/571 specced (5/51 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 51 open · 571 TASKS.md rows · 217/572 specced (5/51 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T509","T567","T17","T28","T70","T71","T76","T109","T113","T128"],"repos":{"wom7api":{"branch":"agent/agy-wave1","dirty":0,"has_upstream":true,"head":"fe3be19","unpushed":null},"wom7ext":{"branch":"agent/agy-wave1","dirty":0,"has_upstream":true,"head":"afe29aa","unpushed":null},"wom7func":{"branch":"agent/agy-wave1","dirty":0,"has_upstream":true,"head":"7f52546","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/agy-wave1","dirty":0,"has_upstream":true,"head":"26843d8","unpushed":null},"wom7sec":{"branch":"agent/agy-wave1","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/agy-wave1","dirty":0,"has_upstream":true,"head":"8b1244d","unpushed":null},"wom7web":{"branch":"agent/agy-wave1","dirty":0,"has_upstream":true,"head":"a4c5980f","unpushed":null}},"tickets":{"open":51,"rowless_open":[],"rows":571,"specced":216,"specced_open":5,"total":571,"unmirrored_open":3}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T509","T567","T17","T28","T70","T71","T76","T109","T113","T128"],"repos":{"wom7api":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"fe3be19","unpushed":null},"wom7ext":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"afe29aa","unpushed":null},"wom7func":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"7f52546","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"26843d8","unpushed":null},"wom7sec":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"44912de","unpushed":null},"wom7skills":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"8b1244d","unpushed":null},"wom7web":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"234865d9","unpushed":null}},"tickets":{"open":51,"rowless_open":[],"rows":571,"specced":217,"specced_open":5,"total":572,"unmirrored_open":3}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -136,7 +136,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T567** — Rebrand wom7*/k7* to w0m-* and migrate all estate repositories from casualuser/* to github.com/webomage/w0m-*
   - **2026-10-23** (2d ago): Stage 1 (AC2) completed & public fork naming convention locked. Following casualuser promotion to admin (Owner) in github.com/orgs/webomage, transferred and renamed all 10 first-party repositories (webomage/w0m, webomage/w0m-web, webomage/w0m-api, webomage/w0m-cf, webomage/w0m-ext, webomage/w0m-sec, webomage/w0m-skills, webomage/w0m-mlx, webomage/w0m-ava, webomage/w0m-clips) and consolidated all 11 public open-source forks under webomage/<repo> (orca, harness2, headroom, webtorrent-desktop, omlx, mlx-vlm, tart, tart-guest-agent, virtual-fido, serena, zeroclaw) keeping their upstream repository names (or <upstream-org>-<repo> on collision). Updated origin remotes across all local checkouts ([remote] 0 in name-refs) and updated w0m-skills schema URLs.
 
-#### Completed today (10):
+#### Completed today (11):
 
 - **T136** — Research migrating WordPress sites to the vinext (Vite+React) stack as a delivery offering (Authored the grounded research & delivery playbook at docs/reports/-t136-wordpress-vinext-astro-migration-offering.md (mirrored to wom7web/docs/reports/2026-10-25-t136-wordpress-vinext-astro-migration-offering.md) and recorded the architectural decision in docs/decisions/AgDR-0042-wordpress-migration-astro-vinext-delivery-offering.md.)
 - **T271** — We are on Cloudflare and use six of its services — survey the rest against real needs, with the free-tier boundary as the first axis (Published the full catalogue survey and Workers Paid ($5/mo = $1.67/mo/project) vs Supabase Pro ($25/mo = $8.33/mo/project) vs Supabase Pro + PITR ($125/mo = $41.67/mo/project) comparison at docs/reports/-t271-cloudflare-services-and-paid-tier-survey.md (mirrored to wom7web/docs/reports/2026-10-25-t271-cloudflare-services-and-paid-tier-survey.md).)
@@ -148,6 +148,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T524** — Supabase default grants: research the safe-by-default change for new tables, views and functions in public, and whether and how to propose it upstream (Completed research & authored report: .agents/reports/2026-10-25-t524-supabase-default-grants-research.md (mirrored to wom7web/docs/reports/2026-10-25-t524-supabase-default-grants-research.md).)
 - **T547** — credential-probe is red on committed code: a member service-handles route matches the credential-surface path regex (All 3 ACs verified and resolved)
 - **T571** — Portal sidebar separation, Admin full-org/capability access, Client/PM side switcher, and Gamification Mode naming for w0m units (Completed (7/7 ACs): Fixed sidebar/toolbar z-index and scroll overflow (AppShell.svelte, AdminTableToolbar.svelte, AuthWidget.svelte, ContextSwitcher.svelte), added wom7api migration 20261025193000_t571_admin_all_orgs_in_wom_my_contexts.sql so Admin sees all active orgs in ContextSwitcher, enabled 1-click w0m PM vs Client View side switching on both-sided orgs (Webomage), separated portal sidebars (cp vs job vs join), and wired Enterprise (Milestones) vs RPG Gamification (Adventures) vocabulary mode for w0m units.)
+- **T572** — Chrome-style icons-only collapsed side panel rail for AppShell, SideNav, ContextSwitcher, SidebarHatSwitcher, and AuthWidget (Completed (4/4 ACs). Implemented Chrome-style icons-only collapsed vertical rail (60px vs 264px), semantic @lucide/svelte vector icons in SideNav, compact avatar/icon triggers with unclipped floating popovers across ContextSwitcher, SidebarHatSwitcher, and AuthWidget, and verified all 64 Vitest assertions, ds-conformance, and svelte-typecheck-ratchet.)
 
 ## 3. Other open threads (in TASKS.md)
 
