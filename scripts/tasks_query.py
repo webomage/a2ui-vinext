@@ -1178,6 +1178,27 @@ EPIC_ROLLUP = re.compile(r"ROADMAP\s*§\s*(\d+)")
 
 
 _SLUG_TO_ROADMAP: dict[str, str] | None = None
+_TAG_BY_SEC: dict[str, str] | None = None
+
+
+def parse_roadmap_epic_tags(rm_path: pathlib.Path | None = None) -> dict[str, str]:
+    """Return {section_id: canonical_3_level_tag} parsed from `## N. Title \\`tag\\`` headers in ROADMAP.md (T355 AC1/AC2)."""
+    global _TAG_BY_SEC
+    if rm_path is None and _TAG_BY_SEC is not None:
+        return _TAG_BY_SEC
+    target = rm_path
+    if target is None:
+        target = WORKSPACE_ROOT / "ROADMAP.md" if (WORKSPACE_ROOT / "ROADMAP.md").is_file() else WEB_ROOT / "ROADMAP.md"
+    if not target.is_file():
+        return {}
+    tags: dict[str, str] = {}
+    for line in target.read_text(encoding="utf-8", errors="replace").splitlines():
+        m = re.match(r"^##\s+(?:\S+\s+)?(\d+)\.\s+.*?\s+`([a-z0-9]+(?:_[a-z0-9]+)+)`\s*$", line)
+        if m:
+            tags[m.group(1)] = m.group(2).lower()
+    if rm_path is None:
+        _TAG_BY_SEC = tags
+    return tags
 
 
 def parse_roadmap_epic_slugs(rm_path: pathlib.Path | None = None) -> dict[str, str]:
@@ -1222,21 +1243,37 @@ def _load_slug_to_roadmap(rm_path: pathlib.Path | None = None) -> dict[str, str]
 
 
 def epic_key(epic: str, rm_path: pathlib.Path | None = None) -> str:
-    """Roll `ROADMAP §13.2 — skills platform` up to `ROADMAP §13`, or map epic slug to ROADMAP section.
+    """Derive the canonical epic roll-up from `epic:` via `tag_family()` (T355 AC2).
 
-    Deliberate: §13, §13.2, §13.3 and `§13 — platform tooling (child of T149)` are four spellings
-    of one roadmap section. Grouping on the raw string splits related work into singletons and
-    makes the biggest theme in the queue look like four small ones.
+    Canonical `epic:` values are 3-level `<tag1>_<tag2>_<tag3>` tags defined on `ROADMAP.md`
+    `## N. Title` headers (e.g. `sdlc_tooling_platform`), rolled up through `tag_family()`.
+    Subsection tags under a single-epic 2-level family (e.g. `sdlc_tooling_skills` under
+    `sdlc_tooling`) roll up to the parent section's canonical 3-level tag (`sdlc_tooling_platform`).
+    Legacy `ROADMAP §N` strings and `> **Epic slug:**` kebab slugs are preserved for synthetic
+    fixture compatibility (`test_plan_set.py`, `test_t531_layers.py`).
     """
-    m = EPIC_ROLLUP.search(epic or "")
+    raw = (epic or "").strip()
+    if not raw:
+        return ""
+    tok_m = re.match(r"^([a-z0-9]+(?:_[a-z0-9]+)+)", raw.lower())
+    if tok_m:
+        fam = tag_family(tok_m.group(1))
+        leaf = fam[-1]
+        canon_tags = set(parse_roadmap_epic_tags(rm_path).values())
+        if leaf not in canon_tags and len(fam) >= 2:
+            by_prefix = [ct for ct in canon_tags if ct.startswith(fam[1] + "_")]
+            if len(by_prefix) == 1:
+                return by_prefix[0]
+        return leaf
+    m = EPIC_ROLLUP.search(raw)
     if m:
         return f"ROADMAP §{m.group(1)}"
     slugs = _load_slug_to_roadmap(rm_path)
-    if epic and epic.lower() in slugs:
-        sec = slugs[epic.lower()]
+    if raw.lower() in slugs:
+        sec = slugs[raw.lower()]
         m_slug = EPIC_ROLLUP.search(sec)
         return f"ROADMAP §{m_slug.group(1)}" if m_slug else sec
-    return epic or ""
+    return raw
 
 
 
@@ -1399,10 +1436,29 @@ def load_plan(epic: str | None = None,
             q = epic.strip()
             clean_q = re.sub(r"^(ROADMAP\s*)?§?\s*", "", q, flags=re.I).strip()
             roadmap_slugs: set[str] = set()
+            roadmap_tags: set[str] = set()
+            sub13_tags = {
+                "13.1": "sdlc_tooling_guardrails",
+                "13.2": "sdlc_tooling_pipeline",
+                "13.3": "sdlc_tooling_skills",
+                "13.4": "sdlc_tooling_graph",
+                "13.5": "sdlc_tooling_discovery",
+                "13.6": "sdlc_tooling_record",
+                "13.7": "sdlc_tooling_gates",
+                "13.8": "sdlc_tooling_substrate",
+                "13.9": "sdlc_tooling_projects",
+                "13.10": "sdlc_tooling_currency",
+                "13.11": "sdlc_tooling_operations",
+            }
             if re.fullmatch(r"\d+(\.\d+)?", clean_q):
                 for sec, slug in parse_roadmap_epic_slugs().items():
                     if sec == clean_q or sec.startswith(clean_q + "."):
                         roadmap_slugs.add(slug)
+                if clean_q in sub13_tags:
+                    roadmap_slugs.add(sub13_tags[clean_q])
+                for sec, rtag in parse_roadmap_epic_tags().items():
+                    if sec == clean_q.split(".")[0]:
+                        roadmap_tags.add(rtag)
 
             matched = []
             for t in all_t:
@@ -1410,7 +1466,19 @@ def load_plan(epic: str | None = None,
                 if not e:
                     continue
                 if re.fullmatch(r"\d+(\.\d+)?", clean_q):
-                    if re.search(rf"§\s*{re.escape(clean_q)}(\.|\b)", e) or (e.lower() in roadmap_slugs):
+                    if "." in clean_q:
+                        if (
+                            re.search(rf"§\s*{re.escape(clean_q)}(\.|\b)", e)
+                            or (e.lower() in roadmap_slugs)
+                            or any(tg.lower() in roadmap_slugs for tg in t.get("tags", []))
+                        ):
+                            matched.append(t)
+                    elif (
+                        re.search(rf"§\s*{re.escape(clean_q)}(\.|\b)", e)
+                        or (e.lower() in roadmap_slugs)
+                        or (e.lower() in roadmap_tags)
+                        or (epic_key(e) in roadmap_tags)
+                    ):
                         matched.append(t)
                 elif q.lower() in e.lower() or q.lower() in t.get("title", "").lower():
                     matched.append(t)
@@ -1418,7 +1486,8 @@ def load_plan(epic: str | None = None,
                 print(f"\u26a0\ufe0f no tickets found matching epic query {epic!r}", file=sys.stderr)
                 return {}
             name = epic_key(matched[0].get('epic', ''))
-            return build_dynamic_plan(matched, name=name, roadmap=name)
+            rm_label = f"ROADMAP §{clean_q.split('.')[0]}" if re.fullmatch(r"\d+(\.\d+)?", clean_q) else name
+            return build_dynamic_plan(matched, name=name, roadmap=rm_label)
 
         if tickets_filter:
             tids = [x.strip() for x in (tickets_filter.split(",") if isinstance(tickets_filter, str) else tickets_filter)]
@@ -1762,9 +1831,53 @@ def cmd_overview(tickets: list[dict], top: int) -> int:
         print()
 
     block("by AREA (theme)", lambda t: t["area"])
-    block("by EPIC, rolled up to ROADMAP §N", lambda t: epic_key(t["epic"]),
-          note="⚠️ raw `epic:` strings are inconsistent (§13, §13.2, '§13 — … (child of T149)'); "
-               "rolled up so one section reads as one theme.", limit=top)
+
+    # T353 + T355 AC8. Unified EPIC & TAG FAMILY 3-level rollup: `epic:` holds a canonical
+    # `<tag1>_<tag2>_<tag3>` tag from ROADMAP.md and rolls up through the exact same `tag_family()`
+    # hierarchy as `_`-namespaced `tags:`.
+    t_by_id = {t["id"]: t for t in openq}
+    fam_ids: dict[str, set[str]] = defaultdict(set)
+    fam_level: dict[str, int] = {}
+    unkeyed_epic = 0
+    for t in openq:
+        ep = epic_key(t["epic"])
+        if not ep:
+            unkeyed_epic += 1
+        sources = ([ep] if ep and "_" in ep else []) + [tg for tg in t["tags"] if "_" in tg]
+        for tg in sources:
+            for lvl, key in enumerate(tag_family(tg), start=1):
+                fam_ids[key].add(t["id"])
+                fam_level[key] = lvl
+
+    def _fam_bar(ids: set[str]) -> str:
+        done = sum(t_by_id[i].get("ac_done", 0) for i in ids)
+        total = sum(t_by_id[i].get("ac_total", 0) for i in ids)
+        return _bar(done, total)
+
+    roots = sorted(
+        (
+            k for k, lvl in fam_level.items() if lvl == 1
+            and any(fam_level[o] == 2 for o in fam_level if o.startswith(k + "_"))
+        ),
+        key=lambda r: (-len(fam_ids[r]), r),
+    )
+    cov_epic = n - unkeyed_epic
+    print(f"── by EPIC & TAG FAMILY — 1→{TAG_FAMILY_DEPTH} deep over {cov_epic}/{n} tickets "
+          f"({len(roots)} root famil{'y' if len(roots) == 1 else 'ies'}"
+          + (f", ⚠️ {unkeyed_epic} unkeyed" if unkeyed_epic else "") + ") ──")
+    print("   Unified rollup (T353/T355): `epic:` and namespaced `tags:` share `<tag1>_<tag2>_<tag3>` "
+          "via `tag_family()`.")
+    for root in roots[:top]:
+        wip_r = sum(1 for i in fam_ids[root] if t_by_id[i]["status"] == "in-progress")
+        print(f"  {len(fam_ids[root]):>3} open · {wip_r:>2} wip · {_fam_bar(fam_ids[root])} · {root}")
+        for child in sorted(k for k, lvl in fam_level.items()
+                             if lvl == 2 and k.startswith(root + "_")):
+            print(f"      {len(fam_ids[child]):>3} · {_fam_bar(fam_ids[child])} · {child}")
+            for gc in sorted(k for k, lvl in fam_level.items()
+                              if lvl == 3 and k.startswith(child + "_")):
+                ids = " ".join(sorted(fam_ids[gc], key=lambda i: -t_by_id[i]["score"])[:4])
+                print(f"          {len(fam_ids[gc]):>3} · {_fam_bar(fam_ids[gc])} · {gc:<32} {ids}")
+    print()
 
     # Tags are a genuinely weak dimension here and the output should say so rather than imply
     # otherwise: 153 distinct labels over 119 tickets is a long tail, and the single most common
@@ -1780,54 +1893,19 @@ def cmd_overview(tickets: list[dict], top: int) -> int:
         print(f"  {c:>3}  {tag:<22} {ids}")
     print()
 
-    # T353. Namespaced tags (`sdlc`, `sdlc_design`, `sdlc_design_gate`) roll up on their OWN
-    # spelling — no manual roadmap-section table to maintain, and a ticket can sit under several
-    # families. Only fires for tags that actually carry a `_`; a flat tag isn't given a fake parent.
-    t_by_id = {t["id"]: t for t in openq}
-    fam_ids: dict[str, set[str]] = defaultdict(set)
-    fam_level: dict[str, int] = {}
-    for t in openq:
-        for tg in t["tags"]:
-            for lvl, key in enumerate(tag_family(tg), start=1):
-                fam_ids[key].add(t["id"])
-                fam_level[key] = lvl
-
-    def _fam_bar(ids: set[str]) -> str:
-        done = sum(t_by_id[i].get("ac_done", 0) for i in ids)
-        total = sum(t_by_id[i].get("ac_total", 0) for i in ids)
-        return _bar(done, total)
-
-    roots = sorted(k for k, lvl in fam_level.items() if lvl == 1
-                   and any(fam_level[o] == 2 for o in fam_level if o.startswith(k + "_")))
-    if roots:
-        print(f"── by TAG FAMILY — namespaced tags auto-rolled-up 1→{TAG_FAMILY_DEPTH} deep "
-              f"({len(roots)} root famil{'y' if len(roots) == 1 else 'ies'}) ──")
-        print("   Convention: `epic_area` groups under `epic`, `epic_area_topic` under `epic_area` — "
-              "computed from the tag string, no lookup table (T353).")
-        for root in roots[:top]:
-            print(f"  {len(fam_ids[root]):>3} · {_fam_bar(fam_ids[root])} · {root}")
-            for child in sorted(k for k, lvl in fam_level.items()
-                                 if lvl == 2 and k.startswith(root + "_")):
-                print(f"      {len(fam_ids[child]):>3} · {_fam_bar(fam_ids[child])} · {child}")
-                for gc in sorted(k for k, lvl in fam_level.items()
-                                  if lvl == 3 and k.startswith(child + "_")):
-                    ids = " ".join(sorted(fam_ids[gc], key=lambda i: -t_by_id[i]["score"])[:4])
-                    print(f"          {len(fam_ids[gc]):>3} · {_fam_bar(fam_ids[gc])} · {gc}  {ids}")
-        print()
-
-    # BUNDLES — what would sensibly be worked together. Same area AND same roadmap section is a
+    # BUNDLES — what would sensibly be worked together. Same area AND same canonical epic tag is a
     # stronger signal than either alone: it means shared surface and shared intent.
     bundles: dict[tuple[str, str], list[dict]] = defaultdict(list)
     for t in openq:
         if t["area"] and epic_key(t["epic"]):
             bundles[(t["area"], epic_key(t["epic"]))].append(t)
     multi = {k: v for k, v in bundles.items() if len(v) > 1}
-    print(f"── BUNDLES — same AREA + same ROADMAP § ({len(multi)} with 2+ members) ──")
+    print(f"── BUNDLES — same AREA + same EPIC ({len(multi)} with 2+ members) ──")
     print("   Work these together: shared surface and shared intent, so the context is paid for once.")
     for (area, epic), ts in sorted(multi.items(), key=lambda kv: -len(kv[1]))[:top]:
         done = sum(t.get("ac_done", 0) for t in ts)
         total = sum(t.get("ac_total", 0) for t in ts)
-        print(f"  {len(ts):>3} · {_bar(done, total)} · {area:<10} {epic:<16} "
+        print(f"  {len(ts):>3} · {_bar(done, total)} · {area:<10} {epic:<30} "
               f"{' '.join(t['id'] for t in sorted(ts, key=lambda t: -t['score']))}")
     return 0
 

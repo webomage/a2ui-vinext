@@ -8,7 +8,7 @@ This document serves as the master backlog for features that have been discussed
 
 ---
 
-## 1. Described Features Missing OpenSpecs
+## 1. Described Features Missing OpenSpecs `sdlc_spec_missing`
 
 > **Epic slug:** `missing-specs`
 These features are mentioned in our high-level architecture (like `USER-FLOWS.md` or Gamification economics) but lack a formal `openspec` defining exactly how they should function. They require formal specification before implementation can begin.
@@ -27,7 +27,7 @@ These features are mentioned in our high-level architecture (like `USER-FLOWS.md
 
 ---
 
-## 2. Designed Features Needing Implementation
+## 2. Designed Features Needing Implementation `sdlc_spec_unbuilt`
 
 > **Epic slug:** `features-implementation`
 These features have been formally designed and architected in recent sessions, but the actual code (frontend components, edge functions, etc.) has not been written yet.
@@ -50,7 +50,7 @@ These features have been formally designed and architected in recent sessions, b
 
 ---
 
-## 3. Immediate Next Tasks (Up Next)
+## 3. Immediate Next Tasks (Up Next) `sdlc_queue_next`
 
 > **Epic slug:** `immediate-tasks`
 1. **[DECISION REQUIRED]**: Select one of the above domains to be our primary focus.
@@ -60,7 +60,7 @@ These features have been formally designed and architected in recent sessions, b
 ---
 *Backlog expanded 2026-07-10 (session: webomage.com incident + hardening).*
 
-## 4. Release Versioning, Healthchecks & Changelog
+## 4. Release Versioning, Healthchecks & Changelog `sdlc_release_health`
 
 > **Epic slug:** `release-versioning-healthchecks`
 * **Goal**: Every service/API stamped with a single `YYYY.MM.DD-<unixtimestamp>` version, propagated to healthchecks and a CP "Services & Versions" panel; a per-deploy changelog tying agent progress to ROADMAP.
@@ -72,7 +72,7 @@ These features have been formally designed and architected in recent sessions, b
   4. Append-only `deploy_log` table + a `CHANGELOG` generator that records each deploy (version, repo, commit range, actor/agent) and links back to ROADMAP items.
 * **Type**: Spec → Build. **Effort**: M.
 
-## 5. Cross-Repo Tech-Debt Knowledgebase
+## 5. Cross-Repo Tech-Debt Knowledgebase `sdlc_debt_knowledgebase`
 
 > **Epic slug:** `cross-repo-tech-debt`
 * **Goal**: Research/observe/record tech debt across all repos in a queryable KB.
@@ -80,7 +80,7 @@ These features have been formally designed and architected in recent sessions, b
 * **Recommendation**: start with the self-hosted aggregator (reuses existing tooling + ties into §4/§9), evaluate CodeScene for prioritization if we want behavioral analysis.
 * **Type**: Research → Spec → Build. **Effort**: M–L.
 
-## 6. SDLC Skill Set for w0m Guild Crew
+## 6. SDLC Skill Set for w0m Guild Crew `sdlc_skills_guild`
 
 > **Epic slug:** `sdlc-skills-crew`
 * **Goal**: A composable skill pack for the dev lifecycle mapped to agent roles (ai-agent / ai-architect / ai-interviewer / admin).
@@ -88,7 +88,7 @@ These features have been formally designed and architected in recent sessions, b
 * **External**: evaluate skills.sh registry + skill-search for reusable SDLC skills to embed (needs web research pass).
 * **Type**: Research → Build (author via skill-creator). **Effort**: M.
 
-## 7. wom7swarm Revalidation — DECOMMISSIONED (2026-07-11)
+## 7. wom7swarm Revalidation — DECOMMISSIONED (2026-07-11) `sdlc_swarm_decommissioned`
 
 > **Epic slug:** `swarm-revalidation`
 * **Resolved**: retired. Only caller was the Telegram webhook (`SWARM_URL` never set); GCP project `webomage-1337` has billing off + closed billing accounts + disabled Run/Artifact APIs + deleted gcloud account → nothing runs, **no cost**, its 16 CVEs are moot.
@@ -100,7 +100,7 @@ than trusting this sentence. The one remaining mention, in `telegram.ts`, is the
 explains the decommission and is declared as an allowed exception with that reason.
 * **Leftover follow-up**: the Telegram bot now has no backend — repoint it to the `w0m-consultant` edge function if wanted (`TODO(telegram)` in `telegram.ts`).
 
-## 8. w0m-mlx Refresh + Fast Rust Gemma Launcher (R&D)
+## 8. w0m-mlx Refresh + Fast Rust Gemma Launcher (R&D) `ai_mlx_gemma`
 
 > **Epic slug:** `w0m-mlx-fast-launcher`
 * **Goal**: Update all vendored packages in `w0m-mlx/w0m-mlx`; build a very fast Rust launcher for Gemma optimized for the MLX raw API.
@@ -108,7 +108,7 @@ explains the decommission and is declared as an allowed exception with that reas
 * **Recommendation**: time-boxed spike — refresh deps, prototype Gemma inference via mlx-rs vs candle on Apple Silicon, measure cold-start + tok/s, then decide.
 * **Type**: Spike → (maybe) Build. **Effort**: L.
 
-## 9. CP People Visibility — Hierarchy Scoping (FEATURE, not a leak)
+## 9. CP People Visibility — Hierarchy Scoping (FEATURE, not a leak) `rbac_visibility_hierarchy`
 
 > **Epic slug:** `cp-people-hierarchy`
 * **Severity correction (2026-07-10)**: NOT a live data exposure. Verified against the live DB — `public.profiles` SELECT RLS is "Admins view all" + "Users view their own" (no permissive `USING(true)`), and `PeopleManager` uses the member's own session (RLS applies), not the service role. The `/team/people` screenshot was an **admin** view (correct behavior). A regular member sees only their own profile today.
@@ -116,7 +116,7 @@ explains the decommission and is declared as an allowed exception with that reas
 * **Needs (net-new primitives — none exist yet)**: a project↔user membership table AND a reporting-line model (`manager_id`/`reports_to`), then RLS/query scoping + a contact/escalation flow. Overlaps RBAC/impersonation (§2.3) and cp-guild-operations OpenSpec.
 * **Type**: Spec → Build (needs org-model design decision). **Effort**: M–L. **Priority**: normal (feature, not security).
 
-## 10. Client Conversion Funnel, Blueprint Proposals & Unified Contracts
+## 10. Client Conversion Funnel, Blueprint Proposals & Unified Contracts `client_conversion_contracts`
 
 > **Epic slug:** `client-conversion-contracts`
 
@@ -131,7 +131,7 @@ explains the decommission and is declared as an allowed exception with that reas
 * **Builds on**: `client-engagement`/`lead-pipeline` (2026-07-02), `ai-intake-service-requests` (2026-07-05), gamification hierarchy-v2, AI-agents gaps #1–2 (fallbacks + streaming, shipped 2026-07-11).
 * **Type**: Spec (written) → Build. **Effort**: L (schema S, edge fns M, CP surfaces M, widget S).
 
-## 11. AI Agent Engine — Engine-Agnostic Agents (status 2026-07-12)
+## 11. AI Agent Engine — Engine-Agnostic Agents (status 2026-07-12) `ai_agents_engine`
 
 > **Epic slug:** `ai-agent-engine`
 * **Source of truth**: [`w0m-web/docs/backend/AI-AGENTS-RESEARCH.md`](w0m-web/docs/backend/AI-AGENTS-RESEARCH.md) §6. Four foundational gaps are now **all shipped & verified live**:
@@ -143,7 +143,7 @@ explains the decommission and is declared as an allowed exception with that reas
 * **Remaining cross-cutting (§4.1, unstarted)**: durable/summarized conversation memory; guardrails via `llama-guard-3-8b`; cost + rate accounting from CF GraphQL (chat logs 0 tokens today). Then per-agent feature depth (§4.2–4.5) + Telegram bridge (also the §7 leftover: repoint the bot to `w0m-consultant`).
 * **Funnel linkage**: gap #4's `submit_service_request` is the **intake** stage of the client-conversion funnel (§10). The **registration** stage (`client-register`, lead → CP client) is specced in `2026-07-11-client-conversion-and-contracts` but not built — the tool's confirmation is where the guided-registration offer belongs.
 
-## 12. WebMCP — Role-Gated Agent Tools Across All Apps (P1, status 2026-07-12)
+## 12. WebMCP — Role-Gated Agent Tools Across All Apps (P1, status 2026-07-12) `ai_mcp_webmcp`
 
 > **Epic slug:** `webmcp-agent-tools`
 * **What**: adopt **WebMCP** (W3C Draft Community Group Report, 2026-02-10; `navigator.modelContext`; origin trial Chrome 149) so every w0m app declares its features as structured, callable tools an in-browser AI agent (Claude in Chrome, Gemini, Copilot) can discover and invoke — instead of screenshot-and-click. WebMCP tools **inherit the user's authenticated browser session**, which makes **RBAC the central design problem**.
@@ -157,7 +157,7 @@ explains the decommission and is declared as an allowed exception with that reas
 * **Relates to**: #46 CF-hosted MCP server (server-side sibling), the tool-calling engine (T1 done), T2 (`client` role for client-scoped cp tools).
 * **Type**: Spec (written) → Build. **Tracked**: TASKS `T21`. **Effort**: L (shared pkg S, per-app registration M, audit/rate-limit S, verify in Chrome 149 origin trial S).
 
-## 13. Platform Health, Tooling & Knowledge Infrastructure (P1, added 2026-07-12)
+## 13. Platform Health, Tooling & Knowledge Infrastructure (P1, added 2026-07-12) `sdlc_tooling_platform`
 
 > **Epic slug (parent):** `platform-health-tooling`
 Standing operational capabilities — not one-off features.
@@ -237,7 +237,7 @@ T143 · T144 · T147 · T148 · T151 · T152 · T153 · **T154 (P0 security)**.
 * **Type**: mostly standing capabilities + 1 research spike. **Effort**: 13.1 M · 13.2 M–L · 13.3 S
   · 13.4 spike · 13.5 S · 13.6 ✅ · 13.7 M · 13.8 L · 13.9 S–M.
 
-## 14. Agency Delivery & Portal Access Model (P1, added 2026-07-12)
+## 14. Agency Delivery & Portal Access Model (P1, added 2026-07-12) `client_portal_access`
 
 > **Epic slug:** `agency-delivery-portal`
 OpenSpec change [`2026-07-12-agency-delivery-and-access-model`](w0m-web/openspec/changes/2026-07-12-agency-delivery-and-access-model/). Defines how w0m operates as an agency once a deal is won. TASKS T29 (delivery) + T30 (access).
@@ -247,12 +247,12 @@ OpenSpec change [`2026-07-12-agency-delivery-and-access-model`](w0m-web/openspec
 * **Owner/infra prerequisites**: create the **`webomage` GitHub org** (+ Teams); stand up `@webomage.com` mailboxes (T28); add the `client` role (§10 T2). All gate the build.
 * **Type**: Spec (written) → Build. **Effort**: L (GitHub App + provisioning M, access layer M, board sync M).
 
-## 15. Verifiable Spec-Authoring Standard (P1, added 2026-07-12)
+## 15. Verifiable Spec-Authoring Standard (P1, added 2026-07-12) `sdlc_spec_standard`
 
 > **Epic slug:** `spec-authoring-standard`
 Every OpenSpec requirement must carry a **verification contract**, not just a `SHALL`: wider feature description, binary **acceptance criteria**, **skill-mapped verification** (`test-driven-development`/`playwright-best-practices`/`verify`/`code-review`/`security-review`/`openspec-verify-change`/`schema`/`supabase`), a **w0m ecosystem checklist** (RLS/RBAC, edge-fn `agent-io` contract, migrations+`schema_migrations`, AI registry+fallback, `/health`, `just check-guardrails` gate, egress reality), a **security checklist** (server-side authz, no inline secrets, injection, abuse controls, guardrails, portal identity), and a change-level **Definition of Done** gating `openspec-archive-change`. Standard: [`w0m-web/openspec/SPEC-AUTHORING-STANDARD.md`](w0m-web/openspec/SPEC-AUTHORING-STANDARD.md); TASKS T33. It's the spec layer of SDLC-as-quests (§13.2/T27): acceptance criteria = test targets, skill map = the quest's tools, checklists = the gates.
 
-## 16. Multi-Hat — Multi-Role & Active Context (incl. Impersonation) (P1, added 2026-07-12)
+## 16. Multi-Hat — Multi-Role & Active Context (incl. Impersonation) (P1, added 2026-07-12) `rbac_hats_multirole`
 
 > **Epic slug:** `multi-hat-active-context`
 OpenSpec change [`2026-07-12-multi-hat`](w0m-web/openspec/changes/2026-07-12-multi-hat/). TASKS T35.
@@ -263,12 +263,12 @@ OpenSpec change [`2026-07-12-multi-hat`](w0m-web/openspec/changes/2026-07-12-mul
 * **Reconciles**: §14 portal access, T2/T3 client portal, the impersonation model. **Type**: Spec (written, to the authoring standard) → Build. **Effort**: M (middleware/resolver + signed claim + switch endpoint + RLS + switcher UI).
 * ✅ **Status**: SHIPPED & Verified (2026-07-13). Active-role enforced via middleware, RoleSwitcher UI live.
 
-## 17. AI Provider-Adapter Seam & Lib Hygiene (P1, added 2026-07-12)
+## 17. AI Provider-Adapter Seam & Lib Hygiene (P1, added 2026-07-12) `ai_provider_adapter`
 
 > **Epic slug:** `ai-provider-adapter-seam`
 Decision from the "libs for harness/routing?" review. **Router + `ai_models` registry stay hand-rolled — the moat** (AI-AGENTS §1); libraries plug in only at the `provider → adapter` seam *behind* `routeChat`/`routeEmbed`, never in front. **Provider policy:** `cloudflare` (raw-fetch, primary) + `google` (**resumable on free tier**) only — **no third-party inference gateways/proxies** (we don't route inference through anyone else's aggregator) and **no new external provider keys** planned. The Vercel AI SDK (`ai`/`@ai-sdk/google`, **pinned**) is the google-only *client* adapter (direct to Google with our key — pinning prevents the unpinned-bump drift that once 404'd chat). Adopt a **local eval lib (promptfoo/evalite)** for the eval harness (not a proxy). Guardrails = `llama-guard-3-8b` (T8, CF-native); durable memory = CF Agents SDK (T7). TASKS T36. Avoid LangChain/LangGraph (Deno-edge misfit + churn; would fight the CF proxy quirks already solved).
 
-## 18. Pending Past Tasks Archive
+## 18. Pending Past Tasks Archive `sdlc_archive_pending`
 
 > **Epic slug:** `past-tasks-archive`
 These are pending tasks recovered from past Antigravity sessions that need to be reviewed, prioritized, and merged into the active backlog or archived.
@@ -277,7 +277,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 
 ---
 
-## 19. Security, RBAC & Platform Hardening (P0, added 2026-07-14)
+## 19. Security, RBAC & Platform Hardening (P0, added 2026-07-14) `rbac_security_hardening`
 
 > **Epic slug:** `security-rbac-hardening`
 * **Goal**: Rectify critical vulnerabilities and structural gaps identified in the 2026-07-14 audit.
@@ -354,7 +354,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Type**: Spec → Migration → Build. **Priority**: P0.
 
 
-## 20. Full-Observability Logging (P1, added 2026-07-15)
+## 20. Full-Observability Logging (P1, added 2026-07-15) `sdlc_observability_logging`
 
 > **Epic slug:** `observability-logging`
 * **Goal**: One structured log line shape across every surface, correlated by a single trace id, in one queryable sink — so any request or incident is traceable end-to-end (today logs are scattered console/`@wom/logger` sinks with no cross-surface trace, no central store, no alerting, no enforced redaction).
@@ -368,7 +368,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Extends** §13.1 (T22) monitoring; ties §4 health/versioning. **Type**: Spec (written to the authoring standard) → Build. **Priority**: P1. **TASKS T43**; OpenSpec `2026-07-15-observability-logging`.
 
 
-## 21. Market Research & Business Strategy Continuation (P1, added 2026-07-15)
+## 21. Market Research & Business Strategy Continuation (P1, added 2026-07-15) `biz_strategy_research`
 
 > **Epic slug:** `market-research-strategy`
 * **Goal**: Conduct deeper, focused research into core operational, infrastructural, and discovery layers of the Webomage system to inform AIOps strategy.
@@ -380,7 +380,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
   5. **Zero-Cost Funding & Bootstrapping Strategy**: Outline pathways to launch and sustain w0m operations at zero initial capital via automated bidding, startup credit pools, and audit pre-sales. [Report: zero_cost_funding_strategy.md](docs/research/business/zero_cost_funding_strategy.md)
   6. **Claude Developer Certification Syllabus & Study Plan**: Document exam domains, syllabus requirements, and preparation tracks for the Claude Certified Developer Foundations credential. [Report: claude_certification_exam_guide.md](docs/research/business/claude_certification_exam_guide.md)
 
-## 22. Platform & Security Integrations Implementation (P1, added 2026-07-17)
+## 22. Platform & Security Integrations Implementation (P1, added 2026-07-17) `security_integrations_platform`
 
 > **Epic slug:** `platform-security-integrations`
 * **Goal**: Implement primary integration hooks for w0m dynamic routing, inner-loop safety, third-party ATS pipelines, and brand citation indexing based on Phase 1 research.
@@ -393,7 +393,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
   6. **w0m + Dagger + Backstage Synergy Integration (T64)**: Deploy TypeScript Dagger SDK workflows replacing legacy bash deploys, and Svelte catalog cards mimicking Backstage widgets. [Report: open_source_sdlc_alternatives.md](docs/research/business/open_source_sdlc_alternatives.md)
   7. **Gitpod Cloud Developer Workspaces (T65)**: Configure and launch `.gitpod.yml` templates for single-click cloud onboarding. [Report: open_source_sdlc_alternatives.md](docs/research/business/open_source_sdlc_alternatives.md)
 
-## 23. Project Governance & Cohort Staffing Model (P2, added 2026-07-17)
+## 23. Project Governance & Cohort Staffing Model (P2, added 2026-07-17) `sdlc_governance_staffing`
 
 > **Epic slug:** `project-governance-staffing`
 * **Goal**: Shift from static global team profiles to dynamic cohort-based staffing and enforce dual DevOps/PM project governance.
@@ -401,7 +401,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
   1. **Dual-Manager Project Governance Policy (T61)**: Establish rigid sign-off constraints demanding separate PM (Org Manager) and DevOps (Tech Manager) approvals. [Report: project_governance_and_cohort_staffing.md](docs/research/business/project_governance_and_cohort_staffing.md)
   2. **Cohort Staffing Units Schema & UI (T62)**: Migrate Postgres profiles, define `unit_templates` and `project_team_members` tables, and build the role-switching interface inside the Member Control Panel.
 
-## 24. Session Follow-ups (P2, added 2026-07-19)
+## 24. Session Follow-ups (P2, added 2026-07-19) `sdlc_followups_session`
 
 > **Epic slug:** `session-followups`
 * **Goal**: Track the residual follow-ups collected while shipping F1 auth-hardening, the w0m-mlx→Gemma 4 re-align, and the cross-repo codegraph rollout. All **P2**.
@@ -413,7 +413,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
   5. **codegraph freshness + cross-repo hygiene (T84)**: all 7 wom7* repos now carry `.codegraph/` indexes, but only w0m-web keeps fresh (pre-push `codegraph sync`); add a sync step to the other repos so indexes don't drift. Also sync the held dirty vendored repos in w0m-mlx (`mlx-rs`, `w0m-mlx`, `mlx-web-ui`, `mlx-data` — stash/commit first). Ties §13.4.
 * **Priority**: P2. **TASKS**: T80–T84.
 
-## 25. Platform-Integration Sync Restoration & Admin-CP Reorg (P1, added 2026-07-19)
+## 25. Platform-Integration Sync Restoration & Admin-CP Reorg (P1, added 2026-07-19) `sdlc_integration_sync`
 
 > **Epic slug:** `integration-sync-admin-cp`
 * **Why**: The `generic_contracts` migration (`20260708200000_generic_contracts.sql`) made `contracts`/`proposals` multi-source (`source` enum + `external_id` + `UNIQUE(external_id, source)`) — the right model (extends §10.3) — but it was applied **semi-blindly**: the Upwork-specific sub-structure was flattened into an opaque `data` JSONB, the Upwork ID moved from PK → `external_id`, and the platform-specific **sync sub-layer degraded**. A parallel investigation (2026-07-19) confirmed the concrete damage.
@@ -432,7 +432,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Uses central knowledge**: CodeGraph (w0m-api `.codegraph`), `supabase`/`schema` skills, SCHEMA-AUDIT-2026-07-11.md, OpenSpec `upwork_pipeline` + `2026-07-11-client-conversion-and-contracts`.
 * **Type**: needs OpenSpec change(s) → build. **Effort**: L (messages = M net-new; poller convergence + FKs = M; CP reorg = M). **Priority**: P1. **TASKS**: T89, T90.
 
-## 26. Design System — Master, Unify & Claude-Design Sync (P1, added 2026-07-19)
+## 26. Design System — Master, Unify & Claude-Design Sync (P1, added 2026-07-19) `design_system_sync`
 
 > **Epic slug:** `design-system-unification`
 * **Why**: The canonical **Webomage Design System** (`w0m-web/design-system/`, a Claude Design "design container" export wrapped as the `webomage-design` skill) is authoritative for **tokens** but only a **spec/reference** for **components** (its component specs are **React JSX**; the runtime is **Svelte 5 + Astro**), and the live code has drifted hard from it. This section makes the DS the mastered, enforced single source and unifies the fractured component layer. Supersedes/expands **T42** (audit → master → sync) and pairs with **T87/T54** (identity surface) and [[design-system-reference]].
@@ -448,7 +448,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Uses central knowledge**: the `webomage-design` skill, `design-system/` artifacts (manifest, dc.html, codemod, adherence ruleset), [[header-ui-spec]] golden rule, [[design-system-reference]].
 * **Type**: T42 is the umbrella; this is its concrete breakdown. Needs OpenSpec change → build. **Effort**: L (unify = the bulk; sync tooling = M). **Priority**: P1. **TASKS**: T91 (master/audit), T92 (unify shared components), T93 (sync pipeline + enforcement). Supersedes T42's three phases.
 
-## 27. Platform Connector/Plugin Architecture + Connected-Services Docs (P1, added 2026-07-19)
+## 27. Platform Connector/Plugin Architecture + Connected-Services Docs (P1, added 2026-07-19) `platform_connector_architecture`
 
 > **Epic slug:** `platform-connector-architecture`
 * **Why**: The team wants a **plugin/connector per platform**, usable both for **system-internal needs** (contracts/jobs/webhooks sync) AND for **members'/trainees' profile syncing + integration with other APIs**. A 2026-07-19 multi-agent inventory found the pieces exist but are ad-hoc: connectors are hand-rolled per service with no shared contract or registry.
@@ -470,7 +470,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Uses central knowledge**: CodeGraph, `supabase`/`schema`/`mcp-builder` skills, `openspec/specs/observability_map.md`, `docs/backend/ats_integration_analysis.md`, the ATS factory as the reference pattern.
 * **Type**: needs OpenSpec change(s) → build. **Effort**: L. **Priority**: P1. **TASKS**: T94 (connector architecture + registry), T95 (connected-services discovery → docs/schemas/data-flows/events).
 
-## 28. w0m Full Audit/Status Command — git-triggered + manual (P1, added 2026-07-19)
+## 28. w0m Full Audit/Status Command — git-triggered + manual (P1, added 2026-07-19) `sdlc_audit_status`
 
 > **Epic slug:** `full-audit-status-command`
 * **Why**: The team wants one **`just` command for a full w0m audit/status** — drift + diff determination with knowledge and docs refreshed — runnable **both from a git hook and manually**. The building blocks already exist but aren't composed into a single authoritative sweep + report.
@@ -478,7 +478,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Scope**: a single **`just audit`** (a.k.a. `just w0m-status`) that: (1) **drift** — spec-drift, lexicon/schema truth, codegraph freshness, tech-debt census, DS conformance (ties T91), decommission-doc drift; (2) **diff** — working-tree vs deployed version (DEPLOY_* stamps / `deploy_log`), migrations-applied vs on-disk, secrets-declared vs used (the inventory found declared-but-unused secrets); (3) **health** — `check-status`/`/health` across apps+edge fns+workers; (4) **knowledge/docs refresh** — regenerate status dashboard + knowledge-light + the connector map (T95); (5) emit one **audit report** artifact (md/html) with a pass/fail summary. Wire a **fast subset into a git hook** (pre-push, already partial) and the **full sweep as manual** (`just audit`) + optionally a scheduled run. Extends T22 (guardrails/monitoring) + T23 (SDLC/knowledge) + T84 (codegraph freshness).
 * **Type**: mostly composition of existing recipes + new drift/diff checks + a report. **Effort**: M. **Priority**: P1. **TASKS**: T96.
 
-## 29. Tours→Docs/Screencasts, Publishable Docs & LinkedIn Premium (P2, added 2026-07-19)
+## 29. Tours→Docs/Screencasts, Publishable Docs & LinkedIn Premium (P2, added 2026-07-19) `docs_publish_tours`
 
 > **Epic slug:** `docs-screencasts-content`
 * **Why**: (a) turn the T79 walkthrough **`TOURS` registry** into a generator that also **bakes screencasts + per-audience `.md`/`.pdf` docs** for members, clients and trainees (docs stay in sync with the real product because they're generated from the same tagged UI); (b) review what documentation is safe to **publish as whitepapers / media / promo**; (c) evaluate the **LinkedIn Premium trial**.
@@ -488,7 +488,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
   - **LinkedIn Premium trial** (T98): the trial maps to the recruiting/sourcing funnel — **Sales Navigator** advanced search + lead lists + InMail for candidate/client sourcing; who-viewed/profile-unlock to enrich `profile_snapshots`/CV. **⚠️ ToS-bounded**: Premium ≠ API access and ≠ scraping rights; the official LinkedIn Talent/Marketing API is a separate gated partner program. So the trial is a **manual evaluation** (does SN sourcing justify a paid recruiter seat? feed leads by hand) — NOT a signal to automate `w0m-ext` against Premium (bans hit paid+reputational). Also assess pursuing the sanctioned LinkedIn API partnership.
 * **Type**: T97 = build (generator + pipeline); T98 = research/evaluation (no build). **Effort**: M / S. **Priority**: P2. **TASKS**: T97 (tours→docs + publishable), T98 (LinkedIn Premium eval).
 
-## 30. w0m-sec — Standalone Security & Code-Audit Toolchain, deployable as a service (P1, added 2026-07-21, updated 2026-09-11)
+## 30. w0m-sec — Standalone Security & Code-Audit Toolchain, deployable as a service (P1, added 2026-07-21, updated 2026-09-11) `security_toolchain_standalone`
 
 > **Epic slug:** `w0m-sec-audit-toolchain`
 
@@ -516,7 +516,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Type**: research + spec now. **Effort**: L (multi-phase — Level 1 lead magnet → Level 2 sandboxed code → Level 3 deep cloud/infra). **Priority**: P1. **TASKS**: [[T111]], [[T336]], [[T337]].
 * **Sequencing**: (1) Level 1 Public URL Lead Magnet & Client Registration Gate ([[T336]]); (2) Level 2 Ephemeral Air-Gapped Code Sandbox Runner ([[T337]]); (3) Level 3 Cloud Provider Connectors & `@k7` Visual Topology Graph vs Brainboard ([[T337]]); (4) Mastered blueprint profile library accretion.
 
-## 31. Content & Blueprint Deep-Review + DS Alignment (P1, added 2026-07-22)
+## 31. Content & Blueprint Deep-Review + DS Alignment (P1, added 2026-07-22) `content_blueprint_review`
 
 > **Epic slug:** `content-blueprint-review`
 * **Why**: The non-code **content corpus** — the branding/application material (CV, role templates, cover letter, screening Q&A), the published **blueprints**, and the marketing/doc surfaces — has grown fast and now risks drifting from the record (the CV, the live DB) and from the mastered Design System. §26/T91–T93 harden the **component** DS; this section hardens **content**: what it *claims* and how it *reads*, not just how it's built. Prompted by the 2026-07-22 branding-templates session, where a role-focused application summary had to be reconciled against the live `projects`/`contracts` tables and the CV (several claims needed correcting — e.g. Meetocean's HIPAA-healthcare vs CRM tag, Airflow/Hatchet not on the CV, Kayse's SOC 2 legal RAG).
@@ -529,7 +529,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Relationships**: extends §26 (DS master/unify/sync, T91–T93) · feeds §30/T111 blueprint audit profiles · consumes [[design-system-reference]] · governed by [[kb-content-policy]].
 * **Type**: recurring hardening pass; needs an OpenSpec change before the tooling build. **Effort**: M (content audit = the bulk; checkers = S). **Priority**: P1. **TASKS**: T118.
 
-## 32. Universal System Standards, RFCs & Single-Source-of-Truth Enforcement (P1, added 2026-08-14)
+## 32. Universal System Standards, RFCs & Single-Source-of-Truth Enforcement (P1, added 2026-08-14) `sdlc_standards_rfc`
 
 > **Epic slug:** `universal-system-standards`
 * **Why**: The `w0m` ecosystem across 6 monorepos encompasses multiple architectural tiers: database DDL, REST/Edge functions, MCP tool definitions, W3C WebMCP adapters, UI design tokens, and agent skills. Without an explicit standard assigned per tier, data structures drift and contracts duplicate (e.g., manual TypeScript types diverging from Postgres DDL; MCP tools using custom unvalidated schemas).
@@ -549,7 +549,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Type**: Architecture → Spec → Audit → Build. **Effort**: L. **Priority**: P1. **TASKS**: T214.
 
 
-## 33. Client Alfa — Full Feature Support, Staged (P0, added 2026-08-17, completed 2026-10-19)
+## 33. Client Alfa — Full Feature Support, Staged (P0, added 2026-08-17, completed 2026-10-19) `client_alfa_features`
 
 > **Epic slug:** `client-alfa` · **Status:** ✅ **COMPLETE (`23/23` tickets `done`, 2026-10-19)**
 
@@ -617,7 +617,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Type**: Program. **Effort**: L. **Priority**: P1 (internal-facing).
 
 
-## 34. Client Beta — Client Delivery, Contracts & Money (P1, added 2026-09-12, broadened 2026-09-29, rebalanced 2026-10-19)
+## 34. Client Beta — Client Delivery, Contracts & Money (P1, added 2026-09-12, broadened 2026-09-29, rebalanced 2026-10-19) `client_beta_stripe`
 
 > **Epic slug:** `client-beta`
 
@@ -652,7 +652,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Type**: Build → Audit. **Effort**: L. **Priority**: P1. **TASKS**: T290, T351, T101, T272, T284, T288, T285, T279, T280, T287, T292, T204, T282, T364, T344, T357, T528, T560, T561, T562, T563.
 
 
-## 35. Apple Virtualization & MicroVM Sandboxes (P1, added 2026-09-18)
+## 35. Apple Virtualization & MicroVM Sandboxes (P1, added 2026-09-18) `infra_virtualization_sandboxes`
 
 > **Epic slug:** `apple-virtualization-sandboxes`
 
@@ -664,7 +664,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Type**: Infra → Tooling. **Effort**: M. **Priority**: P1. **TASKS**: T373, T368, T365.
 
 
-## 36. Generative Video & Media Subprojects — w0m-clips & w0m-ava (P2, added 2026-09-18)
+## 36. Generative Video & Media Subprojects — w0m-clips & w0m-ava (P2, added 2026-09-18) `ai_media_generative`
 
 > **Epic slug:** `generative-video-media`
 
@@ -675,7 +675,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Type**: Product → AI. **Effort**: L. **Priority**: P2. **TASKS**: T322, T323.
 
 
-## 37. Open Source Forks & PR Federation — w0m-pr Tooling & CP Integration (P1, added 2026-09-18)
+## 37. Open Source Forks & PR Federation — w0m-pr Tooling & CP Integration (P1, added 2026-09-18) `sdlc_federation_prs`
 
 > **Epic slug:** `forks-pr-federation`
 
@@ -686,7 +686,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Exit criterion:** `just forks-check` integrated into pre-push gates and CP Developer Forks & PRs interface operational in staging/production.
 * **Type**: Tooling → Web. **Effort**: M. **Priority**: P1. **TASKS**: T377, T378, T369, T345.
 
-## 38. Hero Epic (P1, added 2026-10-01)
+## 38. Hero Epic (P1, added 2026-10-01) `product_hero_epic`
 
 > **Epic slug:** `hero-epic`
 
@@ -697,7 +697,7 @@ These are pending tasks recovered from past Antigravity sessions that need to be
 * **Exit criterion:** all seven tickets at 100% of their own acceptance criteria, each live proof recorded in the ticket's status notes with the measured result. There is no single probe for this; each ticket closes on its own criteria, and a ticked box is a claim, not evidence.
 * **Type**: Product → Web. **Effort**: L. **Priority**: P1. **TASKS**: T493, T476, T439, T498, T499, T501, T505.
 
-## 39. Roots Epic (P0, added 2026-10-01)
+## 39. Roots Epic (P0, added 2026-10-01) `product_roots_epic`
 
 > **Epic slug:** `roots-epic`
 

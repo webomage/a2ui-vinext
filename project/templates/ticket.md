@@ -14,8 +14,7 @@ queue: backlog-platform # now | next | p1 | backlog-ai | backlog-platform | secu
 priority: P1            # P0 | P1 | P2 | P3 | (blank) — P3 has always been scored by the ranker
                         # (PRIORITY_WEIGHT["P3"] = 10); this comment claimed otherwise until 2026-08-04.
 repos: [web]            # api | web | cf | ext | infra | tooling | research | mlx | …
-epic: ""                # e.g. "platform-health-tooling" — canonical kebab-case slug from ROADMAP.md
-                        # (closed vocabulary defined in project/tickets-schema.jsonc; see also ROADMAP.md).
+epic: ""                # e.g. "sdlc_tooling_platform" — canonical 3-level `<tag1>_<tag2>_<tag3>` tag from ROADMAP.md headers (T355 AC6; gated by `epic_completeness.py` and `ticket_schema_check.py`).
 spec: ""                # e.g. "openspec/changes/2026-07-12-multi-hat"  (blank if none)
 # OPTIONAL milestone: audit-2026-07-17  # temporal phase or origin event, T239 AC3b. Orthogonal to functional `epic`.
                         # Declared in .w0m/sdlc.json -> milestones. Optional for ticket-side origin milestones.
@@ -62,14 +61,11 @@ spec: ""                # e.g. "openspec/changes/2026-07-12-multi-hat"  (blank i
 # OPTIONAL pending_closure: ""    # declared external condition holding a 100%-AC ticket open (e.g. awaiting deploy) — T245 AC1b
 # OPTIONAL spec_exempt: ""        # exemption class from .w0m/sdlc.json -> spec_policy.exempt_classes — T185 AC1/AC2
 gh_issue:               # filled by scripts/sync_github.py
-tags: []                # e.g. [ai, security]
-                        # OPTIONAL namespaced form (T353): `_`-delimited, most-general segment
-                        # first — `sdlc`, `sdlc_design`, `sdlc_design_gate` are 3 depths of one
-                        # family. `just tasks overview`'s "by TAG FAMILY" block rolls these up
-                        # automatically from the string alone (`tasks_query.tag_family()`), no
-                        # roadmap-section lookup table to maintain. A flat tag (no `_`) is fine —
-                        # this is additive to `epic:`, not a replacement; use it going forward,
-                        # not a mass-retag of existing tickets.
+tags: []                # e.g. [ai, security] or namespaced `sdlc_tooling_epictags` (T353, T355).
+                        # Namespaced form (`<tag1>_<tag2>_<tag3>`): `_`-delimited, most-general
+                        # segment first. `just tasks overview`'s unified "by EPIC & TAG FAMILY"
+                        # block rolls both `epic:` and namespaced `tags:` up automatically via
+                        # `tasks_query.tag_family()`. A flat tag (no `_`) is also valid in `tags:`.
 created: 2026-07-13
 ---
 
@@ -102,7 +98,7 @@ Per [`../../openspec/SPEC-AUTHORING-STANDARD.md`](../../openspec/SPEC-AUTHORING-
 
 ## Links
 
-- **Epic:** [[ROADMAP]] §13.6 — `platform-health-tooling`
+- **Epic:** [[ROADMAP]] §13 — `sdlc_tooling_platform`
 - **Spec:** —
 - **Related:** [[T00]]
 

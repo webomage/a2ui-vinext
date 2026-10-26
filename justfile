@@ -797,6 +797,15 @@ goldens:
     done
     E2E_BASE_URL=http://localhost:4321 gauge run specs/web/goldens.spec:40
 
+# T227 (AC2, AC3, AC5, AC6) — On-demand built-artifact server & golden gate (`wrangler dev --local` with
+# sanitized `wrangler.local-gate.json` and ephemeral `--persist-to`, never `--remote` against live bindings).
+# Kept on-demand rather than in blocking `_deploy-gates` per T224 AC4 and `justfile` host memory constraints.
+serve-built-web *args:
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/serve_built_artifact.py --app web {{ args }}
+
+goldens-built port="4329":
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/serve_built_artifact.py --app web --port {{ port }} --check-assets --exec "gauge run specs/web/goldens.spec:40"
+
 smoke-live url="https://webomage.com":
     @echo "🔎 Live smoke against {{ url }} (non-blocking — reports, does not gate)..."
     -@cd w0m-web && E2E_BASE_URL={{ url }} gauge run specs/web/live-smoke.spec

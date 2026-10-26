@@ -47,10 +47,12 @@ def extract_roadmap_titles(roadmap_path: Path = ROADMAP) -> dict[str, str]:
     titles: dict[str, str] = {}
 
     for line in text.splitlines():
-        m = re.match(r"^##\s+(\d+)\.\s+(.*?)(?:\s+\([^\)]+\))?$", line)
+        m = re.match(r"^##\s+(\d+)\.\s+(.*?)(?:\s+`[a-z0-9_]+`)?\s*$", line)
         if m:
             sec = m.group(1)
             title = m.group(2).strip()
+            title = re.sub(r"\s+`[a-z0-9_]+`\s*$", "", title).strip()
+            title = re.sub(r"\s*\([^\)]+\)\s*$", "", title).strip()
             title = re.sub(r"\s*\(P\d+.*?\)", "", title).strip()
             titles[sec] = title
             continue
@@ -66,6 +68,17 @@ def extract_roadmap_titles(roadmap_path: Path = ROADMAP) -> dict[str, str]:
         titles.setdefault(sub, title)
 
     return titles
+
+
+def extract_roadmap_tags(roadmap_path: Path = ROADMAP) -> dict[str, str]:
+    """Extract canonical 3-level epic tags (`<tag1>_<tag2>_<tag3>`) from ROADMAP.md headers (T355 AC1)."""
+    text = roadmap_path.read_text(encoding="utf-8")
+    tags: dict[str, str] = {}
+    for line in text.splitlines():
+        m = re.match(r"^##\s+(?:\S+\s+)?(\d+)\.\s+.*?\s+`([a-z0-9_]+)`\s*$", line)
+        if m:
+            tags[m.group(1)] = m.group(2)
+    return dict(sorted(tags.items(), key=lambda x: int(x[0])))
 
 
 def extract_roadmap_epics(roadmap_path: Path = ROADMAP) -> dict[str, str]:
@@ -85,6 +98,10 @@ def extract_roadmap_epics(roadmap_path: Path = ROADMAP) -> dict[str, str]:
                 if m_slug:
                     slugs[sec] = m_slug.group(1)
                     break
+            if sec not in slugs:
+                m_hdr = re.match(r"^##\s+(?:\S+\s+)?(\d+)\.\s+.*?\s+`([a-z0-9_]+)`\s*$", line)
+                if m_hdr:
+                    slugs[sec] = m_hdr.group(2)
 
         m_sub = re.match(r"^\*\s+\*\*(\d+\.\d+)\s+.*?\*\*.*?\*\*Epic slug:\*\*\s+`([^`]+)`", line)
         if m_sub:
@@ -94,8 +111,8 @@ def extract_roadmap_epics(roadmap_path: Path = ROADMAP) -> dict[str, str]:
 
 
 def get_canonical_values() -> list[str]:
-    """Return sorted canonical epic slug strings."""
-    return sorted(set(extract_roadmap_epics().values()))
+    """Return sorted canonical epic strings (both 3-level header tags and section slugs)."""
+    return sorted(set(extract_roadmap_epics().values()) | set(extract_roadmap_tags().values()))
 
 
 def get_epic_aliases() -> dict[str, dict[str, str]]:
@@ -208,16 +225,50 @@ def check_drift() -> list[str]:
     return errs
 
 
-def normalize_ticket_epics() -> tuple[int, int]:
-    """Normalize all tickets in project/tickets/ to canonical epics and tag audit milestones.
+SUB13_TAGS: dict[str, str] = {
+    "health-status-guardrails": "sdlc_tooling_guardrails",
+    "sdlc-pipeline-hooks": "sdlc_tooling_pipeline",
+    "skills-expansion": "sdlc_tooling_skills",
+    "knowledge-graph-engine": "sdlc_tooling_graph",
+    "package-discovery-mcp": "sdlc_tooling_discovery",
+    "delivery-record-sync": "sdlc_tooling_record",
+    "gate-integrity": "sdlc_tooling_gates",
+    "agent-substrate-sandboxes": "sdlc_tooling_substrate",
+    "governed-projects": "sdlc_tooling_projects",
+    "toolchain-currency": "sdlc_tooling_currency",
+    "platform-operations": "sdlc_tooling_operations",
+}
+
+
+def normalize_ticket_epics(skip_ids: set[str] | None = None) -> tuple[int, int]:
+    """Normalize all tickets in .tasks/ to canonical 3-level epic tags and tag audit milestones (T355 AC5).
 
     Returns (updated_count, total_count).
     """
+    header_tags = extract_roadmap_tags()
     slugs = extract_roadmap_epics()
+    slug_to_parent_sec = {v: k.split(".")[0] for k, v in slugs.items()}
     aliases = get_epic_aliases()
-    canonical_slugs = set(slugs.values())
+    canonical_header_tags = set(header_tags.values())
     updated = 0
     total = 0
+
+    adhoc_to_sec = {
+        "wom7sec-audit-toolchain": "30",
+        "wom7mlx-fast-launcher": "8",
+        "epic-client": "33",
+        "security-and-posture": "19",
+        "team-governance": "23",
+        "platform-core-settings": "25",
+        "platform-tooling": "13",
+        "commercial-matrix-and-observability": "10",
+        "profile-cv-studio": "9",
+        "member-profile-upwork": "22",
+        "sdlc-quality-gates": "13",
+        "sdlc-quality": "13",
+        "cp-context-shell-ia": "16",
+        "cp-context-shell": "16",
+    }
 
     # 10 dated audit tickets (T67-T76)
     audit_tickets = {
@@ -233,7 +284,53 @@ def normalize_ticket_epics() -> tuple[int, int]:
         "T76": "13",
     }
 
+    empty_epic_tickets = {
+        "T274": "13",
+        "T340": "21",
+        "T427": "13",
+        "T437": "37",
+        "T438": "37",
+        "T551": "13",
+        "T553": "39",
+        "T554": "13",
+        "T573": "13",
+        "T575": "27",
+        "T576": "27",
+    }
+
+    empty_area_tickets = {
+        "T274": "tools",
+        "T282": "product",
+        "T285": "product",
+        "T288": "product",
+        "T340": "knowledge",
+        "T427": "sdlc",
+        "T437": "tools",
+        "T438": "tools",
+        "T573": "tools",
+    }
+
+    area_aliases = {
+        "tooling": "tools",
+        "web": "product",
+        "platform": "sdlc",
+        "integrations": "tools",
+        "connectors": "tools",
+    }
+
+    type_aliases = {
+        "chore": "task",
+        "docs": "task",
+        "refactor": "task",
+        "perf": "task",
+        "research": "task",
+        "feat": "feature",
+        "fix": "bug",
+    }
+
     for p in sorted(TICKETS.glob("T*.md")):
+        if skip_ids and p.stem in skip_ids:
+            continue
         total += 1
         text = p.read_text(encoding="utf-8")
         stem = p.stem
@@ -244,45 +341,104 @@ def normalize_ticket_epics() -> tuple[int, int]:
         fm_text = m_fm.group(1)
 
         m_ep = re.search(r"^epic:\s*(.*?)$", fm_text, re.M)
-        if not m_ep:
-            continue
-
-        raw_val = m_ep.group(1).strip().strip("\"'")
-        raw_clean = re.sub(r"\s+#.*$", "", raw_val).strip().strip("\"'")
-        if not raw_clean:
-            continue
+        raw_clean = ""
+        if m_ep:
+            raw_val = m_ep.group(1).strip().strip("\"'")
+            raw_clean = re.sub(r"\s+#.*$", "", raw_val).strip().strip("\"'")
 
         target_epic = None
         needs_milestone = False
+        sub13_tag = SUB13_TAGS.get(raw_clean)
 
         if stem in audit_tickets and (raw_clean.startswith("Audit 2026-07-17") or "Audit" in raw_clean):
             sec = audit_tickets[stem]
-            target_epic = slugs[sec]
+            target_epic = header_tags.get(sec)
             needs_milestone = True
-        elif raw_clean in canonical_slugs:
+        elif not raw_clean and stem in empty_epic_tickets:
+            target_epic = header_tags.get(empty_epic_tickets[stem])
+        elif raw_clean in canonical_header_tags:
             target_epic = raw_clean
+        elif raw_clean in slug_to_parent_sec:
+            sec = slug_to_parent_sec[raw_clean]
+            target_epic = header_tags.get(sec)
+        elif raw_clean in adhoc_to_sec:
+            sec = adhoc_to_sec[raw_clean]
+            target_epic = header_tags.get(sec)
         elif raw_clean in aliases:
-            target_epic = aliases[raw_clean]["to"]
-        else:
-            # Check if it has a section match
+            alias_to = aliases[raw_clean]["to"]
+            if alias_to in canonical_header_tags:
+                target_epic = alias_to
+            elif alias_to in slug_to_parent_sec:
+                target_epic = header_tags.get(slug_to_parent_sec[alias_to])
+        elif raw_clean:
             m_s = re.search(r"§\s*(\d+(?:\.\d+)?)", raw_clean)
-            if m_s and m_s.group(1) in slugs:
-                target_epic = slugs[m_s.group(1)]
+            if m_s:
+                sec = m_s.group(1).split(".")[0]
+                target_epic = header_tags.get(sec)
 
         changed = False
         new_fm = fm_text
 
         if target_epic and target_epic != raw_clean:
-            new_fm = re.sub(
-                r"^epic:\s*.*?$",
-                f'epic: "{target_epic}"',
-                new_fm,
-                flags=re.M,
-            )
+            if m_ep:
+                new_fm = re.sub(
+                    r"^epic:\s*.*?$",
+                    f'epic: "{target_epic}"',
+                    new_fm,
+                    flags=re.M,
+                )
+            else:
+                new_fm = new_fm.rstrip() + f'\nepic: "{target_epic}"'
             changed = True
 
+        # Normalize area (missing or alias)
+        m_ar = re.search(r"^area:\s*(.*?)$", new_fm, re.M)
+        if m_ar:
+            ar_val = re.sub(r"\s+#.*$", "", m_ar.group(1)).strip().strip("\"'")
+            new_ar = area_aliases.get(ar_val) or (empty_area_tickets.get(stem) if not ar_val else None)
+            if new_ar and new_ar != ar_val:
+                new_fm = re.sub(r"^area:\s*.*?$", f"area: {new_ar}", new_fm, flags=re.M)
+                changed = True
+        elif stem in empty_area_tickets:
+            new_fm = new_fm.rstrip() + f"\narea: {empty_area_tickets[stem]}"
+            changed = True
+
+        # Normalize type alias
+        m_ty = re.search(r"^type:\s*(.*?)$", new_fm, re.M)
+        if m_ty:
+            ty_val = re.sub(r"\s+#.*$", "", m_ty.group(1)).strip().strip("\"'")
+            if ty_val in type_aliases:
+                new_fm = re.sub(r"^type:\s*.*?$", f"type: {type_aliases[ty_val]}", new_fm, flags=re.M)
+                changed = True
+
+        # Ensure required keys exist
+        defaults_missing = [
+            ("queue", "queue: p1"),
+            ("repos", "repos: [web]"),
+            ("spec", 'spec: ""'),
+            ("gh_issue", "gh_issue: 0"),
+            ("tags", "tags: []"),
+        ]
+        for req_key, default_line in defaults_missing:
+            if not re.search(rf"^{req_key}:\s*", new_fm, re.M):
+                new_fm = new_fm.rstrip() + f"\n{default_line}"
+                changed = True
+
+        if sub13_tag:
+            m_tags = re.search(r"^tags:\s*\[(.*?)\]", new_fm, re.M)
+            if m_tags:
+                existing_tags = [x.strip().strip("\"'") for x in m_tags.group(1).split(",") if x.strip()]
+                if sub13_tag not in existing_tags:
+                    existing_tags.append(sub13_tag)
+                    new_fm = re.sub(
+                        r"^tags:\s*\[.*?\]",
+                        f"tags: [{', '.join(existing_tags)}]",
+                        new_fm,
+                        flags=re.M,
+                    )
+                    changed = True
+
         if needs_milestone and "milestone:" not in new_fm:
-            # Add milestone after epic
             new_fm = re.sub(
                 r"^(epic:\s*.*?)$",
                 r'\1\nmilestone: "audit-2026-07-17"',

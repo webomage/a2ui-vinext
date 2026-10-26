@@ -101,10 +101,13 @@ AREA_CLOSED = bool(_VOCAB["area"].get("closed"))
 # and only a check pinned to the DECLARED vocabulary can settle it.
 VALID_REPO = set(_VOCAB["repo"]["values"])
 
-# ── epic & milestone (T239 AC1, AC3b, AC5, T531 AC2) ────────────────────────
+# ── epic & milestone (T239 AC1, AC3b, AC5, T355 AC4, T531 AC2) ───────────────
 def valid_epics(roadmap_path: Path | None = None) -> set[str]:
-    """Return canonical epic slugs from ROADMAP.md `> **Epic slug:**` lines (T531 AC2)."""
-    from_roadmap = set(tq.parse_roadmap_epic_slugs(roadmap_path).values())
+    """Return canonical 3-level epic tags and epic slugs from ROADMAP.md (T355, T531 AC2)."""
+    from_roadmap = (
+        set(tq.parse_roadmap_epic_tags(roadmap_path).values())
+        | set(tq.parse_roadmap_epic_slugs(roadmap_path).values())
+    )
     if roadmap_path is not None:
         return from_roadmap
     return from_roadmap | set((_VOCAB.get("epic") or {}).get("values", []))
@@ -201,6 +204,12 @@ def reconcile_consumers() -> list[str]:
         errs.extend(sev.check_drift())
     except Exception as ex:
         errs.append(f"EPIC VOCABULARY DRIFT CHECK FAILED: {ex}")
+    try:
+        import epic_completeness as ec
+        ec_errs, _ = ec.check_epic_completeness()
+        errs.extend(ec_errs)
+    except Exception as ex:
+        errs.append(f"EPIC COMPLETENESS CHECK FAILED: {ex}")
     errs.extend(check_milestones_conformance())
     return errs
 

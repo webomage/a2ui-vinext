@@ -24,7 +24,7 @@
 | 7 | [T171](/home/aleksei/Projects/!self/w0m/.tasks/T171.md) | [#171](https://github.com/webomage/wom7board/issues/171) | P2 | queued | sdlc | 35 | w0m planner/scheduler for batched Claude Code tasks in dev sandboxes — prove the unit be |
 | 8 | [T181](/home/aleksei/Projects/!self/w0m/.tasks/T181.md) | [#181](https://github.com/webomage/wom7board/issues/181) | P2 | queued | tools | 35 | GUI workstation VMs — Claude Desktop + Slack in a Tart guest; the second VM type, and th |
 | 9 | [T226](/home/aleksei/Projects/!self/w0m/.tasks/T226.md) | [#226](https://github.com/webomage/wom7board/issues/226) | P2 | queued | infra | 35 | Two advisory suites assert facts about CLIENT repos that have since changed — and nobody |
-| 10 | [T227](/home/aleksei/Projects/!self/w0m/.tasks/T227.md) | [#227](https://github.com/webomage/wom7board/issues/227) | P2 | queued | infra | 35 | Serve the BUILT artifact locally (wrangler dev --remote) so gates can test what actually |
+| 10 | [T343](/home/aleksei/Projects/!self/w0m/.tasks/T343.md) | [#343](https://github.com/webomage/wom7board/issues/343) | P2 | queued | tools | 31 | Unify estate resource governance — just resources audit/prune across simulators, LLM wei |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 36 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **36** are
+> ⚠️ **0 of 33 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **33** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -49,7 +49,7 @@
 | 7 | [T171](/home/aleksei/Projects/!self/w0m/.tasks/T171.md) | [#171](https://github.com/webomage/wom7board/issues/171) | P2 | queued | sdlc | 0/8 | `░░░░░░░░░░` 0% | — | w0m planner/scheduler for batched Claude Code tasks in dev s |
 | 8 | [T181](/home/aleksei/Projects/!self/w0m/.tasks/T181.md) | [#181](https://github.com/webomage/wom7board/issues/181) | P2 | queued | tools | 0/8 | `░░░░░░░░░░` 0% | — | GUI workstation VMs — Claude Desktop + Slack in a Tart guest |
 | 9 | [T226](/home/aleksei/Projects/!self/w0m/.tasks/T226.md) | [#226](https://github.com/webomage/wom7board/issues/226) | P2 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Two advisory suites assert facts about CLIENT repos that hav |
-| 10 | [T227](/home/aleksei/Projects/!self/w0m/.tasks/T227.md) | [#227](https://github.com/webomage/wom7board/issues/227) | P2 | queued | infra | 0/6 | `░░░░░░░░░░` 0% | — | Serve the BUILT artifact locally (wrangler dev --remote) so  |
+| 10 | [T343](/home/aleksei/Projects/!self/w0m/.tasks/T343.md) | [#343](https://github.com/webomage/wom7board/issues/343) | P2 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | Unify estate resource governance — just resources audit/prun |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/agy-t576-tg-threads-discovery` | 0 | **n/a — NO UPSTREAM** | `526f9dd2` |
-| `w0m-api` | `agent/agy-t576-tg-threads-discovery` | 0 | **n/a — NO UPSTREAM** | `bfd3eef` |
-| `w0m-cf` | `agent/agy-t576-tg-threads-discovery` | 0 | **n/a — NO UPSTREAM** | `3bc5102` |
-| `w0m-skills` | `agent/agy-t576-tg-threads-discovery` | 0 | **n/a — NO UPSTREAM** | `0199a02` |
-| `w0m-ext` | `agent/agy-t576-tg-threads-discovery` | 0 | **n/a — NO UPSTREAM** | `c4ada98` |
-| `w0m-sec` | `agent/agy-t576-tg-threads-discovery` | 0 | **n/a — NO UPSTREAM** | `7e803d2` |
-| `w0m-mlx/w0m-mlx` | `agent/agy-t576-tg-threads-discovery` | 0 | **n/a — NO UPSTREAM** | `4dcccc1` |
+| `w0m-web` | `beta` | 0 | 1 | `229a0ffb` |
+| `w0m-api` | `beta` | 0 | 0 | `bfd3eef` |
+| `w0m-cf` | `beta` | 0 | 0 | `3bc5102` |
+| `w0m-skills` | `beta` | 0 | 0 | `0199a02` |
+| `w0m-ext` | `beta` | 0 | 0 | `c4ada98` |
+| `w0m-sec` | `beta` | 0 | 0 | `7e803d2` |
+| `w0m-mlx/w0m-mlx` | `beta` | 0 | 0 | `4dcccc1` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 36 open · 576 TASKS.md rows · 218/576 specced (5/36 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 33 open · 576 TASKS.md rows · 252/576 specced (5/33 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17","T28","T70","T109","T128","T132","T171","T181","T226","T227"],"repos":{"w0m-api":{"branch":"agent/agy-t576-tg-threads-discovery","dirty":0,"has_upstream":true,"head":"bfd3eef","unpushed":null},"w0m-cf":{"branch":"agent/agy-t576-tg-threads-discovery","dirty":0,"has_upstream":true,"head":"3bc5102","unpushed":null},"w0m-ext":{"branch":"agent/agy-t576-tg-threads-discovery","dirty":0,"has_upstream":true,"head":"c4ada98","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-t576-tg-threads-discovery","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":null},"w0m-sec":{"branch":"agent/agy-t576-tg-threads-discovery","dirty":0,"has_upstream":true,"head":"7e803d2","unpushed":null},"w0m-skills":{"branch":"agent/agy-t576-tg-threads-discovery","dirty":0,"has_upstream":true,"head":"0199a02","unpushed":null},"w0m-web":{"branch":"agent/agy-t576-tg-threads-discovery","dirty":0,"has_upstream":true,"head":"526f9dd2","unpushed":null}},"tickets":{"open":36,"rowless_open":[],"rows":576,"specced":218,"specced_open":5,"total":576,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17","T28","T70","T109","T128","T132","T171","T181","T226","T343"],"repos":{"w0m-api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"bfd3eef","unpushed":0},"w0m-cf":{"branch":"beta","dirty":0,"has_upstream":true,"head":"3bc5102","unpushed":0},"w0m-ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"c4ada98","unpushed":0},"w0m-mlx/w0m-mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":0},"w0m-sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"7e803d2","unpushed":0},"w0m-skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"0199a02","unpushed":0},"w0m-web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"229a0ffb","unpushed":1}},"tickets":{"open":33,"rowless_open":[],"rows":576,"specced":252,"specced_open":5,"total":576,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -131,10 +131,14 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (4):
+#### Completed today (8):
 
+- **T227** — Serve the BUILT artifact locally (wrangler dev --remote) so gates can test what actually ships (AC6 (Execution placement & tests): Wired just serve-built-web and just goldens-built as on-demand recipes in justfile; validated OpenSpec change -t227-serve-built-artifact-goldens (--type change --strict); pytest w0m-web/project/scripts/tests/test_serve_built_artifact.py passed (9 passed).)
+- **T353** — Hierarchical tag-namespace convention for auto-aggregated epic rollups ([[T355]] landed (AC1–AC8). All 39 ROADMAP.md headers now carry canonical)
+- **T355** — Canonical 3-level epic tags replace ROADMAP §N notation — gated schema for all tickets (Completed and verified (8/8 ACs))
 - **T491** — Name the Cloudflare repo by its content, then rename it once — with `name-refs --gate` as the done-check (Completed as part of [[T567]] (done). wom7func renamed once to w0m-cf (github.com/webomage/w0m-cf); just name-refs wom7func --gate (0 live) and just name-refs wom7cfworkers --gate (0 live) both exit 0; deployed Cloudflare Worker script name (wom7func in w0m-cf/wrangler.jsonc) and WORKERS_WEBHOOK_URL preserved for uninterrupted cron/Workflow/AI-guard operation.)
 - **T509** — Root-first layout: finish the T414 move in staged units, behind a stale-path probe that checks the file a recipe, hook or profile runs actually exists (Completed AC3, AC5, AC6, AC7, AC9, AC10, AC13, AC16 (17/17 ACs) + AgDR-0050 — ticket DONE)
+- **T565** — OpenSpec backfill batches — classify remaining unspecced tickets under spec_policy.exempt_classes and author specs for non-exempt feature/contract work (AC2: Authored 10 retroactive OpenSpec changes in w0m-web/openspec/changes/ with explicit Filed, Shipped, and Authored provenance dates (-t560-jobs-portal-cutover, 2026-10-26-t561-outreach-clipping-vault, 2026-10-26-t575-telegram-threads-hiring-search, 2026-10-26-t564-virtual-agent-identity, 2026-10-26-t531-multi-agent-worktree-landing, 2026-10-26-t506-security-pii-cutover, 2026-10-26-t528-kyc-personal-compliance-split, 2026-10-26-t544-personal-tables-rls-privacy, 2026-10-26-t501-personnel-resume-assistant, 2026-10-26-t514-contact-vcard-import).)
 - **T567** — Rebrand wom7*/k7* to w0m-* and migrate all estate repositories from casualuser/* to github.com/webomage/w0m-* (Stages 2, 3, and 4 (AC3–AC6) completed and verified (done). Following [[T509]] root-first cutover, atomically renamed all local repositories (w0m-web, w0m-api, w0m-cf, w0m-ext, w0m-sec, w0m-skills, w0m-mlx, w0m-ava, w0m-clips, w0m-pr), consolidated k7 TUIs into w0m CLI subcommands (w0m vm, w0m k8s, w0m cloud, w0m llm, w0m spec, w0m notify) via w0m-skills/tools/w0m_portable_cli.py, and verified just name-refs <name> --gate exits 0 across all 11 legacy names (wom7web, wom7api, wom7func, wom7cfworkers, wom7ext, wom7sec, wom7skills, wom7mlx, wom7ava, wom7clips, wom7pr), plus just preflight, just check-guardrails, and full estate + member test suites. Deployed Cloudflare Worker script identifiers (wom7api, wom7func in wrangler.jsonc) remain pinned for zero-downtime cron/DO/Workflow continuity.)
 - **T574** — Extension: auto-sync Webomage/Google browser session from .webomage.com cookies and wire Antigravity Bridge status to HTTPS/Realtime transport (Completed (4/4 ACs). Implemented .webomage.com chunked @supabase/ssr cookie auto-sync (parseSupabaseCookiesToSession + syncSessionFromWebomageCookies), added "Continue with Google / Sync Webomage" button (SUPABASE_SYNC_BROWSER_SESSION) + chrome.cookies.onChanged listener, fixed "Anitgravity Bridge" → "Antigravity Bridge" and wired MCP_GET_STATUS / MCP_CONNECT / MCP_DISCONNECT to live HTTPS Cloud + extension_commands Realtime status; verified by just test-unit (18/18 passed), just typecheck (0 errors), just lint-gate (0 warnings/errors), and just build-chrome.)
 

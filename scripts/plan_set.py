@@ -31,24 +31,29 @@ if str(SCRIPTS_DIR) not in sys.path:
 
 SECTION_RE = re.compile(r"^##\s+(\d+)\.\s+(.+?)\s*$")
 PRIORITY_RE = re.compile(r"\((P[0-3])\b")
+TRAILING_TAG_RE = re.compile(r"\s*`([a-z0-9_]+)`\s*$")
 PAREN_TAIL_RE = re.compile(r"\s*\((?:P[0-3]|status|added|updated|R&D|FEATURE)[^)]*\)\s*$")
 ROADMAP_REF_RE = re.compile(r"§\s*(\d+)")
 
 
 def read_epics(roadmap_md: Path) -> list[dict]:
-    """ROADMAP's numbered top-level sections: `## 19. Security, RBAC & Platform Hardening (P0, added …)`."""
+    """ROADMAP's numbered top-level sections: `## 19. Security, RBAC & Platform Hardening (P0, added …) `tag``."""
     epics = []
     for line in roadmap_md.read_text(encoding="utf-8").splitlines():
         m = SECTION_RE.match(line)
         if not m:
             continue
-        title = m.group(2)
+        raw_title = m.group(2)
+        tag_m = TRAILING_TAG_RE.search(raw_title)
+        tag = tag_m.group(1) if tag_m else ""
+        title = TRAILING_TAG_RE.sub("", raw_title).strip()
         pr = PRIORITY_RE.search(title)
         epics.append({
             "n": int(m.group(1)),
             "title": title,
             "name": PAREN_TAIL_RE.sub("", title).strip(),
             "priority": pr.group(1) if pr else "",
+            "tag": tag,
         })
     return epics
 
@@ -109,7 +114,13 @@ def build_plan(epic: dict, tickets: list[dict], reason: str) -> dict:
     from tasks_query import build_dynamic_plan, epic_key  # lazily: importing it reads the workspace
 
     roadmap = f"ROADMAP.md §{epic['n']}"
-    matched = [t for t in tickets if epic_key(t.get("epic", "")) == f"ROADMAP §{epic['n']}"]
+    targets = {f"ROADMAP §{epic['n']}"}
+    if epic.get("tag"):
+        targets.add(epic["tag"])
+    matched = [
+        t for t in tickets
+        if epic_key(t.get("epic", "")) in targets or t.get("epic", "") in targets
+    ]
     plan = build_dynamic_plan(matched, epic["name"], roadmap)
     if not plan:
         raise SystemExit(f"❌ no ticket carries epic 'ROADMAP §{epic['n']}' — a plan must track something. "
