@@ -2,6 +2,23 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.26-1793036162
+_First deployed: 2026-10-26 17:56:20.996155+00_
+
+### Features
+- **connectors**: register Threads provider, TG/Threads job sources, and close T575 ([T575](file:///.tasks/T575.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `1d863b0` | 2026-10-26 17:56:20.996155+00 |
+| demo | `1d863b0` | 2026-10-26 17:55:13.828633+00 |
+| job | `1d863b0` | 2026-10-26 17:54:10.198573+00 |
+| join | `1d863b0` | 2026-10-26 17:52:26.585537+00 |
+| cp | `1d863b0` | 2026-10-26 17:51:05.699914+00 |
+| web | `1d863b0` | 2026-10-26 17:48:02.508663+00 |
+| release | `1d863b0` | 2026-10-26 17:44:47.857436+00 |
+| api | `1d863b0` | 2026-10-26 17:44:40.957429+00 |
+
 ## 2026.10.26-1793021763
 _First deployed: 2026-10-26 14:14:21.487201+00_
 
