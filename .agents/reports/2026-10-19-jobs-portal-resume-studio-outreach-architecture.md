@@ -1,4 +1,4 @@
-# Jobs Portal Member & Commercial CP, Multi-Platform Outreach Hub & Extension Clipper Architecture (`AgDR-0033`)
+# Jobs Portal Member & Commercial CP, Multi-Platform Outreach Hub & Extension Clipper Architecture (`AgDR-0033` / `T560`)
 
 > [!IMPORTANT]
 > **Decided Architecture (`AgDR-0033`, Owner Confirmed `D1`–`D5` on 2026-10-19)**:

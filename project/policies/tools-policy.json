@@ -227,7 +227,7 @@
       "source": "rustup",
       "auto": "none",
       "smoke": "rustup --version",
-      "note": "T235 AC1 — the toolchain manager, and the reason the other four carry `auto: none`: it self-updates via `rustup update`, so wiring them to any package manager would fight it. It is the upgrade path for this whole group."
+      "note": "T235 AC1 / T273 AC1 — the toolchain manager, and the reason the other Rust entries carry `auto: none`: it self-updates via `rustup update`, so wiring them to any package manager would fight it. It is the upgrade path for this whole group and provisions the `wasm32-unknown-unknown` target (`rustup target add wasm32-unknown-unknown`) required by `wom7func/crates/w0m-wasm-utils` (T273)."
     },
     "semgrep": {
       "min": "1.100.0",
@@ -292,6 +292,24 @@
       "auto": "minor",
       "smoke": "uv --version",
       "note": "required:true, and doubly so: 2 command-position uses in the canonical justfile (`uv pip install -r pyproject.toml`, `uv run playwright install chromium`, lines ~538-539) AND it is the declared `source` of graphify — a governed tool whose install instructions are `uv tool install`. It was undeclared while a tool that depends on it was governed. ⚠️ `uv --version` embeds a commit hash after the semver; first-semver parsing gets it right, leave version_arg unset."
+    },
+    "wasm-pack": {
+      "min": "0.13.0",
+      "known_good": "0.13.1",
+      "required": false,
+      "source": "rustup",
+      "auto": "none",
+      "smoke": "wasm-pack --version",
+      "note": "T273 AC1 — Rust-to-WASM packager for Cloudflare Workers (`wasm32-unknown-unknown`). `required: false` alongside `cargo`/`rustc`/`rustup` so Linux `x86_64` and CI machines without a local Rust toolchain use the deterministic `#![no_std]` WASM binary verifier/emitter (`scripts/wasm_worker_check.py`) without failing host preflight."
+    },
+    "worker-build": {
+      "min": "0.1.0",
+      "known_good": "0.1.11",
+      "required": false,
+      "source": "rustup",
+      "auto": "none",
+      "smoke": "worker-build --version",
+      "note": "T273 AC1 — Cloudflare `workers-rs` build tool (`wasm32-unknown-unknown` target). `required: false` on multi-OS hosts; `wom7func/crates/w0m-wasm-utils` compiles as `#![no_std]` `cdylib` (`550` B raw / `389` B gzip) to avoid pulling the `worker` crate's allocator into the 1 MiB Cloudflare Workers Free tier bundle budget (`AgDR-0044`)."
     },
     "zeroclaw": {
       "min": "0.8.3",

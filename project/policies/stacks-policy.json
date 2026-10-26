@@ -613,6 +613,55 @@
         "covered_by": "web",
         "reason": "Same position as the other two wom7api stacks (`worker`, `edge`): the estate-wide pre-push gates live in `web`'s .husky and enumerate every repo, and wom7api has no .husky of its own. This stack's OWN integrity is gated at pre-commit by `py-typecheck-api`. ⚠️ CORRECTED 2026-08-08 — first written as `mode: local`, which `hooks-check` rejected: `local` asserts a pre-push gate this stack does not declare, and the gate's message is right that a claimed gate which does not exist is worse than a recorded gap. The residual gap is the same one `worker` records: pushing wom7api alone runs no estate-wide gate."
       }
+    },
+    "wasm-worker": {
+      "repo": "wom7func",
+      "path": "crates/w0m-wasm-utils",
+      "runtime": "rust",
+      "justfile": "wom7func/justfile",
+      "techs": [
+        {
+          "name": "workers-wasm",
+          "detect": "config:crates/w0m-wasm-utils/Cargo.toml",
+          "note": "T273 — `#![no_std]` Rust-to-WASM CPU-bound utility crate for Cloudflare Workers (`wasm32-unknown-unknown`), separate from native `mlx`.",
+          "skills": [
+            "cloudflare-workers"
+          ]
+        }
+      ],
+      "commands": {
+        "build": "wasm-build",
+        "test": "wasm-test",
+        "lint": "wasm-lint",
+        "fmt": "wasm-fmt",
+        "fmt-check": "wasm-fmt-check"
+      },
+      "gates": {
+        "lint": "pre-commit",
+        "fmt-check": "pre-commit",
+        "build": {
+          "phase": "manual",
+          "reason": "T273 AC1/AC2: `wasm-build` emits `crates/w0m-wasm-utils/pkg/w0m_wasm_utils.wasm` (a tracked artefact); hooks must verify without mutating tracked files (`wasm-lint` + `wasm-fmt-check` run at `pre-commit`).",
+          "remeasure": "Never — `wasm-build` is a writer/emitter, while `wasm-lint` and `wasm-worker-check` verify the binary and bundle budget."
+        },
+        "test": {
+          "phase": "manual",
+          "reason": "T273 AC3/AC4: `wasm-worker-check` runs in the offline `just test` aggregate (`test-suites.json`), and `wasm-lint` gates crate + WASM ABI at `pre-commit`.",
+          "remeasure": "Promote to `pre-push` if `wom7func` adds a dedicated `.husky/pre-push` hook."
+        },
+        "fmt": {
+          "phase": "manual",
+          "reason": "`wasm-fmt` writes files in-place (`rustfmt`), so it can never be a hook; `wasm-fmt-check` (`phase: pre-commit`) is the read-only gate counterpart.",
+          "remeasure": "Never for `fmt` itself; `wasm-fmt-check` is gated at `pre-commit`."
+        }
+      },
+      "enabled": true,
+      "note": "T273 AC1 — Deliberately separate from `mlx` (`wom7mlx/wom7mlx`, a native macOS Metal binary): this stack targets `wasm32-unknown-unknown` inside `wom7func/crates/w0m-wasm-utils` under the 1 MiB Cloudflare Workers Free tier compressed bundle ceiling (`AgDR-0044`).",
+      "push_gate": {
+        "mode": "central",
+        "covered_by": "web",
+        "reason": "Covered by the estate-wide pre-push gates in `web` (`discovery`, `hooks-check`, and `wasm-worker-check` in `test-suites.json`), while `wasm-lint` and `wasm-fmt-check` enforce crate, formatting, and WASM ABI integrity at `pre-commit` in `wom7func`."
+      }
     }
   }
 }

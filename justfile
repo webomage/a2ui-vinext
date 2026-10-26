@@ -1424,6 +1424,43 @@ stale-path-check *args:
 stale-path-check-test:
     @python3 scripts/tests/test_stale_path_check.py
 
+# ── Biometric Hardware Anchor for @wom/kyc & profile_identity (T475) ─────────
+kyc-bio-probe *args:
+    @python3 wom7api/scripts/kyc_bio_probe.py {{ args }}
+
+kyc-bio-probe-test:
+    @python3 -m pytest wom7api/scripts/tests/test_kyc_bio_probe.py -q
+
+# ── Cloudflare Binding Inventory & Rust->WASM Worker Toolchain (T271 / T273) ──
+cf-bindings-inventory *args:
+    @python3 scripts/cf_bindings_inventory.py {{ args }}
+
+cf-bindings-inventory-test:
+    @python3 -m pytest scripts/tests/test_cf_bindings_inventory.py -q
+
+wasm-worker-check *args:
+    @python3 scripts/wasm_worker_check.py --check {{ args }}
+
+wasm-worker-check-test:
+    @python3 -m pytest scripts/tests/test_wasm_worker_check.py -q
+
+wasm-build:
+    @just --justfile wom7func/justfile wasm-build
+
+wasm-test:
+    @just --justfile wom7func/justfile wasm-test
+
+wasm-lint:
+    @just --justfile wom7func/justfile wasm-lint
+
+wasm-fmt:
+    @just --justfile wom7func/justfile wasm-fmt
+
+wasm-fmt-check:
+    @just --justfile wom7func/justfile wasm-fmt-check
+
+
+
 
 
 
