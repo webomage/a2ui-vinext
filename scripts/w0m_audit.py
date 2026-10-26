@@ -171,6 +171,13 @@ def check_conform():
         add(PASS if r_bp.returncode == 0 else FAIL, "conform", "blueprint-catalog",
             bp_msg[-1] if bp_msg else ("ok" if r_bp.returncode == 0 else "blueprint catalog drift"))
 
+    obs_check = WEB_ROOT / "project" / "scripts" / "check_observability_map.py"
+    if obs_check.is_file():
+        r_obs = subprocess.run([sys.executable, str(obs_check)], cwd=WEB_ROOT, capture_output=True, text=True)
+        obs_msg = (r_obs.stdout or r_obs.stderr).strip().splitlines()
+        add(PASS if r_obs.returncode == 0 else FAIL, "conform", "observability-map",
+            obs_msg[-1] if obs_msg else ("ok" if r_obs.returncode == 0 else "observability_map.md drift"))
+
 
 # ── DRIFT: git + spec ────────────────────────────────────────────────────────────
 def _openspec_scope_plan(scope_diff: str) -> tuple[list[str], int, int]:

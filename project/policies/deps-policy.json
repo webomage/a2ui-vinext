@@ -102,13 +102,49 @@
     "undici": "wom7web pins '>=7.28.0 <8'; wom7api/cfworkers are on the 8.x line and were raised to '>=8.9.0' on 2026-08-04 for GHSA-8xcm-r25x-g524 / jr45-8vmc-qm54 / m8rv-5g2x-5cg5 / v3r7-h72x-cjcm (all fixed in 8.9.0). ⚠️ Their old open-ended '>=7.28.0' override was RESOLVING BELOW their own direct dependency — package.json asked for '^8.8.0' and the lockfile carried 8.5.0, because a range override wins over the dependency range. A '>=' override is not a no-op; it re-resolves. The floors entry stays at '>=7.28.0' because it is shared with wom7web, which cannot cross into 8.x — REASON: the floor is a lower bound only, so it let wom7web resolve undici 8.7.0 — but jsdom@29 (vitest's DOM env) requires undici's internal 'lib/handler/wrap-handler.js', which exists in 7.x and is gone in 8.x. Result: `just test` collected ZERO tests and died with MODULE_NOT_FOUND, i.e. the whole vitest suite was silently not running. 7.29.0 is still >= the security floor, so bounding costs no patch level. api/cfworkers have no jsdom and are fine on 8.x — do NOT 'align' them back to 7."
   },
   "aligned_advisory": {
-    "_comment": "Should share a version but NOT enforced — a bump needs per-repo testing. --check warns, never fails; --apply leaves untouched.",
+    "_comment": "T56 AC1–AC5 — Every workspace package.json not listed in `lagging` must declare `target`, and all non-lagging lockfiles must resolve a single version (`resolved_target`). Remaining per-site exceptions are keyed by workspace path (e.g. `wom7ext/extension`, `wom7web/apps/join`) with `declared`, `installed`, `reason`, and `recheck_by`; minor-version lag is computed dynamically at check time.",
     "@supabase/supabase-js": {
       "target": "^2.110.7",
+      "resolved_target": "2.110.7",
       "lagging": {
-        "wom7ext": "^2.87.1 — 23 minors behind; bump needs an extension test, own change"
+        "wom7ext/extension": {
+          "declared": "^2.87.1",
+          "installed": "2.98.0",
+          "reason": "Pinned pending extension E2E auth/realtime smoke coverage (T55); MV3 service-worker bundle requires dedicated verification before bump",
+          "recheck_by": "2026-12-01"
+        }
       }
     }
+  },
+  "runtime": {
+    "_comment": "T113 AC1/AC2/AC5 — Deployed Cloudflare workerd runtime (`compatibility_date` + `nodejs_compat`) and build-time Node.js engine pin (`.nvmrc` + `engines.node`). Enforced across all 5 wom7web Astro apps, wom7api, and wom7func.",
+    "nvmrc": "22.23.3",
+    "nvmrc_files": [
+      ".nvmrc",
+      "wom7web/.nvmrc"
+    ],
+    "engines": {
+      "node": ">=22.23.3 <23",
+      "pnpm": ">=10.32.0"
+    },
+    "engines_repos": [
+      "wom7web",
+      "wom7api",
+      "wom7func"
+    ],
+    "compatibility_date": "2026-05-06",
+    "required_compatibility_flags": [
+      "nodejs_compat"
+    ],
+    "wrangler_configs": [
+      "wom7web/apps/web/wrangler.jsonc",
+      "wom7web/apps/cp/wrangler.jsonc",
+      "wom7web/apps/join/wrangler.jsonc",
+      "wom7web/apps/job/wrangler.jsonc",
+      "wom7web/apps/demo/wrangler.jsonc",
+      "wom7api/wrangler.jsonc",
+      "wom7func/wrangler.jsonc"
+    ]
   },
   "licenses": {
     "_comment": "T135 AC6 — the TRANSITIVE dependency-license audit. It lives here, beside `floors`, because `project/hygiene-policy.json → licenses` has always said *\"the transitive dependency-license audit reads deps-policy.json -> licenses\"* — and until 2026-08-10 **this key did not exist**. That pointer read as coverage for two weeks while nothing implemented it: the same dangling-reference shape T192 found in a `$schema`. Read by `project/scripts/repo_hygiene.py` (`just deps-license-check`). Source of truth is `pnpm licenses list --json`, run per workspace, NOT a hand-maintained list — 1,210 packages across 24 buckets, and a copied list goes stale on the next install.",
