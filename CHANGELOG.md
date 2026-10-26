@@ -2,6 +2,27 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.26-1793021763
+_First deployed: 2026-10-26 14:14:21.487201+00_
+
+### Features
+- **hooks**: auto-scale run-typecheck concurrency and V8 heap by host RAM (T573, T509) ([T573](file:///.tasks/T573.md), [T509](file:///.tasks/T509.md))
+- **sdlc**: complete T509 L2 root-first layout cutover and AgDR-0050 (T509) ([T509](file:///.tasks/T509.md))
+
+### Fixes
+- **scripts**: resolve w0m-* repo prefixes in estate_search --repo (T509) ([T509](file:///.tasks/T509.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `ef1dce9` | 2026-10-26 14:14:21.487201+00 |
+| demo | `ef1dce9` | 2026-10-26 14:13:35.787471+00 |
+| job | `ef1dce9` | 2026-10-26 14:12:44.541706+00 |
+| join | `ef1dce9` | 2026-10-26 14:11:27.144629+00 |
+| cp | `ef1dce9` | 2026-10-26 14:10:19.87324+00 |
+| web | `ef1dce9` | 2026-10-26 14:08:09.967104+00 |
+| release | `ef1dce9` | 2026-10-26 14:05:38.387056+00 |
+| api | `ef1dce9` | 2026-10-26 14:05:32.174517+00 |
+
 ## 2026.10.25-1792983664
 _First deployed: 2026-10-26 03:17:33.810524+00_
 
