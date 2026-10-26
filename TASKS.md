@@ -64,6 +64,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T575](.tasks/T575.md) | **P1** | **Telegram & Meta Threads hiring post search: Cloudflare-native sources, member TG/Threads credentials, and interactive keyword search UI** | w0m, w0m-web, w0m-api, w0m-cf, w0m-ext | — | ✅ **done** |
 | [T574](.tasks/T574.md) | **P1** | **Extension: auto-sync Webomage/Google browser session from .webomage.com cookies and wire Antigravity Bridge status to HTTPS/Realtime transport** | ext | openspec/specs/wom7ext-browser-extension/spec.md | ✅ **done** |
 | [T573](.tasks/T573.md) | **P1** | **Pre-push typecheck host-RAM auto-scaling, V8 heap sizing & global flock serialization (Load 70 swap-thrash fix)** | web | — | ✅ **done** |
 | [T572](.tasks/T572.md) | **P1** | **Chrome-style icons-only collapsed side panel rail for AppShell, SideNav, ContextSwitcher, SidebarHatSwitcher, and AuthWidget** | web | openspec/specs/cp-context-shell/spec.md | ✅ **done** |

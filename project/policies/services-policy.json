@@ -353,6 +353,49 @@
       ],
       "docs": "docs/backend/CONNECTOR-RESEARCH-MATRIX.md",
       "note": "T94(b) — declared, NOT implemented. HIGH PRIORITY per owner ask 2026-09-16 (see project/tickets/T94.md Status notes). OAuth2 authorization_code, 1h access tokens, refreshable; rung 2 (read sync) on the depth ladder, no webhook, no official MCP. New Data API apps must register with Reddit by 2026-09-30 — sequence the adapter build accordingly."
+    },
+    {
+      "key": "threads",
+      "title": "Meta Threads",
+      "implemented": true,
+      "entity": "person",
+      "transport": "api",
+      "mcp_url": null,
+      "headless": true,
+      "evidence": {
+        "date": "2026-10-26",
+        "method": "Meta Threads API v1.0 (https://graph.threads.net/v1.0/keyword_search) with per-member OAuth 2.0 / 60-day long-lived user access tokens stored encrypted in public.connections (T550, T575, AgDR-0034)."
+      },
+      "scopes": [
+        {
+          "scope": "threads_basic",
+          "description": "Read your Threads profile (id, username, display name, avatar)",
+          "capability": "profile.read"
+        },
+        {
+          "scope": "threads_keyword_search",
+          "description": "Search public Threads hiring posts by keyword (up to 2,200 queries / 24h per user)",
+          "capability": "jobs.search"
+        },
+        {
+          "scope": "threads_read_replies",
+          "description": "Read replies and hiring thread conversations",
+          "capability": "replies.read"
+        },
+        {
+          "scope": "threads_manage_replies",
+          "description": "Publish and manage replies on hiring threads",
+          "capability": "replies.write"
+        }
+      ],
+      "capabilities": [
+        "profile.read",
+        "jobs.search",
+        "replies.read",
+        "replies.write"
+      ],
+      "docs": "docs/backend/CONNECTOR-RESEARCH-MATRIX.md",
+      "note": "Connected via unified /api/connections/threads/{start,callback} OAuth flow or member access token in /me/connectors → public.connections (T575)."
     }
   ],
   "job_board_sources": [
@@ -440,6 +483,28 @@
       "markets": ["global"],
       "docs": "https://cryptojobslist.com/feed",
       "note": "Public RSS feed for remote Web3, blockchain, and systems engineering roles — no credentials required."
+    },
+    {
+      "key": "telegram",
+      "title": "Telegram Hiring Channels",
+      "auth": "public_feed",
+      "credentials": [],
+      "workflow": "job-aggregator",
+      "markets": ["global"],
+      "docs": "https://core.telegram.org/bots/api",
+      "note": "T550 / T575 — Scrapes public Telegram job channels (t.me/s/<channel>?q=<keyword>) and member-configured channel feeds for remote USD/USDT hiring posts."
+    },
+    {
+      "key": "threads",
+      "title": "Meta Threads Keyword Search",
+      "auth": "api_key",
+      "credentials": [
+        "THREADS_ACCESS_TOKEN"
+      ],
+      "workflow": "job-aggregator",
+      "markets": ["global"],
+      "docs": "https://developers.facebook.com/docs/threads/keyword-search",
+      "note": "T550 / T575 — Searches Meta Threads hiring posts via GET https://graph.threads.net/v1.0/keyword_search using member-connected Threads tokens (public.connections) or THREADS_ACCESS_TOKEN in public.admin_secrets."
     }
   ]
 }
