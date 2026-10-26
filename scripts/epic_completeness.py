@@ -215,7 +215,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if (args.advisory or not errors) else 1
 
     print(
-        f"▶ EPIC COMPLETENESS — {open_n} open of {total_n} tickets · "
+        f"[EPIC COMPLETENESS] {open_n} open of {total_n} tickets · "
         f"{len(by_tag)} canonical 3-level ROADMAP tags\n"
     )
 
@@ -229,7 +229,7 @@ def main(argv: list[str] | None = None) -> int:
         f"({len(non_canonical_all)} distinct strings)"
     )
     print(
-        f"  {sum(len(v) for v in dangling_all.values()):3} 🔴 point at a § that DOES NOT EXIST in ROADMAP.md"
+        f"  {sum(len(v) for v in dangling_all.values()):3} [ERR] point at a § that DOES NOT EXIST in ROADMAP.md"
     )
     for s, ids in sorted(dangling_all.items(), key=lambda x: int(x[0])):
         print(f"        §{s}: {' '.join(ids)}")
@@ -253,12 +253,12 @@ def main(argv: list[str] | None = None) -> int:
     ]
     print(f"  {len(empty)} of {len(by_tag)} ROADMAP sections have NO open ticket:")
     for tag, s, name in empty:
-        flag = "  ✅ decommissioned" if "DECOMMISSION" in name.upper() else ""
+        flag = "  [OK] decommissioned" if "DECOMMISSION" in name.upper() else ""
         print(f"    §{s:<3} {tag:<32} {name[:48]}{flag}")
 
     print("\n── the sections that DO carry open work ──")
     for tag, ids in sorted(by_sect_open.items(), key=lambda x: -len(x[1])):
-        info = by_tag.get(tag, {"section": "?", "title": "🔴 NO SUCH TAG"})
+        info = by_tag.get(tag, {"section": "?", "title": "[ERR] NO SUCH TAG"})
         s = info["section"]
         name = info["title"]
         print(
@@ -267,12 +267,12 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     if errors:
-        print(f"\n❌ EPIC COMPLETENESS GATE FAILED ({len(errors)} error(s)):", file=sys.stderr)
+        print(f"\n[FAIL] EPIC COMPLETENESS GATE FAILED ({len(errors)} error(s)):", file=sys.stderr)
         for err in errors[:15]:
             print(f"  · {err}", file=sys.stderr)
         return 0 if args.advisory else 1
 
-    print("\n✅ All tickets carry canonical 3-level ROADMAP epic tags (0 drift)")
+    print("\n[OK] All tickets carry canonical 3-level ROADMAP epic tags (0 drift)")
     return 0
 
 
