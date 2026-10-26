@@ -32,8 +32,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 63 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **63** are
+> ⚠️ **0 of 57 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **57** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -48,8 +48,8 @@
 | 6 | [T365](/home/aleksei/Projects/!self/w0m/.tasks/T365.md) | [#365](https://github.com/webomage/wom7board/issues/365) | P1 | queued | infra | 0/6 | `░░░░░░░░░░` 0% | — | GUI sandbox browser & extension bundling: pre-provisioned Ch |
 | 7 | [T454](/home/aleksei/Projects/!self/w0m/.tasks/T454.md) | [#454](https://github.com/webomage/wom7board/issues/454) | P1 | queued | security | 0/4 | `░░░░░░░░░░` 0% | — | MFA for non-admin accounts — sign-in challenge in every app  |
 | 8 | [T475](/home/aleksei/Projects/!self/w0m/.tasks/T475.md) | [#475](https://github.com/webomage/wom7board/issues/475) | P1 | queued | security | 0/5 | `░░░░░░░░░░` 0% | — | Biometric hardware anchor for @wom/kyc and compliance profil |
-| 9 | [T347](/home/aleksei/Projects/!self/w0m/.tasks/T347.md) | [#347](https://github.com/webomage/wom7board/issues/347) | P2 | queued | product | 2/7 | `███░░░░░░░` 29% | — | Bug triage display: route bugs to a project's QA hat, fallin |
-| 10 | [T491](/home/aleksei/Projects/!self/w0m/.tasks/T491.md) | [#491](https://github.com/webomage/wom7board/issues/491) | P2 | queued | tools | 1/5 | `██░░░░░░░░` 20% | — | Name the Cloudflare repo by its content, then rename it once |
+| 9 | [T491](/home/aleksei/Projects/!self/w0m/.tasks/T491.md) | [#491](https://github.com/webomage/wom7board/issues/491) | P2 | queued | tools | 1/5 | `██░░░░░░░░` 20% | — | Name the Cloudflare repo by its content, then rename it once |
+| 10 | [T518](/home/aleksei/Projects/!self/w0m/.tasks/T518.md) | [#518](https://github.com/webomage/wom7board/issues/518) | P3 | queued | product | 1/6 | `██░░░░░░░░` 17% | — | Group C, seven scripts waiting on an owner decision: the new |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `wom7web` | `agent/prs-org-forks` | 0 | **n/a — NO UPSTREAM** | `31099713` |
-| `wom7api` | `agent/prs-org-forks` | 0 | **n/a — NO UPSTREAM** | `1fc9828` |
-| `wom7func` | `agent/prs-org-forks` | 0 | **n/a — NO UPSTREAM** | `87a4afe` |
-| `wom7skills` | `agent/prs-org-forks` | 0 | **n/a — NO UPSTREAM** | `a489dd0` |
-| `wom7ext` | `agent/prs-org-forks` | 0 | **n/a — NO UPSTREAM** | `afe29aa` |
-| `wom7sec` | `agent/prs-org-forks` | 0 | **n/a — NO UPSTREAM** | `7c6d52c` |
-| `wom7mlx/wom7mlx` | `agent/prs-org-forks` | 0 | **n/a — NO UPSTREAM** | `26843d8` |
+| `wom7web` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `76bbb792` |
+| `wom7api` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `90d2251` |
+| `wom7func` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `87a4afe` |
+| `wom7skills` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `a489dd0` |
+| `wom7ext` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `afe29aa` |
+| `wom7sec` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `44912de` |
+| `wom7mlx/wom7mlx` | `agent/batch-a` | 0 | **n/a — NO UPSTREAM** | `26843d8` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 63 open · 570 TASKS.md rows · 212/570 specced (6/63 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 57 open · 570 TASKS.md rows · 213/570 specced (6/57 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T509","T365","T136","T271","T273","T454","T475","T567","T17","T28"],"repos":{"wom7api":{"branch":"agent/prs-org-forks","dirty":0,"has_upstream":true,"head":"1fc9828","unpushed":null},"wom7ext":{"branch":"agent/prs-org-forks","dirty":0,"has_upstream":true,"head":"afe29aa","unpushed":null},"wom7func":{"branch":"agent/prs-org-forks","dirty":0,"has_upstream":true,"head":"87a4afe","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/prs-org-forks","dirty":0,"has_upstream":true,"head":"26843d8","unpushed":null},"wom7sec":{"branch":"agent/prs-org-forks","dirty":0,"has_upstream":true,"head":"7c6d52c","unpushed":null},"wom7skills":{"branch":"agent/prs-org-forks","dirty":0,"has_upstream":true,"head":"a489dd0","unpushed":null},"wom7web":{"branch":"agent/prs-org-forks","dirty":0,"has_upstream":true,"head":"31099713","unpushed":null}},"tickets":{"open":63,"rowless_open":[],"rows":570,"specced":212,"specced_open":6,"total":570,"unmirrored_open":4}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T509","T365","T136","T271","T273","T454","T475","T567","T17","T28"],"repos":{"wom7api":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"90d2251","unpushed":null},"wom7ext":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"afe29aa","unpushed":null},"wom7func":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"87a4afe","unpushed":null},"wom7mlx/wom7mlx":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"26843d8","unpushed":null},"wom7sec":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"44912de","unpushed":null},"wom7skills":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"a489dd0","unpushed":null},"wom7web":{"branch":"agent/batch-a","dirty":0,"has_upstream":true,"head":"76bbb792","unpushed":null}},"tickets":{"open":57,"rowless_open":[],"rows":570,"specced":213,"specced_open":6,"total":570,"unmirrored_open":3}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -136,9 +136,11 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T567** — Rebrand wom7*/k7* to w0m-* and migrate all estate repositories from casualuser/* to github.com/webomage/w0m-*
   - **2026-10-23** (2d ago): Stage 1 (AC2) completed & public fork naming convention locked. Following casualuser promotion to admin (Owner) in github.com/orgs/webomage, transferred and renamed all 10 first-party repositories (webomage/w0m, webomage/w0m-web, webomage/w0m-api, webomage/w0m-cf, webomage/w0m-ext, webomage/w0m-sec, webomage/w0m-skills, webomage/w0m-mlx, webomage/w0m-ava, webomage/w0m-clips) and consolidated all 11 public open-source forks under webomage/<repo> (orca, harness2, headroom, webtorrent-desktop, omlx, mlx-vlm, tart, tart-guest-agent, virtual-fido, serena, zeroclaw) keeping their upstream repository names (or <upstream-org>-<repo> on collision). Updated origin remotes across all local checkouts ([remote] 0 in name-refs) and updated w0m-skills schema URLs.
 
-#### Completed today (1):
+#### Completed today (3):
 
 - **T481** — One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it (AC7 (e2e_gate switch schedule): Recorded that [[T478]] split its remaining 151 stale-UI / stale-selector spec failures into [[T486]] (queued, 0/5 ACs) and visual goldens into [[T487]]; release.e2e_gate stays "record" (b) until [[T486]] AC5 reaches a clean local run, with the switch to "require" (a) scheduled for  to 2026-11-01.)
+- **T524** — Supabase default grants: research the safe-by-default change for new tables, views and functions in public, and whether and how to propose it upstream (Completed research & authored report: .agents/reports/2026-10-25-t524-supabase-default-grants-research.md (mirrored to wom7web/docs/reports/2026-10-25-t524-supabase-default-grants-research.md).)
+- **T547** — credential-probe is red on committed code: a member service-handles route matches the credential-surface path regex (All 3 ACs verified and resolved)
 
 ## 3. Other open threads (in TASKS.md)
 
