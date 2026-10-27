@@ -1672,4 +1672,29 @@ The new `agent-tree` suite went red on the very first stable run as `MISSING` (e
 - Tell: `git remote -v` in `wom7pr/<repo>` showing `git@github.com:casualuser/<repo>.git` instead of `git@github.com:webomage/<repo>.git`, or running `gh repo fork` without `--org webomage`.
 - Rule: every open-source fork in `wom7pr/` must live under the `webomage` organization (`git@github.com:webomage/<repo>.git`) with commits authored and GPG-signed by `casualuser` (`Aleksei Tcelishchev <casualuser@gmail.com>`). Never fall back to creating or pushing to a personal `casualuser/<repo>` fork; if `gh repo fork --org webomage` is blocked by PAT lifetime policy, surface the exact token policy error to the owner instead of switching orgs.
 
+### IMPORT `@webomage/ui` SVELTE PRIMITIVES FROM SUBMODULE PATHS IN VITEST-TESTED COMPONENTS
+**2026-10-26 (T577).** Importing `Button` from the root barrel `@webomage/ui` inside `ProfilePage.svelte` failed under Vitest with a syntax error on `WebMCP.astro`.
+
+The `@webomage/ui` root barrel (`packages/ui/src/index.ts`) re-exports both Svelte primitives and `WebMCP.astro`. When a standalone Vitest suite imports a `.svelte` component without the full Astro Vite plugin pipeline loaded, Vite attempts to parse `WebMCP.astro` as JavaScript and fails before the test runs.
+
+⇒ **In `.svelte` components tested by Vitest (`apps/cp`), import `@webomage/ui` primitives from their concrete submodule paths (`@webomage/ui/lib/components/ui/button/index`, `@webomage/ui/lib/components/ui/input/index`, `@webomage/ui/lib/components/ui/select/index`) rather than the root barrel.**
+⭐ **The tell:** Vitest failing on `WebMCP.astro` (`Unexpected token '<'`) after replacing raw HTML controls with `import { Button } from '@webomage/ui'`.
+
+### A RESEND SENDING-RESTRICTED KEY ANSWERS HTTP 401 ON MANAGEMENT ENDPOINTS — READ THE ERROR `name`, NOT ONLY THE STATUS CODE
+**2026-10-26 (T28 / T504).** Probing `GET https://api.resend.com/domains` with `RESEND_API_KEY` returned HTTP 401, which an HTTP-status-only classifier reports as a revoked/dead key.
+
+Inspecting the JSON body (`{"statusCode":401,"message":"This API key is restricted to only send emails","name":"restricted_api_key"}`) proved the exact opposite: the key in Infisical `beta` is an active, least-privilege **Sending access** token that Resend authenticates and then blocks from management routes (`/domains`, `/api-keys`).
+
+⇒ **When probing third-party API credentials for liveness (`T504`), parse the error payload's machine code (`name: "restricted_api_key"`) before classifying a 401/403 as revoked.** Least-privilege tokens fail management reads by design while remaining live for their scoped write action.
+⭐ **The tell:** A credential liveness probe that treats every `status in (401, 403)` as "dead/revoked" without reading the response body.
+
+### NEVER REWRITE GIT HISTORY (`git filter-repo`) BEFORE 100% OF MATCHED SECRETS ARE ROTATED AT THEIR ISSUING PROVIDERS
+**2026-10-26 (T504 / T17 / AgDR-0051).** `T17` proposed running `git filter-repo` to purge `.env.bak` from `w0m-web` history while 21 Tier-B/Tier-C credentials from May 2026 `.dev.vars` commits were still live in Infisical `beta`.
+
+Rewriting git SHAs across a multi-repo estate (`w0m-web`, `w0m-api`) invalidates every historical commit citation in `TASKS.md`, `STATE.md`, and `.tasks/T*.md` while leaving any unrotated credential just as valid in provider backends and cached clones (`refs/original/`). Worse, removing the historical blobs causes `secret_history_check.py` (which diffs `git log --all` against Infisical) to report `0` matches — turning the gate green while live leaked credentials remain unrotated.
+
+⇒ **Enforce Rotation-First (`AgDR-0051`): rotate 100% of historical credentials at the provider and in Infisical (`secret-history-check` → `0` matches against live secrets) BEFORE any `git filter-repo` history rewrite is allowed to run.**
+⭐ **The tell:** Proposing `git filter-repo` or `BFG` to make a secret scanner pass before the underlying keys have been rotated.
+
+
 
