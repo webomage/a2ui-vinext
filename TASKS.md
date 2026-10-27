@@ -49,6 +49,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T578](.tasks/T578.md) | **P1** | **CP mobile UI responsiveness: unclip collapsed sidebar popovers and make /me/work ProjectManager & AdminTableToolbar usable on mobile** | w0m, w0m-web | openspec/specs/cp-context-shell/spec.md | ✅ **done** |
 | [T577](.tasks/T577.md) | **P1** | **Group Upwork Contracts, Proposals, and Messages under dedicated 'Upwork' parent category in job.webomage.com sidebar** | w0m, w0m-web | openspec/changes/archive/2026-10-26-t560-jobs-portal-cutover | ✅ **done** |
 | [T576](.tasks/T576.md) | **P1** | **Telegram & Meta Threads automatic channel, group, and topic community discovery for hiring search** | w0m, w0m-web, w0m-api, w0m-cf | — | ✅ **done** |
 | [T575](.tasks/T575.md) | **P1** | **Telegram & Meta Threads hiring post search: Cloudflare-native sources, member TG/Threads credentials, and interactive keyword search UI** | w0m, w0m-web, w0m-api, w0m-cf, w0m-ext | — | ✅ **done** |
