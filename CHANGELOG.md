@@ -2,6 +2,22 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.26-1793061488
+_First deployed: 2026-10-27 00:56:14.610129+00_
+
+### Features
+- **estate**: complete T226, T508, T522, T521, T128, T132, T512, T109, T84, and T106 ([T226](file:///.tasks/T226.md), [T508](file:///.tasks/T508.md), [T522](file:///.tasks/T522.md), [T521](file:///.tasks/T521.md), [T128](file:///.tasks/T128.md), [T132](file:///.tasks/T132.md), [T512](file:///.tasks/T512.md), [T109](file:///.tasks/T109.md), [T84](file:///.tasks/T84.md), [T106](file:///.tasks/T106.md))
+- **cp**: record T577 Upwork sidebar category, editable CV title, and WorkHistory layout fix ([T577](file:///.tasks/T577.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `a3bc2f0` | 2026-10-27 00:56:14.610129+00 |
+| demo | `a3bc2f0` | 2026-10-27 00:55:02.996996+00 |
+| job | `a3bc2f0` | 2026-10-27 00:54:01.055202+00 |
+| join | `a3bc2f0` | 2026-10-27 00:52:21.915045+00 |
+| cp | `a3bc2f0` | 2026-10-27 00:51:10.758961+00 |
+| web | `a3bc2f0` | 2026-10-27 00:48:56.117687+00 |
+
 ## 2026.10.26-1793049239
 _First deployed: 2026-10-26 21:26:52.515061+00_
 
