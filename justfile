@@ -1112,6 +1112,36 @@ e2e-local *specs:
       $creds \
       gauge run --env local {{ if specs == "" { "specs" } else { specs } }}
 
+# T579 — Multi-role RBAC, throwaway Postgres hat write-path, CP shell context, and Gauge spec verification
+roles-verify:
+    @just cp-nav-check-test
+    @just t553-hat-write-path-test
+    @cd w0m-web && pnpm --filter cp exec vitest run --project dom src/components/shell/__tests__/CpShell.test.ts src/lib/context/__tests__/nav.test.ts
+    @cd w0m-web && gauge validate specs/personas/class_reach.spec specs/web/multi_role_hats_and_guild.spec specs/web/admin_cp_personas.spec
+
+# T579 — Self-contained 7-persona local browser E2E runner (provisions test-team-local + edge-local + runs persona specs)
+e2e-roles-local *specs:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ! curl -s -o /dev/null "http://127.0.0.1:54321/rest/v1/"; then
+      echo "  ❌ local Supabase is not up on 127.0.0.1:54321. Start Docker and run: just db-local-up && just db-local-seed"
+      exit 2
+    fi
+    [ -f w0m-web/env/local/generated.properties ] || just db-local-env
+    just test-team-local
+    EDGE_PID=""
+    if ! lsof -nP -iTCP:8791 -sTCP:LISTEN >/dev/null 2>&1; then
+      echo "  ▶ starting edge-local in background…"
+      just edge-local > /tmp/w0m-edge-local.log 2>&1 &
+      EDGE_PID=$!
+      trap '[ -n "$EDGE_PID" ] && kill "$EDGE_PID" 2>/dev/null || true' EXIT
+      for i in $(seq 1 30); do
+        lsof -nP -iTCP:8791 -sTCP:LISTEN >/dev/null 2>&1 && break
+        sleep 1
+      done
+    fi
+    just e2e-local {{ if specs == "" { "specs/personas/class_reach.spec specs/web/multi_role_hats_and_guild.spec" } else { specs } }}
+
 # T532 — Run live-guard proof test
 live-guard-test:
     @cd w0m-web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 pnpm exec tsx tests/support/liveGuard.probe.mts
