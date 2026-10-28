@@ -134,10 +134,10 @@ every piece of intelligence has an explicit lifecycle from raw intake to verifie
 | `mocs/` | Thematic navigation indices and high-level summaries | Navigation |
 | `assets/` | Architecture diagrams, mockups, images | Attachments |
 
-## Desktop & Web Access
-- **Native Desktop Obsidian**: `obsidian://open?vault={target.name}`
-- **Client Portal Web UI**: [cp.webomage.com](https://cp.webomage.com/client/vault)
-- **Admin Control Panel**: [cp.w0m.xyz](https://cp.w0m.xyz/admin/vaults)
+## Desktop, Mobile & Web Access
+- **Native Desktop Obsidian**: `obsidian://open?vault={project_id}`
+- **Client Portal Web UI**: `/o/{project.get("org_slug", project_id)}/projects/vault`
+- **Mobile R2 Sync Gateway**: `https://cp.webomage.com/api/vault/r2/{project.get("knowledge_hub", {}).get("engagement_public_id", f"eg-{project_id}")}`
 """
         index_md.write_text(index_content)
 

@@ -708,7 +708,7 @@
     },
     "knowledge_hub": {
       "type": "object",
-      "description": "T284 AC1/AC5 — Declared client-facing knowledge hub corpus boundary. Maps a client org/project to its explicit vault_slug, corpus_root (relative to estate root), allowed_prefixes, and denied_prefixes so client document boundaries are DATA, never inferred from directory names.",
+      "description": "T284 AC1/AC5 / T580 — Declared client-facing knowledge hub corpus boundary and per-engagement Cloudflare R2 namespace. Maps a client org/project/engagement to its explicit vault_slug, engagement_public_id, r2_bucket, r2_prefix, corpus_root (relative to estate root), allowed_prefixes, and denied_prefixes so client document boundaries are DATA, never inferred from directory names.",
       "required": [
         "vault_slug",
         "corpus_root",
@@ -720,6 +720,21 @@
         "vault_slug": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "engagement_public_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "T580 — Canonical public_id in public.engagements for this engagement vault (e.g. 'eg-artemio-quiero-comer', 'eg-servicios777', 'eg-personaje0', 'eg-1945')."
+        },
+        "r2_bucket": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "T580 — Cloudflare R2 bucket storing this engagement's Obsidian vault objects (default: 'wom-engagement-vaults')."
+        },
+        "r2_prefix": {
+          "type": "string",
+          "minLength": 3,
+          "description": "T580 — Key prefix inside r2_bucket isolating this engagement's vault (e.g. 'engagements/eg-artemio-quiero-comer')."
         },
         "corpus_root": {
           "type": "string",

@@ -1911,6 +1911,14 @@ tracks-check *args:
 content-tools-test:
     @python3 scripts/tests/test_content_tools.py
 
+# ── Per-Engagement Cloudflare R2 Obsidian Vault Sync (T580) ───────────────────
+vault-push-r2 *args:
+    @infisical run --env=beta --silent -- python3 scripts/vault_push_r2.py {{ args }}
+
+vault-push-r2-test:
+    @python3 scripts/tests/test_vault_push_r2.py
+
+
 
 
 
