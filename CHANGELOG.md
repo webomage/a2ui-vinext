@@ -2,6 +2,23 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.28-1793225231
+_First deployed: 2026-10-28 22:34:03.603021+00_
+
+### Features
+- **estate**: per-engagement R2 vault sync CLI and T580/T581 tracking (T580, T581) ([T580](file:///.tasks/T580.md), [T581](file:///.tasks/T581.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `c674fb2` | 2026-10-28 22:34:03.603021+00 |
+| demo | `c674fb2` | 2026-10-28 22:33:17.188939+00 |
+| job | `c674fb2` | 2026-10-28 22:32:19.705019+00 |
+| join | `c674fb2` | 2026-10-28 22:30:47.827062+00 |
+| cp | `c674fb2` | 2026-10-28 22:29:38.607763+00 |
+| web | `c674fb2` | 2026-10-28 22:27:27.343428+00 |
+| release | `c674fb2` | 2026-10-28 22:25:00.191906+00 |
+| api | `c674fb2` | 2026-10-28 22:24:54.423701+00 |
+
 ## 2026.10.28-1793208728
 _First deployed: 2026-10-28 20:00:09.666705+00_
 
