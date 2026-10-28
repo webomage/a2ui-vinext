@@ -2,6 +2,25 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.28-1793208728
+_First deployed: 2026-10-28 20:00:09.666705+00_
+
+### Features
+- **sdlc**: add T579 CP API parity & roles-verify / e2e-roles-local targets (T579) ([T579](file:///.tasks/T579.md))
+- **cp**: complete T578 CP mobile UI responsiveness and unclip sidebar popovers ([T578](file:///.tasks/T578.md))
+- **security**: complete T70 and T28, advance T504 AC4/AC6 with AgDR-0051, and record lessons (T70, T28, T504, T17) ([T70](file:///.tasks/T70.md), [T28](file:///.tasks/T28.md), [T504](file:///.tasks/T504.md), [T17](file:///.tasks/T17.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `b0cc91f` | 2026-10-28 20:00:09.666705+00 |
+| demo | `b0cc91f` | 2026-10-28 19:59:15.29867+00 |
+| job | `b0cc91f` | 2026-10-28 19:58:19.48542+00 |
+| join | `b0cc91f` | 2026-10-28 19:56:39.828902+00 |
+| cp | `b0cc91f` | 2026-10-28 19:55:04.912757+00 |
+| web | `b0cc91f` | 2026-10-28 19:52:44.391894+00 |
+| release | `b0cc91f` | 2026-10-28 19:50:11.08663+00 |
+| api | `b0cc91f` | 2026-10-28 19:50:05.339197+00 |
+
 ## 2026.10.26-1793061488
 _First deployed: 2026-10-27 00:56:14.610129+00_
 
