@@ -29,6 +29,29 @@
         "ssh_key": "~/.ssh/id_rsa",
         "gh_account": "casualuser",
         "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "org_slug": "webomage",
+      "project_slug": "w0m",
+      "knowledge_hub": {
+        "vault_slug": "w0m",
+        "engagement_public_id": "eg-w0m",
+        "r2_bucket": "wom-engagement-vaults",
+        "r2_prefix": "engagements/eg-w0m",
+        "corpus_root": "w0m-web/projects/w0m/vault",
+        "allowed_prefixes": [
+          "index.md",
+          "mocs/",
+          "notes/",
+          "sources/",
+          "claims/"
+        ],
+        "denied_prefixes": [
+          "inbox/",
+          ".obsidian/",
+          "internal/",
+          ".w0m/",
+          "openspec/"
+        ]
       }
     },
     {

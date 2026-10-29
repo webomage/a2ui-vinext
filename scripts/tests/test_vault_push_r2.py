@@ -15,9 +15,10 @@ import vault_push_r2 as vpr  # noqa: E402
 
 
 class TestVaultPushR2(unittest.TestCase):
-    def test_discovers_all_four_declared_engagement_vaults(self) -> None:
+    def test_discovers_all_declared_engagement_vaults(self) -> None:
         vaults = vpr.discover_engagement_vaults()
         by_eg = {v["engagement_public_id"]: v for v in vaults}
+        self.assertIn("eg-w0m", by_eg)
         self.assertIn("eg-1945", by_eg)
         self.assertIn("eg-artemio-quiero-comer", by_eg)
         self.assertIn("eg-servicios777", by_eg)
@@ -30,6 +31,11 @@ class TestVaultPushR2(unittest.TestCase):
             rel_paths = {rel for rel, _, _ in files}
             self.assertIn("index.md", rel_paths, f"{eg_id} missing index.md")
             self.assertIn("mocs/architecture.md", rel_paths, f"{eg_id} missing mocs/architecture.md")
+            self.assertIn(
+                "notes/mobile-sync-user-guide.md",
+                rel_paths,
+                f"{eg_id} missing notes/mobile-sync-user-guide.md",
+            )
             self.assertIn(".obsidian/app.json", rel_paths, f"{eg_id} missing .obsidian/app.json")
 
     def test_client_safe_filter_blocks_inbox_plugins_and_internal_urls(self) -> None:
