@@ -89,3 +89,36 @@ All 4 client engagements now have isolated prefixes inside `r2://wom-engagement-
    - **Server Address:** `https://cp.webomage.com/api/vault/r2/<engagement_public_id>`
    - **Username:** Your signed-in CP email address
    - **Password:** Your active JWT Access Token (1-click copyable from the **Connect Mobile App (CF R2)** card)
+
+---
+
+## 3. T582 — `w0m-ext` on iOS Mobile Browsers (All 3 Delivery Options)
+
+Because Apple iOS restricts third-party Chromium/Firefox browsers from loading extensions directly unless built into a WebKit extension host or delivered via Safari WebExtensions / Bookmarklets, **T582** ships all **three** iOS options side-by-side:
+
+```mermaid
+flowchart LR
+  subgraph Build["w0m-ext Build & R2 Release Pipeline"]
+    BM["build-manifest.mjs\n(chrome / firefox / safari)"]
+    PK["package-ios.mjs\n(pnpm build:ios)"]
+    R2E[("Cloudflare R2\nwom-engagement-vaults\nreleases/w0m-ext/*")]
+    BM --> PK --> R2E
+  end
+
+  subgraph Options["3 iOS Mobile Delivery Paths"]
+    O1["Option 1: Orion Browser for iOS\nw0m-ext-ios-orion.xpi & .zip\n(Direct File Install, Zero Xcode)"]
+    O2["Option 2: Native iOS Safari WebExtension\nw0m-ext-safari.zip + manifest.safari.json\n(xcrun safari-web-extension-converter --ios-only)"]
+    O3["Option 3: Universal 1-Tap iOS Bookmarklet\nbuildMobileAutofillBookmarklet(pkg)\n(Safari iOS, Chrome iOS, Brave iOS, Orion iOS)"]
+  end
+
+  R2E -->|"/api/vault/r2/w0m-ext-ios/*"| O1
+  R2E -->|"/api/vault/r2/w0m-ext-ios/*"| O2
+  Studio["PlatformProfileStudio.svelte\n📱 iOS Mobile Agent Tab"] --> O1 & O2 & O3
+```
+
+| Option | Target iOS Browsers | Package / Mechanism | How to Use on iPhone / iPad |
+|---|---|---|---|
+| **Option 1 (Recommended — Full MV3 Extension, Zero Xcode)** | **Orion Browser for iOS** (by Kagi, free on iOS App Store) | `w0m-ext-ios-orion.xpi` (351 KB) & `w0m-ext-ios-chrome.zip` (351 KB) hosted in `r2://wom-engagement-vaults/releases/w0m-ext/` | 1. Install **Orion Browser** from the App Store.<br>2. Download `w0m-ext-ios-orion.xpi` from `/api/vault/r2/w0m-ext-ios/w0m-ext-ios-orion.xpi` (or from the **📱 iOS Mobile Agent** tab).<br>3. In Orion iOS, tap `⋯` → **Extensions** → **+** → **Install from File** and select `w0m-ext-ios-orion.xpi`. |
+| **Option 2 (Native iOS Safari Extension)** | **Safari on iOS 16.4+ / iPadOS** | `w0m-ext-safari.zip` (`manifest.safari.json` with `strict_min_version: "16.4"`, `background.non_persistent: true`, and desktop-only `webRequest`/`contextMenus` stripped) | Convert on macOS via:<br>`xcrun safari-web-extension-converter w0m-ext/extension/dist/ios/safari-unpacked --project-location w0m-ext/dist/safari-ios --app-name 'Webomage Agent' --bundle-identifier com.webomage.agent --swift --ios-only`<br>Sign in Xcode / TestFlight and enable in **iOS Settings → Apps → Safari → Extensions**. |
+| **Option 3 (Universal 1-Tap Bookmarklet)** | **Safari iOS, Chrome iOS, Brave iOS, Orion iOS, In-App WebViews** | `buildMobileAutofillBookmarklet(pkg)` (`javascript:(function(){...})()`) | 1. Tap **📱 Copy iOS Bookmarklet** in `PlatformProfileStudio`.<br>2. Save any bookmark in Safari/Chrome iOS as `⚡ w0m Agent` and paste the `javascript:...` URL.<br>3. Tap the bookmark on any application form to auto-fill inputs and open the interactive **⚡ w0m iOS Agent** bottom-sheet drawer. |
+

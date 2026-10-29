@@ -49,6 +49,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T582](.tasks/T582.md) | **P0** | **iOS Mobile Browser Support for w0m-ext (Orion iOS .xpi/.zip Package, Safari WebExtension Target & 1-Tap iOS Universal Auto-Fill Bookmarklet)** | web | — | ✅ **done** |
 | [T581](.tasks/T581.md) | **P0** | **Job Portal Multi-Platform Profile Preparation Studio (Indeed, Proxify, Developers.net) & JOIN.com Job Boards/Services Catalog** | web | — | ✅ **done** |
 | [T580](.tasks/T580.md) | **P1** | **Per-engagement Cloudflare R2 Obsidian vaults: engagement_id schema & policy, wom-engagement-vaults R2 bucket & sync CLI, authenticated WebDAV/R2 mobile gateway, and CP mobile connection UI** | w0m, w0m-web, w0m-api | openspec/specs/per-project-vault-topology/spec.md | ✅ **done** |
 | [T579](.tasks/T579.md) | **P1** | **CP UI/API parity & multi-role E2E harness: un-reserve /admin/claims, wire headless CP APIs (reconcile-spei, release-approval, sync/vault, ats-api, HatchetActivity), and wire roles-verify / e2e-roles-local** | w0m, w0m-web | openspec/specs/cp-context-shell/spec.md | ✅ **done** |

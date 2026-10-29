@@ -322,6 +322,50 @@ def verify_vaults(s3: Any, vaults: list[dict[str, Any]]) -> int:
     return 0
 
 
+IOS_EXT_FILES: dict[str, str] = {
+    "w0m-ext-ios-orion.xpi": "application/x-xpinstall",
+    "w0m-ext-ios-chrome.zip": "application/zip",
+    "w0m-ext-safari.zip": "application/zip",
+    "ios-packages.json": "application/json; charset=utf-8",
+}
+
+
+def push_ios_ext_packages(s3: Any | None, dry_run: bool) -> int:
+    ios_dir = ESTATE_ROOT / "w0m-ext" / "extension" / "dist" / "ios"
+    bucket = DEFAULT_BUCKET
+    prefix = "releases/w0m-ext"
+    if not ios_dir.is_dir():
+        die(f"{ios_dir} does not exist — run 'pnpm -C w0m-ext/extension build:ios' first.")
+    print(f"\n📦 Pushing iOS extension packages → r2://{bucket}/{prefix}/")
+    pushed = 0
+    for fname, content_type in IOS_EXT_FILES.items():
+        fpath = ios_dir / fname
+        if not fpath.is_file():
+            die(f"missing {fpath} — run 'pnpm -C w0m-ext/extension build:ios' first.")
+        data = fpath.read_bytes()
+        digest = sha256_bytes(data)
+        key = f"{prefix}/{fname}"
+        if dry_run:
+            print(f"    🔍 DRY RUN: would upload {key:42} ({len(data):>8,} B, sha256={digest[:12]}…)")
+            pushed += 1
+            continue
+        assert s3 is not None
+        s3.put_object(
+            Bucket=bucket,
+            Key=key,
+            Body=data,
+            ContentType=content_type,
+            Metadata={"sha256": digest, "channel": "w0m-ext-ios"},
+        )
+        head = s3.head_object(Bucket=bucket, Key=key)
+        if head["ContentLength"] != len(data):
+            die(f"{key}: R2 size mismatch ({head['ContentLength']} vs {len(data)})")
+        print(f"    ✅ {key:42} ({len(data):>8,} B, sha256={digest[:12]}…)")
+        pushed += 1
+    print(f"\n✅ Pushed {pushed} iOS extension package file(s) to r2://{bucket}/{prefix}/")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument(
@@ -334,8 +378,17 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Download and verify SHA-256 of index.md for each engagement vault in R2",
     )
+    ap.add_argument(
+        "--push-ios-ext",
+        action="store_true",
+        help="Upload built w0m-ext iOS packages (.xpi / .zip) to r2://wom-engagement-vaults/releases/w0m-ext/",
+    )
     ap.add_argument("--policy", type=Path, default=DEFAULT_POLICY)
     args = ap.parse_args(argv)
+
+    s3 = None if args.dry_run else get_s3_client()
+    if args.push_ios_ext:
+        return push_ios_ext_packages(s3, args.dry_run)
 
     vaults = discover_engagement_vaults(
         policy_path=args.policy,
@@ -347,7 +400,6 @@ def main(argv: list[str] | None = None) -> int:
             f"no declared engagement vaults matched {args.engagement or 'clients-policy.json'}."
         )
 
-    s3 = None if args.dry_run else get_s3_client()
     if args.verify:
         assert s3 is not None
         return verify_vaults(s3, vaults)
