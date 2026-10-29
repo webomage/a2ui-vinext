@@ -49,6 +49,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T584](.tasks/T584.md) | **P1** | **Mobile Terminal & Deploy Gate — Asterisk Password Masking & Show/Hide Toggle for Live Input & Linux Sudo Confirm** | web | — | ✅ **done** |
 | [T583](.tasks/T583.md) | **P0** | **Visual SVG Step-by-Step User Guides & Seeded Vault Setup Notes for Obsidian Mobile R2 Sync, Profile Prep Studio & iOS w0m-ext** | web | — | ✅ **done** |
 | [T582](.tasks/T582.md) | **P0** | **iOS Mobile Browser Support for w0m-ext (Orion iOS .xpi/.zip Package, Safari WebExtension Target & 1-Tap iOS Universal Auto-Fill Bookmarklet)** | web | — | ✅ **done** |
 | [T581](.tasks/T581.md) | **P0** | **Job Portal Multi-Platform Profile Preparation Studio (Indeed, Proxify, Developers.net) & JOIN.com Job Boards/Services Catalog** | web | — | ✅ **done** |

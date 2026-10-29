@@ -358,6 +358,144 @@ def _run_presence_helper(arg: str) -> tuple[int, str]:
     return r.returncode, (r.stdout.strip() or r.stderr.strip())
 
 
+def _read_masked_password(
+    prompt: str,
+    tty_fd: int | None = None,
+    timeout: float = PRESENCE_TIMEOUT,
+) -> str | None:
+    """Read a password from a TTY fd, echoing '*' for each character typed.
+
+    Supports Backspace (\\x7f / \\x08 -> '\\b \\b'), Ctrl+U (\\x15 line clear),
+    Ctrl+W (\\x17 word erase), Enter (\\r / \\n), and Ctrl+C / Ctrl+D cancel.
+    Returns None on cancel/EOF, raises TimeoutError on timeout.
+    """
+    import select
+    import termios
+
+    own_fd = False
+    fd = tty_fd
+    if fd is None:
+        try:
+            fd = os.open("/dev/tty", os.O_RDWR | os.O_NOCTTY)
+            own_fd = True
+        except OSError:
+            if sys.stdin.isatty():
+                fd = sys.stdin.fileno()
+            else:
+                raise
+
+    try:
+        old_attrs = termios.tcgetattr(fd)
+    except Exception:
+        if own_fd and fd is not None:
+            os.close(fd)
+        raise
+
+    def _write(text: str) -> None:
+        data = text.encode("utf-8", "replace")
+        try:
+            os.write(fd, data)
+        except OSError:
+            try:
+                sys.stderr.write(text)
+                sys.stderr.flush()
+            except OSError:
+                pass
+
+    chars: list[str] = []
+    deadline = time.monotonic() + timeout
+    try:
+        new_attrs = termios.tcgetattr(fd)
+        new_attrs[3] &= ~(termios.ECHO | termios.ICANON | termios.ISIG)
+        new_attrs[0] &= ~termios.ICRNL
+        new_attrs[6][termios.VMIN] = 1
+        new_attrs[6][termios.VTIME] = 0
+        termios.tcsetattr(fd, termios.TCSADRAIN, new_attrs)
+        _write(prompt)
+
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                _write("\r\n")
+                raise TimeoutError(f"timed out waiting for password within {int(timeout)}s")
+            ready, _, _ = select.select([fd], [], [], min(remaining, 0.5))
+            if not ready:
+                continue
+            try:
+                raw = os.read(fd, 1)
+            except OSError:
+                _write("\r\n")
+                return None
+            if not raw:
+                _write("\r\n")
+                return "".join(chars) if chars else None
+
+            b0 = raw[0]
+            if b0 in (0x0D, 0x0A):  # Enter (\r or \n)
+                _write("\r\n")
+                return "".join(chars)
+            if b0 == 0x03:  # Ctrl+C
+                _write("\r\n")
+                return None
+            if b0 == 0x04:  # Ctrl+D
+                if not chars:
+                    _write("\r\n")
+                    return None
+                continue
+            if b0 in (0x7F, 0x08):  # Backspace / Ctrl+H
+                if chars:
+                    chars.pop()
+                    _write("\b \b")
+                continue
+            if b0 == 0x15:  # Ctrl+U (clear line)
+                if chars:
+                    _write("\b \b" * len(chars))
+                    chars.clear()
+                continue
+            if b0 == 0x17:  # Ctrl+W (erase previous word)
+                erased = 0
+                while chars and chars[-1].isspace():
+                    chars.pop()
+                    erased += 1
+                while chars and not chars[-1].isspace():
+                    chars.pop()
+                    erased += 1
+                if erased:
+                    _write("\b \b" * erased)
+                continue
+            if b0 == 0x1B:  # Escape / CSI sequence — drain any immediately buffered sequence bytes
+                while select.select([fd], [], [], 0.01)[0]:
+                    if not os.read(fd, 1):
+                        break
+                continue
+            if b0 < 0x20:
+                continue
+
+            # Decode multi-byte UTF-8 character if needed
+            seq = bytearray(raw)
+            expected_extra = (
+                1 if (b0 & 0xE0) == 0xC0 else 2 if (b0 & 0xF0) == 0xE0 else 3 if (b0 & 0xF8) == 0xF0 else 0
+            )
+            for _ in range(expected_extra):
+                if select.select([fd], [], [], 0.05)[0]:
+                    nxt = os.read(fd, 1)
+                    if nxt:
+                        seq.extend(nxt)
+            ch = bytes(seq).decode("utf-8", "replace")
+            chars.append(ch)
+            _write("*")
+    finally:
+        try:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_attrs)
+        except Exception:
+            pass
+        if own_fd and fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+
+
 def _confirm_presence_linux(step: str, describe: str) -> tuple[bool, str]:
     """Verify device owner on Linux using security key (FIDO2 / virtual-fido) or system auth."""
     # 1. CTAP / FIDO2 security key presence check (e.g. virtual-fido or hardware YubiKey)
@@ -389,17 +527,42 @@ def _confirm_presence_linux(step: str, describe: str) -> tuple[bool, str]:
     except Exception:
         pass
 
-    # 2. System authentication fallback (PAM / sudo)
+    # 2. System authentication fallback (PAM / sudo with '*' masked feedback)
+    user = os.environ.get("USER", "device owner")
     print(f"\n{BOLD}▶ Device owner verification (Linux system auth){OFF}", file=sys.stderr)
-    print(f"{DIM}   → confirm with password or fingerprint for {os.environ.get('USER', 'device owner')}…{OFF}", file=sys.stderr)
+    print(f"{DIM}   → confirm with password or fingerprint for {user}…{OFF}", file=sys.stderr)
+    prompt = f"   [confirm] sudo password for {user}: "
     try:
-        r = subprocess.run(
-            ["sudo", "-k", "-p", "   [confirm] sudo password for %u: ", "sudo", "-v"],
-            timeout=PRESENCE_TIMEOUT,
-        )
-        if r.returncode == 0:
-            return True, "device owner verified via system auth"
-        return False, f"system authentication failed (exit {r.returncode})"
+        for attempt in range(3):
+            try:
+                pw = _read_masked_password(prompt, timeout=PRESENCE_TIMEOUT)
+            except TimeoutError:
+                return False, f"timed out waiting for system auth within {PRESENCE_TIMEOUT}s"
+            except Exception:
+                # Fallback if no termios-capable TTY is attached
+                r = subprocess.run(
+                    ["sudo", "-k", "-p", "   [confirm] sudo password for %u: ", "sudo", "-v"],
+                    timeout=PRESENCE_TIMEOUT,
+                )
+                if r.returncode == 0:
+                    return True, "device owner verified via system auth"
+                return False, f"system authentication failed (exit {r.returncode})"
+
+            if pw is None:
+                return False, "system authentication cancelled"
+
+            r = subprocess.run(
+                ["sudo", "-k", "-S", "-p", "", "sudo", "-v"],
+                input=pw + "\n",
+                text=True,
+                capture_output=True,
+                timeout=PRESENCE_TIMEOUT,
+            )
+            if r.returncode == 0:
+                return True, "device owner verified via system auth"
+            if attempt < 2:
+                print("   Sorry, try again.", file=sys.stderr)
+        return False, "system authentication failed (3 incorrect password attempts)"
     except subprocess.TimeoutExpired:
         return False, f"timed out waiting for system auth within {PRESENCE_TIMEOUT}s"
     except Exception as exc:
