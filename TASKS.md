@@ -49,6 +49,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T583](.tasks/T583.md) | **P0** | **Visual SVG Step-by-Step User Guides & Seeded Vault Setup Notes for Obsidian Mobile R2 Sync, Profile Prep Studio & iOS w0m-ext** | web | — | ✅ **done** |
 | [T582](.tasks/T582.md) | **P0** | **iOS Mobile Browser Support for w0m-ext (Orion iOS .xpi/.zip Package, Safari WebExtension Target & 1-Tap iOS Universal Auto-Fill Bookmarklet)** | web | — | ✅ **done** |
 | [T581](.tasks/T581.md) | **P0** | **Job Portal Multi-Platform Profile Preparation Studio (Indeed, Proxify, Developers.net) & JOIN.com Job Boards/Services Catalog** | web | — | ✅ **done** |
 | [T580](.tasks/T580.md) | **P1** | **Per-engagement Cloudflare R2 Obsidian vaults: engagement_id schema & policy, wom-engagement-vaults R2 bucket & sync CLI, authenticated WebDAV/R2 mobile gateway, and CP mobile connection UI** | w0m, w0m-web, w0m-api | openspec/specs/per-project-vault-topology/spec.md | ✅ **done** |

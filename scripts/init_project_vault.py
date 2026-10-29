@@ -119,10 +119,11 @@ tags: [moc, project-vault, karpathy-wiki]
 Welcome to the **{project_id}** project knowledge base. This vault implements the **Karpathy LLM Wiki pattern**:
 every piece of intelligence has an explicit lifecycle from raw intake to verified atomic claims, synthesized domain models, and navigational Maps of Content.
 
-## Primary Maps of Content (MOCs)
+## Primary Maps of Content (MOCs) & Guides
 - [[mocs/architecture|System Architecture & Components]]
 - [[mocs/requirements|Client Requirements & Specs]]
 - [[mocs/deliverables|Deliverables & Milestones]]
+- [[notes/mobile-sync-user-guide|Obsidian Mobile & Cloudflare R2 Sync User Guide]]
 
 ## Directory Architecture
 | Directory | Role | Lifecycle Stage |
@@ -188,6 +189,50 @@ tags: [moc, deliverables]
 # {project_id.capitalize()} Deliverables MOC
 
 - Milestones, client sprint releases, and verified deliverables.
+""")
+
+    eng_id = project.get("knowledge_hub", {}).get("engagement_public_id", f"eg-{project_id}")
+    org_slug = project.get("org_slug", project_id)
+    mobile_guide = target / "notes" / "mobile-sync-user-guide.md"
+    if not mobile_guide.exists():
+        mobile_guide.write_text(f"""---
+id: NOTE-{project_id}-mobile-sync-guide
+title: "Obsidian Mobile & Desktop Sync User Guide ({eng_id})"
+project: {project_id}
+type: note
+created: {today}
+tags: [user-guide, obsidian-mobile, cloudflare-r2, webdav]
+---
+
+# Obsidian Mobile & Desktop Sync User Guide ({eng_id})
+
+This engagement vault (`{project_id}`) is backed by isolated **Cloudflare R2** storage (`r2://wom-engagement-vaults/engagements/{eng_id}/`) and exposed over an authenticated WebDAV gateway so you can read, edit, and sync notes from **Obsidian Mobile (iOS & Android)**, **Obsidian Desktop**, or the **Client Portal Knowledge Hub** (`/o/{org_slug}/projects/vault`).
+
+## Step 1 — Copy Your Per-Engagement Credentials in the Client Portal
+1. Open the Knowledge Hub at `https://cp.webomage.com/o/{org_slug}/projects/vault`.
+2. Click **📱 Connect Mobile App (CF R2)** in the top toolbar.
+3. Click **☁️ Sync R2 Vault** once to ensure the latest MOCs and notes are seeded into your R2 prefix.
+4. Copy the three WebDAV connection values:
+   - **WebDAV Server Address:** `https://cp.webomage.com/api/vault/r2/{eng_id}`
+   - **Username:** Your signed-in Webomage email address
+   - **Password:** Your active JWT Access Token (click **🔑 Copy Access Token**)
+
+## Step 2 — Configure Obsidian Mobile (iOS / Android) via "Remotely Save"
+1. Install **Obsidian** from the iOS App Store or Google Play Store and create a local vault named `{project_id}`.
+2. Open **Settings → Community Plugins → Turn on Community Plugins → Browse**.
+3. Search for **Remotely Save**, tap **Install**, then **Enable**.
+4. Open **Remotely Save** settings and configure:
+   - **Choose A Remote Service:** `WebDAV`
+   - **Server Address:** `https://cp.webomage.com/api/vault/r2/{eng_id}`
+   - **Username:** `<your-email>`
+   - **Password:** `<your-jwt-access-token>`
+   - **Auth Type:** `Basic`
+5. Tap **Check** to verify connectivity (`207 Multi-Status`), then tap the **Remotely Save** ribbon icon in the sidebar to sync all MOCs and notes (`[[index]]`, `[[mocs/architecture]]`, `[[mocs/requirements]]`, `[[mocs/deliverables]]`).
+
+## Security & Boundary Rules
+- **Strict Per-Engagement Isolation:** Your credentials only authorize access to `engagements/{eng_id}/`. Cross-engagement requests are rejected (`403 Forbidden`).
+- **Allowed Paths:** Markdown notes in `index.md`, `mocs/`, `notes/`, `claims/`, `sources/`, and safe `.obsidian/` workspace settings (`app.json`, `graph.json`, `appearance.json`).
+- **Denied Paths:** Raw `inbox/` drops and executable `.obsidian/plugins/` bundles are blocked at the gateway to prevent unreviewed or executable code from syncing across devices.
 """)
 
     # Place .gitkeep or READMEs in subdirectories

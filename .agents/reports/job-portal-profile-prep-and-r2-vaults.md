@@ -122,3 +122,22 @@ flowchart LR
 | **Option 2 (Native iOS Safari Extension)** | **Safari on iOS 16.4+ / iPadOS** | `w0m-ext-safari.zip` (`manifest.safari.json` with `strict_min_version: "16.4"`, `background.non_persistent: true`, and desktop-only `webRequest`/`contextMenus` stripped) | Convert on macOS via:<br>`xcrun safari-web-extension-converter w0m-ext/extension/dist/ios/safari-unpacked --project-location w0m-ext/dist/safari-ios --app-name 'Webomage Agent' --bundle-identifier com.webomage.agent --swift --ios-only`<br>Sign in Xcode / TestFlight and enable in **iOS Settings → Apps → Safari → Extensions**. |
 | **Option 3 (Universal 1-Tap Bookmarklet)** | **Safari iOS, Chrome iOS, Brave iOS, Orion iOS, In-App WebViews** | `buildMobileAutofillBookmarklet(pkg)` (`javascript:(function(){...})()`) | 1. Tap **📱 Copy iOS Bookmarklet** in `PlatformProfileStudio`.<br>2. Save any bookmark in Safari/Chrome iOS as `⚡ w0m Agent` and paste the `javascript:...` URL.<br>3. Tap the bookmark on any application form to auto-fill inputs and open the interactive **⚡ w0m iOS Agent** bottom-sheet drawer. |
 
+---
+
+## 4. T583 — Committed Visual SVG Step-by-Step User Guides & Seeded Vault Notes
+
+All 5 visual SVG step-by-step diagrams are committed in both `w0m-web/apps/cp/public/assets/guides/` and `w0m-web/apps/job/public/assets/guides/`, embedded directly inside `KnowledgeHub.svelte` and `PlatformProfileStudio.svelte`, and accompanied by `notes/mobile-sync-user-guide.md` in all 4 engagement vaults (`1945`, `artemio`, `servicios777`, `personaje0`):
+
+````carousel
+![Obsidian Mobile & Desktop Sync via Cloudflare R2 WebDAV — 3-Step Visual Setup Guide](/home/aleksei/.gemini/antigravity-cli/brain/514770da-2de8-4c42-b74c-763a3bf102dd/obsidian-mobile-r2-webdav.svg)
+<!-- slide -->
+![Option 1 — Orion Browser for iOS: Direct .xpi / .zip Extension Install](/home/aleksei/.gemini/antigravity-cli/brain/514770da-2de8-4c42-b74c-763a3bf102dd/ios-orion-extension-install.svg)
+<!-- slide -->
+![Option 2 — Native iOS Safari WebExtension (manifest.safari.json + Xcode / TestFlight)](/home/aleksei/.gemini/antigravity-cli/brain/514770da-2de8-4c42-b74c-763a3bf102dd/ios-safari-web-extension.svg)
+<!-- slide -->
+![Option 3 — Universal 1-Tap iOS Bookmarklet](/home/aleksei/.gemini/antigravity-cli/brain/514770da-2de8-4c42-b74c-763a3bf102dd/ios-universal-bookmarklet.svg)
+<!-- slide -->
+![Multi-Platform Profile Synthesis & JOIN.com 36-Channel Syndication Pipeline](/home/aleksei/.gemini/antigravity-cli/brain/514770da-2de8-4c42-b74c-763a3bf102dd/multi-platform-profile-workflow.svg)
+````
+
+

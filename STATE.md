@@ -20,7 +20,7 @@
 | 3 | [T343](/home/aleksei/Projects/!self/w0m/.tasks/T343.md) | [#343](https://github.com/webomage/wom7board/issues/343) | P2 | queued | tools | 31 | Unify estate resource governance — just resources audit/prune across simulators, LLM wei |
 | 4 | [T480](/home/aleksei/Projects/!self/w0m/.tasks/T480.md) | [#480](https://github.com/webomage/wom7board/issues/480) | P2 | queued | sdlc | 29 | Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel |
 | 5 | [T486](/home/aleksei/Projects/!self/w0m/.tasks/T486.md) | [#486](https://github.com/webomage/wom7board/issues/486) | P2 | queued | sdlc | 29 | Bring the stale admin/web Gauge specs in line with the current UI, or retire each with a |
-| 6 | [T523](/home/aleksei/Projects/!self/w0m/.tasks/T523.md) | [#523](https://github.com/webomage/wom7board/issues/523) | P2 | queued | sdlc | 28 | The deploy's golden run logs 288 browser errors (503 and 404 on /cdn/news and /cdn/post- |
+| 6 | [T523](/home/aleksei/Projects/!self/w0m/.tasks/T523.md) | [#523](https://github.com/webomage/wom7board/issues/523) | P2 | queued | sdlc | 29 | The deploy's golden run logs 288 browser errors (503 and 404 on /cdn/news and /cdn/post- |
 | 7 | [T14](/home/aleksei/Projects/!self/w0m/.tasks/T14.md) | [#14](https://github.com/webomage/wom7board/issues/14) | P3 | queued | tools | 20 | wom7mlx refresh + Rust Gemma launcher |
 | 8 | [T82](/home/aleksei/Projects/!self/w0m/.tasks/T82.md) | [#82](https://github.com/webomage/wom7board/issues/82) | P3 | queued | ai | 20 | Gemma 4 Rust port (wom7-mlx-rs) |
 | 9 | [T83](/home/aleksei/Projects/!self/w0m/.tasks/T83.md) | [#83](https://github.com/webomage/wom7board/issues/83) | P3 | queued | ai | 20 | Local image generation (wom7mlx) |
@@ -60,18 +60,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/agy-t582-ios-ext` | 0 | **n/a — NO UPSTREAM** | `608e93b4` |
-| `w0m-api` | `agent/agy-t582-ios-ext` | 0 | **n/a — NO UPSTREAM** | `35fb93d` |
-| `w0m-cf` | `agent/agy-t582-ios-ext` | 0 | **n/a — NO UPSTREAM** | `3bc5102` |
-| `w0m-skills` | `agent/agy-t582-ios-ext` | 0 | **n/a — NO UPSTREAM** | `9418339` |
-| `w0m-ext` | `agent/agy-t582-ios-ext` | 0 | **n/a — NO UPSTREAM** | `2e4b860` |
-| `w0m-sec` | `agent/agy-t582-ios-ext` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/agy-t582-ios-ext` | 0 | **n/a — NO UPSTREAM** | `4dcccc1` |
+| `w0m-web` | `agent/agy-t583-visual-guides` | 0 | **n/a — NO UPSTREAM** | `b355534c` |
+| `w0m-api` | `agent/agy-t583-visual-guides` | 0 | **n/a — NO UPSTREAM** | `35fb93d` |
+| `w0m-cf` | `agent/agy-t583-visual-guides` | 0 | **n/a — NO UPSTREAM** | `3bc5102` |
+| `w0m-skills` | `agent/agy-t583-visual-guides` | 0 | **n/a — NO UPSTREAM** | `9418339` |
+| `w0m-ext` | `agent/agy-t583-visual-guides` | 0 | **n/a — NO UPSTREAM** | `2e4b860` |
+| `w0m-sec` | `agent/agy-t583-visual-guides` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
+| `w0m-mlx/w0m-mlx` | `agent/agy-t583-visual-guides` | 0 | **n/a — NO UPSTREAM** | `4dcccc1` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 21 open · 582 TASKS.md rows · 255/582 specced (5/21 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 21 open · 583 TASKS.md rows · 255/583 specced (5/21 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T171","T181","T343","T480","T486","T523","T14","T82","T83","T487"],"repos":{"w0m-api":{"branch":"agent/agy-t582-ios-ext","dirty":0,"has_upstream":true,"head":"35fb93d","unpushed":null},"w0m-cf":{"branch":"agent/agy-t582-ios-ext","dirty":0,"has_upstream":true,"head":"3bc5102","unpushed":null},"w0m-ext":{"branch":"agent/agy-t582-ios-ext","dirty":0,"has_upstream":true,"head":"2e4b860","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-t582-ios-ext","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":null},"w0m-sec":{"branch":"agent/agy-t582-ios-ext","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-t582-ios-ext","dirty":0,"has_upstream":true,"head":"9418339","unpushed":null},"w0m-web":{"branch":"agent/agy-t582-ios-ext","dirty":0,"has_upstream":true,"head":"608e93b4","unpushed":null}},"tickets":{"open":21,"rowless_open":[],"rows":582,"specced":255,"specced_open":5,"total":582,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T171","T181","T343","T480","T486","T523","T14","T82","T83","T487"],"repos":{"w0m-api":{"branch":"agent/agy-t583-visual-guides","dirty":0,"has_upstream":true,"head":"35fb93d","unpushed":null},"w0m-cf":{"branch":"agent/agy-t583-visual-guides","dirty":0,"has_upstream":true,"head":"3bc5102","unpushed":null},"w0m-ext":{"branch":"agent/agy-t583-visual-guides","dirty":0,"has_upstream":true,"head":"2e4b860","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-t583-visual-guides","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":null},"w0m-sec":{"branch":"agent/agy-t583-visual-guides","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-t583-visual-guides","dirty":0,"has_upstream":true,"head":"9418339","unpushed":null},"w0m-web":{"branch":"agent/agy-t583-visual-guides","dirty":0,"has_upstream":true,"head":"b355534c","unpushed":null}},"tickets":{"open":21,"rowless_open":[],"rows":583,"specced":255,"specced_open":5,"total":583,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -123,7 +123,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-10-28 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-10-29 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
