@@ -2,6 +2,21 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.29-1793288100
+_First deployed: 2026-10-29 15:55:43.138096+00_
+
+### Features
+- **root**: add mobile-sync-user-guide scaffolding and close T583 (T583) ([T583](file:///.tasks/T583.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `956cda5` | 2026-10-29 15:55:43.138096+00 |
+| demo | `956cda5` | 2026-10-29 15:54:51.860739+00 |
+| job | `956cda5` | 2026-10-29 15:54:01.639529+00 |
+| join | `956cda5` | 2026-10-29 15:52:37.717883+00 |
+| cp | `956cda5` | 2026-10-29 15:51:25.905757+00 |
+| web | `956cda5` | 2026-10-29 15:47:13.421212+00 |
+
 ## 2026.10.29-1793276295
 _First deployed: 2026-10-29 12:32:38.325101+00_
 
