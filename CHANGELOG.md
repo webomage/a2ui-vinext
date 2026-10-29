@@ -2,6 +2,21 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.29-1793276295
+_First deployed: 2026-10-29 12:32:38.325101+00_
+
+### Features
+- **root**: add --push-ios-ext R2 uploader and close T582 (T582) ([T582](file:///.tasks/T582.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `e724a80` | 2026-10-29 12:32:38.325101+00 |
+| demo | `e724a80` | 2026-10-29 12:31:47.30494+00 |
+| job | `e724a80` | 2026-10-29 12:30:53.207467+00 |
+| join | `e724a80` | 2026-10-29 12:29:11.060199+00 |
+| cp | `e724a80` | 2026-10-29 12:27:51.24364+00 |
+| web | `e724a80` | 2026-10-29 12:25:17.83229+00 |
+
 ## 2026.10.28-1793225231
 _First deployed: 2026-10-28 22:34:03.603021+00_
 
