@@ -2,6 +2,16 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.29-1793314887
+_First deployed: 2026-10-29 23:13:41.079873+00_
+
+### Features
+- **security**: add asterisk password masking for Linux sudo confirm and mobile terminal input (T584) ([T584](file:///.tasks/T584.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `37aa9ec` | 2026-10-29 23:13:41.079873+00 |
+
 ## 2026.10.29-1793312271
 _First deployed: 2026-10-29 22:25:35.577607+00_
 
