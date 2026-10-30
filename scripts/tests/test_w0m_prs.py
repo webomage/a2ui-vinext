@@ -198,7 +198,79 @@ def main() -> int:
             up_clean = w0m_prs.update_fork(Path("/fake/repo"), fetch=False)
             check("update_fork fast-forwards clean branch", up_clean["success"] is True and up_clean["action"] == "fast_forwarded")
 
-    # 8. Skill check
+    # 8. Digest & Rising Projects tests (T583)
+    mock_log_res = MagicMock()
+    mock_log_res.returncode = 0
+    mock_log_res.stdout = "a1b2c3d|Alice|2 days ago|feat(agent): add multi-agent task bus\nb2c3d4e|Bob|3 days ago|fix(ui): resolve layout shift"
+    with patch("w0m_prs.inspect_fork", return_value=mock_info_dict):
+        with patch("w0m_prs.run_cmd", return_value=mock_log_res):
+            repo_digest = w0m_prs.compile_repo_digest(Path("/fake/testrepo"), days=7)
+            check("compile_repo_digest returns paragraph_1 and paragraph_2", bool(repo_digest["paragraph_1"]) and bool(repo_digest["paragraph_2"]))
+            check("compile_repo_digest formats 2-paragraph recent_updates_summary", "\n\n" in repo_digest["recent_updates_summary"])
+            check("compile_repo_digest counts window commits", repo_digest["commits_window_count"] == 2)
+
+    sample_trending_html = """
+    <article class="Box-row">
+      <h2 class="h3 lh-condensed"><a href="/stablyai/orca">stablyai / orca</a></h2>
+      <p class="col-9 color-fg-muted my-1 pr-4">AI Agent Developer Desktop &amp; IDE</p>
+      <span itemprop="programmingLanguage">TypeScript</span>
+      <a href="/stablyai/orca/stargazers"><svg></svg> 4,620 </a>
+      <a href="/stablyai/orca/forks"><svg></svg> 380 </a>
+      <span class="d-inline-block float-sm-right">610 stars this week</span>
+    </article>
+    """
+    parsed_trending = w0m_prs.parse_github_trending_html(sample_trending_html, period="weekly")
+    check("parse_github_trending_html extracts repo", len(parsed_trending) == 1 and parsed_trending[0]["repo"] == "stablyai/orca")
+    check("parse_github_trending_html extracts stars and velocity", parsed_trending[0]["stars"] == 4620 and parsed_trending[0]["velocity_stars"] == 610)
+    check("parse_github_trending_html marks participating repo", parsed_trending[0]["participating"] is True)
+
+    rising_offline = w0m_prs.fetch_rising_projects(period="weekly", limit=6, offline=True)
+    check("fetch_rising_projects offline returns projects list", len(rising_offline["projects"]) == 6)
+    check("fetch_rising_projects includes sources metadata", len(rising_offline["sources"]) >= 3)
+    check("fetch_rising_projects includes star_history_url", all("star-history.com" in p["star_history_url"] for p in rising_offline["projects"]))
+
+    # 8c. Feature Voting & Roadmap Board (T584)
+    check(
+        "compute_issue_vote_score weights reactions",
+        w0m_prs.compute_issue_vote_score(10, 2, 1, 2) == 10 + 2 * 2 + 1 * 2 + 2,
+    )
+    check(
+        "classify_issue_column detects shipped when closed",
+        w0m_prs.classify_issue_column("CLOSED", [], None, []) == "shipped",
+    )
+    check(
+        "classify_issue_column detects in_progress when open PR linked",
+        w0m_prs.classify_issue_column("OPEN", ["enhancement"], None, [{"number": 21157, "state": "OPEN"}]) == "in_progress",
+    )
+    check(
+        "classify_issue_column detects planned with milestone",
+        w0m_prs.classify_issue_column("OPEN", ["enhancement"], "v1.2", []) == "planned",
+    )
+    check(
+        "classify_issue_column defaults to proposed",
+        w0m_prs.classify_issue_column("OPEN", ["enhancement"], None, []) == "proposed",
+    )
+    check(
+        "classify_issue_category tags Agent & AI",
+        w0m_prs.classify_issue_category("Add ZeroClaw agent connector", "MCP skill", ["agent"]) == "Agent & AI",
+    )
+    cleaned_summary = w0m_prs.distill_issue_card_summary(
+        "Preserve effort level",
+        "<kbd>[![Author](https://cdn.discordapp.com/avatars/1.png)](https://discord.com/1)</kbd>\n\nWhen resuming a Claude or Codex session, Orca should preserve the selected reasoning effort level.",
+        ["enhancement"],
+        [{"number": 21157, "state": "OPEN"}],
+    )
+    check(
+        "distill_issue_card_summary strips Discord kbd badge and appends PR",
+        "kbd" not in cleaned_summary and "#21157" in cleaned_summary,
+    )
+    board_offline = w0m_prs.fetch_repo_feature_board(repo="stablyai/orca", limit=15, offline=True)
+    check("fetch_repo_feature_board enforces github_account_required policy", board_offline.get("auth_policy") == "github_account_required")
+    check("fetch_repo_feature_board returns items and 4 columns", len(board_offline.get("items", [])) >= 5 and set(board_offline.get("columns", {}).keys()) == {"proposed", "planned", "in_progress", "shipped"})
+    unauth_vote = w0m_prs.vote_github_issue("stablyai/orca", 190, token="")
+    check("vote_github_issue rejects unauthenticated vote with 401 and github_auth_required", unauth_vote.get("ok") is False and unauth_vote.get("status") == 401 and unauth_vote.get("github_auth_required") is True)
+
+    # 9. Skill check
     skill_md = ROOT / "w0m-skills/skills/w0m-prs/SKILL.md"
     check("w0m-prs SKILL.md exists in w0m-skills", skill_md.is_file())
 

@@ -279,6 +279,18 @@ forks-update *args:
 forks-sync *args:
     @python3 scripts/w0m_prs.py update {{ args }}
 
+prs-digest *args:
+    @python3 scripts/w0m_prs.py digest {{ args }}
+
+prs-rising *args:
+    @python3 scripts/w0m_prs.py rising {{ args }}
+
+prs-features *args:
+    @python3 scripts/w0m_prs.py features {{ args }}
+
+prs-vote *args:
+    @python3 scripts/w0m_prs.py vote {{ args }}
+
 prs-test:
     @python3 scripts/tests/test_w0m_prs.py
 
