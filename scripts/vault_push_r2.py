@@ -255,6 +255,10 @@ def push_vault(s3: Any, vault_meta: dict[str, Any], dry_run: bool) -> tuple[int,
             if rel_path.endswith(".md")
             else "application/json; charset=utf-8"
             if rel_path.endswith(".json")
+            else "image/svg+xml"
+            if rel_path.endswith(".svg")
+            else "image/png"
+            if rel_path.endswith(".png")
             else "application/octet-stream"
         )
         if dry_run:

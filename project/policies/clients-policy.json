@@ -43,7 +43,8 @@
           "mocs/",
           "notes/",
           "sources/",
-          "claims/"
+          "claims/",
+          "assets/"
         ],
         "denied_prefixes": [
           "inbox/",
@@ -71,7 +72,8 @@
           "mocs/",
           "notes/",
           "sources/",
-          "claims/"
+          "claims/",
+          "assets/"
         ],
         "denied_prefixes": [
           "inbox/",
@@ -140,7 +142,8 @@
           "mocs/",
           "notes/",
           "sources/",
-          "claims/"
+          "claims/",
+          "assets/"
         ],
         "denied_prefixes": [
           "inbox/",
@@ -175,7 +178,7 @@
           "paid_tier_option": {
             "plan": "Supabase Pro",
             "monthly_usd": 25,
-            "attributable_formula": "Shared DB row/byte footprint is measurable, but egress (5 GB Free / 250 GB Pro) is unmeasurable via Management API (T229 HTTP 404) — cannot attribute overage per tenant."
+            "attributable_formula": "Shared DB row/byte footprint is measurable, but egress (5 GB Free / 250 GB Pro) is unmeasurable via Management API (T229 HTTP 404) \u2014 cannot attribute overage per tenant."
           }
         },
         {
@@ -220,7 +223,7 @@
           "title": "Telegram Order & Admin Bot (@artemioquierocomer_bot)",
           "category": "messaging",
           "reachability": "external",
-          "external_reason": "TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID live in Artemio's dedicated Infisical workspace (19a35ec3-…) and Cloudflare Worker artemioquierocomer-mx secrets outside cp.webomage.com.",
+          "external_reason": "TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID live in Artemio's dedicated Infisical workspace (19a35ec3-\u2026) and Cloudflare Worker artemioquierocomer-mx secrets outside cp.webomage.com.",
           "attribution_class": "attributable",
           "current_plan": "Telegram Bot API (Free)",
           "monthly_base_usd": 0,
@@ -291,7 +294,8 @@
           "mocs/",
           "notes/",
           "sources/",
-          "claims/"
+          "claims/",
+          "assets/"
         ],
         "denied_prefixes": [
           "inbox/",
@@ -365,7 +369,8 @@
           "mocs/",
           "notes/",
           "sources/",
-          "claims/"
+          "claims/",
+          "assets/"
         ],
         "denied_prefixes": [
           "inbox/",
