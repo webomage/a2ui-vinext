@@ -49,6 +49,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T587](.tasks/T587.md) | **P1** | **Per-Profile Shared Primary CV Links (`/u/[slug]/cv`, `/u/[slug]`, `/team`, `/cv`, `/resume`, and Resume Studio)** | web | — | ✅ **done** |
 | [T586](.tasks/T586.md) | **P1** | **PRs & OSS UI — 2-Paragraph Repo Activity Digest, GitHub Rising Projects Radar & Issue Feature Voting Board** | web | — | ✅ **done** |
 | [T585](.tasks/T585.md) | **P1** | **First-Party Webomage (w0m / eg-w0m) Project Vault, Cloudflare R2 Sync & Knowledge Hub Integration** | web | — | ✅ **done** |
 | [T584](.tasks/T584.md) | **P1** | **Mobile Terminal & Deploy Gate — Asterisk Password Masking & Show/Hide Toggle for Live Input & Linux Sudo Confirm** | web | — | ✅ **done** |
