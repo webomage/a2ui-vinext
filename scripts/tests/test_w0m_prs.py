@@ -37,6 +37,7 @@ def main() -> int:
     check("preset includes mlx-vlm", "Blaizzy/mlx-vlm" in w0m_prs.PRESET_REPOS["w0m-pr"])
     check("preset includes tart", "cirruslabs/tart" in w0m_prs.PRESET_REPOS["w0m-pr"])
     check("preset includes harness2", "google-research/harness2" in w0m_prs.PRESET_REPOS["w0m-pr"])
+    check("preset includes graphify", "Graphify-Labs/graphify" in w0m_prs.PRESET_REPOS["w0m-pr"])
 
     # 2. Search mock
     mock_res = MagicMock()

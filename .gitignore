@@ -91,5 +91,8 @@ project/.tools-weekly-status.json
 .infisical.yaml
 .infisical/
 
+# ── Firecrawl CLI output cache ────────────────────────────────────────────────
+.firecrawl/
+
 
 

@@ -33,6 +33,7 @@ PRESET_REPOS = {
         "headroomlabs-ai/headroom",
         "oraios/serena",
         "google-research/harness2",
+        "Graphify-Labs/graphify",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -45,6 +46,7 @@ PRESET_REPOS = {
         "headroomlabs-ai/headroom",
         "oraios/serena",
         "google-research/harness2",
+        "Graphify-Labs/graphify",
     ],
 }
 
@@ -124,6 +126,7 @@ BOT_LOGINS = {
     "codecov",
     "dependabot",
     "stale",
+    "graphify-labs",
 }
 
 
@@ -241,6 +244,20 @@ def audit_pr(repo: str, pr_number: int) -> Dict[str, Any]:
         return {"error": res.stderr.strip() or "Failed to view PR"}
 
     data = json.loads(res.stdout)
+    # GitHub computes mergeable lazily on first view; retry once if OPEN + UNKNOWN
+    if data.get("state") == "OPEN" and data.get("mergeable") == "UNKNOWN":
+        time.sleep(1.0)
+        retry_res = run_cmd(
+            ["gh", "pr", "view", str(pr_number), "-R", repo, "--json", "mergeable"],
+            check=False,
+        )
+        if retry_res.returncode == 0 and retry_res.stdout.strip():
+            try:
+                retry_data = json.loads(retry_res.stdout)
+                if retry_data.get("mergeable"):
+                    data["mergeable"] = retry_data["mergeable"]
+            except json.JSONDecodeError:
+                pass
     rollup = data.get("statusCheckRollup", []) or []
     ci_status = "PASS"
     for check in rollup:

@@ -22,6 +22,11 @@
       "version": "canonical",
       "observed_version": "2026.07.27-1785131185"
     },
+    "firecrawl": {
+      "provider": "skills.sh",
+      "source": "firecrawl/skills",
+      "version": "unknown"
+    },
     "mmd-validate": {
       "provider": "w0m-native",
       "version": "canonical",
@@ -65,7 +70,7 @@
     "w0m-prs": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.10.26-1793009642"
+      "observed_version": "2026.10.28-1793220550"
     },
     "w0m-sdlc-archive": {
       "provider": "w0m-native",

@@ -1,6 +1,7 @@
 # Standalone Product Research: GitHub-Issue-Backed Feature Voting & Roadmap Board
 
 **Date:** 2026-10-29  
+**Tickets:** [[T586]], [[T588]], [[T591]], [[T592]]  
 **Scope:** Competitive landscape audit, product positioning, and technical architecture for a standalone **GitHub-Issues-as-SSOT Feature Voting Board** (`/<owner>/<repo>`).
 
 ---

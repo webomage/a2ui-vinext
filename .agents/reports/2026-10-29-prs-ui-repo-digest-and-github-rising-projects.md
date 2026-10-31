@@ -1,6 +1,7 @@
 # PRs UI Repo Activity Digest (1–2 Paragraphs) & GitHub Rising Projects Radar
 
 **Date:** 2026-10-29  
+**Tickets:** [[T586]], [[T345]]  
 **Canonical Repo Path:** `.agents/reports/2026-10-29-prs-ui-repo-digest-and-github-rising-projects.md`  
 **Mirrored Docs Path:** `w0m-web/docs/reports/2026-10-29-prs-ui-repo-digest-and-github-rising-projects.md`  
 **Surfaces Covered:** `scripts/w0m_prs.py` (`w0m-prs` skill) · `w0m-web/apps/cp/src/components/profile/ParticipatingProjects.svelte` (`/me/oss`) · `w0m-web/apps/cp/src/components/system/ForksManager.svelte` (`/admin/forks`)

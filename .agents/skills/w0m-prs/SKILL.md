@@ -2,7 +2,7 @@
 name: w0m-prs
 description: GitHub PR discovery, health audit, background polling, and visual reporting tool for w0m and open-source estate. Use when tracking upstream open-source PRs, auditing review decisions and mergeability, monitoring background status updates, or generating publication-grade Markdown reports with validated Mermaid charts.
 metadata:
-  version: "2026.10.26-1793009642"
+  version: "2026.10.28-1793220550"
 ---
 
 # w0m-prs
@@ -113,6 +113,12 @@ just forks-sync       # alias to forks-update
 ```
 
 ## Agent Best Practices
+- **Mandatory `webomage` Org Fork, GPG-Signed Commits (`-S`), and Why / What For / How PR Structure**:
+  - Every upstream PR must originate from the `webomage` organization fork (`github.com/webomage/<repo>`) with 100% GPG-signed commits (`git commit -S` / `git rebase -S`, `Verified` on GitHub).
+  - Every PR body MUST explicitly articulate:
+    1. **Why (Rationale & Problem)**: What breaks, stalls, or requires manual workarounds today, and why existing mechanisms fall short.
+    2. **What For (Use Cases & Value)**: Concrete real-world workflows and who/what benefits from the change.
+    3. **How (Implementation, Invariants & Verification)**: Technical architecture, fail-closed invariants, and exact unit/integration test proof (while preserving any required upstream PR template sections/checklists).
 - **Mandatory upstream pre-flight (prior art & discovery)**: Always search open AND closed PRs and issues (`gh pr list --state all --search "<keywords>"`, `gh issue list --state all --search "<keywords>"`, or `just prs search`) before opening an upstream PR or issue.
   - If an active PR exists, **do not open a duplicate PR** (Zero Redundant PRs principle). Test it, validate behavior, and contribute constructive QA or targeted patches directly on that PR.
   - If stalled/closed PRs exist, inspect why they stalled (unmerged dependency abstractions, CLA blocks, merge conflicts, architecture). Citing them in the PR body is mandatory: state what is superseded, contrast architectural trade-offs upfront (e.g. single vs. companion server), and preemptively address maintainer design concerns.

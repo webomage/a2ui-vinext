@@ -7,7 +7,7 @@
 records it, with the reasoning around it. This page exists to answer *"was this decided,
 or did it just happen?"* without grepping — nothing here is the source of truth.
 
-**379 recorded decision(s)** — 50 structured (AgDR), 329 in place across 169 file(s).
+**378 recorded decision(s)** — 50 structured (AgDR), 328 in place across 168 file(s).
 
 ## Structured records (AgDR)
 
@@ -368,7 +368,6 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-07-28 | [`.tasks/T151.md:352`](../.tasks/T151.md) | - [x] AC7 — ✅ DECIDED 2026-07-28: graphify watch is NOT adopted. Redundant, and the risky shape. |
 | 2026-07-27 | [`.tasks/T150.md:34`](../.tasks/T150.md) | ✅ OWNER DECISION 2026-07-27 — git hooks are LEGACY GIT, not vendor tech |
 | 2026-07-27 | [`.tasks/T150.md:407`](../.tasks/T150.md) | tine path). ~~ DROPPED 2026-07-27 — owner decision, |
-| 2026-07-27 | [`.tasks/T152.md:7`](../.tasks/T152.md) | priority: P2 owner 2026-07-27: OpenCode is P2 |
 | 2026-07-26 | [`.tasks/T127.md:10`](../.tasks/T127.md) | 2026-07-26 by owner decision): this is the "native skills install" half of "w0m skills and tools should be a complete SDLC and management toolset", i.e. the centre of the toolset, not adjacent infra. The old note read "infra tooling; T24 (the survey it complem |
 | 2026-07-25 | [`.tasks/T139.md:27`](../.tasks/T139.md) | entifier ask, split out by explicit owner decision: |
 | 2026-07-24 | [`.tasks/T127.md:49`](../.tasks/T127.md) | Language = TypeScript (owner decision 2026-07-24). The whole skills subsystem is Node/TS |

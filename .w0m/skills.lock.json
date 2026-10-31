@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-10-26T22:51:36.719Z",
+  "generatedAt": "2026-10-28T20:49:12.295Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -169,7 +169,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-prs",
-      "integrity": "sha256-0e3bc2a9b9a1bf0f16b5439880ad1a7c3fbebc6b2c7afa8c1907326f88896e0d"
+      "integrity": "sha256-02e0a15437a2854e6e014172a791751d1b500b29afc4d66ffcd7a694c245d7c8"
     },
     "w0m-ticket-audit": {
       "provider": "w0m-native",
@@ -198,6 +198,14 @@
       "scope": "project",
       "path": ".agents/skills/w0m-pixel-clone",
       "integrity": "sha256-c90e499c6256446b772d22dca2fb2e40569682d871c00e5b2822ee1b9926ac6a"
+    },
+    "firecrawl": {
+      "provider": "skills.sh",
+      "source": "firecrawl/skills",
+      "resolved": "unknown",
+      "scope": "project",
+      "path": ".agents/skills/firecrawl",
+      "integrity": "sha256-dc12b0608437f58b20aff824d09d893db3f83dadd3c5b3bf7cb495152e9144fd"
     }
   }
 }

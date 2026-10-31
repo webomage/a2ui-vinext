@@ -1,6 +1,7 @@
 # w0m Estate — Major Packages, OSS Tools & Enhancement Opportunities Audit
 
 **Date:** 2026-10-30  
+**Tickets:** [[T589]], [[T590]]  
 **Scope:** All 7 estate repositories (`w0m-web`, `w0m-api`, `w0m-cf`, `w0m-ext`, `w0m-sec`, `w0m-skills`, `w0m-mlx`), `project/policies/tools-policy.json` (37 host CLIs), `project/policies/stacks-policy.json` (10 stacks), `.mcp.json`, and `w0m-pr/` (7 upstream OSS forks).
 
 ---
