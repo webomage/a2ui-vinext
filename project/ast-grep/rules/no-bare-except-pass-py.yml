@@ -1,0 +1,10 @@
+id: w0m-no-bare-except-pass-py
+language: Python
+severity: warning
+message: "Avoid bare `except: pass` in Python; catch a specific Exception subclass and document or handle the failure."
+rule:
+  pattern: |
+    try:
+        $$$BODY
+    except:
+        pass

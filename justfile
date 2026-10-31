@@ -128,6 +128,13 @@ diagram *args:
 diagram-test:
     @python3 scripts/tests/test_diagram_view.py
 
+# ── Structural AST Guardrails (T589) ─────────────────────────────────────────
+ast-grep-check *args:
+    @python3 scripts/ast_grep_check.py {{ args }}
+
+ast-grep-test:
+    @python3 scripts/tests/test_ast_grep_check.py
+
 # ── Local Merge Queue & Committer (T425) ──────────────────────────────────────
 [positional-arguments]
 land *args:

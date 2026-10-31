@@ -1,0 +1,6 @@
+id: w0m-no-eval-call-ts
+language: TypeScript
+severity: error
+message: "Never invoke eval() in TypeScript runtime code."
+rule:
+  pattern: eval($ARG)

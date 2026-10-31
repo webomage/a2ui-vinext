@@ -1,0 +1,7 @@
+id: w0m-no-env-fallback-chain
+language: TypeScript
+severity: warning
+message: "Avoid 3+ deep process.env fallback chains (AgDR-0025: Zero Silent Fallbacks). Resolve canonical env configuration once."
+note: "Multi-key environment fallback ladders hide misconfigured secrets across environments."
+rule:
+  pattern: process.env.$A || process.env.$B || process.env.$C

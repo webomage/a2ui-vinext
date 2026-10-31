@@ -1,0 +1,4 @@
+# w0m Estate Structural AST Guardrails (T589 / AgDR-0025)
+# Executed via `just ast-grep-check` (`python3 scripts/ast_grep_check.py`).
+ruleDirs:
+  - project/ast-grep/rules

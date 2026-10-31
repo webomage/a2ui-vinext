@@ -49,6 +49,11 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T592](.tasks/T592.md) | **P1** | **Feature Voting Board — One-Click Supabase GitHub OAuth Voting & Cloudflare Edge SVG Badge Cache** | web | — | ✅ **done** |
+| [T591](.tasks/T591.md) | **P2** | **Webomage Browser Extension (w0m-ext) — GitHub Issue Priority Score Overlay & Agent Spec Drawer** | web | — | ✅ **done** |
+| [T590](.tasks/T590.md) | **P2** | **Graphify MCP v2 (mcp>=1,<3) Compatibility Verification & Estate Tool Policy Alignment** | web | — | ✅ **done** |
+| [T589](.tasks/T589.md) | **P1** | **Structural AST Guardrails — Activate ast-grep with sgconfig.yml, Anti-Pattern Rules, and just ast-grep-check** | web | — | ✅ **done** |
+| [T588](.tasks/T588.md) | **P1** | **MCP & WebMCP Tools for GitHub Feature Voting Board & Repo Activity Digest (@webomage/webmcp)** | web | — | ✅ **done** |
 | [T587](.tasks/T587.md) | **P1** | **Per-Profile Shared Primary CV Links (`/u/[slug]/cv`, `/u/[slug]`, `/team`, `/cv`, `/resume`, and Resume Studio)** | web | — | ✅ **done** |
 | [T586](.tasks/T586.md) | **P1** | **PRs & OSS UI — 2-Paragraph Repo Activity Digest, GitHub Rising Projects Radar & Issue Feature Voting Board** | web | — | ✅ **done** |
 | [T585](.tasks/T585.md) | **P1** | **First-Party Webomage (w0m / eg-w0m) Project Vault, Cloudflare R2 Sync & Knowledge Hub Integration** | web | — | ✅ **done** |
