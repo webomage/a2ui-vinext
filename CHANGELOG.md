@@ -2,6 +2,28 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.10.31-1793464869
+_First deployed: 2026-10-31 18:16:44.686083+00_
+
+### Features
+- **vault**: enable vault assets/ in clients-policy and sync R2 SVG diagrams (T594) ([T594](file:///.tasks/T594.md))
+- **estate**: add graphify preset and mergeable retry to w0m-prs, sync firecrawl skill, and track T593 (T343, T531, T593) ([T593](file:///.tasks/T593.md), [T343](file:///.tasks/T343.md), [T531](file:///.tasks/T531.md))
+- **estate**: activate ast-grep guardrails, align graphify MCP v2 policy, and close T588-T592 (T588, T589, T590, T591, T592) ([T588](file:///.tasks/T588.md), [T592](file:///.tasks/T592.md), [T589](file:///.tasks/T589.md), [T590](file:///.tasks/T590.md), [T591](file:///.tasks/T591.md))
+- **tasks**: complete T587 per-profile shared primary CV links (T587) ([T587](file:///.tasks/T587.md))
+- **prs**: add prs-digest, prs-rising, prs-features, and prs-vote CLI commands (T586) ([T586](file:///.tasks/T586.md))
+- **vault**: declare w0m knowledge_hub in clients-policy and sync eg-w0m to R2 (T585) ([T585](file:///.tasks/T585.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `0ba5a88` | 2026-10-31 18:16:44.686083+00 |
+| demo | `0ba5a88` | 2026-10-31 18:15:26.61044+00 |
+| job | `0ba5a88` | 2026-10-31 18:14:08.080164+00 |
+| join | `0ba5a88` | 2026-10-31 18:11:36.836543+00 |
+| cp | `0ba5a88` | 2026-10-31 18:09:38.879461+00 |
+| web | `0ba5a88` | 2026-10-31 18:05:41.753415+00 |
+| release | `0ba5a88` | 2026-10-31 18:02:15.841431+00 |
+| api | `0ba5a88` | 2026-10-31 18:02:10.392296+00 |
+
 ## 2026.10.29-1793314887
 _First deployed: 2026-10-29 23:13:41.079873+00_
 
