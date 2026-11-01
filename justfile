@@ -405,9 +405,12 @@ schema-check-test:
 do recipe *args:
     @just {{ recipe }} {{ args }}
 
-# Unified w0m CLI entrypoint (tasks, status, vm, k8s, cloud, llm, spec, notify) (T567 AC6 / AgDR-0012)
+# Unified w0m CLI entrypoint (skill, project, agent, tree, session, tasks, status, vm, k8s, cloud, llm, spec, notify) (T567 AC6 / T598 / AgDR-0012)
 w0m *args:
-    @python3 w0m-skills/tools/w0m_portable_cli.py --project "{{ justfile_directory() }}" {{ args }}
+    @python3 scripts/w0m_cli.py --project "{{ justfile_directory() }}" {{ args }}
+
+w0m-cli-test:
+    @python3 scripts/tests/test_w0m_cli.py
 
 # ── Knowledge & Graph ────────────────────────────────────────────────────────
 ask question repo="":

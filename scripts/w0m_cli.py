@@ -1,0 +1,678 @@
+#!/usr/bin/env python3
+"""w0m_cli.py — Unified `w0m` CLI for Skills, Multi-Project, Agent & Session Management (T598).
+
+Provides a single, globally installable `w0m` entrypoint (`~/.local/bin/w0m`) unifying:
+1. `w0m skill` (alias `skills`):
+   - `list [--project <dir>] [--registry] [--json]`
+   - `search <query> [--json]`
+   - `check [--project <dir>]`
+   - `sync [--project <dir>] [--check]`
+   - `add <id> [flags]`, `remove <name>`, `update [name]`, `relock`, `audit`
+2. `w0m project` (alias `projects`):
+   - `list [--orca] [--json]`
+   - `show <id> [--json]`
+   - `check [<id>] [--json]`
+   - `init [<dir>] [--retention]`
+   - `link-remote <dir-or-id> <remote-url>`
+3. `w0m agent`:
+   - `whoami`, `set`, `claim`, `release`, `tag`, `claims`, `rename` (via `agent_identity.py`)
+4. `w0m tree`:
+   - `new`, `list`, `land`, `remove`, `prune` (via `agent_tree.py`)
+5. `w0m session` (alias `sessions`):
+   - `list`, `attach`, `doctor` (via `orca_sessions.py` / `orca terminal`)
+6. `w0m tasks`, `w0m status`, `w0m preflight`, `w0m prs`, `w0m install`.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+from typing import Any
+
+HERE = Path(__file__).resolve()
+ESTATE_ROOT = HERE.parents[1]
+SKILLS_REPO = ESTATE_ROOT / "w0m-skills"
+PORTABLE_CLI = SKILLS_REPO / "tools" / "w0m_portable_cli.py"
+CLIENTS_POLICY = ESTATE_ROOT / "project" / "policies" / "clients-policy.json"
+AGENT_IDENTITY_SCRIPT = ESTATE_ROOT / "w0m-web" / "project" / "scripts" / "agent_identity.py"
+AGENT_TREE_SCRIPT = ESTATE_ROOT / "w0m-web" / "project" / "scripts" / "agent_tree.py"
+ORCA_SESSIONS_SCRIPT = ESTATE_ROOT / "scripts" / "orca_sessions.py"
+TASKS_QUERY_SCRIPT = ESTATE_ROOT / "scripts" / "tasks_query.py"
+PREFLIGHT_SCRIPT = ESTATE_ROOT / "scripts" / "preflight.py"
+PRS_SCRIPT = ESTATE_ROOT / "scripts" / "w0m_prs.py"
+CLIENT_CHECK_SCRIPT = ESTATE_ROOT / "scripts" / "client_check.py"
+CLIENT_INVENTORY_SCRIPT = ESTATE_ROOT / "scripts" / "client_inventory.py"
+
+
+def _load_json(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def _git_remote_origin(repo_dir: Path) -> str:
+    if not (repo_dir / ".git").exists():
+        return ""
+    try:
+        res = subprocess.run(
+            ["git", "-C", str(repo_dir), "remote", "get-url", "origin"],
+            capture_output=True,
+            text=True,
+            timeout=3,
+        )
+        return res.stdout.strip() if res.returncode == 0 else ""
+    except (OSError, subprocess.SubprocessError):
+        return ""
+
+
+def derive_orca_project_id(remote_url: str, fallback_id: str = "local") -> str:
+    """Derive canonical Orca project ID (`github:<owner>/<repo>`, `git:<key>`, or `repo:<id>`) from git remote."""
+    raw = remote_url.strip()
+    if not raw:
+        return f"repo:{fallback_id}"
+    # Match github.com[:/]owner/repo(.git)
+    m_gh = re.search(r"github\.com[:/]([^/]+)/([^/\s]+?)(?:\.git)?$", raw, re.IGNORECASE)
+    if m_gh:
+        return f"github:{m_gh.group(1)}/{m_gh.group(2)}"
+    # Generic git host/path
+    m_git = re.search(r"(?:@|https?://)([^:/]+)[:/](.+?)(?:\.git)?$", raw)
+    if m_git:
+        host = m_git.group(1).lower()
+        path = m_git.group(2).strip("/")
+        return f"git:{host}/{path}"
+    return f"repo:{fallback_id}"
+
+
+def _extract_skill_description(skill_md: Path) -> str:
+    if not skill_md.is_file():
+        return ""
+    try:
+        text = skill_md.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ""
+    if text.startswith("---\n"):
+        end = text.find("\n---", 4)
+        if end != -1:
+            fm = text[4:end]
+            for line in fm.splitlines():
+                m = re.match(r"^description:\s*(.+)$", line.strip())
+                if m:
+                    return m.group(1).strip().strip("\"'")
+    for line in text.splitlines():
+        s = line.strip()
+        if s and not s.startswith("#") and not s.startswith("---"):
+            return s[:120]
+    return ""
+
+
+# ── 1. `w0m skill` ───────────────────────────────────────────────────────────
+
+
+def skill_list_data(
+    project_dir: Path,
+    *,
+    include_registry: bool = False,
+    skills_repo: Path = SKILLS_REPO,
+) -> dict[str, Any]:
+    proj = project_dir.resolve()
+    manifest_path = proj / ".w0m" / "skills.json"
+    lock_path = proj / ".w0m" / "skills.lock.json"
+    manifest = _load_json(manifest_path)
+    lock = _load_json(lock_path)
+
+    declared_raw = manifest.get("skills") if isinstance(manifest.get("skills"), dict) else {}
+    locked_raw = lock.get("skills") if isinstance(lock.get("skills"), dict) else {}
+    excluded_raw = manifest.get("exclude") if isinstance(manifest.get("exclude"), dict) else {}
+
+    rows: list[dict[str, Any]] = []
+    all_names = sorted(set(declared_raw.keys()) | set(locked_raw.keys()))
+    for name in all_names:
+        dec = declared_raw.get(name) if isinstance(declared_raw.get(name), dict) else {}
+        lck = locked_raw.get(name) if isinstance(locked_raw.get(name), dict) else {}
+        rows.append(
+            {
+                "name": name,
+                "provider": dec.get("provider") or lck.get("provider") or "unknown",
+                "version": dec.get("version") or lck.get("resolved") or "*",
+                "locked": bool(lck),
+                "integrity": (lck.get("integrity") or "")[:19],
+                "path": lck.get("path") or f".agents/skills/{name}",
+            }
+        )
+
+    out: dict[str, Any] = {
+        "project": manifest.get("project") or proj.name,
+        "project_dir": str(proj),
+        "manifest_exists": manifest_path.is_file(),
+        "lockfile_exists": lock_path.is_file(),
+        "declared_count": len(declared_raw),
+        "locked_count": len(locked_raw),
+        "excluded_count": len(excluded_raw),
+        "skills": rows,
+    }
+
+    if include_registry:
+        reg_data = _load_json(skills_repo / "skills-registry.json")
+        reg_skills = reg_data.get("skills") if isinstance(reg_data.get("skills"), dict) else {}
+        canonical: list[dict[str, Any]] = []
+        for sname, sinfo in sorted(reg_skills.items()):
+            info = sinfo if isinstance(sinfo, dict) else {}
+            desc = _extract_skill_description(skills_repo / "skills" / sname / "SKILL.md")
+            canonical.append(
+                {
+                    "name": sname,
+                    "origin": info.get("origin", "unknown"),
+                    "version": info.get("version", ""),
+                    "upstream": info.get("upstream", ""),
+                    "description": desc,
+                }
+            )
+        out["canonical_registry"] = canonical
+        out["canonical_count"] = len(canonical)
+
+    return out
+
+
+def skill_search_data(query: str, *, skills_repo: Path = SKILLS_REPO) -> list[dict[str, Any]]:
+    q = query.strip().lower()
+    reg_data = _load_json(skills_repo / "skills-registry.json")
+    reg_skills = reg_data.get("skills") if isinstance(reg_data.get("skills"), dict) else {}
+    skills_dir = skills_repo / "skills"
+
+    candidates = set(reg_skills.keys())
+    if skills_dir.is_dir():
+        for d in skills_dir.iterdir():
+            if d.is_dir() and (d / "SKILL.md").is_file():
+                candidates.add(d.name)
+
+    matches: list[dict[str, Any]] = []
+    for name in sorted(candidates):
+        info = reg_skills.get(name) if isinstance(reg_skills.get(name), dict) else {}
+        desc = _extract_skill_description(skills_dir / name / "SKILL.md")
+        haystack = f"{name} {info.get('origin', '')} {info.get('upstream', '')} {desc}".lower()
+        if not q or q in haystack:
+            matches.append(
+                {
+                    "name": name,
+                    "origin": info.get("origin", "w0m-native"),
+                    "version": info.get("version", ""),
+                    "description": desc,
+                }
+            )
+    return matches
+
+
+def _run_tsx_or_fallback(ts_file: Path, ts_args: list[str], cwd: Path) -> int:
+    tsx_bin = shutil.which("tsx") or str(SKILLS_REPO / "node_modules" / ".bin" / "tsx")
+    if Path(tsx_bin).is_file() or shutil.which("tsx"):
+        res = subprocess.run([tsx_bin, str(ts_file), *ts_args], cwd=str(cwd))
+        return res.returncode
+    pnpm_bin = shutil.which("pnpm")
+    if pnpm_bin and (SKILLS_REPO / "package.json").is_file():
+        res = subprocess.run(
+            [pnpm_bin, "--dir", str(SKILLS_REPO), "exec", "tsx", str(ts_file), *ts_args],
+            cwd=str(cwd),
+        )
+        return res.returncode
+    print(f"[ERR] tsx runtime not found to execute {ts_file}", file=sys.stderr)
+    return 2
+
+
+def handle_skill(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser(prog="w0m skill", description="Manage w0m skills, manifests, and sync surfaces")
+    ap.add_argument("subcmd", nargs="?", default="list", help="list | search | check | sync | add | remove | update | relock | audit")
+    ap.add_argument("rest", nargs=argparse.REMAINDER)
+    ap.add_argument("--project", default=None, help="Target project directory (default: cwd)")
+    ap.add_argument("--registry", action="store_true", help="Include canonical w0m-skills registry in list")
+    ap.add_argument("--check", action="store_true", help="Verify sync without writing (for `sync`)")
+    ap.add_argument("--json", action="store_true", help="Emit JSON output")
+    args = ap.parse_args(argv)
+
+    proj = Path(args.project).resolve() if args.project else Path.cwd().resolve()
+    sub = args.subcmd.lower()
+
+    if sub == "list":
+        data = skill_list_data(proj, include_registry=args.registry)
+        if args.json:
+            print(json.dumps(data, indent=2))
+            return 0
+        print(
+            f"▶ Project Skills ({data['project']} @ {data['project_dir']}): "
+            f"{data['declared_count']} declared, {data['locked_count']} locked, {data['excluded_count']} excluded"
+        )
+        for s in data["skills"]:
+            lock_badge = "locked" if s["locked"] else "UNLOCKED"
+            print(f"  • {s['name']:<28} {s['provider']:<12} {s['version']:<18} [{lock_badge}] {s['integrity']}")
+        if args.registry and "canonical_registry" in data:
+            print(f"\n▶ Canonical w0m-skills Registry ({data['canonical_count']} skills):")
+            for c in data["canonical_registry"]:
+                print(f"  • {c['name']:<28} {c['origin']:<12} {c['description'][:68]}")
+        return 0
+
+    if sub == "search":
+        q = " ".join(r for r in args.rest if not r.startswith("-")).strip()
+        matches = skill_search_data(q)
+        if args.json:
+            print(json.dumps({"query": q, "count": len(matches), "matches": matches}, indent=2))
+            return 0
+        print(f"▶ Skill Search '{q}' ({len(matches)} match(es)):")
+        for m in matches:
+            print(f"  • {m['name']:<28} [{m['origin']}] {m['description'][:72]}")
+        return 0
+
+    if sub == "sync":
+        sync_args: list[str] = []
+        if args.check or "--check" in args.rest:
+            sync_args.append("--check")
+        return _run_tsx_or_fallback(SKILLS_REPO / "skills.ts", sync_args, ESTATE_ROOT)
+
+    if sub == "audit":
+        return _run_tsx_or_fallback(SKILLS_REPO / "skill_audit.ts", args.rest, SKILLS_REPO)
+
+    if sub == "check":
+        if PORTABLE_CLI.is_file() and not shutil.which("tsx") and not (SKILLS_REPO / "node_modules" / ".bin" / "tsx").is_file():
+            res = subprocess.run([sys.executable, str(PORTABLE_CLI), "--project", str(proj), "skill-check"])
+            return res.returncode
+        return _run_tsx_or_fallback(
+            SKILLS_REPO / "w0m_skill.ts",
+            ["check", "--project", str(proj), *args.rest],
+            proj,
+        )
+
+    if sub in ("add", "remove", "update", "relock"):
+        return _run_tsx_or_fallback(
+            SKILLS_REPO / "w0m_skill.ts",
+            [sub, *args.rest, "--project", str(proj)],
+            proj,
+        )
+
+    print(f"[ERR] Unknown `w0m skill` subcommand '{sub}'.", file=sys.stderr)
+    return 2
+
+
+# ── 2. `w0m project` ─────────────────────────────────────────────────────────
+
+
+def _primary_estate_root(estate_root: Path) -> Path:
+    """Resolve the primary checkout root when running inside a `~/.w0m/work/<set>/w0m` worktree."""
+    try:
+        res = subprocess.run(
+            ["git", "-C", str(estate_root), "rev-parse", "--path-format=absolute", "--git-common-dir"],
+            capture_output=True,
+            text=True,
+            timeout=3,
+        )
+        if res.returncode == 0 and res.stdout.strip():
+            common_parent = Path(res.stdout.strip()).resolve().parent
+            if common_parent.is_dir():
+                return common_parent
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return estate_root.resolve()
+
+
+def project_list_data(
+    *,
+    estate_root: Path = ESTATE_ROOT,
+    policy_path: Path | None = None,
+    extra_proj_Root: Path | None = None,
+) -> list[dict[str, Any]]:
+    pol_file = policy_path or (estate_root / "project" / "policies" / "clients-policy.json")
+    pol = _load_json(pol_file)
+    declared = pol.get("projects") if isinstance(pol.get("projects"), list) else []
+    primary_root = _primary_estate_root(estate_root)
+
+    rows: list[dict[str, Any]] = []
+    seen_roots: set[Path] = set()
+
+    for p in declared:
+        if not isinstance(p, dict) or not p.get("id"):
+            continue
+        pid = str(p["id"])
+        raw_root = str(p.get("root", "."))
+        abs_root = (estate_root / raw_root).resolve()
+        if not abs_root.is_dir() and primary_root != estate_root.resolve():
+            alt_root = (primary_root / raw_root).resolve()
+            if alt_root.is_dir():
+                abs_root = alt_root
+        seen_roots.add(abs_root)
+        exists = abs_root.is_dir()
+        remote = _git_remote_origin(abs_root) if exists else ""
+        if not remote and isinstance(p.get("vcs"), dict) and p["vcs"].get("repo"):
+            remote = f"git@github.com:{p['vcs']['repo']}.git"
+        elif not remote and p.get("org_slug") and p.get("project_slug") and pid == "w0m":
+            remote = f"git@github.com:{p['org_slug']}/{p['project_slug']}.git"
+
+        skills_manifest = _load_json(abs_root / ".w0m" / "skills.json") if exists else {}
+        skills_count = len(skills_manifest.get("skills", {})) if isinstance(skills_manifest.get("skills"), dict) else 0
+        sdlc_exists = (abs_root / ".w0m" / "sdlc.json").is_file() if exists else False
+        runtime = p.get("runtime") if isinstance(p.get("runtime"), dict) else {}
+
+        rows.append(
+            {
+                "id": pid,
+                "role": str(p.get("role", "managed")),
+                "enabled": bool(p.get("enabled", True)),
+                "root": str(abs_root),
+                "exists": exists,
+                "substrate": str(runtime.get("substrate", "host")),
+                "git_remote": remote,
+                "orca_project_id": derive_orca_project_id(remote, fallback_id=pid),
+                "skills_count": skills_count,
+                "has_sdlc_json": sdlc_exists,
+            }
+        )
+
+    # Also scan sibling !proj directory for local checkouts not yet in clients-policy.json (e.g. pandatransfer)
+    proj_scan = (
+        extra_proj_Root
+        if extra_proj_Root is not None
+        else (primary_root.parents[1] / "!proj" if len(primary_root.parents) >= 2 else None)
+    )
+    if proj_scan and proj_scan.is_dir():
+        for child in sorted(proj_scan.iterdir()):
+            if not child.is_dir() or child.name.startswith("."):
+                continue
+            resolved_child = child.resolve()
+            if resolved_child in seen_roots:
+                continue
+            if not (resolved_child / ".git").exists():
+                continue
+            remote = _git_remote_origin(resolved_child)
+            skills_manifest = _load_json(resolved_child / ".w0m" / "skills.json")
+            skills_count = len(skills_manifest.get("skills", {})) if isinstance(skills_manifest.get("skills"), dict) else 0
+            rows.append(
+                {
+                    "id": child.name.lower(),
+                    "role": "local-checkout",
+                    "enabled": True,
+                    "root": str(resolved_child),
+                    "exists": True,
+                    "substrate": "host",
+                    "git_remote": remote,
+                    "orca_project_id": derive_orca_project_id(remote, fallback_id=child.name.lower()),
+                    "skills_count": skills_count,
+                    "has_sdlc_json": (resolved_child / ".w0m" / "sdlc.json").is_file(),
+                }
+            )
+
+    return rows
+
+
+def link_project_remote(
+    target: str,
+    remote_url: str,
+    *,
+    estate_root: Path = ESTATE_ROOT,
+    policy_path: Path | None = None,
+) -> dict[str, Any]:
+    """Set or update the `origin` Git remote on a project directory or project ID so Orca merges it across hosts."""
+    projects = project_list_data(estate_root=estate_root, policy_path=policy_path)
+    by_id = {p["id"]: p for p in projects}
+    if target in by_id:
+        repo_dir = Path(by_id[target]["root"])
+    else:
+        repo_dir = Path(target).expanduser().resolve()
+
+    if not (repo_dir / ".git").exists():
+        raise ValueError(f"Target '{repo_dir}' is not a Git repository.")
+
+    existing = _git_remote_origin(repo_dir)
+    if existing:
+        res = subprocess.run(
+            ["git", "-C", str(repo_dir), "remote", "set-url", "origin", remote_url.strip()],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    else:
+        res = subprocess.run(
+            ["git", "-C", str(repo_dir), "remote", "add", "origin", remote_url.strip()],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    if res.returncode != 0:
+        raise RuntimeError(f"git remote update failed: {(res.stderr or res.stdout).strip()}")
+
+    updated_remote = _git_remote_origin(repo_dir)
+    return {
+        "root": str(repo_dir),
+        "previous_remote": existing,
+        "git_remote": updated_remote,
+        "orca_project_id": derive_orca_project_id(updated_remote, fallback_id=repo_dir.name),
+    }
+
+
+def handle_project(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser(prog="w0m project", description="Manage estate and client projects, SDLC contracts, and Orca project identity")
+    ap.add_argument("subcmd", nargs="?", default="list", help="list | show | check | init | link-remote")
+    ap.add_argument("rest", nargs=argparse.REMAINDER)
+    ap.add_argument("--retention", action="store_true", help="Also initialize state retention during `init`")
+    ap.add_argument("--json", action="store_true", help="Emit JSON output")
+    args = ap.parse_args(argv)
+
+    sub = args.subcmd.lower()
+    if sub == "list":
+        rows = project_list_data()
+        if args.json:
+            print(json.dumps({"projects": rows}, indent=2))
+            return 0
+        print(f"▶ w0m Projects & Workspaces ({len(rows)} total):")
+        print(f"  {'ID':<15} {'ROLE':<15} {'LOCAL':<6} {'SKILLS':<7} {'SDLC':<5} {'ORCA PROJECT ID':<34} {'ROOT'}")
+        for r in rows:
+            loc = "yes" if r["exists"] else "no"
+            sdlc = "yes" if r["has_sdlc_json"] else "no"
+            print(
+                f"  {r['id']:<15} {r['role']:<15} {loc:<6} {r['skills_count']:<7} "
+                f"{sdlc:<5} {r['orca_project_id']:<34} {r['root']}"
+            )
+        return 0
+
+    if sub == "show":
+        if not args.rest:
+            print("[ERR] Usage: w0m project show <project-id>", file=sys.stderr)
+            return 2
+        target_id = args.rest[0].strip()
+        rows = project_list_data()
+        found = next((r for r in rows if r["id"] == target_id), None)
+        if not found:
+            print(f"[ERR] Unknown project '{target_id}'. Run `w0m project list`.", file=sys.stderr)
+            return 2
+        if args.json or "--json" in args.rest:
+            print(json.dumps(found, indent=2))
+        else:
+            for k, v in found.items():
+                print(f"{k:<18}: {v}")
+        return 0
+
+    if sub == "check":
+        target_args = [a for a in args.rest if a != "--json"]
+        if args.json or "--json" in args.rest:
+            target_args.append("--json")
+        if target_args and not target_args[0].startswith("-"):
+            res = subprocess.run([sys.executable, str(CLIENT_CHECK_SCRIPT), *target_args], cwd=str(ESTATE_ROOT))
+        else:
+            res = subprocess.run([sys.executable, str(CLIENT_INVENTORY_SCRIPT), *target_args], cwd=str(ESTATE_ROOT))
+        return res.returncode
+
+    if sub == "init":
+        target_dir = Path(args.rest[0]).resolve() if args.rest and not args.rest[0].startswith("-") else Path.cwd().resolve()
+        rc = subprocess.run([sys.executable, str(PORTABLE_CLI), "--project", str(target_dir), "init"]).returncode
+        if rc == 0 and (args.retention or "--retention" in args.rest):
+            rc = subprocess.run([sys.executable, str(PORTABLE_CLI), "--project", str(target_dir), "init-retention"]).returncode
+        return rc
+
+    if sub == "link-remote":
+        clean_rest = [a for a in args.rest if a != "--json"]
+        if len(clean_rest) < 2:
+            print("[ERR] Usage: w0m project link-remote <project-id-or-dir> <git-remote-url>", file=sys.stderr)
+            return 2
+        try:
+            info = link_project_remote(clean_rest[0], clean_rest[1])
+        except (ValueError, RuntimeError) as exc:
+            print(f"[ERR] {exc}", file=sys.stderr)
+            return 2
+        if args.json or "--json" in args.rest:
+            print(json.dumps(info, indent=2))
+        else:
+            print(f"[OK] Linked {info['root']} -> {info['git_remote']} (Orca ID: {info['orca_project_id']})")
+        return 0
+
+    print(f"[ERR] Unknown `w0m project` subcommand '{sub}'.", file=sys.stderr)
+    return 2
+
+
+# ── 3. `w0m install` ─────────────────────────────────────────────────────────
+
+
+def install_w0m_shim(bin_dir: Path | None = None, *, target_script: Path = HERE) -> Path:
+    dest_dir = (bin_dir or (Path.home() / ".local" / "bin")).expanduser().resolve()
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    shim = dest_dir / "w0m"
+    content = (
+        "#!/bin/sh\n"
+        f"# Auto-generated by w0m_cli.py (T598)\n"
+        f'exec python3 "{target_script}" "$@"\n'
+    )
+    shim.write_text(content, encoding="utf-8")
+    shim.chmod(0o755)
+    return shim
+
+
+# ── 4. Top-Level Dispatcher ──────────────────────────────────────────────────
+
+
+HELP_TEXT = """\
+w0m — Unified CLI for Skills, Projects, Virtual Agents & Multi-Host Sessions (T598)
+
+Usage:
+  w0m <group> [subcommand] [options]
+
+Command Groups:
+  skill, skills      Manage project & canonical skills (`list`, `search`, `check`, `sync`, `add`, `remove`, `update`, `relock`, `audit`)
+  project, projects  Manage estate & client projects (`list`, `show`, `check`, `init`, `link-remote`)
+  agent              Virtual Agent ID, ticket claims & Orca tab naming (`whoami`, `claim`, `rename`, `release`, `tag`, `claims`)
+  tree               Isolated agent worktree sets (`new`, `list`, `land`, `remove`, `prune`)
+  session, sessions  Multi-host Orca agent sessions (`list`, `attach`, `hosts`)
+  tasks              Query ranked w0m ticket queue (`hot`, `sdlc`, `plan`, `board`, `wip`)
+  status             Consolidated portable project status
+  preflight          Run estate preflight checks (`--fast`)
+  prs                Audit upstream open-source PRs (`w0m-pr/`)
+  vm, k8s, cloud     Portable infrastructure & FinOps commands (`w0m_portable_cli.py`)
+  llm, spec, notify  Portable LLM, OpenSpec & Telegram telemetry commands (`w0m_portable_cli.py`)
+  install            Install `~/.local/bin/w0m` executable shim on PATH
+"""
+
+PORTABLE_PASSTHROUGH_SUBCOMMANDS = frozenset({
+    "vm",
+    "k8s",
+    "cloud",
+    "llm",
+    "spec",
+    "notify",
+    "lessons",
+    "state-brief",
+    "state-check",
+    "state-save",
+    "state-rotate",
+    "state-bounds",
+    "skill-check",
+    "sync-tickets",
+    "init",
+    "init-retention",
+})
+
+
+def main(argv: list[str] | None = None) -> int:
+    raw_args = list(sys.argv[1:] if argv is None else argv)
+    if not raw_args or raw_args[0] in ("-h", "--help", "help"):
+        print(HELP_TEXT)
+        return 0
+
+    # Support optional leading `--project <dir>` or `--project=<dir>` before the command group
+    project_override: str | None = None
+    cleaned_args: list[str] = []
+    i = 0
+    while i < len(raw_args):
+        tok = raw_args[i]
+        if tok == "--project" and i + 1 < len(raw_args):
+            project_override = raw_args[i + 1]
+            i += 2
+            continue
+        if tok.startswith("--project="):
+            project_override = tok.split("=", 1)[1]
+            i += 1
+            continue
+        cleaned_args.append(tok)
+        i += 1
+
+    if not cleaned_args:
+        print(HELP_TEXT)
+        return 0
+
+    group = cleaned_args[0].lower()
+    rest = cleaned_args[1:]
+    proj_dir = project_override or str(Path.cwd())
+
+    if group in ("skill", "skills"):
+        if project_override and "--project" not in rest:
+            rest = [*rest, "--project", project_override]
+        return handle_skill(rest)
+
+    if group in ("project", "projects"):
+        return handle_project(rest)
+
+    if group == "agent":
+        return subprocess.run([sys.executable, str(AGENT_IDENTITY_SCRIPT), *rest]).returncode
+
+    if group == "tree":
+        return subprocess.run([sys.executable, str(AGENT_TREE_SCRIPT), *rest]).returncode
+
+    if group in ("session", "sessions"):
+        if ORCA_SESSIONS_SCRIPT.is_file():
+            return subprocess.run([sys.executable, str(ORCA_SESSIONS_SCRIPT), *rest]).returncode
+        print("[ERR] scripts/orca_sessions.py not found in this checkout.", file=sys.stderr)
+        return 2
+
+    if group == "tasks":
+        if project_override and Path(project_override).resolve() != ESTATE_ROOT.resolve():
+            return subprocess.run([sys.executable, str(PORTABLE_CLI), "--project", proj_dir, "tasks", *rest]).returncode
+        return subprocess.run([sys.executable, str(TASKS_QUERY_SCRIPT), *rest], cwd=str(ESTATE_ROOT)).returncode
+
+    if group == "status":
+        return subprocess.run([sys.executable, str(PORTABLE_CLI), "--project", proj_dir, "status", *rest]).returncode
+
+    if group in PORTABLE_PASSTHROUGH_SUBCOMMANDS:
+        return subprocess.run([sys.executable, str(PORTABLE_CLI), "--project", proj_dir, group, *rest]).returncode
+
+    if group == "preflight":
+        return subprocess.run([sys.executable, str(PREFLIGHT_SCRIPT), *rest], cwd=str(ESTATE_ROOT)).returncode
+
+    if group == "prs":
+        return subprocess.run([sys.executable, str(PRS_SCRIPT), *rest], cwd=str(ESTATE_ROOT)).returncode
+
+    if group == "install":
+        ap = argparse.ArgumentParser(prog="w0m install")
+        ap.add_argument("--bin-dir", default=None, help="Directory to install `w0m` shim (default: ~/.local/bin)")
+        a = ap.parse_args(rest)
+        shim = install_w0m_shim(Path(a.bin_dir) if a.bin_dir else None)
+        print(f"[OK] Installed w0m CLI shim at {shim}")
+        return 0
+
+    print(f"[ERR] Unknown w0m command group '{group}'. Run `w0m --help`.", file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
