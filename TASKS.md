@@ -41,7 +41,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T368](project/tickets/T368.md) | P3 | 🆕 **Research Apple Silicon native microVM containerization (`apple/container`), compose orchestration, and GUI tooling** 🆕 filed 2026-09-17 per owner directive: *"let's make P2 ticket with research for this and include research for tools (Container-Compose, Orchard / Contained / ContainerUI)"*. Evaluates Apple's open-source `apple/container` microVM framework as a lightweight alternative to full VM boot via Tart for ephemeral Linux workloads on Apple Silicon. Investigates sub-second (<500ms) startup and dynamic RAM bounding, multi-container orchestration compatibility via `Container-Compose` and `Opossum`, native macOS monitoring GUIs (`Orchard`, `Contained`, `ContainerUI`), and formalizes the w0m substrate boundary separating Tart (full macOS/Linux desktop sandboxes) from Apple Container (ephemeral Linux code runners). **5 ACs.** | infra, tooling, research, web | ROADMAP §13; [[T296]], [[T297]], [[T343]], [[T365]] | 💤 **paused** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | P3 | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 💤 **paused** |
-| [T593](.tasks/T593.md) | P3 | **Re-check Orca Mobile dark/light mode override PRs (#19599, #10421, #25278) and maintain open w0m-pr upstream PRs** | tooling, skills | w0m-skills/skills/w0m-prs/SKILL.md | 💤 **paused** |
 
 ## COMPLETED (recent done)
 
@@ -53,6 +52,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T596](.tasks/T596.md) | **P1** | 🆕 **Multi-host Orca instance and agent session orchestration across macOS and Linux boxes** | tooling, skills | — | ✅ **done** |
 | [T595](.tasks/T595.md) | **P1** | **Standardize cross-platform toolchain on Homebrew with LTS floors, latest comparison, and Node 26 alignment (AgDR-0052)** | web, api, cf | — | ✅ **done** |
 | [T594](.tasks/T594.md) | **P1** | **Per-project UI Screens & Workflows User Guides with visual SVG diagrams in all 5 Obsidian vaults (w0m, 1945, artemio, servicios777, personaje0)** | web, api, tooling | — | ✅ **done** |
+| [T593](.tasks/T593.md) | P3 | **Re-check Orca Mobile dark/light mode override PRs (#19599, #10421, #25278) and maintain open w0m-pr upstream PRs** | tooling, skills | w0m-skills/skills/w0m-prs/SKILL.md | ✅ **done** |
 | [T592](.tasks/T592.md) | **P1** | **Feature Voting Board — One-Click Supabase GitHub OAuth Voting & Cloudflare Edge SVG Badge Cache** | web | — | ✅ **done** |
 | [T591](.tasks/T591.md) | **P2** | **Webomage Browser Extension (w0m-ext) — GitHub Issue Priority Score Overlay & Agent Spec Drawer** | web | — | ✅ **done** |
 | [T590](.tasks/T590.md) | **P2** | **Graphify MCP v2 (mcp>=1,<3) Compatibility Verification & Estate Tool Policy Alignment** | web | — | ✅ **done** |

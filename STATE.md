@@ -26,8 +26,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 19 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **19** are
+> ⚠️ **0 of 18 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **18** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -48,18 +48,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/agy-t480` | 0 | **n/a — NO UPSTREAM** | `18f4faee` |
-| `w0m-api` | `agent/agy-t480` | 0 | **n/a — NO UPSTREAM** | `5e4918c` |
-| `w0m-cf` | `agent/agy-t480` | **2** | **n/a — NO UPSTREAM** | `80bada3` |
-| `w0m-skills` | `agent/agy-t480` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
-| `w0m-ext` | `agent/agy-t480` | 0 | **n/a — NO UPSTREAM** | `2ec4f71` |
-| `w0m-sec` | `agent/agy-t480` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/agy-t480` | 0 | **n/a — NO UPSTREAM** | `4dcccc1` |
+| `w0m-web` | `agent/agy-t593` | 0 | **n/a — NO UPSTREAM** | `18f4faee` |
+| `w0m-api` | `agent/agy-t593` | 0 | **n/a — NO UPSTREAM** | `2e5d25b` |
+| `w0m-cf` | `agent/agy-t593` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
+| `w0m-skills` | `agent/agy-t593` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
+| `w0m-ext` | `agent/agy-t593` | 0 | **n/a — NO UPSTREAM** | `2ec4f71` |
+| `w0m-sec` | `agent/agy-t593` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
+| `w0m-mlx/w0m-mlx` | `agent/agy-t593` | 0 | **n/a — NO UPSTREAM** | `4dcccc1` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 19 open · 599 TASKS.md rows · 262/599 specced (6/19 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 18 open · 599 TASKS.md rows · 262/599 specced (5/18 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T569","T486","T487","T17"],"repos":{"w0m-api":{"branch":"agent/agy-t480","dirty":0,"has_upstream":true,"head":"5e4918c","unpushed":null},"w0m-cf":{"branch":"agent/agy-t480","dirty":2,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/agy-t480","dirty":0,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-t480","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":null},"w0m-sec":{"branch":"agent/agy-t480","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-t480","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-t480","dirty":0,"has_upstream":true,"head":"18f4faee","unpushed":null}},"tickets":{"open":19,"rowless_open":[],"rows":599,"specced":262,"specced_open":6,"total":599,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T569","T486","T487","T17"],"repos":{"w0m-api":{"branch":"agent/agy-t593","dirty":0,"has_upstream":true,"head":"2e5d25b","unpushed":null},"w0m-cf":{"branch":"agent/agy-t593","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/agy-t593","dirty":0,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-t593","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":null},"w0m-sec":{"branch":"agent/agy-t593","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-t593","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-t593","dirty":0,"has_upstream":true,"head":"18f4faee","unpushed":null}},"tickets":{"open":18,"rowless_open":[],"rows":599,"specced":262,"specced_open":5,"total":599,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -122,10 +122,11 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T569** — Apple Silicon omlx live latency benchmark & 4-bit MLX quantization for Laya / Kev / Jev System One adapters
   - **2026-11-01** (today): AC1, AC2, AC3 completed on Apple M1 Max Metal (agy:agy-t569); AC4 prepared for owner confirmation. Quantized LiquidAI/LFM2.5-1.2B-Thinking (628 MB) and Qwen/Qwen3.5-0.8B-Base (404 MB) to 4-bit MLX; executed live 100-ticket Metal GPU benchmarks for laya-mlx-serve 0.6.0 (P50: 120.12 ms, P95: 141.13 ms, ECE: 0.0944, Macro-F1: 0.5719) and omlx (P50: 312.17 ms, P95: 338.92 ms); forked mizorewww/laya-mlx to webomage/laya-mlx (w0m-pr/laya-mlx), authored and GPG-signed commit baeb7b0 (tests/test_serve.py, torchless NumPy temperature calibration fallback in laya_mlx/calibrate.py, lazy rich import in experiments/snake_runtime.py), verified 290 passed, 0 failed on M1 Max Metal, and pushed fix/native-serve-tests-and-torchless-calibration to origin.
 
-#### Completed today (7):
+#### Completed today (8):
 
 - **T171** — w0m planner/scheduler for batched Claude Code tasks in dev sandboxes — prove the unit before building the fleet (Grounded AC1, AC5, and AC6 against Orca AutomationService, orca orchestration federated DAGs, and Google AX (ax.io/v1alpha1) in [.agents/reports/2026-11-01-orca-multi-host-tasks-automations-and-google-ax-architecture.md](../.agents/reports/2026-11-01-orca-multi-host-tasks-automations-and-google-ax-architecture.md))
 - **T564** — Virtual agent identity (agent_id) & cross-worktree ticket claim and tagging system (Extended w0m-web/project/scripts/agent_identity.py (format_session_title, orca_rename_terminal, claim --track, and rename subcommand) and w0m-web/project/scripts/agent_tree.py (new --ticket --track) so claiming a ticket or creating an agent tree inside an Orca terminal automatically renames the tab to [<Track> · ]<T##> · <Short Title> [<handle>] ([[T597]] AC5).)
+- **T593** — Re-check Orca Mobile dark/light mode override PRs (#19599, #10421, #25278) and maintain open w0m-pr upstream PRs (Completed AC1–AC4 (status: done))
 - **T595** — Standardize cross-platform toolchain on Homebrew with LTS floors, latest comparison, and Node 26 alignment (AgDR-0052) (Created T595 and AgDR-0052 per owner direction to standardize on Homebrew (brew) across macOS and Linux, enforce at least LTS for min while comparing against latest, and lift the <23 Node upper-bound cap so Homebrew node (26.13.0) and LTS (>=22.23.3) both pass estate gates.)
 - **T596** — Multi-host Orca instance and agent session orchestration across macOS and Linux boxes (Authored and archived OpenSpec change [w0m-web/openspec/changes/archive/-t596-multi-host-orca-sessions](../w0m-web/openspec/changes/archive/2026-11-01-t596-multi-host-orca-sessions/proposal.md).)
 - **T597** — Orca cross-workspace tab drag-and-drop with confirmation dialog, session rebinding, and UI state sync (Created (status: queued, priority: P1) per owner direction: "moving live sessions here could be complicated but I think we can change session and then update UI and if it's drag-and-drop then start moving, confirm in UI with info, update session, update UI".)
