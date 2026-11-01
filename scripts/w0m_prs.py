@@ -36,6 +36,7 @@ PRESET_REPOS = {
         "Graphify-Labs/graphify",
         "mizorewww/laya-mlx",
         "oxiglade/mlx-rs",
+        "ml-explore/mlx-lm",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -51,6 +52,7 @@ PRESET_REPOS = {
         "Graphify-Labs/graphify",
         "mizorewww/laya-mlx",
         "oxiglade/mlx-rs",
+        "ml-explore/mlx-lm",
     ],
 }
 
@@ -2498,6 +2500,7 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
     "graphify": "Graphify-Labs/graphify",
     "laya-mlx": "mizorewww/laya-mlx",
     "mlx-rs": "oxiglade/mlx-rs",
+    "mlx-lm": "ml-explore/mlx-lm",
 }
 
 
@@ -2726,6 +2729,60 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
             "matching active desktop Markdown tabs.\n"
             "- **`mobile/src/session/use-mobile-session-document-readers.ts`**: Surfaces structured outside-workspace read errors cleanly.\n"
             "- **Verification**: Covered by `use-mobile-session-document-readers.test.ts`."
+        ),
+    },
+    "oxiglade/mlx-rs:feat/mlx-lm-gemma4-arch": {
+        "ticket": "T601",
+        "title": "feat(mlx-lm): add Gemma 4 architecture with KV sharing, ProportionalRoPE, and per_layer_config",
+        "why": (
+            "`mlx-lm` in `oxiglade/mlx-rs` currently supports `llama` and `qwen3`, but lacks support for Google's Gemma 4 architecture "
+            "(`gemma4`, `gemma4_text`, `gemma4_unified`). Gemma 4 introduces architectural primitives not present in `llama` or `qwen3`: "
+            "unscaled `RMSNormNoScale` on values (`v_norm`) paired with `scale = 1.0` SDPA, `ProportionalRoPE` (`partial_rotary_factor = 0.25`, "
+            "`rope_theta = 1_000_000.0`) on full-attention layers, cross-layer KV sharing (`num_kv_shared_layers` / `previous_kvs`), "
+            "`attention_k_eq_v`, 4 RMSNorms per decoder layer, per-layer input embeddings & gating (`hidden_size_per_layer_input`), "
+            "`use_double_wide_mlp`, `geglu`, `final_logit_softcapping`, and Transformers >= 5.15 `per_layer_config` schemas."
+        ),
+        "what_for": (
+            "Enables native Rust inference for Gemma 4 checkpoints (E2B, E4B, 31B dense, and VLM/unified checkpoints when running text decoding) "
+            "through `mlx-lm`'s strict `ArchitectureFactory`, `DecoderModel`, and `CacheStep` contracts."
+        ),
+        "how": (
+            "- **`mlx-lm/src/arch/gemma4/config.rs`**: Validates `gemma4`, `gemma4_text`, and `gemma4_unified` configs (including nested "
+            "`text_config` and Transformers >= 5.15 `per_layer_config`), derives `previous_kvs` and double-wide MLP dimensions, and normalizes "
+            "quantization override paths.\n"
+            "- **`mlx-lm/src/arch/gemma4/rope.rs`**: Implements `LayerRope` with `proportional_frequency_table` (`f32::INFINITY` on unrotated "
+            "pairs, matching `mlx_lm.models.rope_utils.ProportionalRoPE`).\n"
+            "- **`mlx-lm/src/arch/gemma4/weights.rs`**: Maps text and VLM safetensors keys while ignoring multimodal towers (`vision_tower.*`, "
+            "`audio_tower.*`, `multi_modal_projector.*`), merged MTP heads (`mtp.*`), and redundant shared-KV layer projections.\n"
+            "- **`mlx-lm/src/arch/gemma4/mod.rs` & `tests.rs`**: Implements `Decoder` (`DecoderModel`) with `first_kv_shared_layer_idx` cache "
+            "layout and unit tests."
+        ),
+    },
+    "ml-explore/mlx-lm:perf/gemma4-kv-shared-prefill-and-moe-sanitize": {
+        "ticket": "T601",
+        "title": "perf(gemma4): add per_layer_config, KV-shared logits_to_keep prefill trimming, and MTP/MoE sanitization",
+        "why": (
+            "1. Transformers >= 5.15 Gemma 4 checkpoints move full-attention `head_dim` and `num_key_value_heads` overrides into "
+            "`text_config.per_layer_config` (`{\"05\": {\"head_dim\": 512, \"num_key_value_heads\": 2}, ...}`) instead of top-level "
+            "`global_head_dim` / `num_global_key_value_heads`.\n"
+            "2. During prompt prefill, Gemma 4's top `num_kv_shared_layers` layers (20 of 35 layers on E2B, 18 of 42 on E4B) do not write "
+            "to the KV cache and only read K/V from earlier layers; running all `L` prompt tokens through those shared layers when only the "
+            "last `logits_to_keep` logits are needed performs redundant attention and FFN compute.\n"
+            "3. Merged checkpoints and quantized MoE checkpoints can include `.self_attn.v_norm` on shared-KV layers, `.experts.gate_up_proj.{weight,scales,biases}`, "
+            "and `mtp.*` / `language_model.mtp.*` speculative head weights."
+        ),
+        "what_for": (
+            "Ensures out-of-the-box compatibility with Transformers >= 5.15 `per_layer_config`, merged MTP checkpoints, and quantized MoE "
+            "checkpoints while accelerating prompt prefill across KV-shared layers when `logits_to_keep` is specified with exact numerical parity."
+        ),
+        "how": (
+            "- **`mlx_lm/models/gemma4_text.py`**: Derives `global_head_dim` and `num_global_key_value_heads` (and per-layer overrides) from "
+            "`per_layer_config`; slices `h`, `per_layer_inputs`, and `masks` (and advances stored `intermediates` RoPE offsets by `trimmed_prefix`) "
+            "at `first_kv_shared_layer_idx` when `logits_to_keep` is set; drops `.self_attn.v_norm` on shared-KV layers and splits suffixed "
+            "`.experts.gate_up_proj.*` / `.experts.down_proj.*` keys.\n"
+            "- **`mlx_lm/models/gemma4.py`**: Forwards `logits_to_keep`, strips `mtp.*` / `language_model.mtp.*`, and avoids double-prefixing "
+            "`language_model.model.`.\n"
+            "- **`tests/test_models.py`**: Adds 3 unit tests (`11/11` Gemma 4 tests passing)."
         ),
     },
 }

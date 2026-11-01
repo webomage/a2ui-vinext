@@ -338,7 +338,7 @@ def main() -> int:
 
     # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593)
     proposals_list = w0m_prs.build_pr_proposals()
-    check("build_pr_proposals returns 9 contribution proposals", len(proposals_list) == 9)
+    check("build_pr_proposals returns 11 contribution proposals", len(proposals_list) == 11)
     check(
         "build_pr_proposals formats structured Why / What For / How markdown body",
         all(
