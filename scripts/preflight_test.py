@@ -167,7 +167,7 @@ def t_hook_mode_always_exits_zero():
     import subprocess
 
     proc = subprocess.run(
-        [sys.executable, str(preflight.ROOT / "scripts" / "preflight.py"),
+        [sys.executable, str(preflight.ESTATE / "scripts" / "preflight.py"),
          "--fast", "--hook"],
         capture_output=True, text=True, timeout=120,
     )

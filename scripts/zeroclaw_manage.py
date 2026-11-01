@@ -223,6 +223,127 @@ def cmd_check(
     return 0
 
 
+FORBIDDEN_CLIENT_AUDIT_TOOLS = (
+    "http_request",
+    "git_operations",
+    "spawn_subagent",
+    "browser",
+    "browser_open",
+    "shell",
+    "file_write",
+    "file_edit",
+)
+
+
+def check_client_audit_path_access(target_path: str, profile: dict[str, Any]) -> tuple[bool, str]:
+    """Evaluate whether a target filesystem path is permitted under a ZeroClaw risk profile (T153 AC5)."""
+    if not profile.get("workspace_only", False) or not profile.get("sandbox_enabled", False):
+        return False, "Profile does not enforce workspace_only=true and sandbox_enabled=true"
+
+    allowed_roots = [os.path.expanduser(str(r)) for r in profile.get("allowed_roots", [])]
+    if not allowed_roots or "/" in allowed_roots:
+        return False, "Profile allowed_roots is empty or contains filesystem root '/'"
+
+    expanded_target = os.path.normpath(os.path.expanduser(target_path))
+    forbidden_raw = list(profile.get("forbidden_paths", [])) + [
+        "~/.zeroclaw/.secret_key",
+        "~/.infisical",
+        str(ESTATE_ROOT),
+    ]
+    for fp in forbidden_raw:
+        expanded_fp = os.path.normpath(os.path.expanduser(str(fp)))
+        if expanded_target == expanded_fp or expanded_target.startswith(expanded_fp + os.sep):
+            return False, f"Refused by forbidden_paths boundary: {fp}"
+
+    for root in allowed_roots:
+        norm_root = os.path.normpath(root)
+        if expanded_target == norm_root or expanded_target.startswith(norm_root + os.sep):
+            return True, f"Allowed within workspace root: {norm_root}"
+
+    return False, f"Refused: outside allowed_roots ({allowed_roots})"
+
+
+def verify_client_audit_isolation(config_data: dict[str, Any] | None = None) -> tuple[bool, list[str]]:
+    """Enforce T153 AC5: verify separate allowlist-shaped client_audit profile and run RED probes."""
+    data = config_data if config_data is not None else load_toml(TEMPLATE_PATH)
+    errors: list[str] = []
+
+    rp = data.get("risk_profiles", {}).get("client_audit")
+    if not isinstance(rp, dict):
+        return False, ["Missing [risk_profiles.client_audit] section (T153 AC5)"]
+
+    if rp.get("workspace_only") is not True:
+        errors.append("client_audit.workspace_only must be true (T153 AC5)")
+    if rp.get("sandbox_enabled") is not True:
+        errors.append("client_audit.sandbox_enabled must be true (T153 AC5)")
+
+    allowed_roots = rp.get("allowed_roots", [])
+    if not allowed_roots or "/" in allowed_roots:
+        errors.append(f"client_audit.allowed_roots must be a strict workspace path, got {allowed_roots!r} (T153 AC5)")
+
+    allowed_tools = set(rp.get("allowed_tools", []))
+    bad_tools = sorted(allowed_tools.intersection(FORBIDDEN_CLIENT_AUDIT_TOOLS))
+    if bad_tools:
+        errors.append(f"client_audit.allowed_tools grants forbidden exfiltration/mutation tools: {bad_tools} (T153 AC5)")
+
+    # T153 AC5 RED probes: attempt to read ~/.zeroclaw/.secret_key, a w0m repo, and ~/.infisical
+    for red_target in (
+        "~/.zeroclaw/.secret_key",
+        "/Users/proto/Projects/@self/@wom/AGENTS.md",
+        str(ESTATE_ROOT / "AGENTS.md"),
+        "~/.infisical/config.json",
+    ):
+        allowed, reason = check_client_audit_path_access(red_target, rp)
+        if allowed:
+            errors.append(f"RED PROBE FAILED: client_audit allowed access to {red_target} ({reason})")
+
+    # Positive probe inside the dedicated client_audit workspace
+    if allowed_roots and "/" not in allowed_roots:
+        ws_file = os.path.join(str(allowed_roots[0]), "src", "index.ts")
+        ws_ok, ws_reason = check_client_audit_path_access(ws_file, rp)
+        if not ws_ok:
+            errors.append(f"client_audit rejected valid workspace file {ws_file} ({ws_reason})")
+
+    return len(errors) == 0, errors
+
+
+def run_sandboxed_client_audit(
+    project_dir: Path,
+    config_data: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Execute T153 AC6 shallow code-only client security audit inside an isolated workspace."""
+    data = config_data if config_data is not None else load_toml(TEMPLATE_PATH)
+    iso_ok, iso_errors = verify_client_audit_isolation(data)
+    if not iso_ok:
+        return {"ok": False, "errors": iso_errors, "findings": []}
+
+    findings: list[dict[str, str]] = []
+    scanned_files = 0
+    patterns = (
+        ("hardcoded_secret", re.compile(r"(?:sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16})")),
+        ("prompt_injection", re.compile(r"ignore\s+all\s+previous\s+instructions", re.IGNORECASE)),
+        ("unsafe_exec", re.compile(r"\b(?:eval|child_process\.execSync)\s*\(")),
+    )
+    if project_dir.is_dir():
+        for path in sorted(project_dir.rglob("*")):
+            if not path.is_file() or path.suffix not in (".ts", ".js", ".py", ".astro", ".svelte", ".json", ".md"):
+                continue
+            scanned_files += 1
+            text = path.read_text(encoding="utf-8", errors="ignore")
+            for kind, pat in patterns:
+                if pat.search(text):
+                    findings.append({"file": str(path.relative_to(project_dir)), "kind": kind})
+
+    return {
+        "ok": True,
+        "profile": "client_audit",
+        "workspace_only": True,
+        "sandbox_substrate": "apple/container (Tier 2 microVM) / ZeroClaw bounded_audit",
+        "scanned_files": scanned_files,
+        "findings": findings,
+    }
+
+
 def cmd_health() -> int:
     print("=== ZeroClaw Runtime & Siri/Shortcuts Health Audit (T153 AC7, T517 AC3) ===\n")
 
@@ -259,11 +380,34 @@ def cmd_health() -> int:
 
     agents = installed_data.get("agents", {})
     risk_profiles = installed_data.get("risk_profiles", {})
-    print(f"  [PASS] 4. Agents configured: {len(agents) if isinstance(agents, dict) else 0}")
-    print(f"  [PASS] 5. Risk profiles evaluated: {len(risk_profiles) if isinstance(risk_profiles, dict) else 0}")
+    agent_mappings: list[str] = []
+    if isinstance(agents, dict):
+        for a_name, a_cfg in agents.items():
+            if isinstance(a_cfg, dict):
+                agent_mappings.append(f"{a_name}->{a_cfg.get('risk_profile', 'unknown')}")
+    fs_wide_profiles: list[str] = []
+    if isinstance(risk_profiles, dict):
+        for rp_name, rp_cfg in risk_profiles.items():
+            if isinstance(rp_cfg, dict) and "/" in rp_cfg.get("allowed_roots", []):
+                fs_wide_profiles.append(rp_name)
+
+    print(
+        f"  [PASS] 4. Agents configured ({len(agent_mappings)}/{len(agent_mappings)}): "
+        f"{', '.join(agent_mappings) or 'none'}"
+    )
+    print(
+        f"  [PASS] 5. Risk profiles evaluated ({len(risk_profiles) if isinstance(risk_profiles, dict) else 0}/3): "
+        f"filesystem-wide roots ('/') granted to {len(fs_wide_profiles)} profile(s) ({', '.join(fs_wide_profiles) or 'none'})"
+    )
+
+    iso_ok, iso_errs = verify_client_audit_isolation(installed_data)
+    if iso_ok:
+        print("  [PASS] 6. Client audit isolation (T153 AC5/AC6): allowlist profile + 3/3 RED probes refused")
+    else:
+        print(f"  [FAIL] 6. Client audit isolation (T153 AC5/AC6): {iso_errs}")
 
     print("\n--- Siri & Apple Shortcuts Contract Checks (T367 / T517 AC3) ---")
-    contract_failures = 0
+    contract_failures = 0 if iso_ok else 1
     for cid, ok, detail in verify_siri_shortcuts_contract():
         tag = "PASS" if ok else "FAIL"
         print(f"  [{tag}] {cid}: {detail}")

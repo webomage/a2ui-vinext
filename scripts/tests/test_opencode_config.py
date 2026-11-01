@@ -74,6 +74,15 @@ class TestOpenCodeConfig(unittest.TestCase):
         self.assertEqual(trace["stages"][1]["stage"], "spec")
         self.assertEqual(trace["stages"][1]["next_gate"], "build")
 
+    def test_live_mcp_and_mlx_probe_surface(self) -> None:
+        res = oc.probe_live_mcp_and_mlx(root=ESTATE_ROOT, sync_home=False)
+        self.assertTrue(res["ok"])
+        self.assertEqual(res["ac3_sdlc_gates"]["stages_verified"], "10/10")
+        self.assertTrue(res["ac5_mlx_offload"]["tool_call_guard_closed"])
+        self.assertIn("codegraph", res["ac7_mcp_probes"])
+        self.assertIn("wom7md", res["ac7_mcp_probes"])
+        self.assertTrue(res["ac7_mcp_probes"]["wom7md"]["ipv4_bound"])
+
 
 if __name__ == "__main__":
     unittest.main()

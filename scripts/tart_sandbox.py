@@ -291,6 +291,300 @@ def build_tart_run_command(
     return cmd
 
 
+def verify_host_substrates(
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+) -> dict[str, object]:
+    """Enforce T368 AC1/AC5: probe live Apple `container` and `tart` substrates on Apple Silicon."""
+    import time
+
+    container_bin = shutil.which("container") or "/opt/homebrew/bin/container"
+    tart_bin = shutil.which("tart") or "/opt/homebrew/bin/tart"
+
+    container_info: dict[str, object] = {"installed": Path(container_bin).is_file(), "binary": container_bin}
+    if Path(container_bin).is_file():
+        t0 = time.perf_counter()
+        v_proc = runner([container_bin, "--version"], capture_output=True, text=True, timeout=5, check=False)
+        s_proc = runner([container_bin, "system", "status"], capture_output=True, text=True, timeout=5, check=False)
+        dt_ms = round((time.perf_counter() - t0) * 1000.0, 1)
+        container_info.update(
+            {
+                "version": v_proc.stdout.strip(),
+                "apiserver_running": s_proc.returncode == 0 and "running" in s_proc.stdout,
+                "status_probe_ms": dt_ms,
+            }
+        )
+
+    tart_info: dict[str, object] = {"installed": Path(tart_bin).is_file(), "binary": tart_bin}
+    if Path(tart_bin).is_file():
+        t1 = time.perf_counter()
+        tv_proc = runner([tart_bin, "--version"], capture_output=True, text=True, timeout=5, check=False)
+        tl_proc = runner([tart_bin, "list"], capture_output=True, text=True, timeout=5, check=False)
+        dt_tart_ms = round((time.perf_counter() - t1) * 1000.0, 1)
+        tart_info.update(
+            {
+                "version": tv_proc.stdout.strip(),
+                "list_probe_ms": dt_tart_ms,
+                "vms_count": max(0, len([ln for ln in tl_proc.stdout.splitlines() if ln.strip()]) - 1),
+            }
+        )
+
+    disk_budget = check_disk_budget()
+    return {
+        "ok": bool(container_info.get("installed")) and bool(tart_info.get("installed")) and bool(disk_budget.get("ok")),
+        "apple_container": container_info,
+        "tart": tart_info,
+        "disk_budget": disk_budget,
+        "routing_tiers": len(WORKLOAD_ROUTING),
+    }
+
+
+MAX_ACTIVE_MACOS_VMS = 2  # Apple XNU kernel quota (hv_apple_isa_vm_quota / VZErrorDomain code 6, T181 AC4)
+
+AGENT_SANDBOX_PROFILE: dict[str, object] = {
+    "profile_type": "agent-sandbox",
+    "ticket": "T180",
+    "interface": "headless (SSH / tart exec)",
+    "clipboard": False,
+    "audio": False,
+    "host_mounts": "none_by_default (opt-in :ro only)",
+    "egress": "deny_by_default (softnet CIDR allowlist or --net-host)",
+}
+
+GUI_WORKSTATION_PROFILE: dict[str, object] = {
+    "profile_type": "gui-workstation",
+    "ticket": "T181",
+    "interface": "display (1800x1169, displayRefit=true, --vnc)",
+    "clipboard": True,
+    "audio": False,
+    "host_mounts": "working_files_allowed",
+    "egress": "ordinary_internet",
+    "default_guest_os": "linux-arm64",
+    "claude_desktop": "official_apt_arm64_repo (Ubuntu 22.04+ / Debian 12+)",
+    "slack_strategy": "web_app_on_linux_arm64_or_macos_slot (Slack Linux .deb is amd64-only; Rosetta Electron unsupported for production credentials)",
+    "remote_access": "--vnc (built-in Screen Sharing / VNC server)",
+    "session_clone_policy": "forbid_cloning_logged_in_workstation_for_automated_agents",
+    "evercred_disposition": "owner_personal_unmanaged_vm_never_adopted",
+}
+
+
+def enforce_macos_vm_quota(active_macos_vms: int) -> None:
+    """Enforce T181 AC4: respect the 2-VM XNU kernel cap (hv_apple_isa_vm_quota) by construction."""
+    if active_macos_vms >= MAX_ACTIVE_MACOS_VMS:
+        raise RuntimeError(
+            f"macOS VM kernel quota exceeded (T181 AC4): {active_macos_vms} active macOS VMs >= "
+            f"MAX_ACTIVE_MACOS_VMS ({MAX_ACTIVE_MACOS_VMS}, hv_apple_isa_vm_quota / VZErrorDomain code 6). "
+            "Use a GUI Linux arm64 guest instead."
+        )
+
+
+def build_gui_workstation_command(
+    vm_name: str = "w0m-gui-workstation",
+    guest_os: str = "linux",
+    active_macos_vms: int = 0,
+    mounts: list[str] | None = None,
+    vnc: bool = True,
+    cloning_signed_in_session: bool = False,
+    free_bytes_override: int | None = None,
+) -> list[str]:
+    """Construct the Type-2 GUI workstation `tart run` argv (T181 AC1–AC8), distinct from T180 sandbox."""
+    if vm_name.strip().lower() == "evercred":
+        raise PermissionError(
+            "Refusing to adopt 'evercred' as a managed GUI workstation image (T181 AC8 / T343 AC4). "
+            "'evercred' is explicitly preserved as the owner's personal VM; use a fresh VM name."
+        )
+    if cloning_signed_in_session:
+        raise PermissionError(
+            "Refusing to clone a signed-in GUI workstation VM for automated agents (T181 AC6). "
+            "APFS CoW cloning of a logged-in VM duplicates live Slack and Claude sessions."
+        )
+
+    norm_os = guest_os.strip().lower()
+    if norm_os == "macos":
+        enforce_macos_vm_quota(active_macos_vms)
+    check_disk_budget(free_bytes_override=free_bytes_override)
+
+    # Type-2 GUI workstation deliberately keeps display and clipboard enabled (unlike Type-1 agent sandbox)
+    cmd = ["tart", "run", vm_name, "--no-audio"]
+    if vnc:
+        cmd.append("--vnc")
+    for m in mounts or []:
+        cmd.append(f"--dir={m.strip()}")
+    return cmd
+
+
+def verify_devpod_tart_provider_lifecycle(provider_yaml: Path | None = None) -> dict[str, object]:
+    """Enforce T179 AC1, AC2, AC3, AC4: exercise all 7 DevPod Tart provider verbs end-to-end."""
+    import os
+    import tempfile
+
+    root = Path(__file__).resolve().parents[1]
+    yaml_path = provider_yaml or (root / "tools" / "devpod-provider-tart" / "provider.yaml")
+    if not yaml_path.is_file():
+        return {"ok": False, "error": f"Missing {yaml_path}"}
+
+    raw = yaml_path.read_text(encoding="utf-8")
+    verbs: dict[str, str] = {}
+    current_verb: str | None = None
+    verb_lines: list[str] = []
+    in_exec = False
+    for line in raw.splitlines():
+        if line.startswith("exec:"):
+            in_exec = True
+            continue
+        if not in_exec:
+            continue
+        m_verb = re.match(r"^  (init|create|start|stop|status|delete|command):\s*\|-\s*$", line)
+        if m_verb:
+            if current_verb:
+                verbs[current_verb] = "\n".join(verb_lines)
+            current_verb = m_verb.group(1)
+            verb_lines = []
+        elif current_verb and line.startswith("    "):
+            verb_lines.append(line[4:])
+    if current_verb:
+        verbs[current_verb] = "\n".join(verb_lines)
+
+    if set(verbs) != {"init", "create", "start", "stop", "status", "delete", "command"}:
+        return {"ok": False, "error": f"Missing verbs: {set(verbs)}"}
+
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td)
+        bin_dir = tmp / "bin"
+        bin_dir.mkdir()
+        state_dir = tmp / "state"
+        state_dir.mkdir()
+        machine_dir = tmp / "machine"
+        machine_dir.mkdir()
+
+        tart_shim = bin_dir / "tart"
+        tart_shim.write_text(
+            f"""#!/usr/bin/env bash
+set -euo pipefail
+STATE_DIR="{state_dir}"
+cmd="${{1:-}}"
+shift || true
+case "$cmd" in
+  clone)
+    img="$1"; vm="$2"
+    echo "stopped" > "$STATE_DIR/$vm"
+    ;;
+  set)
+    ;;
+  run)
+    vm="$1"
+    echo "running" > "$STATE_DIR/$vm"
+    sleep 0.1
+    ;;
+  ip)
+    echo "192.168.64.42"
+    ;;
+  list)
+    echo "Source Name Disk Size State"
+    for f in "$STATE_DIR"/*; do
+      [ -f "$f" ] || continue
+      vm="$(basename "$f")"
+      st="$(cat "$f")"
+      echo "local $vm 50 50 $st"
+    done
+    ;;
+  stop)
+    vm="$1"
+    [ -f "$STATE_DIR/$vm" ] && echo "stopped" > "$STATE_DIR/$vm"
+    ;;
+  delete)
+    vm="$1"
+    rm -f "$STATE_DIR/$vm"
+    ;;
+esac
+""",
+            encoding="utf-8",
+        )
+        tart_shim.chmod(0o755)
+
+        sshpass_shim = bin_dir / "sshpass"
+        sshpass_shim.write_text(
+            """#!/usr/bin/env bash
+shift 2
+exec "$@"
+""",
+            encoding="utf-8",
+        )
+        sshpass_shim.chmod(0o755)
+
+        ssh_shim = bin_dir / "ssh"
+        ssh_shim.write_text(
+            """#!/usr/bin/env bash
+last="${@: -1}"
+eval "$last"
+""",
+            encoding="utf-8",
+        )
+        ssh_shim.chmod(0o755)
+
+        env = dict(os.environ)
+        env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
+        env["MACHINE_ID"] = "devpod-linux-test"
+        env["MACHINE_FOLDER"] = str(machine_dir)
+        env["TART_IMAGE"] = "ghcr.io/cirruslabs/ubuntu:latest"
+
+        def run_verb(v: str, extra_env: dict[str, str] | None = None, stdin_text: str | None = None) -> subprocess.CompletedProcess[str]:
+            e = dict(env)
+            if extra_env:
+                e.update(extra_env)
+            return subprocess.run(
+                ["bash", "-c", verbs[v]],
+                env=e,
+                input=stdin_text,
+                capture_output=True,
+                text=True,
+                timeout=10,
+                check=False,
+            )
+
+        r_init = run_verb("init")
+        r_macos_reject = run_verb("create", {"TART_IMAGE": "ghcr.io/cirruslabs/macos-tahoe-base:latest"})
+        r_create = run_verb("create")
+        r_status_1 = run_verb("status")
+        r_cmd = run_verb("command", {"COMMAND": "cat"}, stdin_text="DEVPOD_AGENT_PING\n")
+        r_stop = run_verb("stop")
+        r_status_2 = run_verb("status")
+        r_start = run_verb("start")
+        r_status_3 = run_verb("status")
+        r_delete = run_verb("delete")
+        r_status_4 = run_verb("status")
+
+        pid_cleaned = not (machine_dir / "tart.pid").exists()
+        ok = (
+            r_init.returncode == 0
+            and r_macos_reject.returncode != 0
+            and "kern.hv_support=0" in r_macos_reject.stderr
+            and r_create.returncode == 0
+            and r_status_1.stdout.strip() == "Running"
+            and r_cmd.returncode == 0
+            and r_cmd.stdout.strip() == "DEVPOD_AGENT_PING"
+            and r_stop.returncode == 0
+            and r_status_2.stdout.strip() == "Stopped"
+            and r_start.returncode == 0
+            and r_status_3.stdout.strip() == "Running"
+            and r_delete.returncode == 0
+            and r_status_4.stdout.strip() == "NotFound"
+            and pid_cleaned
+        )
+        return {
+            "ok": ok,
+            "verbs_verified": len(verbs),
+            "macos_rejected_before_clone": r_macos_reject.returncode != 0,
+            "agent_protocol_stdio_ok": r_cmd.stdout.strip() == "DEVPOD_AGENT_PING",
+            "lifecycle_states": [
+                r_status_1.stdout.strip(),
+                r_status_2.stdout.strip(),
+                r_status_3.stdout.strip(),
+                r_status_4.stdout.strip(),
+            ],
+            "pid_cleaned_on_delete": pid_cleaned,
+        }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Governed Tart macOS sandbox launcher & Apple Silicon substrate router (T180/T368)"
@@ -344,10 +638,20 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Validate posture and print the governed tart command without executing.",
     )
+    parser.add_argument(
+        "--verify-host-substrates",
+        action="store_true",
+        help="Verify live Apple container microVM and Tart VM substrates on Apple Silicon (T368 AC1/AC5).",
+    )
 
     args = parser.parse_args(argv)
 
     try:
+        if args.verify_host_substrates:
+            res = verify_host_substrates()
+            print(json.dumps(res, indent=2))
+            return 0 if res.get("ok") else 1
+
         if args.workload:
             route = classify_workload(args.workload)
             print(json.dumps(route, indent=2))

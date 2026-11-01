@@ -302,6 +302,105 @@ def main() -> int:
     ):
         failures += 1
 
+    # 11. resource_monitor (T343 AC1-AC4): audit subsystems, 10% free-disk threshold guard, and AC4 unmanaged VM protection
+    import resource_monitor
+
+    disk_ok = resource_monitor.check_host_disk_headroom(usage_override=(1000, 500, 500))
+    disk_low = resource_monitor.check_host_disk_headroom(usage_override=(1000, 950, 50))
+    if not _check(
+        "T343 AC3: check_host_disk_headroom triggers low_disk_warning below 10% threshold",
+        disk_ok["low_disk_warning"] is False
+        and disk_low["low_disk_warning"] is True
+        and "LOW DISK WARNING" in disk_low["headline"],
+    ):
+        failures += 1
+
+    prune_dry = resource_monitor.prune_resources(apply=False)
+    if not _check(
+        "T343 AC2: prune_resources defaults to dry_run=True and lists protected unmanaged VMs",
+        prune_dry["ok"] is True
+        and prune_dry["dry_run"] is True
+        and "evercred" in prune_dry["protected_unmanaged_vms"],
+    ):
+        failures += 1
+
+    unmanaged_refused = False
+    try:
+        resource_monitor.prune_resources(apply=True, target_vm="evercred")
+    except PermissionError:
+        unmanaged_refused = True
+    if not _check(
+        "RED PROBE (T343 AC4): prune_resources refuses to touch unmanaged VM 'evercred'",
+        unmanaged_refused,
+    ):
+        failures += 1
+
+    # 12. tart_sandbox.verify_host_substrates (T368 AC5) + GUI workstation profile (T181 AC1-AC8)
+    import tart_sandbox
+
+    substrates = tart_sandbox.verify_host_substrates()
+    if not _check(
+        "T368 AC5: verify_host_substrates reports apple_container, tart, disk_budget, and 8 routing tiers",
+        "apple_container" in substrates
+        and "tart" in substrates
+        and "disk_budget" in substrates
+        and substrates.get("routing_tiers") == 8,
+    ):
+        failures += 1
+
+    gui_cmd = tart_sandbox.build_gui_workstation_command("w0m-gui-linux", guest_os="linux", vnc=True)
+    if not _check(
+        "T181 AC1/AC5: GUI workstation profile is distinct from agent sandbox (keeps clipboard & display, uses --vnc)",
+        "--no-clipboard" not in gui_cmd
+        and "--no-graphics" not in gui_cmd
+        and "--vnc" in gui_cmd
+        and tart_sandbox.AGENT_SANDBOX_PROFILE["clipboard"] is False
+        and tart_sandbox.GUI_WORKSTATION_PROFILE["clipboard"] is True,
+    ):
+        failures += 1
+
+    quota_blocked = False
+    try:
+        tart_sandbox.build_gui_workstation_command("w0m-gui-macos", guest_os="macos", active_macos_vms=2)
+    except RuntimeError:
+        quota_blocked = True
+    evercred_blocked = False
+    try:
+        tart_sandbox.build_gui_workstation_command("evercred")
+    except PermissionError:
+        evercred_blocked = True
+    clone_blocked = False
+    try:
+        tart_sandbox.build_gui_workstation_command("w0m-gui-linux", cloning_signed_in_session=True)
+    except PermissionError:
+        clone_blocked = True
+    if not _check(
+        "RED PROBE (T181 AC4/AC6/AC8): enforces 2-VM macOS quota, forbids cloning signed-in sessions, and protects 'evercred'",
+        quota_blocked and evercred_blocked and clone_blocked,
+    ):
+        failures += 1
+
+    # 13. T179 AC1-AC4: DevPod Tart provider 7-verb lifecycle & macOS rejection
+    devpod_res = tart_sandbox.verify_devpod_tart_provider_lifecycle()
+    if not _check(
+        "T179 AC1-AC4: verify_devpod_tart_provider_lifecycle exercises all 7 verbs, stdio agent pipe, and macOS rejection",
+        bool(devpod_res.get("ok"))
+        and devpod_res.get("lifecycle_states") == ["Running", "Stopped", "Running", "NotFound"],
+    ):
+        failures += 1
+
+    # 14. T180 AC3/AC4: Egress CIDR red-probe & deny-by-default sandbox command
+    egress_res = tart_sandbox.probe_egress(["10.0.0.0/8", "192.168.64.0/24"], probe_blocked_ip="1.1.1.1")
+    sbx_cmd = tart_sandbox.build_tart_run_command("w0m-agent-sandbox")
+    if not _check(
+        "T180 AC3/AC4: probe_egress blocks 1.1.1.1 outside CIDR allowlist and build_tart_run_command defaults to --no-clipboard --no-audio --net-host",
+        bool(egress_res.get("ok"))
+        and "--no-clipboard" in sbx_cmd
+        and "--no-audio" in sbx_cmd
+        and "--net-host" in sbx_cmd,
+    ):
+        failures += 1
+
     return 1 if failures else 0
 
 

@@ -314,10 +314,14 @@ def check_tools() -> dict:
     if PROJECT is None:
         sys.path.insert(0, str(ESTATE / "scripts"))
         import deps_sync
+        import resource_monitor
 
         runtime_errors.extend(deps_sync.check_node_engines({"w0m-web": ROOT / "package.json"}))
         runtime_errors.extend(deps_sync.check_astro_adapter_exports(ROOT))
         detail.extend(runtime_errors)
+        disk_info = resource_monitor.check_host_disk_headroom()
+        if disk_info["low_disk_warning"]:
+            detail.append(str(disk_info["headline"]))
     outdated_cache = ESTATE / "project" / ".tools-outdated.json"
     if outdated_cache.is_file():
         try:

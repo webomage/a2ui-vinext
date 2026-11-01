@@ -319,6 +319,13 @@ prs-submit *args:
 prs-test:
     @python3 scripts/tests/test_w0m_prs.py
 
+# ── Unified Estate Resource Governance (T343) ──────────────────────────────
+resources *args:
+    @python3 scripts/resource_monitor.py {{ args }}
+
+resources-prune *args:
+    @python3 scripts/resource_monitor.py --prune {{ args }}
+
 rename-audit *args:
     @python3 scripts/rename_audit.py {{ args }}
 

@@ -583,6 +583,14 @@
         ],
         "scope": "project",
         "purpose": "T26: Standing read-only HTTP MCP server (https://awesome-repositories.com/api/mcp, OAuth 2.1 auto-discovery via /.well-known/oauth-protected-resource) for vetted OSS package & repository discovery during SDLC research and spec stages (docs/PACKAGE-DISCOVERY-MCP.md)."
+      },
+      "zeroclaw-acp": {
+        "enabled": true,
+        "required": false,
+        "transport": "stdio",
+        "command": "zeroclaw acp",
+        "scope": "host",
+        "purpose": "T153 AC3: w0m -> ZeroClaw Agent Communication Protocol (ACP) server over JSON-RPC 2.0 stdio (`~/.cargo/bin/zeroclaw acp`)."
       }
     },
     "directions": {
