@@ -16,7 +16,9 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(ROOT / "w0m-api" / "scripts"))
 
+import ai_tools  # noqa: E402
 import backfill_news  # noqa: E402
 import backfill_post_images  # noqa: E402
 import validate_content  # noqa: E402
@@ -165,6 +167,34 @@ def main() -> int:
             not ok_bad_tr and any("missing offerings" in e for e in bad_tr_errs),
         ):
             failures += 1
+
+    # 6. T83 AC3/AC5/AC6: ai_tools.py local image generation helper & 32 GB Apple Silicon budget guard
+    budget = ai_tools.validate_image_memory_budget("512x512")
+    if not _check(
+        "ai_tools.validate_image_memory_budget validates 512x512 within 24 GB Apple Silicon budget",
+        budget["width"] == 512
+        and budget["height"] == 512
+        and float(budget["estimated_memory_gb"]) <= 24.0,
+    ):
+        failures += 1
+
+    skipped = ai_tools.generate_image("Architecture diagram", size="512x512")
+    if not _check(
+        "ai_tools.generate_image skips cleanly when USE_LOCAL_IMAGE_GEN is false (T184 P3 compliance)",
+        skipped.get("status") == "skipped_optional_p3",
+    ):
+        failures += 1
+
+    try:
+        ai_tools.validate_image_memory_budget("2048x2048")
+        red_img_dim = False
+    except ValueError:
+        red_img_dim = True
+    if not _check(
+        "RED PROBE: ai_tools.validate_image_memory_budget rejects dimensions exceeding 1536x1536 cap",
+        red_img_dim,
+    ):
+        failures += 1
 
     return 1 if failures else 0
 

@@ -23,8 +23,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 8 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **8** are
+> ⚠️ **0 of 5 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **5** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/agy-t486` | 0 | **n/a — NO UPSTREAM** | `d811fedd` |
-| `w0m-api` | `agent/agy-t486` | 0 | **n/a — NO UPSTREAM** | `5e4918c` |
-| `w0m-cf` | `agent/agy-t486` | **2** | **n/a — NO UPSTREAM** | `80bada3` |
-| `w0m-skills` | `agent/agy-t486` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
-| `w0m-ext` | `agent/agy-t486` | 0 | **n/a — NO UPSTREAM** | `2ec4f71` |
-| `w0m-sec` | `agent/agy-t486` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/agy-t486` | 0 | **n/a — NO UPSTREAM** | `4dcccc1` |
+| `w0m-web` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `2315ceb7` |
+| `w0m-api` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `28b4ac2` |
+| `w0m-cf` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
+| `w0m-skills` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
+| `w0m-ext` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `2ec4f71` |
+| `w0m-sec` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
+| `w0m-mlx/w0m-mlx` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `e3d014c` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 599 TASKS.md rows · 262/599 specced (1/8 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 599 TASKS.md rows · 262/599 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/agy-t486","dirty":0,"has_upstream":true,"head":"5e4918c","unpushed":null},"w0m-cf":{"branch":"agent/agy-t486","dirty":2,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/agy-t486","dirty":0,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-t486","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":null},"w0m-sec":{"branch":"agent/agy-t486","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-t486","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-t486","dirty":0,"has_upstream":true,"head":"d811fedd","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":599,"specced":262,"specced_open":1,"total":599,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"28b4ac2","unpushed":null},"w0m-cf":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"e3d014c","unpushed":null},"w0m-sec":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"2315ceb7","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":599,"specced":262,"specced_open":1,"total":599,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,8 +113,11 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (12):
+#### Completed today (15):
 
+- **T14** — wom7mlx refresh + Rust Gemma launcher (AC1: Completed time-boxed spike comparing webomage/mlx-rs (oxiglade/mlx-rs v0.33.0 + mlx-lm 0.33.0) vs candle (mistral.rs v0.8.x) vs oMLX (0.7.3-w0m) + mlx-vlm (0.7.11-w0m), and audited w0m-mlx-rs (w0m-mlx/w0m-mlx) + casualuser/mlx-rs (5b6dc1ab) for upstream contribution readiness (verdict: do not upstream legacy GLM-4.6V / CPU-loop dequantize_affine or obsolete build.rs env vars; future upstream PRs from webomage/mlx-rs target mlx-lm/src/arch/gemma4/). Documented in .agents/reports/-t14-t82-t83-mlx-rs-review-and-gemma4-architecture.md.)
+- **T82** — Gemma 4 Rust port (wom7-mlx-rs) (✅  — Completed (6/6 ACs))
+- **T83** — Local image generation (wom7mlx) (✅  — Completed (6/6 ACs))
 - **T152** — Dual-agent SDLC — make wom7skills, tools and openspec work on OpenCode as well as Claude, with Gemma 4 via MLX for small-task offloading (✅ DONE (11/11 ACs): Completed live Apple Silicon macOS (M1 Max) host verification (python3 scripts/opencode_config.py --probe-live --sync-home): synced ~/.config/opencode/opencode.json, verified all 10/10 w0m-sdlc- gate commands (AC3), executed live text-in/text-out completion against oMLX on http://127.0.0.1:8888/v1/chat/completions with fail-closed ToolCallUnsupportedError (AC5), and probed MCP endpoints AS MCP via JSON-RPC 2.0 initialize (codegraph v1.6.2 stdio + 127.0.0.1:3001/3007 IPv4 HTTP, AC7).)
 - **T153** — ZeroClaw as a managed w0m runtime — omlx-backed local agent, bidirectional w0m↔zeroclaw, tracked install config, and sandboxed client-project audits (✅ SHARED SANDBOX SUBSTRATE DECIDED WITH [[T171]] (T171 AC5))
 - **T171** — w0m planner/scheduler for batched Claude Code tasks in dev sandboxes — prove the unit before building the fleet (Grounded AC1, AC5, and AC6 against Orca AutomationService, orca orchestration federated DAGs, and Google AX (ax.io/v1alpha1) in [.agents/reports/2026-11-01-orca-multi-host-tasks-automations-and-google-ax-architecture.md](../.agents/reports/2026-11-01-orca-multi-host-tasks-automations-and-google-ax-architecture.md))

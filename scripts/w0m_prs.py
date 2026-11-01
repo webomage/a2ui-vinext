@@ -35,6 +35,7 @@ PRESET_REPOS = {
         "google-research/harness2",
         "Graphify-Labs/graphify",
         "mizorewww/laya-mlx",
+        "oxiglade/mlx-rs",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -49,6 +50,7 @@ PRESET_REPOS = {
         "google-research/harness2",
         "Graphify-Labs/graphify",
         "mizorewww/laya-mlx",
+        "oxiglade/mlx-rs",
     ],
 }
 
@@ -2495,6 +2497,7 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
     "harness2": "google-research/harness2",
     "graphify": "Graphify-Labs/graphify",
     "laya-mlx": "mizorewww/laya-mlx",
+    "mlx-rs": "oxiglade/mlx-rs",
 }
 
 
