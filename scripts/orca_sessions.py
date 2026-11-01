@@ -36,6 +36,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+PRIMARY_CONTROL_PLANE_HOST = "linux-host"
 DEFAULT_REMOTE_HOSTS: tuple[str, ...] = ("linux-host",)
 DEFAULT_SSH_TARGET_CONFIG: dict[str, dict[str, Any]] = {
     "linux-host": {
@@ -47,6 +48,58 @@ DEFAULT_SSH_TARGET_CONFIG: dict[str, dict[str, Any]] = {
         "allowRemoteCliControl": True,
     }
 }
+
+
+def is_local_linux_control_plane(
+    sys_platform: str | None = None,
+    hostname: str | None = None,
+) -> bool:
+    """Return True when executing directly on the Linux primary control-plane host (`HP` / `linux-host`)."""
+    plat = (sys_platform or sys.platform).lower()
+    hname = (hostname or socket.gethostname()).lower()
+    return plat.startswith("linux") or hname in {"hp", "linux-host", "w0m-linux"}
+
+
+def get_default_remote_hosts(
+    sys_platform: str | None = None,
+    hostname: str | None = None,
+) -> tuple[str, ...]:
+    """Return default remote SSH hosts to poll alongside `local`.
+
+    When running directly on the Linux primary control plane (`HP` / `linux-host`),
+    `local` IS the primary host and macOS may be reset/offline, so no remote SSH
+    host is polled by default.
+    """
+    if is_local_linux_control_plane(sys_platform=sys_platform, hostname=hostname):
+        return ()
+    return DEFAULT_REMOTE_HOSTS
+
+
+def normalize_host_target(
+    host: str,
+    *,
+    sys_platform: str | None = None,
+    hostname: str | None = None,
+) -> str:
+    """Map `linux-host` to `local` when already executing on the Linux primary control plane."""
+    if host == "linux-host" and is_local_linux_control_plane(sys_platform=sys_platform, hostname=hostname):
+        return "local"
+    return host
+
+
+def resolve_local_orca_cli(home_dir: Path | None = None) -> str:
+    """Resolve the local `orca` CLI binary across Linux (`~/.local/bin/orca`) and macOS."""
+    found = shutil.which("orca")
+    if found:
+        return found
+    home = home_dir or Path.home()
+    linux_bin = home / ".local" / "bin" / "orca"
+    if linux_bin.is_file():
+        return str(linux_bin)
+    mac_bin = Path("/Applications/Orca.app/Contents/Resources/bin/orca")
+    if mac_bin.is_file():
+        return str(mac_bin)
+    return "orca"
 
 IDLE_STATES: frozenset[str] = frozenset({"done", "tui-idle", "idle", "stopped", "dormant"})
 ACTIVE_STATES: frozenset[str] = frozenset({"working", "running", "thinking", "tool-use"})
@@ -916,10 +969,11 @@ def spawn_session(
     snapshot_override: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Spawn a new Orca terminal/agent session targeted at `worktree_target` (`agy-orca`, `root`, or path)."""
+    eff_host = normalize_host_target(host)
     snapshot = snapshot_override or (
         collect_local_snapshot(host_label="local")
-        if host == "local"
-        else collect_remote_snapshot(host)
+        if eff_host == "local"
+        else collect_remote_snapshot(eff_host)
     )
     if not snapshot.get("reachable"):
         return {
@@ -952,8 +1006,8 @@ def spawn_session(
             "command": command,
         }
 
-    if host == "local":
-        cli_bin = shutil.which("orca") or "/Applications/Orca.app/Contents/Resources/bin/orca"
+    if eff_host == "local":
+        cli_bin = resolve_local_orca_cli()
         cmd_list = [cli_bin, "terminal", "create", "--worktree", f"path:{wt_path}", "--title", formatted_title]
         if command:
             cmd_list.extend(["--command", command])
@@ -1011,10 +1065,11 @@ def attach_session(
     snapshot_override: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Safely attach or rebind `conversation_id` into `worktree_target` on `host` (`T596` AC2)."""
+    eff_host = normalize_host_target(host)
     snapshot = snapshot_override or (
         collect_local_snapshot(host_label="local")
-        if host == "local"
-        else collect_remote_snapshot(host)
+        if eff_host == "local"
+        else collect_remote_snapshot(eff_host)
     )
     if not snapshot.get("reachable"):
         return {
@@ -1053,7 +1108,7 @@ def attach_session(
     if verdict["action"] == "rebind_idle" and isinstance(existing, dict):
         old_pid = existing.get("pid")
         old_handle = existing.get("terminalHandle")
-        if host == "local":
+        if eff_host == "local":
             if isinstance(old_pid, int):
                 try:
                     os.kill(old_pid, signal.SIGTERM)
@@ -1070,13 +1125,13 @@ def attach_session(
         else:
             if isinstance(old_pid, int):
                 subprocess.run(
-                    ["ssh", "-o", "BatchMode=yes", host, f"kill -TERM {old_pid} 2>/dev/null || true"],
+                    ["ssh", "-o", "BatchMode=yes", eff_host, f"kill -TERM {old_pid} 2>/dev/null || true"],
                     capture_output=True,
                     text=True,
                     timeout=5.0,
                 )
 
-    if host == "local":
+    if eff_host == "local":
         create_res = orca_rpc_call(
             "terminal.create",
             {
@@ -1086,7 +1141,7 @@ def attach_session(
             },
         )
         if not create_res.get("ok"):
-            cli_bin = "/Applications/Orca.app/Contents/Resources/bin/orca"
+            cli_bin = resolve_local_orca_cli()
             proc_res = subprocess.run(
                 [cli_bin, "terminal", "create", "--worktree", f"path:{worktree_target}", "--command", attach_cmd, "--json"],
                 capture_output=True,
@@ -1105,7 +1160,7 @@ def attach_session(
             f"--command '{attach_cmd}' --json"
         )
         proc_res = subprocess.run(
-            ["ssh", "-o", "BatchMode=yes", host, remote_cmd],
+            ["ssh", "-o", "BatchMode=yes", eff_host, remote_cmd],
             capture_output=True,
             text=True,
             timeout=10.0,
@@ -1290,10 +1345,23 @@ def format_worktrees_table(snapshots: list[dict[str, Any]]) -> str:
     return "\n".join(lines) if count > 0 else "No Orca worktrees discovered."
 
 
-def _select_hosts(host_arg: str) -> list[str]:
+def _select_hosts(
+    host_arg: str,
+    *,
+    sys_platform: str | None = None,
+    hostname: str | None = None,
+) -> list[str]:
     if host_arg == "all":
-        return ["local", *DEFAULT_REMOTE_HOSTS]
-    return [h.strip() for h in host_arg.split(",") if h.strip()]
+        return ["local", *get_default_remote_hosts(sys_platform=sys_platform, hostname=hostname)]
+    selected: list[str] = []
+    for raw_h in host_arg.split(","):
+        h = raw_h.strip()
+        if not h:
+            continue
+        norm = normalize_host_target(h, sys_platform=sys_platform, hostname=hostname)
+        if norm not in selected:
+            selected.append(norm)
+    return selected
 
 
 def _collect_local_projects_status(home_dir: Path | None = None) -> list[dict[str, Any]]:
@@ -1447,7 +1515,7 @@ def save_private_workload_state(
     except OSError:
         pass
 
-    target_hosts = hosts or ["local", *DEFAULT_REMOTE_HOSTS]
+    target_hosts = hosts or ["local", *get_default_remote_hosts()]
     snapshots: list[dict[str, Any]] = []
     sessions_by_host: dict[str, list[dict[str, Any]]] = {}
     all_sessions: list[dict[str, Any]] = []
@@ -1614,7 +1682,8 @@ def archive_host_sessions(
     except OSError:
         pass
 
-    snap = collect_local_snapshot(host_label="local", home_dir=home) if host == "local" else collect_remote_snapshot(host)
+    eff_host = normalize_host_target(host)
+    snap = collect_local_snapshot(host_label="local", home_dir=home) if eff_host == "local" else collect_remote_snapshot(eff_host)
     sessions = correlate_host_sessions(snap, include_dormant=True, dormant_limit=25)
     target_cids = conversation_ids or [
         str(s["conversation_id"])
@@ -1628,7 +1697,7 @@ def archive_host_sessions(
             continue
         cdir = base_dest / cid
         cdir.mkdir(parents=True, exist_ok=True)
-        if host == "local":
+        if eff_host == "local":
             src_dir = home / ".gemini" / "antigravity-cli" / "brain" / cid
             if src_dir.is_dir():
                 for md in src_dir.glob("*.md"):
@@ -1636,7 +1705,7 @@ def archive_host_sessions(
         else:
             cmd = f"cd ~/.gemini/antigravity-cli/brain/{cid} && tar -cf - *.md 2>/dev/null || true"
             try:
-                p1 = subprocess.Popen(["ssh", "-o", "BatchMode=yes", host, cmd], stdout=subprocess.PIPE)
+                p1 = subprocess.Popen(["ssh", "-o", "BatchMode=yes", eff_host, cmd], stdout=subprocess.PIPE)
                 p2 = subprocess.Popen(["tar", "-xf", "-", "-C", str(cdir)], stdin=p1.stdout)
                 if p1.stdout:
                     p1.stdout.close()
@@ -1648,15 +1717,15 @@ def archive_host_sessions(
 
     closed_handles: list[str] = []
     if close_terminals:
-        cli_bin = "/Applications/Orca.app/Contents/Resources/bin/orca"
+        cli_bin = resolve_local_orca_cli(home)
         for term in snap.get("terminals") or []:
             wt_path = str(term.get("worktreePath") or "")
             handle = str(term.get("handle") or "")
             if not handle or "w0m" not in wt_path:
                 continue
             cmd_list = [cli_bin, "terminal", "close", "--terminal", handle, "--tab", "--json"]
-            if host != "local":
-                cmd_list.extend(["--environment", host])
+            if eff_host != "local":
+                cmd_list.extend(["--environment", eff_host])
             try:
                 res = subprocess.run(cmd_list, capture_output=True, text=True, timeout=10.0)
                 if res.returncode == 0:

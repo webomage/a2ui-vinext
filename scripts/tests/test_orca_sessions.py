@@ -389,6 +389,16 @@ class TestOrcaSessions(unittest.TestCase):
             self.assertIn("`40410adb-a034-4a71-8a83-98907b5e3a7f`", md)
         print("  [PASS] save_private_workload_state and load_private_workload_state persist private state and artifacts")
 
+    def test_linux_primary_control_plane_standalone_routing(self) -> None:
+        self.assertTrue(osess.is_local_linux_control_plane(sys_platform="linux", hostname="HP"))
+        self.assertFalse(osess.is_local_linux_control_plane(sys_platform="darwin", hostname="MacBook-Pro.local"))
+        self.assertEqual(osess.get_default_remote_hosts(sys_platform="linux", hostname="HP"), ())
+        self.assertEqual(osess.get_default_remote_hosts(sys_platform="darwin", hostname="MacBook-Pro.local"), ("linux-host",))
+        self.assertEqual(osess._select_hosts("all", sys_platform="linux", hostname="HP"), ["local"])
+        self.assertEqual(osess._select_hosts("linux-host", sys_platform="linux", hostname="HP"), ["local"])
+        self.assertEqual(osess._select_hosts("all", sys_platform="darwin", hostname="MacBook-Pro.local"), ["local", "linux-host"])
+        print("  [PASS] Linux primary control plane routes standalone without loopback SSH or macOS dependency")
+
 
 if __name__ == "__main__":
     unittest.main()
