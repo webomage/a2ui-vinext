@@ -2,7 +2,7 @@
 """Unified Headroom Process & Service Lifecycle Manager (T456).
 
 Handles status, start, stop, restart, and log inspection across:
-1. Homebrew service (casualuser/tap/headroom -> homebrew.mxcl.headroom) on port 8787
+1. Homebrew service (webomage/tap/headroom -> homebrew.mxcl.headroom) on port 8787
 2. Legacy LaunchAgents (com.headroom.default, sh.brew.headroom-local)
 3. Direct process & port arbitration (8787 primary, 8788 legacy)
 """
@@ -23,7 +23,7 @@ HEADROOM_PORT = 8787
 LEGACY_PORT = 8788
 HEADROOM_HOST = "127.0.0.1"
 HEADROOM_URL = f"http://{HEADROOM_HOST}:{HEADROOM_PORT}"
-BREW_FORMULA = "casualuser/tap/headroom"
+BREW_FORMULA = "webomage/tap/headroom"
 BREW_SERVICE_LABELS = ["sh.brew.headroom", "homebrew.mxcl.headroom"]
 BREW_SERVICE_LABEL = "sh.brew.headroom"
 PRIMARY_LOG_PATH = Path("/opt/homebrew/var/log/headroom.log")

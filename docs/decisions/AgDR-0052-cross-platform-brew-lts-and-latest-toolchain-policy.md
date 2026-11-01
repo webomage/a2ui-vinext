@@ -64,8 +64,12 @@ Measured on 2026-11-01 while provisioning the reset macOS host (`proto@MacBook-P
    - `just tools-check` and `just tools-outdated` compare the installed version against both `min` (LTS floor) and upstream `latest` / `known_good`.
 2. **Homebrew (`brew`) as Preferred Cross-Platform Package Manager**:
    - Homebrew (`/opt/homebrew` on macOS, `/home/linuxbrew/.linuxbrew` on Linux) is the canonical package manager for host CLI tools and runtimes (`node`, `python3`, `deno`, `just`, `uv`, `gh`, `infisical`, `supabase`, `semgrep`, `gitleaks`, `osv-scanner`, `jq`, `ast-grep`, `pnpm`, `ruff`, `mypy`, `terraform`).
-   - Legacy `source` declarations (`nvs`, `pyenv`, `tfenv`) in `project/policies/tools-policy.json` are migrated to `brew`.
-   - Isolated ecosystem tools that do not publish core Homebrew bottles (`graphify` via `uv tool`, `openspec` via `pnpm`) remain on their respective cross-platform tool runners and are compared alongside `brew` formulae.
+   - Legacy `source` declarations (`nvs`, `pyenv`, `tfenv`, `pip`) in `project/policies/tools-policy.json` are migrated to `brew`.
+   - Isolated ecosystem tools that do not publish core Homebrew bottles (`openspec` via `pnpm`) remain on their respective cross-platform tool runners and are compared alongside `brew` formulae.
+3. **Patched First-Party Forks (`webomage/<repo>@beta`) & Canonical Homebrew Tap (`webomage/tap`)**:
+   - For every open-source tool where `@wom` maintains custom features, fixes, or upstream PRs (`headroom`, `omlx`, `orca`, `graphify`, `serena`, `mlx-vlm`, `laya-mlx`, `tart-guest-agent`, `virtual-fido` under `github.com/webomage/<repo>` in `w0m-pr/`), the fork MUST maintain a **`beta` integration branch** that is continuously aligned to the **latest official upstream release / default branch** with all open `webomage` PR branches rebased/merged on top (authored and GPG-signed `-S` by `casualuser` with zero `Co-Authored-By` trailers).
+   - All patched tools are published to and installed from the canonical organization Homebrew tap **`webomage/tap`** (`github.com/webomage/homebrew-tap`, never personal `casualuser/tap` or third-party taps like `jundot/omlx`) using `<latest_upstream_version>-w0m` versioning, `url "https://github.com/webomage/<repo>.git", branch: "beta"`, `skip_clean "libexec"`, and ad-hoc Mach-O code signing (`codesign --force --sign -`) in `post_install` so local macOS 27 (`arm64_golden_gate`) installations run natively without requiring Apple Developer certificate resigning or notarization.
+   - `just tap-sync` (`scripts/w0m_prs.py tap-sync`) audits and synchronizes the `w0m-pr/*` `beta` branches against upstream releases and updates `webomage/homebrew-tap` formulae.
 
 ## Consequences
 

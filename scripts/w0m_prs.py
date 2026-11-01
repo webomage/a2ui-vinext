@@ -566,7 +566,7 @@ def inspect_fork(repo_path: Path, fetch: bool = True) -> Dict[str, Any]:
     upstream_target = None
     target_remote = "upstream" if "upstream" in remotes else ("origin" if "origin" in remotes else None)
     if target_remote:
-        for branch_candidate in ("main", "master"):
+        for branch_candidate in ("main", "master", "v8"):
             check_ref = run_cmd(["git", "rev-parse", "--verify", f"{target_remote}/{branch_candidate}"], check=False, cwd=repo_path)
             if check_ref.returncode == 0:
                 upstream_target = f"{target_remote}/{branch_candidate}"
@@ -1533,6 +1533,149 @@ def cmd_update(args: argparse.Namespace) -> None:
     print("\nUpdate process complete.")
 
 
+def _extract_fork_version(repo_dir: Path) -> str:
+    """Extract canonical upstream version from package manifests or git tags."""
+    for pkg_rel in ("apps/desktop/package.json", "package.json"):
+        pkg_json = repo_dir / pkg_rel
+        if pkg_json.exists():
+            try:
+                data = json.loads(pkg_json.read_text(encoding="utf-8"))
+                ver = data.get("version")
+                if isinstance(ver, str) and re.match(r"^\d+\.\d+", ver) and ver != "0.0.0":
+                    return re.sub(r"(\.dev\d+|rc\d+|-.*)$", "", ver)
+            except Exception:
+                pass
+    pyproject = repo_dir / "pyproject.toml"
+    if pyproject.exists():
+        content = pyproject.read_text(encoding="utf-8", errors="replace")
+        m = re.search(r'(?m)^version\s*=\s*"([^"]+)"', content)
+        if m:
+            return re.sub(r"(\.dev\d+|rc\d+|-.*)$", "", m.group(1))
+    try:
+        res = subprocess.run(
+            ["git", "-C", str(repo_dir), "tag", "-l", "--sort=-v:refname"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        for line in res.stdout.splitlines():
+            tag = line.strip().lstrip("v")
+            if tag and re.match(r"^\d+\.\d+(?:\.\d+)?$", tag):
+                return tag
+    except Exception:
+        pass
+    return "-"
+
+
+def cmd_tap_sync(args: argparse.Namespace) -> None:
+    """Audit and synchronize w0m-pr/* beta branches with webomage/tap Homebrew formulae."""
+    forks_dir = resolve_forks_dir(args.dir)
+    if not forks_dir or not forks_dir.exists():
+        print("✗ Could not locate w0m-pr directory.")
+        sys.exit(1)
+
+    tap_dir = Path(args.tap_dir) if args.tap_dir else Path("/opt/homebrew/Library/Taps/webomage/homebrew-tap")
+    formula_dir = tap_dir / "Formula"
+
+    brew_installed: dict[str, str] = {}
+    try:
+        res = subprocess.run(
+            ["brew", "list", "--versions"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        for line in res.stdout.splitlines():
+            parts = line.split()
+            if len(parts) >= 2:
+                brew_installed[parts[0]] = parts[-1]
+    except Exception:
+        pass
+
+    subdirs = sorted([d for d in forks_dir.iterdir() if d.is_dir() and (d / ".git").exists()])
+    fetch = not args.no_fetch
+    rows = []
+
+    for d in subdirs:
+        info = inspect_fork(d, fetch=fetch)
+        repo = info["repo"]
+        upstream_ver = _extract_fork_version(d)
+        expected_tap_ver = f"{upstream_ver}-w0m" if upstream_ver != "-" else "-"
+
+        formula_path = formula_dir / f"{repo}.rb"
+        tap_ver = "-"
+        tap_branch = "-"
+        updated_formula = False
+        if formula_path.exists():
+            f_text = formula_path.read_text(encoding="utf-8")
+            vm = re.search(r'version\s+"([^"]+)"', f_text)
+            if vm:
+                tap_ver = vm.group(1)
+            bm = re.search(r'branch:\s*"([^"]+)"', f_text)
+            if bm:
+                tap_branch = bm.group(1)
+            if getattr(args, "sync", False) and expected_tap_ver != "-" and tap_ver != expected_tap_ver:
+                new_text = re.sub(r'version\s+"[^"]+"', f'version "{expected_tap_ver}"', f_text, count=1)
+                formula_path.write_text(new_text, encoding="utf-8")
+                tap_ver = expected_tap_ver
+                updated_formula = True
+
+        installed_ver = brew_installed.get(repo, "-")
+        vs_upstream = f"+{info['ahead_upstream']}/-{info['behind_upstream']}" if info["upstream_ref"] != "-" else "-"
+        origin_sync = f"+{info['ahead_origin']}/-{info['behind_origin']}" if info["has_origin_branch"] else "no remote"
+        aligned = (
+            info["branch"] == "beta"
+            and info["behind_upstream"] == 0
+            and info["behind_origin"] == 0
+            and tap_branch == "beta"
+            and (expected_tap_ver == "-" or tap_ver == expected_tap_ver)
+        )
+        status = "✓ aligned" if aligned else ("↻ formula synced" if updated_formula else "⚠ check alignment")
+        rows.append({
+            "repo": repo,
+            "branch": info["branch"],
+            "upstream_ref": info["upstream_ref"],
+            "vs_upstream": vs_upstream,
+            "origin_sync": origin_sync,
+            "upstream_version": upstream_ver,
+            "tap_formula": f"webomage/tap/{repo}" if formula_path.exists() else "-",
+            "tap_version": tap_ver,
+            "installed_version": installed_ver,
+            "status": status,
+        })
+
+    if args.json:
+        print(json.dumps(rows, indent=2))
+        return
+
+    headers = ["Repository", "Branch", "vs Upstream", "Origin Sync", "Tap Formula", "Tap Version", "Installed", "Status"]
+    table_data = [
+        (
+            r["repo"],
+            r["branch"],
+            r["vs_upstream"],
+            r["origin_sync"],
+            r["tap_formula"],
+            r["tap_version"],
+            r["installed_version"],
+            r["status"],
+        )
+        for r in rows
+    ]
+    col_widths = [len(h) for h in headers]
+    for row in table_data:
+        for i, val in enumerate(row):
+            col_widths[i] = max(col_widths[i], len(str(val)))
+    print("  ".join(h.ljust(col_widths[i]) for i, h in enumerate(headers)))
+    print("  ".join("-" * col_widths[i] for i in range(len(headers))))
+    for row in table_data:
+        print("  ".join(str(row[i]).ljust(col_widths[i]) for i in range(len(headers))))
+    print(f"\nAudited {len(rows)} fork(s) against webomage/tap ({tap_dir}).")
+
+
+
 def cmd_digest(args: argparse.Namespace) -> None:
     forks_dir = resolve_forks_dir(args.dir)
     if args.repo:
@@ -2444,6 +2587,15 @@ def main() -> None:
     p_vote.add_argument("--unvote", action="store_true", help="Remove existing 👍 reaction instead of adding")
     p_vote.add_argument("--json", action="store_true", help="Output structured JSON")
     p_vote.set_defaults(func=cmd_vote)
+
+    # Tap-Sync (T595 / AgDR-0052)
+    p_tap_sync = subparsers.add_parser("tap-sync", help="Audit and sync w0m-pr/* beta branches with webomage/tap formulae")
+    p_tap_sync.add_argument("--dir", type=str, help="Path to w0m-pr directory")
+    p_tap_sync.add_argument("--tap-dir", type=str, help="Path to webomage/homebrew-tap directory")
+    p_tap_sync.add_argument("--no-fetch", action="store_true", help="Skip fetching remotes before checking")
+    p_tap_sync.add_argument("--sync", action="store_true", help="Update Formula/*.rb versions in webomage/homebrew-tap")
+    p_tap_sync.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_tap_sync.set_defaults(func=cmd_tap_sync)
 
     args = parser.parse_args()
     args.func(args)

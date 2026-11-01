@@ -116,12 +116,12 @@
     },
     "headroom": {
       "min": "0.37.0",
-      "known_good": "0.37.0",
+      "known_good": "0.39.0",
       "required": false,
-      "source": "uv-tool",
+      "source": "brew",
       "auto": "none",
       "smoke": "headroom --version",
-      "note": "🔴 SOURCE CORRECTED 2026-08-31: this said `pip` and that was WRONG. There were TWO installs — a uv tool at ~/.local/share/uv/tools/headroom-ai (which owns ~/.local/bin/headroom, the binary that actually runs and that `headroom --version` reports) and a pip install inside pyenv 3.12.9 that NOTHING executes. Upgrading via pip moved the version nobody uses while `headroom --version` kept reporting the old one. Upgrade with `uv tool upgrade headroom-ai`. This is the same two-managers-one-tool shape recorded for ast-grep in this very file. pip into the pyenv 3.12.9 env (`pip install \"headroom-ai[all]\"`); pypi name is headroom-ai, NOT headroom. Provision + verify with `just headroom-bootstrap` / `just headroom-status` (advisory; `--enforce` gates). required:false ON PURPOSE — nothing in the estate depends on it, and its compression measured 0 tokens saved on 2026-08-03 while costing +57% wall clock. The value is the two READ-ONLY analyzers: `just headroom-audit` (transcript waste sizing) and `just headroom-learn` (failure→guidance, ~82k tok/session). ⚠️ Four traps, all hit once: `install apply --providers auto` aborts on any stray provider it auto-detects (it was the retired openclaw binary until that was uninstalled 2026-08-10; keep --providers manual --target claude regardless); `--memory` leaves the backend initialized:false → /readyz 503 → install fails; it installs serena as code-memory and serena needs a `projects` key in ~/.serena/serena_config.yml; and a custom ANTHROPIC_BASE_URL silently disables on-demand tool loading (#746, needs ENABLE_TOOL_SEARCH) and the 1M context window (#1158). ⚠️ Never a bare `headroom learn --apply` — it rewrites the agent memory index; use `just headroom-learn-apply` which pins --target CLAUDE.local.md."
+      "note": "T456 / T595 (AgDR-0052) — installed via `webomage/tap/headroom` (`brew install webomage/tap/headroom`) built from `github.com/webomage/headroom` `beta` branch (continuously aligned to latest upstream official release `0.39.0` + our open PR tweaks `feat/omlx-proxy-routing` & `feat/audit-host-services` on top, ad-hoc signed with `codesign --force --sign -`). Managed as a Homebrew launchd service on `127.0.0.1:8787` via `just headroom-start` / `just headroom-status` (`scripts/headroom_service.py`)."
     },
     "infisical": {
       "min": "0.40.0",
@@ -170,12 +170,12 @@
     },
     "omlx": {
       "min": "0.5.0",
-      "known_good": "0.6.4",
+      "known_good": "0.7.3",
       "required": false,
-      "source": "pip",
+      "source": "brew",
       "auto": "minor",
       "smoke": "omlx --version",
-      "note": "T184 AC3 — THE local LLM serving tool, by owner decision 2026-08-08: \"we're happy with tart and omlx as tools for LLMs and VMs\" and \"omlx works for me and rapid-mlx is not — we go with omlx\" (rapid-mlx was evaluated and REJECTED, not merely unchosen). OpenAI-compatible multi-model server for Apple Silicon; `omlx serve` defaults to :8000. 🔴 It was undeclared here until 2026-08-09 — installed, load-bearing, and invisible to `tools-check`, so a machine without it would have reported a clean toolchain. Found by revalidating T184's ACs, not by any gate. `required: false` because nothing in the commit/push path needs it; it is a developer-workstation tool."
+      "note": "T184 AC3 / T595 (AgDR-0052) — THE local LLM serving tool on Apple Silicon (`omlx serve` on `:8888`, routed behind Headroom `:8787`). Installed via `webomage/tap/omlx` (`brew install webomage/tap/omlx`) built from `github.com/webomage/omlx` `beta` branch (continuously aligned to latest upstream official release `0.7.3` + our PR `#3743` `fix/menubar-adopt-external-omlx` and Gemma 4 `_safe_fused_mse_decode_kernel` `dim > 256` guard on top, ad-hoc signed with `codesign --force --sign -`)."
     },
     "osv-scanner": {
       "min": "2.0.0",

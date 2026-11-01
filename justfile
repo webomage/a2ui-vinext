@@ -286,6 +286,9 @@ forks-update *args:
 forks-sync *args:
     @python3 scripts/w0m_prs.py update {{ args }}
 
+tap-sync *args:
+    @python3 scripts/w0m_prs.py tap-sync {{ args }}
+
 prs-digest *args:
     @python3 scripts/w0m_prs.py digest {{ args }}
 

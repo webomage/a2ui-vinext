@@ -4,6 +4,7 @@
 import json
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -270,6 +271,13 @@ def main() -> int:
     check("fetch_repo_feature_board returns items and 4 columns", len(board_offline.get("items", [])) >= 5 and set(board_offline.get("columns", {}).keys()) == {"proposed", "planned", "in_progress", "shipped"})
     unauth_vote = w0m_prs.vote_github_issue("stablyai/orca", 190, token="")
     check("vote_github_issue rejects unauthenticated vote with 401 and github_auth_required", unauth_vote.get("ok") is False and unauth_vote.get("status") == 401 and unauth_vote.get("github_auth_required") is True)
+
+    # 8d. Tap-Sync & Version Extraction (T595 / AgDR-0052)
+    with tempfile.TemporaryDirectory() as tmp_tap_root:
+        tmp_pkg = Path(tmp_tap_root) / "demo"
+        tmp_pkg.mkdir()
+        (tmp_pkg / "pyproject.toml").write_text('name = "demo"\nversion = "0.7.3rc1"\n', encoding="utf-8")
+        check("_extract_fork_version strips rc suffix from pyproject.toml", w0m_prs._extract_fork_version(tmp_pkg) == "0.7.3")
 
     # 9. Skill check
     skill_md = ROOT / "w0m-skills/skills/w0m-prs/SKILL.md"
