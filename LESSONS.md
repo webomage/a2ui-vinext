@@ -549,6 +549,30 @@ An agent ran `npx vitest run src/auth/middleware.spec.ts` from `wom7web/packages
 ⇒ **Name the working directory and command with every "X is broken" claim, and reproduce it the repo's own way (`just <recipe>`, or from the root) before it leaves your hands.** If a re-run disagrees with something you already said, retract it in that message, not three messages later.
 ⭐ **The tell:** an import or module-resolution error for a virtual module (`astro:*`, a workspace alias) when you are not at the root.
 
+### RESOLVE RUSTUP-MANAGED CARGO/RUSTC EXPLICITLY AND RUN CRATE CHECKS IN TEMPORARY DIRECTORIES
+**2026-11-01, T595. Bit twice during `just deploy-all` (`_deploy-preflight`).**
+
+`scripts/wasm_worker_check.py` checked `rustup target list --installed` (which confirmed `wasm32-unknown-unknown` was installed in `~/.rustup/toolchains/stable-aarch64-apple-darwin`) and then invoked `shutil.which("cargo")`. In interactive login shells (`zsh -lic`) where `/opt/homebrew/bin` precedes `/opt/homebrew/opt/rustup/bin`, `shutil.which("cargo")` resolved to `/opt/homebrew/bin/cargo` from Homebrew's standalone `rust` bottle, which only carries the host `aarch64-apple-darwin` sysroot and lacks `wasm32-unknown-unknown` `core` (`error[E0463]: can't find crate for core`). Worse, running `cargo check --manifest-path w0m-cf/crates/w0m-wasm-utils/Cargo.toml` in-place wrote untracked `Cargo.lock` and `target/` directories into `w0m-cf`, dirtying the release worktree and racing when `wasm-worker-check` and `wasm-worker-check-selftest` executed concurrently under `run_suites.py --prepush`.
+
+⇒ **Whenever a gate checks `rustup target list --installed` for a cross-compilation target (`wasm32-unknown-unknown`), resolve `cargo` and `rustc` via `rustup which cargo` and `rustup which rustc` (`env["RUSTC"] = rustc_bin` and prepend the toolchain `bin` dir to `PATH`), and run `cargo check` / `cargo build` inside an isolated `tempfile.TemporaryDirectory()` copy of the crate.**
+⭐ **The tell:** `rustup target list --installed` lists `wasm32-unknown-unknown`, yet `cargo check --target wasm32-unknown-unknown` fails with `error[E0463]: can't find crate for core`; or `git status` in `w0m-cf` shows untracked `Cargo.lock` / `target/` after a read-only check suite runs.
+
+### NEVER PUT `-q` IN `pytest.ini` `addopts` WHEN `justfile` RECIPES PASS `-q`
+**2026-11-01, T595.** `run_suites.py --prepush` reported `[UNKNOWN] 2 suite(s) passed with an UNREADABLE check count: kyc-bio-probe-selftest, cf-bindings-inventory-selftest`.
+
+Root `pytest.ini` set `addopts = -q -p no:cacheprovider`, while the `justfile` recipes (`kyc-bio-probe-test`, `cf-bindings-inventory-test`, `wasm-worker-check-test`) also passed `-q` on the command line. Pytest stacks `-q` flags additively: `-q` in `pytest.ini` plus `-q` on the CLI enters `-qq` (`verbosity = -2`), which suppresses the `N passed in Xs` summary line that `run_suites.py` parses via `PASSED_N` (`(\d+)\s+passed`).
+
+⇒ **Keep `pytest.ini` `addopts` free of `-q` (`addopts = -p no:cacheprovider`) so single `-q` invocations in `justfile` recipes emit the `N passed in Xs` summary line expected by `run_suites.py`.**
+⭐ **The tell:** A pytest suite passing with `..` dots only and zero summary line, causing `run_suites.py` to print `? check(s)` and `[UNKNOWN] ... passed with an UNREADABLE check count`.
+
+### STUB AN EXPLICIT IN-MEMORY `Storage` ON `window.localStorage` IN VITEST JSDOM SUITES UNDER NODE 25+
+**2026-11-01, T600.** Running Vitest component tests (`ProjectManager.test.ts`) under Node `v26.13.0` emitted `--localstorage-file was not provided for a valid path` and threw `TypeError: window.localStorage.clear is not a function`.
+
+Node 25/26 defines an experimental `globalThis.localStorage` getter that returns an uninitialized stub object when `--localstorage-file` is not passed on the Node CLI, shadowing or breaking jsdom's `window.localStorage` methods (`getItem`, `setItem`, `removeItem`, `clear`) inside Vitest workers.
+
+⇒ **In Vitest component tests that exercise `window.localStorage`, define a deterministic in-memory `Storage` stub via `Object.defineProperty(window, "localStorage", ...)` in `beforeEach` rather than relying on the ambient Node/jsdom global.**
+⭐ **The tell:** Node printing `Warning: `--localstorage-file` was not provided` followed by `window.localStorage.getItem/setItem/clear is not a function` in a Vitest `jsdom` suite.
+
 
 ## 3. Deploys and platforms
 
@@ -704,6 +728,27 @@ The deploy shipped and published its tags, then `record_release` committed `rele
 When `just deploy-all` cut an isolated release worktree (`~/.w0m/releases/<v>/w0m`) on the Linux host, four blocking suites failed that had passed in the agent tree: `prs` and `py-test` (`resolve_forks_dir` hardcoded the macOS host path `~/Projects/@self/@wom` when escaping a release worktree, missing `~/Projects/!self/w0m`), `mmd-validate-probe` and `ai-memory-pin` (untracked `_ext/` and `wom7skills/skills/mmd-validate/node_modules` existed only in the agent tree, not the live checkout `provision_worktree_fixtures` symlinks from), and fresh worktree builds needed `apps/web/src/.generated/*.json` and `.infisical.yaml`.
 
 ⇒ **Any script that locates the main estate from a detached release worktree must check every supported host path (`~/Projects/!self/w0m` and `~/Projects/@self/@wom`) before falling back, and every gitignored fixture or generated snapshot a blocking suite or build reads must be provisioned by `release.py:provision_worktree_fixtures()` and present in the live checkout.**
+
+### VERIFY ALL 5 WORKSPACE `.bin` SETS, WARP REGISTRATION, AND WIFI IPV6 SERVICE BEFORE RUNNING `deploy-all` ON A FRESH HOST
+**2026-11-01, T595.** On a freshly provisioned macOS host, `just deploy-all` failed three times before reaching `deploy-api`: first with `ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL Command "tsx" not found` (`w0m-api/node_modules/.bin` was missing because `pnpm install` had only been run in `w0m-web`), second with `warp-cli` un-registered (`Reason: Registration Missing due to: Daemon Startup`), and third with `getaddrinfo` failing on `db.pqbbjgeapylcengbuvee.supabase.co` even after `warp-cli` reported `Connected`.
+
+⇒ **On any newly provisioned or reset host, run three bootstrap checks before `just deploy-all`:**
+1. **Workspace `.bin` sets (`5/5`):** Run `just deps-install` (`python3 scripts/deps_sync.py --install`, verified by `just preflight --fast`) so all 5 TypeScript workspaces (`w0m-web`, `w0m-api`, `w0m-cf`, `w0m-ext/extension`, `w0m-skills`) have populated `node_modules/.bin` binaries (`tsx`, `vitest`, `wrangler`, `astro`, `svelte-check`).
+2. **Consumer WARP registration:** Register and connect standard consumer WARP (`Account type: Free` — no Zero Trust team name required) via `warp-cli --accept-tos registration new && warp-cli --accept-tos connect`.
+3. **macOS IPv6 service registration on IPv4-only Wi-Fi:** Register a static private IPv6 address and router (`networksetup -setv6manual Wi-Fi fd00:0:0:1::2 64 fd00:0:0:1::1`) so macOS `getaddrinfo` queries AAAA records over the WARP tunnel (`just check-warp`).
+⭐ **The tell:** `just preflight --fast` or `just deploy-all` failing on a fresh machine where `which pnpm` and `warp-cli status` look installed, but sub-workspaces lack `node_modules/.bin` or `scutil --nwi | grep en0` shows `IPv4,DNS` only.
+
+### EXPORT TOOLCHAIN PATHS IN `~/.zshenv` AND REWRITE ABSOLUTE HOME SYMLINKS WHEN MIGRATING ACROSS OS HOSTS
+**2026-11-01, T596 / Host Offload (`darwin` `/Users/proto` → `linux` `/home/aleksei`).**
+
+When offloading workspaces and agent sessions from macOS (`/Users/proto`) to the Linux control plane (`/home/aleksei`), two cross-OS mismatches surfaced immediately:
+1. `rsync -az` preserved absolute symlinks pointing to `/Users/proto/...` (e.g. `BridgeMvp -> /Users/proto/Projects/!proj/bridgeroad/bridgeroad-app`), creating dangling symlinks on Linux.
+2. On Linux, `/home/linuxbrew/.linuxbrew/bin`, `~/.local/bin`, `~/.pyenv/shims`, and `fnm` were only exported inside `~/.zshrc`. Non-interactive SSH probes (`ssh linux-host 'python3 scripts/preflight.py --fast'`) and daemon subprocesses skipped `~/.zshrc` and reported `12/15` required tools missing (`node`, `pnpm`, `deno`, `gh`, `just`, `infisical`, `uv`).
+
+⇒ **When migrating or synchronizing workspaces between macOS (`/Users/<user>`) and Linux (`/home/<user>`):**
+- Export all toolchain `PATH` entries (`linuxbrew`, `~/.local/bin`, `~/.cargo/bin`, `pyenv`, `fnm env`) in **`~/.zshenv`** (not only `~/.zshrc`) so non-interactive SSH commands, Orca RPC workers, and hooks resolve the identical toolchain as interactive login shells.
+- Scan transferred workspaces with `find ~/Projects -type l` and rewrite any `/Users/<user>/...` symlink target to `/home/<user>/...` (or a relative symlink).
+⭐ **The tell:** `ssh <host> 'just preflight --fast'` reporting missing tools that work fine in an interactive terminal tab, or `ls -l` showing red dangling symlinks pointing to `/Users/...` on a Linux host.
 
 
 ## 4. Dependencies and config
@@ -1328,6 +1373,17 @@ Embedding `projectId`, `projectTitle`, `projectRoleId`, `projectRoleName`, and `
 
 ⇒ **Scope all document stylesheet rules under an explicit container class (`.resume-sheet.template-*`), and confine document-wide pagination rules (`@page`, `@media print`) strictly inside print media queries.**
 ⭐ **The tell:** Importing document stylesheets into an interactive workspace island without an enclosing container class namespace.
+
+### SHARED API ENDPOINTS CONSUMED BY MULTIPLE SVELTE ISLANDS MUST RETURN NORMALIZED IDENTIFIERS AND DEFAULT TO THE CURRENT ORG CONTEXT
+**2026-11-01, T600 (CP `/o/webomage/projects` Hats & `ContextSwitcher`).**
+
+On `https://cp.webomage.com/o/webomage/projects`, clicking the sidebar `Project Hats ▼` button did nothing and displayed static `"Project Hats"`, while the `Project Hats & Roles` card below kept resetting to `Artemio, quiero comer!` on every reload. Inspection showed `GET /api/project/hats` returned `{ project_id, assigned_roles: string[], worn_role }` for `MyProjectHats.svelte`, whereas `SidebarHatSwitcher.svelte` called the same endpoint expecting `{ id, hats: [{ id, role_name, role_slug, is_worn }] }`. Because `p.id` was `undefined` and `p.hats` was missing, `SidebarHatSwitcher` failed to select any project or list any roles. Meanwhile, `MyProjectHats.svelte` defaulted to `projects[0]` alphabetically (`Artemio`) without checking `localStorage` or matching `client_org_slug === currentOrgSlug` (`webomage` → `w0m Platform`).
+
+⇒ **When multiple Svelte islands (`SidebarHatSwitcher`, `MyProjectHats`, `HatSwitcher`) share an API endpoint or client state:**
+1. Return canonical normalized fields (`id` alongside `project_id`, and structured `assigned_hats` alongside `assigned_roles`) from the API route so no consumer silently reads `undefined`.
+2. Synchronize selection state across islands via a shared `localStorage` key (`wom_selected_hat_project_id`) AND a window custom event (`wom:project-hat-changed`), defaulting to the project whose `client_org_slug` matches the active URL org (`currentOrgSlug`) before falling back to `projects[0]`.
+3. Summarize multi-role badges (`> 2` roles in `ContextSwitcher`) as `<Primary Role> +<N-1>` (`Tech Lead +6`) on a single truncated line with the full list in `title`.
+⭐ **The tell:** Two components on the same page fetching the same `/api/...` URL but destructuring different property names (`p.id` vs `p.project_id`), or an org-scoped page (`/o/<org>/projects`) defaulting a selector to a different organization's project on reload.
 
 ---
 
