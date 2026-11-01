@@ -2,6 +2,46 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.01-1793550372
+_First deployed: 2026-11-01 16:34:29.240784+00_
+
+### Features
+- **mlx**: port canonical MLX Gemma 4 + oMLX schemas and register mlx-rs/mlx-lm PR proposals (T601) ([T601](file:///.tasks/T601.md))
+- **mlx**: complete T14, T82, and T83 with webomage/mlx-rs fork and Gemma 4 port (T14, T82, T83) ([T14](file:///.tasks/T14.md), [T82](file:///.tasks/T82.md), [T83](file:///.tasks/T83.md))
+- **sdlc**: complete T487 visual golden local stack SSOT, baseline check, and diff gate (T487) ([T487](file:///.tasks/T487.md))
+- **tooling**: complete paused backlog tasks T152, T153, T179, T180, T181, T343, T368 ([T152](file:///.tasks/T152.md), [T153](file:///.tasks/T153.md), [T179](file:///.tasks/T179.md), [T180](file:///.tasks/T180.md), [T181](file:///.tasks/T181.md), [T343](file:///.tasks/T343.md), [T368](file:///.tasks/T368.md))
+- **prs**: prepare 9 upstream PR proposals, submit gate, and worktree monitor (T593) ([T593](file:///.tasks/T593.md))
+- **e2e,oci**: Gauge fail-fast + parallel E2E, multi-engine OCI sandboxes, and service+version probes (T480) ([T480](file:///.tasks/T480.md))
+- **automation**: Orca AutomationService sync, N=1/N=3 cohort runner, and capability red-probe (T171) ([T171](file:///.tasks/T171.md))
+- **cli**: worktree session targeting, Orca GitHub Tasks auth sync, and T597 completion (T597) ([T597](file:///.tasks/T597.md))
+- **tools**: add private cross-host workload state persistence and w0m-prs Orca task/automation sync (T599) ([T599](file:///.tasks/T599.md))
+- **cli,catalog**: add w0m track, w0m automation prechecks, and sync Backstage catalog (T597, T598, T171) ([T597](file:///.tasks/T597.md), [T598](file:///.tasks/T598.md), [T171](file:///.tasks/T171.md))
+- **tools**: add w0m catalog subcommand and platform entity alignment to AX report (T597, T598) ([T597](file:///.tasks/T597.md), [T598](file:///.tasks/T598.md))
+- **tools**: add unified w0m CLI and Orca multi-host AX specs (T597, T598) ([T597](file:///.tasks/T597.md), [T598](file:///.tasks/T598.md))
+- **tools**: add multi-host Orca instance and agent session orchestration (T596) ([T596](file:///.tasks/T596.md))
+- **T595**: standardize on webomage/tap with continuous beta branch tap-sync (AgDR-0052) ([T595](file:///.tasks/T595.md))
+- **T569,T596,T597**: complete T569 Apple Silicon Metal benchmarks and file P1 Orca tickets ([T569](file:///.tasks/T569.md), [T596](file:///.tasks/T596.md), [T597](file:///.tasks/T597.md))
+- **T595**: standardize toolchain on brew with LTS floor and latest comparison (AgDR-0052) ([T595](file:///.tasks/T595.md))
+
+### Fixes
+- **scripts**: resolve rustup wasm32 cargo and isolate crate check (T595) ([T595](file:///.tasks/T595.md))
+- **tools**: govern missing host CLIs and verify/auto-provision workspace .bin tools (T595) ([T595](file:///.tasks/T595.md))
+- **tasks**: record T600 CP project hat switcher & ContextSwitcher fixes (T600) ([T600](file:///.tasks/T600.md))
+- **sdlc**: align stale Gauge specs, update spec-reality retired reporting, and close T486 (T486) ([T486](file:///.tasks/T486.md))
+- **prs**: support --no-dry-run and idempotent open-PR detection in prs-submit (T593) ([T593](file:///.tasks/T593.md))
+- **deploy**: exclude harmless Gauge/WebGL audit trouble and record release-to-release deltas (T523) ([T523](file:///.tasks/T523.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `09f8383` | 2026-11-01 16:34:29.240784+00 |
+| demo | `09f8383` | 2026-11-01 16:34:13.779886+00 |
+| job | `09f8383` | 2026-11-01 16:33:46.508722+00 |
+| join | `09f8383` | 2026-11-01 16:33:10.25929+00 |
+| cp | `09f8383` | 2026-11-01 16:32:38.64733+00 |
+| web | `09f8383` | 2026-11-01 16:31:49.830811+00 |
+| release | `09f8383` | 2026-11-01 16:30:24.686661+00 |
+| api | `09f8383` | 2026-11-01 16:30:19.691649+00 |
+
 ## 2026.10.31-1793464869
 _First deployed: 2026-10-31 18:16:44.686083+00_
 
