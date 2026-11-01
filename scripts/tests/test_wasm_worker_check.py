@@ -111,3 +111,17 @@ def test_ac5_ac7_agdr_boundary_red_probe() -> None:
         assert "ZeroClaw" in joined
         assert "31,699,216" in joined
         assert "fourth" in joined
+
+
+def test_resolve_wasm32_cargo_and_clean_tree_isolation() -> None:
+    """T595: Verify `cargo check` resolves rustup's toolchain and leaves zero untracked files in CRATE_DIR."""
+    res = wwc.check_crate_lint_and_abi()
+    assert res["ok"] is True, res["problems"]
+    assert not (wwc.CRATE_DIR / "Cargo.lock").exists()
+    assert not (wwc.CRATE_DIR / "target").exists()
+    resolved = wwc._resolve_wasm32_cargo()
+    if resolved is not None:
+        cargo_bin, cargo_env = resolved
+        assert Path(cargo_bin).is_file()
+        assert "RUSTC" in cargo_env
+        assert Path(cargo_env["RUSTC"]).is_file()

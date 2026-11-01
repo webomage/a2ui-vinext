@@ -26,11 +26,13 @@ from __future__ import annotations
 import argparse
 import gzip
 import json
+import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from typing import Any
 
 HERE = Path(__file__).resolve()
@@ -281,26 +283,72 @@ def build_deterministic_wasm_bytes() -> bytes:
     return b"\x00asm\x01\x00\x00\x00" + type_sec + func_sec + mem_sec + export_sec + code_sec
 
 
+def _resolve_wasm32_cargo(
+    rustup: str | None = None,
+    cargo: str | None = None,
+) -> tuple[str, dict[str, str]] | None:
+    """Resolve the `rustup` toolchain `cargo` + `rustc` that owns `wasm32-unknown-unknown` (T595).
+
+    On macOS hosts where Homebrew `rust` (`/opt/homebrew/bin/cargo`) precedes
+    `/opt/homebrew/opt/rustup/bin` on `PATH`, bare `shutil.which("cargo")` resolves to
+    Homebrew's standalone `cargo` which lacks the `wasm32-unknown-unknown` `core` sysroot
+    even when `rustup target list --installed` reports `wasm32-unknown-unknown` installed.
+    """
+    rustup_bin = rustup or shutil.which("rustup")
+    if not rustup_bin:
+        return None
+    t_out = subprocess.run(
+        [rustup_bin, "target", "list", "--installed"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if t_out.returncode != 0 or "wasm32-unknown-unknown" not in (t_out.stdout or ""):
+        return None
+
+    cargo_out = subprocess.run(
+        [rustup_bin, "which", "cargo"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    rustc_out = subprocess.run(
+        [rustup_bin, "which", "rustc"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    cargo_bin = (cargo_out.stdout or "").strip() if cargo_out.returncode == 0 else (cargo or shutil.which("cargo") or "")
+    rustc_bin = (rustc_out.stdout or "").strip() if rustc_out.returncode == 0 else ""
+    if not cargo_bin:
+        return None
+
+    env = dict(os.environ)
+    toolchain_bin_dir = str(Path(cargo_bin).parent)
+    env["PATH"] = f"{toolchain_bin_dir}{os.pathsep}{env.get('PATH', '')}"
+    if rustc_bin:
+        env["RUSTC"] = rustc_bin
+    return cargo_bin, env
+
+
 def emit_wasm_binary(out_path: Path = WASM_BIN_PATH) -> dict[str, Any]:
     """Build or deterministically emit `w0m_wasm_utils.wasm`."""
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    cargo = shutil.which("cargo")
-    rustup = shutil.which("rustup")
+    resolved = _resolve_wasm32_cargo()
     used_cargo = False
-    if cargo and rustup and CARGO_TOML_PATH.is_file():
-        t_out = subprocess.run(
-            [rustup, "target", "list", "--installed"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if "wasm32-unknown-unknown" in (t_out.stdout or ""):
+    if resolved and CARGO_TOML_PATH.is_file() and LIB_RS_PATH.is_file():
+        cargo_bin, cargo_env = resolved
+        with tempfile.TemporaryDirectory(prefix="w0m-wasm-emit-") as tmp:
+            tmp_dir = Path(tmp)
+            (tmp_dir / "src").mkdir(parents=True, exist_ok=True)
+            shutil.copy2(CARGO_TOML_PATH, tmp_dir / "Cargo.toml")
+            shutil.copy2(LIB_RS_PATH, tmp_dir / "src" / "lib.rs")
             res = subprocess.run(
                 [
-                    cargo,
+                    cargo_bin,
                     "build",
                     "--manifest-path",
-                    str(CARGO_TOML_PATH),
+                    str(tmp_dir / "Cargo.toml"),
                     "--target",
                     "wasm32-unknown-unknown",
                     "--release",
@@ -308,9 +356,10 @@ def emit_wasm_binary(out_path: Path = WASM_BIN_PATH) -> dict[str, Any]:
                 capture_output=True,
                 text=True,
                 check=False,
+                env=cargo_env,
             )
             built = (
-                CRATE_DIR
+                tmp_dir
                 / "target"
                 / "wasm32-unknown-unknown"
                 / "release"
@@ -587,29 +636,28 @@ def check_crate_lint_and_abi(
             if exp not in exports:
                 problems.append(f"WASM binary missing required export `{exp}`")
 
-    cargo = shutil.which("cargo")
-    rustup = shutil.which("rustup")
+    resolved = _resolve_wasm32_cargo()
     cargo_checked = False
-    if cargo and rustup and cargo_toml_path.is_file():
-        t_out = subprocess.run(
-            [rustup, "target", "list", "--installed"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if "wasm32-unknown-unknown" in (t_out.stdout or ""):
+    if resolved and cargo_toml_path.is_file() and lib_rs_path.is_file() and len(problems) == 0:
+        cargo_bin, cargo_env = resolved
+        with tempfile.TemporaryDirectory(prefix="w0m-wasm-check-") as tmp:
+            tmp_dir = Path(tmp)
+            (tmp_dir / "src").mkdir(parents=True, exist_ok=True)
+            shutil.copy2(cargo_toml_path, tmp_dir / "Cargo.toml")
+            shutil.copy2(lib_rs_path, tmp_dir / "src" / "lib.rs")
             chk = subprocess.run(
                 [
-                    cargo,
+                    cargo_bin,
                     "check",
                     "--manifest-path",
-                    str(cargo_toml_path),
+                    str(tmp_dir / "Cargo.toml"),
                     "--target",
                     "wasm32-unknown-unknown",
                 ],
                 capture_output=True,
                 text=True,
                 check=False,
+                env=cargo_env,
             )
             cargo_checked = True
             if chk.returncode != 0:
