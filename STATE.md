@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `2315ceb7` |
-| `w0m-api` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `28b4ac2` |
-| `w0m-cf` | `agent/agy-mlx` | **2** | **n/a — NO UPSTREAM** | `80bada3` |
-| `w0m-skills` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
-| `w0m-ext` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `2ec4f71` |
-| `w0m-sec` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/agy-mlx` | 0 | **n/a — NO UPSTREAM** | `e3d014c` |
+| `w0m-web` | `agent/agy-hats` | 0 | **n/a — NO UPSTREAM** | `6d8c6b25` |
+| `w0m-api` | `agent/agy-hats` | 0 | **n/a — NO UPSTREAM** | `28b4ac2` |
+| `w0m-cf` | `agent/agy-hats` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
+| `w0m-skills` | `agent/agy-hats` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
+| `w0m-ext` | `agent/agy-hats` | 0 | **n/a — NO UPSTREAM** | `2ec4f71` |
+| `w0m-sec` | `agent/agy-hats` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
+| `w0m-mlx/w0m-mlx` | `agent/agy-hats` | 0 | **n/a — NO UPSTREAM** | `e3d014c` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 599 TASKS.md rows · 262/599 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 599 TASKS.md rows · 263/600 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"28b4ac2","unpushed":null},"w0m-cf":{"branch":"agent/agy-mlx","dirty":2,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"e3d014c","unpushed":null},"w0m-sec":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-mlx","dirty":0,"has_upstream":true,"head":"2315ceb7","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":599,"specced":262,"specced_open":1,"total":599,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/agy-hats","dirty":0,"has_upstream":true,"head":"28b4ac2","unpushed":null},"w0m-cf":{"branch":"agent/agy-hats","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/agy-hats","dirty":0,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-hats","dirty":0,"has_upstream":true,"head":"e3d014c","unpushed":null},"w0m-sec":{"branch":"agent/agy-hats","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-hats","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-hats","dirty":0,"has_upstream":true,"head":"6d8c6b25","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":599,"specced":263,"specced_open":1,"total":600,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,7 +113,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (15):
+#### Completed today (16):
 
 - **T14** — wom7mlx refresh + Rust Gemma launcher (AC1: Completed time-boxed spike comparing webomage/mlx-rs (oxiglade/mlx-rs v0.33.0 + mlx-lm 0.33.0) vs candle (mistral.rs v0.8.x) vs oMLX (0.7.3-w0m) + mlx-vlm (0.7.11-w0m), and audited w0m-mlx-rs (w0m-mlx/w0m-mlx) + casualuser/mlx-rs (5b6dc1ab) for upstream contribution readiness (verdict: do not upstream legacy GLM-4.6V / CPU-loop dequantize_affine or obsolete build.rs env vars; future upstream PRs from webomage/mlx-rs target mlx-lm/src/arch/gemma4/). Documented in .agents/reports/-t14-t82-t83-mlx-rs-review-and-gemma4-architecture.md.)
 - **T82** — Gemma 4 Rust port (wom7-mlx-rs) (✅  — Completed (6/6 ACs))
@@ -130,6 +130,7 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T597** — Orca cross-workspace tab drag-and-drop with confirmation dialog, session rebinding, and UI state sync (Created (status: queued, priority: P1) per owner direction: "moving live sessions here could be complicated but I think we can change session and then update UI and if it's drag-and-drop then start moving, confirm in UI with info, update session, update UI".)
 - **T598** — Unified w0m CLI tool (w0m skill, w0m project, w0m agent, w0m tree, w0m session) for skills and multi-project management (Created, implemented, and verified done by agy:agy-orca (Track C) per owner direction: "I also think we should get something like w0m cli tool for skills and projects management".)
 - **T599** — Private cross-host workload state persistence, Linux session archive/closeout, and w0m-prs new PR/branch discovery with Orca task/automation registration ((agy:agy-t599, Track C): Completed AC1–AC4 (status: done))
+- **T600** — Fix CP SidebarHatSwitcher no-op dropdown, stop Project Hats resetting to Artemio, and compact ContextSwitcher multi-role subtitle (Completed (agy:agy-hats, 4/4 ACs): Fixed SidebarHatSwitcher.svelte & /api/project/hats payload mismatch (id/project_id + assigned_hats), persisted selected hat project (wom_selected_hat_project_id) with own-org project priority (w0m Platform on /o/webomage/projects) and cross-island wom:project-hat-changed synchronization across MyProjectHats.svelte / HatSwitcher.svelte / SidebarHatSwitcher.svelte, and compacted multi-role subtitles (Tech Lead +6) in ContextSwitcher.svelte. Verified 41/41 unit tests.)
 
 ## 3. Other open threads (in TASKS.md)
 

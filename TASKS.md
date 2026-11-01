@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T600](.tasks/T600.md) | **P1** | **Fix CP SidebarHatSwitcher no-op dropdown, stop Project Hats resetting to Artemio, and compact ContextSwitcher multi-role subtitle** | web | openspec/specs/identity-surface/spec.md | ✅ **done** |
 | [T599](.tasks/T599.md) | **P1** | **Private cross-host workload state persistence, Linux session archive/closeout, and w0m-prs new PR/branch discovery with Orca task/automation registration** | tooling, skills | openspec/changes/2026-11-01-orca-session-naming-and-ax-workflows | ✅ **done** |
 | [T598](.tasks/T598.md) | **P1** | **Unified w0m CLI tool (w0m skill, w0m project, w0m agent, w0m tree, w0m session) for skills and multi-project management** | tooling, skills | openspec/changes/2026-11-01-orca-session-naming-and-ax-workflows | ✅ **done** |
 | [T597](.tasks/T597.md) | **P1** | 🆕 **Orca cross-workspace tab drag-and-drop with confirmation dialog, session rebinding, and UI state sync** | tooling | — | ✅ **done** |
