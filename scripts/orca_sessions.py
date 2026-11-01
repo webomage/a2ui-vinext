@@ -1222,21 +1222,40 @@ def format_sessions_table(sessions: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+EXPECTED_ORCA_VERSION_PREFIX = "1.4."
+
+
+def verify_orca_runtime_service_and_version(
+    rt: dict[str, Any] | None,
+    expected_prefix: str = EXPECTED_ORCA_VERSION_PREFIX,
+) -> tuple[bool, bool, str]:
+    """Verify that the replying Orca RPC daemon reports expected service identity (`runtimeId` + `ready`) and expected version."""
+    if not isinstance(rt, dict) or not rt.get("runtimeId"):
+        return False, False, "offline"
+    service_ok = bool(rt.get("runtimeId")) and rt.get("ready", True) is not False
+    actual_version = str(rt.get("appVersion") or "")
+    version_ok = actual_version.startswith(expected_prefix) if actual_version else False
+    return service_ok, version_ok, actual_version or "unknown"
+
+
 def format_hosts_table(snapshots: list[dict[str, Any]], sessions_by_host: dict[str, list[dict[str, Any]]]) -> str:
     """Format multi-host Orca runtime and SSH connectivity summary."""
     lines = [
-        "| Host | Hostname (`platform`) | Reachable | Orca Runtime (`version`) | Terminals | Live Sessions | SSH Targets |",
-        "|---|---|---|---|---|---|---|",
+        "| Host | Hostname (`platform`) | Reachable | Orca Runtime (`version`) | Service+Version OK | Terminals | Live Sessions | SSH Targets |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for snap in snapshots:
         host = str(snap.get("host") or "local")
         hname = f"{snap.get('hostname', host)} ({snap.get('platform', 'unknown')})"
         reachable = "yes" if snap.get("reachable") else "no"
         rt = snap.get("orcaRuntime") or {}
-        if isinstance(rt, dict) and rt.get("runtimeId"):
-            rt_str = f"ready ({str(rt.get('runtimeId'))[:8]} / {rt.get('appVersion', '1.4.x')})"
+        svc_ok, ver_ok, actual_ver = verify_orca_runtime_service_and_version(rt)
+        if svc_ok:
+            rt_str = f"ready ({str(rt.get('runtimeId'))[:8]} / {actual_ver})"
+            probe_ok_str = f"yes (orca {actual_ver})" if ver_ok else f"version-mismatch ({actual_ver} != {EXPECTED_ORCA_VERSION_PREFIX}*)"
         else:
             rt_str = "offline"
+            probe_ok_str = "no"
         terms_count = len(snap.get("terminals") or [])
         host_sessions = sessions_by_host.get(host, [])
         live_count = sum(1 for s in host_sessions if s.get("pid") is not None)
@@ -1246,7 +1265,7 @@ def format_hosts_table(snapshots: list[dict[str, Any]], sessions_by_host: dict[s
             for t in ssh_targets[:4]
         ) or "-"
         lines.append(
-            f"| `{host}` | `{hname}` | `{reachable}` | `{rt_str}` | `{terms_count}` | `{live_count}` | {ssh_desc} |"
+            f"| `{host}` | `{hname}` | `{reachable}` | `{rt_str}` | `{probe_ok_str}` | `{terms_count}` | `{live_count}` | {ssh_desc} |"
         )
     return "\n".join(lines)
 

@@ -1063,10 +1063,15 @@ stable-promote *args:
 e2e-stable *args:
     @python3 scripts/release.py e2e-stable {{ args }}
 
-# T532 — Run E2E tests against local sandbox environment
+# T532 & T480 — Run E2E tests against local sandbox environment (fail-fast precondition gates + parallel execution)
 e2e-local *specs:
     #!/usr/bin/env bash
     set -uo pipefail
+    # T480 AC5b — refuse to start when a concurrent astro check / vite build is holding .vite caches.
+    if pgrep -f "astro check|vite build" >/dev/null 2>&1; then
+      echo "  ❌ concurrent astro check or vite build detected — wait for it to finish so .vite/deps_ssr is not corrupted (T480 AC5b)."
+      exit 2
+    fi
     if ! curl -s -o /dev/null "http://127.0.0.1:54321/rest/v1/"; then
       echo "  ❌ local Supabase is not up. Run: just db-local-up && just db-local-env && just db-local-seed"
       exit 2
@@ -1087,6 +1092,17 @@ e2e-local *specs:
     anon=$(grep '^PUBLIC_SUPABASE_ANON_KEY' "$gen" | cut -d= -f2- | tr -d ' ')
     svc=$(grep '^SERVICE_ROLE_KEY' "$gen" | cut -d= -f2- | tr -d ' ')
     db=$(grep '^DATABASE_URL' "$gen" | cut -d= -f2- | tr -d ' ')
+    # T480 AC5 — prove the test team can actually sign in BEFORE launching 148 specs.
+    admin_email=$(grep '^ADMIN_EMAIL = ' "$team" | cut -d= -f2- | tr -d ' ')
+    admin_pass=$(grep '^ADMIN_PASSWORD = ' "$team" | cut -d= -f2- | tr -d ' ')
+    auth_rc=$(curl -s -o /dev/null -w '%{http_code}' \
+      -H "apikey: $anon" -H "Content-Type: application/json" \
+      -d "{\"email\":\"$admin_email\",\"password\":\"$admin_pass\"}" \
+      "http://127.0.0.1:54321/auth/v1/token?grant_type=password")
+    if [ "$auth_rc" != "200" ]; then
+      echo "  ❌ test-team sign-in failed against 127.0.0.1:54321 (HTTP $auth_rc) — run \`just test-team-local\` first (T480 AC5)."
+      exit 2
+    fi
     # T478 — measured 2026-09-28, beta injects FIVE values that point at live: PUBLIC_SUPABASE_URL,
     # SUPABASE_URL, PUBLIC_CP_URL, UPWORK_CALLBACK_URL, WORKERS_WEBHOOK_URL — and DATABASE_URL is the live
     # superuser. The first two were overridden; the rest reached live (ats.steps.ts connects with
@@ -1104,13 +1120,17 @@ e2e-local *specs:
     done
     # T478 — the corpus once wrote 12 rows into LIVE contact_messages from a local run: ~25 steps hardcoded live
     # URLs. tests/support/liveGuard.ts now refuses live hosts in-process; prove it works before any spec runs.
-    ( cd w0m-web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 pnpm exec tsx tests/support/liveGuard.probe.mts ) \
+    ( cd w0m-web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 node tests/support/liveGuard.probe.mts ) \
       || { echo "  ❌ the live guard is not holding — refusing to run a local suite that could reach live."; exit 2; }
-    echo "  ▶ starting Astro against LOCAL Supabase…"
+    expected_ver="${W0M_DEPLOY_VERSION:-local-$(git -C w0m-web rev-parse --short HEAD 2>/dev/null || echo dev)}"
+    echo "  ▶ starting Astro against LOCAL Supabase (expected version: $expected_ver)…"
     cd w0m-web
     infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- env \
       W0M_E2E_LOCAL=1 \
       E2E_LOCAL=true \
+      SUBDOMAIN_DEV=1 \
+      DEPLOY_VERSION="$expected_ver" \
+      W0M_DEPLOY_VERSION="$expected_ver" \
       PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 \
       PUBLIC_SUPABASE_ANON_KEY="$anon" \
       SUPABASE_SERVICE_ROLE_KEY="$svc" \
@@ -1121,11 +1141,14 @@ e2e-local *specs:
     # Kill by PORT, not only the parent pid: `pnpm -r --parallel` children outlive $DEV, and the first T478 run
     # left web listening on :4321 after the recipe exited.
     trap 'kill $DEV 2>/dev/null || true; for p in 4321 4322 4323 4324 4325; do lsof -nP -tiTCP:$p -sTCP:LISTEN 2>/dev/null | xargs kill 2>/dev/null || true; done' EXIT
-    for i in $(seq 1 60); do curl -s -f http://localhost:4321 >/dev/null 2>&1 && break; sleep 1; done
-    if ! curl -s -f http://localhost:4321 >/dev/null 2>&1; then
-      echo "  ❌ dev server never came up:"; tail -15 /tmp/w0m-e2e-local-dev.log; exit 1
+    if ! python3 ../scripts/host_service_probe.py --expect-version "$expected_ver" --wait 60; then
+      echo "  ❌ dev servers failed service+version verification:"; tail -20 /tmp/w0m-e2e-local-dev.log; exit 1
     fi
-    echo "  ✅ dev server up on :4321 (database: 127.0.0.1:54321)"
+    echo "  ✅ all 5 Astro dev servers + Supabase GoTrue verified (service identity + version $expected_ver)"
+    parallel_flags=""
+    if [ "${W0M_E2E_PARALLEL:-1}" != "0" ]; then
+      parallel_flags="--parallel -n ${W0M_E2E_WORKERS:-4}"
+    fi
     # 🔴 gauge needs ADMIN_EMAIL / ADMIN_PASSWORD (tests/helpers/auth.ts) or 99 scenarios fail on
     # "ADMIN_EMAIL and ADMIN_PASSWORD must be set" — 36% of the first full run, and none of it a
     # product defect. But injecting the estate's secrets wholesale is DANGEROUS: the teardown in
@@ -1144,7 +1167,7 @@ e2e-local *specs:
       SERVICE_ROLE_KEY="$svc" \
       $local_urls \
       $creds \
-      gauge run --env local {{ if specs == "" { "specs" } else { specs } }}
+      gauge run --env local $parallel_flags {{ if specs == "" { "specs" } else { specs } }}
 
 # T579 — Multi-role RBAC, throwaway Postgres hat write-path, CP shell context, and Gauge spec verification
 roles-verify:
@@ -1178,11 +1201,35 @@ e2e-roles-local *specs:
 
 # T532 — Run live-guard proof test
 live-guard-test:
-    @cd w0m-web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 pnpm exec tsx tests/support/liveGuard.probe.mts
+    @cd w0m-web && PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 node tests/support/liveGuard.probe.mts
 
 # T532 — unit tests for the E2E sandbox isolation guard
 e2e-sandbox-guard-test:
     @cd w0m-web && python3 project/scripts/tests/test_e2e_sandbox_guard.py
+
+# T480 — Multi-engine local and remote OCI/VM sandbox status (Colima, Apple container, Docker, Podman, Tart, DevPod, remote SSH)
+oci-status *args:
+    @python3 scripts/oci_sandbox.py status {{ args }}
+
+# T480 — Ensure an OCI/VM sandbox engine is up and print its DOCKER_HOST
+oci-up provider="auto":
+    @python3 scripts/oci_sandbox.py up --provider={{ provider }}
+
+# T480 — Print the active DOCKER_HOST for the running OCI sandbox engine
+oci-env:
+    @python3 scripts/oci_sandbox.py env
+
+# T480 — Unit tests for the multi-engine OCI/VM sandbox orchestrator
+oci-sandbox-test:
+    @python3 -m pytest scripts/tests/test_oci_sandbox.py -q -p no:cacheprovider
+
+# T480 — Verify host/service identity and expected version across local/remote endpoints
+host-probe *args:
+    @python3 scripts/host_service_probe.py {{ args }}
+
+# T480 — Unit tests for Gauge fail-fast, stage-aware timeouts, watchdog, and parallel execution
+t480-gauge-test:
+    @python3 -m pytest scripts/tests/test_t480_gauge_fail_fast.py -q -p no:cacheprovider
 
 _deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp check-infisical _deploy-gates db-migrate _deploy-ship _post-deploy-knowledge
 

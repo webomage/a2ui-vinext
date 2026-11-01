@@ -78,8 +78,8 @@ def die(msg: str, code: int = 1) -> NoReturn:
 
 def get_s3_client() -> Any:
     try:
-        import boto3  # type: ignore[import-untyped]
-        from botocore.config import Config  # type: ignore[import-untyped]
+        import boto3
+        from botocore.config import Config
     except ImportError:
         die("boto3 is not installed — `pip install boto3`", 2)
 

@@ -540,13 +540,13 @@ def _confirm_presence_linux(step: str, describe: str) -> tuple[bool, str]:
                 return False, f"timed out waiting for system auth within {PRESENCE_TIMEOUT}s"
             except Exception:
                 # Fallback if no termios-capable TTY is attached
-                r = subprocess.run(
+                r_tty = subprocess.run(
                     ["sudo", "-k", "-p", "   [confirm] sudo password for %u: ", "sudo", "-v"],
                     timeout=PRESENCE_TIMEOUT,
                 )
-                if r.returncode == 0:
+                if r_tty.returncode == 0:
                     return True, "device owner verified via system auth"
-                return False, f"system authentication failed (exit {r.returncode})"
+                return False, f"system authentication failed (exit {r_tty.returncode})"
 
             if pw is None:
                 return False, "system authentication cancelled"

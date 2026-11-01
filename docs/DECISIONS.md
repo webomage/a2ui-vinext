@@ -143,7 +143,7 @@ Decisions recorded in the [AgDR](../project/templates/decision.md) format since 
 | 2026-09-28 | [`.tasks/T100.md:46`](../.tasks/T100.md) | t user. Evidence: confirmed live by owner 2026-09-28 ("github connected linked") on cp.webomage.com/me/account . |
 | 2026-09-28 | [`.tasks/T477.md:29`](../.tasks/T477.md) | Owner, 2026-09-28, while preparing a deploy: "can we do parallel execution of different tests in |
 | 2026-09-28 | [`.tasks/T478.md:29`](../.tasks/T478.md) | Owner, 2026-09-28, after [[T476]]'s live check could not sign in as anyone but the founder: |
-| 2026-09-28 | [`.tasks/T480.md:28`](../.tasks/T480.md) | Owner, 2026-09-28, during [[T478]]'s local regression: "why so long??" , then "file a ticket for parallel |
+| 2026-09-28 | [`.tasks/T480.md:29`](../.tasks/T480.md) | Owner, 2026-09-28, during [[T478]]'s local regression: "why so long??" , then "file a ticket for parallel |
 | 2026-09-28 | [`.tasks/T481.md:28`](../.tasks/T481.md) | Owner, 2026-09-28: "so actually do we run tests against shared active working git worktree or reusing one for |
 | 2026-09-28 | [`.tasks/T481.md:42`](../.tasks/T481.md) | Decision (owner, 2026-09-28) |
 | 2026-09-28 | [`.tasks/T481.md:55`](../.tasks/T481.md) | Revision (owner, 2026-09-28, later): THREE worktrees, not two |

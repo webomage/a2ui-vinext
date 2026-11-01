@@ -27,7 +27,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T486](.tasks/T486.md) | **P2** | **Bring the stale admin/web Gauge specs in line with the current UI, or retire each with a reason** | web | — | ⚪ **queued** |
-| [T480](.tasks/T480.md) | **P2** | **Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel** | web, api | — | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T487](.tasks/T487.md) | P3 | **Visual goldens: regenerate on the local stack or pin the render environment** | web | — | ⚪ **queued** |
 | [T14](project/tickets/T14.md) · [#15](https://github.com/casualuser/webomage.com/issues/15) | P3 | wom7mlx refresh + Rust Gemma launcher (time-boxed spike, mlx-rs vs candle). | mlx | ROADMAP §8 | 💤 **paused** |
@@ -160,6 +159,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T483](.tasks/T483.md) · [#483](https://github.com/casualuser/webomage.com/issues/483) | **P1** | **Purge Hostinger MCP configurations, background processes, schemas, and estate residue** | root | — | ✅ **done** |
 | [T482](.tasks/T482.md) · [#482](https://github.com/casualuser/webomage.com/issues/482) | **P1** | **SkillOpt integration: nightly self-evolution cycle (just sleep), transcript friction mining, and skill optimization for wom7skills** | skills, api, tooling | wom7web/openspec/changes/2026-09-28-t482-skillopt-sleep-integration | ✅ **done** |
 | [T481](.tasks/T481.md) · [#481](https://github.com/casualuser/webomage.com/issues/481) | **P1** | **One persistent isolated STABLE worktree: full local regression runs there, releases cut and deploy from it** | web, api | openspec/changes/archive/2026-09-28-t481-persistent-stable-worktree | ✅ **done** |
+| [T480](.tasks/T480.md) | **P2** | **Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel** | web, api | — | ✅ **done** |
 | [T479](.tasks/T479.md) · [#479](https://github.com/casualuser/webomage.com/issues/479) | **P2** | 🆕 **HttpOnly island token hardening — CP pages replace raw access tokens with cookie-authenticated /api/* proxies** | web | — | ✅ **done** |
 | [T478](.tasks/T478.md) · [#478](https://github.com/casualuser/webomage.com/issues/478) | **P1** | **Local full regression: a current local schema, a provisioned test team with client hats, then triage and fix** | web, api | — | ✅ **done** |
 | [T477](.tasks/T477.md) | **P2** | **Pre-push: stop the slow scans walking node_modules, then run independent gates in parallel** | web | — | ✅ **done** |
