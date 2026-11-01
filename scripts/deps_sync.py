@@ -25,8 +25,9 @@ Preventive vs detective division of labour (T298 AC6):
     all lockfiles before a floor exists in `deps-policy.json`.
 
 Usage (from anywhere):
-    python3 scripts/deps_sync.py            # check, exit 1 on drift
+    python3 scripts/deps_sync.py            # check, exit 1 on drift or missing workspace .bin tools
     python3 scripts/deps_sync.py --apply    # fix in place, then `pnpm install` per repo
+    python3 scripts/deps_sync.py --install  # install missing node_modules/.bin across all TS repos
 """
 from __future__ import annotations
 
@@ -649,6 +650,153 @@ def version_satisfies_range(ver: tuple[int, int, int], spec: str) -> bool:
     return False
 
 
+WORKSPACE_CRITICAL_BINS: tuple[tuple[str, str], ...] = (
+    ("tsx", "tsx"),
+    ("wrangler", "wrangler"),
+    ("vitest", "vitest"),
+    ("typescript", "tsc"),
+    ("oxlint", "oxlint"),
+    ("oxfmt", "oxfmt"),
+    ("astro", "astro"),
+    ("drizzle-kit", "drizzle-kit"),
+)
+
+
+def _resolve_worktree_main_repo_dir(repo_dir: Path) -> Path | None:
+    """If `repo_dir` is inside a git linked worktree, return the corresponding directory in the main checkout."""
+    for candidate in (repo_dir, repo_dir.parent):
+        git_marker = candidate / ".git"
+        if git_marker.is_file():
+            try:
+                raw = git_marker.read_text(encoding="utf-8").strip()
+            except OSError:
+                return None
+            if not raw.startswith("gitdir:"):
+                return None
+            gitdir_str = raw.split(":", 1)[1].strip()
+            gitdir_path = Path(gitdir_str)
+            if not gitdir_path.is_absolute():
+                gitdir_path = (candidate / gitdir_path).resolve()
+            if gitdir_path.parent.name == "worktrees" and gitdir_path.parent.parent.name == ".git":
+                main_root = gitdir_path.parent.parent.parent
+                rel = repo_dir.relative_to(candidate)
+                return (main_root / rel).resolve()
+            return None
+        if git_marker.is_dir():
+            return None
+    return None
+
+
+def _effective_node_modules(repo_dir: Path, *, strict_local: bool = False) -> Path:
+    """Return `repo_dir / 'node_modules'`, or the main checkout's `node_modules` when in a linked worktree."""
+    local_nm = repo_dir / "node_modules"
+    if strict_local or local_nm.is_dir():
+        return local_nm
+    main_repo_dir = _resolve_worktree_main_repo_dir(repo_dir)
+    if main_repo_dir is not None:
+        main_nm = main_repo_dir / "node_modules"
+        if main_nm.is_dir():
+            return main_nm
+    return local_nm
+
+
+def check_workspace_bins(
+    repos: dict[str, Path],
+    pkgs: dict[str, dict] | None = None,
+    *,
+    strict_local: bool = False,
+) -> list[str]:
+    """T595: Verify every TS repo has `node_modules/.bin` and all critical CLI binaries it declares."""
+    problems: list[str] = []
+    for repo_name, pkg_path in repos.items():
+        if pkgs is not None and repo_name in pkgs:
+            pkg = pkgs[repo_name]
+        elif pkg_path.is_file():
+            try:
+                pkg, _ = load(pkg_path)
+            except (OSError, json.JSONDecodeError):
+                continue
+        else:
+            continue
+
+        all_deps = {
+            **pkg.get("dependencies", {}),
+            **pkg.get("devDependencies", {}),
+        }
+        expected = [
+            (dep_name, bin_name)
+            for dep_name, bin_name in WORKSPACE_CRITICAL_BINS
+            if dep_name in all_deps
+        ]
+        if not expected:
+            continue
+
+        repo_dir = pkg_path.parent
+        nm = _effective_node_modules(repo_dir, strict_local=strict_local)
+        bin_dir = nm / ".bin"
+        rel_dir = (
+            repo_dir.relative_to(ROOT).as_posix()
+            if repo_dir.is_relative_to(ROOT)
+            else repo_name
+        )
+        if not bin_dir.is_dir():
+            bins_str = ", ".join(b for _, b in expected)
+            problems.append(
+                f"workspace-bins: {repo_name} missing node_modules/.bin (declares {bins_str}) — "
+                f"run `just deps-install` or `pnpm --dir {rel_dir} install --frozen-lockfile`"
+            )
+            continue
+
+        missing_bins = [
+            f"{bin_name} (from {dep_name})"
+            for dep_name, bin_name in expected
+            if not (bin_dir / bin_name).exists()
+        ]
+        if missing_bins:
+            problems.append(
+                f"workspace-bins: {repo_name} missing {', '.join(missing_bins)} in node_modules/.bin — "
+                f"run `just deps-install` or `pnpm --dir {rel_dir} install --frozen-lockfile`"
+            )
+    return problems
+
+
+def install_workspace_deps(
+    repos: dict[str, Path],
+    pkgs: dict[str, dict] | None = None,
+) -> int:
+    """T595: Install missing `node_modules/.bin` across TS repos using `pnpm install --frozen-lockfile`."""
+    reinstalled: list[str] = []
+    for repo_name, pkg_path in repos.items():
+        if not pkg_path.is_file():
+            continue
+        single_repo = {repo_name: pkg_path}
+        single_pkg = {repo_name: pkgs[repo_name]} if (pkgs and repo_name in pkgs) else None
+        missing = check_workspace_bins(single_repo, single_pkg, strict_local=True)
+        if not missing:
+            continue
+        repo_dir = pkg_path.parent
+        print(f"  ▶ installing workspace dependencies in {repo_name} ({repo_dir})...")
+        proc = subprocess.run(
+            ["pnpm", "--dir", str(repo_dir), "install", "--frozen-lockfile", "--prefer-offline"],
+            check=False,
+        )
+        if proc.returncode != 0:
+            print(f"  ✗ pnpm install failed in {repo_name} (exit {proc.returncode})", file=sys.stderr)
+            return proc.returncode
+        reinstalled.append(repo_name)
+
+    post_problems = check_workspace_bins(repos, pkgs, strict_local=True)
+    if post_problems:
+        for p in post_problems:
+            print(f"  ✗ {p}", file=sys.stderr)
+        return 1
+    if reinstalled:
+        print(f"  ✓ installed workspace binaries in {len(reinstalled)} repo(s): {', '.join(reinstalled)}")
+    else:
+        print(f"  ✓ all {len(repos)} TS repos already have complete node_modules/.bin toolchains")
+    return 0
+
+
 def check_node_engines(
     repos: dict[str, Path],
     host_node_version: tuple[int, int, int] | None = None,
@@ -659,11 +807,11 @@ def check_node_engines(
         return []
     node_str = ".".join(map(str, node_ver))
     problems: list[str] = []
-    critical_pkgs = ("astro", "wrangler", "vite", "vitest")
+    critical_pkgs = ("astro", "wrangler", "vite", "vitest", "tsx")
 
     for repo_name, pkg_path in repos.items():
         repo_dir = pkg_path.parent
-        nm = repo_dir / "node_modules"
+        nm = _effective_node_modules(repo_dir)
         if not nm.is_dir():
             continue
         candidates: list[Path] = [pkg_path]
@@ -905,6 +1053,7 @@ def evaluate_policy_detailed(
     pkgs: dict[str, dict],
     *,
     include_npm_lockfiles: bool = True,
+    check_bins: bool = False,
 ) -> tuple[list[str], list[str], dict[str, dict[str, str]], dict[str, object]]:
     """Evaluate `policy` against loaded `pkgs`, `pnpm-lock.yaml`, and tracked `package-lock.json`.
 
@@ -1186,7 +1335,13 @@ def evaluate_policy_detailed(
             if f": {r} " in rt_err or f" {r}/" in rt_err:
                 violated_repos.add(r)
 
-    # ---- T566 AC2: host node engines + @astrojs/* ESM export & peer linkage ----
+    # ---- T566 AC2 & T595: host node engines + workspace .bin CLIs + @astrojs/* ESM export & peer linkage ----
+    if check_bins:
+        for bin_err in check_workspace_bins(repos, pkgs):
+            hard.append(bin_err)
+            for r in pkgs:
+                if f": {r} " in bin_err:
+                    violated_repos.add(r)
     for eng_err in check_node_engines(repos):
         hard.append(eng_err)
         for r in pkgs:
@@ -1286,6 +1441,7 @@ def format_summary(
 
 def main() -> int:
     apply = "--apply" in sys.argv
+    install = "--install" in sys.argv
     policy, _ = load(POLICY)
     repos = {name: ROOT / rel for name, rel in policy["repos"].items()}
     pkgs = {name: load(path)[0] for name, path in repos.items() if path.exists()}
@@ -1293,7 +1449,12 @@ def main() -> int:
     if missing:
         print(f"  ! policy lists repos with no package.json: {missing}")
 
-    hard, warn, edits, report = evaluate_policy_detailed(policy, repos, pkgs, include_npm_lockfiles=True)
+    if install:
+        return install_workspace_deps(repos, pkgs)
+
+    hard, warn, edits, report = evaluate_policy_detailed(
+        policy, repos, pkgs, include_npm_lockfiles=True, check_bins=True
+    )
     ws_edits: dict[str, dict[str, str]] = cast(
         dict[str, dict[str, str]], report.get("workspace_edits") or {}
     )

@@ -53,24 +53,31 @@ REPOS = [
     "w0m-mlx/w0m-mlx",
 ]
 
-# Full T164 candidate CLI surface (20 host inventory candidates + 7 initial probe candidates).
+# Full T164 / T595 candidate CLI surface (35 host CLI candidates).
 TOOLS = [
     "ansible",
     "ast-grep",
     "bat",
+    "caddy",
     "cargo",
+    "cloudflared",
     "cmake",
+    "colima",
     "direnv",
     "docker",
     "fd",
+    "git",
     "go",
     "helm",
     "java",
     "jq",
     "kubectl",
+    "mkcert",
     "ncdu",
     "pip3",
+    "pnpm",
     "podman",
+    "pre-commit",
     "psql",
     "redis-cli",
     "rg",
@@ -80,6 +87,7 @@ TOOLS = [
     "sqlite3",
     "tree",
     "uv",
+    "warp-cli",
     "wget",
     "yq",
 ]
@@ -196,8 +204,9 @@ def scan_usage(
 
         is_shell = p.name in NAMES or p.suffix in SHELL_SUFFIXES
         if is_shell:
+            is_recipe = p.name in ("justfile", "Makefile") or p.suffix == ".just"
             clean_shell = "\n".join(
-                ln.lstrip()
+                (re.sub(r"^[-@]+\s*", "", ln.lstrip()) if is_recipe else ln.lstrip())
                 for ln in text.splitlines()
                 if ln.strip() and not ln.lstrip().startswith(("#", "//"))
             )

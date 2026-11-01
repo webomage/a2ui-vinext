@@ -26,6 +26,16 @@
       "auto": "none",
       "note": "azure jumphost IaC. Manual."
     },
+    "caddy": {
+      "min": "2.8.0",
+      "known_good": "2.11.2",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "version_arg": "version",
+      "smoke": "caddy version",
+      "note": "T595 — reverse-proxy server invoked by `just dev-stack` / `just stop-dev` (`w0m-web/project/dev/Caddyfile`) for local HTTPS subdomain routing (`*.w0m.local`). `required: false` because standard port-based dev (`just dev` / `just dev-cp`) runs without Caddy."
+    },
     "cargo": {
       "min": "1.95.0",
       "known_good": "1.99.1",
@@ -44,13 +54,32 @@
       "smoke": "cargo-clippy --version",
       "note": "T235 AC1 — the linter. 🔬 DECLARED UNDER ITS REAL BINARY NAME. T235 was filed claiming \"clippy MISSING\"; it is installed — the binary is `cargo-clippy`, and probing the bare name `clippy` returns nothing. tools-check does `shutil.which(<key>)`, so declaring this as `clippy` would have re-committed the exact error the ticket was corrected for. ⚠️ Version scheme differs: clippy 0.1.N ships with rustc 1.N. Floor **0.1.95**, RAISED with the toolchain 2026-08-19 and MEASURED off the pinned toolchain rather than inferred: `rustup run 1.95 cargo-clippy --version` → `clippy 0.1.95`."
     },
+    "cloudflared": {
+      "min": "2024.1.0",
+      "known_good": "2026.3.0",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "cloudflared --version",
+      "note": "T595 — Cloudflare Tunnel daemon invoked by `just db-tunnel` (`cloudflared tunnel --config w0m-api/cloudflared/wom.yml run wom`). `required: false` because commit/push/deploy gates do not open a tunnel (`brew install cloudflared`)."
+    },
     "codegraph": {
       "min": "1.4.0",
-      "known_good": "1.4.1",
+      "known_good": "1.6.2",
       "required": false,
       "source": "npm",
       "auto": "none",
       "note": "npm global (nvs). Update via npm/pnpm."
+    },
+    "colima": {
+      "min": "0.8.0",
+      "known_good": "0.10.3",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "version_arg": "version",
+      "smoke": "colima version",
+      "note": "T480 / T595 — primary Apple Silicon Virtualization.framework OCI container runtime provider invoked by `scripts/oci_sandbox.py` (`just oci-status`, `just oci-up`, `just db-local-up`). `required: false` because non-container workflows and alternative OCI providers (`docker`, `podman`, `tart`) can run without it (`brew install colima`)."
     },
     "deno": {
       "min": "2.0.0",
@@ -62,7 +91,7 @@
     },
     "docker": {
       "min": "24.0.0",
-      "known_good": "29.9.0",
+      "known_good": "29.9.2",
       "required": false,
       "source": "brew",
       "auto": "none",
@@ -71,7 +100,7 @@
     },
     "gauge": {
       "min": "1.6.0",
-      "known_good": "1.6.40",
+      "known_good": "1.6.42",
       "required": false,
       "source": "brew",
       "auto": "none",
@@ -95,6 +124,15 @@
       "auto": "minor",
       "smoke": "gh --version",
       "note": "GitHub board/PR sync"
+    },
+    "git": {
+      "min": "2.39.0",
+      "known_good": "2.54.0",
+      "required": true,
+      "source": "brew",
+      "auto": "none",
+      "smoke": "git --version",
+      "note": "T595 — VCS binary invoked across 200+ command/subprocess sites (`scripts/land.py`, `scripts/estate_search.py`, `w0m-web/project/scripts/agent_tree.py`, `scripts/release.py`). Floor `2.39.0` ensures `git worktree` and `--no-pager` behaviors used by agent trees."
     },
     "gitleaks": {
       "min": "8.20.0",
@@ -150,6 +188,15 @@
       "smoke": "just --summary",
       "note": "task runner — every recipe"
     },
+    "mkcert": {
+      "min": "1.4.4",
+      "known_good": "1.4.4",
+      "required": false,
+      "source": "brew",
+      "auto": "patch",
+      "smoke": "mkcert --version",
+      "note": "T595 — local CA certificate generator invoked by `just dev-stack` (`mkcert -install`) for local HTTPS subdomain development (`*.w0m.local`). `required: false` because standard port-based dev runs over HTTP."
+    },
     "mypy": {
       "min": "1.15.0",
       "known_good": "2.4.1",
@@ -185,6 +232,33 @@
       "auto": "minor",
       "smoke": "osv-scanner scan --lockfile=pnpm-lock.yaml",
       "note": "pre-commit advisory gate"
+    },
+    "pnpm": {
+      "min": "10.32.0",
+      "known_good": "12.16.1",
+      "required": true,
+      "source": "brew",
+      "auto": "none",
+      "smoke": "pnpm --version",
+      "note": "T595 — canonical package manager and workspace script runner across all 5 TypeScript repos (`w0m-web`, `w0m-api`, `w0m-cf`, `w0m-ext/extension`, `w0m-skills`), invoked 120+ times in `justfile`, `just/estate.just`, `w0m-api/dagger/pipeline.ts`, and hooks. Floor `10.32.0` matches `deps-policy.json -> runtime.engines.pnpm`; `known_good: 12.16.1` tracks the Homebrew binary on PATH."
+    },
+    "podman": {
+      "min": "5.0.0",
+      "known_good": "5.8.1",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "podman --version",
+      "note": "T480 / T595 — rootless OCI container provider probed and started by `scripts/oci_sandbox.py` (`podman machine inspect`, `podman machine start`) as an alternative to Colima and Docker Desktop. `required: false` because any single healthy OCI provider (`colima`, `docker`, `podman`) satisfies local container sandboxes."
+    },
+    "pre-commit": {
+      "min": "4.0.0",
+      "known_good": "4.7.0",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "pre-commit --version",
+      "note": "T595 — hook runner invoked directly by `just check-guardrails` (`pre-commit run gitleaks --all-files`, `pre-commit run guard-test-admin --all-files`) and `.git/hooks/pre-commit` across the estate."
     },
     "psql": {
       "min": "15.0",
@@ -224,7 +298,7 @@
     },
     "rustup": {
       "min": "1.27.0",
-      "known_good": "1.29.0",
+      "known_good": "1.29.2",
       "required": false,
       "source": "rustup",
       "auto": "none",
@@ -246,8 +320,8 @@
       "required": false,
       "source": "uvx",
       "auto": "none",
-      "version_cmd": "uvx --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena --version",
-      "smoke": "uvx --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena project health-check .",
+      "version_cmd": "uvx --quiet --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena --version",
+      "smoke": "uvx --quiet --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena project health-check .",
       "note": "🔴 DO NOT INSTALL THE `serena` MARKETPLACE PLUGIN. Removed 2026-08-31 (`claude plugin uninstall serena@claude-plugins-official`). It is authored by Oraios — serena's own upstream — and distributed through Anthropic's official marketplace, so it looks like the sanctioned way to get this tool. It is not compatible with governing it. The plugin ships NOTHING but a manifest and one .mcp.json whose entire content launches `uvx --from git+https://github.com/oraios/serena` with NO ref, so it resolves upstream's DEFAULT BRANCH on every start. Its own version is a marketplace commit SHA describing the WRAPPER, so pinning the plugin does not pin serena — there is no configuration that reconciles the two. Installed 2026-08-12 22:19Z; commit 5b02bbef rewrote all three .serena/project.yml files to the `language_servers:` schema at 2026-08-13 05:16 -0500, under seven hours later, and the pinned 1.6.1 was dead from then until 2026-08-31. Keeping both registrations is the one arrangement that cannot work: they fight over the same config file, and the ungoverned one wins silently. `just mcp-health` now catches a repeat the same day. LSP-backed symbol edits + diagnostics over MCP (T166). PyPI package is **serena-agent**, NOT `serena` — `serena` on PyPI is an unrelated project at 0.9.1, so installing it gets you the wrong software. 🔴 PINNED 2026-08-05 (T166 AC1b): the launch in ~/.claude.json was `uvx --from git+https://github.com/oraios/serena`, which re-resolved the DEFAULT BRANCH on every start — the one tool that can rewrite source at symbol granularity had no version, no lockfile and no integrity check, and was running an unreleased **1.6.2.dev0**. min/known_good were literally unenforceable against a moving branch. 🔴 EXTENDED & FORKED 2026-09-20 (T170): Pinned to w0m-maintained fork tag `v1.7.0-w0m.1` (casualuser/serena) adding @astrojs/language-server support (AstroLanguageServer under solidlsp) with upstream PR #2085. The smoke test exercises project loading (`serena project health-check .`) rather than just `--version`, so broken schemas or missing language providers fail organically. ⚠️ Bumping this means editing BOTH this entry and the `args` in ~/.claude.json — the version lives in the MCP launch line, not in a lockfile. ⚠️ Needs a `projects` key in ~/.serena/serena_config.yml or it fails to boot. Installed by Headroom as its default --code-memory backend, not chosen independently."
     },
     "sshpass": {
@@ -271,7 +345,7 @@
     },
     "tart": {
       "min": "2.0.0",
-      "known_good": "2.35.0",
+      "known_good": "2.32.1",
       "required": false,
       "source": "brew",
       "auto": "minor",
@@ -280,7 +354,7 @@
     },
     "terraform": {
       "min": "1.10.0",
-      "known_good": "1.14.3",
+      "known_good": "1.17.1",
       "required": false,
       "source": "brew",
       "auto": "none",
@@ -296,9 +370,19 @@
       "smoke": "uv --version",
       "note": "required:true, and doubly so: 2 command-position uses in the canonical justfile (`uv pip install -r pyproject.toml`, `uv run playwright install chromium`, lines ~538-539) AND it is the declared `source` of graphify — a governed tool whose install instructions are `uv tool install`. It was undeclared while a tool that depends on it was governed. ⚠️ `uv --version` embeds a commit hash after the semver; first-semver parsing gets it right, leave version_arg unset."
     },
+    "warp-cli": {
+      "min": "2024.1.0",
+      "known_good": "2026.3.846.0",
+      "required": false,
+      "source": "cask",
+      "auto": "none",
+      "version_arg": "--version",
+      "smoke": "warp-cli --accept-tos --version",
+      "note": "T595 — Cloudflare WARP client CLI invoked by `just check-warp` (in `_deploy-all-chain` and `deploy-api`). `required: false` because offline gates and standard `just deploy` do not invoke `check-warp`; install via `brew install --cask cloudflare-warp` on machines running `deploy-all` or `deploy-api`."
+    },
     "wasm-pack": {
       "min": "0.13.0",
-      "known_good": "0.13.1",
+      "known_good": "0.15.1",
       "required": false,
       "source": "rustup",
       "auto": "none",
@@ -325,7 +409,7 @@
     },
     "openspec": {
       "min": "1.11.0",
-      "known_good": "1.14.3",
+      "known_good": "1.16.0",
       "required": false,
       "source": "pnpm",
       "auto": "none",
@@ -346,7 +430,6 @@
     "kubectl": "0 command-position uses; no Kubernetes cluster or manifest exists in the estate.",
     "ncdu": "0 command-position uses; interactive disk-usage TUI, never invoked by scripts, recipes, or git hooks.",
     "pip3": "0 command-position uses; Python package management in estate recipes uses `uv` (`uv pip install`, `uv run`, `uv tool install`), never raw `pip3`.",
-    "podman": "0 command-position uses; ephemeral container verification (`w0m-api/scripts/db_baseline.py`) invokes `docker`, not `podman`.",
     "redis-cli": "0 command-position uses; no Redis instance or client workflow exists in the estate.",
     "rg": "0 command-position uses; `just search` (`scripts/estate_search.py`) runs `LC_ALL=C git --no-pager grep` per repo, and agent harnesses bundle their own ripgrep.",
     "ruff": "0 command-position uses; retired from TS/Rust repos in T135 task 3.1 and not wired into any recipe or hook (`py-typecheck` uses `mypy`).",

@@ -316,7 +316,15 @@ def check_tools() -> dict:
         import deps_sync
         import resource_monitor
 
-        runtime_errors.extend(deps_sync.check_node_engines({"w0m-web": ROOT / "package.json"}))
+        ts_repos = {
+            "w0m-web": ROOT / "package.json",
+            "w0m-api": ESTATE / "w0m-api" / "package.json",
+            "w0m-cf": ESTATE / "w0m-cf" / "package.json",
+            "w0m-ext": ESTATE / "w0m-ext" / "extension" / "package.json",
+            "w0m-skills": ESTATE / "w0m-skills" / "package.json",
+        }
+        runtime_errors.extend(deps_sync.check_workspace_bins(ts_repos))
+        runtime_errors.extend(deps_sync.check_node_engines(ts_repos))
         runtime_errors.extend(deps_sync.check_astro_adapter_exports(ROOT))
         detail.extend(runtime_errors)
         disk_info = resource_monitor.check_host_disk_headroom()
@@ -333,9 +341,9 @@ def check_tools() -> dict:
         except (OSError, ValueError):
             pass
     ok = not missing and not runtime_errors
-    headline = f"{len(required) - len(missing)}/{len(required)} required tools on PATH"
+    headline = f"{len(required) - len(missing)}/{len(required)} required tools on PATH · 5/5 TS workspace .bin sets"
     if runtime_errors:
-        headline += f" ({len(runtime_errors)} node/astro linkage error(s))"
+        headline += f" ({len(runtime_errors)} node/workspace/astro linkage error(s))"
     return _result(
         "tools",
         ok,

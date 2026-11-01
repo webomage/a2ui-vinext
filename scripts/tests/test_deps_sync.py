@@ -475,6 +475,48 @@ class TestDepsSyncUpperBounds(unittest.TestCase):
             pkgs = {k: deps_sync.load(p)[0] for k, p in repos.items()}
             self.assertEqual(deps_sync.check_runtime_alignment(policy, repos, pkgs, estate_root=root), [])
 
+    def test_t595_workspace_bins_catches_missing_tsx_and_node_modules_bin(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            api_dir = root / "w0m-api"
+            api_dir.mkdir(parents=True)
+            pkg_path = api_dir / "package.json"
+            pkg_path.write_text(
+                json.dumps(
+                    {
+                        "name": "w0m-api",
+                        "devDependencies": {
+                            "tsx": "^4.23.1",
+                            "vitest": "^4.3.2",
+                            "typescript": "^5.9.3",
+                            "wrangler": "4.91.1",
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            repos = {"w0m-api": pkg_path}
+            pkgs = {"w0m-api": deps_sync.load(pkg_path)[0]}
+
+            # 1. Missing node_modules/.bin entirely (the exact `Command "tsx" not found` failure on `just deploy-all`)
+            errs_no_nm = deps_sync.check_workspace_bins(repos, pkgs, strict_local=True)
+            self.assertEqual(len(errs_no_nm), 1)
+            self.assertIn("w0m-api missing node_modules/.bin (declares tsx, wrangler, vitest, tsc)", errs_no_nm[0])
+            self.assertIn("just deps-install", errs_no_nm[0])
+
+            # 2. node_modules/.bin exists, but `tsx` is missing
+            bin_dir = api_dir / "node_modules" / ".bin"
+            bin_dir.mkdir(parents=True)
+            for b in ("wrangler", "vitest", "tsc"):
+                (bin_dir / b).write_text("#!/bin/sh\n", encoding="utf-8")
+            errs_no_tsx = deps_sync.check_workspace_bins(repos, pkgs, strict_local=True)
+            self.assertEqual(len(errs_no_tsx), 1)
+            self.assertIn("w0m-api missing tsx (from tsx) in node_modules/.bin", errs_no_tsx[0])
+
+            # 3. Once `tsx` is present, check_workspace_bins passes with 0 errors
+            (bin_dir / "tsx").write_text("#!/bin/sh\n", encoding="utf-8")
+            self.assertEqual(deps_sync.check_workspace_bins(repos, pkgs, strict_local=True), [])
+
 
 if __name__ == "__main__":
     unittest.main()

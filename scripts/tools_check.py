@@ -141,7 +141,7 @@ def installed_version(tool: str, arg: str = "--version", spec: dict[str, Any] | 
             out = subprocess.run(shlex.split(cmd), capture_output=True, text=True, timeout=120)
         except (OSError, subprocess.SubprocessError, ValueError):
             return None
-        m = SEMVER.search((out.stdout or "") + "\n" + (out.stderr or ""))
+        m = SEMVER.search(out.stdout or "") or SEMVER.search(out.stderr or "")
         return m.group(0) if m else None
 
     if shutil.which(tool) is None:
@@ -150,7 +150,7 @@ def installed_version(tool: str, arg: str = "--version", spec: dict[str, Any] | 
         out = subprocess.run([tool, arg], capture_output=True, text=True, timeout=45)
     except (OSError, subprocess.SubprocessError):
         return None
-    m = SEMVER.search((out.stdout or "") + "\n" + (out.stderr or ""))
+    m = SEMVER.search(out.stdout or "") or SEMVER.search(out.stderr or "")
     return m.group(0) if m else None
 
 

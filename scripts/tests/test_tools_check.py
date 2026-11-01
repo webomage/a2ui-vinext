@@ -208,6 +208,19 @@ class ProbeAndOutOfScopeCoverageTests(unittest.TestCase):
         policy_path = tools_check.resolve_policy_path(ROOT)
         policy: dict[str, Any] = json.loads(policy_path.read_text(encoding="utf-8"))
         self.assertEqual(tools_check.validate_out_of_scope(policy), [])
+        self.assertGreaterEqual(len(tool_usage_probe.TOOLS), 35)
+        for governed_cli in (
+            "pnpm",
+            "pre-commit",
+            "git",
+            "colima",
+            "podman",
+            "warp-cli",
+            "cloudflared",
+            "caddy",
+            "mkcert",
+        ):
+            self.assertIn(governed_cli, policy["tools"])
 
         scanned, hits = tool_usage_probe.scan_usage()
         self.assertGreater(scanned, 500, "estate corpus must not be vacuous")

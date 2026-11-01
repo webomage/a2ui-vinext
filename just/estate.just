@@ -1856,6 +1856,10 @@ deps-check:
 deps-apply:
     @python3 scripts/deps_sync.py --apply
 
+# Install missing node_modules/.bin toolchains across all 5 TS repos (`pnpm install --frozen-lockfile --prefer-offline`).
+deps-install:
+    @python3 scripts/deps_sync.py --install
+
 # Red probes for lockstep's version resolution (overrides > devDependencies > dependencies).
 # Offline. Added 2026-08-11 with the fix that made lockstep usable for a DIRECT dependency —
 # it previously read pnpm.overrides only, so declaring one reported `has None` on every repo

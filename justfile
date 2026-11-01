@@ -738,6 +738,11 @@ check-guardrails:
 
 check-warp:
     @echo "Checking Cloudflare WARP and deploy-host reachability..."
+    @if ! command -v warp-cli >/dev/null 2>&1; then \
+    	echo "❌ warp-cli is not installed on PATH — required by 'just check-warp' for deploy-all / deploy-api."; \
+    	echo "   Install Cloudflare WARP (`brew install --cask cloudflare-warp`) and retry."; \
+    	exit 1; \
+    fi
     @status=$(warp-cli --accept-tos status 2>/dev/null | head -1); \
     if ! echo "$status" | grep -q "Connected"; then \
     	echo "  WARP not connected ($status) — connecting..."; \
@@ -870,6 +875,7 @@ smoke-live url="https://webomage.com":
     -@python3 scripts/live_verify_helper.py crawler-smoke --url {{ url }}
 
 _assert-clean-tree:
+    @[ -x w0m-api/node_modules/.bin/tsx ] || pnpm --dir w0m-api install --frozen-lockfile --prefer-offline
     @pnpm --dir w0m-api exec tsx dagger/pipeline.ts assert-clean-tree
 
 _log-deploy:
@@ -935,6 +941,7 @@ plan-set-check:
 # work in them at once); a release cannot see that. Inside the release worktree W0M_RELEASE_WORKTREE=1 is set and this
 # recipe runs the chain itself. Forcing a deploy of the local working tree is explicit: `just deploy-local`.
 deploy:
+    @[ -x w0m-api/node_modules/.bin/tsx ] || pnpm --dir w0m-api install --frozen-lockfile --prefer-offline
     @pnpm --dir w0m-api exec tsx dagger/pipeline.ts entrypoint --mode deploy
 
 # T473 — FORCE: deploy the local working tree as it is (uncommitted edits of anyone included). Not the default.
@@ -970,13 +977,16 @@ _deploy-ship:
 # W0M_RELEASE_APPS (set by a release deploy) lists the apps whose fingerprint changed since the last deployed release;
 # the others are skipped and keep serving their previous version. Unset (a local deploy) = every app.
 _deploy-apps:
+    @[ -x w0m-api/node_modules/.bin/tsx ] || pnpm --dir w0m-api install --frozen-lockfile --prefer-offline
     @pnpm --dir w0m-api exec tsx dagger/pipeline.ts deploy-apps
 
 deploy-all:
+    @[ -x w0m-api/node_modules/.bin/tsx ] || pnpm --dir w0m-api install --frozen-lockfile --prefer-offline
     @pnpm --dir w0m-api exec tsx dagger/pipeline.ts entrypoint --mode deploy-all
 
 # T64 AC1 & AC3 — Dagger TypeScript pipeline plan preview & unit/typecheck suite (`w0m-api/dagger/`).
 dagger-plan:
+    @[ -x w0m-api/node_modules/.bin/tsx ] || pnpm --dir w0m-api install --frozen-lockfile --prefer-offline
     @pnpm --dir w0m-api exec tsx dagger/pipeline.ts plan
 
 dagger-test:
@@ -1337,6 +1347,7 @@ decisions-test:
 
 # ── Skills Platform (Level 1 & Level 2) ──────────────────────────────────────
 skills-sync mode="":
+    @[ -x w0m-skills/node_modules/.bin/tsx ] || pnpm --dir w0m-skills install --frozen-lockfile --prefer-offline
     @cd w0m-skills && pnpm exec tsx skills.ts {{ if mode == "check" { "--check" } else { mode } }}
 
 skills-test *args:
