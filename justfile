@@ -853,6 +853,17 @@ serve-built-web *args:
 goldens-built port="4329":
     @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 project/scripts/serve_built_artifact.py --app web --port {{ port }} --check-assets --exec "gauge run specs/web/goldens.spec:40"
 
+# T487 AC2/AC3 (AgDR-0053) — Verify every golden baseline referenced across specs exists, and regenerate with a mandatory diff summary.
+goldens-check *args:
+    @python3 scripts/regen_goldens.py --check {{ args }}
+
+goldens-regen spec="":
+    @python3 scripts/regen_goldens.py --regen {{ spec }}
+
+goldens-check-test:
+    @python3 scripts/tests/test_regen_goldens.py
+
+
 smoke-live url="https://webomage.com":
     @echo "🔎 Live smoke against {{ url }} (non-blocking — reports, does not gate)..."
     -@cd w0m-web && E2E_BASE_URL={{ url }} gauge run specs/web/live-smoke.spec
@@ -1121,7 +1132,7 @@ e2e-local *specs:
     # superuser. The first two were overridden; the rest reached live (ats.steps.ts connects with
     # DATABASE_URL; the dev server dispatches to the live worker). All are pinned to loopback below, in BOTH
     # env blocks. The worker URL points at a port nothing listens on: a dispatch fails loudly, not live.
-    local_urls="DATABASE_URL=$db PUBLIC_CP_URL=http://localhost:4325 PUBLIC_WEB_URL=http://localhost:4321 PUBLIC_JOIN_URL=http://localhost:4323 PUBLIC_JOB_URL=http://localhost:4324 WORKERS_WEBHOOK_URL=http://127.0.0.1:1 UPWORK_CALLBACK_URL=http://127.0.0.1:1"
+    local_urls="DATABASE_URL=$db PUBLIC_CP_URL=http://localhost:4325 PUBLIC_WEB_URL=http://localhost:4321 PUBLIC_JOIN_URL=http://localhost:4323 PUBLIC_JOB_URL=http://localhost:4322 WORKERS_WEBHOOK_URL=http://127.0.0.1:1 UPWORK_CALLBACK_URL=http://127.0.0.1:1"
     # T478 — every app port must be FREE, or the run is not local. Measured 2026-09-28: `pnpm run dev`
     # SKIPS an app whose port is taken, so four dev servers left running since 2026-09-25 against the LIVE
     # project answered this suite's /cp, /join and /job requests. A server we did not start is refused, not reused.
@@ -1130,6 +1141,9 @@ e2e-local *specs:
         echo "  ❌ port $p is already in use (pid $(lsof -nP -tiTCP:$p -sTCP:LISTEN | head -1)) — this run would not be local."
         echo "     Stop it first (\`just stop-dev\`), then rerun."; exit 2
       fi
+    done
+    for p in 9229 9230 9231 9232 9233 9234; do
+      lsof -nP -tiTCP:$p -sTCP:LISTEN 2>/dev/null | xargs kill -9 2>/dev/null || true
     done
     # T478 — the corpus once wrote 12 rows into LIVE contact_messages from a local run: ~25 steps hardcoded live
     # URLs. tests/support/liveGuard.ts now refuses live hosts in-process; prove it works before any spec runs.
@@ -1153,7 +1167,7 @@ e2e-local *specs:
     DEV=$!
     # Kill by PORT, not only the parent pid: `pnpm -r --parallel` children outlive $DEV, and the first T478 run
     # left web listening on :4321 after the recipe exited.
-    trap 'kill $DEV 2>/dev/null || true; for p in 4321 4322 4323 4324 4325; do lsof -nP -tiTCP:$p -sTCP:LISTEN 2>/dev/null | xargs kill 2>/dev/null || true; done' EXIT
+    trap 'kill $DEV 2>/dev/null || true; for p in 4321 4322 4323 4324 4325 9229 9230 9231 9232 9233 9234; do lsof -nP -tiTCP:$p -sTCP:LISTEN 2>/dev/null | xargs kill 2>/dev/null || true; done' EXIT
     if ! python3 ../scripts/host_service_probe.py --expect-version "$expected_ver" --wait 60; then
       echo "  ❌ dev servers failed service+version verification:"; tail -20 /tmp/w0m-e2e-local-dev.log; exit 1
     fi

@@ -495,6 +495,7 @@ db-local-seed *args:
 # @test.webomage.com. Re-running converges. Order: db-local-up → db-local-env → db-local-seed → this.
 test-team-local:
     @cd w0m-api && python3 scripts/test_team_local.py
+    @db=$(grep '^DATABASE_URL' w0m-web/env/local/generated.properties 2>/dev/null | cut -d= -f2- | tr -d ' '); [ -n "$db" ] && psql "$db" -q -c "ALTER ROLE authenticator SET pgrst.db_schemas = 'public, graphql_public, gamification'; GRANT USAGE ON SCHEMA gamification TO anon, authenticated, service_role; GRANT SELECT ON ALL TABLES IN SCHEMA gamification TO anon, authenticated, service_role; NOTIFY pgrst, 'reload config'; NOTIFY pgrst, 'reload schema';" >/dev/null 2>&1 || true
 
 # T478 — serve the edge functions against the LOCAL stack (foreground; Ctrl-C stops it). Secrets arrive by
 # `infisical run` and reach the CLI through a pipe, never a file. Functions get an ALLOWLIST: AI keys and request
