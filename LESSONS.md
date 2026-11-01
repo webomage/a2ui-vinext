@@ -1752,5 +1752,14 @@ Rewriting git SHAs across a multi-repo estate (`w0m-web`, `w0m-api`) invalidates
 ⇒ **Enforce Rotation-First (`AgDR-0051`): rotate 100% of historical credentials at the provider and in Infisical (`secret-history-check` → `0` matches against live secrets) BEFORE any `git filter-repo` history rewrite is allowed to run.**
 ⭐ **The tell:** Proposing `git filter-repo` or `BFG` to make a secret scanner pass before the underlying keys have been rotated.
 
+### RESOLVE PER-LAYER KV OVERRIDES, DROP SHARED-KV EXTRA WEIGHTS, AND SANITIZE QUANTIZED MOE WEIGHTS IN GEMMA 4 MLX PORTS
+**2026-11-01 (T601).** Approximating Gemma 4 in `w0m-mlx` using Gemma 2/3 uniform layer assumptions failed to account for `per_layer_config` heterogeneity (`use_k_eq_v`, `head_dim`, `num_key_value_heads`), `num_kv_shared_layers` KV cache sharing (`previous_kvs`), extra `.self_attn.v_norm` weights on shared-KV layers, and quantized MoE router weight layouts (`.experts.gate_up_proj.*` / `.experts.down_proj.*` + `mtp.*` multi-token prediction heads).
+
+In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), global layers and sliding-window layers carry distinct KV head counts and `attention_k_eq_v` semantics, shared-KV layers reuse earlier KV states (`first_kv_shared_layer_idx` for prefill trimming) and must drop unused `.self_attn.v_norm` weights during loading, and quantized MoE checkpoints require explicit expert tensor sanitization and `mtp.*` prefix stripping before `nn.quantize` / weight binding.
+
+⇒ **When porting hybrid-attention + MoE architectures (`gemma4`, `gemma4_text`) to MLX (`w0m-mlx`, `mlx-rs`, `mlx-lm`), resolve `per_layer_config` per layer index, trim prefill tokens only after `first_kv_shared_layer_idx`, and strip `.self_attn.v_norm` on shared-KV layers plus `mtp.*` weights during checkpoint sanitization.**
+⭐ **The tell:** Strict weight loading failing on unexpected `.self_attn.v_norm` / `mtp.*` keys or KV-shared layers producing corrupted logits during chunked prefill when `logits_to_keep` trims hidden states before `first_kv_shared_layer_idx`.
+
+
 
 
