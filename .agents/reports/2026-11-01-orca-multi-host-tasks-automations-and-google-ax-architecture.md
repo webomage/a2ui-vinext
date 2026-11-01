@@ -268,3 +268,81 @@ Or, when a terminal is created for an agent tree or project operational scope be
 3. **`T597` Cross-Workspace Tab Drag-and-Drop (`w0m-pr/orca`):**
    - Step 2 (Confirmation Modal) displays the tab's Track/Ticket `customTitle` alongside the detected `agentIdentity` and target workspace.
    - Step 4 (`moveUnifiedTabToWorktree`) preserves `customTitle` across `tabsByWorktree` and `unifiedTabsByWorktree` so moving a tab between `global-floating-terminal` and a project worktree never resets its Track/Ticket title.
+
+---
+
+## 6. Alignment Against Canonical `w0m` Development Platform Schemas & Entities
+
+To guarantee zero duplicate Sources of Truth (`AgDR-0025`, `T214` `SSOT-AUTHORITY-GRAPH.md`), every concept introduced across Orca multi-host sessions, Google AX (`ax.io/v1alpha1`), Track/Ticket naming, and the `w0m` CLI (`T598`) maps strictly to the existing `w0m` Development Platform schemas and entities:
+
+```mermaid
+flowchart TB
+  subgraph L_CORP["1. Org & Engagement Layer (AgDR-0027 / AgDR-0028)"]
+    ORG["public.orgs<br/>(kind: platform | company | personal)"]
+    ENG["public.engagements<br/>(<contractor>.<engagement>.<client>)"]
+    PROJ["public.projects<br/>(slug: w0m · self_hire: true)"]
+    HAT["public.hats + public.project_roles<br/>(client · pm · tl · dev · devops · qa)"]
+    ORG --> ENG --> PROJ --> HAT
+  end
+
+  subgraph L_MODEL_A["2. Model A Quest Track & Ticket Layer (AgDR-0022 / T333 / T214)"]
+    QT["projects.metadata.quest_tracks[]<br/>(id, code: 'Track C', epic: Raid, milestone: Adventure)"]
+    TICKET[".tasks/T##.md (Quest)<br/>(ticket-frontmatter.schema.json · agent_id: agy:agy-orca)"]
+    XP["gamification.xp_ledger + wallets<br/>(award_gamification_xp on ticket_completed / pr_merged)"]
+    PROJ --> QT --> TICKET --> XP
+  end
+
+  subgraph L_CATALOG["3. Backstage IDP Catalog Layer (AgDR-0026 / catalog-info.yaml)"]
+    BS_SYS["kind: System<br/>(system:default/w0m)"]
+    BS_COMP["kind: Component<br/>(repo-w0m-web · stack-*)"]
+    BS_API["kind: API (spec.type: mcp-server)<br/>(.w0m/sdlc.json -> mcp.servers)"]
+    BS_AI["kind: AiResource (w0m.dev/v1alpha1)<br/>(.w0m/skills.json -> skill-*)"]
+    BS_SYS --> BS_COMP
+    BS_SYS --> BS_API
+    BS_SYS --> BS_AI
+  end
+
+  subgraph L_ORCA_AX["4. Orca Runtime, Agent Tree & Google AX Execution Layer (T531 / T564 / T596 / T597 / T598)"]
+    ORCA_PROJ["Orca Project + ProjectHostSetup<br/>(github:webomage/w0m on local & linux-host)"]
+    TREE["Agent Worktree Set (AgDR-0032)<br/>(~/.w0m/work/<handle>/w0m · branch: agent/<handle>)"]
+    TAB["Orca Terminal / Session Tab<br/>Title: '[<Track> · ]<T##> · <Short Title> [<handle>]'"]
+    AX_CRD["Google AX Equivalents<br/>(Workspace · Task · Gateway · Model)"]
+    ORCA_PROJ --> TREE --> TAB
+    TREE <--> AX_CRD
+  end
+
+  PROJ <--> BS_SYS
+  BS_COMP <--> ORCA_PROJ
+  QT <-->|"Track Code + worktree + attached_agent"| TAB
+  TICKET <-->|"T## + agent_id (<harness>:<handle>)"| TAB
+```
+
+### 6.1 Cross-Layer Entity & Schema Rosetta Matrix
+
+| Domain Concept | PostgreSQL / Runtime SSOT (`w0m-api` / `@wom`) | Backstage Catalog Entity (`AgDR-0026` / `catalog_models.py`) | Model A / Guild Lexicon (`AgDR-0022` / `T333` / `09-naming-lexicon.md`) | Orca Runtime Entity (`w0m-pr/orca`) | Google AX (`ax.io/v1alpha1`) & `w0m` CLI (`T598`) |
+|---|---|---|---|---|---|
+| **Engagement** | `public.engagements` (`<contractor>.<engagement>.<client>`, e.g. `webomage.platform.webomage`) | `kind: Group`, `spec.type: engagement`, `w0m.dev/client` | Client / Self-Hire Engagement | — *(above repo level)* | — |
+| **Delivery Project / Estate** | `public.projects` (`slug = 'w0m'`, `engagement_id`) + `project/policies/clients-policy.json` | `kind: System` (`spec.type: estate` or `project`, e.g. `system:default/w0m`) | **Project** (`Negotium`) | `Project` (`id: github:webomage/w0m` when single-remote, or grouped by `clients-policy.json`) | `w0m project [list\|show\|check\|init\|link-remote]` |
+| **Repository / Stack** | `.w0m/sdlc.json -> repos` + `project/policies/stacks-policy.json` | `kind: Component` (`spec.type: repository` or stack type) | Codebase Component | `ProjectHostSetup` (`hostId: local \| runtime:<envId>`, `repoId`, `path`) | AX `Workspace.spec.repo` |
+| **Isolated Agent Worktree** | `~/.w0m/work/<handle>/w0m` (`branch: agent/<handle>`, `AgDR-0032`, `T531`) | Runtime instance of `System` (`w0m`) | `QuestTrack.worktree` (`agent/<handle>`) | `Worktree` + `WorkspaceRunContext` (sleep/wake capable) | AX `Workspace` (`ax suspend` / `ax resume`) · `w0m tree [new\|list\|land\|remove]` |
+| **Campaign Milestone** | `public.client_milestones` / `ROADMAP.md` Phase | — | **Adventure** (`QuestTrack.milestone`) | Milestone filter in `TaskSourceContext` | — |
+| **Feature Epic** | `ROADMAP.md` §1–§34 3-level tag (`.tasks/T*.md -> epic`, e.g. `sdlc_tooling_platform`) | — | **Raid** (`QuestTrack.epic`) | Epic / Label in `TaskSourceContext` | — |
+| **Execution Track** | `public.projects.metadata.quest_tracks[]` (`wom_get_project_quest_tracks` / `wom_attach_agent_to_quest_track`, `T333`) | — | **Quest Track** (`id: track-c`, `code: "Track C"`, `tickets[]`) | `orca orchestration` `Run` + Tab Title prefix (`Track C · ...`) | `w0m agent claim T## --track "Track C"` |
+| **Atomic Task / Ticket** | `.tasks/T##.md` (`ticket-frontmatter.schema.json`) → compiled to `TASKS.md` & `STATE.md` | Annotation `w0m.dev/ticket-id` | **Quest** (`Labor`, `QuestTrack.tickets[]`) | `TaskSourceContext` issue + `orca orchestration` `Task` | AX `Task` CRD · `w0m tasks [hot\|sdlc\|plan]` |
+| **Acting Human Principal & Hat** | `public.profiles` + `public.hats` + `public.worn_hats` (`AgDR-0027` / `AgDR-0028`) | `kind: User` (`user:default/casualuser`) + `kind: Group` (`spec.type: hat`) | `QuestTrack.assigned_developer` + Worn Hat (`pm`, `tl`, `dev`, `client`) | `orca account` + Git author identity (`T300`) | `just profile-resolve` |
+| **Coding Harness Virtual Agent** | `.tasks/T##.md -> agent_id` (`<harness>:<handle>`, e.g. `agy:agy-orca`) + `~/.w0m/agents/registry.json` (`T564`) | — *(ephemeral session actor)* | `QuestTrack.attached_agent` (`antigravity`, `claude-code`, `codex`, `zeroclaw`, `opencode`) | `ORCA_TERMINAL_HANDLE` (`term_<uuid>`), `ORCA_TAB_ID`, `agent-hooks/last-status.json` | `w0m agent [whoami\|claim\|rename\|release]` · `w0m session [list\|attach]` |
+| **Deployed Product AI Persona & LLM Alias** | `public.ai_personas.name` (`w0m-consultant`, `w0m-architect`, `w0m-admin`, `w0m-personnel`) + `public.ai_models.id` (`w0m-llm-<role>`, `AgDR-0046`) | — | **AI Persona (`Genius`)** & **AI Model (`Numen`)** (`09-naming-lexicon.md` §2.E) | — *(served via Supabase Edge Functions, not IDE terminals)* | AX `Model` CRD · `w0m llm [status\|models\|health]` |
+| **Governed Agent Skill** | `w0m-skills/skills/*/SKILL.md` (`skills.schema.json`) → `.w0m/skills.json` + `.w0m/skills.lock.json` | `kind: AiResource` (`apiVersion: w0m.dev/v1alpha1`, `spec.type: agent-skill`) | **Ars / Sapientia** | Injected into workspace `.agents/skills/*` & `.claude/skills/*` | AX `Workspace.spec.skills` · `w0m skill [list\|search\|check\|sync\|add]` |
+| **MCP Server & Egress Boundary** | `.w0m/sdlc.json -> mcp.servers` + `softnet` CIDR allowlist (`T180`) | `kind: API` (`spec.type: mcp-server`, `w0m.dev/mcp-*`) | — | Injected via `.mcp.json` + `RuntimeDeviceGrant` | AX `Gateway` CRD + `Workspace.spec.mcpServers` |
+| **Scheduled / Automated Run** | `public.workflow_runs` (backend) + `T171` batched sandbox runner | — | **Workflow Run (`Cursus`)** (`09-naming-lexicon.md` §2.E) | `AutomationService` (`rrule` + **zero-token shell `precheck`** + `schedulerOwner`) | Antigravity `/schedule` + K8s `CronJob` → AX `Task` |
+
+### 6.2 Three Schema Invariants Preserved (Zero Conflation)
+
+1. **`Project` (1:N Multi-Repo `System`) vs Orca `Project` (Repo-Keyed Workspace Group):**
+   - In `w0m` (`AgDR-0026`, `AgDR-0028`, `clients-policy.json`), a **Project** (`public.projects` / Backstage `System`) belongs to an **Engagement** and can contain multiple **Repositories** (`Component`, e.g. `@wom` has 10 repos; `bridgeroad` has `bridgeroad-w0m`, `BridgeMvp`, and `bridgeroad-func`).
+   - In Orca, `deriveProjectIdentity` keys each sidebar `Project` by its root Git remote (`github:<owner>/<repo>`) and attaches per-host checkouts as `ProjectHostSetup` entries (`local`, `runtime:<envId>`). `w0m project list` (`scripts/w0m_cli.py`) explicitly bridges both views by reporting the `w0m` project `id`, `role`, multi-repo map, and derived `orca_project_id`.
+2. **Coding Harness Virtual Agents (`<harness>:<handle>`) vs Deployed Product AI Personas (`w0m-<role>`):**
+   - Per `AgDR-0046` (`T500`), `public.ai_personas` (`w0m-consultant`, `w0m-architect`, `w0m-admin`, `w0m-personnel`) and `public.ai_models` (`w0m-llm-*`) represent **deployed customer/internal chat personas** in Supabase.
+   - Per `T564` (`ticket-frontmatter.schema.json`), `agent_id` (`<harness>:<handle>`, e.g. `agy:agy-orca`) represents **SDLC coding harness sessions** running in Orca terminals and attached to `public.projects.metadata.quest_tracks[]` (`T333`). The two namespaces never collide.
+3. **Track Membership Lives in `quest_tracks[]` & Session State, Not Ad-Hoc Ticket Frontmatter Keys:**
+   - Per `w0m-web/project/schemas/meta/ticket-frontmatter.schema.json` and `scripts/ticket_schema_check.py`, `.tasks/T##.md` frontmatter tracks `epic` (3-level `ROADMAP.md` tag) and `agent_id` (`<harness>:<handle>`), while **Track** grouping (`Track A`, `Track C`, `Area 1`–`Area 7`) lives canonically in `public.projects.metadata.quest_tracks` (`T333`) and `~/.w0m/agents/registry.json` (`track`, `session_title`, `orca_terminal_handle`), projected onto the Orca tab title (`[<Track> · ]<T##> · <Short Title> [<handle>]`).

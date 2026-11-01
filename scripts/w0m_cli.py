@@ -48,6 +48,19 @@ PREFLIGHT_SCRIPT = ESTATE_ROOT / "scripts" / "preflight.py"
 PRS_SCRIPT = ESTATE_ROOT / "scripts" / "w0m_prs.py"
 CLIENT_CHECK_SCRIPT = ESTATE_ROOT / "scripts" / "client_check.py"
 CLIENT_INVENTORY_SCRIPT = ESTATE_ROOT / "scripts" / "client_inventory.py"
+CATALOG_SYNC_SCRIPT = ESTATE_ROOT / "w0m-web" / "project" / "scripts" / "catalog_sync.py"
+CATALOG_JSON_FILE = ESTATE_ROOT / "w0m-web" / "project" / "catalog-entities.json"
+
+
+def _run_catalog_sync(mode: str = "--check") -> int:
+    if not CATALOG_SYNC_SCRIPT.is_file():
+        return 0
+    uv_bin = shutil.which("uv")
+    if uv_bin:
+        cmd = [uv_bin, "run", "--with", "pyyaml", "--with", "jsonschema", "python", str(CATALOG_SYNC_SCRIPT), mode]
+    else:
+        cmd = [sys.executable, str(CATALOG_SYNC_SCRIPT), mode]
+    return subprocess.run(cmd, cwd=str(ESTATE_ROOT)).returncode
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -272,9 +285,13 @@ def handle_skill(argv: list[str]) -> int:
 
     if sub == "sync":
         sync_args: list[str] = []
-        if args.check or "--check" in args.rest:
+        is_check = bool(args.check or "--check" in args.rest)
+        if is_check:
             sync_args.append("--check")
-        return _run_tsx_or_fallback(SKILLS_REPO / "skills.ts", sync_args, ESTATE_ROOT)
+        rc = _run_tsx_or_fallback(SKILLS_REPO / "skills.ts", sync_args, ESTATE_ROOT)
+        if rc == 0 and not is_check and proj.resolve() == ESTATE_ROOT.resolve():
+            _run_catalog_sync("--write")
+        return rc
 
     if sub == "audit":
         return _run_tsx_or_fallback(SKILLS_REPO / "skill_audit.ts", args.rest, SKILLS_REPO)
@@ -290,11 +307,14 @@ def handle_skill(argv: list[str]) -> int:
         )
 
     if sub in ("add", "remove", "update", "relock"):
-        return _run_tsx_or_fallback(
+        rc = _run_tsx_or_fallback(
             SKILLS_REPO / "w0m_skill.ts",
             [sub, *args.rest, "--project", str(proj)],
             proj,
         )
+        if rc == 0 and proj.resolve() == ESTATE_ROOT.resolve():
+            _run_catalog_sync("--write")
+        return rc
 
     print(f"[ERR] Unknown `w0m skill` subcommand '{sub}'.", file=sys.stderr)
     return 2
@@ -550,11 +570,49 @@ def install_w0m_shim(bin_dir: Path | None = None, *, target_script: Path = HERE)
     return shim
 
 
+def handle_catalog(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser(prog="w0m catalog", description="Inspect and synchronize Backstage IDP catalog entities (AgDR-0026)")
+    ap.add_argument("subcmd", nargs="?", default="list", help="list | check | sync")
+    ap.add_argument("--kind", default=None, help="Filter by Backstage entity kind (System, Component, API, AiResource, Group, User)")
+    ap.add_argument("--json", action="store_true", help="Emit JSON output")
+    args = ap.parse_args(argv)
+
+    sub = args.subcmd.lower()
+    if sub == "check":
+        return _run_catalog_sync("--check")
+    if sub in ("sync", "write"):
+        return _run_catalog_sync("--write")
+    if sub == "list":
+        data = _load_json(CATALOG_JSON_FILE)
+        entities = data.get("entities") if isinstance(data.get("entities"), list) else []
+        if args.kind:
+            k_low = args.kind.lower()
+            entities = [e for e in entities if isinstance(e, dict) and str(e.get("kind", "")).lower() == k_low]
+        if args.json:
+            print(json.dumps({"count": len(entities), "entities": entities}, indent=2))
+            return 0
+        print(f"▶ w0m Backstage IDP Catalog ({len(entities)} entities from catalog-entities.json):")
+        for e in entities:
+            if not isinstance(e, dict):
+                continue
+            kind = str(e.get("kind", ""))
+            meta = e.get("metadata") if isinstance(e.get("metadata"), dict) else {}
+            spec = e.get("spec") if isinstance(e.get("spec"), dict) else {}
+            name = str(meta.get("name", ""))
+            etype = str(spec.get("type", "-"))
+            title = str(meta.get("title") or meta.get("description") or "")[:54]
+            print(f"  • {kind:<12} {name:<32} {etype:<16} {title}")
+        return 0
+
+    print(f"[ERR] Unknown `w0m catalog` subcommand '{sub}'.", file=sys.stderr)
+    return 2
+
+
 # ── 4. Top-Level Dispatcher ──────────────────────────────────────────────────
 
 
 HELP_TEXT = """\
-w0m — Unified CLI for Skills, Projects, Virtual Agents & Multi-Host Sessions (T598)
+w0m — Unified CLI for Skills, Projects, Catalog, Virtual Agents & Multi-Host Sessions (T598)
 
 Usage:
   w0m <group> [subcommand] [options]
@@ -562,6 +620,7 @@ Usage:
 Command Groups:
   skill, skills      Manage project & canonical skills (`list`, `search`, `check`, `sync`, `add`, `remove`, `update`, `relock`, `audit`)
   project, projects  Manage estate & client projects (`list`, `show`, `check`, `init`, `link-remote`)
+  catalog            Manage Backstage IDP catalog entities (`list [--kind <Kind>]`, `check`, `sync`) (AgDR-0026)
   agent              Virtual Agent ID, ticket claims & Orca tab naming (`whoami`, `claim`, `rename`, `release`, `tag`, `claims`)
   tree               Isolated agent worktree sets (`new`, `list`, `land`, `remove`, `prune`)
   session, sessions  Multi-host Orca agent sessions (`list`, `attach`, `hosts`)
@@ -632,6 +691,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if group in ("project", "projects"):
         return handle_project(rest)
+
+    if group == "catalog":
+        return handle_catalog(rest)
 
     if group == "agent":
         return subprocess.run([sys.executable, str(AGENT_IDENTITY_SCRIPT), *rest]).returncode

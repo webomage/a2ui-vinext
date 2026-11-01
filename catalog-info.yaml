@@ -912,6 +912,62 @@ relations:
 apiVersion: w0m.dev/v1alpha1
 kind: AiResource
 metadata:
+  name: skill-firecrawl
+  namespace: default
+  title: 'Skill: firecrawl'
+  description: Governed agent skill `firecrawl` (provider=skills.sh, version=unknown).
+  annotations:
+    w0m.dev/skill-provider: skills.sh
+    w0m.dev/skill-source: firecrawl/skills
+    w0m.dev/skill-version: unknown
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - skills-sh
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: skills.sh
+  version: unknown
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
+  name: skill-mmd-validate
+  namespace: default
+  title: 'Skill: mmd-validate'
+  description: Governed agent skill `mmd-validate` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-observed-version: 2026.10.26-1793055094
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
   name: skill-socrates
   namespace: default
   title: 'Skill: socrates'
@@ -973,7 +1029,7 @@ metadata:
   title: 'Skill: w0m'
   description: Governed agent skill `w0m` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.09.24-1790232259
+    w0m.dev/skill-observed-version: 2026.10.26-1793053633
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1080,12 +1136,40 @@ relations:
 apiVersion: w0m.dev/v1alpha1
 kind: AiResource
 metadata:
+  name: skill-w0m-pixel-clone
+  namespace: default
+  title: 'Skill: w0m-pixel-clone'
+  description: Governed agent skill `w0m-pixel-clone` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-observed-version: 2026.10.26-1793055094
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
   name: skill-w0m-prs
   namespace: default
   title: 'Skill: w0m-prs'
   description: Governed agent skill `w0m-prs` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.09.21-1790048274
+    w0m.dev/skill-observed-version: 2026.10.28-1793220550
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1225,7 +1309,7 @@ metadata:
   title: 'Skill: w0m-sdlc-research'
   description: Governed agent skill `w0m-sdlc-research` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.10.21-1792622813
+    w0m.dev/skill-observed-version: 2026.10.26-1793009642
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1337,7 +1421,7 @@ metadata:
   title: 'Skill: w0m-sdlc-start'
   description: Governed agent skill `w0m-sdlc-start` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.09.24-1790250554
+    w0m.dev/skill-observed-version: 2026.10.26-1793009642
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1393,7 +1477,7 @@ metadata:
   title: 'Skill: w0m-state-load'
   description: Governed agent skill `w0m-state-load` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.09.24-1790282807
+    w0m.dev/skill-observed-version: 2026.10.26-1793009642
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1449,7 +1533,7 @@ metadata:
   title: 'Skill: w0m-tasks'
   description: Governed agent skill `w0m-tasks` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.09.28-1790589022
+    w0m.dev/skill-observed-version: 2026.10.26-1793009642
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1505,7 +1589,7 @@ metadata:
   title: 'Skill: w0m-ticket-audit'
   description: Governed agent skill `w0m-ticket-audit` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.09.22-1790054019
+    w0m.dev/skill-observed-version: 2026.10.26-1793009642
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json

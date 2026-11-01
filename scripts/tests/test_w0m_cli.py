@@ -147,6 +147,13 @@ class TestW0mCli(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertIn("Unified CLI for Skills, Projects", buf.getvalue())
 
+        cat_buf = io.StringIO()
+        with redirect_stdout(cat_buf):
+            rc_cat = w0m_cli.main(["catalog", "list", "--kind", "System", "--json"])
+        self.assertEqual(rc_cat, 0)
+        cat_data = json.loads(cat_buf.getvalue())
+        self.assertGreaterEqual(cat_data["count"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
