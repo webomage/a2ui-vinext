@@ -154,6 +154,29 @@ class TestW0mCli(unittest.TestCase):
         cat_data = json.loads(cat_buf.getvalue())
         self.assertGreaterEqual(cat_data["count"], 1)
 
+    def test_track_and_automation_commands(self) -> None:
+        trk_buf = io.StringIO()
+        with redirect_stdout(trk_buf):
+            rc_trk = w0m_cli.main(["track", "show", "track-c", "--json"])
+        self.assertEqual(rc_trk, 0)
+        trk_data = json.loads(trk_buf.getvalue())
+        self.assertEqual(trk_data["id"], "track-c")
+        self.assertEqual(trk_data["agent_id"], "agy:agy-orca")
+        self.assertEqual(trk_data["host_id"], "local")
+        self.assertIn("T597", trk_data["tickets"])
+
+        auto_buf = io.StringIO()
+        with redirect_stdout(auto_buf):
+            rc_auto = w0m_cli.main(["automation", "templates", "--json"])
+        self.assertEqual(rc_auto, 0)
+        auto_data = json.loads(auto_buf.getvalue())
+        self.assertGreaterEqual(auto_data["count"], 4)
+        ids = {t["id"] for t in auto_data["templates"]}
+        self.assertIn("in-triage-watch", ids)
+        self.assertIn("prs-review-watch", ids)
+        self.assertIn("beta-drift-watch", ids)
+        self.assertIn("catalog-drift-watch", ids)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -54,8 +54,11 @@ metadata:
   description: Multi-repo software delivery estate (10 repos, profile=w0m).
   annotations:
     w0m.dev/confirm-gate: project/policies/confirm-policy.json
+    w0m.dev/orca-project-id: github:webomage/w0m
     w0m.dev/profile: w0m
+    w0m.dev/project-role: w0m
     w0m.dev/source-register: .w0m/sdlc.json
+    w0m.dev/substrate: host
   tags:
   - w0m
   - estate

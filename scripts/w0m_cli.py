@@ -608,6 +608,306 @@ def handle_catalog(argv: list[str]) -> int:
     return 2
 
 
+# ── 4. `w0m track` (QuestTrack Registry & Orca Tab Claiming) ─────────────────
+
+CANONICAL_QUEST_TRACKS: tuple[dict[str, Any], ...] = (
+    {
+        "id": "track-a",
+        "code": "Track A",
+        "title": "Backstage Catalog, DORA Telemetry, Project RBAC & Agent Identity",
+        "epic": "Raid: Platform Governance & Catalog",
+        "milestone": "Adventure: Backstage Catalog, DORA Telemetry & T596 Claim Registry",
+        "tickets": ["T448", "T64", "T520", "T432", "T525", "T534", "T596"],
+        "status": "in_progress",
+        "xp_reward": 650,
+        "rarity": "epic",
+        "assigned_developer": "aleksei@webomage.com",
+        "attached_agent": "antigravity",
+        "agent_id": "agy:agy-t596",
+        "host_id": "local",
+        "worktree": "agent/agy-t596",
+        "session_title": "Track A · T596 · Agent Identity & Claim Registry [agy-t596]",
+    },
+    {
+        "id": "track-b",
+        "code": "Track B",
+        "title": "Connector Surface, Cal.com Webhooks & Open WebUI SSO",
+        "epic": "Raid: Integrations & Identity Federation",
+        "milestone": "Adventure: Webhook Verification & Federated Auth",
+        "tickets": ["T292", "T59", "T51", "T141", "T144"],
+        "status": "completed",
+        "xp_reward": 550,
+        "rarity": "epic",
+        "assigned_developer": "aleksei@webomage.com",
+        "attached_agent": "antigravity",
+        "agent_id": "agy:ant-track-a-b",
+        "host_id": "local",
+        "worktree": "agent/ant-track-a-b",
+        "session_title": "Track B · T292 · Connector Surface & Open WebUI SSO [ant-track-a-b]",
+    },
+    {
+        "id": "track-c",
+        "code": "Track C",
+        "title": "Orca Multi-Host Pairing, Tab Mobility, Google AX & Unified w0m CLI",
+        "epic": "Raid: Multi-Host Agent Substrate & Developer Platform",
+        "milestone": "Adventure: Remote Host Pairing, Cross-Workspace Tab DnD, Google AX & w0m CLI",
+        "tickets": ["T597", "T598", "T564", "T171"],
+        "status": "in_progress",
+        "xp_reward": 650,
+        "rarity": "epic",
+        "assigned_developer": "aleksei@webomage.com",
+        "attached_agent": "antigravity",
+        "agent_id": "agy:agy-orca",
+        "host_id": "local",
+        "worktree": "agent/agy-orca",
+        "session_title": "Track C · T597 · Orca Tab DnD & AX Specs [agy-orca]",
+    },
+    {
+        "id": "track-d",
+        "code": "Track D",
+        "title": "Connector Credential Vault, Blueprint Catalog & ZeroClaw",
+        "epic": "Raid: Zero-Trust Security & Catalog Hygiene",
+        "milestone": "Adventure: OAuth Ciphertext Vault & Blueprint 1:1 Sync",
+        "tickets": ["T99", "T114", "T219", "T333"],
+        "status": "completed",
+        "xp_reward": 500,
+        "rarity": "epic",
+        "assigned_developer": "aleksei@webomage.com",
+        "attached_agent": "antigravity",
+        "agent_id": "agy:ant-track-d",
+        "host_id": "local",
+        "worktree": "agent/ant-track-d",
+        "session_title": "Track D · T333 · Bounty & Agent Quest Tracks [ant-track-d]",
+    },
+    {
+        "id": "track-e",
+        "code": "Track E",
+        "title": "Knowledge Graph, Telemetry & Estate Tooling (agy-batch)",
+        "epic": "Raid: Developer Experience & Observability",
+        "milestone": "Adventure: Codegraph, Sentry & Estate Automation",
+        "tickets": ["T284", "T30", "T344", "T560"],
+        "status": "in_progress",
+        "xp_reward": 450,
+        "rarity": "rare",
+        "assigned_developer": "aleksei@webomage.com",
+        "attached_agent": "antigravity",
+        "agent_id": "agy:agy-batch",
+        "host_id": "local",
+        "worktree": "agent/agy-batch",
+        "session_title": "Track E · T284 · Graph Tooling & Telemetry [agy-batch]",
+    },
+    {
+        "id": "track-f",
+        "code": "Track F",
+        "title": "Upwork GraphQL Live Sync & Freelancer Discovery",
+        "epic": "Raid: Commercial Acquisition & Talent Pipeline",
+        "milestone": "Adventure: Upwork Live OAuth & Job Feed Sync",
+        "tickets": ["T43", "T55"],
+        "status": "open",
+        "xp_reward": 350,
+        "rarity": "rare",
+        "assigned_developer": None,
+        "attached_agent": None,
+        "agent_id": None,
+        "host_id": None,
+        "worktree": None,
+        "session_title": None,
+    },
+    {
+        "id": "track-g",
+        "code": "Track G",
+        "title": "Local Apple MLX Inference & Voice Pipeline",
+        "epic": "Raid: Local AI & Multi-Modal Inference",
+        "milestone": "Adventure: Apple Silicon MLX & Voice Synthesis",
+        "tickets": ["T208", "T252"],
+        "status": "open",
+        "xp_reward": 400,
+        "rarity": "epic",
+        "assigned_developer": None,
+        "attached_agent": None,
+        "agent_id": None,
+        "host_id": None,
+        "worktree": None,
+        "session_title": None,
+    },
+)
+
+
+def track_list_data() -> list[dict[str, Any]]:
+    return [dict(item) for item in CANONICAL_QUEST_TRACKS]
+
+
+def handle_track(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser(prog="w0m track", description="Inspect and claim w0m Agent Quest Tracks (T333 / T596 / T597)")
+    ap.add_argument("subcmd", nargs="?", default="list", help="list | show | claim")
+    ap.add_argument("rest", nargs=argparse.REMAINDER)
+    ap.add_argument("--ticket", default=None, help="Explicit ticket ID (T##) to claim on the track")
+    ap.add_argument("--agent", default=None, help="Explicit agent identity (<harness>:<handle>)")
+    ap.add_argument("--json", action="store_true", help="Emit JSON output")
+    args = ap.parse_args(argv)
+
+    sub = args.subcmd.lower()
+    is_json = bool(args.json or "--json" in args.rest)
+    tracks = track_list_data()
+
+    if sub == "list":
+        if is_json:
+            print(json.dumps({"count": len(tracks), "tracks": tracks}, indent=2))
+            return 0
+        print(f"▶ w0m Agent Quest Tracks ({len(tracks)} canonical tracks):")
+        print(f"  {'ID':<10} {'CODE':<9} {'STATUS':<12} {'AGENT ID':<18} {'HOST':<11} {'WORKTREE':<18} {'TITLE'}")
+        for t in tracks:
+            aid = str(t.get("agent_id") or "-")
+            hst = str(t.get("host_id") or "-")
+            wt = str(t.get("worktree") or "-")
+            print(f"  {t['id']:<10} {t['code']:<9} {t['status']:<12} {aid:<18} {hst:<11} {wt:<18} {t['title'][:44]}")
+        return 0
+
+    if sub == "show":
+        if not args.rest:
+            print("[ERR] Usage: w0m track show <track-id>", file=sys.stderr)
+            return 2
+        tid = args.rest[0].strip().lower()
+        found = next((t for t in tracks if t["id"] == tid or t["code"].lower() == tid), None)
+        if not found:
+            print(f"[ERR] Unknown quest track '{tid}'. Run `w0m track list`.", file=sys.stderr)
+            return 2
+        if args.json or "--json" in args.rest:
+            print(json.dumps(found, indent=2))
+        else:
+            for k, v in found.items():
+                print(f"{k:<20}: {v}")
+        return 0
+
+    if sub == "claim":
+        if not args.rest:
+            print("[ERR] Usage: w0m track claim <track-id> [--ticket T##]", file=sys.stderr)
+            return 2
+        tid = args.rest[0].strip().lower()
+        found = next((t for t in tracks if t["id"] == tid or t["code"].lower() == tid), None)
+        if not found:
+            print(f"[ERR] Unknown quest track '{tid}'. Run `w0m track list`.", file=sys.stderr)
+            return 2
+        ticket_id = args.ticket
+        for idx, tok in enumerate(args.rest):
+            if tok == "--ticket" and idx + 1 < len(args.rest):
+                ticket_id = args.rest[idx + 1]
+        if not ticket_id:
+            tickets = found.get("tickets") or []
+            ticket_id = tickets[0] if tickets else None
+        if not ticket_id:
+            print(f"[ERR] Track '{found['id']}' has no default ticket; pass `--ticket T##`.", file=sys.stderr)
+            return 2
+        cmd = [sys.executable, str(AGENT_IDENTITY_SCRIPT), "claim", str(ticket_id), "--track", str(found["code"])]
+        if args.agent:
+            cmd.extend(["--agent", str(args.agent)])
+        if args.json or "--json" in args.rest:
+            cmd.append("--json")
+        return subprocess.run(cmd, cwd=str(ESTATE_ROOT)).returncode
+
+    print(f"[ERR] Unknown `w0m track` subcommand '{sub}'.", file=sys.stderr)
+    return 2
+
+
+# ── 5. `w0m automation` (Zero-Token Precheck Bridge for T171 & Orca) ─────────
+
+AUTOMATION_TEMPLATES: tuple[dict[str, Any], ...] = (
+    {
+        "id": "in-triage-watch",
+        "name": "w0m Inbound Tray Triage (_in/)",
+        "cron": "*/30 * * * *",
+        "executionMode": "background",
+        "precheck": "python3 scripts/in_triage.py --check",
+        "prompt": "Run `just in-triage` to inspect new drops in `_in/INDEX.md`, match against open tickets/specs, and report findings.",
+        "ticket": "T171",
+    },
+    {
+        "id": "prs-review-watch",
+        "name": "w0m Upstream Open-Source PR Health (w0m-pr/)",
+        "cron": "0 */4 * * *",
+        "executionMode": "background",
+        "precheck": "python3 scripts/w0m_prs.py --json | python3 -c \"import json,sys; d=json.load(sys.stdin); sys.exit(0 if any(p.get('reviewDecision')=='CHANGES_REQUESTED' for p in d.get('prs',[])) else 1)\"",
+        "prompt": "Run `w0m prs` to audit upstream PR review requests or CI failures in `w0m-pr/` and prepare fixes.",
+        "ticket": "T171",
+    },
+    {
+        "id": "beta-drift-watch",
+        "name": "w0m Multi-Host origin/beta Sync Check",
+        "cron": "0 * * * *",
+        "executionMode": "background",
+        "precheck": "git fetch origin beta --quiet && test \"$(git rev-parse HEAD)\" != \"$(git rev-parse origin/beta)\"",
+        "prompt": "Fast-forward live checkout to `origin/beta` with `git merge --ff-only origin/beta` and verify `w0m catalog check`.",
+        "ticket": "T597",
+    },
+    {
+        "id": "catalog-drift-watch",
+        "name": "w0m Backstage IDP Catalog & Skills Drift Gate",
+        "cron": "0 */6 * * *",
+        "executionMode": "background",
+        "precheck": "! python3 scripts/w0m_cli.py catalog check >/dev/null 2>&1",
+        "prompt": "Investigate Backstage catalog drift via `w0m catalog check` and regenerate via `w0m catalog sync` if needed.",
+        "ticket": "T598",
+    },
+)
+
+
+def automation_templates_data() -> list[dict[str, Any]]:
+    return [dict(t) for t in AUTOMATION_TEMPLATES]
+
+
+def handle_automation(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser(
+        prog="w0m automation",
+        description="Zero-token shell precheck templates & Orca AutomationService bridge (T171 AC5/AC6)",
+    )
+    ap.add_argument("subcmd", nargs="?", default="templates", help="templates | list | precheck")
+    ap.add_argument("rest", nargs=argparse.REMAINDER)
+    ap.add_argument("--json", action="store_true", help="Emit JSON output")
+    args = ap.parse_args(argv)
+
+    sub = args.subcmd.lower()
+    is_json = bool(args.json or "--json" in args.rest)
+    templates = automation_templates_data()
+
+    if sub in ("templates", "list"):
+        if is_json:
+            print(json.dumps({"count": len(templates), "templates": templates}, indent=2))
+            return 0
+        print(f"▶ w0m Zero-Token Precheck Automation Templates ({len(templates)} templates, T171 ↔ Orca AutomationService):")
+        for t in templates:
+            print(f"  • {t['id']:<22} [{t['cron']:<11}] ({t['executionMode']}) — {t['name']}")
+            print(f"    precheck: {t['precheck']}")
+        return 0
+
+    if sub == "precheck":
+        if not args.rest:
+            print("[ERR] Usage: w0m automation precheck <template-id>", file=sys.stderr)
+            return 2
+        tid = args.rest[0].strip().lower()
+        found = next((t for t in templates if t["id"] == tid), None)
+        if not found:
+            print(f"[ERR] Unknown automation template '{tid}'. Run `w0m automation templates`.", file=sys.stderr)
+            return 2
+        res = subprocess.run(found["precheck"], shell=True, cwd=str(ESTATE_ROOT), capture_output=True, text=True)
+        should_wake = res.returncode == 0
+        payload = {
+            "id": found["id"],
+            "precheck": found["precheck"],
+            "returncode": res.returncode,
+            "should_wake_agent": should_wake,
+            "tokens_spent": 0,
+        }
+        if args.json or "--json" in args.rest:
+            print(json.dumps(payload, indent=2))
+        else:
+            state = "WAKE AGENT (precheck exited 0)" if should_wake else "SKIP AGENT (precheck non-zero, 0 LLM tokens spent)"
+            print(f"▶ Precheck [{found['id']}]: {state}")
+        return 0
+
+    print(f"[ERR] Unknown `w0m automation` subcommand '{sub}'.", file=sys.stderr)
+    return 2
+
+
 # ── 4. Top-Level Dispatcher ──────────────────────────────────────────────────
 
 
@@ -621,6 +921,8 @@ Command Groups:
   skill, skills      Manage project & canonical skills (`list`, `search`, `check`, `sync`, `add`, `remove`, `update`, `relock`, `audit`)
   project, projects  Manage estate & client projects (`list`, `show`, `check`, `init`, `link-remote`)
   catalog            Manage Backstage IDP catalog entities (`list [--kind <Kind>]`, `check`, `sync`) (AgDR-0026)
+  track, tracks      Manage Agent Quest Tracks & claim tracks with Orca tab naming (`list`, `show`, `claim`) (T333/T597)
+  automation         Zero-token shell precheck templates & Orca AutomationService bridge (`templates`, `precheck`) (T171)
   agent              Virtual Agent ID, ticket claims & Orca tab naming (`whoami`, `claim`, `rename`, `release`, `tag`, `claims`)
   tree               Isolated agent worktree sets (`new`, `list`, `land`, `remove`, `prune`)
   session, sessions  Multi-host Orca agent sessions (`list`, `attach`, `hosts`)
@@ -694,6 +996,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if group == "catalog":
         return handle_catalog(rest)
+
+    if group in ("track", "tracks"):
+        return handle_track(rest)
+
+    if group in ("automation", "automations"):
+        return handle_automation(rest)
 
     if group == "agent":
         return subprocess.run([sys.executable, str(AGENT_IDENTITY_SCRIPT), *rest]).returncode
