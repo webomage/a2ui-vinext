@@ -28,7 +28,7 @@
     },
     "cargo": {
       "min": "1.95.0",
-      "known_good": "1.98.1",
+      "known_good": "1.99.1",
       "required": false,
       "source": "rustup",
       "auto": "none",
@@ -37,7 +37,7 @@
     },
     "cargo-clippy": {
       "min": "0.1.95",
-      "known_good": "0.1.98",
+      "known_good": "0.1.99",
       "required": false,
       "source": "rustup",
       "auto": "none",
@@ -54,7 +54,7 @@
     },
     "deno": {
       "min": "2.0.0",
-      "known_good": "2.9.3",
+      "known_good": "2.9.8",
       "required": true,
       "source": "brew",
       "auto": "none",
@@ -89,7 +89,7 @@
     },
     "gh": {
       "min": "2.60.0",
-      "known_good": "2.103.0",
+      "known_good": "2.103.3",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -108,7 +108,7 @@
     },
     "graphify": {
       "min": "0.9.30",
-      "known_good": "0.9.92",
+      "known_good": "0.9.100",
       "required": false,
       "source": "uv",
       "auto": "none",
@@ -125,7 +125,7 @@
     },
     "infisical": {
       "min": "0.40.0",
-      "known_good": "0.44.6",
+      "known_good": "0.44.11",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -143,7 +143,7 @@
     },
     "just": {
       "min": "1.40.0",
-      "known_good": "1.58.0",
+      "known_good": "1.59.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -152,20 +152,21 @@
     },
     "mypy": {
       "min": "1.15.0",
-      "known_good": "2.4.0",
+      "known_good": "2.4.1",
       "required": false,
-      "source": "pyenv",
+      "source": "brew",
       "auto": "minor",
       "smoke": "mypy --version",
-      "note": "T188 — type-checks the Python that implements this estate's gates (`just py-typecheck`, scope in w0m-web/mypy.ini). `required: false` because the gate is scoped to one repo's scripts, not to building or shipping anything. ⚠️ SOURCE RISK, recorded rather than discovered later: this resolves through a **pyenv shim** (/Users/proto/.pyenv/shims/mypy), so it vanishes on an interpreter switch — the exact failure that forced `ast-grep` from pip-inside-pyenv to brew (two managers, one tool). A pre-commit hook that disappears with a `pyenv global` change fails confusingly. Move to brew if this bites; until then the risk is written down here, not assumed away."
+      "note": "T188 / T595 (AgDR-0052) — type-checks the Python that implements this estate's gates (`just py-typecheck`, scope in w0m-web/mypy.ini). `required: false` because the gate is scoped to one repo's scripts, not to building or shipping anything. Standardized on `source: brew` (`brew install mypy`) across macOS and Linux per AgDR-0052 to eliminate pyenv shim drift."
     },
     "node": {
-      "min": "22.0.0",
-      "known_good": "24.17.0",
+      "min": "22.23.3",
+      "known_good": "26.13.0",
       "required": true,
-      "source": "nvs",
+      "source": "brew",
       "auto": "none",
-      "note": "build-time only; managed by nvs (NOT brew node). Update via nvs."
+      "smoke": "node --version",
+      "note": "T595 (AgDR-0052) — build-time Node.js runtime standardized on Homebrew (`brew install node` for Latest `26.13.0`, `brew install node@22` for LTS floor `22.23.3`) across macOS and Linux. `min: 22.23.3` enforces at least active LTS; `known_good: 26.13.0` tracks current Latest release."
     },
     "omlx": {
       "min": "0.5.0",
@@ -195,16 +196,17 @@
       "note": "T164 AC1 — PostgreSQL interactive/batch client (`libpq` / `postgresql@18`). Measured 33 command/subprocess invocations across 18 files (40 raw before symlink deduplication): `w0m-api/justfile` (`db-psql`, `db-psql-ssl`, `tracks-report`, `upwork-sync-check`, `db-audit-log`), `w0m-api/scripts/db_baseline.py`, `db_local_migrate.py`, `db_local_seed.py`, `stage2_schema_check.py`, `w0m-web/project/scripts/lexicon_lint.py`, and `w0m-web/apps/web/scripts/snapshot-*.mjs`, plus declared in `.w0m/sdlc.json` (`mcp.servers.supabase`) as the primary CLI fallback when the Supabase MCP server is disconnected. `required: false` because commit/push hooks do not require a local `psql` binary; floor `15.0` matches the estate's Supabase Postgres 15 baseline."
     },
     "python3": {
-      "min": "3.11.0",
-      "known_good": "3.12.9",
+      "min": "3.12.0",
+      "known_good": "3.15.2",
       "required": true,
-      "source": "pyenv",
+      "source": "brew",
       "auto": "none",
-      "note": "pyenv-managed (~/.pyenv/shims, 3.12.9). NOT brew. Update via `pyenv install` + set version. Never auto-touch."
+      "smoke": "python3 --version",
+      "note": "T595 (AgDR-0052) — standardized on Homebrew (`brew install python` for Latest `3.15.2`, `brew install python@3.12` for stable `3.12.x` floor) across macOS and Linux. `min: 3.12.0` enforces the active stable floor; `known_good: 3.15.2` tracks current Latest Homebrew Python."
     },
     "rustc": {
       "min": "1.95.0",
-      "known_good": "1.98.1",
+      "known_good": "1.99.1",
       "required": false,
       "source": "rustup",
       "auto": "none",
@@ -213,7 +215,7 @@
     },
     "rustfmt": {
       "min": "1.9.0",
-      "known_good": "1.9.0",
+      "known_good": "1.10.0",
       "required": false,
       "source": "rustup",
       "auto": "none",
@@ -231,7 +233,7 @@
     },
     "semgrep": {
       "min": "1.100.0",
-      "known_good": "1.182.0",
+      "known_good": "1.183.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -260,7 +262,7 @@
     },
     "supabase": {
       "min": "2.100.0",
-      "known_good": "2.113.0",
+      "known_good": "2.122.0",
       "required": true,
       "source": "brew",
       "auto": "patch",
@@ -280,13 +282,14 @@
       "min": "1.10.0",
       "known_good": "1.14.3",
       "required": false,
-      "source": "tfenv",
+      "source": "brew",
       "auto": "none",
-      "note": "via tfenv, not brew. Update via tfenv."
+      "smoke": "terraform --version",
+      "note": "T595 (AgDR-0052) — standardized on `source: brew` across macOS and Linux instead of single-language `tfenv`."
     },
     "uv": {
       "min": "0.5.0",
-      "known_good": "0.13.4",
+      "known_good": "0.13.6",
       "required": true,
       "source": "brew",
       "auto": "minor",

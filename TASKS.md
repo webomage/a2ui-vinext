@@ -50,6 +50,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T595](.tasks/T595.md) | **P1** | **Standardize cross-platform toolchain on Homebrew with LTS floors, latest comparison, and Node 26 alignment (AgDR-0052)** | web, api, cf | — | ✅ **done** |
 | [T594](.tasks/T594.md) | **P1** | **Per-project UI Screens & Workflows User Guides with visual SVG diagrams in all 5 Obsidian vaults (w0m, 1945, artemio, servicios777, personaje0)** | web, api, tooling | — | ✅ **done** |
 | [T592](.tasks/T592.md) | **P1** | **Feature Voting Board — One-Click Supabase GitHub OAuth Voting & Cloudflare Edge SVG Badge Cache** | web | — | ✅ **done** |
 | [T591](.tasks/T591.md) | **P2** | **Webomage Browser Extension (w0m-ext) — GitHub Issue Priority Score Overlay & Agent Spec Drawer** | web | — | ✅ **done** |

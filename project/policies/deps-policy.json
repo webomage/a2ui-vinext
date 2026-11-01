@@ -117,14 +117,14 @@
     }
   },
   "runtime": {
-    "_comment": "T113 AC1/AC2/AC5 — Deployed Cloudflare workerd runtime (`compatibility_date` + `nodejs_compat`) and build-time Node.js engine pin (`.nvmrc` + `engines.node`). Enforced across all 5 w0m-web Astro apps, w0m-api, and w0m-cf.",
-    "nvmrc": "22.23.3",
+    "_comment": "T113 AC1/AC2/AC5 & T595 (AgDR-0052) — Deployed Cloudflare workerd runtime (`compatibility_date` + `nodejs_compat`) and build-time Node.js engine pin (`.nvmrc` tracks current latest `known_good`, `engines.node` enforces >= active LTS floor without blocking newer LTS/Current releases). Enforced across all 5 w0m-web Astro apps, w0m-api, and w0m-cf.",
+    "nvmrc": "26.13.0",
     "nvmrc_files": [
       ".nvmrc",
       "w0m-web/.nvmrc"
     ],
     "engines": {
-      "node": ">=22.23.3 <23",
+      "node": ">=22.23.3",
       "pnpm": ">=10.32.0"
     },
     "engines_repos": [
