@@ -114,7 +114,7 @@ SECRETS: list[tuple[str, re.Pattern[str]]] = [
 # accepted so producers can convert one at a time; the glyph branch goes only when the last
 # producer has moved, in the same commit as the policy declaration.
 STEP = re.compile(r"^\s*(?:[🔑✅❌📸🔍⏳▶]|\[(?:OK|FAIL|STEP|KEY|SHOT|SCAN|WAIT|RUN)\]|Deploying|Building|=== )")
-TROUBLE = re.compile(r"(?i)\b(error|failed|failure|warn|warning|deprecat|vulnerab|cannot|refus|denied|timeout|retry)\b")
+TROUBLE = re.compile(r"(?i)\b(error|failed|failure|warn|warning|deprecat\w*|vulnerab\w*|cannot|refus\w*|denied|timeout|retry)\b")
 
 
 def clean(raw: str) -> str:
@@ -176,6 +176,14 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
         r"advisory suite\(s\) failing)",
         re.IGNORECASE,
     )
+    # T523 AC4 — Exclude harmless summary/driver lines that match `TROUBLE` only by word shape:
+    # 1. Gauge summary lines with 0 failures (`Specifications: 2 executed 2 passed 0 failed`)
+    # 2. Chromium WebGL GPU driver performance hints (`[Browser WARNING]: ... GL Driver Message ... GL_CLOSE_PATH_NV`)
+    rx_harmless_trouble = re.compile(
+        r"(?:^(?:Specifications|Scenarios):\s+\d+\s+executed\s+\d+\s+passed\s+0\s+failed\b|"
+        r"\[Browser WARNING\]:.*GL Driver Message.*(?:GL_CLOSE_PATH_NV|ReadPixels|Performance))",
+        re.IGNORECASE,
+    )
 
     for ln in lines:
         s = ln.strip()
@@ -189,6 +197,8 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
             browser_errors.append(s)
         elif rx_tool_chatter.search(s):
             tool_chatter.append(s)
+        elif rx_harmless_trouble.search(s):
+            continue
         elif TROUBLE.search(s):
             other_trouble.append(s)
 
@@ -198,6 +208,66 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
         "browser_errors": browser_errors,
         "tool_chatter": tool_chatter,
         "other_trouble": other_trouble,
+    }
+
+
+def previous_release_audit(logs_dir: Path, current_release: str | None = None) -> dict[str, object] | None:
+    """T523 AC5: Load the most recent prior `deploy-<release>.audit.json` to compare counts release-to-release."""
+    if not logs_dir.is_dir():
+        return None
+    candidates = sorted(logs_dir.glob("deploy-*.audit.json"), key=lambda p: p.name, reverse=True)
+    for path in candidates:
+        if current_release and path.name == f"deploy-{current_release}.audit.json":
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(data, dict) and data.get("release"):
+                return data
+        except (OSError, ValueError):
+            continue
+    return None
+
+
+def compute_audit_deltas(
+    current: dict[str, object],
+    previous: dict[str, object] | None,
+) -> dict[str, object]:
+    """T523 AC5: Compute release-to-release deltas for browser_errors, other_trouble, and build_warnings."""
+    if not previous:
+        return {
+            "previous_release": None,
+            "browser_errors_delta": None,
+            "other_trouble_delta": None,
+            "build_warnings_delta": None,
+            "rising_metrics": [],
+        }
+
+    prev_rel = str(previous.get("release") or "")
+    cur_br = int(current.get("browser_errors_count") or 0)  # type: ignore[arg-type]
+    prev_br = int(previous.get("browser_errors_count") or 0)  # type: ignore[arg-type]
+    cur_tr = int(current.get("other_trouble_count") or 0)  # type: ignore[arg-type]
+    prev_tr = int(previous.get("other_trouble_count") or 0)  # type: ignore[arg-type]
+    cur_bw = int(current.get("build_warnings_count") or 0)  # type: ignore[arg-type]
+    prev_bw = int(previous.get("build_warnings_count") or 0)  # type: ignore[arg-type]
+
+    br_delta = cur_br - prev_br
+    tr_delta = cur_tr - prev_tr
+    bw_delta = cur_bw - prev_bw
+
+    rising: list[str] = []
+    if br_delta > 0:
+        rising.append(f"browser_errors: {prev_br} -> {cur_br} (+{br_delta})")
+    if tr_delta > 0:
+        rising.append(f"other_trouble: {prev_tr} -> {cur_tr} (+{tr_delta})")
+    if bw_delta > 0:
+        rising.append(f"build_warnings: {prev_bw} -> {cur_bw} (+{bw_delta})")
+
+    return {
+        "previous_release": prev_rel or None,
+        "browser_errors_delta": br_delta,
+        "other_trouble_delta": tr_delta,
+        "build_warnings_delta": bw_delta,
+        "rising_metrics": rising,
     }
 
 
@@ -308,9 +378,10 @@ def main() -> int:
     steps = [ln.strip() for ln in lines if STEP.match(ln) and ln.strip()]
     audit = audit_transcript(text)
 
-    # T507: Write structured deploy audit record
+    # T507 / T523 AC5: Write structured deploy audit record with release-to-release deltas
+    prev_audit = previous_release_audit(LOGS, current_release=release)
     audit_file = LOGS / "deploy-audit-latest.json"
-    audit_record = {
+    audit_record: dict[str, object] = {
         "release": release,
         "recipe": recipe,
         "exit_code": rc,
@@ -323,6 +394,8 @@ def main() -> int:
         "tool_chatter_count": len(audit["tool_chatter"]),
         "other_trouble_count": len(audit["other_trouble"]),
     }
+    deltas = compute_audit_deltas(audit_record, prev_audit)
+    audit_record.update(deltas)
     audit_file.write_text(json.dumps(audit_record, indent=2) + "\n")
     if is_release and release:
         (LOGS / f"deploy-{release}.audit.json").write_text(json.dumps(audit_record, indent=2) + "\n")
@@ -370,6 +443,12 @@ def main() -> int:
         print(f"  ℹ  {len(audit['tool_chatter'])} tool deprecation/chatter line(s) filtered")
 
     print(f"  ℹ  audit record: {audit_file.name}")
+    rising = deltas.get("rising_metrics")
+    if isinstance(rising, list) and rising:
+        print(
+            f"  ⚠️  [advisory] audit count rise vs previous release {deltas.get('previous_release')}: "
+            f"{', '.join(str(x) for x in rising)}"
+        )
 
     # Rotate on the way out, so the directory stays bucketed without anyone remembering to do it.
     # --quiet keeps a normal deploy silent about rotation; it speaks only when it actually moves or

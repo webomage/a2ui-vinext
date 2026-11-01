@@ -26,7 +26,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T523](.tasks/T523.md) | **P2** | 🆕 **The deploy's golden run logs 288 browser errors (503 and 404 on /cdn/news and /cdn/post-images images) and still passes, and the audit counts harmless lines as trouble** | web | — | ⚪ **queued** |
 | [T486](.tasks/T486.md) | **P2** | **Bring the stale admin/web Gauge specs in line with the current UI, or retire each with a reason** | web | — | ⚪ **queued** |
 | [T480](.tasks/T480.md) | **P2** | **Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel** | web, api | — | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
@@ -121,6 +120,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T527](.tasks/T527.md) | **P2** | 🆕 **state-check never runs at push: its tracking-surface scope looks for files in the repo that no longer holds them, and the root repo has no such step** | tooling | — | ✅ **done** |
 | [T525](.tasks/T525.md) | **P2** | 🆕 **Admin CP rework: move the confirmed personal and business views out, and leave admin as w0m system management only** | web | — | ✅ **done** |
 | [T524](.tasks/T524.md) | **P2** | 🆕 **Supabase default grants: research the safe-by-default change for new tables, views and functions in public, and whether and how to propose it upstream** | api | — | ✅ **done** |
+| [T523](.tasks/T523.md) | **P2** | 🆕 **The deploy's golden run logs 288 browser errors (503 and 404 on /cdn/news and /cdn/post-images images) and still passes, and the audit counts harmless lines as trouble** | web | — | ✅ **done** |
 | [T522](.tasks/T522.md) | P3 | 🆕 **23 user-scope skills are loaded into every session with no manifest, lock or provenance, and the count grew from 15 to 23 ungoverned** | skills | — | ✅ **done** |
 | [T521](.tasks/T521.md) | **P2** | 🆕 **mmd-validate becomes a portable w0m skills tool that client projects can install, with its hardcoded paths fixed and its sandbox label decided** | skills, web | — | ✅ **done** |
 | [T520](.tasks/T520.md) | **P2** | 🆕 **Admin CP infrastructure tariff and usage warnings dashboard** | web, api | openspec/changes/2026-10-01-admin-cp-infra-usage-and-tariff-monitor | ✅ **done** |

@@ -150,6 +150,44 @@ check("categorizes browser errors", len(audit_res["browser_errors"]) == 1, repr(
 check("categorizes tool chatter", len(audit_res["tool_chatter"]) == 1, repr(audit_res["tool_chatter"]))
 check("categorizes other trouble", len(audit_res["other_trouble"]) == 1, repr(audit_res["other_trouble"]))
 
+# ── T523 AC4: harmless Gauge 0-failed summaries and WebGL driver warnings are excluded, real trouble still counts ──
+harmless_and_real_log = (
+    "Specifications:   2 executed  2 passed  0 failed  0 skipped\n"
+    "Scenarios:        7 executed  7 passed  0 failed  0 skipped\n"
+    "[Browser WARNING]: [.WebGL-0x1240065b500] GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\n"
+    "Specifications:   2 executed  1 passed  1 failed  0 skipped\n"
+    "Failed step: I should see the dashboard\n"
+    "DeprecationWarning: custom application deprecation notice\n"
+)
+t523_res = dl.audit_transcript(harmless_and_real_log)
+check(
+    "T523 AC4: excludes Gauge 0-failed summary lines and WebGL GL_CLOSE_PATH_NV warnings from other_trouble",
+    len(t523_res["other_trouble"]) == 3
+    and all("0 failed" not in ln and "GL_CLOSE_PATH_NV" not in ln for ln in t523_res["other_trouble"]),
+    repr(t523_res["other_trouble"]),
+)
+check(
+    "T523 AC4: still counts non-zero failed Gauge summary, failed step, and deprecation lines",
+    any("1 failed" in ln for ln in t523_res["other_trouble"])
+    and any("Failed step:" in ln for ln in t523_res["other_trouble"])
+    and any("DeprecationWarning:" in ln for ln in t523_res["other_trouble"]),
+    repr(t523_res["other_trouble"]),
+)
+
+# ── T523 AC5: release-to-release delta calculation and rise reporting ──
+deltas_res = dl.compute_audit_deltas(
+    {"browser_errors_count": 288, "other_trouble_count": 19, "build_warnings_count": 4},
+    {"release": "2026.09.30-1790816882", "browser_errors_count": 0, "other_trouble_count": 19, "build_warnings_count": 4},
+)
+check(
+    "T523 AC5: computes browser_errors_delta and flags rising_metrics against previous release",
+    deltas_res["previous_release"] == "2026.09.30-1790816882"
+    and deltas_res["browser_errors_delta"] == 288
+    and deltas_res["other_trouble_delta"] == 0
+    and any("browser_errors: 0 -> 288 (+288)" in m for m in deltas_res["rising_metrics"]),
+    repr(deltas_res),
+)
+
 check("the wrapper's teardown cleared the ISOLATED consent file (the clear still fires)", not _CONSENT_SENTINEL.exists(), str(_CONSENT_SENTINEL))
 _real_after = _real_consent.read_bytes() if _real_consent.exists() else None
 check("and left the real consent file exactly as it was", _real_after == _real_before, "the real consent changed during this suite")
