@@ -1114,7 +1114,7 @@ e2e-local *specs:
     # superuser. The first two were overridden; the rest reached live (ats.steps.ts connects with
     # DATABASE_URL; the dev server dispatches to the live worker). All are pinned to loopback below, in BOTH
     # env blocks. The worker URL points at a port nothing listens on: a dispatch fails loudly, not live.
-    local_urls="DATABASE_URL=$db PUBLIC_CP_URL=http://localhost:4325 PUBLIC_WEB_URL=http://localhost:4321 PUBLIC_JOIN_URL=http://localhost:4323 WORKERS_WEBHOOK_URL=http://127.0.0.1:1 UPWORK_CALLBACK_URL=http://127.0.0.1:1"
+    local_urls="DATABASE_URL=$db PUBLIC_CP_URL=http://localhost:4325 PUBLIC_WEB_URL=http://localhost:4321 PUBLIC_JOIN_URL=http://localhost:4323 PUBLIC_JOB_URL=http://localhost:4324 WORKERS_WEBHOOK_URL=http://127.0.0.1:1 UPWORK_CALLBACK_URL=http://127.0.0.1:1"
     # T478 — every app port must be FREE, or the run is not local. Measured 2026-09-28: `pnpm run dev`
     # SKIPS an app whose port is taken, so four dev servers left running since 2026-09-25 against the LIVE
     # project answered this suite's /cp, /join and /job requests. A server we did not start is refused, not reused.

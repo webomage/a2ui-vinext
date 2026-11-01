@@ -25,7 +25,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T486](.tasks/T486.md) | **P2** | **Bring the stale admin/web Gauge specs in line with the current UI, or retire each with a reason** | web | — | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T487](.tasks/T487.md) | P3 | **Visual goldens: regenerate on the local stack or pin the render environment** | web | — | ⚪ **queued** |
 | [T14](project/tickets/T14.md) · [#15](https://github.com/casualuser/webomage.com/issues/15) | P3 | wom7mlx refresh + Rust Gemma launcher (time-boxed spike, mlx-rs vs candle). | mlx | ROADMAP §8 | 💤 **paused** |
@@ -154,6 +153,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T490](.tasks/T490.md) | P3 | 🆕 **Extension: subscribe to hosted admin commands (extension_commands) as an authenticated admin, in a normal-mode build** | ext, web | — | ✅ **done** |
 | [T489](.tasks/T489.md) · [#489](https://github.com/casualuser/webomage.com/issues/489) | **P2** | 🆕 **Live test-team provisioning & production non-founder verification (confirm-gated)** | api, web | — | ✅ **done** |
 | [T488](.tasks/T488.md) · [#488](https://github.com/casualuser/webomage.com/issues/488) | **P2** | **T478 leftovers: signed URLs for uploaded resumes, the public CV decision, live test-team provisioning** | api, web | — | ✅ **done** |
+| [T486](.tasks/T486.md) | **P2** | **Bring the stale admin/web Gauge specs in line with the current UI, or retire each with a reason** | web | — | ✅ **done** |
 | [T485](.tasks/T485.md) · [#485](https://github.com/casualuser/webomage.com/issues/485) | **P2** | **Align workerd runtime binary versions across estate and refresh worker types** | cf, web, api | openspec/changes/archive/2026-09-28-align-workerd-runtime-versions | ✅ **done** |
 | [T484](.tasks/T484.md) · [#484](https://github.com/casualuser/webomage.com/issues/484) | **P1** | **Fix contract promotion to CV and integrate personal resume library and CV script functions into CP Resume Studio** | web, api | openspec/changes/2026-09-28-resume-studio-integration/proposal.md | ✅ **done** |
 | [T483](.tasks/T483.md) · [#483](https://github.com/casualuser/webomage.com/issues/483) | **P1** | **Purge Hostinger MCP configurations, background processes, schemas, and estate residue** | root | — | ✅ **done** |

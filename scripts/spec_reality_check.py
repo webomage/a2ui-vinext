@@ -46,7 +46,7 @@ STUB = re.compile(r"\bstub\b|not (yet )?implemented|TODO|FIXME|for now", re.I)
 COMMENT = re.compile(r"//[^\n]*|/\*.*?\*/", re.S)
 SETUP = re.compile(r"^(initialize|teardown|setup|cleanup)\b", re.I)
 
-STEP = re.compile(r'@Step\(\s*"([^"]+)"\s*\)\s*\n\s*public\s+(?:async\s+)?(\w+)\s*\(', re.M)
+STEP = re.compile(r'@Step\(\s*"([^"]+)"\s*,?\s*\)\s*\n\s*public\s+(?:async\s+)?(\w+)\s*\(', re.M)
 METH = re.compile(r"(?:public|private|protected)?\s*(?:async\s+)?(\w+)\s*\([^)]*\)\s*\{", re.M)
 
 
@@ -137,6 +137,7 @@ def main() -> int:
 
     total = 0
     mute: list[tuple[str, str, int]] = []
+    retired: list[tuple[str, str]] = []
 
     def scan(spec_path: Path) -> None:
         """Walk one spec's scenarios. Written as a flat loop over (heading, steps) pairs rather
@@ -145,10 +146,13 @@ def main() -> int:
         nonlocal total
         scenarios: list[tuple[str, list[str]]] = []
         for ln in spec_path.read_text(encoding="utf-8", errors="replace").splitlines():
+            stripped = ln.strip()
+            if stripped.startswith("// RETIRED"):
+                retired.append((str(spec_path.relative_to(ROOT)), stripped[2:].strip()))
             if ln.startswith("## "):
                 scenarios.append((ln[3:].strip(), []))
-            elif ln.strip().startswith("* ") and scenarios:
-                scenarios[-1][1].append(ln.strip()[2:].strip())
+            elif stripped.startswith("* ") and scenarios:
+                scenarios[-1][1].append(stripped[2:].strip())
         for name, steps in scenarios:
             if SETUP.match(name):
                 continue
@@ -163,7 +167,9 @@ def main() -> int:
         scan(sp)
 
     print(f"  ▶ spec reality — {len(specs)} specs · {total} scenarios (setup/teardown excluded) · "
-          f"{len(registry)} implemented steps")
+          f"{len(registry)} implemented steps · {len(retired)} retired with reason")
+    for path_s, reason in retired:
+        print(f"      ℹ️  {path_s}: {reason}")
 
     if stubs:
         print(f"\n  🔴 STUB actions/identities — the step does NOTHING, so the scenario acts as someone/something else ({len(stubs)}):")
