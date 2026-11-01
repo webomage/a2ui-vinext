@@ -1539,7 +1539,7 @@ def _extract_fork_version(repo_dir: Path) -> str:
         pkg_json = repo_dir / pkg_rel
         if pkg_json.exists():
             try:
-                data = json.loads(pkg_json.read_text(encoding="utf-8"))
+                data: dict[str, Any] = json.loads(pkg_json.read_text(encoding="utf-8"))
                 ver = data.get("version")
                 if isinstance(ver, str) and re.match(r"^\d+\.\d+", ver) and ver != "0.0.0":
                     return re.sub(r"(\.dev\d+|rc\d+|-.*)$", "", ver)

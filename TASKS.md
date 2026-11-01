@@ -20,7 +20,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 |---|------|------|-------|-----|--------|
 | [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 💤 **paused** |
 | [T597](.tasks/T597.md) | **P1** | 🆕 **Orca cross-workspace tab drag-and-drop with confirmation dialog, session rebinding, and UI state sync** | tooling | — | ⚪ **queued** |
-| [T596](.tasks/T596.md) | **P1** | 🆕 **Multi-host Orca instance and agent session orchestration across macOS and Linux boxes** | tooling, skills | — | ⚪ **queued** |
 | [T290](project/tickets/T290.md) | **P1** | 🆕 **Stage-4 Money had no ticket of its own, and `simulate_payment` is a live billing hole** — found 2026-08-26 on reaching the last unmet stage. Stage-4's exit is *invoices reconcile against Stripe, and simulate_payment is out of the production path*, but it named [[T9]] — **AI token accounting from epic §11**. Same defect stage-2 carried until 2026-08-18: the stage reads as progress whenever the wrong ticket moves. 🔴 `client-api:223` marks an invoice paid AND credits a treasury, and **an authenticated client passes its ownership check on their OWN invoice** — no caller anywhere in source, and `stripe-webhook` already does both writes. ✅ **CLOSED on production 2026-08-26** (release `2026.08.26-1787760232`): the deployed function now answers `400 Unknown action`, identical to the control — it answered `404 Invoice not found` before. A grep could never have told those two apart. ⚠️ Impact is small by LUCK — one invoice, already paid, no Stripe activity yet. 🔀 **Epic moved 2026-09-12**: §33 split into Alfa/Beta, this ticket is now Beta's (§34). | api | ROADMAP §34 | 💤 **paused** |
 | [T569](.tasks/T569.md) · [#569](https://github.com/casualuser/webomage.com/issues/569) | P3 | **Apple Silicon omlx live latency benchmark & 4-bit MLX quantization for Laya / Kev / Jev System One adapters** | mlx, tooling, research | openspec/changes/archive/2026-10-23-system-one-typed-decisions | 🟡 **in-progress** |
 
@@ -52,6 +51,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T596](.tasks/T596.md) | **P1** | 🆕 **Multi-host Orca instance and agent session orchestration across macOS and Linux boxes** | tooling, skills | — | ✅ **done** |
 | [T595](.tasks/T595.md) | **P1** | **Standardize cross-platform toolchain on Homebrew with LTS floors, latest comparison, and Node 26 alignment (AgDR-0052)** | web, api, cf | — | ✅ **done** |
 | [T594](.tasks/T594.md) | **P1** | **Per-project UI Screens & Workflows User Guides with visual SVG diagrams in all 5 Obsidian vaults (w0m, 1945, artemio, servicios777, personaje0)** | web, api, tooling | — | ✅ **done** |
 | [T592](.tasks/T592.md) | **P1** | **Feature Voting Board — One-Click Supabase GitHub OAuth Voting & Cloudflare Edge SVG Badge Cache** | web | — | ✅ **done** |

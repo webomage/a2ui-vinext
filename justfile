@@ -1940,6 +1940,20 @@ vault-push-r2 *args:
 vault-push-r2-test:
     @python3 scripts/tests/test_vault_push_r2.py
 
+# ── Multi-Host Orca Instance & Agent Session Orchestration (T596) ─────────────
+orca-sessions *args:
+    @python3 scripts/orca_sessions.py list {{ args }}
+
+orca-attach *args:
+    @python3 scripts/orca_sessions.py attach {{ args }}
+
+orca-hosts *args:
+    @python3 scripts/orca_sessions.py hosts {{ args }}
+
+orca-sessions-test:
+    @python3 scripts/tests/test_orca_sessions.py
+
+
 
 
 
