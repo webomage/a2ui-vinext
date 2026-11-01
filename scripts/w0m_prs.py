@@ -239,7 +239,7 @@ def audit_pr(repo: str, pr_number: int) -> Dict[str, Any]:
     cmd = [
         "gh", "pr", "view", str(pr_number),
         "-R", repo,
-        "--json", "number,title,state,url,author,isDraft,mergeable,reviewDecision,comments,reviews,statusCheckRollup",
+        "--json", "number,title,state,url,author,headRefName,isDraft,mergeable,reviewDecision,comments,reviews,statusCheckRollup",
     ]
     res = run_cmd(cmd, check=False)
     if res.returncode != 0:
@@ -261,10 +261,15 @@ def audit_pr(repo: str, pr_number: int) -> Dict[str, Any]:
             except json.JSONDecodeError:
                 pass
     rollup = data.get("statusCheckRollup", []) or []
-    ci_status = "PASS"
-    for check in rollup:
-        conclusion = check.get("conclusion") or check.get("status")
-        if conclusion in ("FAILURE", "TIMED_OUT", "ACTION_REQUIRED", "CANCELLED"):
+    # Deduplicate by check name/context so a superseded CANCELLED run doesn't mask a newer SUCCESS run
+    dedup_checks: Dict[str, Dict[str, Any]] = {}
+    for idx, check in enumerate(rollup):
+        cname = str(check.get("name") or check.get("context") or f"check_{idx}")
+        dedup_checks[cname] = check
+    ci_status = "PASS" if dedup_checks else "NONE"
+    for check in dedup_checks.values():
+        conclusion = (check.get("conclusion") or check.get("state") or check.get("status") or "").upper()
+        if conclusion in ("FAILURE", "TIMED_OUT", "ACTION_REQUIRED", "ERROR"):
             ci_status = "FAIL"
             break
         elif conclusion in ("IN_PROGRESS", "QUEUED", "PENDING"):
@@ -278,6 +283,7 @@ def audit_pr(repo: str, pr_number: int) -> Dict[str, Any]:
         "number": data.get("number"),
         "title": data.get("title"),
         "state": data.get("state"),
+        "headRefName": data.get("headRefName", ""),
         "mergeable": data.get("mergeable", "UNKNOWN"),
         "reviewDecision": data.get("reviewDecision") or "NONE",
         "commentsCount": len(data.get("comments", [])),
@@ -2494,14 +2500,23 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
 
 # Active upstream PR head branches (excluded from unsubmitted pending branch list)
 ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
-    "feat/global-graph-sync-and-status",          # Graphify-Labs/graphify#4727
-    "fix/turboquant-dim512-threadgroup-fallback", # Blaizzy/mlx-vlm#2288
-    "fix/menubar-adopt-external-omlx",            # jundot/omlx#3743
-    "feat/macos-deep-link-worktree",              # stablyai/orca#21157
-    "feat/macos-deep-link-shortcuts",             # stablyai/orca#21148
-    "feat/zeroclaw-agent-connector",              # stablyai/orca#16597
-    "feat/media-clipboard-and-file-transfer",     # openai/tart-guest-agent#62
-    "macos_release",                              # bulwarkid/virtual-fido#48
+    "feat/global-graph-sync-and-status",                    # Graphify-Labs/graphify#4727
+    "fix/turboquant-dim512-threadgroup-fallback",           # Blaizzy/mlx-vlm#2288
+    "fix/menubar-adopt-external-omlx",                      # jundot/omlx#3743
+    "feat/macos-deep-link-worktree",                        # stablyai/orca#21157
+    "feat/macos-deep-link-shortcuts",                       # stablyai/orca#21148
+    "feat/zeroclaw-agent-connector",                        # stablyai/orca#16597
+    "feat/media-clipboard-and-file-transfer",               # openai/tart-guest-agent#62
+    "macos_release",                                        # bulwarkid/virtual-fido#48
+    "fix/native-serve-tests-and-torchless-calibration",     # mizorewww/laya-mlx#27
+    "feat/omlx-proxy-routing",                              # headroomlabs-ai/headroom#4597
+    "feat/cross-worktree-tab-move",                         # stablyai/orca#37029
+    "feat/agent-collaboration-board",                       # stablyai/orca#37030
+    "feat/mobile-camera-capture-chat",                      # stablyai/orca#37031
+    "feat/mobile-live-input-password-mask",                 # stablyai/orca#37032
+    "feat/obsidian-ofm-engine",                             # stablyai/orca#37033
+    "fix/mobile-landscape-safe-area-insets",                # stablyai/orca#37034
+    "fix/mobile-markdown-external-tab-read",                # stablyai/orca#37035
 }
 
 # Internal / archived / superseded sub-branches (excluded from unsubmitted pending branch list)
