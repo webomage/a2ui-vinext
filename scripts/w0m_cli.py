@@ -858,9 +858,9 @@ def automation_templates_data() -> list[dict[str, Any]]:
 def handle_automation(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(
         prog="w0m automation",
-        description="Zero-token shell precheck templates & Orca AutomationService bridge (T171 AC5/AC6)",
+        description="Zero-token shell precheck templates & Orca AutomationService bridge (T171 AC2–AC7)",
     )
-    ap.add_argument("subcmd", nargs="?", default="templates", help="templates | list | precheck")
+    ap.add_argument("subcmd", nargs="?", default="templates", help="templates | list | precheck | sync-orca | status | cohort")
     ap.add_argument("rest", nargs=argparse.REMAINDER)
     ap.add_argument("--json", action="store_true", help="Emit JSON output")
     args = ap.parse_args(argv)
@@ -897,12 +897,61 @@ def handle_automation(argv: list[str]) -> int:
             "should_wake_agent": should_wake,
             "tokens_spent": 0,
         }
-        if args.json or "--json" in args.rest:
+        if is_json:
             print(json.dumps(payload, indent=2))
         else:
             state = "WAKE AGENT (precheck exited 0)" if should_wake else "SKIP AGENT (precheck non-zero, 0 LLM tokens spent)"
             print(f"▶ Precheck [{found['id']}]: {state}")
         return 0
+
+    if sub == "sync-orca":
+        from t171_sandbox_cohort_runner import sync_orca_automations  # type: ignore[import-not-found]
+
+        sync_res = sync_orca_automations(templates, primary_root=_primary_estate_root(ESTATE_ROOT))
+        if is_json:
+            print(json.dumps(sync_res, indent=2))
+        else:
+            print(f"▶ Synced {sync_res.get('synced_count', 0)} automation(s) to {sync_res.get('scheduler_surface')}:")
+            for row in sync_res.get("synced", []):
+                print(f"  • {row.get('name')} [{row.get('action')}] ok={row.get('ok')}")
+        return 0 if sync_res.get("ok") else 1
+
+    if sub == "status":
+        from t171_sandbox_cohort_runner import list_orca_automations_status  # type: ignore[import-not-found]
+
+        status_res = list_orca_automations_status()
+        if is_json:
+            print(json.dumps(status_res, indent=2))
+        else:
+            print(f"▶ Orca AutomationService Live Schedules ({status_res.get('count', 0)} active):")
+            for row in status_res.get("automations", []):
+                state = "ENABLED" if row.get("enabled") else "DISABLED"
+                last_st = row.get("lastRunStatus") or "never_run"
+                print(
+                    f"  • {row.get('name')} [{row.get('rrule')}] {state} · owner={row.get('schedulerOwner')} "
+                    f"· lastStatus={last_st} · tokens={row.get('totalTokens', 0)}"
+                )
+        return 0 if status_res.get("ok") else 1
+
+    if sub in ("cohort", "verify"):
+        from t171_sandbox_cohort_runner import run_all_t171_verifications  # type: ignore[import-not-found]
+
+        report = run_all_t171_verifications(ESTATE_ROOT)
+        if is_json:
+            print(json.dumps(report, indent=2))
+        else:
+            print(f"▶ T171 Cohort & Sandbox Capability Verification: {'PASS' if report.get('ok') else 'FAIL'}")
+            for c in report["ac2_ac3_cohort_benchmark"]["cohorts"]:
+                ev = c["evaluation"]
+                print(
+                    f"  • Cohort N={c['cohort_size']}: routing_verified={ev['routing_verified']} "
+                    f"routed_ms={ev['avg_routed_wall_clock_ms']} direct_ms={ev['avg_direct_wall_clock_ms']} "
+                    f"stop_triggered={ev['stop_condition_triggered']}"
+                )
+            print(f"  • AC4 Red Probe: ok={report['ac4_capability_red_probe']['ok']} (rc={report['ac4_capability_red_probe']['returncode']})")
+            print(f"  • AC4b Policy Binding: ok={report['ac4b_tools_policy_binding']['ok']} (live_headroom={report['ac4b_tools_policy_binding']['live_headroom_version']})")
+            print(f"  • AC7 Abort Worktree Probe: ok={report['ac7_abort_clean_worktree']['ok']} (worktree_clean={report['ac7_abort_clean_worktree']['worktree_clean']})")
+        return 0 if report.get("ok") else 1
 
     print(f"[ERR] Unknown `w0m automation` subcommand '{sub}'.", file=sys.stderr)
     return 2
