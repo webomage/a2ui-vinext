@@ -1,0 +1,23 @@
+# Per-Project UI Screens & Operational Workflows User Guides (`T594`)
+
+**Date:** 2026-10-31  
+**Ticket:** [[T594]]  
+**Origin Session:** `linux-host` (`514770da-2de8-4c42-b74c-763a3bf102dd`)
+
+All **5 declared project Obsidian vaults** (`w0m`, `1945`, `artemio`, `servicios777`, `personaje0`) include dedicated **UI Screens & Operational Workflows User Guides (`notes/ui-user-guide.md`)** and inline visual SVG diagrams (`assets/ui-screens.svg`, `assets/ui-workflows.svg`, and `assets/obsidian-mobile-r2-webdav.svg`) that render across all three surfaces:
+
+1. **Webomage CP `<KnowledgeHub>` (`cp.webomage.com/o/[org]/projects/vault`)** — includes a **`🖥️ UI & Workflows Guide`** quick-jump button in the toolbar and automatic rewriting of `assets/*.svg` and `![[assets/*.svg]]` embeds to `/assets/vaults/<slug>/*.svg`.
+2. **Obsidian Desktop (`obsidian://open?vault=<slug>`)** — loads `notes/ui-user-guide.md` and `assets/*.svg` natively from `w0m-web/projects/<slug>/vault/`.
+3. **Obsidian Mobile via Cloudflare R2 WebDAV (`r2://wom-engagement-vaults/engagements/<engagement>/`)** — synced via `/api/vault/r2/<engagement>/assets/*.svg` (`58 files / 208 KB` verified in R2).
+
+---
+
+## Per-Project Vault User Guides & SVG Diagrams Index
+
+| Project (`slug` / `engagement`) | UI & Workflows User Guide (`notes/ui-user-guide.md`) | Mobile Sync Guide (`notes/mobile-sync-user-guide.md`) | UI Screens SVG (`assets/ui-screens.svg`) | UI Workflows SVG (`assets/ui-workflows.svg`) | Webomage CP Route |
+|---|---|---|---|---|---|
+| **Webomage (`w0m` / `eg-w0m`)** | [`w0m-web/projects/w0m/vault/notes/ui-user-guide.md`](../../w0m-web/projects/w0m/vault/notes/ui-user-guide.md) | [`w0m-web/projects/w0m/vault/notes/mobile-sync-user-guide.md`](../../w0m-web/projects/w0m/vault/notes/mobile-sync-user-guide.md) | [`w0m-web/projects/w0m/vault/assets/ui-screens.svg`](../../w0m-web/projects/w0m/vault/assets/ui-screens.svg) | [`w0m-web/projects/w0m/vault/assets/ui-workflows.svg`](../../w0m-web/projects/w0m/vault/assets/ui-workflows.svg) | `/o/webomage/projects/vault?vault=w0m&file=notes/ui-user-guide` |
+| **1945 Social Club (`1945` / `eg-1945`)** | [`w0m-web/projects/1945/vault/notes/ui-user-guide.md`](../../w0m-web/projects/1945/vault/notes/ui-user-guide.md) | [`w0m-web/projects/1945/vault/notes/mobile-sync-user-guide.md`](../../w0m-web/projects/1945/vault/notes/mobile-sync-user-guide.md) | [`w0m-web/projects/1945/vault/assets/ui-screens.svg`](../../w0m-web/projects/1945/vault/assets/ui-screens.svg) | [`w0m-web/projects/1945/vault/assets/ui-workflows.svg`](../../w0m-web/projects/1945/vault/assets/ui-workflows.svg) | `/o/1945-social-club/projects/vault?file=notes/ui-user-guide` |
+| **Artemio (`artemio` / `eg-artemio-quiero-comer`)** | [`w0m-web/projects/artemio/vault/notes/ui-user-guide.md`](../../w0m-web/projects/artemio/vault/notes/ui-user-guide.md) | [`w0m-web/projects/artemio/vault/notes/mobile-sync-user-guide.md`](../../w0m-web/projects/artemio/vault/notes/mobile-sync-user-guide.md) | [`w0m-web/projects/artemio/vault/assets/ui-screens.svg`](../../w0m-web/projects/artemio/vault/assets/ui-screens.svg) | [`w0m-web/projects/artemio/vault/assets/ui-workflows.svg`](../../w0m-web/projects/artemio/vault/assets/ui-workflows.svg) | `/o/artemio-quiero-comer/projects/vault?file=notes/ui-user-guide` |
+| **Servicios777 (`servicios777` / `eg-servicios777`)** | [`w0m-web/projects/servicios777/vault/notes/ui-user-guide.md`](../../w0m-web/projects/servicios777/vault/notes/ui-user-guide.md) | [`w0m-web/projects/servicios777/vault/notes/mobile-sync-user-guide.md`](../../w0m-web/projects/servicios777/vault/notes/mobile-sync-user-guide.md) | [`w0m-web/projects/servicios777/vault/assets/ui-screens.svg`](../../w0m-web/projects/servicios777/vault/assets/ui-screens.svg) | [`w0m-web/projects/servicios777/vault/assets/ui-workflows.svg`](../../w0m-web/projects/servicios777/vault/assets/ui-workflows.svg) | `/o/maksim-kulikov/projects/vault?vault=servicios777&file=notes/ui-user-guide` |
+| **Personaje0 (`personaje0` / `eg-personaje0`)** | [`w0m-web/projects/personaje0/vault/notes/ui-user-guide.md`](../../w0m-web/projects/personaje0/vault/notes/ui-user-guide.md) | [`w0m-web/projects/personaje0/vault/notes/mobile-sync-user-guide.md`](../../w0m-web/projects/personaje0/vault/notes/mobile-sync-user-guide.md) | [`w0m-web/projects/personaje0/vault/assets/ui-screens.svg`](../../w0m-web/projects/personaje0/vault/assets/ui-screens.svg) | [`w0m-web/projects/personaje0/vault/assets/ui-workflows.svg`](../../w0m-web/projects/personaje0/vault/assets/ui-workflows.svg) | `/o/maksim-kulikov/projects/vault?vault=personaje0&file=notes/ui-user-guide` |

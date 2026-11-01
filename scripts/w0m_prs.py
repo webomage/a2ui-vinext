@@ -290,7 +290,8 @@ def audit_pr(repo: str, pr_number: int) -> Dict[str, Any]:
 
 
 def cmd_search(args: argparse.Namespace) -> None:
-    results = search_prs(author=args.author, repo=args.repo, preset=args.preset, limit=args.limit)
+    effective_author = None if getattr(args, "all", False) else (args.author or (CANONICAL_CONTRIBUTOR if args.preset else None))
+    results = search_prs(author=effective_author, repo=args.repo, preset=args.preset, limit=args.limit)
     if args.json:
         print(json.dumps(results, indent=2))
         return
@@ -2476,13 +2477,502 @@ def cmd_vote(args: argparse.Namespace) -> None:
     )
 
 
+FORK_UPSTREAM_MAP: dict[str, str] = {
+    "omlx": "jundot/omlx",
+    "mlx-vlm": "Blaizzy/mlx-vlm",
+    "orca": "stablyai/orca",
+    "tart-guest-agent": "openai/tart-guest-agent",
+    "tart": "cirruslabs/tart",
+    "virtual-fido": "bulwarkid/virtual-fido",
+    "headroom": "headroomlabs-ai/headroom",
+    "serena": "oraios/serena",
+    "harness2": "google-research/harness2",
+    "graphify": "Graphify-Labs/graphify",
+    "laya-mlx": "mizorewww/laya-mlx",
+}
+
+
+def discover_new_prs_and_branches(
+    *,
+    author: str = CANONICAL_CONTRIBUTOR,
+    preset: str = "w0m-pr",
+    forks_dir: Optional[Path] = None,
+    fetch: bool = False,
+) -> dict[str, Any]:
+    """Discover active upstream PRs AND unsubmitted PR-ready feature branches across `w0m-pr/*` (`T599` AC3)."""
+    open_prs_raw = search_prs(author=author, preset=preset, limit=50)
+    open_prs: list[dict[str, Any]] = []
+    open_repos_with_pr: dict[str, list[dict[str, Any]]] = {}
+
+    for p in open_prs_raw:
+        repo_name = (p.get("repository") or {}).get("nameWithOwner") or "unknown"
+        num = p.get("number")
+        if not num:
+            continue
+        info = audit_pr(repo_name, int(num))
+        if "error" in info:
+            entry = {
+                "repo": repo_name,
+                "number": int(num),
+                "title": p.get("title", ""),
+                "state": (p.get("state") or "OPEN").upper(),
+                "mergeable": "UNKNOWN",
+                "reviewDecision": "NONE",
+                "ciStatus": "N/A",
+                "feedback": "-",
+                "commentsCount": 0,
+                "reviewsCount": 0,
+                "url": p.get("url", f"https://github.com/{repo_name}/pull/{num}"),
+            }
+        else:
+            entry = {
+                "repo": repo_name,
+                "number": int(num),
+                "title": info.get("title", ""),
+                "state": (info.get("state") or "OPEN").upper(),
+                "mergeable": info.get("mergeable", "UNKNOWN"),
+                "reviewDecision": info.get("reviewDecision", "NONE"),
+                "ciStatus": info.get("ciStatus", "N/A"),
+                "feedback": info.get("feedback", "-"),
+                "commentsCount": int(info.get("commentsCount", 0)),
+                "reviewsCount": int(info.get("reviewsCount", 0)),
+                "url": info.get("url", f"https://github.com/{repo_name}/pull/{num}"),
+            }
+        open_prs.append(entry)
+        open_repos_with_pr.setdefault(repo_name, []).append(entry)
+
+    fdir = forks_dir or resolve_forks_dir()
+    pending_branches: list[dict[str, Any]] = []
+    if fdir and fdir.is_dir():
+        for repo_path in sorted(fdir.iterdir()):
+            if not (repo_path / ".git").exists():
+                continue
+            fork_name = repo_path.name
+            upstream_repo = FORK_UPSTREAM_MAP.get(fork_name, f"upstream/{fork_name}")
+            fork_info = inspect_fork(repo_path, fetch=fetch)
+            upstream_ref = fork_info.get("upstream_ref") or ""
+            if upstream_ref == "-":
+                continue
+            default_branch = upstream_ref.split("/", 1)[1] if "/" in upstream_ref else "main"
+
+            # Inspect local + origin branches authored by casualuser / Aleksei Tcelishchev that are ahead of upstream
+            refs_cp = run_cmd(
+                [
+                    "git",
+                    "for-each-ref",
+                    "--format=%(refname:short)|%(objectname:short)|%(authorname)|%(authoremail)|%(contents:subject)",
+                    "refs/heads",
+                    "refs/remotes/origin",
+                ],
+                check=False,
+                cwd=repo_path,
+            )
+            seen_branch_names: set[str] = set()
+            for line in (refs_cp.stdout or "").splitlines():
+                parts = line.split("|", 4)
+                if len(parts) < 5:
+                    continue
+                ref_short, sha, author_name, author_email, subject = parts
+                bname = ref_short.removeprefix("origin/")
+                if bname in ("HEAD", "main", "master", "v8", "beta") or bname in seen_branch_names:
+                    continue
+                if "casualuser" not in author_email.lower() and "tcelishchev" not in author_name.lower():
+                    continue
+                counts_cp = run_cmd(
+                    ["git", "rev-list", "--left-right", "--count", f"{upstream_ref}...{ref_short}"],
+                    check=False,
+                    cwd=repo_path,
+                )
+                if counts_cp.returncode != 0 or not counts_cp.stdout.strip():
+                    continue
+                cparts = counts_cp.stdout.strip().split()
+                if len(cparts) != 2:
+                    continue
+                try:
+                    behind_u, ahead_u = int(cparts[0]), int(cparts[1])
+                except ValueError:
+                    continue
+                if ahead_u <= 0 or behind_u > 0:
+                    continue
+                seen_branch_names.add(bname)
+                repo_open_prs = open_repos_with_pr.get(upstream_repo, [])
+                # Skip branches in repos that already have our active consolidated PR open
+                if len(repo_open_prs) > 0:
+                    continue
+                compare_url = (
+                    f"https://github.com/{upstream_repo}/compare/"
+                    f"{default_branch}...{CANONICAL_FORK_ORG}:{bname}?expand=1"
+                )
+                pending_branches.append(
+                    {
+                        "fork": fork_name,
+                        "upstream_repo": upstream_repo,
+                        "branch": bname,
+                        "head_sha": sha,
+                        "subject": subject,
+                        "ahead_upstream": ahead_u,
+                        "behind_upstream": behind_u,
+                        "open_prs_in_repo": len(repo_open_prs),
+                        "compare_url": compare_url,
+                    }
+                )
+
+    return {
+        "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "author": author,
+        "preset": preset,
+        "openPrCount": len(open_prs),
+        "openPrs": open_prs,
+        "pendingBranchCount": len(pending_branches),
+        "pendingBranches": pending_branches,
+    }
+
+
+def check_prs_delta(
+    *,
+    author: str = CANONICAL_CONTRIBUTOR,
+    preset: str = "w0m-pr",
+    state_path: Optional[Path] = None,
+    forks_dir: Optional[Path] = None,
+    current_override: Optional[dict[str, Any]] = None,
+) -> dict[str, Any]:
+    """Compare live PR + fork branch state against `~/.w0m/state/prs-watch-state.json` (`T599` AC3).
+
+    Used as the zero-token shell `--precheck` gate for Orca Automations:
+    - Returns `changed=True` (CLI exits `0`) when any PR state/mergeability/review/CI/comment count
+      or pending fork branch changes.
+    - Returns `changed=False` (CLI exits `1`) when nothing changed, so Orca skips LLM invocation (`skipped_precheck`).
+    """
+    target_file = state_path or (Path.home() / ".w0m" / "state" / "prs-watch-state.json")
+    target_file.parent.mkdir(parents=True, exist_ok=True)
+
+    current = current_override or discover_new_prs_and_branches(
+        author=author, preset=preset, forks_dir=forks_dir, fetch=False
+    )
+
+    prev: dict[str, Any] = {}
+    if target_file.is_file():
+        try:
+            prev = json.loads(target_file.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            prev = {}
+
+    prev_prs = {f"{p['repo']}#{p['number']}": p for p in (prev.get("openPrs") or []) if isinstance(p, dict)}
+    prev_branches = {
+        f"{b['upstream_repo']}:{b['branch']}": b for b in (prev.get("pendingBranches") or []) if isinstance(b, dict)
+    }
+
+    deltas: list[str] = []
+    for p in current.get("openPrs") or []:
+        key = f"{p['repo']}#{p['number']}"
+        old = prev_prs.get(key)
+        if old is None:
+            deltas.append(f"NEW_PR {key} ({p.get('title')})")
+            continue
+        for field in ("state", "mergeable", "reviewDecision", "ciStatus", "commentsCount", "reviewsCount", "feedback"):
+            if old.get(field) != p.get(field):
+                deltas.append(f"PR_DELTA {key} {field}: {old.get(field)} -> {p.get(field)}")
+
+    for b in current.get("pendingBranches") or []:
+        bkey = f"{b['upstream_repo']}:{b['branch']}"
+        old_b = prev_branches.get(bkey)
+        if old_b is None:
+            deltas.append(f"NEW_BRANCH {bkey}@{b.get('head_sha')} (+{b.get('ahead_upstream')})")
+        elif old_b.get("head_sha") != b.get("head_sha"):
+            deltas.append(f"BRANCH_UPDATED {bkey}: {old_b.get('head_sha')} -> {b.get('head_sha')}")
+
+    target_file.write_text(json.dumps(current, indent=2) + "\n", encoding="utf-8")
+    try:
+        import os as _os
+        _os.chmod(target_file, 0o600)
+    except OSError:
+        pass
+
+    return {
+        "changed": len(deltas) > 0,
+        "deltaCount": len(deltas),
+        "deltas": deltas,
+        "stateFile": str(target_file),
+        "openPrCount": current.get("openPrCount", 0),
+        "pendingBranchCount": current.get("pendingBranchCount", 0),
+    }
+
+
+def sync_prs_to_orca(
+    *,
+    author: str = CANONICAL_CONTRIBUTOR,
+    preset: str = "w0m-pr",
+    worktree: str = "active",
+    trigger: str = "*/15 * * * *",
+    provider: str = "claude",
+    forks_dir: Optional[Path] = None,
+    dry_run: bool = False,
+    discovered_override: Optional[dict[str, Any]] = None,
+) -> dict[str, Any]:
+    """Synchronize discovered PRs and PR-ready fork branches into Orca References, Orchestration Task, and Automation (`T599` AC3)."""
+    discovered = discovered_override or discover_new_prs_and_branches(
+        author=author, preset=preset, forks_dir=forks_dir, fetch=False
+    )
+    open_prs = discovered.get("openPrs") or []
+    pending_branches = discovered.get("pendingBranches") or []
+    pr_urls = [str(p["url"]) for p in open_prs if p.get("url")]
+
+    orca_bin = "/Applications/Orca.app/Contents/Resources/bin/orca"
+    if not Path(orca_bin).is_file():
+        orca_bin = "orca"
+
+    workspace_root = find_workspace_root()
+    precheck_cmd = f"python3 {workspace_root / 'scripts' / 'w0m_prs.py'} check-delta --preset {preset}"
+    automation_name = "w0m Upstream PRs & Fork Branches Monitor"
+    task_title = (
+        f"Monitor {len(open_prs)} open upstream PRs & {len(pending_branches)} pending w0m-pr fork branches "
+        f"(laya-mlx, headroom, orca, serena)"
+    )
+
+    if dry_run:
+        return {
+            "ok": True,
+            "dryRun": True,
+            "referenceUrls": pr_urls,
+            "taskTitle": task_title,
+            "automationName": automation_name,
+            "trigger": trigger,
+            "precheck": precheck_cmd,
+            "discovered": discovered,
+        }
+
+    # 1. Attach open PR URLs as Orca workspace references
+    ref_ok = False
+    if pr_urls:
+        ref_cp = run_cmd(
+            [orca_bin, "reference", "add", *pr_urls, "--worktree", worktree, "--json"],
+            check=False,
+            timeout=15.0,
+        )
+        ref_ok = ref_cp.returncode == 0
+
+    # 2. Ensure Orca Orchestration Run & Task
+    run_id = None
+    task_id = None
+    runs_cp = run_cmd([orca_bin, "orchestration", "run-list", "--json"], check=False, timeout=10.0)
+    if runs_cp.returncode == 0 and runs_cp.stdout.strip():
+        try:
+            runs_data = (json.loads(runs_cp.stdout).get("result") or {}).get("runs") or []
+            for r in runs_data:
+                if not r.get("legacy") and "PRs" in str(r.get("objective") or ""):
+                    run_id = r.get("id")
+                    break
+        except ValueError:
+            pass
+
+    if not run_id:
+        create_run_cp = run_cmd(
+            [
+                orca_bin,
+                "orchestration",
+                "run-create",
+                "--objective",
+                "w0m Upstream PRs & Fork Branches Tracker (T599)",
+                "--json",
+            ],
+            check=False,
+            timeout=10.0,
+        )
+        if create_run_cp.returncode == 0 and create_run_cp.stdout.strip():
+            try:
+                run_id = ((json.loads(create_run_cp.stdout).get("result") or {}).get("run") or {}).get("id")
+            except ValueError:
+                pass
+    else:
+        run_cmd([orca_bin, "orchestration", "run-use", "--run", str(run_id), "--json"], check=False, timeout=10.0)
+
+    if run_id:
+        tlist_cp = run_cmd([orca_bin, "orchestration", "task-list", "--run", str(run_id), "--json"], check=False, timeout=10.0)
+        existing_tasks = []
+        if tlist_cp.returncode == 0 and tlist_cp.stdout.strip():
+            try:
+                existing_tasks = (json.loads(tlist_cp.stdout).get("result") or {}).get("tasks") or []
+            except ValueError:
+                existing_tasks = []
+        for t in existing_tasks:
+            t_label = str(t.get("taskTitle") or t.get("title") or t.get("spec") or "")
+            if "open upstream PRs" in t_label or "w0m-pr" in t_label:
+                task_id = t.get("id")
+                break
+        if not task_id:
+            branch_summary = ", ".join(
+                f"{b['upstream_repo']}:{b['branch']} (+{b['ahead_upstream']})" for b in pending_branches[:5]
+            )
+            spec_body = (
+                f"Open PRs ({len(open_prs)}): {', '.join(p['repo'] + '#' + str(p['number']) for p in open_prs)}. "
+                f"Pending PR-ready branches ({len(pending_branches)}): {branch_summary}"
+            )
+            tcreate_cp = run_cmd(
+                [
+                    orca_bin,
+                    "orchestration",
+                    "task-create",
+                    "--run",
+                    str(run_id),
+                    "--task-title",
+                    task_title,
+                    "--display-name",
+                    "w0m-prs Monitor",
+                    "--spec",
+                    spec_body,
+                    "--json",
+                ],
+                check=False,
+                timeout=10.0,
+            )
+            if tcreate_cp.returncode == 0 and tcreate_cp.stdout.strip():
+                try:
+                    task_id = ((json.loads(tcreate_cp.stdout).get("result") or {}).get("task") or {}).get("id")
+                except ValueError:
+                    pass
+
+    # 3. Create or update scheduled Orca Automation with Zero-Token Precheck
+    automation_id = None
+    alist_cp = run_cmd([orca_bin, "automations", "list", "--json"], check=False, timeout=10.0)
+    if alist_cp.returncode == 0 and alist_cp.stdout.strip():
+        try:
+            autos = (json.loads(alist_cp.stdout).get("result") or {}).get("automations") or []
+            for a in autos:
+                if a.get("name") == automation_name:
+                    automation_id = a.get("id")
+                    break
+        except ValueError:
+            pass
+
+    prompt_text = (
+        "Run `just prs-discover` and `just prs-open`. Summarize any PR review/CI/mergeability deltas "
+        "or newly discovered PR-ready branches in w0m-pr/* and update the Orca task."
+    )
+    if not automation_id:
+        acreate_cp = run_cmd(
+            [
+                orca_bin,
+                "automations",
+                "create",
+                "--name",
+                automation_name,
+                "--trigger",
+                trigger,
+                "--precheck",
+                precheck_cmd,
+                "--prompt",
+                prompt_text,
+                "--provider",
+                provider,
+                "--workspace",
+                worktree,
+                "--reuse-session",
+                "--json",
+            ],
+            check=False,
+            timeout=15.0,
+        )
+        if acreate_cp.returncode == 0 and acreate_cp.stdout.strip():
+            try:
+                res_obj = json.loads(acreate_cp.stdout).get("result") or {}
+                automation_id = (res_obj.get("automation") or res_obj).get("id")
+            except ValueError:
+                pass
+
+    # Seed baseline state file so future prechecks only fire on real deltas
+    check_prs_delta(author=author, preset=preset, forks_dir=forks_dir, current_override=discovered)
+
+    return {
+        "ok": True,
+        "referencesAttached": len(pr_urls) if ref_ok else 0,
+        "referenceUrls": pr_urls,
+        "orchestrationRunId": run_id,
+        "orchestrationTaskId": task_id,
+        "automationId": automation_id,
+        "automationName": automation_name,
+        "precheck": precheck_cmd,
+        "openPrCount": len(open_prs),
+        "pendingBranchCount": len(pending_branches),
+        "discovered": discovered,
+    }
+
+
+def cmd_discover(args: argparse.Namespace) -> None:
+    forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
+    res = discover_new_prs_and_branches(
+        author=args.author,
+        preset=args.preset,
+        forks_dir=forks_dir,
+        fetch=bool(getattr(args, "fetch", False)),
+    )
+    if args.json:
+        print(json.dumps(res, indent=2))
+        return
+
+    print(
+        f"=== Active Upstream PRs ({res['openPrCount']}) & Pending PR-Ready Fork Branches ({res['pendingBranchCount']}) ==="
+    )
+    for p in res["openPrs"]:
+        print(
+            f"  [OPEN PR] {p['repo']}#{p['number']} | {p['mergeable']} | review={p['reviewDecision']} | "
+            f"CI={p['ciStatus']} | feedback={p['feedback']} | {p['title']}"
+        )
+    if res["pendingBranches"]:
+        print("\n--- Unsubmitted / New PR-Ready Fork Branches in w0m-pr/* ---")
+        for b in res["pendingBranches"]:
+            print(
+                f"  [NEW BRANCH] {b['upstream_repo']} <- {CANONICAL_FORK_ORG}:{b['branch']}@{b['head_sha']} "
+                f"(+{b['ahead_upstream']}/-{b['behind_upstream']} vs upstream) — {b['subject']}\n"
+                f"               Compare/Open PR: {b['compare_url']}"
+            )
+
+
+def cmd_check_delta(args: argparse.Namespace) -> None:
+    forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
+    state_path = Path(args.state_file) if getattr(args, "state_file", None) else None
+    res = check_prs_delta(author=args.author, preset=args.preset, state_path=state_path, forks_dir=forks_dir)
+    if args.json:
+        print(json.dumps(res, indent=2))
+    else:
+        if res["changed"]:
+            print(f"DELTA DETECTED ({res['deltaCount']}): " + "; ".join(res["deltas"]))
+        else:
+            print(
+                f"NO DELTA (openPrs={res['openPrCount']}, pendingBranches={res['pendingBranchCount']})"
+            )
+    sys.exit(0 if res["changed"] else 1)
+
+
+def cmd_orca_sync(args: argparse.Namespace) -> None:
+    forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
+    res = sync_prs_to_orca(
+        author=args.author,
+        preset=args.preset,
+        worktree=args.worktree,
+        trigger=args.trigger,
+        provider=args.provider,
+        forks_dir=forks_dir,
+        dry_run=bool(args.dry_run),
+    )
+    if args.json:
+        print(json.dumps(res, indent=2))
+        return
+    print(
+        f"[ORCA PR SYNC] referencesAttached={res.get('referencesAttached')} "
+        f"runId={res.get('orchestrationRunId')} taskId={res.get('orchestrationTaskId')} "
+        f"automationId={res.get('automationId')} "
+        f"(openPrs={res.get('openPrCount')}, pendingBranches={res.get('pendingBranchCount')})"
+    )
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="w0m-prs: GitHub PR tool for w0m estate (T345/T369/T377)")
+    parser = argparse.ArgumentParser(description="w0m-prs: GitHub PR tool for w0m estate (T345/T369/T377/T599)")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Search
     p_search = subparsers.add_parser("search", help="Search PRs by author, repo, or preset")
     p_search.add_argument("--author", type=str, help="GitHub author username")
+    p_search.add_argument("--all", action="store_true", help="Include all authors when searching a preset")
     p_search.add_argument("--repo", type=str, help="GitHub repository (owner/name)")
     p_search.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), help="Preset target")
     p_search.add_argument("--limit", type=int, default=50, help="Maximum number of PRs")
@@ -2596,6 +3086,42 @@ def main() -> None:
     p_tap_sync.add_argument("--sync", action="store_true", help="Update Formula/*.rb versions in webomage/homebrew-tap")
     p_tap_sync.add_argument("--json", action="store_true", help="Output structured JSON")
     p_tap_sync.set_defaults(func=cmd_tap_sync)
+
+    # Discover (T599)
+    p_discover = subparsers.add_parser(
+        "discover", help="Discover active upstream PRs and unsubmitted PR-ready feature branches in w0m-pr/*"
+    )
+    p_discover.add_argument("--author", type=str, default=CANONICAL_CONTRIBUTOR, help="GitHub author username")
+    p_discover.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target")
+    p_discover.add_argument("--dir", type=str, help="Path to w0m-pr directory")
+    p_discover.add_argument("--fetch", action="store_true", help="Fetch remotes before inspecting branches")
+    p_discover.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_discover.set_defaults(func=cmd_discover)
+
+    # Check-Delta (T599 — zero-token shell precheck for Orca Automations)
+    p_delta = subparsers.add_parser(
+        "check-delta", help="Zero-token precheck: exit 0 on PR/branch delta, exit 1 when unchanged"
+    )
+    p_delta.add_argument("--author", type=str, default=CANONICAL_CONTRIBUTOR, help="GitHub author username")
+    p_delta.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target")
+    p_delta.add_argument("--dir", type=str, help="Path to w0m-pr directory")
+    p_delta.add_argument("--state-file", type=str, help="Override state file path")
+    p_delta.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_delta.set_defaults(func=cmd_check_delta)
+
+    # Orca-Sync (T599 — register Orca workspace references, orchestration task, and scheduled automation)
+    p_orca = subparsers.add_parser(
+        "orca-sync", help="Attach PR references, create Orca orchestration task, and register Orca automation"
+    )
+    p_orca.add_argument("--author", type=str, default=CANONICAL_CONTRIBUTOR, help="GitHub author username")
+    p_orca.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target")
+    p_orca.add_argument("--dir", type=str, help="Path to w0m-pr directory")
+    p_orca.add_argument("--worktree", type=str, default="active", help="Orca worktree selector (default: active)")
+    p_orca.add_argument("--trigger", type=str, default="*/15 * * * *", help="Orca automation cron/trigger")
+    p_orca.add_argument("--provider", type=str, default="claude", help="Orca automation provider (default: claude)")
+    p_orca.add_argument("--dry-run", action="store_true", help="Preview Orca sync actions without mutating")
+    p_orca.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_orca.set_defaults(func=cmd_orca_sync)
 
     args = parser.parse_args()
     args.func(args)

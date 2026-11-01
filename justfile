@@ -301,6 +301,15 @@ prs-features *args:
 prs-vote *args:
     @python3 scripts/w0m_prs.py vote {{ args }}
 
+prs-discover *args:
+    @python3 scripts/w0m_prs.py discover {{ args }}
+
+prs-check-delta *args:
+    @python3 scripts/w0m_prs.py check-delta {{ args }}
+
+prs-orca-sync *args:
+    @python3 scripts/w0m_prs.py orca-sync {{ args }}
+
 prs-test:
     @python3 scripts/tests/test_w0m_prs.py
 
@@ -1943,7 +1952,7 @@ vault-push-r2 *args:
 vault-push-r2-test:
     @python3 scripts/tests/test_vault_push_r2.py
 
-# ── Multi-Host Orca Instance & Agent Session Orchestration (T596) ─────────────
+# ── Multi-Host Orca Instance & Agent Session Orchestration (T596 / T599) ──────
 orca-sessions *args:
     @python3 scripts/orca_sessions.py list {{ args }}
 
@@ -1952,6 +1961,15 @@ orca-attach *args:
 
 orca-hosts *args:
     @python3 scripts/orca_sessions.py hosts {{ args }}
+
+orca-state-save *args:
+    @python3 scripts/orca_sessions.py save-state {{ args }}
+
+orca-state-load *args:
+    @python3 scripts/orca_sessions.py load-state {{ args }}
+
+orca-archive *args:
+    @python3 scripts/orca_sessions.py archive {{ args }}
 
 orca-sessions-test:
     @python3 scripts/tests/test_orca_sessions.py

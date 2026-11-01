@@ -339,6 +339,56 @@ class TestOrcaSessions(unittest.TestCase):
         self.assertIn("`agy-t596`", sessions_md)
         print("  [PASS] format_hosts_table and format_sessions_table render multi-host inventory tables")
 
+    def test_save_and_load_private_workload_state(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            state_dir = home / ".w0m" / "state" / "workload"
+            sess_arch = home / ".w0m" / "state" / "sessions" / "linux-host" / "40410adb-a034-4a71-8a83-98907b5e3a7f"
+            sess_arch.mkdir(parents=True, exist_ok=True)
+            (sess_arch / "summary.md").write_text("# Archived\n", encoding="utf-8")
+
+            reg_dir = home / ".w0m" / "agents"
+            reg_dir.mkdir(parents=True, exist_ok=True)
+            (reg_dir / "registry.json").write_text(
+                json.dumps(
+                    {
+                        "claims": {
+                            "T599": {
+                                "agent_id": "agy:agy-t599",
+                                "track": "Track C",
+                                "session_title": "Track C · T599 · Workload State [agy-t599]",
+                                "orca_terminal_handle": "term_active_w0m",
+                            }
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            snap_local = _make_sample_snapshot("local")
+            snap_remote = _make_sample_snapshot("linux-host")
+            saved = osess.save_private_workload_state(
+                state_dir=state_dir,
+                home_dir=home,
+                sync_hosts=False,
+                snapshots_override=[snap_local, snap_remote],
+            )
+            self.assertTrue(saved["ok"])
+            self.assertEqual(saved["hostCount"], 2)
+            self.assertEqual(saved["archivedSessionCount"], 1)
+            self.assertTrue(Path(saved["latestJson"]).is_file())
+            self.assertTrue(Path(saved["latestMd"]).is_file())
+
+            loaded = osess.load_private_workload_state(state_dir=state_dir, home_dir=home)
+            self.assertTrue(loaded["ok"])
+            self.assertTrue(loaded["payload"]["private"])
+            self.assertIn("T599", loaded["payload"]["agentClaims"])
+
+            md = Path(saved["latestMd"]).read_text(encoding="utf-8")
+            self.assertIn("Private Cross-Host Project & Agent Workload Snapshot", md)
+            self.assertIn("`40410adb-a034-4a71-8a83-98907b5e3a7f`", md)
+        print("  [PASS] save_private_workload_state and load_private_workload_state persist private state and artifacts")
+
 
 if __name__ == "__main__":
     unittest.main()

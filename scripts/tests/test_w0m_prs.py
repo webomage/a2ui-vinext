@@ -279,6 +279,63 @@ def main() -> int:
         (tmp_pkg / "pyproject.toml").write_text('name = "demo"\nversion = "0.7.3rc1"\n', encoding="utf-8")
         check("_extract_fork_version strips rc suffix from pyproject.toml", w0m_prs._extract_fork_version(tmp_pkg) == "0.7.3")
 
+    # 8e. New PR & Fork Branch Discovery, Zero-Token Delta Check, and Orca Sync (T599)
+    sample_discovered = {
+        "generatedAt": "2026-11-01T12:00:00Z",
+        "author": "casualuser",
+        "preset": "w0m-pr",
+        "openPrCount": 1,
+        "openPrs": [
+            {
+                "repo": "stablyai/orca",
+                "number": 21157,
+                "title": "feat(worktree): support macOS deep-link protocol",
+                "state": "OPEN",
+                "mergeable": "MERGEABLE",
+                "reviewDecision": "NONE",
+                "ciStatus": "PASS",
+                "feedback": "-",
+                "commentsCount": 2,
+                "reviewsCount": 1,
+                "url": "https://github.com/stablyai/orca/pull/21157",
+            }
+        ],
+        "pendingBranchCount": 1,
+        "pendingBranches": [
+            {
+                "fork": "laya-mlx",
+                "upstream_repo": "mizorewww/laya-mlx",
+                "branch": "fix/native-serve-tests-and-torchless-calibration",
+                "head_sha": "baeb7b0",
+                "subject": "fix: add native serve contract tests and torchless calibration fallback",
+                "ahead_upstream": 1,
+                "behind_upstream": 0,
+                "open_prs_in_repo": 0,
+                "compare_url": "https://github.com/mizorewww/laya-mlx/compare/main...webomage:fix/native-serve-tests-and-torchless-calibration?expand=1",
+            }
+        ],
+    }
+    with tempfile.TemporaryDirectory() as tmp_state_dir:
+        state_file = Path(tmp_state_dir) / "prs-watch-state.json"
+        d1 = w0m_prs.check_prs_delta(state_path=state_file, current_override=sample_discovered)
+        check("check_prs_delta detects initial baseline as changed", d1["changed"] is True and d1["deltaCount"] == 2)
+        d2 = w0m_prs.check_prs_delta(state_path=state_file, current_override=sample_discovered)
+        check("check_prs_delta returns changed=False when state is unchanged", d2["changed"] is False and d2["deltaCount"] == 0)
+
+        mutated = json.loads(json.dumps(sample_discovered))
+        mutated["openPrs"][0]["commentsCount"] = 3
+        d3 = w0m_prs.check_prs_delta(state_path=state_file, current_override=mutated)
+        check("check_prs_delta detects comment count delta", d3["changed"] is True and "commentsCount: 2 -> 3" in d3["deltas"][0])
+
+    orca_sync_dry = w0m_prs.sync_prs_to_orca(dry_run=True, discovered_override=sample_discovered)
+    check(
+        "sync_prs_to_orca dry-run builds reference URLs, task title, and precheck command",
+        orca_sync_dry["ok"] is True
+        and orca_sync_dry["dryRun"] is True
+        and "https://github.com/stablyai/orca/pull/21157" in orca_sync_dry["referenceUrls"]
+        and "check-delta" in orca_sync_dry["precheck"],
+    )
+
     # 9. Skill check
     skill_md = ROOT / "w0m-skills/skills/w0m-prs/SKILL.md"
     check("w0m-prs SKILL.md exists in w0m-skills", skill_md.is_file())

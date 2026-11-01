@@ -1132,9 +1132,385 @@ def _select_hosts(host_arg: str) -> list[str]:
     return [h.strip() for h in host_arg.split(",") if h.strip()]
 
 
+def _collect_local_projects_status(home_dir: Path | None = None) -> list[dict[str, Any]]:
+    """Inspect local project repositories under `~/Projects/!self/w0m` and `~/Projects/!proj/*`."""
+    home = home_dir or Path.home()
+    projects: list[dict[str, Any]] = []
+    candidates: list[tuple[str, Path]] = [("w0m", home / "Projects" / "!self" / "w0m")]
+    proj_root = home / "Projects" / "!proj"
+    if proj_root.is_dir():
+        for child in sorted(proj_root.iterdir()):
+            if child.is_dir() and not child.name.startswith("."):
+                candidates.append((child.name, child))
+
+    for pid, pdir in candidates:
+        if not pdir.is_dir():
+            continue
+        git_dir = pdir / ".git"
+        branch = "-"
+        dirty = 0
+        head = ""
+        if git_dir.exists():
+            try:
+                branch = subprocess.run(
+                    ["git", "-C", str(pdir), "branch", "--show-current"],
+                    capture_output=True,
+                    text=True,
+                    timeout=3.0,
+                ).stdout.strip() or "HEAD"
+                head = subprocess.run(
+                    ["git", "-C", str(pdir), "rev-parse", "--short", "HEAD"],
+                    capture_output=True,
+                    text=True,
+                    timeout=3.0,
+                ).stdout.strip()
+                st = subprocess.run(
+                    ["git", "-C", str(pdir), "status", "--porcelain"],
+                    capture_output=True,
+                    text=True,
+                    timeout=3.0,
+                ).stdout.splitlines()
+                dirty = sum(1 for line in st if line.strip())
+            except (OSError, subprocess.SubprocessError):
+                pass
+        projects.append(
+            {
+                "id": pid,
+                "path": str(pdir),
+                "branch": branch,
+                "head": head,
+                "dirtyCount": dirty,
+            }
+        )
+    return projects
+
+
+def format_workload_markdown(payload: dict[str, Any]) -> str:
+    """Render a private Markdown dashboard for cross-host project and agent workload state (`T599` AC1)."""
+    lines = [
+        f"# Private Cross-Host Project & Agent Workload Snapshot (`{payload.get('generatedAt', '')}`)",
+        "",
+        "> **Private State (`~/.w0m/state/workload/`) — mode `0700`/`0600`, excluded from public Git.**",
+        "",
+        "## 1. Orca Hosts & Runtime Summary",
+        "",
+        "| Host | Hostname (`platform`) | Reachable | Terminals | Live Sessions | Worktrees | Agent Trees |",
+        "|---|---|---|---:|---:|---:|---:|",
+    ]
+    for h in payload.get("hosts") or []:
+        lines.append(
+            f"| `{h.get('host')}` | `{h.get('hostname')} ({h.get('platform')})` | "
+            f"`{'yes' if h.get('reachable') else 'no'}` | {h.get('terminalCount', 0)} | "
+            f"{h.get('liveSessionCount', 0)} | {h.get('worktreeCount', 0)} | {len(h.get('agentTrees') or [])} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## 2. Active & Dormant Agent Sessions Across Hosts",
+            "",
+            format_sessions_table(payload.get("sessions") or []),
+            "",
+            "## 3. Local Projects & Worktree Hygiene",
+            "",
+            "| Project | Path | Branch | HEAD | Dirty Files |",
+            "|---|---|---|---|---:|",
+        ]
+    )
+    for proj in payload.get("localProjects") or []:
+        lines.append(
+            f"| `{proj.get('id')}` | `{proj.get('path')}` | `{proj.get('branch')}` | "
+            f"`{proj.get('head') or '-'}` | {proj.get('dirtyCount', 0)} |"
+        )
+
+    claims = payload.get("agentClaims") or {}
+    lines.extend(
+        [
+            "",
+            f"## 4. Virtual Agent Claims (`{len(claims)}` recorded)",
+            "",
+            "| Ticket | Agent ID | Track | Session Title | Terminal Handle |",
+            "|---|---|---|---|---|",
+        ]
+    )
+    for tid, info in sorted(claims.items()):
+        if not isinstance(info, dict):
+            continue
+        lines.append(
+            f"| `{tid}` | `{info.get('agent_id', '-')}` | `{info.get('track') or '-'}` | "
+            f"{info.get('session_title') or '-'} | `{info.get('orca_terminal_handle') or '-'}` |"
+        )
+
+    archived = payload.get("archivedSessions") or []
+    if archived:
+        lines.extend(
+            [
+                "",
+                "## 5. Privately Archived Session Artifacts (`~/.w0m/state/sessions/`)",
+                "",
+                "| Host | Conversation ID | Artifact Count | Path |",
+                "|---|---|---:|---|",
+            ]
+        )
+        for item in archived:
+            lines.append(
+                f"| `{item.get('host')}` | `{item.get('conversation_id')}` | "
+                f"{item.get('artifactCount', 0)} | `{item.get('path')}` |"
+            )
+
+    return "\n".join(lines) + "\n"
+
+
+def save_private_workload_state(
+    *,
+    hosts: list[str] | None = None,
+    state_dir: Path | None = None,
+    home_dir: Path | None = None,
+    include_dormant: bool = True,
+    dormant_limit: int = 15,
+    sync_hosts: bool = False,
+    snapshots_override: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Persist cross-host project and agent workload state privately to `~/.w0m/state/workload/` (`T599` AC1)."""
+    home = home_dir or Path.home()
+    base_state = home / ".w0m" / "state"
+    target_dir = state_dir or (base_state / "workload")
+    base_state.mkdir(parents=True, exist_ok=True)
+    target_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        os.chmod(base_state, 0o700)
+        os.chmod(target_dir, 0o700)
+    except OSError:
+        pass
+
+    target_hosts = hosts or ["local", *DEFAULT_REMOTE_HOSTS]
+    snapshots: list[dict[str, Any]] = []
+    sessions_by_host: dict[str, list[dict[str, Any]]] = {}
+    all_sessions: list[dict[str, Any]] = []
+
+    if snapshots_override is not None:
+        snapshots = list(snapshots_override)
+        for snap in snapshots:
+            h = str(snap.get("host") or "local")
+            hs = correlate_host_sessions(snap, include_dormant=include_dormant, dormant_limit=dormant_limit)
+            sessions_by_host[h] = hs
+            all_sessions.extend(hs)
+    else:
+        for h in target_hosts:
+            snap = (
+                collect_local_snapshot(host_label="local", home_dir=home, dormant_limit=dormant_limit)
+                if h == "local"
+                else collect_remote_snapshot(h)
+            )
+            snapshots.append(snap)
+            hs = correlate_host_sessions(snap, include_dormant=include_dormant, dormant_limit=dormant_limit)
+            sessions_by_host[h] = hs
+            all_sessions.extend(hs)
+
+    reg_path = home / ".w0m" / "agents" / "registry.json"
+    agent_claims: dict[str, Any] = {}
+    if reg_path.is_file():
+        try:
+            raw_reg = json.loads(reg_path.read_text(encoding="utf-8"))
+            if isinstance(raw_reg, dict) and isinstance(raw_reg.get("claims"), dict):
+                agent_claims = raw_reg["claims"]
+        except (OSError, ValueError):
+            pass
+
+    archived_sessions: list[dict[str, Any]] = []
+    sess_archive_root = base_state / "sessions"
+    if sess_archive_root.is_dir():
+        for host_dir in sorted(sess_archive_root.iterdir()):
+            if not host_dir.is_dir():
+                continue
+            for conv_dir in sorted(host_dir.iterdir()):
+                if not conv_dir.is_dir():
+                    continue
+                md_files = sorted(p.name for p in conv_dir.glob("*.md"))
+                archived_sessions.append(
+                    {
+                        "host": host_dir.name,
+                        "conversation_id": conv_dir.name,
+                        "artifactCount": len(md_files),
+                        "artifacts": md_files,
+                        "path": str(conv_dir),
+                    }
+                )
+
+    ts_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    ts_slug = time.strftime("%Y%m%d-%H%M%S", time.gmtime())
+
+    payload: dict[str, Any] = {
+        "schemaVersion": "1.0.0",
+        "generatedAt": ts_iso,
+        "private": True,
+        "hosts": [
+            {
+                "host": s.get("host"),
+                "hostname": s.get("hostname"),
+                "platform": s.get("platform"),
+                "reachable": s.get("reachable"),
+                "orcaRuntime": s.get("orcaRuntime"),
+                "terminalCount": len(s.get("terminals") or []),
+                "worktreeCount": len(s.get("worktrees") or []),
+                "liveSessionCount": sum(
+                    1 for sess in sessions_by_host.get(str(s.get("host")), []) if sess.get("pid") is not None
+                ),
+                "agentTrees": s.get("agentTrees") or [],
+            }
+            for s in snapshots
+        ],
+        "sessions": all_sessions,
+        "localProjects": _collect_local_projects_status(home),
+        "agentClaims": agent_claims,
+        "archivedSessions": archived_sessions,
+    }
+
+    latest_json = target_dir / "latest.json"
+    history_json = target_dir / f"workload-{ts_slug}.json"
+    latest_md = target_dir / "latest.md"
+
+    json_text = json.dumps(payload, indent=2) + "\n"
+    md_text = format_workload_markdown(payload)
+
+    latest_json.write_text(json_text, encoding="utf-8")
+    history_json.write_text(json_text, encoding="utf-8")
+    latest_md.write_text(md_text, encoding="utf-8")
+    for fpath in (latest_json, history_json, latest_md):
+        try:
+            os.chmod(fpath, 0o600)
+        except OSError:
+            pass
+
+    synced_remotes: list[str] = []
+    if sync_hosts:
+        for rh in target_hosts:
+            if rh == "local":
+                continue
+            try:
+                remote_script = (
+                    "mkdir -p ~/.w0m/state/workload && chmod 700 ~/.w0m/state ~/.w0m/state/workload && "
+                    "cat > ~/.w0m/state/workload/latest.json && chmod 600 ~/.w0m/state/workload/latest.json"
+                )
+                cp = subprocess.run(
+                    ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5", rh, remote_script],
+                    input=json_text,
+                    capture_output=True,
+                    text=True,
+                    timeout=8.0,
+                )
+                if cp.returncode == 0:
+                    synced_remotes.append(rh)
+            except (OSError, subprocess.SubprocessError):
+                pass
+
+    return {
+        "ok": True,
+        "generatedAt": ts_iso,
+        "latestJson": str(latest_json),
+        "historyJson": str(history_json),
+        "latestMd": str(latest_md),
+        "hostCount": len(payload["hosts"]),
+        "sessionCount": len(all_sessions),
+        "archivedSessionCount": len(archived_sessions),
+        "syncedRemotes": synced_remotes,
+        "payload": payload,
+    }
+
+
+def load_private_workload_state(*, state_dir: Path | None = None, home_dir: Path | None = None) -> dict[str, Any]:
+    """Load the latest saved private cross-host workload snapshot (`T599` AC1)."""
+    home = home_dir or Path.home()
+    target_dir = state_dir or (home / ".w0m" / "state" / "workload")
+    latest_json = target_dir / "latest.json"
+    if not latest_json.is_file():
+        return {"ok": False, "error": f"No saved workload state at {latest_json}"}
+    try:
+        data: dict[str, Any] = json.loads(latest_json.read_text(encoding="utf-8"))
+        return {"ok": True, "path": str(latest_json), "payload": data}
+    except (OSError, ValueError) as exc:
+        return {"ok": False, "error": str(exc)}
+
+
+def archive_host_sessions(
+    host: str = "linux-host",
+    *,
+    conversation_ids: list[str] | None = None,
+    close_terminals: bool = False,
+    dest_root: Path | None = None,
+    home_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Collect brain Markdown artifacts from `host` into `~/.w0m/state/sessions/<host>/` and optionally close tabs (`T599` AC1/AC2)."""
+    home = home_dir or Path.home()
+    base_dest = dest_root or (home / ".w0m" / "state" / "sessions" / host)
+    base_dest.mkdir(parents=True, exist_ok=True)
+    try:
+        os.chmod(base_dest.parent, 0o700)
+        os.chmod(base_dest, 0o700)
+    except OSError:
+        pass
+
+    snap = collect_local_snapshot(host_label="local", home_dir=home) if host == "local" else collect_remote_snapshot(host)
+    sessions = correlate_host_sessions(snap, include_dormant=True, dormant_limit=25)
+    target_cids = conversation_ids or [
+        str(s["conversation_id"])
+        for s in sessions
+        if s.get("conversation_id") and ("w0m" in str(s.get("worktreePath") or "") or s.get("state") != "working")
+    ]
+
+    collected: list[dict[str, Any]] = []
+    for cid in target_cids:
+        if not UUID_RE.fullmatch(cid):
+            continue
+        cdir = base_dest / cid
+        cdir.mkdir(parents=True, exist_ok=True)
+        if host == "local":
+            src_dir = home / ".gemini" / "antigravity-cli" / "brain" / cid
+            if src_dir.is_dir():
+                for md in src_dir.glob("*.md"):
+                    (cdir / md.name).write_bytes(md.read_bytes())
+        else:
+            cmd = f"cd ~/.gemini/antigravity-cli/brain/{cid} && tar -cf - *.md 2>/dev/null || true"
+            try:
+                p1 = subprocess.Popen(["ssh", "-o", "BatchMode=yes", host, cmd], stdout=subprocess.PIPE)
+                p2 = subprocess.Popen(["tar", "-xf", "-", "-C", str(cdir)], stdin=p1.stdout)
+                if p1.stdout:
+                    p1.stdout.close()
+                p2.communicate(timeout=15.0)
+            except (OSError, subprocess.SubprocessError):
+                pass
+        files = sorted(p.name for p in cdir.glob("*.md"))
+        collected.append({"conversation_id": cid, "artifactCount": len(files), "artifacts": files, "path": str(cdir)})
+
+    closed_handles: list[str] = []
+    if close_terminals:
+        cli_bin = "/Applications/Orca.app/Contents/Resources/bin/orca"
+        for term in snap.get("terminals") or []:
+            wt_path = str(term.get("worktreePath") or "")
+            handle = str(term.get("handle") or "")
+            if not handle or "w0m" not in wt_path:
+                continue
+            cmd_list = [cli_bin, "terminal", "close", "--terminal", handle, "--tab", "--json"]
+            if host != "local":
+                cmd_list.extend(["--environment", host])
+            try:
+                res = subprocess.run(cmd_list, capture_output=True, text=True, timeout=10.0)
+                if res.returncode == 0:
+                    closed_handles.append(handle)
+            except (OSError, subprocess.SubprocessError):
+                pass
+
+    return {
+        "ok": True,
+        "host": host,
+        "collected": collected,
+        "closedTerminals": closed_handles,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Multi-host Orca instance and agent session orchestration (T596)."
+        description="Multi-host Orca instance and agent session orchestration (T596 / T599)."
     )
     sub = parser.add_subparsers(dest="subcommand")
 
@@ -1164,6 +1540,23 @@ def main(argv: list[str] | None = None) -> int:
     p_hosts.add_argument("--ensure-ssh", action="store_true", help="Ensure linux-host is registered and connected in Orca")
     p_hosts.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
 
+    # save-state (T599 AC1)
+    p_save = sub.add_parser("save-state", help="Privately persist cross-host project and agent workload state")
+    p_save.add_argument("--host", default="all", help="Host selector: all, local, linux-host (default: all)")
+    p_save.add_argument("--sync-hosts", action="store_true", help="Mirror private snapshot to remote SSH hosts")
+    p_save.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+
+    # load-state (T599 AC1)
+    p_load = sub.add_parser("load-state", help="Load latest privately persisted cross-host workload state")
+    p_load.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+
+    # archive (T599 AC1/AC2)
+    p_arch = sub.add_parser("archive", help="Collect session brain artifacts into private archive and optionally close tabs")
+    p_arch.add_argument("--host", default="linux-host", help="Target host (default: linux-host)")
+    p_arch.add_argument("--conversation", action="append", default=None, help="Specific conversation UUID(s) to collect")
+    p_arch.add_argument("--close-terminals", action="store_true", help="Close completed w0m Orca terminal tabs on host")
+    p_arch.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+
     # Support top-level flags when invoked without subcommand (`just orca-sessions --json`)
     parser.add_argument("--host", default="all", help="Host selector: all, local, linux-host (default: all)")
     parser.add_argument("--include-dormant", action="store_true", help="Include dormant brain transcripts")
@@ -1172,6 +1565,47 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     cmd = args.subcommand or "list"
+
+    if cmd == "save-state":
+        res = save_private_workload_state(
+            hosts=_select_hosts(args.host),
+            sync_hosts=bool(getattr(args, "sync_hosts", False)),
+        )
+        if args.json:
+            print(json.dumps(res, indent=2))
+        else:
+            print(
+                f"[SAVED PRIVATE STATE] {res['latestJson']} & {res['latestMd']} "
+                f"(hosts={res['hostCount']}, sessions={res['sessionCount']}, "
+                f"archivedSessions={res['archivedSessionCount']}, syncedRemotes={res['syncedRemotes']})"
+            )
+        return 0
+
+    if cmd == "load-state":
+        res = load_private_workload_state()
+        if args.json:
+            print(json.dumps(res, indent=2))
+        else:
+            if not res.get("ok"):
+                print(f"[ERROR] {res.get('error')}", file=sys.stderr)
+                return 1
+            print(format_workload_markdown(res["payload"]))
+        return 0 if res.get("ok") else 1
+
+    if cmd == "archive":
+        res = archive_host_sessions(
+            args.host,
+            conversation_ids=args.conversation,
+            close_terminals=bool(args.close_terminals),
+        )
+        if args.json:
+            print(json.dumps(res, indent=2))
+        else:
+            print(
+                f"[ARCHIVED] host={res['host']} conversations={len(res['collected'])} "
+                f"closedTerminals={len(res['closedTerminals'])}"
+            )
+        return 0
 
     if cmd == "attach":
         res = attach_session(
