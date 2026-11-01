@@ -310,6 +310,12 @@ prs-check-delta *args:
 prs-orca-sync *args:
     @python3 scripts/w0m_prs.py orca-sync {{ args }}
 
+prs-proposals *args:
+    @python3 scripts/w0m_prs.py proposals {{ args }}
+
+prs-submit *args:
+    @python3 scripts/w0m_prs.py submit {{ args }}
+
 prs-test:
     @python3 scripts/tests/test_w0m_prs.py
 

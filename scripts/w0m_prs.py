@@ -2492,6 +2492,270 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
 }
 
 
+# Active upstream PR head branches (excluded from unsubmitted pending branch list)
+ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
+    "feat/global-graph-sync-and-status",          # Graphify-Labs/graphify#4727
+    "fix/turboquant-dim512-threadgroup-fallback", # Blaizzy/mlx-vlm#2288
+    "fix/menubar-adopt-external-omlx",            # jundot/omlx#3743
+    "feat/macos-deep-link-worktree",              # stablyai/orca#21157
+    "feat/macos-deep-link-shortcuts",             # stablyai/orca#21148
+    "feat/zeroclaw-agent-connector",              # stablyai/orca#16597
+    "feat/media-clipboard-and-file-transfer",     # openai/tart-guest-agent#62
+    "macos_release",                              # bulwarkid/virtual-fido#48
+}
+
+# Internal / archived / superseded sub-branches (excluded from unsubmitted pending branch list)
+INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
+    "feat/audit-host-services",
+    "fix/gemma4-turboquant-sdpa256-bounds",
+    "w0m/v1.7.0-astro",
+    "PR_restructured",
+    "cleaned",
+    "dkit",
+    "feature/final-polish",
+    "feature/tests-docs-new",
+    "feature/transports",
+    "macos",
+    "macos_mini",
+    "macos_purego",
+    "macos_stable",
+    "macos_vhid",
+    "tested",
+}
+
+# Canonical Why / What For / How PR Proposals for Prepared Contribution Branches (T593 AC4 / T569 AC4 / T597)
+CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
+    "mizorewww/laya-mlx:fix/native-serve-tests-and-torchless-calibration": {
+        "ticket": "T569",
+        "title": "fix: add native serve contract tests and torchless calibration fallback",
+        "why": (
+            "1. `docs/MIGRATION_0_4_17.md` notes that four `test_serve` cases asserting native device and thread semantics "
+            "stay in local tests, and `laya_mlx/serve.py` cites `tests/test_serve.py` in five inline contract comments, "
+            "but `tests/test_serve.py` was missing from `tests/`.\n"
+            "2. `laya_mlx/calibrate.py` unconditionally imported `torch` for a 1-parameter scalar LBFGS temperature fit, "
+            "causing `ModuleNotFoundError: No module named 'torch'` on pure Apple Silicon MLX installs.\n"
+            "3. Top-level `laya_mlx.snake.replay` imports in `experiments/snake_runtime.py` pulled in `rich` (`[demo]` extra), "
+            "breaking `PrefixPreparation` imports when `[demo]` is not installed."
+        ),
+        "what_for": (
+            "Enables Apple Silicon developers and CI environments running pure MLX (`pip install -e '.[dev,serve,mcp,structured]'` "
+            "without PyTorch or `rich`) to run the full native test suite, fit per-bucket calibration temperatures "
+            "(`fit_one_temperature` / `fit_temperature_map`), and verify all native `laya-mlx-serve` device, thread-limit, "
+            "and wire-contract invariants."
+        ),
+        "how": (
+            "- **`tests/test_serve.py`**: Adds 12 unit and integration tests covering `GET /health` device preference reporting, "
+            "agreement with `laya_status`, `LAYA_DEVICE` validation, `_apply_thread_limit()` refusal on MLX, and `/v1/systemone` wire contracts.\n"
+            "- **`laya_mlx/calibrate.py`**: Preserves the `torch.optim.LBFGS` path when `torch` is installed and falls back to a "
+            "pure-NumPy damped Newton solver on the grouped float32 NLL objective when `torch` is absent.\n"
+            "- **`experiments/snake_runtime.py`**: Moves `LayaPolicy` and `load_record` imports into `main()`.\n"
+            "- **Verification**: `290 passed, 0 failed` on Apple M1 Max Metal + `345` API surface entries with `0` unclassified differences."
+        ),
+    },
+    "headroomlabs-ai/headroom:feat/omlx-proxy-routing": {
+        "ticket": "T593",
+        "title": "feat(proxy): unified multi-upstream routing for Anthropic Cloud and local oMLX",
+        "why": (
+            "Developers running hybrid cloud + local Apple Silicon MLX workflows (`oMLX` / OpenAI-compatible local inference alongside "
+            "Anthropic Cloud) previously had to run separate Headroom proxy instances or reconfigure upstream URLs when switching between "
+            "Claude and local `oMLX` models."
+        ),
+        "what_for": (
+            "Allows a single Headroom proxy instance to dynamically route local `omlx/*` / OpenAI-compatible model requests to a local "
+            "`oMLX` server (`HEADROOM_OMLX_BASE_URL` / `http://127.0.0.1:8000`) while forwarding standard Anthropic requests to "
+            "`api.anthropic.com` with full context compression and telemetry."
+        ),
+        "how": (
+            "- **`headroom/providers/proxy_routes.py` & `headroom/proxy/handlers/anthropic.py`**: Resolves target upstream per request "
+            "model prefix (`omlx/` or configured local provider routes) and normalizes headers/endpoints cleanly.\n"
+            "- **`headroom/proxy/models.py` & `headroom/proxy/server.py`**: Registers local `oMLX` routing configuration and startup summary."
+        ),
+    },
+    "stablyai/orca:feat/cross-worktree-tab-move": {
+        "ticket": "T597",
+        "title": "feat(tabs): cross-workspace tab drag-and-drop and Move to Workspace menu",
+        "why": (
+            "Terminal and agent tabs could only be reordered or split within the same worktree's tab strip. Dragging a tab onto another "
+            "worktree in the sidebar was ignored (`source.worktreeId !== target.worktreeId`), and there was no context-menu action to move "
+            "a live terminal or agent tab between the Floating Workspace and project worktrees without closing and respawning the session."
+        ),
+        "what_for": (
+            "Lets users seamlessly move live terminal and agent tabs across worktrees (including between the Floating Workspace and project "
+            "worktrees) via either drag-and-drop onto any sidebar worktree card or the tab right-click menu (`Move to Workspace -> [Target Worktree]`), "
+            "preserving live PTY bindings (`ptyIdsByTabId`, `tabLayoutsByTabId`) and custom tab titles."
+        ),
+        "how": (
+            "- **`src/renderer/src/store/slices/tabs/tabs-cross-worktree-move.ts` & `tabs-move-actions.ts`**: Implements atomic `moveTabToWorktree` "
+            "across `unifiedTabsByWorktree`, `tabsByWorktree`, `groupsByWorktree`, `layoutByWorktree`, `activeGroupIdByWorktree`, and `activeTabIdByWorktree`, "
+            "collapsing empty split groups in the source worktree.\n"
+            "- **`src/renderer/src/components/tab-group/cross-worktree-tab-drop.ts` & `worktree-card-surface.tsx`**: Highlights hovered sidebar "
+            "worktree cards (`data-worktree-tab-drop-target=\"true\"`) during tab drag and commits cross-worktree drops.\n"
+            "- **`src/renderer/src/components/tab-bar/TabWorkspaceLayoutMenuSection.tsx`**: Adds `Move to Workspace` submenu.\n"
+            "- **Verification**: `7/7` Vitest tests passing in `cross-worktree-tab-drop.test.ts` and `tab-move-to-pane-column.test.ts`."
+        ),
+    },
+    "stablyai/orca:feat/agent-collaboration-board": {
+        "ticket": "T593",
+        "title": "feat(orchestration): add FIFO resource locks and collaboration board",
+        "why": (
+            "When multiple supervised or peer agents work concurrently across shared resources (such as database migrations, shared ports, "
+            "or staging environments), there was no built-in coordination primitive in `orca orchestration` to acquire mutually exclusive "
+            "FIFO resource locks or post shared status updates on a run-scoped collaboration board."
+        ),
+        "what_for": (
+            "Provides deterministic SQLite-backed FIFO resource locking (`orca orchestration lock-acquire`, `lock-release`, `lock-list`) "
+            "with lease TTL expiry and wait-queue promotion, plus a run-scoped collaboration board so multi-agent DAG workers can coordinate "
+            "contended resources without race conditions."
+        ),
+        "how": (
+            "- **`src/main/orchestration/db/locks/resource-lock-store.ts`**: Implements transactional FIFO lock acquisition, re-entrant lease "
+            "renewal, automatic expired-lock reclamation, and queue promotion on release.\n"
+            "- **`src/main/runtime/rpc/methods/orchestration/locks/locks.ts` & `src/cli/handlers/orchestration/lock-handlers.ts`**: Exposes "
+            "typed RPC methods and CLI subcommands.\n"
+            "- **Verification**: Covered by `resource-lock-store.test.ts` and `locks.test.ts`."
+        ),
+    },
+    "stablyai/orca:feat/mobile-camera-capture-chat": {
+        "ticket": "T557",
+        "title": "feat(mobile): add camera photo capture to chat and terminal sessions",
+        "why": (
+            "On Orca Mobile, attaching an image to Native Chat or a terminal session only supported picking from the photo library or "
+            "filesystem (`library` / `files`). Capturing a live photo of a physical whiteboard, hardware screen, or device error required "
+            "leaving Orca, taking a photo in the system Camera app, and switching back to browse the library."
+        ),
+        "what_for": (
+            "Adds a native `Take Photo` (`camera`) option directly inside both the Native Chat attachment sheet and the terminal session "
+            "command dock (`MobileTerminalInputActions`), streaming the captured image through the bounded chunked base64 reader."
+        ),
+        "how": (
+            "- **`mobile/src/session/mobile-image-source-picker.ts` & `media-picker-contract.ts`**: Adds `pickFromCamera` using "
+            "`ImagePicker.requestCameraPermissionsAsync` + `ImagePicker.launchCameraAsync` with `CameraPermissionError` handling.\n"
+            "- **`mobile/src/session/native-chat/composer/MobileNativeChatComposer.tsx` & `MobileSessionCommandDock.tsx`**: Wires `onTakePhoto` "
+            "into both chat and terminal input docks.\n"
+            "- **Verification**: Unit tests in `mobile-image-source-picker.test.ts`, `MobileNativeChatComposer.test.ts`, and "
+            "`use-mobile-native-chat-image-attachments.test.ts`."
+        ),
+    },
+    "stablyai/orca:feat/mobile-live-input-password-mask": {
+        "ticket": "T593",
+        "title": "feat(mobile): add asterisk password masking and show/hide toggle in terminal input dock",
+        "why": (
+            "When a remote terminal session prompts for a password, passphrase, or secret token (`sudo`, `ssh`, `gpg`, `Enter passphrase`), "
+            "Orca Mobile's command/live-input dock echoed characters in plain text on screen and offered no manual mask toggle."
+        ),
+        "what_for": (
+            "Automatically detects terminal password/passphrase prompts and masks typed characters with asterisks (`*`) in the mobile "
+            "terminal input dock, while providing a one-tap eye toggle (`Show` / `Hide`) so users can verify or conceal sensitive input at any time."
+        ),
+        "how": (
+            "- **`mobile/src/terminal/terminal-password-prompt.ts` & `use-terminal-password-prompt-state.ts`**: Detects password/passphrase/PIN "
+            "prompts from terminal output lines and resolves per-handle mask state (`autoDetectedPrompt` + `manualOverride`).\n"
+            "- **`mobile/src/session/MobileTerminalPasswordMaskOverlay.tsx` & `MobileSessionCommandDock.tsx`**: Renders the asterisk mask overlay "
+            "and show/hide toggle button over both live-input and command-draft modes.\n"
+            "- **Verification**: Unit tests in `terminal-password-prompt.test.ts` and `MobileTerminalPasswordMaskOverlay.test.tsx`."
+        ),
+    },
+    "stablyai/orca:feat/obsidian-ofm-engine": {
+        "ticket": "T464",
+        "title": "feat(editor): obsidian-flavored markdown engine and callouts",
+        "why": (
+            "Many engineering repositories and agent knowledge bases use Obsidian-Flavored Markdown (OFM) conventions—including `[[wikilinks]]`, "
+            "`![[embeds]]`, and `> [!NOTE]` / `> [!WARNING]` / `> [!TIP]` callout blocks—which previously rendered as raw bracket text or plain "
+            "blockquotes in Orca's desktop Markdown reader."
+        ),
+        "what_for": (
+            "Renders GitHub/Obsidian callout admonitions (`[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`, collapsible `+`/`-` "
+            "callouts) and resolves `[[wikilink]]` / `[[target|alias]]` / `[[doc#heading]]` navigation across workspace Markdown files."
+        ),
+        "how": (
+            "- **`src/renderer/src/components/editor/MarkdownBlockquoteOrCallout.tsx` & `markdown-preview.css`**: Parses callout headers, icons, "
+            "severity palettes, and collapsible `<details>` state.\n"
+            "- **`src/renderer/src/components/editor/markdown-doc-link-slug.ts` & `markdown-doc-links.ts`**: Resolves wikilink slugs and heading "
+            "fragments against workspace Markdown entries.\n"
+            "- **Verification**: Unit tests in `MarkdownBlockquoteOrCallout.test.tsx` and `markdown-doc-links.test.ts`."
+        ),
+    },
+    "stablyai/orca:fix/mobile-landscape-safe-area-insets": {
+        "ticket": "T433",
+        "title": "fix(mobile): apply horizontal edge padding to MobileHomeScreen in landscape",
+        "why": (
+            "On iPhones with Dynamic Island / sensor housing in landscape orientation, `MobileHomeScreen` only applied `edges={['top']}` "
+            "on its root `SafeAreaView` without horizontal safe-area padding, causing host cards and top-bar controls to clip under the "
+            "left/right hardware cutouts."
+        ),
+        "what_for": (
+            "Applies `useHorizontalEdgePadding()` to `MobileHomeScreen`'s root `SafeAreaView` so the Home host list respects left/right "
+            "safe-area insets in landscape orientation just like session and settings screens."
+        ),
+        "how": (
+            "- **`mobile/src/home/MobileHomeScreen.tsx`**: Imports `useHorizontalEdgePadding` from `../layout/screen-edge-padding` and "
+            "merges `horizontalPadding` into `<SafeAreaView style={[styles.container, horizontalPadding]} edges={['top']}>`."
+        ),
+    },
+    "stablyai/orca:fix/mobile-markdown-external-tab-read": {
+        "ticket": "T593",
+        "title": "fix(mobile): authorize open desktop markdown tabs outside workspace root and surface outside-workspace errors",
+        "why": (
+            "When a desktop workspace had an open Markdown tab referencing a file outside the primary git worktree root (such as an agent "
+            "report or shared scratch spec), opening that synced Markdown tab on Orca Mobile failed silently or threw an unhandled ` OutsideWorkspaceError`."
+        ),
+        "what_for": (
+            "Authorizes reading Markdown files that are already explicitly open as tabs on the paired desktop host and surfaces a clear, "
+            "actionable error state on mobile if an unindexed path outside the workspace root is requested."
+        ),
+        "how": (
+            "- **`src/main/runtime/markdown-tab-disk-host.ts`, `file-reads.ts`, & `chat-scratch-file-root.ts`**: Permits read access for paths "
+            "matching active desktop Markdown tabs.\n"
+            "- **`mobile/src/session/use-mobile-session-document-readers.ts`**: Surfaces structured outside-workspace read errors cleanly.\n"
+            "- **Verification**: Covered by `use-mobile-session-document-readers.test.ts`."
+        ),
+    },
+}
+
+
+def format_pr_proposal_body(proposal: dict[str, str]) -> str:
+    """Format a structured Why / What For / How PR description body (`AGENTS.md`)."""
+    return (
+        f"## Why (Rationale & Problem)\n\n{proposal['why']}\n\n"
+        f"## What For (Use Cases & Value)\n\n{proposal['what_for']}\n\n"
+        f"## How (Implementation, Invariants & Verification)\n\n{proposal['how']}\n"
+    )
+
+
+def discover_worktrees_summary() -> list[dict[str, Any]]:
+    """Inventory active w0m agent worktrees (`~/.w0m/work/*/w0m`) for unified worktree+PR monitoring (`T593`)."""
+    work_root = Path.home() / ".w0m" / "work"
+    trees: list[dict[str, Any]] = []
+    if not work_root.is_dir():
+        return trees
+    for entry in sorted(work_root.iterdir()):
+        root_repo = entry / "w0m"
+        if not (root_repo / ".git").exists():
+            continue
+        name = entry.name
+        st_cp = run_cmd(["git", "status", "--porcelain"], check=False, cwd=root_repo)
+        dirty_root = len((st_cp.stdout or "").splitlines()) if st_cp.returncode == 0 else 0
+        dirty_members: list[str] = []
+        if dirty_root > 0:
+            dirty_members.append(".")
+        for sub in ("w0m-web", "w0m-api", "w0m-cf", "w0m-ext", "w0m-sec", "w0m-skills"):
+            sub_p = root_repo / sub
+            if (sub_p / ".git").exists():
+                sub_cp = run_cmd(["git", "status", "--porcelain"], check=False, cwd=sub_p)
+                if sub_cp.returncode == 0 and (sub_cp.stdout or "").strip():
+                    dirty_members.append(sub)
+        trees.append(
+            {
+                "name": name,
+                "agent_id": f"agy:{name}",
+                "path": str(root_repo),
+                "dirty_repos": dirty_members,
+                "clean": len(dirty_members) == 0,
+            }
+        )
+    return trees
+
+
 def discover_new_prs_and_branches(
     *,
     author: str = CANONICAL_CONTRIBUTOR,
@@ -2499,7 +2763,7 @@ def discover_new_prs_and_branches(
     forks_dir: Optional[Path] = None,
     fetch: bool = False,
 ) -> dict[str, Any]:
-    """Discover active upstream PRs AND unsubmitted PR-ready feature branches across `w0m-pr/*` (`T599` AC3)."""
+    """Discover active upstream PRs, unsubmitted PR-ready feature branches across `w0m-pr/*`, and active worktrees (`T599` AC3, `T593` AC4)."""
     open_prs_raw = search_prs(author=author, preset=preset, limit=50)
     open_prs: list[dict[str, Any]] = []
     open_repos_with_pr: dict[str, list[dict[str, Any]]] = {}
@@ -2543,6 +2807,7 @@ def discover_new_prs_and_branches(
 
     fdir = forks_dir or resolve_forks_dir()
     pending_branches: list[dict[str, Any]] = []
+    fork_worktrees: list[dict[str, Any]] = []
     if fdir and fdir.is_dir():
         for repo_path in sorted(fdir.iterdir()):
             if not (repo_path / ".git").exists():
@@ -2550,6 +2815,16 @@ def discover_new_prs_and_branches(
             fork_name = repo_path.name
             upstream_repo = FORK_UPSTREAM_MAP.get(fork_name, f"upstream/{fork_name}")
             fork_info = inspect_fork(repo_path, fetch=fetch)
+            fork_worktrees.append(
+                {
+                    "fork": fork_name,
+                    "upstream_repo": upstream_repo,
+                    "branch": fork_info.get("branch", "beta"),
+                    "ahead_upstream": int(fork_info.get("ahead_upstream") or 0),
+                    "behind_upstream": int(fork_info.get("behind_upstream") or 0),
+                    "dirty_count": int(fork_info.get("dirty_count") or 0),
+                }
+            )
             upstream_ref = fork_info.get("upstream_ref") or ""
             if upstream_ref == "-":
                 continue
@@ -2574,7 +2849,12 @@ def discover_new_prs_and_branches(
                     continue
                 ref_short, sha, author_name, author_email, subject = parts
                 bname = ref_short.removeprefix("origin/")
-                if bname in ("HEAD", "main", "master", "v8", "beta") or bname in seen_branch_names:
+                if (
+                    bname in ("HEAD", "main", "master", "v8", "beta")
+                    or bname in seen_branch_names
+                    or bname in ACTIVE_OPEN_PR_HEAD_BRANCHES
+                    or bname in INTERNAL_OR_SUPERSEDED_BRANCHES
+                ):
                     continue
                 if "casualuser" not in author_email.lower() and "tcelishchev" not in author_name.lower():
                     continue
@@ -2596,9 +2876,8 @@ def discover_new_prs_and_branches(
                     continue
                 seen_branch_names.add(bname)
                 repo_open_prs = open_repos_with_pr.get(upstream_repo, [])
-                # Skip branches in repos that already have our active consolidated PR open
-                if len(repo_open_prs) > 0:
-                    continue
+                proposal_key = f"{upstream_repo}:{bname}"
+                proposal = CONTRIBUTION_PROPOSALS.get(proposal_key)
                 compare_url = (
                     f"https://github.com/{upstream_repo}/compare/"
                     f"{default_branch}...{CANONICAL_FORK_ORG}:{bname}?expand=1"
@@ -2607,15 +2886,20 @@ def discover_new_prs_and_branches(
                     {
                         "fork": fork_name,
                         "upstream_repo": upstream_repo,
+                        "base_branch": default_branch,
                         "branch": bname,
                         "head_sha": sha,
-                        "subject": subject,
+                        "subject": proposal["title"] if proposal else subject,
+                        "ticket": proposal.get("ticket", "") if proposal else "",
                         "ahead_upstream": ahead_u,
                         "behind_upstream": behind_u,
                         "open_prs_in_repo": len(repo_open_prs),
                         "compare_url": compare_url,
+                        "has_proposal": proposal is not None,
                     }
                 )
+
+    agent_trees = discover_worktrees_summary()
 
     return {
         "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -2625,6 +2909,9 @@ def discover_new_prs_and_branches(
         "openPrs": open_prs,
         "pendingBranchCount": len(pending_branches),
         "pendingBranches": pending_branches,
+        "agentTreeCount": len(agent_trees),
+        "agentTrees": agent_trees,
+        "forkWorktrees": fork_worktrees,
     }
 
 
@@ -2681,6 +2968,21 @@ def check_prs_delta(
         elif old_b.get("head_sha") != b.get("head_sha"):
             deltas.append(f"BRANCH_UPDATED {bkey}: {old_b.get('head_sha')} -> {b.get('head_sha')}")
 
+    if "agentTrees" in current and "agentTrees" in prev:
+        prev_trees = {t["name"]: t for t in (prev.get("agentTrees") or []) if isinstance(t, dict) and t.get("name")}
+        curr_trees = {t["name"]: t for t in (current.get("agentTrees") or []) if isinstance(t, dict) and t.get("name")}
+        for tname, tinfo in curr_trees.items():
+            old_t = prev_trees.get(tname)
+            if old_t is None:
+                deltas.append(f"NEW_WORKTREE {tname} (clean={tinfo.get('clean')})")
+            elif old_t.get("dirty_repos") != tinfo.get("dirty_repos"):
+                deltas.append(
+                    f"WORKTREE_DELTA {tname} dirty_repos: {old_t.get('dirty_repos')} -> {tinfo.get('dirty_repos')}"
+                )
+        for tname in prev_trees:
+            if tname not in curr_trees:
+                deltas.append(f"WORKTREE_REMOVED {tname}")
+
     target_file.write_text(json.dumps(current, indent=2) + "\n", encoding="utf-8")
     try:
         import os as _os
@@ -2695,6 +2997,122 @@ def check_prs_delta(
         "stateFile": str(target_file),
         "openPrCount": current.get("openPrCount", 0),
         "pendingBranchCount": current.get("pendingBranchCount", 0),
+        "agentTreeCount": current.get("agentTreeCount", 0),
+    }
+
+
+def build_pr_proposals(
+    *,
+    branch_filter: Optional[str] = None,
+    forks_dir: Optional[Path] = None,
+) -> list[dict[str, Any]]:
+    """Build structured Why / What For / How PR proposals for all prepared contribution branches (`T593` AC4)."""
+    fdir = forks_dir or resolve_forks_dir()
+    items: list[dict[str, Any]] = []
+    for key, prop in CONTRIBUTION_PROPOSALS.items():
+        upstream_repo, bname = key.split(":", 1)
+        if branch_filter and branch_filter not in (bname, key, upstream_repo):
+            continue
+        fork_name = next((k for k, v in FORK_UPSTREAM_MAP.items() if v == upstream_repo), upstream_repo.split("/")[-1])
+        default_branch = "v8" if upstream_repo.endswith("/graphify") else ("master" if upstream_repo.endswith("/virtual-fido") else "main")
+        head_sha = "-"
+        if fdir and (fdir / fork_name / ".git").exists():
+            sha_cp = run_cmd(
+                ["git", "rev-parse", "--short=10", f"refs/heads/{bname}"],
+                check=False,
+                cwd=fdir / fork_name,
+            )
+            if sha_cp.returncode == 0 and sha_cp.stdout.strip():
+                head_sha = sha_cp.stdout.strip()
+        body = format_pr_proposal_body(prop)
+        compare_url = f"https://github.com/{upstream_repo}/compare/{default_branch}...{CANONICAL_FORK_ORG}:{bname}?expand=1"
+        gh_cmd = (
+            f"gh pr create --repo {upstream_repo} --base {default_branch} "
+            f"--head {CANONICAL_FORK_ORG}:{bname} --title {json.dumps(prop['title'])}"
+        )
+        items.append(
+            {
+                "key": key,
+                "fork": fork_name,
+                "upstream_repo": upstream_repo,
+                "base_branch": default_branch,
+                "branch": bname,
+                "head_sha": head_sha,
+                "ticket": prop["ticket"],
+                "title": prop["title"],
+                "body": body,
+                "compare_url": compare_url,
+                "gh_command_preview": gh_cmd,
+            }
+        )
+    return items
+
+
+def submit_prepared_prs(
+    *,
+    branch_filter: Optional[str] = None,
+    forks_dir: Optional[Path] = None,
+    dry_run: bool = True,
+) -> dict[str, Any]:
+    """Submit (or dry-run preview) prepared upstream PRs from `webomage/<repo>` (`T593` AC4, `T435`).
+
+    Live execution (`dry_run=False`) requires human confirmation via `just prs-submit` (`_confirm "prs-submit"`,
+    `W0M_PRS_SUBMIT_CONFIRMED=1`) and refuses agent environment markers outright.
+    """
+    import os as _os
+
+    proposals = build_pr_proposals(branch_filter=branch_filter, forks_dir=forks_dir)
+    if not dry_run:
+        if _os.environ.get("CLAUDECODE") or _os.environ.get("AI_AGENT") or _os.environ.get("W0M_PRS_SUBMIT_CONFIRMED") != "1":
+            return {
+                "ok": False,
+                "dryRun": False,
+                "error": (
+                    "REFUSED-AGENT: External PR creation requires human Touch ID confirmation (`just prs-submit` "
+                    "from a human terminal, T435). Use `--dry-run` to preview."
+                ),
+                "count": len(proposals),
+                "proposals": proposals,
+            }
+
+    results: list[dict[str, Any]] = []
+    for item in proposals:
+        if dry_run:
+            results.append({**item, "status": "DRY_RUN_READY"})
+            continue
+        cp = run_cmd(
+            [
+                "gh",
+                "pr",
+                "create",
+                "--repo",
+                item["upstream_repo"],
+                "--base",
+                item["base_branch"],
+                "--head",
+                f"{CANONICAL_FORK_ORG}:{item['branch']}",
+                "--title",
+                item["title"],
+                "--body",
+                item["body"],
+            ],
+            check=False,
+            timeout=30.0,
+        )
+        results.append(
+            {
+                **item,
+                "status": "SUBMITTED" if cp.returncode == 0 else "FAILED",
+                "url": cp.stdout.strip() if cp.returncode == 0 else "",
+                "stderr": cp.stderr.strip() if cp.returncode != 0 else "",
+            }
+        )
+
+    return {
+        "ok": all(r["status"] in ("DRY_RUN_READY", "SUBMITTED") for r in results),
+        "dryRun": dry_run,
+        "count": len(results),
+        "results": results,
     }
 
 
@@ -2709,12 +3127,13 @@ def sync_prs_to_orca(
     dry_run: bool = False,
     discovered_override: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
-    """Synchronize discovered PRs and PR-ready fork branches into Orca References, Orchestration Task, and Automation (`T599` AC3)."""
+    """Synchronize discovered PRs, PR-ready fork branches, and active worktrees into Orca References, Orchestration Task, and Automation (`T599` AC3, `T593` AC4)."""
     discovered = discovered_override or discover_new_prs_and_branches(
         author=author, preset=preset, forks_dir=forks_dir, fetch=False
     )
     open_prs = discovered.get("openPrs") or []
     pending_branches = discovered.get("pendingBranches") or []
+    agent_trees = discovered.get("agentTrees") or []
     pr_urls = [str(p["url"]) for p in open_prs if p.get("url")]
 
     orca_bin = "/Applications/Orca.app/Contents/Resources/bin/orca"
@@ -2725,8 +3144,8 @@ def sync_prs_to_orca(
     precheck_cmd = f"python3 {workspace_root / 'scripts' / 'w0m_prs.py'} check-delta --preset {preset}"
     automation_name = "w0m Upstream PRs & Fork Branches Monitor"
     task_title = (
-        f"Monitor {len(open_prs)} open upstream PRs & {len(pending_branches)} pending w0m-pr fork branches "
-        f"(laya-mlx, headroom, orca, serena)"
+        f"Monitor {len(open_prs)} open upstream PRs, {len(pending_branches)} PR-ready w0m-pr branches "
+        f"& {len(agent_trees)} active agent worktrees"
     )
 
     if dry_run:
@@ -2801,7 +3220,7 @@ def sync_prs_to_orca(
                 break
         if not task_id:
             branch_summary = ", ".join(
-                f"{b['upstream_repo']}:{b['branch']} (+{b['ahead_upstream']})" for b in pending_branches[:5]
+                f"{b['upstream_repo']}:{b['branch']} (+{b['ahead_upstream']})" for b in pending_branches[:9]
             )
             spec_body = (
                 f"Open PRs ({len(open_prs)}): {', '.join(p['repo'] + '#' + str(p['number']) for p in open_prs)}. "
@@ -2845,8 +3264,8 @@ def sync_prs_to_orca(
             pass
 
     prompt_text = (
-        "Run `just prs-discover` and `just prs-open`. Summarize any PR review/CI/mergeability deltas "
-        "or newly discovered PR-ready branches in w0m-pr/* and update the Orca task."
+        "Run `just prs-discover`, `just prs-open`, and `just agent-tree-list`. Summarize any PR review/CI/mergeability "
+        "deltas, newly prepared PR-ready branches in w0m-pr/*, or worktree changes and update the Orca task."
     )
     if not automation_id:
         acreate_cp = run_cmd(
@@ -2893,6 +3312,7 @@ def sync_prs_to_orca(
         "precheck": precheck_cmd,
         "openPrCount": len(open_prs),
         "pendingBranchCount": len(pending_branches),
+        "agentTreeCount": len(agent_trees),
         "discovered": discovered,
     }
 
@@ -2910,7 +3330,8 @@ def cmd_discover(args: argparse.Namespace) -> None:
         return
 
     print(
-        f"=== Active Upstream PRs ({res['openPrCount']}) & Pending PR-Ready Fork Branches ({res['pendingBranchCount']}) ==="
+        f"=== Active Upstream PRs ({res['openPrCount']}), Pending PR-Ready Fork Branches ({res['pendingBranchCount']}) "
+        f"& Active Agent Worktrees ({res.get('agentTreeCount', 0)}) ==="
     )
     for p in res["openPrs"]:
         print(
@@ -2920,11 +3341,60 @@ def cmd_discover(args: argparse.Namespace) -> None:
     if res["pendingBranches"]:
         print("\n--- Unsubmitted / New PR-Ready Fork Branches in w0m-pr/* ---")
         for b in res["pendingBranches"]:
+            t_tag = f" [{b['ticket']}]" if b.get("ticket") else ""
             print(
-                f"  [NEW BRANCH] {b['upstream_repo']} <- {CANONICAL_FORK_ORG}:{b['branch']}@{b['head_sha']} "
+                f"  [NEW BRANCH]{t_tag} {b['upstream_repo']} <- {CANONICAL_FORK_ORG}:{b['branch']}@{b['head_sha']} "
                 f"(+{b['ahead_upstream']}/-{b['behind_upstream']} vs upstream) — {b['subject']}\n"
                 f"               Compare/Open PR: {b['compare_url']}"
             )
+    if res.get("agentTrees"):
+        print("\n--- Monitored Agent Worktrees (~/.w0m/work/*/w0m) ---")
+        for t in res["agentTrees"]:
+            st = "CLEAN" if t["clean"] else f"DIRTY ({', '.join(t['dirty_repos'])})"
+            print(f"  [WORKTREE] {t['name']} ({t['agent_id']}) | {st} | {t['path']}")
+
+
+def cmd_proposals(args: argparse.Namespace) -> None:
+    forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
+    items = build_pr_proposals(branch_filter=getattr(args, "branch", None), forks_dir=forks_dir)
+    if args.json:
+        print(json.dumps({"count": len(items), "proposals": items}, indent=2))
+        return
+    print(f"=== Prepared Upstream Contribution PR Proposals ({len(items)}) ===")
+    for idx, p in enumerate(items, 1):
+        print(
+            f"\n[{idx}/{len(items)}] {p['upstream_repo']} <- {CANONICAL_FORK_ORG}:{p['branch']}@{p['head_sha']} ({p['ticket']})\n"
+            f"  Title:   {p['title']}\n"
+            f"  Compare: {p['compare_url']}\n"
+            f"  Command: {p['gh_command_preview']}"
+        )
+
+
+def cmd_submit(args: argparse.Namespace) -> None:
+    forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
+    res = submit_prepared_prs(
+        branch_filter=getattr(args, "branch", None),
+        forks_dir=forks_dir,
+        dry_run=bool(args.dry_run),
+    )
+    if args.json:
+        print(json.dumps(res, indent=2))
+        if not res.get("ok"):
+            sys.exit(2)
+        return
+    if not res.get("ok") and res.get("error"):
+        print(res["error"], file=sys.stderr)
+        sys.exit(2)
+    mode = "DRY-RUN" if res["dryRun"] else "LIVE SUBMIT"
+    print(f"=== Upstream PR Submission ({mode}, count={res['count']}) ===")
+    for r in res["results"]:
+        print(
+            f"  [{r['status']}] {r['upstream_repo']} <- {CANONICAL_FORK_ORG}:{r['branch']}@{r['head_sha']} — {r['title']}"
+        )
+        if r.get("url"):
+            print(f"    URL: {r['url']}")
+        elif res["dryRun"]:
+            print(f"    Compare: {r['compare_url']}")
 
 
 def cmd_check_delta(args: argparse.Namespace) -> None:
@@ -2938,7 +3408,8 @@ def cmd_check_delta(args: argparse.Namespace) -> None:
             print(f"DELTA DETECTED ({res['deltaCount']}): " + "; ".join(res["deltas"]))
         else:
             print(
-                f"NO DELTA (openPrs={res['openPrCount']}, pendingBranches={res['pendingBranchCount']})"
+                f"NO DELTA (openPrs={res['openPrCount']}, pendingBranches={res['pendingBranchCount']}, "
+                f"agentTrees={res.get('agentTreeCount', 0)})"
             )
     sys.exit(0 if res["changed"] else 1)
 
@@ -2961,12 +3432,13 @@ def cmd_orca_sync(args: argparse.Namespace) -> None:
         f"[ORCA PR SYNC] referencesAttached={res.get('referencesAttached')} "
         f"runId={res.get('orchestrationRunId')} taskId={res.get('orchestrationTaskId')} "
         f"automationId={res.get('automationId')} "
-        f"(openPrs={res.get('openPrCount')}, pendingBranches={res.get('pendingBranchCount')})"
+        f"(openPrs={res.get('openPrCount')}, pendingBranches={res.get('pendingBranchCount')}, "
+        f"agentTrees={res.get('agentTreeCount', 0)})"
     )
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="w0m-prs: GitHub PR tool for w0m estate (T345/T369/T377/T599)")
+    parser = argparse.ArgumentParser(description="w0m-prs: GitHub PR tool for w0m estate (T345/T369/T377/T599/T593)")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Search
@@ -3122,6 +3594,25 @@ def main() -> None:
     p_orca.add_argument("--dry-run", action="store_true", help="Preview Orca sync actions without mutating")
     p_orca.add_argument("--json", action="store_true", help="Output structured JSON")
     p_orca.set_defaults(func=cmd_orca_sync)
+
+    # Proposals (T593 AC4 — structured Why/What For/How PR proposals for prepared branches)
+    p_props = subparsers.add_parser(
+        "proposals", help="List structured Why/What For/How PR proposals for prepared w0m-pr branches"
+    )
+    p_props.add_argument("--branch", type=str, default=None, help="Filter by branch or repo name")
+    p_props.add_argument("--dir", type=str, help="Path to w0m-pr directory")
+    p_props.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_props.set_defaults(func=cmd_proposals)
+
+    # Submit (T593 AC4 — owner-confirmed PR submission or --dry-run preview)
+    p_submit = subparsers.add_parser(
+        "submit", help="Submit prepared w0m-pr upstream PRs (requires human confirmation or --dry-run)"
+    )
+    p_submit.add_argument("--branch", type=str, default=None, help="Specific branch or repo to submit")
+    p_submit.add_argument("--dir", type=str, help="Path to w0m-pr directory")
+    p_submit.add_argument("--dry-run", action="store_true", help="Preview gh pr create commands without submitting")
+    p_submit.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_submit.set_defaults(func=cmd_submit)
 
     args = parser.parse_args()
     args.func(args)

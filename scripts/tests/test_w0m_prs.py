@@ -336,6 +336,32 @@ def main() -> int:
         and "check-delta" in orca_sync_dry["precheck"],
     )
 
+    # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593)
+    proposals_list = w0m_prs.build_pr_proposals()
+    check("build_pr_proposals returns 9 contribution proposals", len(proposals_list) == 9)
+    check(
+        "build_pr_proposals formats structured Why / What For / How markdown body",
+        all(
+            "## Why (Rationale & Problem)" in p["body"]
+            and "## What For (Use Cases & Value)" in p["body"]
+            and "## How (Implementation, Invariants & Verification)" in p["body"]
+            for p in proposals_list
+        ),
+    )
+    submit_dry = w0m_prs.submit_prepared_prs(dry_run=True)
+    check(
+        "submit_prepared_prs dry-run marks matched branch DRY_RUN_READY",
+        submit_dry["ok"] is True
+        and submit_dry["dryRun"] is True
+        and any(r["key"] == "mizorewww/laya-mlx:fix/native-serve-tests-and-torchless-calibration" and r["status"] == "DRY_RUN_READY" for r in submit_dry["results"]),
+    )
+    with patch.dict("os.environ", {"CLAUDECODE": "1"}, clear=False):
+        submit_agent_refused = w0m_prs.submit_prepared_prs(dry_run=False)
+        check(
+            "submit_prepared_prs live mode refuses agent sessions (T435 gate)",
+            submit_agent_refused["ok"] is False and "REFUSED-AGENT" in str(submit_agent_refused.get("error", "")),
+        )
+
     # 9. Skill check
     skill_md = ROOT / "w0m-skills/skills/w0m-prs/SKILL.md"
     check("w0m-prs SKILL.md exists in w0m-skills", skill_md.is_file())
