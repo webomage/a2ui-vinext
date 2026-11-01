@@ -26,6 +26,7 @@ import json
 import os
 import platform
 import re
+import shutil
 import signal
 import socket
 import subprocess
@@ -865,15 +866,139 @@ def check_single_writer_guard(
     }
 
 
+def _resolve_worktree_path(worktree_arg: str, snapshot: dict[str, Any]) -> str:
+    """Resolve a tree short name (`agy-orca`), `root`/`beta`, or path into an absolute filesystem path."""
+    raw = worktree_arg.strip()
+    if raw.startswith("path:"):
+        raw = raw[5:]
+    # Check agentTrees by name first (e.g. `agy-orca` or `agent/agy-orca`)
+    short_name = raw.removeprefix("agent/")
+    for tree in snapshot.get("agentTrees") or []:
+        if tree.get("name") == short_name and isinstance(tree.get("path"), str):
+            return str(tree["path"])
+    # Check `root` / `main` / `beta`
+    if raw in ("root", "main", "beta"):
+        for wt in snapshot.get("worktrees") or []:
+            if wt.get("isMainWorktree") and isinstance(wt.get("path"), str) and wt["path"].endswith("/w0m"):
+                return str(wt["path"])
+    # Check registered Orca worktrees by displayName or branch
+    for wt in snapshot.get("worktrees") or []:
+        if (
+            wt.get("displayName") == raw
+            or wt.get("branch") in (raw, f"refs/heads/{raw}", f"refs/heads/agent/{short_name}")
+            or wt.get("id") == raw
+        ) and isinstance(wt.get("path"), str):
+            return str(wt["path"])
+    return str(Path(raw).expanduser())
+
+
 def _resolve_worktree_selector(worktree_arg: str, snapshot: dict[str, Any]) -> str:
-    """Resolve a path or selector into an Orca worktreeId or path selector."""
+    """Resolve a tree short name (`agy-orca`), `root`/`beta`, path, or selector into an Orca worktreeId or path."""
     if worktree_arg in ("active", "current") or worktree_arg.startswith(("id:", "path:", "name:", "branch:")):
         return worktree_arg
-    norm_path = str(Path(worktree_arg).expanduser())
+    norm_path = _resolve_worktree_path(worktree_arg, snapshot)
     for wt in snapshot.get("worktrees") or []:
         if wt.get("path") == norm_path and isinstance(wt.get("id"), str):
             return str(wt["id"])
     return norm_path
+
+
+def spawn_session(
+    worktree_target: str,
+    *,
+    host: str = "local",
+    ticket: str | None = None,
+    track: str | None = None,
+    title: str | None = None,
+    command: str | None = None,
+    focus: bool = True,
+    dry_run: bool = False,
+    snapshot_override: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Spawn a new Orca terminal/agent session targeted at `worktree_target` (`agy-orca`, `root`, or path)."""
+    snapshot = snapshot_override or (
+        collect_local_snapshot(host_label="local")
+        if host == "local"
+        else collect_remote_snapshot(host)
+    )
+    if not snapshot.get("reachable"):
+        return {
+            "ok": False,
+            "host": host,
+            "worktree": worktree_target,
+            "error": f"Host {host} is unreachable: {snapshot.get('sshError') or 'unknown error'}",
+        }
+
+    wt_path = _resolve_worktree_path(worktree_target, snapshot)
+    wt_selector = _resolve_worktree_selector(worktree_target, snapshot)
+    short_handle = Path(wt_path).parent.name if "/.w0m/work/" in wt_path else Path(wt_path).name
+
+    parts: list[str] = []
+    if track and track.strip():
+        parts.append(track.strip())
+    if ticket and ticket.strip():
+        parts.append(ticket.strip().upper())
+    parts.append((title or f"Session {short_handle}").strip())
+    formatted_title = f"{' · '.join(parts)} [{short_handle}]"
+
+    if dry_run:
+        return {
+            "ok": True,
+            "dryRun": True,
+            "host": host,
+            "worktree": wt_selector,
+            "worktreePath": wt_path,
+            "title": formatted_title,
+            "command": command,
+        }
+
+    if host == "local":
+        cli_bin = shutil.which("orca") or "/Applications/Orca.app/Contents/Resources/bin/orca"
+        cmd_list = [cli_bin, "terminal", "create", "--worktree", f"path:{wt_path}", "--title", formatted_title]
+        if command:
+            cmd_list.extend(["--command", command])
+        if focus:
+            cmd_list.append("--focus")
+        cmd_list.append("--json")
+        proc_res = subprocess.run(cmd_list, capture_output=True, text=True, timeout=10.0)
+        if proc_res.returncode == 0:
+            try:
+                create_res = json.loads(proc_res.stdout)
+            except ValueError:
+                create_res = {"ok": True, "result": {"raw": proc_res.stdout.strip()}}
+        else:
+            create_res = {"ok": False, "error": (proc_res.stderr or proc_res.stdout).strip()}
+    else:
+        cmd_flag = f" --command '{command}'" if command else ""
+        focus_flag = " --focus" if focus else ""
+        remote_cmd = (
+            f"~/.local/bin/orca terminal create --worktree path:{wt_path} "
+            f"--title '{formatted_title}'{cmd_flag}{focus_flag} --json"
+        )
+        proc_res = subprocess.run(
+            ["ssh", "-o", "BatchMode=yes", host, remote_cmd],
+            capture_output=True,
+            text=True,
+            timeout=10.0,
+        )
+        if proc_res.returncode == 0:
+            try:
+                create_res = json.loads(proc_res.stdout)
+            except ValueError:
+                create_res = {"ok": True, "result": {"raw": proc_res.stdout.strip()}}
+        else:
+            create_res = {"ok": False, "error": (proc_res.stderr or proc_res.stdout).strip()}
+
+    return {
+        "ok": bool(create_res.get("ok")),
+        "host": host,
+        "worktree": wt_selector,
+        "worktreePath": wt_path,
+        "title": formatted_title,
+        "command": command,
+        "terminal": create_res.get("result"),
+        "error": create_res.get("error") if not create_res.get("ok") else None,
+    }
 
 
 def attach_session(
@@ -1124,6 +1249,26 @@ def format_hosts_table(snapshots: list[dict[str, Any]], sessions_by_host: dict[s
             f"| `{host}` | `{hname}` | `{reachable}` | `{rt_str}` | `{terms_count}` | `{live_count}` | {ssh_desc} |"
         )
     return "\n".join(lines)
+
+
+def format_worktrees_table(snapshots: list[dict[str, Any]]) -> str:
+    """Format Orca worktree targets and active agent trees across hosts."""
+    lines = [
+        "| Host | Display Name | Branch | Status | Main / Child | Path |",
+        "|---|---|---|---|---|---|",
+    ]
+    count = 0
+    for snap in snapshots:
+        host = str(snap.get("host") or "local")
+        for wt in snap.get("worktrees") or []:
+            count += 1
+            dname = str(wt.get("displayName") or "-")
+            branch = str(wt.get("branch") or "-").replace("refs/heads/", "")
+            status = str(wt.get("workspaceStatus") or "-")
+            lineage = "main" if wt.get("isMainWorktree") else ("child" if wt.get("parentWorktreeId") else "external")
+            path = str(wt.get("path") or "-")
+            lines.append(f"| `{host}` | `{dname}` | `{branch}` | `{status}` | `{lineage}` | `{path}` |")
+    return "\n".join(lines) if count > 0 else "No Orca worktrees discovered."
 
 
 def _select_hosts(host_arg: str) -> list[str]:
@@ -1524,7 +1669,7 @@ def main(argv: list[str] | None = None) -> int:
     # attach
     p_attach = sub.add_parser("attach", help="Safely attach or consolidate a session into a target worktree")
     p_attach.add_argument("conversation_id", help="Conversation UUID to attach")
-    p_attach.add_argument("--worktree", required=True, help="Target worktree path or selector")
+    p_attach.add_argument("--worktree", required=True, help="Target worktree tree name (`agy-orca`), `root`, or path")
     p_attach.add_argument("--host", default="local", help="Target host (local or linux-host)")
     p_attach.add_argument(
         "--rebind-idle",
@@ -1533,6 +1678,23 @@ def main(argv: list[str] | None = None) -> int:
     )
     p_attach.add_argument("--dry-run", action="store_true", help="Verify single-writer guard without spawning")
     p_attach.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+
+    # spawn
+    p_spawn = sub.add_parser("spawn", help="Spawn a new Orca terminal/agent session directly inside a target worktree")
+    p_spawn.add_argument("--worktree", required=True, help="Target worktree tree name (`agy-orca`), `root`, or path")
+    p_spawn.add_argument("--host", default="local", help="Target host (local or linux-host)")
+    p_spawn.add_argument("--ticket", default=None, help="Optional ticket ID (T##) for session title")
+    p_spawn.add_argument("--track", default=None, help="Optional Quest Track label (e.g. 'Track C')")
+    p_spawn.add_argument("--title", default=None, help="Optional short session title")
+    p_spawn.add_argument("--command", default=None, help="Optional shell/agent command to execute in the terminal")
+    p_spawn.add_argument("--no-focus", action="store_true", help="Do not focus the newly created terminal tab")
+    p_spawn.add_argument("--dry-run", action="store_true", help="Resolve worktree target and title without spawning")
+    p_spawn.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+
+    # worktrees
+    p_wts = sub.add_parser("worktrees", help="List selectable Orca worktree targets and agent trees across hosts")
+    p_wts.add_argument("--host", default="all", help="Host selector: all, local, linux-host (default: all)")
+    p_wts.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
 
     # hosts
     p_hosts = sub.add_parser("hosts", help="Inspect and ensure multi-host Orca runtime & SSH connectivity")
@@ -1628,6 +1790,30 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"[REFUSED] {res.get('error')}", file=sys.stderr)
         return 0 if res.get("ok") else 1
 
+    if cmd == "spawn":
+        res = spawn_session(
+            args.worktree,
+            host=args.host,
+            ticket=args.ticket,
+            track=args.track,
+            title=args.title,
+            command=args.command,
+            focus=not args.no_focus,
+            dry_run=args.dry_run,
+        )
+        if args.json:
+            print(json.dumps(res, indent=2))
+        else:
+            if res.get("ok"):
+                mode = "DRY-RUN" if res.get("dryRun") else "SPAWNED"
+                print(
+                    f"[{mode}] host={res['host']} worktree={res['worktreePath']} "
+                    f"title=\"{res['title']}\""
+                )
+            else:
+                print(f"[ERR] {res.get('error')}", file=sys.stderr)
+        return 0 if res.get("ok") else 1
+
     hosts = _select_hosts(args.host)
     if cmd == "hosts" and getattr(args, "ensure_ssh", False) and "local" in hosts:
         ensure_ssh_target("linux-host", connect=True)
@@ -1649,6 +1835,27 @@ def main(argv: list[str] | None = None) -> int:
         hs = correlate_host_sessions(snap, include_dormant=include_dormant, dormant_limit=dormant_limit)
         sessions_by_host[h] = hs
         all_sessions.extend(hs)
+
+    if cmd == "worktrees":
+        if args.json:
+            print(
+                json.dumps(
+                    {
+                        "hosts": [
+                            {
+                                "host": s.get("host"),
+                                "worktrees": s.get("worktrees") or [],
+                                "agentTrees": s.get("agentTrees") or [],
+                            }
+                            for s in snapshots
+                        ]
+                    },
+                    indent=2,
+                )
+            )
+        else:
+            print(format_worktrees_table(snapshots))
+        return 0
 
     if cmd == "hosts":
         if args.json:

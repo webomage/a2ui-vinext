@@ -908,6 +908,283 @@ def handle_automation(argv: list[str]) -> int:
     return 2
 
 
+# ── 6. `w0m gh` (Orca GitHub Tasks Auth, Scopes & Worktree Visibility Sync) ──
+
+REQUIRED_GH_SCOPES: tuple[str, ...] = ("repo", "read:org", "project")
+
+
+def _parse_gh_auth_status(raw: str) -> dict[str, Any]:
+    user = ""
+    active = False
+    scopes: list[str] = []
+    for line in raw.splitlines():
+        m_user = re.search(r"Logged in to \S+ account (\S+)", line)
+        if m_user and not user:
+            user = m_user.group(1)
+        m_act = re.search(r"Active account:\s*(true|false)", line, re.I)
+        if m_act:
+            active = m_act.group(1).lower() == "true"
+        m_sc = re.search(r"Token scopes:\s*(.+)$", line, re.I)
+        if m_sc:
+            scopes = [s.strip().strip("'\"") for s in m_sc.group(1).split(",") if s.strip()]
+    missing = [s for s in REQUIRED_GH_SCOPES if s not in scopes]
+    return {
+        "authenticated": bool(user),
+        "user": user or None,
+        "active": active,
+        "scopes": scopes,
+        "missing_scopes": missing,
+        "issues_ready": "repo" in scopes,
+        "projects_v2_ready": "project" in scopes and "read:org" in scopes,
+    }
+
+
+def inspect_gh_host_status(host: str = "local") -> dict[str, Any]:
+    if host == "local":
+        gh_bin = shutil.which("gh")
+        if not gh_bin:
+            return {"host": "local", "gh_available": False, "authenticated": False, "missing_scopes": list(REQUIRED_GH_SCOPES)}
+        res = subprocess.run([gh_bin, "auth", "status"], capture_output=True, text=True, timeout=6.0)
+        parsed = _parse_gh_auth_status(f"{res.stdout}\n{res.stderr}")
+        parsed["host"] = "local"
+        parsed["gh_available"] = True
+        parsed["gh_path"] = gh_bin
+        return parsed
+
+    remote_cmd = (
+        "if [ ! -x ~/.local/bin/gh ] && [ -x /home/linuxbrew/.linuxbrew/bin/gh ]; then "
+        "mkdir -p ~/.local/bin && ln -sf /home/linuxbrew/.linuxbrew/bin/gh ~/.local/bin/gh; fi; "
+        "GH_BIN=$(command -v gh || echo ~/.local/bin/gh); "
+        "if [ -x \"$GH_BIN\" ]; then echo \"GH_PATH=$GH_BIN\"; \"$GH_BIN\" auth status 2>&1 || true; "
+        "else echo \"GH_MISSING\"; fi"
+    )
+    try:
+        res = subprocess.run(
+            ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5", host, remote_cmd],
+            capture_output=True,
+            text=True,
+            timeout=8.0,
+        )
+        out = f"{res.stdout}\n{res.stderr}"
+        if "GH_MISSING" in out or res.returncode != 0 and "Logged in to" not in out:
+            return {"host": host, "gh_available": False, "authenticated": False, "missing_scopes": list(REQUIRED_GH_SCOPES)}
+        gh_path = ""
+        for line in out.splitlines():
+            if line.startswith("GH_PATH="):
+                gh_path = line.split("=", 1)[1].strip()
+        parsed = _parse_gh_auth_status(out)
+        parsed["host"] = host
+        parsed["gh_available"] = True
+        parsed["gh_path"] = gh_path
+        return parsed
+    except (OSError, subprocess.SubprocessError) as exc:
+        return {"host": host, "gh_available": False, "authenticated": False, "error": str(exc)[:200], "missing_scopes": list(REQUIRED_GH_SCOPES)}
+
+
+ORCA_SYNC_SNIPPET = r"""
+import json, os, socket, sys, uuid
+from pathlib import Path
+
+user = sys.argv[1] if len(sys.argv) > 1 else "casualuser"
+home = Path.home()
+if sys.platform.startswith("darwin"):
+    orca_dir = home / "Library" / "Application Support" / "orca"
+else:
+    orca_dir = Path(os.environ.get("XDG_CONFIG_HOME") or (home / ".config")) / "orca"
+
+meta_path = orca_dir / "orca-runtime.json"
+if not meta_path.is_file():
+    print(json.dumps({"ok": False, "error": f"Missing {meta_path}"}))
+    sys.exit(0)
+
+meta = json.loads(meta_path.read_text(encoding="utf-8"))
+endpoint = next((t["endpoint"] for t in (meta.get("transports") or []) if t.get("kind") == "unix"), None)
+
+def rpc(method, params=None):
+    req_id = str(uuid.uuid4())
+    req = {"id": req_id, "authToken": meta.get("authToken"), "method": method}
+    if params is not None:
+        req["params"] = params
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
+        s.settimeout(5.0)
+        s.connect(endpoint)
+        s.sendall((json.dumps(req) + "\n").encode("utf-8"))
+        buf = b""
+        while True:
+            chunk = s.recv(65536)
+            if not chunk:
+                break
+            buf += chunk
+            while b"\n" in buf:
+                line, buf = buf.split(b"\n", 1)
+                if not line.strip():
+                    continue
+                frame = json.loads(line.decode("utf-8", errors="replace"))
+                if frame.get("_keepalive"):
+                    continue
+                if frame.get("id") == req_id:
+                    return frame
+    return {"ok": False}
+
+repos_res = rpc("repo.list", {})
+repos = (repos_res.get("result") or {}).get("repos", []) if repos_res.get("ok") else []
+updated = []
+for r in repos:
+    if r.get("kind") != "git":
+        continue
+    updates = {
+        "ghAccount": {"host": "github.com", "user": user},
+        "issueSourcePreference": "origin",
+    }
+    if r.get("displayName") == "w0m":
+        updates.update({
+            "worktreeBasePath": f"{home}/.w0m/work",
+            "externalWorktreeVisibility": "hide",
+            "customWorktreeVisibilitySources": [
+                {"id": "w0m-work", "rootPath": f"{home}/.w0m/work"},
+                {"id": "w0m-releases", "rootPath": f"{home}/.w0m/releases"},
+            ],
+            "worktreeVisibilitySourcePreferences": {
+                "custom": {
+                    "w0m-work": "show",
+                    "w0m-releases": "hide",
+                }
+            },
+        })
+    u_res = rpc("repo.update", {"repo": r["id"], "updates": updates})
+    updated.append({
+        "id": r["id"],
+        "displayName": r.get("displayName"),
+        "ok": bool(u_res.get("ok")),
+        "ghAccount": (u_res.get("result") or {}).get("repo", {}).get("ghAccount"),
+    })
+print(json.dumps({"ok": True, "updated_repos": updated}))
+"""
+
+
+def sync_orca_gh_and_worktrees(host: str = "local", user: str = "casualuser") -> dict[str, Any]:
+    if host == "local":
+        res = subprocess.run(
+            [sys.executable, "-c", ORCA_SYNC_SNIPPET, user],
+            capture_output=True,
+            text=True,
+            timeout=8.0,
+        )
+        payload: dict[str, Any] = {"host": "local", "ok": False}
+        if res.returncode == 0 and res.stdout.strip():
+            try:
+                payload = {"host": "local", **json.loads(res.stdout.strip().splitlines()[-1])}
+            except ValueError:
+                payload = {"host": "local", "ok": False, "error": res.stdout.strip()[:200]}
+        if AGENT_TREE_SCRIPT.is_file():
+            subprocess.run(
+                [sys.executable, str(AGENT_TREE_SCRIPT), "sync-orca", "--json"],
+                capture_output=True,
+                text=True,
+                timeout=8.0,
+            )
+        return payload
+
+    try:
+        res = subprocess.run(
+            ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5", host, "python3", "-", user],
+            input=ORCA_SYNC_SNIPPET,
+            capture_output=True,
+            text=True,
+            timeout=10.0,
+        )
+        if res.returncode == 0 and res.stdout.strip():
+            return {"host": host, **json.loads(res.stdout.strip().splitlines()[-1])}
+        return {"host": host, "ok": False, "error": (res.stderr or res.stdout).strip()[:200]}
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        return {"host": host, "ok": False, "error": str(exc)[:200]}
+
+
+def handle_gh(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser(
+        prog="w0m gh",
+        description="Inspect & synchronize GitHub CLI (`gh`) auth, scopes, and Orca repo bindings across hosts",
+    )
+    ap.add_argument("subcmd", nargs="?", default="status", help="status | sync-orca")
+    ap.add_argument("rest", nargs=argparse.REMAINDER)
+    ap.add_argument("--host", default="all", help="Target host: all, local, linux-host (default: all)")
+    ap.add_argument("--user", default="casualuser", help="GitHub account login to bind in Orca (default: casualuser)")
+    ap.add_argument("--json", action="store_true", help="Emit JSON output")
+    args = ap.parse_args(argv)
+
+    sub = args.subcmd.lower()
+    is_json = bool(args.json or "--json" in args.rest)
+    hosts = ["local", "linux-host"] if args.host == "all" else [h.strip() for h in args.host.split(",") if h.strip()]
+
+    if sub == "status":
+        rows = [inspect_gh_host_status(h) for h in hosts]
+        if is_json:
+            print(json.dumps({"hosts": rows}, indent=2))
+            return 0
+        print("▶ GitHub CLI (`gh`) & Orca Tasks Auth Status:")
+        for r in rows:
+            avail = "yes" if r.get("gh_available") else "NO"
+            user = r.get("user") or "-"
+            scopes = ", ".join(r.get("scopes") or []) or "-"
+            missing = ", ".join(r.get("missing_scopes") or []) or "none"
+            issues_ok = "READY" if r.get("issues_ready") else "MISSING_SCOPE"
+            proj_ok = "READY" if r.get("projects_v2_ready") else "NEEDS `project` SCOPE"
+            print(
+                f"  • {r['host']:<12} gh={avail:<4} user={user:<12} issues={issues_ok:<6} "
+                f"projects_v2={proj_ok:<21} scopes=[{scopes}] (missing: {missing})"
+            )
+        if any(r.get("missing_scopes") for r in rows):
+            print(
+                "\n  💡 To enable GitHub Projects v2 in Orca Tasks UI, run in your terminal:\n"
+                "     gh auth refresh --hostname github.com -s project,read:org,repo && w0m gh sync-orca"
+            )
+        return 0
+
+    if sub == "sync-orca":
+        status_by_host = {h: inspect_gh_host_status(h) for h in hosts}
+        # If local has `project` scope and linux-host is missing it, propagate token automatically
+        if (
+            "local" in status_by_host
+            and "linux-host" in status_by_host
+            and status_by_host["local"].get("projects_v2_ready")
+            and not status_by_host["linux-host"].get("projects_v2_ready")
+        ):
+            tok_res = subprocess.run(
+                ["gh", "auth", "token", "--hostname", "github.com", "--user", args.user],
+                capture_output=True,
+                text=True,
+                timeout=5.0,
+            )
+            if tok_res.returncode == 0 and tok_res.stdout.strip():
+                subprocess.run(
+                    [
+                        "ssh",
+                        "-o",
+                        "BatchMode=yes",
+                        "linux-host",
+                        "~/.local/bin/gh auth login --hostname github.com --git-protocol ssh --with-token",
+                    ],
+                    input=tok_res.stdout.strip() + "\n",
+                    capture_output=True,
+                    text=True,
+                    timeout=8.0,
+                )
+
+        sync_rows = [sync_orca_gh_and_worktrees(h, user=args.user) for h in hosts]
+        if is_json:
+            print(json.dumps({"hosts": sync_rows}, indent=2))
+            return 0
+        print(f"▶ Synchronized Orca `ghAccount` ({args.user}@github.com) & Worktree Visibility Sources:")
+        for sr in sync_rows:
+            repos = sr.get("updated_repos") or []
+            r_names = ", ".join(f"{r.get('displayName')}({'ok' if r.get('ok') else 'err'})" for r in repos) or "-"
+            print(f"  • {sr['host']:<12} ok={sr.get('ok')} repos=[{r_names}]")
+        return 0
+
+    print(f"[ERR] Unknown `w0m gh` subcommand '{sub}'.", file=sys.stderr)
+    return 2
+
+
 # ── 4. Top-Level Dispatcher ──────────────────────────────────────────────────
 
 
@@ -923,9 +1200,10 @@ Command Groups:
   catalog            Manage Backstage IDP catalog entities (`list [--kind <Kind>]`, `check`, `sync`) (AgDR-0026)
   track, tracks      Manage Agent Quest Tracks & claim tracks with Orca tab naming (`list`, `show`, `claim`) (T333/T597)
   automation         Zero-token shell precheck templates & Orca AutomationService bridge (`templates`, `precheck`) (T171)
+  gh                 GitHub CLI auth & Orca Tasks/Worktree visibility sync (`status`, `sync-orca`)
   agent              Virtual Agent ID, ticket claims & Orca tab naming (`whoami`, `claim`, `rename`, `release`, `tag`, `claims`)
-  tree               Isolated agent worktree sets (`new`, `list`, `land`, `remove`, `prune`)
-  session, sessions  Multi-host Orca agent sessions (`list`, `attach`, `hosts`)
+  tree               Isolated agent worktree sets (`new [--spawn-session]`, `list`, `sync-orca`, `land`, `remove`, `prune`)
+  session, sessions  Multi-host Orca agent sessions (`list`, `spawn`, `attach`, `worktrees`, `hosts`)
   tasks              Query ranked w0m ticket queue (`hot`, `sdlc`, `plan`, `board`, `wip`)
   status             Consolidated portable project status
   preflight          Run estate preflight checks (`--fast`)
@@ -1002,6 +1280,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if group in ("automation", "automations"):
         return handle_automation(rest)
+
+    if group == "gh":
+        return handle_gh(rest)
 
     if group == "agent":
         return subprocess.run([sys.executable, str(AGENT_IDENTITY_SCRIPT), *rest]).returncode

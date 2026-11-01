@@ -18,6 +18,7 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 import w0m_cli  # noqa: E402
+import orca_sessions  # noqa: E402
 
 
 class TestW0mCli(unittest.TestCase):
@@ -176,6 +177,67 @@ class TestW0mCli(unittest.TestCase):
         self.assertIn("prs-review-watch", ids)
         self.assertIn("beta-drift-watch", ids)
         self.assertIn("catalog-drift-watch", ids)
+
+    def test_gh_auth_parsing_and_worktree_session_targeting(self) -> None:
+        raw_status = (
+            "github.com\n"
+            "  ✓ Logged in to github.com account casualuser (keyring)\n"
+            "  - Active account: true\n"
+            "  - Token scopes: 'admin:public_key', 'gist', 'read:org', 'repo'\n"
+        )
+        parsed = w0m_cli._parse_gh_auth_status(raw_status)
+        self.assertTrue(parsed["authenticated"])
+        self.assertEqual(parsed["user"], "casualuser")
+        self.assertTrue(parsed["issues_ready"])
+        self.assertFalse(parsed["projects_v2_ready"])
+        self.assertEqual(parsed["missing_scopes"], ["project"])
+
+        fake_snap = {
+            "reachable": True,
+            "host": "local",
+            "agentTrees": [
+                {
+                    "name": "agy-orca",
+                    "path": "/Users/proto/.w0m/work/agy-orca/w0m",
+                    "agent_id": "agy:agy-orca",
+                }
+            ],
+            "worktrees": [
+                {
+                    "id": "repo-w0m::/Users/proto/Projects/!self/w0m",
+                    "path": "/Users/proto/Projects/!self/w0m",
+                    "isMainWorktree": True,
+                    "displayName": "beta",
+                },
+                {
+                    "id": "repo-w0m::/Users/proto/.w0m/work/agy-orca/w0m",
+                    "path": "/Users/proto/.w0m/work/agy-orca/w0m",
+                    "isMainWorktree": False,
+                    "displayName": "Track C · T597 · agy-orca",
+                },
+            ],
+        }
+        self.assertEqual(
+            orca_sessions._resolve_worktree_path("agy-orca", fake_snap),
+            "/Users/proto/.w0m/work/agy-orca/w0m",
+        )
+        self.assertEqual(
+            orca_sessions._resolve_worktree_path("root", fake_snap),
+            "/Users/proto/Projects/!self/w0m",
+        )
+        spawn_res = orca_sessions.spawn_session(
+            "agy-orca",
+            host="local",
+            ticket="T597",
+            track="Track C",
+            title="Orca Tab DnD",
+            dry_run=True,
+            snapshot_override=fake_snap,
+        )
+        self.assertTrue(spawn_res["ok"])
+        self.assertTrue(spawn_res["dryRun"])
+        self.assertEqual(spawn_res["worktreePath"], "/Users/proto/.w0m/work/agy-orca/w0m")
+        self.assertEqual(spawn_res["title"], "Track C · T597 · Orca Tab DnD [agy-orca]")
 
 
 if __name__ == "__main__":
