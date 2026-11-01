@@ -3080,6 +3080,38 @@ def submit_prepared_prs(
         if dry_run:
             results.append({**item, "status": "DRY_RUN_READY"})
             continue
+        existing_cp = run_cmd(
+            [
+                "gh",
+                "pr",
+                "list",
+                "--repo",
+                item["upstream_repo"],
+                "--head",
+                f"{CANONICAL_FORK_ORG}:{item['branch']}",
+                "--state",
+                "open",
+                "--json",
+                "number,url",
+            ],
+            check=False,
+            timeout=15.0,
+        )
+        if existing_cp.returncode == 0 and existing_cp.stdout.strip():
+            try:
+                existing_items = json.loads(existing_cp.stdout)
+                if isinstance(existing_items, list) and existing_items:
+                    results.append(
+                        {
+                            **item,
+                            "status": "ALREADY_OPEN",
+                            "url": str(existing_items[0].get("url", "")),
+                            "stderr": "",
+                        }
+                    )
+                    continue
+            except ValueError:
+                pass
         cp = run_cmd(
             [
                 "gh",
@@ -3109,7 +3141,7 @@ def submit_prepared_prs(
         )
 
     return {
-        "ok": all(r["status"] in ("DRY_RUN_READY", "SUBMITTED") for r in results),
+        "ok": all(r["status"] in ("DRY_RUN_READY", "SUBMITTED", "ALREADY_OPEN") for r in results),
         "dryRun": dry_run,
         "count": len(results),
         "results": results,
@@ -3610,7 +3642,12 @@ def main() -> None:
     )
     p_submit.add_argument("--branch", type=str, default=None, help="Specific branch or repo to submit")
     p_submit.add_argument("--dir", type=str, help="Path to w0m-pr directory")
-    p_submit.add_argument("--dry-run", action="store_true", help="Preview gh pr create commands without submitting")
+    p_submit.add_argument(
+        "--dry-run",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Preview gh pr create commands without submitting (--no-dry-run for live submission)",
+    )
     p_submit.add_argument("--json", action="store_true", help="Output structured JSON")
     p_submit.set_defaults(func=cmd_submit)
 
