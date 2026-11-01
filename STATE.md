@@ -15,11 +15,14 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T480](/Users/proto/Projects/!self/w0m/.tasks/T480.md) | [#480](https://github.com/webomage/wom7board/issues/480) | P2 | queued | sdlc | 29 | Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel |
-| 2 | [T486](/Users/proto/Projects/!self/w0m/.tasks/T486.md) | [#486](https://github.com/webomage/wom7board/issues/486) | P2 | queued | sdlc | 29 | Bring the stale admin/web Gauge specs in line with the current UI, or retire each with a |
-| 3 | [T523](/Users/proto/Projects/!self/w0m/.tasks/T523.md) | [#523](https://github.com/webomage/wom7board/issues/523) | P2 | queued | sdlc | 29 | The deploy's golden run logs 288 browser errors (503 and 404 on /cdn/news and /cdn/post- |
-| 4 | [T487](/Users/proto/Projects/!self/w0m/.tasks/T487.md) | [#487](https://github.com/webomage/wom7board/issues/487) | P3 | queued | sdlc | 14 | Visual goldens: regenerate on the local stack or pin the render environment |
-| 5 | [T17](/Users/proto/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 1 | [T596](/Users/proto/Projects/!self/w0m/.tasks/T596.md) | ⚠️ not mirrored | P1 | queued | tools | 60 | Multi-host Orca instance and agent session orchestration across macOS and Linux boxes |
+| 2 | [T597](/Users/proto/Projects/!self/w0m/.tasks/T597.md) | ⚠️ not mirrored | P1 | queued | tools | 60 | Orca cross-workspace tab drag-and-drop with confirmation dialog, session rebinding, and  |
+| 3 | [T569](/Users/proto/Projects/!self/w0m/.tasks/T569.md) | [#569](https://github.com/webomage/wom7board/issues/569) | P3 | in-progress | ai | 51 | Apple Silicon omlx live latency benchmark & 4-bit MLX quantization for Laya 📄 live spec |
+| 4 | [T480](/Users/proto/Projects/!self/w0m/.tasks/T480.md) | [#480](https://github.com/webomage/wom7board/issues/480) | P2 | queued | sdlc | 29 | Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel |
+| 5 | [T486](/Users/proto/Projects/!self/w0m/.tasks/T486.md) | [#486](https://github.com/webomage/wom7board/issues/486) | P2 | queued | sdlc | 29 | Bring the stale admin/web Gauge specs in line with the current UI, or retire each with a |
+| 6 | [T523](/Users/proto/Projects/!self/w0m/.tasks/T523.md) | [#523](https://github.com/webomage/wom7board/issues/523) | P2 | queued | sdlc | 29 | The deploy's golden run logs 288 browser errors (503 and 404 on /cdn/news and /cdn/post- |
+| 7 | [T487](/Users/proto/Projects/!self/w0m/.tasks/T487.md) | [#487](https://github.com/webomage/wom7board/issues/487) | P3 | queued | sdlc | 14 | Visual goldens: regenerate on the local stack or pin the render environment |
+| 8 | [T17](/Users/proto/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -27,19 +30,22 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 22 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **22** are
+> ⚠️ **0 of 24 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **24** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T17](/Users/proto/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/Users/proto/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
-| 2 | [T480](/Users/proto/Projects/!self/w0m/.tasks/T480.md) | [#480](https://github.com/webomage/wom7board/issues/480) | P2 | queued | sdlc | 0/8 | `░░░░░░░░░░` 0% | — | Gauge e2e: fail fast on dead waits and known-bad states, the |
-| 3 | [T486](/Users/proto/Projects/!self/w0m/.tasks/T486.md) | [#486](https://github.com/webomage/wom7board/issues/486) | P2 | queued | sdlc | 0/5 | `░░░░░░░░░░` 0% | — | Bring the stale admin/web Gauge specs in line with the curre |
-| 4 | [T523](/Users/proto/Projects/!self/w0m/.tasks/T523.md) | [#523](https://github.com/webomage/wom7board/issues/523) | P2 | queued | sdlc | 0/5 | `░░░░░░░░░░` 0% | — | The deploy's golden run logs 288 browser errors (503 and 404 |
-| 5 | [T487](/Users/proto/Projects/!self/w0m/.tasks/T487.md) | [#487](https://github.com/webomage/wom7board/issues/487) | P3 | queued | sdlc | 0/4 | `░░░░░░░░░░` 0% | — | Visual goldens: regenerate on the local stack or pin the ren |
+| 1 | [T569](/Users/proto/Projects/!self/w0m/.tasks/T569.md) | [#569](https://github.com/webomage/wom7board/issues/569) | P3 | in-progress | ai | 3/4 | `████████░░` 75% | — | Apple Silicon omlx live latency benchmark & 4-bit MLX quanti |
+| 2 | [T596](/Users/proto/Projects/!self/w0m/.tasks/T596.md) | ⚠️ not mirrored | P1 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | Multi-host Orca instance and agent session orchestration acr |
+| 3 | [T597](/Users/proto/Projects/!self/w0m/.tasks/T597.md) | ⚠️ not mirrored | P1 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | Orca cross-workspace tab drag-and-drop with confirmation dia |
+| 4 | [T17](/Users/proto/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/Users/proto/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 5 | [T480](/Users/proto/Projects/!self/w0m/.tasks/T480.md) | [#480](https://github.com/webomage/wom7board/issues/480) | P2 | queued | sdlc | 0/8 | `░░░░░░░░░░` 0% | — | Gauge e2e: fail fast on dead waits and known-bad states, the |
+| 6 | [T486](/Users/proto/Projects/!self/w0m/.tasks/T486.md) | [#486](https://github.com/webomage/wom7board/issues/486) | P2 | queued | sdlc | 0/5 | `░░░░░░░░░░` 0% | — | Bring the stale admin/web Gauge specs in line with the curre |
+| 7 | [T523](/Users/proto/Projects/!self/w0m/.tasks/T523.md) | [#523](https://github.com/webomage/wom7board/issues/523) | P2 | queued | sdlc | 0/5 | `░░░░░░░░░░` 0% | — | The deploy's golden run logs 288 browser errors (503 and 404 |
+| 8 | [T487](/Users/proto/Projects/!self/w0m/.tasks/T487.md) | [#487](https://github.com/webomage/wom7board/issues/487) | P3 | queued | sdlc | 0/4 | `░░░░░░░░░░` 0% | — | Visual goldens: regenerate on the local stack or pin the ren |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -50,18 +56,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `d5223cbc` |
-| `w0m-api` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `03350e2` |
-| `w0m-cf` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
-| `w0m-skills` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
-| `w0m-ext` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `2ec4f71` |
-| `w0m-sec` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `4dcccc1` |
+| `w0m-web` | `agent/agy-t569` | 0 | **n/a — NO UPSTREAM** | `fd5bcf86` |
+| `w0m-api` | `agent/agy-t569` | 0 | **n/a — NO UPSTREAM** | `03350e2` |
+| `w0m-cf` | `agent/agy-t569` | **2** | **n/a — NO UPSTREAM** | `80bada3` |
+| `w0m-skills` | `agent/agy-t569` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
+| `w0m-ext` | `agent/agy-t569` | 0 | **n/a — NO UPSTREAM** | `2ec4f71` |
+| `w0m-sec` | `agent/agy-t569` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
+| `w0m-mlx/w0m-mlx` | `agent/agy-t569` | 0 | **n/a — NO UPSTREAM** | `4dcccc1` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 22 open · 595 TASKS.md rows · 256/595 specced (6/22 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 24 open · 597 TASKS.md rows · 256/597 specced (6/24 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T480","T486","T523","T487","T17"],"repos":{"w0m-api":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"03350e2","unpushed":null},"w0m-cf":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":null},"w0m-sec":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"d5223cbc","unpushed":null}},"tickets":{"open":22,"rowless_open":[],"rows":595,"specced":256,"specced_open":6,"total":595,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T596","T597","T569","T480","T486","T523","T487","T17"],"repos":{"w0m-api":{"branch":"agent/agy-t569","dirty":0,"has_upstream":true,"head":"03350e2","unpushed":null},"w0m-cf":{"branch":"agent/agy-t569","dirty":2,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/agy-t569","dirty":0,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-t569","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":null},"w0m-sec":{"branch":"agent/agy-t569","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-t569","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-t569","dirty":0,"has_upstream":true,"head":"fd5bcf86","unpushed":null}},"tickets":{"open":24,"rowless_open":[],"rows":597,"specced":256,"specced_open":6,"total":597,"unmirrored_open":4}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -119,7 +125,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
+#### In-flight tickets (1):
+
+- **T569** — Apple Silicon omlx live latency benchmark & 4-bit MLX quantization for Laya / Kev / Jev System One adapters
+  - **2026-11-01** (today): AC1, AC2, AC3 completed on Apple M1 Max Metal (agy:agy-t569); AC4 prepared for owner confirmation. Quantized LiquidAI/LFM2.5-1.2B-Thinking (628 MB) and Qwen/Qwen3.5-0.8B-Base (404 MB) to 4-bit MLX; executed live 100-ticket Metal GPU benchmarks for laya-mlx-serve 0.6.0 (P50: 120.12 ms, P95: 141.13 ms, ECE: 0.0944, Macro-F1: 0.5719) and omlx (P50: 312.17 ms, P95: 338.92 ms); forked mizorewww/laya-mlx to webomage/laya-mlx (w0m-pr/laya-mlx), authored and GPG-signed commit baeb7b0 (tests/test_serve.py, torchless NumPy temperature calibration fallback in laya_mlx/calibrate.py, lazy rich import in experiments/snake_runtime.py), verified 290 passed, 0 failed on M1 Max Metal, and pushed fix/native-serve-tests-and-torchless-calibration to origin.
 
 #### Completed today (1):
 

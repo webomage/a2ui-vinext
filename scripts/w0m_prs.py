@@ -34,6 +34,7 @@ PRESET_REPOS = {
         "oraios/serena",
         "google-research/harness2",
         "Graphify-Labs/graphify",
+        "mizorewww/laya-mlx",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -47,6 +48,7 @@ PRESET_REPOS = {
         "oraios/serena",
         "google-research/harness2",
         "Graphify-Labs/graphify",
+        "mizorewww/laya-mlx",
     ],
 }
 
