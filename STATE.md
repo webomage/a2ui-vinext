@@ -15,11 +15,11 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T480](/home/aleksei/Projects/!self/w0m/.tasks/T480.md) | [#480](https://github.com/webomage/wom7board/issues/480) | P2 | queued | sdlc | 29 | Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel |
-| 2 | [T486](/home/aleksei/Projects/!self/w0m/.tasks/T486.md) | [#486](https://github.com/webomage/wom7board/issues/486) | P2 | queued | sdlc | 29 | Bring the stale admin/web Gauge specs in line with the current UI, or retire each with a |
-| 3 | [T523](/home/aleksei/Projects/!self/w0m/.tasks/T523.md) | [#523](https://github.com/webomage/wom7board/issues/523) | P2 | queued | sdlc | 29 | The deploy's golden run logs 288 browser errors (503 and 404 on /cdn/news and /cdn/post- |
-| 4 | [T487](/home/aleksei/Projects/!self/w0m/.tasks/T487.md) | [#487](https://github.com/webomage/wom7board/issues/487) | P3 | queued | sdlc | 14 | Visual goldens: regenerate on the local stack or pin the render environment |
-| 5 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 1 | [T480](/Users/proto/Projects/!self/w0m/.tasks/T480.md) | [#480](https://github.com/webomage/wom7board/issues/480) | P2 | queued | sdlc | 29 | Gauge e2e: fail fast on dead waits and known-bad states, then run specs in parallel |
+| 2 | [T486](/Users/proto/Projects/!self/w0m/.tasks/T486.md) | [#486](https://github.com/webomage/wom7board/issues/486) | P2 | queued | sdlc | 29 | Bring the stale admin/web Gauge specs in line with the current UI, or retire each with a |
+| 3 | [T523](/Users/proto/Projects/!self/w0m/.tasks/T523.md) | [#523](https://github.com/webomage/wom7board/issues/523) | P2 | queued | sdlc | 29 | The deploy's golden run logs 288 browser errors (503 and 404 on /cdn/news and /cdn/post- |
+| 4 | [T487](/Users/proto/Projects/!self/w0m/.tasks/T487.md) | [#487](https://github.com/webomage/wom7board/issues/487) | P3 | queued | sdlc | 14 | Visual goldens: regenerate on the local stack or pin the render environment |
+| 5 | [T17](/Users/proto/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -35,11 +35,11 @@
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
-| 2 | [T480](/home/aleksei/Projects/!self/w0m/.tasks/T480.md) | [#480](https://github.com/webomage/wom7board/issues/480) | P2 | queued | sdlc | 0/8 | `░░░░░░░░░░` 0% | — | Gauge e2e: fail fast on dead waits and known-bad states, the |
-| 3 | [T486](/home/aleksei/Projects/!self/w0m/.tasks/T486.md) | [#486](https://github.com/webomage/wom7board/issues/486) | P2 | queued | sdlc | 0/5 | `░░░░░░░░░░` 0% | — | Bring the stale admin/web Gauge specs in line with the curre |
-| 4 | [T523](/home/aleksei/Projects/!self/w0m/.tasks/T523.md) | [#523](https://github.com/webomage/wom7board/issues/523) | P2 | queued | sdlc | 0/5 | `░░░░░░░░░░` 0% | — | The deploy's golden run logs 288 browser errors (503 and 404 |
-| 5 | [T487](/home/aleksei/Projects/!self/w0m/.tasks/T487.md) | [#487](https://github.com/webomage/wom7board/issues/487) | P3 | queued | sdlc | 0/4 | `░░░░░░░░░░` 0% | — | Visual goldens: regenerate on the local stack or pin the ren |
+| 1 | [T17](/Users/proto/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/Users/proto/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 2 | [T480](/Users/proto/Projects/!self/w0m/.tasks/T480.md) | [#480](https://github.com/webomage/wom7board/issues/480) | P2 | queued | sdlc | 0/8 | `░░░░░░░░░░` 0% | — | Gauge e2e: fail fast on dead waits and known-bad states, the |
+| 3 | [T486](/Users/proto/Projects/!self/w0m/.tasks/T486.md) | [#486](https://github.com/webomage/wom7board/issues/486) | P2 | queued | sdlc | 0/5 | `░░░░░░░░░░` 0% | — | Bring the stale admin/web Gauge specs in line with the curre |
+| 4 | [T523](/Users/proto/Projects/!self/w0m/.tasks/T523.md) | [#523](https://github.com/webomage/wom7board/issues/523) | P2 | queued | sdlc | 0/5 | `░░░░░░░░░░` 0% | — | The deploy's golden run logs 288 browser errors (503 and 404 |
+| 5 | [T487](/Users/proto/Projects/!self/w0m/.tasks/T487.md) | [#487](https://github.com/webomage/wom7board/issues/487) | P3 | queued | sdlc | 0/4 | `░░░░░░░░░░` 0% | — | Visual goldens: regenerate on the local stack or pin the ren |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -50,18 +50,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/agy-t594-project-ui-guides` | 0 | **n/a — NO UPSTREAM** | `298aa36c` |
-| `w0m-api` | `agent/agy-t594-project-ui-guides` | **1** | **n/a — NO UPSTREAM** | `c8a999a` |
-| `w0m-cf` | `agent/agy-t594-project-ui-guides` | 0 | **n/a — NO UPSTREAM** | `3bc5102` |
-| `w0m-skills` | `agent/agy-t594-project-ui-guides` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
-| `w0m-ext` | `agent/agy-t594-project-ui-guides` | **1** | **n/a — NO UPSTREAM** | `2ec4f71` |
-| `w0m-sec` | `agent/agy-t594-project-ui-guides` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/agy-t594-project-ui-guides` | 0 | **n/a — NO UPSTREAM** | `4dcccc1` |
+| `w0m-web` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `d5223cbc` |
+| `w0m-api` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `03350e2` |
+| `w0m-cf` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
+| `w0m-skills` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
+| `w0m-ext` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `2ec4f71` |
+| `w0m-sec` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
+| `w0m-mlx/w0m-mlx` | `agent/agy-t595` | 0 | **n/a — NO UPSTREAM** | `4dcccc1` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 22 open · 594 TASKS.md rows · 256/594 specced (6/22 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 22 open · 595 TASKS.md rows · 256/595 specced (6/22 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T480","T486","T523","T487","T17"],"repos":{"w0m-api":{"branch":"agent/agy-t594-project-ui-guides","dirty":1,"has_upstream":true,"head":"c8a999a","unpushed":null},"w0m-cf":{"branch":"agent/agy-t594-project-ui-guides","dirty":0,"has_upstream":true,"head":"3bc5102","unpushed":null},"w0m-ext":{"branch":"agent/agy-t594-project-ui-guides","dirty":1,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-t594-project-ui-guides","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":null},"w0m-sec":{"branch":"agent/agy-t594-project-ui-guides","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-t594-project-ui-guides","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-t594-project-ui-guides","dirty":0,"has_upstream":true,"head":"298aa36c","unpushed":null}},"tickets":{"open":22,"rowless_open":[],"rows":594,"specced":256,"specced_open":6,"total":594,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T480","T486","T523","T487","T17"],"repos":{"w0m-api":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"03350e2","unpushed":null},"w0m-cf":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"4dcccc1","unpushed":null},"w0m-sec":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-t595","dirty":0,"has_upstream":true,"head":"d5223cbc","unpushed":null}},"tickets":{"open":22,"rowless_open":[],"rows":595,"specced":256,"specced_open":6,"total":595,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,7 +113,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-10-31 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-11-01 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
@@ -123,7 +123,7 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 
 #### Completed today (1):
 
-- **T594** — Per-project UI Screens & Workflows User Guides with visual SVG diagrams in all 5 Obsidian vaults (w0m, 1945, artemio, servicios777, personaje0) (Completed AC1–AC4)
+- **T595** — Standardize cross-platform toolchain on Homebrew with LTS floors, latest comparison, and Node 26 alignment (AgDR-0052) (Created T595 and AgDR-0052 per owner direction to standardize on Homebrew (brew) across macOS and Linux, enforce at least LTS for min while comparing against latest, and lift the <23 Node upper-bound cap so Homebrew node (26.13.0) and LTS (>=22.23.3) both pass estate gates.)
 
 ## 3. Other open threads (in TASKS.md)
 
