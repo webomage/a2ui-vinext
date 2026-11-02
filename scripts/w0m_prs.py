@@ -2523,6 +2523,10 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
     "feat/obsidian-ofm-engine",                             # stablyai/orca#37033
     "fix/mobile-landscape-safe-area-insets",                # stablyai/orca#37034
     "fix/mobile-markdown-external-tab-read",                # stablyai/orca#37035
+    "feat/nested-subfolder-git-and-sdlc-repo",              # stablyai/orca#37510
+    "feat/mobile-session-tab-reorder",                      # stablyai/orca#37511
+    "feat/mlx-lm-gemma4-arch",                              # oxiglade/mlx-rs#442
+    "perf/gemma4-kv-shared-prefill-and-moe-sanitize",       # ml-explore/mlx-lm#2026
 }
 
 # Internal / archived / superseded sub-branches (excluded from unsubmitted pending branch list)
@@ -3216,7 +3220,9 @@ def submit_prepared_prs(
                 "--repo",
                 item["upstream_repo"],
                 "--head",
-                f"{CANONICAL_FORK_ORG}:{item['branch']}",
+                item["branch"],
+                "--author",
+                CANONICAL_CONTRIBUTOR,
                 "--state",
                 "open",
                 "--json",
@@ -3259,12 +3265,14 @@ def submit_prepared_prs(
             check=False,
             timeout=30.0,
         )
+        err_text = cp.stderr.strip() if cp.returncode != 0 else ""
+        already_open_err = cp.returncode != 0 and "already exists" in err_text.lower()
         results.append(
             {
                 **item,
-                "status": "SUBMITTED" if cp.returncode == 0 else "FAILED",
+                "status": "SUBMITTED" if cp.returncode == 0 else ("ALREADY_OPEN" if already_open_err else "FAILED"),
                 "url": cp.stdout.strip() if cp.returncode == 0 else "",
-                "stderr": cp.stderr.strip() if cp.returncode != 0 else "",
+                "stderr": "" if already_open_err else err_text,
             }
         )
 
@@ -3553,6 +3561,8 @@ def cmd_submit(args: argparse.Namespace) -> None:
         )
         if r.get("url"):
             print(f"    URL: {r['url']}")
+        elif r.get("stderr"):
+            print(f"    Error: {r['stderr']}")
         elif res["dryRun"]:
             print(f"    Compare: {r['compare_url']}")
 
