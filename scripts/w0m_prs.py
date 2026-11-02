@@ -19,6 +19,12 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+
+from agent_provider import resolve_agent_provider, resolve_orca_bin  # noqa: E402
+
 CANONICAL_FORK_ORG = "webomage"
 CANONICAL_CONTRIBUTOR = "casualuser"
 
@@ -3290,12 +3296,12 @@ def sync_prs_to_orca(
     preset: str = "w0m-pr",
     worktree: str = "active",
     trigger: str = "*/15 * * * *",
-    provider: str = "claude",
+    provider: str = "auto",
     forks_dir: Optional[Path] = None,
     dry_run: bool = False,
     discovered_override: Optional[dict[str, Any]] = None,
 ) -> dict[str, Any]:
-    """Synchronize discovered PRs, PR-ready fork branches, and active worktrees into Orca References, Orchestration Task, and Automation (`T599` AC3, `T593` AC4)."""
+    """Synchronize discovered PRs, PR-ready fork branches, and active worktrees into Orca References, Orchestration Task, and Automation (`T599` AC3, `T593` AC4, `T609` AC5)."""
     discovered = discovered_override or discover_new_prs_and_branches(
         author=author, preset=preset, forks_dir=forks_dir, fetch=False
     )
@@ -3304,9 +3310,8 @@ def sync_prs_to_orca(
     agent_trees = discovered.get("agentTrees") or []
     pr_urls = [str(p["url"]) for p in open_prs if p.get("url")]
 
-    orca_bin = "/Applications/Orca.app/Contents/Resources/bin/orca"
-    if not Path(orca_bin).is_file():
-        orca_bin = "orca"
+    orca_bin = resolve_orca_bin()
+    resolved_provider = resolve_agent_provider(provider)
 
     workspace_root = find_workspace_root()
     precheck_cmd = f"python3 {workspace_root / 'scripts' / 'w0m_prs.py'} check-delta --preset {preset}"
@@ -3320,6 +3325,7 @@ def sync_prs_to_orca(
         return {
             "ok": True,
             "dryRun": True,
+            "provider": resolved_provider,
             "referenceUrls": pr_urls,
             "taskTitle": task_title,
             "automationName": automation_name,
@@ -3420,6 +3426,7 @@ def sync_prs_to_orca(
 
     # 3. Create or update scheduled Orca Automation with Zero-Token Precheck
     automation_id = None
+    existing_agent_id = None
     alist_cp = run_cmd([orca_bin, "automations", "list", "--json"], check=False, timeout=10.0)
     if alist_cp.returncode == 0 and alist_cp.stdout.strip():
         try:
@@ -3427,6 +3434,7 @@ def sync_prs_to_orca(
             for a in autos:
                 if a.get("name") == automation_name:
                     automation_id = a.get("id")
+                    existing_agent_id = a.get("agentId")
                     break
         except ValueError:
             pass
@@ -3450,7 +3458,7 @@ def sync_prs_to_orca(
                 "--prompt",
                 prompt_text,
                 "--provider",
-                provider,
+                resolved_provider,
                 "--workspace",
                 worktree,
                 "--reuse-session",
@@ -3465,12 +3473,33 @@ def sync_prs_to_orca(
                 automation_id = (res_obj.get("automation") or res_obj).get("id")
             except ValueError:
                 pass
+    elif existing_agent_id != resolved_provider:
+        run_cmd(
+            [
+                orca_bin,
+                "automations",
+                "edit",
+                str(automation_id),
+                "--provider",
+                resolved_provider,
+                "--prompt",
+                prompt_text,
+                "--precheck",
+                precheck_cmd,
+                "--trigger",
+                trigger,
+                "--json",
+            ],
+            check=False,
+            timeout=15.0,
+        )
 
     # Seed baseline state file so future prechecks only fire on real deltas
     check_prs_delta(author=author, preset=preset, forks_dir=forks_dir, current_override=discovered)
 
     return {
         "ok": True,
+        "provider": resolved_provider,
         "referencesAttached": len(pr_urls) if ref_ok else 0,
         "referenceUrls": pr_urls,
         "orchestrationRunId": run_id,
@@ -3760,7 +3789,12 @@ def main() -> None:
     p_orca.add_argument("--dir", type=str, help="Path to w0m-pr directory")
     p_orca.add_argument("--worktree", type=str, default="active", help="Orca worktree selector (default: active)")
     p_orca.add_argument("--trigger", type=str, default="*/15 * * * *", help="Orca automation cron/trigger")
-    p_orca.add_argument("--provider", type=str, default="claude", help="Orca automation provider (default: claude)")
+    p_orca.add_argument(
+        "--provider",
+        type=str,
+        default="auto",
+        help="Orca automation agent provider (default: auto — resolves installed antigravity/claude/codex/opencode)",
+    )
     p_orca.add_argument("--dry-run", action="store_true", help="Preview Orca sync actions without mutating")
     p_orca.add_argument("--json", action="store_true", help="Output structured JSON")
     p_orca.set_defaults(func=cmd_orca_sync)

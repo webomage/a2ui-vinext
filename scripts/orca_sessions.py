@@ -36,6 +36,12 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+
+from agent_provider import build_agent_resume_command  # noqa: E402
+
 PRIMARY_CONTROL_PLANE_HOST = "linux-host"
 DEFAULT_REMOTE_HOSTS: tuple[str, ...] = ("linux-host",)
 DEFAULT_SSH_TARGET_CONFIG: dict[str, dict[str, Any]] = {
@@ -1091,7 +1097,13 @@ def attach_session(
         }
 
     resolved_wt = _resolve_worktree_selector(worktree_target, snapshot)
-    attach_cmd = f"agy --conversation={conversation_id} --dangerously-skip-permissions"
+    existing_session = verdict.get("existing")
+    session_agent = (
+        existing_session.get("agent")
+        if isinstance(existing_session, dict) and isinstance(existing_session.get("agent"), str)
+        else "antigravity"
+    )
+    attach_cmd = build_agent_resume_command(conversation_id, session_agent)
 
     if dry_run:
         return {

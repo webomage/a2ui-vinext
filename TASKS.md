@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T609](.tasks/T609.md) | **P1** | **Declarative hat/role permissions & UI visibility schema, PM Knowledge Hub Worker bundling, Linux obsidian:// handler, and multi-agent provider abstraction** | root, web, api | docs/CP-FEATURE-INDEX.md | ✅ **done** |
 | [T608](.tasks/T608.md) | **P1** | **Prepare Orca upstream PR branches for nested subfolder Git + .w0m/sdlc.json issue resolution and mobile session tab reordering, and sync unified w0m-pr/orca beta** | root | docs/ORCA-INTEGRATION.md | ✅ **done** |
 | [T607](.tasks/T607.md) | **P1** | **Implement Mexico professional self-accounting (RESICO 626 / Actividad Profesional 612) integrated with SAT, INM, and KYC checks** | web | openspec/specs/client-cp-flow/spec.md | ✅ **done** |
 | [T606](.tasks/T606.md) | **P0** | **Expose unified 5-target service ordering (Website, Repo, Infra, Cross-Cloud Migration, Blueprint) and @k7* smart infra audit engine across main website and Client Portal** | web, api | openspec/specs/client-cp-flow/spec.md | ✅ **done** |

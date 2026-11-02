@@ -35,6 +35,12 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+
+from agent_provider import resolve_agent_provider  # noqa: E402
+
 ESTATE_ROOT = Path(__file__).resolve().parent.parent
 TOOLS_POLICY_PATH = ESTATE_ROOT / "project" / "policies" / "tools-policy.json"
 HEADROOM_HOST = "127.0.0.1"
@@ -572,6 +578,7 @@ def sync_orca_automations(
             )
 
     # 2. Upsert canonical w0m automation templates
+    resolved_agent_id = resolve_agent_provider("auto")
     now_ms = int(time.time() * 1000)
     for tmpl in templates:
         name = str(tmpl["name"])
@@ -583,6 +590,7 @@ def sync_orca_automations(
                 {
                     "id": existing_row["id"],
                     "updates": {
+                        "agentId": resolved_agent_id,
                         "prompt": str(tmpl["prompt"]),
                         "precheck": {"command": precheck_cmd, "timeoutSeconds": 60},
                         "rrule": str(tmpl["cron"]),
@@ -610,7 +618,7 @@ def sync_orca_automations(
                     "name": name,
                     "prompt": str(tmpl["prompt"]),
                     "precheck": {"command": precheck_cmd, "timeoutSeconds": 60},
-                    "agentId": "claude",
+                    "agentId": resolved_agent_id,
                     "runContext": run_context,
                     "sourceContext": source_context,
                     "repo": repo_id,
