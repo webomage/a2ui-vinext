@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T612](.tasks/T612.md) | **P1** | **Guard Obsidian URI launches per engagement to prevent mobile last-vault fallback and cross-project vault collisions** | web | openspec/specs/per-project-vault-topology | ✅ **done** |
 | [T611](.tasks/T611.md) | **P0** | **Fix apps/web @webomage/fingerprint deploy-web Rolldown failure, add workspace-import linkage gate in deps_sync.py, and add tools-install bootstrap for missing governed CLI tools (gauge)** | root, web | docs/DEPS-ALIGNMENT.md | ✅ **done** |
 | [T610](.tasks/T610.md) | **P1** | **Parallelize w0m-prs GitHub delta precheck under 10s, fix Orca run-use CLI flag, and harden Linux Orca binary resolution** | tooling | openspec/changes/2026-11-01-orca-session-naming-and-ax-workflows | ✅ **done** |
 | [T609](.tasks/T609.md) | **P1** | **Declarative hat/role permissions & UI visibility schema, PM Knowledge Hub Worker bundling, Linux obsidian:// handler, and multi-agent provider abstraction** | root, web, api | docs/CP-FEATURE-INDEX.md | ✅ **done** |

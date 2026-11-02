@@ -1778,6 +1778,12 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⇒ **Every internal `@webomage/*` or `@wom/*` workspace import in `.ts`, `.js`, `.svelte`, or `.astro` must be declared as `"workspace:*"` in that app or package's `package.json` (enforced pre-push by `check_workspace_package_imports()` in `scripts/deps_sync.py`), and missing governed `source: "brew"` CLIs plus `post_install` plugin manifests are bootstrapped via `just tools-install --only <tool> --apply`.**
 ⭐ **The tell:** Adding an import of `@webomage/*` or `@wom/*` inside a `.svelte` component where `astro check` passes locally while `pnpm --filter <app> build` fails in Rolldown with `failed to resolve import "@webomage/..."`.
 
+### NEVER FIRE UNCONFIRMED `obsidian://open?vault=<SLUG>` DEEP LINKS OR PARSE CUSTOM-SCHEME URIS VIA `new URL().hostname`
+**2026-11-02 (T612).** Tapping a raw `<a href="obsidian://open?vault=w0m&file=index">` link on `/o/webomage/projects/vault` from an iPhone opened an unrelated empty local vault (`Servicios777.mx`) even though Supabase RLS and Cloudflare R2 strictly isolated `w0m` (`eg-w0m`). Obsidian's `obsidian://open?vault=<name>` URI scheme cannot create a vault or pull from WebDAV/R2; when no local vault named `<name>` exists on iOS/Android, Obsidian silently falls back to opening the device's **last active local vault**. Additionally, in WebKit/iOS Safari, `new URL("obsidian://open?vault=w0m")` sets `hostname === ""` and opaque `pathname === "//open"` (whereas Chromium/Node set `hostname === "open"`).
+
+⇒ **Gate every `obsidian://open` launch (toolbar buttons AND intercepted inline `a[href^="obsidian://"]` links) behind a per-engagement local-vault confirmation (`w0m:obsidian-vault-binding:v1:<engagementPublicId>`) validated fail-closed against `clients-policy.json` foreign vault slugs (`obsidian-launch.ts`), and parse custom-scheme URIs with an explicit scheme regex rather than `new URL().hostname`.**
+⭐ **The tell:** Raw `href="obsidian://open?vault=..."` anchors rendered on mobile/client pages, or custom-scheme URI parsers relying on `new URL(href).hostname` that pass in Node/Vitest and fail on iOS Safari.
+
 
 
 
