@@ -517,6 +517,66 @@ class TestDepsSyncUpperBounds(unittest.TestCase):
             (bin_dir / "tsx").write_text("#!/bin/sh\n", encoding="utf-8")
             self.assertEqual(deps_sync.check_workspace_bins(repos, pkgs, strict_local=True), [])
 
+    def test_t611_workspace_package_imports_linkage_catches_undeclared_svelte_and_ts_imports(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            web_dir = Path(tmp) / "w0m-web"
+            pkg_fp = web_dir / "packages" / "fingerprint" / "src"
+            pkg_lib = web_dir / "packages" / "lib" / "src"
+            app_web = web_dir / "apps" / "web" / "src" / "components"
+            pkg_fp.mkdir(parents=True)
+            pkg_lib.mkdir(parents=True)
+            app_web.mkdir(parents=True)
+
+            (web_dir / "package.json").write_text(json.dumps({"name": "w0m-web", "private": True}), encoding="utf-8")
+            (web_dir / "packages" / "fingerprint" / "package.json").write_text(
+                json.dumps({"name": "@webomage/fingerprint", "version": "1.0.0"}), encoding="utf-8"
+            )
+            (pkg_fp / "index.ts").write_text("export const fp = () => 'ok';\n", encoding="utf-8")
+
+            (web_dir / "packages" / "lib" / "package.json").write_text(
+                json.dumps({"name": "@webomage/lib", "version": "1.0.0"}), encoding="utf-8"
+            )
+            # Comment mentioning another workspace package must NOT trigger a false positive
+            (pkg_lib / "comment.ts").write_text(
+                "// Handled by @webomage/fingerprint on the client.\nexport const x = 1;\n",
+                encoding="utf-8",
+            )
+
+            app_web_pj = web_dir / "apps" / "web" / "package.json"
+            app_web_pj.write_text(
+                json.dumps({"name": "web", "dependencies": {"@webomage/lib": "workspace:*"}}),
+                encoding="utf-8",
+            )
+            (app_web / "SecurityAuditWidget.svelte").write_text(
+                '<script lang="ts">\n'
+                '  import { fp } from "@webomage/fingerprint";\n'
+                '  import { x } from "@webomage/lib/comment";\n'
+                "</script>\n",
+                encoding="utf-8",
+            )
+
+            # RED: @webomage/fingerprint is imported in .svelte without being declared in apps/web/package.json
+            errs = deps_sync.check_workspace_package_imports(web_dir)
+            self.assertEqual(len(errs), 1, errs)
+            self.assertIn("workspace-import-linkage", errs[0])
+            self.assertIn("apps/web", errs[0])
+            self.assertIn("@webomage/fingerprint", errs[0])
+
+            # GREEN: declaring "@webomage/fingerprint": "workspace:*" clears the violation
+            app_web_pj.write_text(
+                json.dumps(
+                    {
+                        "name": "web",
+                        "dependencies": {
+                            "@webomage/fingerprint": "workspace:*",
+                            "@webomage/lib": "workspace:*",
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(deps_sync.check_workspace_package_imports(web_dir), [])
+
 
 if __name__ == "__main__":
     unittest.main()

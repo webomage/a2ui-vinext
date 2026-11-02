@@ -104,8 +104,9 @@
       "required": false,
       "source": "brew",
       "auto": "none",
+      "post_install": "gauge install",
       "smoke": "gauge --version",
-      "note": "T237 AC5 — the spec runner for the estate's 190 Gauge specs (`gauge run specs`, wired through `pnpm test:e2e` / `just e2e` / `just e2e-local`). 🔴 UNDECLARED UNTIL 2026-08-19 while load-bearing for the whole corpus — the same invisible-dependency shape omlx, tart, zeroclaw and the Rust toolchain each had, found the same way: by asking what a gate actually depends on. ⚠️ `auto: none` because a runner upgrade changes how specs execute, and this corpus is already the subject of T237 — bumping the thing under test while its trustworthiness is in question would confound both. `required: false`: nothing in the commit/push path runs specs (that is T237 AC4's job), so a machine without gauge is not broken, just unable to run E2E."
+      "note": "T237 AC5 / T611 AC3 — the spec runner for the estate's Gauge specs (`gauge run specs`, wired through `pnpm test:e2e` / `just e2e` / `just e2e-local` / `just goldens` / `just smoke-live`). Provisioned on macOS and Linuxbrew via `just tools-install --only gauge --apply`, which runs `brew install gauge` followed by `post_install: \"gauge install\"` in `w0m-web/` to install the `manifest.json` plugins (`ts`, `html-report`, `json-report`). 🔴 UNDECLARED UNTIL 2026-08-19 while load-bearing for the whole corpus — the same invisible-dependency shape omlx, tart, zeroclaw and the Rust toolchain each had, found the same way: by asking what a gate actually depends on. ⚠️ `auto: none` because a runner upgrade changes how specs execute, and this corpus is already the subject of T237 — bumping the thing under test while its trustworthiness is in question would confound both. `required: false`: nothing in the commit/push path runs specs (that is T237 AC4's job), so a machine without gauge is not broken, just unable to run E2E."
     },
     "gcloud": {
       "min": "500.0.0",

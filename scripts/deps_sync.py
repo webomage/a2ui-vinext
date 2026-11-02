@@ -1046,6 +1046,98 @@ def check_astro_adapter_exports(web_dir: Path) -> list[str]:
     return problems
 
 
+_WS_IMPORT_RE = re.compile(
+    r"""(?:"""
+    r"""\bfrom\s+["']((?:@webomage|@wom)/[a-z0-9-]+)(?:/[^"']*)?["']"""
+    r"""|\bimport\s+["']((?:@webomage|@wom)/[a-z0-9-]+)(?:/[^"']*)?["']"""
+    r"""|\bimport\s*\(\s*["']((?:@webomage|@wom)/[a-z0-9-]+)(?:/[^"']*)?["']"""
+    r""")"""
+)
+_BLOCK_COMMENT_RE = re.compile(r"/\*[\s\S]*?\*/")
+_LINE_COMMENT_RE = re.compile(r"(?m)(?:^|(?<=\s))//[^\n]*")
+
+
+def check_workspace_package_imports(web_dir: Path) -> list[str]:
+    """Verify every internal `@webomage/*` / `@wom/*` workspace import is declared in `package.json` (T611 AC2).
+
+    `astro check` skips `.svelte` files and TypeScript `paths` can mask undeclared workspace packages
+    during typecheck, while pnpm's strict `node_modules` isolation makes Vite/Rolldown fail at
+    `astro build` time during `deploy-*` if `"@webomage/<pkg>": "workspace:*"` is absent from the
+    importing app or package's `package.json`.
+    """
+    pkgs_root = web_dir / "packages"
+    if not pkgs_root.is_dir():
+        return []
+
+    internal_names: set[str] = set()
+    for pj in sorted(pkgs_root.glob("*/package.json")):
+        try:
+            name = json.loads(pj.read_text(encoding="utf-8")).get("name")
+        except (OSError, ValueError):
+            continue
+        if isinstance(name, str) and (name.startswith("@webomage/") or name.startswith("@wom/")):
+            internal_names.add(name)
+    if not internal_names:
+        return []
+
+    problems: list[str] = []
+    scan_exts = {".ts", ".tsx", ".js", ".mjs", ".svelte", ".astro"}
+    skip_dirs = {"node_modules", "dist", ".astro", ".svelte-kit", "coverage"}
+
+    for group in ("apps", "packages"):
+        group_dir = web_dir / group
+        if not group_dir.is_dir():
+            continue
+        for member_dir in sorted(group_dir.iterdir()):
+            pj = member_dir / "package.json"
+            if not member_dir.is_dir() or not pj.is_file():
+                continue
+            try:
+                manifest = json.loads(pj.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            own_name = manifest.get("name")
+            declared = (
+                set((manifest.get("dependencies") or {}).keys())
+                | set((manifest.get("devDependencies") or {}).keys())
+                | set((manifest.get("peerDependencies") or {}).keys())
+            )
+            missing_first_file: dict[str, Path] = {}
+            for src_root_name in ("src", "tests"):
+                src_root = member_dir / src_root_name
+                if not src_root.is_dir():
+                    continue
+                for fpath in sorted(src_root.rglob("*")):
+                    if fpath.suffix not in scan_exts or not fpath.is_file():
+                        continue
+                    if skip_dirs.intersection(fpath.relative_to(member_dir).parts):
+                        continue
+                    try:
+                        raw = fpath.read_text(encoding="utf-8", errors="ignore")
+                    except OSError:
+                        continue
+                    cleaned = _LINE_COMMENT_RE.sub("", _BLOCK_COMMENT_RE.sub("", raw))
+                    for m in _WS_IMPORT_RE.finditer(cleaned):
+                        imp_pkg = m.group(1) or m.group(2) or m.group(3)
+                        if (
+                            imp_pkg
+                            and imp_pkg in internal_names
+                            and imp_pkg != own_name
+                            and imp_pkg not in declared
+                            and imp_pkg not in missing_first_file
+                        ):
+                            missing_first_file[imp_pkg] = fpath
+
+            rel_member = f"{group}/{member_dir.name}"
+            for imp_pkg, sample_file in sorted(missing_first_file.items()):
+                rel_sample = sample_file.relative_to(member_dir).as_posix()
+                problems.append(
+                    f'workspace-import-linkage: w0m-web/{rel_member} ({rel_sample}) imports workspace package '
+                    f'{imp_pkg!r} without declaring "{imp_pkg}": "workspace:*" in w0m-web/{rel_member}/package.json'
+                )
+    return problems
+
+
 
 def evaluate_policy_detailed(
     policy: dict,
@@ -1348,9 +1440,12 @@ def evaluate_policy_detailed(
             if f": {r} " in eng_err:
                 violated_repos.add(r)
     if "w0m-web" in repos:
-        astro_errs = check_astro_adapter_exports(repos["w0m-web"].parent)
-        if astro_errs:
+        web_root = repos["w0m-web"].parent
+        astro_errs = check_astro_adapter_exports(web_root)
+        ws_imp_errs = check_workspace_package_imports(web_root)
+        if astro_errs or ws_imp_errs:
             hard.extend(astro_errs)
+            hard.extend(ws_imp_errs)
             violated_repos.add("w0m-web")
 
     override_repos = [r for r in pkgs if override_hits[r] > 0]

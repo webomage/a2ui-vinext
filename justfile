@@ -1568,6 +1568,10 @@ tools-check *args:
 tools-upgrade *args:
     @python3 scripts/tools_upgrade.py {{ args }}
 
+# T611 AC3 — bootstrap missing governed `source: "brew"` CLI tools (and optional `post_install` hooks such as `gauge install`).
+tools-install *args:
+    @python3 scripts/tools_upgrade.py --install-missing {{ args }}
+
 # T546 — the scheduled run upgrades and smoke-tests, then PROPOSES the bumps (a machine-level state file); it never writes tools-policy.json, so the live checkout stays clean.
 tools-weekly *args:
     @python3 scripts/tools_check.py --outdated --cache && python3 scripts/tools_upgrade.py --apply {{ args }}

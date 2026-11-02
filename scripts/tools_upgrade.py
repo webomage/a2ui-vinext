@@ -235,6 +235,109 @@ def reconcile(tools: dict, policy: dict, apply: bool) -> tuple[list[str], list[s
     return promoted, blocked
 
 
+def install_missing(tools: dict, only: set[str], apply: bool) -> int:
+    """Install missing `source: "brew"` tools from `tools-policy.json` (T611 AC3).
+
+    - Without `--only`: selects missing `required: true` brew tools so optional OS-specific tools
+      (e.g. `tart`, `omlx` on Linux) are never pulled in blindly.
+    - With `--only <tool>[,<tool>]`: selects the named missing brew tool(s), failing closed (exit 2)
+      if a requested tool is non-`brew` (and surfacing its manual install note).
+    - Dry-run by default; `--apply` runs `brew install <formula>`, optional `post_install` in `WEB`
+      (e.g. `gauge install` for `w0m-web/manifest.json` plugins), and `smoke`, never writing
+      `tools-policy.json` directly (proposes in `PROPOSED` if installed version exceeds `known_good`).
+    """
+    candidates: list[tuple[str, dict, str]] = []
+    optional_missing: list[str] = []
+    for name, spec in sorted(tools.items()):
+        if name.startswith("_") or not isinstance(spec, dict):
+            continue
+        cur = installed_version(name, spec.get("version_arg", "--version"), spec)
+        if cur is not None:
+            continue
+        src = spec.get("source")
+        if only:
+            if src != "brew":
+                print(
+                    f"❌ --install-missing cannot install {name!r} via brew (source={src!r}). "
+                    f"Note: {spec.get('note', 'install manually')}",
+                    file=sys.stderr,
+                )
+                return 2
+            formula = spec.get("formula") or BREW_FORMULA.get(name, name)
+            candidates.append((name, spec, str(formula)))
+        else:
+            if src == "brew" and spec.get("required"):
+                formula = spec.get("formula") or BREW_FORMULA.get(name, name)
+                candidates.append((name, spec, str(formula)))
+            elif src == "brew":
+                optional_missing.append(name)
+
+    if not candidates:
+        print("  nothing missing to install" + (f" for {', '.join(sorted(only))}" if only else " among required brew tools"))
+        if optional_missing:
+            print(f"  optional missing brew tool(s): {', '.join(optional_missing)} (pass `--only <tool> --apply` to install)")
+        return 0
+
+    label = "INSTALLING" if apply else "INSTALL PLAN (dry-run)"
+    print(f"  {label} — {len(candidates)} missing brew tool(s):")
+    for name, spec, formula in candidates:
+        post = f" + `{spec['post_install']}`" if spec.get("post_install") else ""
+        print(f"    {name:12} brew install {formula} (floor >= {spec['min']}, known_good {spec.get('known_good', '—')}){post}")
+    if optional_missing:
+        print(f"  (optional missing brew tools skipped unless named via --only: {', '.join(optional_missing)})")
+    if not apply:
+        only_hint = f" --only {','.join(sorted(only))}" if only else ""
+        print(f"\n  re-run with --install-missing{only_hint} --apply to install and smoke-test.")
+        return 0
+
+    installed_ok: list[str] = []
+    failed: list[str] = []
+    proposals = load_proposals(PROPOSED)
+    wrote_proposal = False
+    for name, spec, formula in candidates:
+        print(f"\n  → brew install {formula}...")
+        inst = run(["brew", "install", formula], timeout=900)
+        new = installed_version(name, spec.get("version_arg", "--version"), spec)
+        if new is None:
+            print(f"    ✗ install did not place {name} on PATH:\n{(inst.stderr or inst.stdout)[-300:]}")
+            failed.append(name)
+            continue
+        if ver_tuple(new) < ver_tuple(spec["min"]):
+            print(f"    ✗ installed {name} {new} is below min {spec['min']}")
+            failed.append(name)
+            continue
+        post_cmd = spec.get("post_install")
+        if post_cmd:
+            print(f"    → running post_install `{post_cmd}`...")
+            pr = run(smoke_argv(post_cmd), cwd=WEB, timeout=600)
+            if pr.returncode != 0:
+                print(f"    ✗ post_install FAILED (`{post_cmd}`):\n{(pr.stderr or pr.stdout)[-400:]}")
+                failed.append(name)
+                continue
+            print(f"    ✓ post_install ok (`{post_cmd}`)")
+        smoke = spec.get("smoke")
+        if smoke:
+            sr = run(smoke_argv(smoke), cwd=WEB, timeout=180)
+            if sr.returncode != 0:
+                print(f"    ✗ smoke FAILED (`{smoke}`):\n{(sr.stderr or sr.stdout)[-400:]}")
+                failed.append(name)
+                continue
+            print(f"    ✓ smoke ok (`{smoke}`) — {name} {new}")
+        kg = spec.get("known_good")
+        if kg and smoke and ver_tuple(new) > ver_tuple(kg):
+            record_proposal(proposals, name, spec, kg, new, True)
+            wrote_proposal = True
+        installed_ok.append(f"{name}@{new}")
+
+    if wrote_proposal:
+        save_proposals(PROPOSED, proposals)
+    print(f"\n  installed: {', '.join(installed_ok) or 'none'}")
+    if failed:
+        print(f"  ✗ failed: {', '.join(failed)}")
+        return 1
+    return 0
+
+
 def main() -> int:
     apply = "--apply" in sys.argv
 
@@ -257,7 +360,8 @@ def main() -> int:
         # reconciler becomes another thing that reports and changes nothing.
         return 1 if blocked else 0
     force = "--force" in sys.argv
-    # --only <tool>[,<tool>] — upgrade a NAMED subset instead of every auto-eligible tool.
+    install_missing_flag = "--install-missing" in sys.argv
+    # --only <tool>[,<tool>] — upgrade or install a NAMED subset instead of every eligible tool.
     # Added 2026-08-10 for a real ask ("keep infisical auto-updated") that the all-or-nothing
     # interface could not express: the auto batch that day also carried `just` (this toolchain's
     # own command interface) and a MAJOR gcloud bump, so "update one tool" meant "update eight".
@@ -280,6 +384,8 @@ def main() -> int:
                   file=sys.stderr)
             return 2
         tools = {k: v for k, v in tools.items() if k in only}
+    if install_missing_flag:
+        return install_missing(tools, only, apply)
     brew = brew_latest()
 
     plan = []

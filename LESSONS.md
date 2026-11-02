@@ -1772,6 +1772,13 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⇒ **When reusing `gh pr list --json` payloads for PR health audits, fall through to paginated `gh pr view` whenever `mergeable == "UNKNOWN"` or any nested list (`comments`, `reviews`, `statusCheckRollup`) has `len >= 100`; and on Linux, always resolve Orca CLI via `ORCA_CLI_COMMAND`, `~/.config/orca/linux-orca-cli-shim/orca`, or `orca-ide` while explicitly rejecting `/usr/bin/orca` and `/bin/orca`.**
 ⭐ **The tell:** A PR delta watcher reporting a sudden `reviewsCount: 217 -> 100` drop after switching from `gh pr view` to `gh pr list`, `orca orchestration task-create` failing with `consumer_fenced` after `run-use --run`, or `orca` launching the GNOME screen reader outside managed Orca terminals.
 
+### DECLARE EVERY INTERNAL `@webomage/*` / `@wom/*` IMPORT IN `package.json` BEFORE `astro build`
+**2026-11-02 (T611).** Release `2026.11.02-1793646360` failed at `deploy-web` (`pnpm --filter web build`) because `apps/web/src/components/security/SecurityAuditWidget.svelte` imported `@webomage/fingerprint` without declaring `"@webomage/fingerprint": "workspace:*"` in `apps/web/package.json`. `astro check` stayed green because it excludes `.svelte` files, while pnpm strict `node_modules` isolation only links declared workspace dependencies into each app's `node_modules`, causing Vite/Rolldown to fail during server bundling.
+
+⇒ **Every internal `@webomage/*` or `@wom/*` workspace import in `.ts`, `.js`, `.svelte`, or `.astro` must be declared as `"workspace:*"` in that app or package's `package.json` (enforced pre-push by `check_workspace_package_imports()` in `scripts/deps_sync.py`), and missing governed `source: "brew"` CLIs plus `post_install` plugin manifests are bootstrapped via `just tools-install --only <tool> --apply`.**
+⭐ **The tell:** Adding an import of `@webomage/*` or `@wom/*` inside a `.svelte` component where `astro check` passes locally while `pnpm --filter <app> build` fails in Rolldown with `failed to resolve import "@webomage/..."`.
+
+
 
 
 

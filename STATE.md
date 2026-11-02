@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t610-pagecap-fix` | 0 | **n/a — NO UPSTREAM** | `63f74920` |
-| `w0m-api` | `agent/t610-pagecap-fix` | 0 | **n/a — NO UPSTREAM** | `c532ddc` |
-| `w0m-cf` | `agent/t610-pagecap-fix` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
-| `w0m-skills` | `agent/t610-pagecap-fix` | 0 | **n/a — NO UPSTREAM** | `927da87` |
-| `w0m-ext` | `agent/t610-pagecap-fix` | 0 | **n/a — NO UPSTREAM** | `71690c3` |
-| `w0m-sec` | `agent/t610-pagecap-fix` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/t610-pagecap-fix` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t611-web-build-and-gauge-tools` | 0 | **n/a — NO UPSTREAM** | `c120dd07` |
+| `w0m-api` | `agent/t611-web-build-and-gauge-tools` | 0 | **n/a — NO UPSTREAM** | `c532ddc` |
+| `w0m-cf` | `agent/t611-web-build-and-gauge-tools` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
+| `w0m-skills` | `agent/t611-web-build-and-gauge-tools` | 0 | **n/a — NO UPSTREAM** | `927da87` |
+| `w0m-ext` | `agent/t611-web-build-and-gauge-tools` | 0 | **n/a — NO UPSTREAM** | `71690c3` |
+| `w0m-sec` | `agent/t611-web-build-and-gauge-tools` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
+| `w0m-mlx/w0m-mlx` | `agent/t611-web-build-and-gauge-tools` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 610 TASKS.md rows · 271/610 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 611 TASKS.md rows · 272/611 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t610-pagecap-fix","dirty":0,"has_upstream":true,"head":"c532ddc","unpushed":null},"w0m-cf":{"branch":"agent/t610-pagecap-fix","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/t610-pagecap-fix","dirty":0,"has_upstream":true,"head":"71690c3","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t610-pagecap-fix","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t610-pagecap-fix","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/t610-pagecap-fix","dirty":0,"has_upstream":true,"head":"927da87","unpushed":null},"w0m-web":{"branch":"agent/t610-pagecap-fix","dirty":0,"has_upstream":true,"head":"63f74920","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":610,"specced":271,"specced_open":1,"total":610,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t611-web-build-and-gauge-tools","dirty":0,"has_upstream":true,"head":"c532ddc","unpushed":null},"w0m-cf":{"branch":"agent/t611-web-build-and-gauge-tools","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/t611-web-build-and-gauge-tools","dirty":0,"has_upstream":true,"head":"71690c3","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t611-web-build-and-gauge-tools","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t611-web-build-and-gauge-tools","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/t611-web-build-and-gauge-tools","dirty":0,"has_upstream":true,"head":"927da87","unpushed":null},"w0m-web":{"branch":"agent/t611-web-build-and-gauge-tools","dirty":0,"has_upstream":true,"head":"c120dd07","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":611,"specced":272,"specced_open":1,"total":611,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,7 +113,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (7):
+#### Completed today (8):
 
 - **T604** — Power free website security audit service with Cloudflare security-audit-skill and surface completed deliverables immediately in Client UI Deliveries (Split into atomic single-responsibility tickets (agy:t605-split-and-orca-prs). Narrowed T604 strictly to Cloudflare security-audit-skill integration, 1-free-audit quota, and immediate Client Portal Deliveries; split visitor fingerprinting into [[T605]], unified 5-target ordering + @k7 infra/migration engine into [[T606]], and Mexico RESICO 626/612 + SAT/INM/KYC self-accounting into [[T607]].)
 - **T605** — Add Simroute-grade smart visitor fingerprinting (@webomage/fingerprint) and canonical email normalization to prevent multi-trial and free-audit farming (Split from [[T604]] and marked done (agy:t605-split-and-orca-prs). Implementation landed in w0m-web/packages/fingerprint/src/index.ts, w0m-web/packages/lib/src/security/passive-audit.ts, w0m-web/apps/web/src/pages/api/security-audit.ts, and w0m-api/supabase/functions/client-register/index.ts (16/16 unit tests passing in fingerprint.test.ts).)
@@ -122,6 +122,7 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T608** — Prepare Orca upstream PR branches for nested subfolder Git + .w0m/sdlc.json issue resolution and mobile session tab reordering, and sync unified w0m-pr/orca beta (Upstream PRs opened & ALREADY_OPEN detection fixed (agy:t608-prs-already-open-fix). Opened [stablyai/orca#37510](https://github.com/stablyai/orca/pull/37510) (feat/nested-subfolder-git-and-sdlc-repo, MERGEABLE) and [stablyai/orca#37511](https://github.com/stablyai/orca/pull/37511) (feat/mobile-session-tab-reorder, MERGEABLE), added them to ACTIVE_OPEN_PR_HEAD_BRANCHES, and fixed submit_prepared_prs in scripts/w0m_prs.py to query gh pr list --head <branch> --author casualuser (without the webomage: prefix) so existing open PRs report [ALREADY_OPEN] instead of falling through to gh pr create.)
 - **T609** — Declarative hat/role permissions & UI visibility schema, PM Knowledge Hub Worker bundling, Linux obsidian:// handler, and multi-agent provider abstraction (Completed & verified (done, agy:t609-pm-vault-hat-rbac).)
 - **T610** — Parallelize w0m-prs GitHub delta precheck under 10s, fix Orca run-use CLI flag, and harden Linux Orca binary resolution ((agy:t610-prs-orca-monitor-fast) — Done (fea7648))
+- **T611** — Fix apps/web @webomage/fingerprint deploy-web Rolldown failure, add workspace-import linkage gate in deps_sync.py, and add tools-install bootstrap for missing governed CLI tools (gauge) ((agy:t611-web-build-and-gauge-tools) — Done)
 
 ## 3. Other open threads (in TASKS.md)
 

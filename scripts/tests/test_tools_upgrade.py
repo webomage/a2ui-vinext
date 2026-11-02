@@ -261,6 +261,85 @@ class Promote(Base):
         self.assertEqual(rc, 1, "partial: something stayed blocked, so the exit code says so")
 
 
+class InstallMissing(Base):
+    def setUp(self) -> None:
+        super().setUp()
+        policy = json.loads(POLICY_TEXT)
+        policy["tools"]["gauge"] = {
+            "min": "1.6.0",
+            "known_good": "1.6.42",
+            "required": False,
+            "source": "brew",
+            "auto": "none",
+            "post_install": "gauge install",
+            "smoke": "gauge --version",
+        }
+        policy["tools"]["rustup"] = {
+            "min": "1.27.0",
+            "known_good": "1.29.2",
+            "required": False,
+            "source": "rustup",
+            "auto": "none",
+            "smoke": "rustup --version",
+        }
+        self.policy.write_text(json.dumps(policy, indent=2) + "\n")
+
+    def test_default_install_missing_selects_only_missing_required_brew_tools_and_is_dry_run(self):
+        before = self.policy.read_bytes()
+        with mock.patch.object(tu, "installed_version", lambda name, arg="--version", spec=None: None if name in {"foo", "gauge"} else "2.0.0"):
+            rc, out = self.invoke("--install-missing")
+        self.assertEqual(rc, 0, out)
+        self.assertEqual(self.policy.read_bytes(), before)
+        self.assertIn("foo", out)
+        self.assertIn("--apply", out)
+
+    def test_install_missing_only_optional_tool_runs_brew_install_post_install_and_smoke_without_writing_policy(self):
+        before = self.policy.read_bytes()
+        calls: list[list[str]] = []
+        state = {"installed": False}
+
+        def fake_installed(name, arg="--version", spec=None):
+            if name == "gauge":
+                return "1.6.42" if state["installed"] else None
+            return "1.1.0"
+
+        def fake_run(cmd, cwd=None, timeout=300):
+            calls.append(cmd)
+            if cmd == ["brew", "install", "gauge"]:
+                state["installed"] = True
+            return cp(0)
+
+        with mock.patch.object(tu, "installed_version", fake_installed), mock.patch.object(tu, "run", fake_run):
+            rc, out = self.invoke("--install-missing", "--only", "gauge", "--apply")
+        self.assertEqual(rc, 0, out)
+        self.assertEqual(self.policy.read_bytes(), before, "install-missing must never write tools-policy.json")
+        self.assertEqual(calls, [["brew", "install", "gauge"], ["gauge", "install"], ["gauge", "--version"]])
+
+    def test_install_missing_fails_closed_when_post_install_or_non_brew_source_fails(self):
+        with mock.patch.object(tu, "installed_version", lambda *a, **k: None):
+            rc_non_brew, out_non_brew = self.invoke("--install-missing", "--only", "rustup", "--apply")
+        self.assertEqual(rc_non_brew, 2, out_non_brew)
+        self.assertIn("rustup", out_non_brew)
+
+        state = {"installed": False}
+
+        def fake_installed(name, arg="--version", spec=None):
+            return "1.6.42" if (name == "gauge" and state["installed"]) else None
+
+        def fake_run_fail_post(cmd, cwd=None, timeout=300):
+            if cmd == ["brew", "install", "gauge"]:
+                state["installed"] = True
+                return cp(0)
+            if cmd == ["gauge", "install"]:
+                return cp(1, err="plugin download failed")
+            return cp(0)
+
+        with mock.patch.object(tu, "installed_version", fake_installed), mock.patch.object(tu, "run", fake_run_fail_post):
+            rc_post, out_post = self.invoke("--install-missing", "--only", "gauge", "--apply")
+        self.assertEqual(rc_post, 1, out_post)
+        self.assertIn("post_install FAILED", out_post)
+
+
 class Structure(unittest.TestCase):
     def test_exactly_one_place_in_the_upgrade_script_writes_the_policy(self):
         """The SSOT guard: weekly and reconcile must have no policy write at all; only promote has one."""
