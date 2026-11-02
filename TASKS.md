@@ -33,6 +33,10 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T608](.tasks/T608.md) | **P1** | **Prepare Orca upstream PR branches for nested subfolder Git + .w0m/sdlc.json issue resolution and mobile session tab reordering, and sync unified w0m-pr/orca beta** | root | docs/ORCA-INTEGRATION.md | ✅ **done** |
+| [T607](.tasks/T607.md) | **P1** | **Implement Mexico professional self-accounting (RESICO 626 / Actividad Profesional 612) integrated with SAT, INM, and KYC checks** | web | openspec/specs/client-cp-flow/spec.md | ✅ **done** |
+| [T606](.tasks/T606.md) | **P0** | **Expose unified 5-target service ordering (Website, Repo, Infra, Cross-Cloud Migration, Blueprint) and @k7* smart infra audit engine across main website and Client Portal** | web, api | openspec/specs/client-cp-flow/spec.md | ✅ **done** |
+| [T605](.tasks/T605.md) | **P0** | **Add Simroute-grade smart visitor fingerprinting (@webomage/fingerprint) and canonical email normalization to prevent multi-trial and free-audit farming** | web, api | openspec/specs/client-cp-flow/spec.md | ✅ **done** |
 | [T604](.tasks/T604.md) | **P0** | **Power free website security audit service with Cloudflare security-audit-skill, enforce 1-free-audit quota with Simroute-grade smart visitor fingerprinting, surface results immediately in Client UI Deliveries on registration/login, and connect all main website workflows to registration & AI service ordering** | web, api, skills, sec | openspec/specs/client-cp-flow/spec.md | ✅ **done** |
 | [T603](.tasks/T603.md) | **P0** | **Declare w0m UI mobile-first with tablet portrait/landscape and well-wrapped desktop support (AgDR-0054), retire VIEW SIDE switcher, smooth real-time sidebar hat re-rendering, and master UI/UX design skills** | web, skills | openspec/specs/cp-context-shell/spec.md | ✅ **done** |
 | [T602](.tasks/T602.md) | **P1** | **Enforce TECH-DEBT.md Tracked grammar (D54), reconcile 16 paid debt rows, and harvest session location/parameter friction on worktree landing** | web, ext, skills | — | ✅ **done** |

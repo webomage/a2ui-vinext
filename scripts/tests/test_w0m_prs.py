@@ -336,9 +336,14 @@ def main() -> int:
         and "check-delta" in orca_sync_dry["precheck"],
     )
 
-    # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593)
+    # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593, T608)
     proposals_list = w0m_prs.build_pr_proposals()
-    check("build_pr_proposals returns 11 contribution proposals", len(proposals_list) == 11)
+    check(
+        "build_pr_proposals returns 13 contribution proposals including T608 Orca PRs",
+        len(proposals_list) == 13
+        and any(p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo" for p in proposals_list)
+        and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list),
+    )
     check(
         "build_pr_proposals formats structured Why / What For / How markdown body",
         all(

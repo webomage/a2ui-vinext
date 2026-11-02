@@ -2731,6 +2731,59 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
             "- **Verification**: Covered by `use-mobile-session-document-readers.test.ts`."
         ),
     },
+    "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo": {
+        "ticket": "T608",
+        "title": "feat(projects): discover nested subfolder git repos inside umbrella roots and resolve .w0m/sdlc.json issue targets",
+        "why": (
+            "1. When adding an umbrella or governance repository (such as a multi-repo estate root or a `-w0m` client wrapper whose root "
+            "`.gitignore` contains `/*` or member exclusions like `w0m-*`), `scanNestedRepos` short-circuited on the outer `.git` marker (`git_repo`) "
+            "and never scanned direct child repositories (`w0m-web`, `bridgeroad-app`, etc.), or filtered them out via `git check-ignore` before "
+            "checking for a nested `.git` marker (complementary to `#32872`, which handles plain non-git subfolders inside an outer repo).\n"
+            "2. Multi-repo workspaces and `-w0m` wrapper projects often track issues and PRs in a dedicated board repository declared in "
+            "`.w0m/sdlc.json` (`vcs.repo`, e.g. `webomage/wom7board`) or inside the nested application repository (`canonical_repo`, e.g. "
+            "`Bridgeroad-app/bridgeroad-app`), so querying the wrapper's `origin` remote returned zero or wrong issues/PRs."
+        ),
+        "what_for": (
+            "Allows users to add umbrella/meta-repositories as grouped multi-repo projects even when the root `.gitignore` ignores member "
+            "subfolders (`/*`), while automatically resolving the canonical GitHub Issue and PR repository from `.w0m/sdlc.json` (`vcs.repo` "
+            "or nested `canonical_repo` git remote)."
+        ),
+        "how": (
+            "- **`src/main/project-groups/nested-repo-discovery.ts` & `nested-repo-scan-rules.ts`**: Scans inside root git repositories for nested "
+            "child repos (`rootIsGitRepo: true`), checks `hasGitMarker(childPath)` at `depth === 0` before `.gitignore` filtering so explicit "
+            "top-level child repos survive `/*` ignore rules, and skips worktree/clone container directories (`.w0m`, `.worktrees`, `w0m-pr`).\n"
+            "- **`src/main/github/sdlc-issue-repository.ts`, `github-api-repository.ts`, & `work-item-list-request.ts`**: Resolves `.w0m/sdlc.json` "
+            "`vcs.repo` (when distinct from root `origin`) and falls back to the nested `canonical_repo` remote when the root repo is a `-w0m` wrapper.\n"
+            "- **Verification**: `64/64` Vitest unit tests passing across `sdlc-issue-repository.test.ts` (3/3), `nested-repo-discovery.test.ts` "
+            "(36/36), and `github-api-repository.test.ts` (25/25)."
+        ),
+    },
+    "stablyai/orca:feat/mobile-session-tab-reorder": {
+        "ticket": "T608",
+        "title": "feat(mobile): add session tab drag/sheet reordering and session.tabs.move relay write",
+        "why": (
+            "On Orca Mobile, the session tab strip (`MobileSessionTabStrip`) was strictly read-only in ordering: users could tap a tab to "
+            "activate it or long-press to open the bulk-close sheet (`Close Tab`, `Close Others`, `Close to Right`), but could not reorder "
+            "tabs horizontally or move tabs across split groups, nor did `mobile-session-write-operations.ts` expose the `session.tabs.move` "
+            "relay write operation."
+        ),
+        "what_for": (
+            "Enables mobile users to reorder session tabs both via horizontal drag-and-drop on the active tab pill and via `Move Tab Left` / "
+            "`Move Tab Right` actions in the long-press tab action sheet, with optimistic local reordering and live `session.tabs.move` "
+            "synchronization back to the desktop host."
+        ),
+        "how": (
+            "- **`mobile/src/session/mobile-session-write-operations.ts` & `mobile-session-route-types.ts`**: Adds the `sessionTabMove` "
+            "(`session.tabs.move`) write operation and `MobileSessionTabGroup` (`tabGroups`, `activeGroupId`) route contracts.\n"
+            "- **`mobile/src/session/mobile-session-tab-reorder.ts`**: Implements `groupSessionTabsByTopLevelId`, `computeSessionTabReorderPlan` "
+            "(keeping paired agent + terminal tabs together as a single top-level block and emitting `reorder` or `move-to-group` RPC payloads), "
+            "`resolveDraggedTabTargetIndex`, and `createReorderTabSheetActions`.\n"
+            "- **`mobile/src/session/MobileSessionTab.tsx`, `MobileSessionTabStrip.tsx`, & `use-mobile-session-screen-state.ts`**: Wires "
+            "`PanResponder` horizontal drag reordering on the active tab pill and `Move Tab Left` / `Move Tab Right` into the long-press sheet.\n"
+            "- **Verification**: `5/5` Vitest unit tests passing across `mobile-session-tab-reorder.test.ts` (4/4) and "
+            "`mobile-bulk-close-sheet-actions.test.ts` (1/1)."
+        ),
+    },
     "oxiglade/mlx-rs:feat/mlx-lm-gemma4-arch": {
         "ticket": "T601",
         "title": "feat(mlx-lm): add Gemma 4 architecture with KV sharing, ProportionalRoPE, and per_layer_config",

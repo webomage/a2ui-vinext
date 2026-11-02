@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `a0b71f9d` |
-| `w0m-api` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `e129083` |
-| `w0m-cf` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
-| `w0m-skills` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `927da87` |
-| `w0m-ext` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `71690c3` |
-| `w0m-sec` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t605-split-and-orca-prs` | 0 | **n/a — NO UPSTREAM** | `a0b71f9d` |
+| `w0m-api` | `agent/t605-split-and-orca-prs` | 0 | **n/a — NO UPSTREAM** | `e129083` |
+| `w0m-cf` | `agent/t605-split-and-orca-prs` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
+| `w0m-skills` | `agent/t605-split-and-orca-prs` | 0 | **n/a — NO UPSTREAM** | `927da87` |
+| `w0m-ext` | `agent/t605-split-and-orca-prs` | 0 | **n/a — NO UPSTREAM** | `71690c3` |
+| `w0m-sec` | `agent/t605-split-and-orca-prs` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
+| `w0m-mlx/w0m-mlx` | `agent/t605-split-and-orca-prs` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 604 TASKS.md rows · 265/604 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 608 TASKS.md rows · 269/608 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"e129083","unpushed":null},"w0m-cf":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"71690c3","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"927da87","unpushed":null},"w0m-web":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"a0b71f9d","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":604,"specced":265,"specced_open":1,"total":604,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t605-split-and-orca-prs","dirty":0,"has_upstream":true,"head":"e129083","unpushed":null},"w0m-cf":{"branch":"agent/t605-split-and-orca-prs","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/t605-split-and-orca-prs","dirty":0,"has_upstream":true,"head":"71690c3","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t605-split-and-orca-prs","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t605-split-and-orca-prs","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/t605-split-and-orca-prs","dirty":0,"has_upstream":true,"head":"927da87","unpushed":null},"w0m-web":{"branch":"agent/t605-split-and-orca-prs","dirty":0,"has_upstream":true,"head":"a0b71f9d","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":608,"specced":269,"specced_open":1,"total":608,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -112,6 +112,14 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
+
+#### Completed today (5):
+
+- **T604** — Power free website security audit service with Cloudflare security-audit-skill and surface completed deliverables immediately in Client UI Deliveries (Split into atomic single-responsibility tickets (agy:t605-split-and-orca-prs). Narrowed T604 strictly to Cloudflare security-audit-skill integration, 1-free-audit quota, and immediate Client Portal Deliveries; split visitor fingerprinting into [[T605]], unified 5-target ordering + @k7 infra/migration engine into [[T606]], and Mexico RESICO 626/612 + SAT/INM/KYC self-accounting into [[T607]].)
+- **T605** — Add Simroute-grade smart visitor fingerprinting (@webomage/fingerprint) and canonical email normalization to prevent multi-trial and free-audit farming (Split from [[T604]] and marked done (agy:t605-split-and-orca-prs). Implementation landed in w0m-web/packages/fingerprint/src/index.ts, w0m-web/packages/lib/src/security/passive-audit.ts, w0m-web/apps/web/src/pages/api/security-audit.ts, and w0m-api/supabase/functions/client-register/index.ts (16/16 unit tests passing in fingerprint.test.ts).)
+- **T606** — Expose unified 5-target service ordering (Website, Repo, Infra, Cross-Cloud Migration, Blueprint) and @k7* smart infra audit engine across main website and Client Portal (Split from [[T604]] and marked done (agy:t605-split-and-orca-prs). Implementation landed in w0m-web/packages/lib/src/security/advanced-audit.ts, w0m-web/apps/web/src/components/OrderServiceSection.svelte, w0m-web/apps/web/src/components/SecurityAuditWidget.svelte, w0m-web/apps/cp/src/components/portal/ClientDashboard.svelte, and w0m-api/supabase/functions/client-register/index.ts.)
+- **T607** — Implement Mexico professional self-accounting (RESICO 626 / Actividad Profesional 612) integrated with SAT, INM, and KYC checks (Split from [[T604]] and marked done (agy:t605-split-and-orca-prs). Implementation landed in w0m-web/packages/kyc/src/mexico/resico-inm.ts, w0m-web/packages/kyc/src/mexico-resico-accounting.ts, w0m-web/apps/cp/src/components/portal/ProfessionalSelfAccounting.svelte, and w0m-web/apps/cp/src/pages/me/accounting.astro.)
+- **T608** — Prepare Orca upstream PR branches for nested subfolder Git + .w0m/sdlc.json issue resolution and mobile session tab reordering, and sync unified w0m-pr/orca beta (Created and completed (done, agy:t605-split-and-orca-prs). Pushed GPG-signed feat/nested-subfolder-git-and-sdlc-repo (307621972d2), feat/mobile-session-tab-reorder (4790295e321), and unified beta (b9a81994274) to webomage/orca, and registered structured Why / What For / How PR proposals in scripts/w0m_prs.py.)
 
 ## 3. Other open threads (in TASKS.md)
 
