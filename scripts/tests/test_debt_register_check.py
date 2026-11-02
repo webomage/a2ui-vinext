@@ -123,10 +123,27 @@ code, out = run("| D11 | api | `src/lib/missing-keys.ts` still ships | x | T900 
 check("a dead path cannot excuse itself via a word in its own FILENAME",
       code == 1 and "DEAD PATH" in out, out[-300:])
 
-# UNOWNED is informational — the Tracked column has no grammar (D54).
+# D54 / T602 AC1: Tracked column grammar — closing an owner ticket gates, while found-at: / accepted: stay green.
+code, out = run("| D10 | api | a real thing whose owner ticket closed | x | owner: [[T901]] |\n")
+check("RED: an owner: [[T901]] where T901 is done fails as STALE OWNER",
+      code == 1 and "STALE OWNER / UNOWNED" in out and "D10" in out, out[-300:])
+
 code, out = run("| D10 | api | a real thing nobody owns | x | T901 |\n")
-check("UNOWNED is reported but does NOT gate",
-      code == 0 and "UNOWNED" in out and "D10" in out, out[-300:])
+check("RED: a bare T901 where T901 is done also fails as STALE OWNER",
+      code == 1 and "STALE OWNER / UNOWNED" in out and "D10" in out, out[-300:])
+
+code, out = run(
+    "| D10 | api | found during a closed ticket | x | found-at: [[T901]] (needs a T-row) |\n"
+    "| D12 | api | accepted floor from closed ticket | x | accepted: [[T901]] AC1 |\n"
+    "| D13 | api | actively owned by open ticket | x | owner: [[T900]] |\n"
+)
+check("GREEN: found-at: [[T901]], accepted: [[T901]], and owner: [[T900]] pass --enforce",
+      code == 0 and "STALE OWNER / UNOWNED" in out and ": 0" in out.split("STALE OWNER / UNOWNED")[1][:160],
+      out[-300:])
+
+code, out = run("| D14 | api | invalid tracked grammar | x | mystery-prefix: none |\n")
+check("RED: invalid Tracked prefix grammar fails --enforce",
+      code == 1 and "invalid Tracked grammar" in out and "D14" in out, out[-300:])
 
 print("\n── and refuses to report health over nothing ──")
 

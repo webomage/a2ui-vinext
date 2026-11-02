@@ -15,7 +15,7 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T17](/Users/proto/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -31,7 +31,7 @@
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T17](/Users/proto/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/Users/proto/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/agy-closeout-lessons` | 0 | **n/a — NO UPSTREAM** | `6e3d91d7` |
-| `w0m-api` | `agent/agy-closeout-lessons` | 0 | **n/a — NO UPSTREAM** | `28b4ac2` |
-| `w0m-cf` | `agent/agy-closeout-lessons` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
-| `w0m-skills` | `agent/agy-closeout-lessons` | 0 | **n/a — NO UPSTREAM** | `5723b03` |
-| `w0m-ext` | `agent/agy-closeout-lessons` | 0 | **n/a — NO UPSTREAM** | `2ec4f71` |
-| `w0m-sec` | `agent/agy-closeout-lessons` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/agy-closeout-lessons` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `cfee32ec` |
+| `w0m-api` | `agent/t602-debt-hygiene` | **1** | **n/a — NO UPSTREAM** | `b100612` |
+| `w0m-cf` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
+| `w0m-skills` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `1dd7f86` |
+| `w0m-ext` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `71690c3` |
+| `w0m-sec` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
+| `w0m-mlx/w0m-mlx` | `agent/t602-debt-hygiene` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 601 TASKS.md rows · 263/601 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 604 TASKS.md rows · 265/604 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/agy-closeout-lessons","dirty":0,"has_upstream":true,"head":"28b4ac2","unpushed":null},"w0m-cf":{"branch":"agent/agy-closeout-lessons","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/agy-closeout-lessons","dirty":0,"has_upstream":true,"head":"2ec4f71","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/agy-closeout-lessons","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/agy-closeout-lessons","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/agy-closeout-lessons","dirty":0,"has_upstream":true,"head":"5723b03","unpushed":null},"w0m-web":{"branch":"agent/agy-closeout-lessons","dirty":0,"has_upstream":true,"head":"6e3d91d7","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":601,"specced":263,"specced_open":1,"total":601,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t602-debt-hygiene","dirty":1,"has_upstream":true,"head":"b100612","unpushed":null},"w0m-cf":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"71690c3","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"1dd7f86","unpushed":null},"w0m-web":{"branch":"agent/t602-debt-hygiene","dirty":0,"has_upstream":true,"head":"cfee32ec","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":604,"specced":265,"specced_open":1,"total":604,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,7 +113,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (16):
+#### Completed today (19):
 
 - **T14** — wom7mlx refresh + Rust Gemma launcher (AC1: Completed time-boxed spike comparing webomage/mlx-rs (oxiglade/mlx-rs v0.33.0 + mlx-lm 0.33.0) vs candle (mistral.rs v0.8.x) vs oMLX (0.7.3-w0m) + mlx-vlm (0.7.11-w0m), and audited w0m-mlx-rs (w0m-mlx/w0m-mlx) + casualuser/mlx-rs (5b6dc1ab) for upstream contribution readiness (verdict: do not upstream legacy GLM-4.6V / CPU-loop dequantize_affine or obsolete build.rs env vars; future upstream PRs from webomage/mlx-rs target mlx-lm/src/arch/gemma4/). Documented in .agents/reports/-t14-t82-t83-mlx-rs-review-and-gemma4-architecture.md.)
 - **T82** — Gemma 4 Rust port (wom7-mlx-rs) (✅  — Completed (6/6 ACs))
@@ -131,6 +131,9 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T598** — Unified w0m CLI tool (w0m skill, w0m project, w0m agent, w0m tree, w0m session) for skills and multi-project management (Created, implemented, and verified done by agy:agy-orca (Track C) per owner direction: "I also think we should get something like w0m cli tool for skills and projects management".)
 - **T599** — Private cross-host workload state persistence, Linux session archive/closeout, and w0m-prs new PR/branch discovery with Orca task/automation registration ((agy:agy-t599, Track C): Completed AC1–AC4 (status: done))
 - **T600** — Fix CP SidebarHatSwitcher no-op dropdown, stop Project Hats resetting to Artemio, and compact ContextSwitcher multi-role subtitle (Completed (agy:agy-hats, 4/4 ACs): Fixed SidebarHatSwitcher.svelte & /api/project/hats payload mismatch (id/project_id + assigned_hats), persisted selected hat project (wom_selected_hat_project_id) with own-org project priority (w0m Platform on /o/webomage/projects) and cross-island wom:project-hat-changed synchronization across MyProjectHats.svelte / HatSwitcher.svelte / SidebarHatSwitcher.svelte, and compacted multi-role subtitles (Tech Lead +6) in ContextSwitcher.svelte. Verified 41/41 unit tests.)
+- **T602** — Enforce TECH-DEBT.md Tracked grammar (D54), reconcile 16 paid debt rows, and harvest session location/parameter friction on worktree landing (Completed (done, agy:t602-debt-hygiene). Verified debt_register_check.py --enforce (24 row(s) + 44 closed-ledger row(s) · 0 findings), test_debt_register_check.py, test_mcp_ratchet.py, test_version_doctor.py (25/25), test_lessons_query.py (8/8), test_agent_tree.py (80/80), and just skill check (29 managed skill(s) match the lockfile).)
+- **T603** — Declare w0m UI mobile-first with tablet portrait/landscape and well-wrapped desktop support (AgDR-0054), retire VIEW SIDE switcher, smooth real-time sidebar hat re-rendering, and master UI/UX design skills (Completed (done). Recorded AgDR-0054, updated AppShell.svelte, SidebarHatSwitcher.svelte, CpShell.svelte, vendored webomage-design, figma-designer, and landing-page-design into w0m-skills, verified ProjectManager.test.ts (8/8 passed) and CpShell.test.ts, and published .agents/reports/CP-SIDEBAR-HAT-UX-AUDIT-2026-11-01.md.)
+- **T604** — Power free website security audit service with Cloudflare security-audit-skill, enforce 1-free-audit quota with Simroute-grade smart visitor fingerprinting, surface results immediately in Client UI Deliveries on registration/login, and connect all main website workflows to registration & AI service ordering (Completed (done). Integrated cloudflare/security-audit-skill (cfSecurityAudit), Simroute-grade smart visitor fingerprinting (@webomage/fingerprint sfp_... + 1-free-audit quota), @k7 Smart Infra Audit & Cross-Cloud Migration engine (@k7c, @k7tg, @k7s, @k7d, @k7env, @k7spec), immediate Client Portal Deliveries (client-register -> orgs.service_usage.deliveries + ClientDashboard.svelte + SecurityAuditReportViewer.svelte), main website visibility (Header.astro, HomeServices.astro, ServicesDetailed.astro, SecurityAuditWidget.svelte, ChatApp.svelte), and Mexico Professional Self-Accounting (RESICO 626 / 612 + SAT/INM/KYC in @wom/kyc and /me/accounting). All 51 unit tests across fingerprint.test.ts, passive-audit.spec.ts, advanced-audit.test.ts, entitlements.spec.ts, and kyc.test.ts pass.)
 
 ## 3. Other open threads (in TASKS.md)
 

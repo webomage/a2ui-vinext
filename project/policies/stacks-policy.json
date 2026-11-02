@@ -16,7 +16,11 @@
           "detect": "dep:astro",
           "note": "Astro 6 — the 5 workspace apps (cp/demo/job/join/web).",
           "skills": [
-            "playwright-best-practices"
+            "playwright-best-practices",
+            "webomage-design",
+            "landing-page-design",
+            "figma-designer",
+            "security-audit"
           ]
         },
         {
@@ -24,7 +28,10 @@
           "detect": "dep:svelte",
           "note": "Svelte 5 components.",
           "skills": [
-            "playwright-best-practices"
+            "playwright-best-practices",
+            "webomage-design",
+            "landing-page-design",
+            "figma-designer"
           ]
         },
         {
@@ -35,7 +42,11 @@
           "name": "tailwindcss",
           "detect": "dep:tailwindcss",
           "note": "Tailwind 4.",
-          "skills": []
+          "skills": [
+            "webomage-design",
+            "landing-page-design",
+            "figma-designer"
+          ]
         },
         {
           "name": "@supabase/supabase-js",

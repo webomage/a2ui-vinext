@@ -22,15 +22,27 @@
       "version": "canonical",
       "observed_version": "2026.07.27-1785131185"
     },
+    "figma-designer": {
+      "provider": "w0m-native",
+      "version": "canonical"
+    },
     "firecrawl": {
       "provider": "skills.sh",
       "source": "firecrawl/skills",
       "version": "unknown"
     },
+    "landing-page-design": {
+      "provider": "w0m-native",
+      "version": "canonical"
+    },
     "mmd-validate": {
       "provider": "w0m-native",
       "version": "canonical",
       "observed_version": "2026.10.26-1793055094"
+    },
+    "security-audit": {
+      "provider": "w0m-native",
+      "version": "canonical"
     },
     "socrates": {
       "provider": "w0m-native",
@@ -75,7 +87,7 @@
     "w0m-sdlc-archive": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.10.21-1792643707"
+      "observed_version": "2026.11.01-1793588043"
     },
     "w0m-sdlc-build": {
       "provider": "w0m-native",
@@ -115,7 +127,7 @@
     "w0m-sdlc-start": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.10.26-1793009642"
+      "observed_version": "2026.11.01-1793588043"
     },
     "w0m-sdlc-verify": {
       "provider": "w0m-native",
@@ -146,6 +158,11 @@
       "provider": "w0m-native",
       "version": "canonical",
       "observed_version": "2026.10.26-1793009642"
+    },
+    "webomage-design": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.11.01-1793590298"
     }
   },
   "auto_recommend": true

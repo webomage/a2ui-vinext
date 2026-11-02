@@ -142,6 +142,42 @@ Detailed context line here.
         temp_path.unlink(missing_ok=True)
 
 
+def test_harvest_friction() -> None:
+    with tempfile.TemporaryDirectory(prefix="t602-friction-") as td:
+        tdir = Path(td)
+        transcript = tdir / "transcript.jsonl"
+        state_file = tdir / "landing-friction.jsonl"
+        sample_lines = [
+            json.dumps({"content": "Encountered error: cannot read '/home/aleksei/.w0m/work/t602/w0m/scripts/agent_tree.py': file does not exist"}),
+            json.dumps({"content": "usage: prog\nprog: error: unrecognized arguments: --bogus-flag"}),
+            json.dumps({"content": "refused: dirty: modified tracked files in w0m-web"}),
+        ]
+        transcript.write_text("\n".join(sample_lines) + "\n", encoding="utf-8")
+
+        res = run_tool(
+            "--harvest-friction",
+            "--transcript",
+            str(transcript),
+            "--state-file",
+            str(state_file),
+            "--tree-name",
+            "t602-test",
+            "--json",
+        )
+        if res.returncode != 0:
+            failures.append(f"test_harvest_friction: expected exit 0, got {res.returncode}: {res.stderr}")
+            return
+        rep = json.loads(res.stdout)
+        if rep.get("harvested_count") != 3:
+            failures.append(f"test_harvest_friction: expected 3 harvested items, got {rep.get('harvested_count')}")
+        by_cat = rep.get("by_category") or {}
+        loc_items = by_cat.get("location_miss") or []
+        if not loc_items or "w0m-web/project/scripts/agent_tree.py" not in str(loc_items[0].get("resolved")):
+            failures.append(f"test_harvest_friction: expected canonical path resolution for agent_tree.py, got {loc_items}")
+        if not state_file.is_file() or len(state_file.read_text(encoding="utf-8").splitlines()) != 3:
+            failures.append("test_harvest_friction: expected 3 persisted JSONL rows in state_file")
+
+
 def main() -> int:
     test_live_summary()
     test_live_search()
@@ -150,6 +186,7 @@ def main() -> int:
     test_json_output()
     test_harness2_index()
     test_synthetic_fixture()
+    test_harvest_friction()
 
     if failures:
         print(f"FAILED — {len(failures)} test(s) failed:")
@@ -157,7 +194,7 @@ def main() -> int:
             print(f"  • {f}")
         return 1
 
-    print("[PASS] test_lessons_query: 7/7 tests passed.")
+    print("[PASS] test_lessons_query: 8/8 tests passed.")
     return 0
 
 

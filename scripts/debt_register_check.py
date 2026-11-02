@@ -18,21 +18,14 @@ What it checks, all of it mechanical:
   · **DUPLICATE ID** — two rows claiming the same D-number
   · **DEAD PATH** — a file the row cites that no longer exists
   · **DEAD TICKET** — a `[[T##]]`/`T##` reference with no ticket file
-  · **UNOWNED** — the Tracked cell names only tickets that are finished, so no live ticket is
-    carrying this row. ⚠️ **This is informational, not a defect.** Read on for why.
-
-🔴 **The `Tracked` column has NO DEFINED GRAMMAR, and that is the real finding.** It holds at least
-four different statements today, and free text cannot distinguish them:
-
-    T89 gap                        found during T89; owned by nobody
-    T168 (recorded), consumed by…  T168 RECORDED it — T168 was never going to fix it
-    T169 AC1/AC6 (accepted)        an ACCEPTED risk, not pending work
-    — (found at T135's gate)       honestly unowned, with provenance
-
-A first version of this check read all of those as *"tracked by a finished ticket ⇒ stale"* and
-reported **17 rows**, of which the ones examined were all still-real debt that had simply outlived
-the ticket that noticed them. ⇒ **Give the column a grammar before gating on it** — e.g. an explicit
-`owner:` vs `found-at:` — and until then this class stays informational.
+  · **STALE OWNER / INVALID TRACKED GRAMMAR (D54 / T602 AC1)** — the `Tracked` column must use an
+    explicit prefix grammar:
+    - `owner: [[T##]]` (or bare `T##` in legacy/test fixtures): active ticket owning the paydown;
+      fails (`STALE OWNER`) if every referenced ticket is `done` or `archived`.
+    - `found-at: [[T##]] ...`: historical provenance of where the debt was discovered; ticket files
+      must exist (`DEAD TICKET`), and `done`/`archived` status is valid.
+    - `accepted: ...`: accepted risk, ratchet, or floor; any referenced ticket files must exist.
+    - `— ...`: honestly unowned (`— (needs a T-row)`).
   · **RESOLVED, NOT DELETED** — a row whose text says RESOLVED/PAID, still sitting in the register
   · **UNKNOWN CITATION (T331 AC1/AC3)** — a `D##` citation in live prose/skills/config that has
     neither an open row nor a `## Closed-Debt Ledger` entry in `TECH-DEBT.md`
@@ -303,14 +296,54 @@ def main() -> int:
         # rotten register, and a report that noisy is one nobody reads.
         cells = [c.strip() for c in body.split("|")]
         tracked = cells[-2] if len(cells) >= 2 else ""
-        refs = {a or b for a, b in TREF.findall(tracked)}
+        tracked_norm = tracked.strip()
+        refs = {a or b for a, b in TREF.findall(tracked_norm)}
+        statuses: dict[str, str | None] = {}
         for t_ in sorted(refs):
             st = ticket_status(t_)
+            statuses[t_] = st
             if st is None:
                 findings["dead_ticket"].append({"id": did, "detail": f"{t_} has no ticket file"})
-            elif st in ("done", "archived"):
+
+        is_found_at = bool(re.match(r"^found-at:\s*", tracked_norm, re.I))
+        is_accepted = bool(re.match(r"^accepted:\s*", tracked_norm, re.I))
+        is_unowned_dash = bool(re.match(r"^[—–-](?:\s|\(|$)", tracked_norm))
+        is_owner = bool(re.match(r"^owner:\s*", tracked_norm, re.I))
+        is_bare_ticket = bool(re.match(r"^(?:\[\[T\d+[a-z]?\]\]|T\d+[a-z]?)\b", tracked_norm))
+
+        if is_found_at:
+            if not refs:
                 findings["stale_tracking"].append(
-                    {"id": did, "detail": f"only reference is {t_} ({st})"})
+                    {"id": did, "detail": f"found-at: requires a [[T##]] reference ('{tracked_norm}')"}
+                )
+        elif is_accepted or is_unowned_dash:
+            pass
+        elif is_owner or is_bare_ticket:
+            existing_refs = [t_ for t_ in sorted(refs) if statuses.get(t_) is not None]
+            live_refs = [
+                t_ for t_ in existing_refs if statuses.get(t_) not in ("done", "archived")
+            ]
+            if existing_refs and not live_refs:
+                closed_desc = ", ".join(f"{t_} ({statuses[t_]})" for t_ in existing_refs)
+                findings["stale_tracking"].append({
+                    "id": did,
+                    "detail": (
+                        f"owner reference {closed_desc} is closed — move paid row to "
+                        "Closed-Debt Ledger or reclassify as found-at:/accepted:"
+                    ),
+                })
+            elif not refs:
+                findings["stale_tracking"].append(
+                    {"id": did, "detail": f"owner: requires a [[T##]] reference ('{tracked_norm}')"}
+                )
+        else:
+            findings["stale_tracking"].append({
+                "id": did,
+                "detail": (
+                    f"invalid Tracked grammar '{tracked_norm}' "
+                    "(expected owner:, found-at:, accepted:, or —)"
+                ),
+            })
 
         # The Debt cell is the first field after the id.
         debt_cell = body.split("|")[1] if body.count("|") >= 1 else body
@@ -365,9 +398,9 @@ def main() -> int:
                         "detail": f"{rel}:{lineno} has no open row and no Closed-Debt Ledger entry",
                     })
 
-    gating = {k: v for k, v in findings.items() if k != "stale_tracking"}
+    gating = findings
     total = sum(len(v) for v in gating.values())
-    informational = len(findings["stale_tracking"])
+    informational = 0
 
     if args.json:
         print(json.dumps({
@@ -394,8 +427,7 @@ def main() -> int:
         "duplicate": ("[HIGH]", "DUPLICATE ID"),
         "dead_path": ("[WARN]", "DEAD PATH — cites a missing file, and does NOT say it was removed"),
         "dead_ticket": ("[HIGH]", "DEAD TICKET — referenced ticket has no file"),
-        "stale_tracking": ("[INFO]", "UNOWNED — no LIVE ticket in the Tracked cell (informational: "
-                                    "the column has no grammar, see the module docstring)"),
+        "stale_tracking": ("[HIGH]", "STALE OWNER / UNOWNED — owner ticket is closed or Tracked cell lacks valid grammar (owner:, found-at:, accepted:, —)"),
         "resolved_not_deleted": ("[WARN]", "RESOLVED, NOT DELETED"),
         "unknown_citation": ("[HIGH]", "UNKNOWN CITATION — cited D## has no open row and no Closed-Debt Ledger entry"),
         "stale_assertion": ("[HIGH]", "STALE OPEN ASSERTION — cites closed D## as still open/tracked"),

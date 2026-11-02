@@ -9,7 +9,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: archive
-  version: "2026.10.21-1792643707"
+  version: "2026.11.01-1793588043"
 ---
 
 # w0m-sdlc-archive — the close + lessons gate
@@ -29,8 +29,7 @@ Read `.w0m/sdlc.json`. Use `tickets` (board/dir/sync), `specs`, `tech_debt`, `le
    (re-run `tickets.sync`; ticket markdown is the source).
 3. **Archive the spec.** If `specs.system:"openspec"`, invoke `openspec-archive-change` to move the
    change into the archive and sync deltas into the main specs. (`specs.system:"none"` → skip.)
-4. **Refresh tech-debt.** Update `{tech_debt.register}` (TECH-DEBT.md): add rows for debt this change introduced, DELETE rows it paid down (git history is the audit trail). Anything introduced/paid-down should be reflected
-   in `{tech_debt.register}`; DELETE rows this ticket resolved (git history is the record).
+4. **Refresh tech-debt.** Update `{tech_debt.register}` (estate-root `TECH-DEBT.md`): add rows for debt this change introduced (using the explicit `Tracked` grammar: `owner: [[T##]]`, `found-at: [[T##]]`, `accepted: [[T##]]`, or `— (needs a T-row)`), and move any `D##` rows this ticket paid down from the open tables into `## Closed-Debt Ledger` with resolution evidence. Run `just debt-check --enforce` to verify zero stale `owner:` links or open paid rows remain.
 5. **Capture lessons — into the RIGHT register (`{lessons.path}` / `LESSONS.md`), governed by the 4-Home Knowledge Split (T178 AC3–AC5).**
    Resolve the target register from `.w0m/sdlc.json -> lessons.path` (or `lessons_surface.file`, defaulting to repo-root `LESSONS.md`).
    **One fact, one home (4-Home Knowledge Split):**

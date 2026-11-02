@@ -52,7 +52,7 @@ BASELINE = WEB / "project" / "mcp-exposure-baseline.json"
 # Ordered risk ladders. Comparison is by RANK, never by equality: `loopback → host` is a widening
 # even though both are "not wildcard", and `unknown → true` means auth stopped gating `initialize`.
 BIND_RANK = {"loopback": 0, "host": 1, "wildcard": 2}
-MCP_RANK = {False: 0, "unknown": 1, True: 2}
+MCP_RANK = {None: 0, False: 0, "unknown": 1, True: 2}
 STATUSES = ("accepted", "known-open")
 
 
@@ -60,12 +60,13 @@ def posture_of(s: dict, lan: dict) -> dict:
     """One address:port row → its risk posture."""
     p = s.get("probe")
     wild = bool(s.get("wildcard"))
+    probed = bool(s.get("probed", "probe" in s))
     return {"bind": "wildcard" if wild else ("loopback" if s.get("loopback") else "host"),
             "lan_reachable": lan.get((s["command"], s["port"])) if wild else None,
             # `probe` ABSENT means never asked (the surface does not speak HTTP); `probe: null`
-            # means asked and not MCP. Conflating them turns a blind spot into a clean bill of health.
-            "probed": bool(s.get("probed", "probe" in s)),
-            "mcp": p.get("mcp", False) if p else False,
+            # means asked and not MCP. Conflating them turns a blind spot into a clean bill of health (D26 / T602 AC2).
+            "probed": probed,
+            "mcp": (p.get("mcp", False) if p else False) if probed else None,
             "unauth_tools_list": p.get("unauth_tools_list") if p else None,
             "tools": sorted(set(p.get("tools") or [])) if p else [],
             "addrs": [s.get("addr")], "ports": [s["port"]]}
@@ -76,11 +77,13 @@ def merge(a: dict, b: dict) -> dict:
     ephemeral ports behind one `command:*` entry. One definition, because the failure mode is the
     same both times: take the first row seen and an open server reports as gated."""
     tl_a, tl_b = a["unauth_tools_list"], b["unauth_tools_list"]
+    probed = a["probed"] or b["probed"]
+    merged_mcp = max(a["mcp"], b["mcp"], key=lambda x: (MCP_RANK[x], x is not None))
     return {"bind": max(a["bind"], b["bind"], key=lambda x: BIND_RANK[x]),
             "lan_reachable": True if (a["lan_reachable"] or b["lan_reachable"])
                              else (a["lan_reachable"] if a["lan_reachable"] is not None else b["lan_reachable"]),
-            "probed": a["probed"] or b["probed"],
-            "mcp": max(a["mcp"], b["mcp"], key=lambda x: MCP_RANK[x]),
+            "probed": probed,
+            "mcp": merged_mcp if probed else None,
             # 200 anywhere means the surface is open, whatever the other family answered. A merge
             # that only fills an EMPTY slot lets a 401 on ::1 mask a 200 on 127.0.0.1.
             "unauth_tools_list": 200 if 200 in (tl_a, tl_b) else (tl_a if tl_a is not None else tl_b),
@@ -228,7 +231,10 @@ def validate(accepted: dict) -> str | None:
         if e.get("bind") not in BIND_RANK:
             return f"{where}.bind is {e.get('bind')!r} — must be one of {tuple(BIND_RANK)}"
         if e.get("mcp") not in MCP_RANK:
-            return f"{where}.mcp is {e.get('mcp')!r} — must be true, false or \"unknown\""
+            return f"{where}.mcp is {e.get('mcp')!r} — must be true, false, null, or \"unknown\""
+        if e.get("probed") is False and e.get("mcp") is not None:
+            return (f"{where}.mcp is {e.get('mcp')!r} with probed=false — unprobed ports must "
+                    f"record mcp=null (not false)")
         if not isinstance(e.get("tools"), list):
             return f"{where}.tools must be a list of tool NAMES"
     return None

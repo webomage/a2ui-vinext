@@ -85,7 +85,8 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 | **Architectural & Design Decisions** | `docs/DECISIONS.md` (`just decisions`) | Indexed record of all decided architectural choices (T232) |
 | **Architectural Anti-Patterns** | `docs/ANTI-PATTERNS.md` | Banned anti-patterns (fallback traps, lava flows, dual SSOT) & invariants |
 | **Ticket Queue & Task Priorities** | `TASKS.md` (`just tasks`, `just tasks hot`) | Ranked task queue with status, priority, and ACs |
-| **Decided Technical Debt** | `TECH-DEBT.md` (`just debt-check`) | Clean, non-drifting list of accepted debts |
+| **Decided Technical Debt** | `TECH-DEBT.md` (`just debt-check`) | Clean, non-drifting list of accepted debts + `## Closed-Debt Ledger` |
+| **Worktree Late-Learn Friction** | `just lessons-harvest` (`scripts/lessons_query.py --harvest-friction`) | Harvests location misses, CLI/schema errors, and gate refusals from transcripts & `agent-tree-land` (T602) |
 | **Tech Stacks & Command Registry** | `project/stacks-policy.json` (`just discovery`) | Per-stack contract mapping tools to `just` commands |
 | **Estate & Client Port Governance** | `project/ports-policy.json` (`just ports-check`) | Canonical port registry (`4321–4325` apps, `8787/8788` headroom, `8790` `w0m-cf`, `4400–4499` client projects, T402) |
 | **Estate File Layout & Hygiene** | `project/layout-policy.json` (`just layout-check`) | Tracked file directory classes, stale report citations, and `.gitignore` justification across 8 repos (T446) |
@@ -93,4 +94,16 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 | **Universal System Standards & SSOT** | `docs/standards/SYSTEM-STANDARDS-MATRIX.md` (`just standards-check`) | 10-layer RFC/Standard matrix, SSOT authority graph, meta-asset JSON Schemas, and coverage engine (T214) |
 | **System Topology & Boundaries** | `docs/ECOSYSTEM.md` & `docs/ARCHITECTURE.md` | Maps cross-boundary data and service flows |
 | **Backend Knowledge Base Index** | `docs/backend/KB-INDEX.md` | Curated index for backend, DB, and edge functions |
+
+### Canonical Script & Policy Locations (`@wom` root vs `w0m-web/project/`)
+
+| Surface | Canonical Path | Never Guess / Stale Path |
+|---|---|---|
+| **Ticket Files & Queue** | `.tasks/T##.md` & `TASKS.md` | `w0m-web/TASKS.md`, `project/tickets/T##.md` |
+| **Technical Debt Register** | `TECH-DEBT.md` & `scripts/debt_register_check.py` | `w0m-web/TECH-DEBT.md`, `w0m-web/project/scripts/debt_register_check.py` |
+| **Lessons & Friction Harvester** | `LESSONS.md`, `scripts/lessons_query.py`, `w0m-web/project/scripts/lessons_check.py` | `w0m-web/LESSONS.md`, `scripts/lessons_check.py` |
+| **Agent Tree & Release Scripts** | `w0m-web/project/scripts/agent_tree.py` & `scripts/release.py` | `scripts/agent_tree.py` |
+| **Suite Runner & Registry** | `scripts/run_suites.py` & `w0m-web/project/test-suites.json` | `w0m-web/project/scripts/run_suites.py`, `project/test-suites.json` |
+| **Graph & MCP Ratchet** | `scripts/graph_health.py`, `scripts/mcp_ratchet.py`, `w0m-web/project/mcp-exposure-baseline.json` | `w0m-web/project/scripts/graph_health.py`, `project/mcp-exposure-baseline.json` |
+| **Version & Ticket Doctors** | `w0m-web/project/scripts/version_doctor.py`, `w0m-web/project/scripts/ticket_audit.py` | `scripts/version_doctor.py`, `scripts/ticket_audit.py` |
 

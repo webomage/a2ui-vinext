@@ -33,6 +33,9 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T604](.tasks/T604.md) | **P0** | **Power free website security audit service with Cloudflare security-audit-skill, enforce 1-free-audit quota with Simroute-grade smart visitor fingerprinting, surface results immediately in Client UI Deliveries on registration/login, and connect all main website workflows to registration & AI service ordering** | web, api, skills, sec | openspec/specs/client-cp-flow/spec.md | ✅ **done** |
+| [T603](.tasks/T603.md) | **P0** | **Declare w0m UI mobile-first with tablet portrait/landscape and well-wrapped desktop support (AgDR-0054), retire VIEW SIDE switcher, smooth real-time sidebar hat re-rendering, and master UI/UX design skills** | web, skills | openspec/specs/cp-context-shell/spec.md | ✅ **done** |
+| [T602](.tasks/T602.md) | **P1** | **Enforce TECH-DEBT.md Tracked grammar (D54), reconcile 16 paid debt rows, and harvest session location/parameter friction on worktree landing** | web, ext, skills | — | ✅ **done** |
 | [T601](.tasks/T601.md) · [#601](https://github.com/casualuser/webomage.com/issues/601) | **P1** | **Proper MLX Gemma 4 port across w0m-mlx, webomage/mlx-rs, and webomage/mlx-lm PRs** | root, mlx, web | — | ✅ **done** |
 | [T600](.tasks/T600.md) | **P1** | **Fix CP SidebarHatSwitcher no-op dropdown, stop Project Hats resetting to Artemio, and compact ContextSwitcher multi-role subtitle** | web | openspec/specs/identity-surface/spec.md | ✅ **done** |
 | [T599](.tasks/T599.md) | **P1** | **Private cross-host workload state persistence, Linux session archive/closeout, and w0m-prs new PR/branch discovery with Orca task/automation registration** | tooling, skills | openspec/changes/2026-11-01-orca-session-naming-and-ax-workflows | ✅ **done** |

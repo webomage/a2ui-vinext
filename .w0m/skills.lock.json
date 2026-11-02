@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-10-28T20:49:12.295Z",
+  "generatedAt": "2026-11-02T04:31:19.862Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -71,7 +71,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-archive",
-      "integrity": "sha256-41c74554a959a03b522fbc78cc13805fa04745245ef465dead5b2198f20d1cf7"
+      "integrity": "sha256-ead820f07fa022a73e0bdf0bee621fe59ba2664a77dc02f190487cd97ceea943"
     },
     "w0m-sdlc-build": {
       "provider": "w0m-native",
@@ -127,7 +127,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-start",
-      "integrity": "sha256-e5284534c3cb1a7bdfd78856326782b37f85acfc73d22a07acc51cf88f1d79cf"
+      "integrity": "sha256-4b63807780b15a4ab4d36d919ad18926844543164f1b1a050b81a48aca8b61ce"
     },
     "w0m-sdlc-verify": {
       "provider": "w0m-native",
@@ -205,7 +205,35 @@
       "resolved": "unknown",
       "scope": "project",
       "path": ".agents/skills/firecrawl",
-      "integrity": "sha256-dc12b0608437f58b20aff824d09d893db3f83dadd3c5b3bf7cb495152e9144fd"
+      "integrity": "sha256-c72530268ffa13d37eb2d6881f04f3ec4f3369aaa04320cd13092d7a19a7d2d4"
+    },
+    "figma-designer": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/figma-designer",
+      "integrity": "sha256-cab853d6759b228fe6690ddc5f956e3372891fbefea0c88767c1404ff7db87a7"
+    },
+    "landing-page-design": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/landing-page-design",
+      "integrity": "sha256-9b27ab26dffde3f57b1530a485616de68db5bd8cabc68fcd07e2792fe6b900da"
+    },
+    "security-audit": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/security-audit",
+      "integrity": "sha256-8c8ff3ec611eedefefd63991fd2fb0f3b0a46080a3b3bddacc8beab81797e50e"
+    },
+    "webomage-design": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/webomage-design",
+      "integrity": "sha256-3f2438a019f7731d240852e1f00eefc8670e0d073d153bd09684bba8b63ced15"
     }
   }
 }

@@ -382,15 +382,15 @@ def load_manifest(v: str) -> dict[str, str]:
     return json.loads(f.read_text())["repos"]
 
 
-def provision_worktree_fixtures(root: Path) -> None:
+def provision_worktree_fixtures(root: Path, estate: Path = ESTATE) -> None:
     """Pass through read-only gitignored fixtures and dependencies needed by offline suites."""
     # 1. External dependencies / pinned binaries (_ext is gitignored in root .gitignore)
-    ext_src, ext_dst = ESTATE / "_ext", root / "_ext"
+    ext_src, ext_dst = estate / "_ext", root / "_ext"
     if ext_src.exists() and not ext_dst.exists():
         ext_dst.symlink_to(ext_src)
 
     # 2. Deploy logs (deploy-logs is gitignored in root .gitignore)
-    logs_src, logs_dst = ESTATE / "deploy-logs", root / "deploy-logs"
+    logs_src, logs_dst = estate / "deploy-logs", root / "deploy-logs"
     if logs_src.exists():
         logs_dst.mkdir(exist_ok=True)
         for f in logs_src.glob("*.log"):
@@ -399,13 +399,13 @@ def provision_worktree_fixtures(root: Path) -> None:
                 shutil.copy2(f, df)
 
     # 3. Credential snapshot (gitignored in w0m-web/.gitignore)
-    cred_src = Repo("w0m-web").abs() / "project" / "credential-snapshot.json"
+    cred_src = Repo("w0m-web").abs(estate) / "project" / "credential-snapshot.json"
     cred_dst = Repo("w0m-web").abs(root) / "project" / "credential-snapshot.json"
     if cred_src.exists() and not cred_dst.exists():
         shutil.copy2(cred_src, cred_dst)
 
     # 4. Audit reports (gitignored in w0m-web/.gitignore)
-    audit_src = Repo("w0m-web").abs() / "docs" / "audit_and_research"
+    audit_src = Repo("w0m-web").abs(estate) / "docs" / "audit_and_research"
     audit_dst = Repo("w0m-web").abs(root) / "docs" / "audit_and_research"
     if audit_src.exists():
         audit_dst.mkdir(parents=True, exist_ok=True)
@@ -414,14 +414,18 @@ def provision_worktree_fixtures(root: Path) -> None:
             if not df.exists():
                 shutil.copy2(f, df)
 
-    # 5. mmd-validate node_modules (gitignored in w0m-skills/.gitignore)
-    mmd_src = Repo("w0m-skills").abs() / "skills" / "mmd-validate" / "node_modules"
+    # 5. w0m-skills & mmd-validate node_modules (gitignored in w0m-skills/.gitignore)
+    skills_nm_src = Repo("w0m-skills").abs(estate) / "node_modules"
+    skills_nm_dst = Repo("w0m-skills").abs(root) / "node_modules"
+    if skills_nm_src.exists() and not skills_nm_dst.exists():
+        skills_nm_dst.symlink_to(skills_nm_src)
+    mmd_src = Repo("w0m-skills").abs(estate) / "skills" / "mmd-validate" / "node_modules"
     mmd_dst = Repo("w0m-skills").abs(root) / "skills" / "mmd-validate" / "node_modules"
     if mmd_src.exists() and not mmd_dst.exists():
         mmd_dst.symlink_to(mmd_src)
 
     # 6. apps/web/src/.generated snapshots (gitignored in w0m-web/.gitignore)
-    gen_src = Repo("w0m-web").abs() / "apps" / "web" / "src" / ".generated"
+    gen_src = Repo("w0m-web").abs(estate) / "apps" / "web" / "src" / ".generated"
     gen_dst = Repo("w0m-web").abs(root) / "apps" / "web" / "src" / ".generated"
     if gen_src.exists():
         gen_dst.mkdir(parents=True, exist_ok=True)

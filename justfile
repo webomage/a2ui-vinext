@@ -1328,9 +1328,12 @@ state-brief:
 state-doctor-test:
     @python3 scripts/tests/test_state_doctor.py
 
-# ── Lessons Register (T232 / T414) ───────────────────────────────────────────
+# ── Lessons Register (T232 / T414 / T602) ────────────────────────────────────
 lessons *args:
     @python3 scripts/lessons_query.py {{ args }}
+
+lessons-harvest *args:
+    @python3 scripts/lessons_query.py --harvest-friction {{ args }}
 
 lessons-test:
     @python3 scripts/tests/test_lessons_query.py

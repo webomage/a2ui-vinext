@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: start
-  version: "2026.10.26-1793009642"
+  version: "2026.11.01-1793588043"
 ---
 
 # w0m-sdlc-start — the ticket kickoff gate
@@ -63,7 +63,7 @@ and note that a command in `commands.needs_secrets` WILL fail until the session 
 
 ## Step 1 — Resolve the ticket
 - If the user gave an id, use it (prefix from `tickets.id_prefix`, e.g. `T37`).
-- If not: **run `just tasks`** (from `w0m-api/`) and present its ranked candidates. Do **not**
+- If not: **run `just tasks`** (from the estate root) and present its ranked candidates. Do **not**
   hand-read the board's NOW/NEXT sections — that was the instruction here until 2026-08-02 and it
   saw **40 of 119** open tickets (NOW 23 + NEXT 17), with the other 79 in nine sections it never
   read. The top-ranked ticket was in none of them. `just tasks` ranks across the whole queue and
@@ -116,8 +116,8 @@ start work on a ticket that shouldn't be started. Otherwise carry its report int
     refuses to answer from a stale union (`graph_fresh`), so a green answer is a current answer.
 - **Spec:** if set, read the change's proposal + `## ADDED/MODIFIED Requirements`.
 - **Prior art:** scan session notes / linked docs for earlier work on this area.
-- **Standing debt:** read `{tech_debt.register}` (TECH-DEBT.md) for decided debt in the
-  touched area, and run `{tech_debt.markers}` for raw TODO/FIXME occurrences. The old
+- **Standing debt:** read `{tech_debt.register}` (estate-root `TECH-DEBT.md`) for decided debt in the
+  touched area (checking the `Tracked` column `owner: [[T##]]` / `found-at: [[T##]]` / `accepted: [[T##]]` links via `just debt-check`), and run `{tech_debt.markers}` for raw TODO/FIXME occurrences. The old
   `public.tech_debt` Supabase census was retired 2026-07-21 — do not query it.
 - **Gotchas & Lessons (T232 AC10):** query earned rules via **`just lessons "<domain|symbols>"`** (or scan root `LESSONS.md`), plus traps from auto-memory (`MEMORY.md`) and `CLAUDE.md`/`AGENTS.md`. `LESSONS.md` is **READ-FIRST** — review relevant tells before starting.
 

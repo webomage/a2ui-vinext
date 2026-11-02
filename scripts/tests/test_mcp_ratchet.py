@@ -63,7 +63,9 @@ def snapshot(*surfaces, lan="192.168.1.9"):
 
 
 def entry(reason="declared for the test", status="accepted", bind="loopback", lan_reachable=None,
-          probed=True, mcp=False, unauth_tools_list=None, tools=()):
+          probed=True, mcp=None, unauth_tools_list=None, tools=()):
+    if mcp is None and probed:
+        mcp = False
     return {"status": status, "reason": reason, "bind": bind, "lan_reachable": lan_reachable,
             "probed": probed, "mcp": mcp, "unauth_tools_list": unauth_tools_list,
             "tools": list(tools)}
@@ -287,6 +289,16 @@ check("an accepted entry with no reason is exit 2 (a baseline without reasons is
 code, rep, out, _ = run("bad-status", {"measured": "x", "accepted": {"svc:1": {
     **entry(), "status": "fine"}}}, snapshot(surface("svc", 1, probed=True, mcp="unknown")))
 check("an unknown status value is exit 2, not treated as accepted", code == 2, out[-160:])
+code, rep, out, _ = run("unprobed-null", {"measured": "x", "accepted": {
+    "svc:1": entry(bind="wildcard", lan_reachable=True, probed=False, mcp=None)}},
+    snapshot(surface("svc", 1, wildcard=True, loopback=False, probed=False)), "--json")
+check("an unprobed surface records mcp: null in tracked posture (D26)",
+      code == 0 and rep and rep["tracked"]["svc:1"]["mcp"] is None, f"exit={code} {rep}")
+code, rep, out, _ = run("unprobed-false", {"measured": "x", "accepted": {"svc:1": {
+    "status": "accepted", "reason": "r", "bind": "wildcard", "lan_reachable": True,
+    "probed": False, "mcp": False, "unauth_tools_list": None, "tools": []}}},
+    snapshot(surface("svc", 1, wildcard=True, loopback=False, probed=False)))
+check("an unprobed baseline entry with mcp: false exits 2 (D26)", code == 2, out[-160:])
 
 r = subprocess.run([sys.executable, str(SCRIPT), "--baseline", str(TMP / "nope.json"),
                     "--from-json", str(TMP / "scope-snapshot.json")], capture_output=True, text=True)

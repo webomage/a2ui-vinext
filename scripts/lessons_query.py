@@ -368,8 +368,41 @@ def main() -> int:
     parser.add_argument("--index", "-i", action="store_true", help="Print compact Harness² cue/lesson/confidence index")
     parser.add_argument("--json", "-j", action="store_true", help="Output results in JSON format")
     parser.add_argument("--path", "-p", help="Custom path to LESSONS.md")
+    parser.add_argument("--harvest-friction", action="store_true", help="Harvest recent session transcripts & worktree landing events for Late-Learn friction (T602 AC4)")
+    parser.add_argument("--since-hours", type=float, default=12.0, help="Hours of transcripts to scan (default: 12.0)")
+    parser.add_argument("--tree-name", default=None, help="Optional agent tree set name")
+    parser.add_argument("--record-event", default=None, help="Optional JSON friction event to record")
+    parser.add_argument("--transcript", action="append", default=None, help="Explicit transcript file path(s) to scan (test seam)")
+    parser.add_argument("--state-file", default=None, help="Override landing-friction.jsonl path (test seam)")
 
     args = parser.parse_args()
+
+    if args.harvest_friction or args.record_event:
+        extra: list[dict[str, str]] = []
+        if args.record_event:
+            try:
+                ev = json.loads(args.record_event)
+                if isinstance(ev, dict):
+                    extra.append({str(k): str(v) for k, v in ev.items()})
+            except Exception as exc:
+                print(f"ERROR: invalid --record-event JSON: {exc}", file=sys.stderr)
+                return 2
+        t_paths = [Path(p) for p in args.transcript] if args.transcript is not None else None
+        s_file = Path(args.state_file) if args.state_file else FRICTION_STATE_FILE
+        report = harvest_session_friction(
+            find_workspace_root(),
+            since_hours=args.since_hours,
+            tree_name=args.tree_name,
+            state_file=s_file,
+            extra_events=extra,
+            transcript_paths=t_paths,
+        )
+        if args.json:
+            print(json.dumps(report, indent=2, ensure_ascii=False))
+        else:
+            print_friction_digest(report)
+        return 0
+
     query_str = " ".join(args.query).strip() if args.query else None
 
     try:
@@ -397,6 +430,342 @@ def main() -> int:
 
     print_results(results, tell_only=args.tell)
     return 0
+
+
+FRICTION_STATE_FILE = Path.home() / ".w0m" / "state" / "landing-friction.jsonl"
+
+_MISS_PATTERNS = (
+    re.compile(r"cannot read [\"']?([^\"'\n]+?)[\"']?: file does not exist", re.IGNORECASE),
+    re.compile(r"can't open file [\"']([^\"'\n]+)[\"']: \[Errno 2\]", re.IGNORECASE),
+    re.compile(r"No such file or directory: [\"']?([^\"'\n]+?)[\"']?(?:$|\s)", re.IGNORECASE),
+    re.compile(r"pathspec [\"']([^\"'\n]+)[\"'] did not match", re.IGNORECASE),
+)
+
+_PARAM_PATTERNS = (
+    (re.compile(r"error: unrecognized arguments:\s*([^\n]+)"), "unrecognized_cli_args"),
+    (re.compile(r"no such option:\s*([^\n]+)", re.IGNORECASE), "no_such_cli_option"),
+    (re.compile(r"error: Justfile does not contain recipe `([^`]+)`"), "unknown_just_recipe"),
+    (re.compile(r"OperationalError:\s*(no such column:[^\n]+)"), "sqlite_schema_miss"),
+    (re.compile(r"could not find target content|target string not found", re.IGNORECASE), "edit_target_mismatch"),
+)
+
+_GATE_PATTERNS = (
+    (re.compile(r"sh:\s*\d+:\s*([a-zA-Z0-9_.-]+):\s*not found"), "missing_worktree_binary"),
+    (re.compile(r"refused:\s*([a-z_]+):\s*([^\n]+)"), "agent_tree_refusal"),
+)
+
+
+def _build_basename_index(root: Path) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+    """Index tracked files across root and member repos by basename and by stem."""
+    import subprocess
+
+    by_name: dict[str, list[str]] = {}
+    by_stem: dict[str, list[str]] = {}
+    repos = ["."]
+    sdlc_path = root / ".w0m" / "sdlc.json"
+    if sdlc_path.is_file():
+        try:
+            declared = json.loads(sdlc_path.read_text(encoding="utf-8")).get("repos", {})
+            for val in declared.values():
+                p = val if isinstance(val, str) else val.get("path")
+                if p and p not in repos and (root / p / ".git").exists():
+                    repos.append(p)
+        except Exception:
+            pass
+
+    for r in repos:
+        repo_dir = root if r == "." else root / r
+        proc = subprocess.run(
+            ["git", "-C", str(repo_dir), "ls-files"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode != 0:
+            continue
+        for rel in proc.stdout.splitlines():
+            if not rel:
+                continue
+            full_rel = rel if r == "." else f"{r}/{rel}"
+            name = Path(rel).name
+            stem = Path(rel).stem
+            by_name.setdefault(name, []).append(full_rel)
+            by_stem.setdefault(stem, []).append(full_rel)
+    return by_name, by_stem
+
+
+def resolve_canonical_location(
+    missing_path: str,
+    root: Path,
+    index: tuple[dict[str, list[str]], dict[str, list[str]]] | None = None,
+) -> list[str]:
+    """Resolve a missed path to its canonical tracked path(s) in the estate."""
+    by_name, by_stem = index if index is not None else _build_basename_index(root)
+    p = Path(missing_path.strip().rstrip(":"))
+    if not p.name:
+        return []
+    exact = by_name.get(p.name, [])
+    if exact:
+        return sorted(set(exact))[:4]
+    code_exts = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"}
+    stem_hits = [
+        cand for cand in by_stem.get(p.stem, [])
+        if Path(cand).suffix == p.suffix or (p.suffix in code_exts and Path(cand).suffix in code_exts)
+    ]
+    if stem_hits:
+        return sorted(set(stem_hits))[:4]
+    return []
+
+
+def _scan_text_for_friction(
+    text: str,
+    source: str,
+    root: Path,
+    index: tuple[dict[str, list[str]], dict[str, list[str]]],
+) -> list[dict[str, str]]:
+    events: list[dict[str, str]] = []
+    for pat in _MISS_PATTERNS:
+        for m in pat.finditer(text):
+            raw_path = m.group(1).strip().rstrip("\r")
+            if not raw_path or len(raw_path) > 240 or raw_path.startswith("/tmp/"):
+                continue
+            if raw_path.startswith("/") and not (
+                str(root) in raw_path or "/.w0m/work/" in raw_path or "/Projects/" in raw_path
+            ):
+                continue
+            # Normalize absolute estate/worktree paths to repo-relative when possible
+            norm = raw_path
+            for prefix in (str(root) + "/",):
+                if norm.startswith(prefix):
+                    norm = norm[len(prefix) :]
+            norm_parts = norm.split("/w0m/", 1)
+            if len(norm_parts) == 2 and ("/.w0m/work/" in raw_path or "/Projects/" in raw_path):
+                norm = norm_parts[1]
+            resolved = resolve_canonical_location(norm, root, index)
+            events.append(
+                {
+                    "category": "location_miss",
+                    "subtype": "missing_path",
+                    "attempted": norm,
+                    "resolved": ", ".join(resolved) if resolved else "unresolved",
+                    "source": source,
+                }
+            )
+    for pat, subtype in _PARAM_PATTERNS:
+        for m in pat.finditer(text):
+            detail = (m.group(1).strip() if m.lastindex else m.group(0).strip()).replace("\r", "")
+            events.append(
+                {
+                    "category": "parameter_or_cli_error",
+                    "subtype": subtype,
+                    "attempted": detail[:160],
+                    "resolved": "",
+                    "source": source,
+                }
+            )
+    for pat, subtype in _GATE_PATTERNS:
+        for m in pat.finditer(text):
+            detail = (
+                f"{m.group(1)}: {m.group(2)}" if m.lastindex and m.lastindex >= 2 else m.group(1).strip()
+            ).replace("\r", "")
+            events.append(
+                {
+                    "category": "landing_or_gate_error",
+                    "subtype": subtype,
+                    "attempted": detail[:160],
+                    "resolved": "",
+                    "source": source,
+                }
+            )
+    return events
+
+
+def harvest_session_friction(
+    root: Path | None = None,
+    *,
+    since_hours: float = 12.0,
+    tree_name: str | None = None,
+    state_file: Path = FRICTION_STATE_FILE,
+    extra_events: list[dict[str, str]] | None = None,
+    transcript_paths: list[Path] | None = None,
+) -> dict[str, object]:
+    """Scan recent session transcripts and landing events for friction, persist to JSONL, and recommend Late-Learn actions (T602 AC4)."""
+    import hashlib
+    import time
+
+    ws_root = root or find_workspace_root()
+    index = _build_basename_index(ws_root)
+    now = time.time()
+    cutoff = now - (since_hours * 3600.0)
+
+    candidates: list[Path] = []
+    if transcript_paths is not None:
+        candidates = [Path(p) for p in transcript_paths if Path(p).is_file()]
+    else:
+        agy_root = Path.home() / ".gemini" / "antigravity-cli" / "brain"
+        if agy_root.is_dir():
+            for p in agy_root.glob("*/.system_generated/logs/transcript.jsonl"):
+                try:
+                    if p.stat().st_mtime >= cutoff:
+                        candidates.append(p)
+                except OSError:
+                    pass
+        claude_root = Path.home() / ".claude" / "projects"
+        if claude_root.is_dir():
+            for p in sorted(claude_root.glob("*/*.jsonl"), key=lambda x: x.stat().st_mtime if x.exists() else 0, reverse=True)[:5]:
+                try:
+                    if p.stat().st_mtime >= cutoff:
+                        candidates.append(p)
+                except OSError:
+                    pass
+
+    raw_events: list[dict[str, str]] = list(extra_events or [])
+    for tp in candidates:
+        try:
+            for line in tp.read_text(encoding="utf-8", errors="ignore").splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    obj = json.loads(line)
+                    content = str(obj.get("content") or "")
+                    if not content and isinstance(obj.get("message"), dict):
+                        content = json.dumps(obj["message"])
+                except Exception:
+                    content = line
+                if any(
+                    k in content
+                    for k in (
+                        "file does not exist",
+                        "Errno 2",
+                        "No such file or directory",
+                        "unrecognized arguments",
+                        "no such option",
+                        "does not contain recipe",
+                        "no such column",
+                        "not found",
+                        "refused:",
+                    )
+                ):
+                    raw_events.extend(_scan_text_for_friction(content, tp.parent.parent.parent.name if ".system_generated" in str(tp) else tp.stem, ws_root, index))
+        except OSError:
+            continue
+
+    existing_fps: set[str] = set()
+    persisted: list[dict[str, str]] = []
+    if state_file.is_file():
+        for line in state_file.read_text(encoding="utf-8", errors="ignore").splitlines():
+            if not line.strip():
+                continue
+            try:
+                rec = json.loads(line)
+                if isinstance(rec, dict) and rec.get("fingerprint"):
+                    existing_fps.add(str(rec["fingerprint"]))
+                    persisted.append(rec)
+            except Exception:
+                continue
+
+    deduped_session: dict[str, dict[str, str]] = {}
+    new_records: list[dict[str, str]] = []
+    iso_now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now))
+    for ev in raw_events:
+        key_str = f"{ev.get('category')}|{ev.get('subtype')}|{ev.get('attempted')}"
+        fp = hashlib.sha1(key_str.encode("utf-8")).hexdigest()[:12]
+        rec = {
+            "timestamp": iso_now,
+            "tree": tree_name or "",
+            "fingerprint": fp,
+            **ev,
+        }
+        deduped_session[fp] = rec
+        if fp not in existing_fps:
+            existing_fps.add(fp)
+            new_records.append(rec)
+
+    if new_records:
+        state_file.parent.mkdir(parents=True, exist_ok=True)
+        with state_file.open("a", encoding="utf-8") as f:
+            for r in new_records:
+                f.write(json.dumps(r, ensure_ascii=False) + "\n")
+
+    active_items = list(deduped_session.values())
+    by_category: dict[str, list[dict[str, str]]] = {
+        "location_miss": [],
+        "parameter_or_cli_error": [],
+        "landing_or_gate_error": [],
+    }
+    for item in active_items:
+        by_category.setdefault(item["category"], []).append(item)
+
+    recommendations: list[dict[str, str]] = []
+    for item in by_category.get("location_miss", []):
+        if item.get("resolved") and item["resolved"] != "unresolved":
+            recommendations.append(
+                {
+                    "target": "CLAUDE.md / LESSONS.md",
+                    "reason": f"Path miss `{item['attempted']}` → canonical location is `{item['resolved']}`",
+                    "action": f"Index `{item['resolved']}` in CLAUDE.md or add a `⭐ The tell` cue in LESSONS.md.",
+                }
+            )
+    for item in by_category.get("parameter_or_cli_error", []):
+        recommendations.append(
+            {
+                "target": "LESSONS.md",
+                "reason": f"CLI/parameter friction ({item['subtype']}): `{item['attempted']}`",
+                "action": "Capture a transferable CLI/schema tell in LESSONS.md if this recurred across turns.",
+            }
+        )
+    for item in by_category.get("landing_or_gate_error", []):
+        recommendations.append(
+            {
+                "target": "TECH-DEBT.md / .tasks/T##.md",
+                "reason": f"Worktree/gate friction ({item['subtype']}): `{item['attempted']}`",
+                "action": "Provision missing worktree fixture in `scripts/release.py` or file a `D##` / `T##` item.",
+            }
+        )
+
+    return {
+        "harvested_count": len(active_items),
+        "newly_recorded_count": len(new_records),
+        "state_file": str(state_file),
+        "by_category": by_category,
+        "recommendations": recommendations,
+    }
+
+
+def print_friction_digest(report: dict[str, object]) -> None:
+    """Print human-readable Late-Learn Friction Digest at worktree landing or via `just lessons-harvest`."""
+    total = int(report.get("harvested_count") or 0)
+    new_cnt = int(report.get("newly_recorded_count") or 0)
+    by_cat: dict[str, list[dict[str, str]]] = report.get("by_category") or {}  # type: ignore[assignment]
+    recs: list[dict[str, str]] = report.get("recommendations") or []  # type: ignore[assignment]
+
+    print(
+        f"▶ Late-Learn Friction Digest — {total} session friction item(s) "
+        f"({new_cnt} newly logged to {report.get('state_file')})"
+    )
+    if total == 0:
+        print("  ✅ 0 location misses, parameter errors, or gate refusals in recent transcripts.")
+        return
+
+    for cat, label in (
+        ("location_miss", "Location Misses (attempted → canonical)"),
+        ("parameter_or_cli_error", "Parameter / CLI / Schema Errors"),
+        ("landing_or_gate_error", "Worktree / Gate Friction"),
+    ):
+        items = by_cat.get(cat) or []
+        if not items:
+            continue
+        print(f"  • {label}: {len(items)}")
+        for it in items[:6]:
+            if it.get("resolved"):
+                print(f"      - `{it['attempted']}` → `{it['resolved']}`")
+            else:
+                print(f"      - [{it['subtype']}] `{it['attempted']}`")
+    if recs:
+        print("  • Late-Learn Candidate Actions:")
+        for r in recs[:5]:
+            print(f"      → [{r['target']}] {r['reason']}")
+            print(f"        {r['action']}")
 
 
 if __name__ == "__main__":

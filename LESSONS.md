@@ -1760,6 +1760,13 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⇒ **When porting hybrid-attention + MoE architectures (`gemma4`, `gemma4_text`) to MLX (`w0m-mlx`, `mlx-rs`, `mlx-lm`), resolve `per_layer_config` per layer index, trim prefill tokens only after `first_kv_shared_layer_idx`, and strip `.self_attn.v_norm` on shared-KV layers plus `mtp.*` weights during checkpoint sanitization.**
 ⭐ **The tell:** Strict weight loading failing on unexpected `.self_attn.v_norm` / `mtp.*` keys or KV-shared layers producing corrupted logits during chunked prefill when `logits_to_keep` trims hidden states before `first_kv_shared_layer_idx`.
 
+### ENFORCE EXPLICIT `owner:` VS `found-at:` TRACKED GRAMMAR IN `TECH-DEBT.md` AND HARVEST WORKTREE FRICTION ON LANDING
+**2026-11-01 (T602 / D54).** Sixteen paid technical-debt rows (`D3`, `D4`, `D10`, `D11`, `D13`, `D17`, `D21`, `D26`, `D34`, `D43`, `D45`, `D46`, `D49`, `D54`, `D56`, `D64`) sat in the open tables of `TECH-DEBT.md` after their tickets closed because `debt_register_check.py` treated `stale_tracking` as advisory (`warning_count += 1`) when a `Tracked` column cited a `done` ticket without distinguishing whether that ticket *owned* the fix (`owner: [[T##]]`) or merely *discovered* the debt (`found-at: [[T##]]`). In parallel, recurring path misses (`scripts/agent_tree.py` vs `w0m-web/project/scripts/agent_tree.py`, `project/test-suites.json` vs `w0m-web/project/test-suites.json`) and unprovisioned worktree binaries (`w0m-skills/node_modules/.bin/tsx`) were lost inside ephemeral session transcripts instead of being harvested when landing worktrees.
+
+⇒ **Every open row in `TECH-DEBT.md` must declare an explicit `Tracked` relationship prefix (`owner: [[T##]]`, `found-at: [[T##]]`, `accepted: [[T##]]`, or `— (needs a T-row)`) enforced by `just debt-check --enforce`, and `just agent-tree-land` (`just lessons-harvest`) must harvest session transcripts for location/parameter/gate friction into `~/.w0m/state/landing-friction.jsonl` and surface canonical paths.**
+⭐ **The tell:** Closing a ticket that paid down a `D##` row without moving that row to `## Closed-Debt Ledger` in `TECH-DEBT.md`, or guessing whether a script lives in `@wom/scripts/` vs `w0m-web/project/scripts/` instead of checking the Canonical Script & Policy Locations table in `AGENTS.md`.
+
+
 
 
 
