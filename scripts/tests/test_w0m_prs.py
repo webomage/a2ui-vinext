@@ -422,6 +422,19 @@ def main() -> int:
             "statusCheckRollup": [],
             "url": "https://github.com/stablyai/orca/pull/202",
         },
+        {
+            "repository": {"nameWithOwner": "openai/tart-guest-agent"},
+            "number": 203,
+            "title": "100+ Reviews Cap PR",
+            "state": "OPEN",
+            "author": {"login": "casualuser"},
+            "mergeable": "MERGEABLE",
+            "reviewDecision": "REVIEW_REQUIRED",
+            "comments": [],
+            "reviews": [{"author": {"login": "github-actions"}, "body": "ok", "state": "COMMENTED"}] * 100,
+            "statusCheckRollup": [],
+            "url": "https://github.com/openai/tart-guest-agent/pull/203",
+        },
     ]
     audit_calls = []
 
@@ -437,8 +450,8 @@ def main() -> int:
         ):
             disc_rich = w0m_prs.discover_new_prs_and_branches(forks_dir=Path(empty_forks_dir2), fetch=False)
     check(
-        "rich gh pr list payloads skip redundant audit_pr calls unless mergeable is UNKNOWN",
-        audit_calls == [("stablyai/orca", 202)]
+        "rich gh pr list payloads skip redundant audit_pr calls unless mergeable is UNKNOWN or nested connection hits 100-item cap",
+        audit_calls == [("stablyai/orca", 202), ("openai/tart-guest-agent", 203)]
         and disc_rich["openPrs"][0]["reviewDecision"] == "APPROVED"
         and disc_rich["openPrs"][0]["ciStatus"] == "PASS"
         and "❓ 1" in disc_rich["openPrs"][0]["feedback"]

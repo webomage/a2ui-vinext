@@ -1766,6 +1766,13 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⇒ **Every open row in `TECH-DEBT.md` must declare an explicit `Tracked` relationship prefix (`owner: [[T##]]`, `found-at: [[T##]]`, `accepted: [[T##]]`, or `— (needs a T-row)`) enforced by `just debt-check --enforce`, and `just agent-tree-land` (`just lessons-harvest`) must harvest session transcripts for location/parameter/gate friction into `~/.w0m/state/landing-friction.jsonl` and surface canonical paths.**
 ⭐ **The tell:** Closing a ticket that paid down a `D##` row without moving that row to `## Closed-Debt Ledger` in `TECH-DEBT.md`, or guessing whether a script lives in `@wom/scripts/` vs `w0m-web/project/scripts/` instead of checking the Canonical Script & Policy Locations table in `AGENTS.md`.
 
+### GUARD AGAINST `gh pr list` 100-ITEM INNER GRAPHQL CAPS AND LINUX `/usr/bin/orca` BINARY COLLISIONS
+**2026-11-02 (T610).** Batching PR audit fields into `gh pr list --json comments,reviews,statusCheckRollup` cut Orca's 15-minute `check-delta` precheck from ~60s (10/16 scheduled runs timing out at 60s) to ~5s, but silently truncated `openai/tart-guest-agent#62` from `217` reviews to `100` because `gh pr list` caps nested GraphQL connections at `first: 100` without pagination, whereas `gh pr view` paginates them. On the same Linux host, `shutil.which("orca")` resolves `/usr/bin/orca` (the GNOME screen reader) when `ORCA_CLI_COMMAND` is absent, and `orca orchestration run-use` requires `--id <run_id>` rather than `--run <run_id>`.
+
+⇒ **When reusing `gh pr list --json` payloads for PR health audits, fall through to paginated `gh pr view` whenever `mergeable == "UNKNOWN"` or any nested list (`comments`, `reviews`, `statusCheckRollup`) has `len >= 100`; and on Linux, always resolve Orca CLI via `ORCA_CLI_COMMAND`, `~/.config/orca/linux-orca-cli-shim/orca`, or `orca-ide` while explicitly rejecting `/usr/bin/orca` and `/bin/orca`.**
+⭐ **The tell:** A PR delta watcher reporting a sudden `reviewsCount: 217 -> 100` drop after switching from `gh pr view` to `gh pr list`, `orca orchestration task-create` failing with `consumer_fenced` after `run-use --run`, or `orca` launching the GNOME screen reader outside managed Orca terminals.
+
+
 
 
 

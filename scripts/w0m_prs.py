@@ -306,10 +306,15 @@ def _format_pr_audit_payload(repo: str, data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+GH_LIST_CONNECTION_CAP = 100
+
+
 def _has_complete_audit_fields(item: Dict[str, Any]) -> bool:
     if not all(k in item for k in ("mergeable", "comments", "reviews", "statusCheckRollup")):
         return False
     if (item.get("state") or "").upper() == "OPEN" and item.get("mergeable") == "UNKNOWN":
+        return False
+    if any(len(item.get(k) or []) >= GH_LIST_CONNECTION_CAP for k in ("comments", "reviews", "statusCheckRollup")):
         return False
     return True
 
