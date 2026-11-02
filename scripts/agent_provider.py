@@ -186,26 +186,59 @@ def resolve_agent_provider(
     raise RuntimeError(f"No supported coding agent CLI found on this host (checked: {checked}).")
 
 
+_GNOME_SCREEN_READER_PATHS: frozenset[str] = frozenset({"/usr/bin/orca", "/bin/orca"})
+
+
 def resolve_orca_bin(
     *,
+    env: Mapping[str, str] | None = None,
     which_fn: Callable[[str], str | None] | None = None,
     home_dir: Path | None = None,
 ) -> str:
-    """Resolve the cross-platform `orca` CLI binary across Linux and macOS."""
+    """Resolve the cross-platform `orca` CLI binary across Linux and macOS.
+
+    Follows Orca's official Linux resolution contract:
+    1. `ORCA_CLI_COMMAND` when set and executable (managed Orca terminals / WSL).
+    2. Orca IDE user/app shims (`~/.config/orca/linux-orca-cli-shim/orca`,
+       `~/.local/bin/orca`, `/Applications/Orca.app/Contents/Resources/bin/orca`).
+    3. `orca-ide` on PATH, then `orca` on PATH — explicitly skipping `/usr/bin/orca`
+       and `/bin/orca` (the GNOME Orca screen reader on Linux desktops).
+    """
     lookup = which_fn or shutil.which
-    found = lookup("orca")
-    if found:
-        return found
+    effective_env = env if env is not None else (os.environ if (which_fn is None and home_dir is None) else {})
+
+    orca_cmd_env = effective_env.get("ORCA_CLI_COMMAND", "").strip()
+    if orca_cmd_env:
+        env_path = Path(orca_cmd_env)
+        if (
+            str(env_path) not in _GNOME_SCREEN_READER_PATHS
+            and env_path.is_file()
+            and os.access(env_path, os.X_OK)
+        ):
+            return str(env_path)
+        resolved_env = lookup(orca_cmd_env)
+        if resolved_env and resolved_env not in _GNOME_SCREEN_READER_PATHS:
+            return resolved_env
+
     home = home_dir or Path.home()
     candidates = (
-        home / ".local" / "bin" / "orca",
         home / ".config" / "orca" / "linux-orca-cli-shim" / "orca",
+        home / ".local" / "bin" / "orca",
         Path("/Applications/Orca.app/Contents/Resources/bin/orca"),
     )
     for candidate in candidates:
         if candidate.is_file() and os.access(candidate, os.X_OK):
             return str(candidate)
-    return "orca"
+
+    found_ide = lookup("orca-ide")
+    if found_ide:
+        return found_ide
+
+    found = lookup("orca")
+    if found and found not in _GNOME_SCREEN_READER_PATHS:
+        return found
+
+    return "orca-ide" if os.name == "posix" and Path("/proc").is_dir() else "orca"
 
 
 def build_agent_resume_command(session_id: str, agent_type: str | None = None) -> str:

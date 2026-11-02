@@ -15,6 +15,7 @@ import subprocess
 import sys
 import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -27,6 +28,17 @@ from agent_provider import resolve_agent_provider, resolve_orca_bin  # noqa: E40
 
 CANONICAL_FORK_ORG = "webomage"
 CANONICAL_CONTRIBUTOR = "casualuser"
+MAX_GH_CONCURRENCY = 16
+GH_CMD_TIMEOUT_SEC = 15.0
+
+PR_LIST_JSON_FIELDS = (
+    "number,title,state,url,createdAt,closedAt,isDraft,author,"
+    "headRefName,mergeable,reviewDecision,comments,reviews,statusCheckRollup"
+)
+PR_VIEW_JSON_FIELDS = (
+    "number,title,state,url,author,headRefName,isDraft,"
+    "mergeable,reviewDecision,comments,reviews,statusCheckRollup"
+)
 
 PRESET_REPOS = {
     "w0m-pr": [
@@ -88,24 +100,34 @@ def search_prs(
     prs: List[Dict[str, Any]] = []
 
     if preset and preset in PRESET_REPOS:
-        for r in PRESET_REPOS[preset]:
+        repos = PRESET_REPOS[preset]
+
+        def _fetch_repo_prs(r: str) -> List[Dict[str, Any]]:
             cmd = [
                 "gh", "pr", "list",
                 "-R", r,
                 "--limit", str(limit),
-                "--json", "number,title,state,url,createdAt,closedAt,isDraft,author",
+                "--json", PR_LIST_JSON_FIELDS,
             ]
             if author:
                 cmd.extend(["--author", author])
-            res = run_cmd(cmd, check=False)
+            try:
+                res = run_cmd(cmd, check=False, timeout=GH_CMD_TIMEOUT_SEC)
+            except subprocess.TimeoutExpired:
+                return []
             if res.returncode == 0 and res.stdout.strip():
                 try:
                     items = json.loads(res.stdout)
                     for it in items:
                         it["repository"] = {"nameWithOwner": r}
-                    prs.extend(items)
+                    return items
                 except json.JSONDecodeError:
-                    pass
+                    return []
+            return []
+
+        with ThreadPoolExecutor(max_workers=min(MAX_GH_CONCURRENCY, max(1, len(repos)))) as pool:
+            for repo_items in pool.map(_fetch_repo_prs, repos):
+                prs.extend(repo_items)
         return prs
 
     cmd = [
@@ -118,7 +140,10 @@ def search_prs(
     if repo:
         cmd.extend(["--repo", repo])
 
-    res = run_cmd(cmd, check=False)
+    try:
+        res = run_cmd(cmd, check=False, timeout=GH_CMD_TIMEOUT_SEC)
+    except subprocess.TimeoutExpired:
+        return []
     if res.returncode == 0 and res.stdout.strip():
         try:
             return json.loads(res.stdout)
@@ -245,31 +270,7 @@ def parse_feedback(
     }
 
 
-def audit_pr(repo: str, pr_number: int) -> Dict[str, Any]:
-    cmd = [
-        "gh", "pr", "view", str(pr_number),
-        "-R", repo,
-        "--json", "number,title,state,url,author,headRefName,isDraft,mergeable,reviewDecision,comments,reviews,statusCheckRollup",
-    ]
-    res = run_cmd(cmd, check=False)
-    if res.returncode != 0:
-        return {"error": res.stderr.strip() or "Failed to view PR"}
-
-    data = json.loads(res.stdout)
-    # GitHub computes mergeable lazily on first view; retry once if OPEN + UNKNOWN
-    if data.get("state") == "OPEN" and data.get("mergeable") == "UNKNOWN":
-        time.sleep(1.0)
-        retry_res = run_cmd(
-            ["gh", "pr", "view", str(pr_number), "-R", repo, "--json", "mergeable"],
-            check=False,
-        )
-        if retry_res.returncode == 0 and retry_res.stdout.strip():
-            try:
-                retry_data = json.loads(retry_res.stdout)
-                if retry_data.get("mergeable"):
-                    data["mergeable"] = retry_data["mergeable"]
-            except json.JSONDecodeError:
-                pass
+def _format_pr_audit_payload(repo: str, data: Dict[str, Any]) -> Dict[str, Any]:
     rollup = data.get("statusCheckRollup", []) or []
     # Deduplicate by check name/context so a superseded CANCELLED run doesn't mask a newer SUCCESS run
     dedup_checks: Dict[str, Dict[str, Any]] = {}
@@ -305,6 +306,52 @@ def audit_pr(repo: str, pr_number: int) -> Dict[str, Any]:
     }
 
 
+def _has_complete_audit_fields(item: Dict[str, Any]) -> bool:
+    if not all(k in item for k in ("mergeable", "comments", "reviews", "statusCheckRollup")):
+        return False
+    if (item.get("state") or "").upper() == "OPEN" and item.get("mergeable") == "UNKNOWN":
+        return False
+    return True
+
+
+def audit_pr(repo: str, pr_number: int) -> Dict[str, Any]:
+    cmd = [
+        "gh", "pr", "view", str(pr_number),
+        "-R", repo,
+        "--json", PR_VIEW_JSON_FIELDS,
+    ]
+    try:
+        res = run_cmd(cmd, check=False, timeout=GH_CMD_TIMEOUT_SEC)
+    except subprocess.TimeoutExpired:
+        return {"error": "Timed out viewing PR"}
+    if res.returncode != 0:
+        return {"error": res.stderr.strip() or "Failed to view PR"}
+
+    try:
+        data = json.loads(res.stdout)
+    except json.JSONDecodeError:
+        return {"error": "Invalid JSON viewing PR"}
+    # GitHub computes mergeable lazily on first view; retry once if OPEN + UNKNOWN
+    if data.get("state") == "OPEN" and data.get("mergeable") == "UNKNOWN":
+        time.sleep(1.0)
+        try:
+            retry_res = run_cmd(
+                ["gh", "pr", "view", str(pr_number), "-R", repo, "--json", "mergeable"],
+                check=False,
+                timeout=GH_CMD_TIMEOUT_SEC,
+            )
+        except subprocess.TimeoutExpired:
+            retry_res = None
+        if retry_res is not None and retry_res.returncode == 0 and retry_res.stdout.strip():
+            try:
+                retry_data = json.loads(retry_res.stdout)
+                if retry_data.get("mergeable"):
+                    data["mergeable"] = retry_data["mergeable"]
+            except json.JSONDecodeError:
+                pass
+    return _format_pr_audit_payload(repo, data)
+
+
 def cmd_search(args: argparse.Namespace) -> None:
     effective_author = None if getattr(args, "all", False) else (args.author or (CANONICAL_CONTRIBUTOR if args.preset else None))
     results = search_prs(author=effective_author, repo=args.repo, preset=args.preset, limit=args.limit)
@@ -321,25 +368,58 @@ def cmd_search(args: argparse.Namespace) -> None:
         print(f"[{state}] {repo_name}#{num} - {title}")
 
 
+def _audit_prs_concurrent(targets: List[tuple[str, int]]) -> List[Dict[str, Any]]:
+    if not targets:
+        return []
+
+    def _one(item: tuple[str, int]) -> Dict[str, Any]:
+        return audit_pr(item[0], item[1])
+
+    with ThreadPoolExecutor(max_workers=min(MAX_GH_CONCURRENCY, len(targets))) as pool:
+        return list(pool.map(_one, targets))
+
+
+def _audit_pr_items_concurrent(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    if not items:
+        return []
+    results: List[Optional[Dict[str, Any]]] = [None] * len(items)
+    missing_indices: List[int] = []
+    missing_targets: List[tuple[str, int]] = []
+
+    for idx, p in enumerate(items):
+        repo_name = (p.get("repository") or {}).get("nameWithOwner") or "unknown"
+        if _has_complete_audit_fields(p):
+            results[idx] = _format_pr_audit_payload(repo_name, p)
+        else:
+            missing_indices.append(idx)
+            missing_targets.append((repo_name, int(p["number"])))
+
+    if missing_targets:
+        for idx, audited in zip(missing_indices, _audit_prs_concurrent(missing_targets)):
+            results[idx] = audited
+
+    return [r if r is not None else {"error": "Audit skipped"} for r in results]
+
+
 def cmd_audit(args: argparse.Namespace) -> None:
-    targets: List[tuple[str, int]] = []
+    pr_items: List[Dict[str, Any]] = []
     if args.repo and args.pr:
-        targets.append((args.repo, args.pr))
+        pr_items.append({"repository": {"nameWithOwner": args.repo}, "number": args.pr})
     elif args.preset in ("w0m-pr", "wom7open"):
         open_prs = search_prs(preset=args.preset, limit=20)
         for p in open_prs:
-            repo_name = p.get("repository", {}).get("nameWithOwner")
+            repo_name = (p.get("repository") or {}).get("nameWithOwner")
             num = p.get("number")
             if repo_name and num:
-                targets.append((repo_name, num))
+                pr_items.append(p)
     else:
         print("Error: Specify --repo and --pr, or --preset w0m-pr", file=sys.stderr)
         sys.exit(1)
 
-    audits = []
-    for r, num in targets:
-        info = audit_pr(r, num)
-        audits.append(info)
+    audits = _audit_pr_items_concurrent(pr_items)
+    for p, info in zip(pr_items, audits):
+        r = (p.get("repository") or {}).get("nameWithOwner")
+        num = p.get("number")
         if not args.json:
             print(f"=== {r}#{num} ===")
             print(f"Title: {info.get('title')}")
@@ -488,13 +568,18 @@ def cmd_table(args: argparse.Namespace) -> None:
     # Sort by created desc
     prs.sort(key=lambda x: x.get("createdAt", ""), reverse=True)
 
-    rows = []
+    valid_prs = []
+    valid_items: List[Dict[str, Any]] = []
     for p in prs:
         repo_name = p.get("repository", {}).get("nameWithOwner") or "unknown"
         num = p.get("number")
         if not num:
             continue
-        info = audit_pr(repo_name, num)
+        valid_prs.append((repo_name, num, p))
+        valid_items.append(p)
+
+    rows = []
+    for (repo_name, num, p), info in zip(valid_prs, _audit_pr_items_concurrent(valid_items)):
         if "error" in info:
             rows.append({
                 "repo": repo_name,
@@ -2894,6 +2979,94 @@ def discover_worktrees_summary() -> list[dict[str, Any]]:
     return trees
 
 
+def _inspect_fork_and_branches(repo_path: Path, fetch: bool) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    fork_name = repo_path.name
+    upstream_repo = FORK_UPSTREAM_MAP.get(fork_name, f"upstream/{fork_name}")
+    fork_info = inspect_fork(repo_path, fetch=fetch)
+    fork_wt = {
+        "fork": fork_name,
+        "upstream_repo": upstream_repo,
+        "branch": fork_info.get("branch", "beta"),
+        "ahead_upstream": int(fork_info.get("ahead_upstream") or 0),
+        "behind_upstream": int(fork_info.get("behind_upstream") or 0),
+        "dirty_count": int(fork_info.get("dirty_count") or 0),
+    }
+    branches: list[dict[str, Any]] = []
+    upstream_ref = fork_info.get("upstream_ref") or ""
+    if upstream_ref == "-":
+        return fork_wt, branches
+    default_branch = upstream_ref.split("/", 1)[1] if "/" in upstream_ref else "main"
+
+    # Inspect local + origin branches authored by casualuser / Aleksei Tcelishchev that are ahead of upstream
+    refs_cp = run_cmd(
+        [
+            "git",
+            "for-each-ref",
+            "--format=%(refname:short)|%(objectname:short)|%(authorname)|%(authoremail)|%(contents:subject)",
+            "refs/heads",
+            "refs/remotes/origin",
+        ],
+        check=False,
+        cwd=repo_path,
+    )
+    seen_branch_names: set[str] = set()
+    for line in (refs_cp.stdout or "").splitlines():
+        parts = line.split("|", 4)
+        if len(parts) < 5:
+            continue
+        ref_short, sha, author_name, author_email, subject = parts
+        bname = ref_short.removeprefix("origin/")
+        if (
+            bname in ("HEAD", "main", "master", "v8", "beta")
+            or bname in seen_branch_names
+            or bname in ACTIVE_OPEN_PR_HEAD_BRANCHES
+            or bname in INTERNAL_OR_SUPERSEDED_BRANCHES
+        ):
+            continue
+        if "casualuser" not in author_email.lower() and "tcelishchev" not in author_name.lower():
+            continue
+        counts_cp = run_cmd(
+            ["git", "rev-list", "--left-right", "--count", f"{upstream_ref}...{ref_short}"],
+            check=False,
+            cwd=repo_path,
+        )
+        if counts_cp.returncode != 0 or not counts_cp.stdout.strip():
+            continue
+        cparts = counts_cp.stdout.strip().split()
+        if len(cparts) != 2:
+            continue
+        try:
+            behind_u, ahead_u = int(cparts[0]), int(cparts[1])
+        except ValueError:
+            continue
+        if ahead_u <= 0 or behind_u > 0:
+            continue
+        seen_branch_names.add(bname)
+        proposal_key = f"{upstream_repo}:{bname}"
+        proposal = CONTRIBUTION_PROPOSALS.get(proposal_key)
+        compare_url = (
+            f"https://github.com/{upstream_repo}/compare/"
+            f"{default_branch}...{CANONICAL_FORK_ORG}:{bname}?expand=1"
+        )
+        branches.append(
+            {
+                "fork": fork_name,
+                "upstream_repo": upstream_repo,
+                "base_branch": default_branch,
+                "branch": bname,
+                "head_sha": sha,
+                "subject": proposal["title"] if proposal else subject,
+                "ticket": proposal.get("ticket", "") if proposal else "",
+                "ahead_upstream": ahead_u,
+                "behind_upstream": behind_u,
+                "open_prs_in_repo": 0,
+                "compare_url": compare_url,
+                "has_proposal": proposal is not None,
+            }
+        )
+    return fork_wt, branches
+
+
 def discover_new_prs_and_branches(
     *,
     author: str = CANONICAL_CONTRIBUTOR,
@@ -2902,142 +3075,77 @@ def discover_new_prs_and_branches(
     fetch: bool = False,
 ) -> dict[str, Any]:
     """Discover active upstream PRs, unsubmitted PR-ready feature branches across `w0m-pr/*`, and active worktrees (`T599` AC3, `T593` AC4)."""
-    open_prs_raw = search_prs(author=author, preset=preset, limit=50)
-    open_prs: list[dict[str, Any]] = []
-    open_repos_with_pr: dict[str, list[dict[str, Any]]] = {}
-
-    for p in open_prs_raw:
-        repo_name = (p.get("repository") or {}).get("nameWithOwner") or "unknown"
-        num = p.get("number")
-        if not num:
-            continue
-        info = audit_pr(repo_name, int(num))
-        if "error" in info:
-            entry = {
-                "repo": repo_name,
-                "number": int(num),
-                "title": p.get("title", ""),
-                "state": (p.get("state") or "OPEN").upper(),
-                "mergeable": "UNKNOWN",
-                "reviewDecision": "NONE",
-                "ciStatus": "N/A",
-                "feedback": "-",
-                "commentsCount": 0,
-                "reviewsCount": 0,
-                "url": p.get("url", f"https://github.com/{repo_name}/pull/{num}"),
-            }
-        else:
-            entry = {
-                "repo": repo_name,
-                "number": int(num),
-                "title": info.get("title", ""),
-                "state": (info.get("state") or "OPEN").upper(),
-                "mergeable": info.get("mergeable", "UNKNOWN"),
-                "reviewDecision": info.get("reviewDecision", "NONE"),
-                "ciStatus": info.get("ciStatus", "N/A"),
-                "feedback": info.get("feedback", "-"),
-                "commentsCount": int(info.get("commentsCount", 0)),
-                "reviewsCount": int(info.get("reviewsCount", 0)),
-                "url": info.get("url", f"https://github.com/{repo_name}/pull/{num}"),
-            }
-        open_prs.append(entry)
-        open_repos_with_pr.setdefault(repo_name, []).append(entry)
-
     fdir = forks_dir or resolve_forks_dir()
+    fork_repo_paths: list[Path] = []
+    if fdir and fdir.is_dir():
+        fork_repo_paths = [rp for rp in sorted(fdir.iterdir()) if (rp / ".git").exists()]
+
+    def _scan_all_forks() -> list[tuple[dict[str, Any], list[dict[str, Any]]]]:
+        if not fork_repo_paths:
+            return []
+        with ThreadPoolExecutor(max_workers=min(MAX_GH_CONCURRENCY, len(fork_repo_paths))) as fpool:
+            return list(fpool.map(lambda rp: _inspect_fork_and_branches(rp, fetch), fork_repo_paths))
+
+    with ThreadPoolExecutor(max_workers=3) as outer_pool:
+        forks_fut = outer_pool.submit(_scan_all_forks)
+        trees_fut = outer_pool.submit(discover_worktrees_summary)
+        open_prs_raw = search_prs(author=author, preset=preset, limit=50)
+
+        open_prs: list[dict[str, Any]] = []
+        open_repos_with_pr: dict[str, list[dict[str, Any]]] = {}
+
+        valid_open = []
+        valid_items: List[Dict[str, Any]] = []
+        for p in open_prs_raw:
+            repo_name = (p.get("repository") or {}).get("nameWithOwner") or "unknown"
+            num = p.get("number")
+            if not num:
+                continue
+            valid_open.append((repo_name, int(num), p))
+            valid_items.append(p)
+
+        for (repo_name, num, p), info in zip(valid_open, _audit_pr_items_concurrent(valid_items)):
+            if "error" in info:
+                entry = {
+                    "repo": repo_name,
+                    "number": num,
+                    "title": p.get("title", ""),
+                    "state": (p.get("state") or "OPEN").upper(),
+                    "mergeable": "UNKNOWN",
+                    "reviewDecision": "NONE",
+                    "ciStatus": "N/A",
+                    "feedback": "-",
+                    "commentsCount": 0,
+                    "reviewsCount": 0,
+                    "url": p.get("url", f"https://github.com/{repo_name}/pull/{num}"),
+                }
+            else:
+                entry = {
+                    "repo": repo_name,
+                    "number": num,
+                    "title": info.get("title", ""),
+                    "state": (info.get("state") or "OPEN").upper(),
+                    "mergeable": info.get("mergeable", "UNKNOWN"),
+                    "reviewDecision": info.get("reviewDecision", "NONE"),
+                    "ciStatus": info.get("ciStatus", "N/A"),
+                    "feedback": info.get("feedback", "-"),
+                    "commentsCount": int(info.get("commentsCount", 0)),
+                    "reviewsCount": int(info.get("reviewsCount", 0)),
+                    "url": info.get("url", f"https://github.com/{repo_name}/pull/{num}"),
+                }
+            open_prs.append(entry)
+            open_repos_with_pr.setdefault(repo_name, []).append(entry)
+
+        fork_results = forks_fut.result()
+        agent_trees = trees_fut.result()
+
     pending_branches: list[dict[str, Any]] = []
     fork_worktrees: list[dict[str, Any]] = []
-    if fdir and fdir.is_dir():
-        for repo_path in sorted(fdir.iterdir()):
-            if not (repo_path / ".git").exists():
-                continue
-            fork_name = repo_path.name
-            upstream_repo = FORK_UPSTREAM_MAP.get(fork_name, f"upstream/{fork_name}")
-            fork_info = inspect_fork(repo_path, fetch=fetch)
-            fork_worktrees.append(
-                {
-                    "fork": fork_name,
-                    "upstream_repo": upstream_repo,
-                    "branch": fork_info.get("branch", "beta"),
-                    "ahead_upstream": int(fork_info.get("ahead_upstream") or 0),
-                    "behind_upstream": int(fork_info.get("behind_upstream") or 0),
-                    "dirty_count": int(fork_info.get("dirty_count") or 0),
-                }
-            )
-            upstream_ref = fork_info.get("upstream_ref") or ""
-            if upstream_ref == "-":
-                continue
-            default_branch = upstream_ref.split("/", 1)[1] if "/" in upstream_ref else "main"
-
-            # Inspect local + origin branches authored by casualuser / Aleksei Tcelishchev that are ahead of upstream
-            refs_cp = run_cmd(
-                [
-                    "git",
-                    "for-each-ref",
-                    "--format=%(refname:short)|%(objectname:short)|%(authorname)|%(authoremail)|%(contents:subject)",
-                    "refs/heads",
-                    "refs/remotes/origin",
-                ],
-                check=False,
-                cwd=repo_path,
-            )
-            seen_branch_names: set[str] = set()
-            for line in (refs_cp.stdout or "").splitlines():
-                parts = line.split("|", 4)
-                if len(parts) < 5:
-                    continue
-                ref_short, sha, author_name, author_email, subject = parts
-                bname = ref_short.removeprefix("origin/")
-                if (
-                    bname in ("HEAD", "main", "master", "v8", "beta")
-                    or bname in seen_branch_names
-                    or bname in ACTIVE_OPEN_PR_HEAD_BRANCHES
-                    or bname in INTERNAL_OR_SUPERSEDED_BRANCHES
-                ):
-                    continue
-                if "casualuser" not in author_email.lower() and "tcelishchev" not in author_name.lower():
-                    continue
-                counts_cp = run_cmd(
-                    ["git", "rev-list", "--left-right", "--count", f"{upstream_ref}...{ref_short}"],
-                    check=False,
-                    cwd=repo_path,
-                )
-                if counts_cp.returncode != 0 or not counts_cp.stdout.strip():
-                    continue
-                cparts = counts_cp.stdout.strip().split()
-                if len(cparts) != 2:
-                    continue
-                try:
-                    behind_u, ahead_u = int(cparts[0]), int(cparts[1])
-                except ValueError:
-                    continue
-                if ahead_u <= 0 or behind_u > 0:
-                    continue
-                seen_branch_names.add(bname)
-                repo_open_prs = open_repos_with_pr.get(upstream_repo, [])
-                proposal_key = f"{upstream_repo}:{bname}"
-                proposal = CONTRIBUTION_PROPOSALS.get(proposal_key)
-                compare_url = (
-                    f"https://github.com/{upstream_repo}/compare/"
-                    f"{default_branch}...{CANONICAL_FORK_ORG}:{bname}?expand=1"
-                )
-                pending_branches.append(
-                    {
-                        "fork": fork_name,
-                        "upstream_repo": upstream_repo,
-                        "base_branch": default_branch,
-                        "branch": bname,
-                        "head_sha": sha,
-                        "subject": proposal["title"] if proposal else subject,
-                        "ticket": proposal.get("ticket", "") if proposal else "",
-                        "ahead_upstream": ahead_u,
-                        "behind_upstream": behind_u,
-                        "open_prs_in_repo": len(repo_open_prs),
-                        "compare_url": compare_url,
-                        "has_proposal": proposal is not None,
-                    }
-                )
-
-    agent_trees = discover_worktrees_summary()
+    for fork_wt, branches in fork_results:
+        fork_worktrees.append(fork_wt)
+        for b in branches:
+            b["open_prs_in_repo"] = len(open_repos_with_pr.get(b["upstream_repo"], []))
+            pending_branches.append(b)
 
     return {
         "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -3377,7 +3485,7 @@ def sync_prs_to_orca(
             except ValueError:
                 pass
     else:
-        run_cmd([orca_bin, "orchestration", "run-use", "--run", str(run_id), "--json"], check=False, timeout=10.0)
+        run_cmd([orca_bin, "orchestration", "run-use", "--id", str(run_id), "--json"], check=False, timeout=10.0)
 
     if run_id:
         tlist_cp = run_cmd([orca_bin, "orchestration", "task-list", "--run", str(run_id), "--json"], check=False, timeout=10.0)

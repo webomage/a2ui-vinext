@@ -336,6 +336,156 @@ def main() -> int:
         and "check-delta" in orca_sync_dry["precheck"],
     )
 
+    # 8e-2. T610 AC1 & AC2: Concurrent search/audit fan-out & run-use --id flag
+    import time as _time
+
+    def _slow_search_cmd(cmd, check=False, cwd=None, timeout=None):
+        _time.sleep(0.05)
+        m = MagicMock()
+        m.returncode = 0
+        repo_idx = cmd.index("-R") + 1 if "-R" in cmd else -1
+        repo_str = cmd[repo_idx] if repo_idx > 0 else "unknown/repo"
+        m.stdout = json.dumps([
+            {"number": 10, "title": f"PR for {repo_str}", "state": "OPEN", "url": f"https://github.com/{repo_str}/pull/10"}
+        ])
+        return m
+
+    t0 = _time.monotonic()
+    with patch("w0m_prs.run_cmd", side_effect=_slow_search_cmd):
+        preset_prs = w0m_prs.search_prs(author="casualuser", preset="w0m-pr", limit=5)
+    elapsed_search = _time.monotonic() - t0
+    expected_repos = w0m_prs.PRESET_REPOS["w0m-pr"]
+    actual_repos = [p["repository"]["nameWithOwner"] for p in preset_prs]
+    check(
+        "search_prs preset runs concurrently (<0.40s for 13x50ms calls) and preserves repo order",
+        elapsed_search < 0.40 and actual_repos == expected_repos,
+    )
+
+    def _slow_audit_pr(repo_name: str, pr_num: int):
+        _time.sleep(0.05)
+        return {
+            "repo": repo_name,
+            "number": pr_num,
+            "title": f"Title {pr_num}",
+            "state": "OPEN",
+            "mergeable": "MERGEABLE",
+            "reviewDecision": "NONE",
+            "ciStatus": "PASS",
+            "feedback": "-",
+            "commentsCount": 0,
+            "reviewsCount": 0,
+            "url": f"https://github.com/{repo_name}/pull/{pr_num}",
+        }
+
+    eight_prs = [
+        {"repository": {"nameWithOwner": "stablyai/orca"}, "number": 100 + i, "title": f"T{i}", "state": "OPEN"}
+        for i in range(8)
+    ]
+    with tempfile.TemporaryDirectory() as empty_forks_dir:
+        t1 = _time.monotonic()
+        with (
+            patch("w0m_prs.search_prs", return_value=eight_prs),
+            patch("w0m_prs.audit_pr", side_effect=_slow_audit_pr),
+            patch("w0m_prs.discover_worktrees_summary", return_value=[]),
+        ):
+            disc_fast = w0m_prs.discover_new_prs_and_branches(forks_dir=Path(empty_forks_dir), fetch=False)
+        elapsed_audit = _time.monotonic() - t1
+    check(
+        "discover_new_prs_and_branches audits PRs concurrently (<0.25s for 8x50ms calls) and preserves PR order",
+        elapsed_audit < 0.25 and [p["number"] for p in disc_fast["openPrs"]] == [100 + i for i in range(8)],
+    )
+
+    rich_prs = [
+        {
+            "repository": {"nameWithOwner": "stablyai/orca"},
+            "number": 201,
+            "title": "Rich Ready PR",
+            "state": "OPEN",
+            "author": {"login": "casualuser"},
+            "mergeable": "MERGEABLE",
+            "reviewDecision": "APPROVED",
+            "comments": [{"author": {"login": "reviewer1"}, "body": "Looks good?"}],
+            "reviews": [],
+            "statusCheckRollup": [{"name": "ci", "conclusion": "SUCCESS"}],
+            "url": "https://github.com/stablyai/orca/pull/201",
+        },
+        {
+            "repository": {"nameWithOwner": "stablyai/orca"},
+            "number": 202,
+            "title": "Lazy Unknown Mergeable PR",
+            "state": "OPEN",
+            "author": {"login": "casualuser"},
+            "mergeable": "UNKNOWN",
+            "reviewDecision": "",
+            "comments": [],
+            "reviews": [],
+            "statusCheckRollup": [],
+            "url": "https://github.com/stablyai/orca/pull/202",
+        },
+    ]
+    audit_calls = []
+
+    def _recording_audit(repo_name: str, pr_num: int):
+        audit_calls.append((repo_name, pr_num))
+        return _slow_audit_pr(repo_name, pr_num)
+
+    with tempfile.TemporaryDirectory() as empty_forks_dir2:
+        with (
+            patch("w0m_prs.search_prs", return_value=rich_prs),
+            patch("w0m_prs.audit_pr", side_effect=_recording_audit),
+            patch("w0m_prs.discover_worktrees_summary", return_value=[]),
+        ):
+            disc_rich = w0m_prs.discover_new_prs_and_branches(forks_dir=Path(empty_forks_dir2), fetch=False)
+    check(
+        "rich gh pr list payloads skip redundant audit_pr calls unless mergeable is UNKNOWN",
+        audit_calls == [("stablyai/orca", 202)]
+        and disc_rich["openPrs"][0]["reviewDecision"] == "APPROVED"
+        and disc_rich["openPrs"][0]["ciStatus"] == "PASS"
+        and "❓ 1" in disc_rich["openPrs"][0]["feedback"]
+        and disc_rich["openPrs"][1]["mergeable"] == "MERGEABLE",
+    )
+
+    recorded_orca_cmds = []
+
+    def _fake_orca_run_cmd(cmd, check=False, cwd=None, timeout=None):
+        recorded_orca_cmds.append(list(cmd))
+        m = MagicMock()
+        m.returncode = 0
+        m.stderr = ""
+        if "run-list" in cmd:
+            m.stdout = json.dumps({"ok": True, "result": {"runs": [{"id": "run_t610", "objective": "w0m Upstream PRs Tracker"}]}})
+        elif "task-list" in cmd:
+            m.stdout = json.dumps({"ok": True, "result": {"tasks": []}})
+        elif "task-create" in cmd:
+            m.stdout = json.dumps({"ok": True, "result": {"task": {"id": "task_t610"}}})
+        elif "automations" in cmd and "list" in cmd:
+            m.stdout = json.dumps({
+                "ok": True,
+                "result": {"automations": [{"id": "auto_t610", "name": "w0m Upstream PRs & Fork Branches Monitor", "agentId": "antigravity"}]},
+            })
+        else:
+            m.stdout = json.dumps({"ok": True, "result": {}})
+        return m
+
+    with tempfile.TemporaryDirectory() as tmp_orca_state:
+        tmp_state_path = Path(tmp_orca_state) / "state.json"
+        with (
+            patch("w0m_prs.run_cmd", side_effect=_fake_orca_run_cmd),
+            patch("w0m_prs.resolve_orca_bin", return_value="/tmp/orca-shim"),
+            patch("w0m_prs.resolve_agent_provider", return_value="antigravity"),
+            patch("w0m_prs.check_prs_delta", side_effect=lambda **kw: {"changed": False}),
+        ):
+            live_sync = w0m_prs.sync_prs_to_orca(dry_run=False, discovered_override=sample_discovered)
+        run_use_cmds = [c for c in recorded_orca_cmds if "run-use" in c]
+        check(
+            "sync_prs_to_orca binds existing run with `orchestration run-use --id <run_id>` (not --run)",
+            len(run_use_cmds) == 1
+            and "--id" in run_use_cmds[0]
+            and "run_t610" in run_use_cmds[0]
+            and "--run" not in run_use_cmds[0]
+            and live_sync["orchestrationTaskId"] == "task_t610",
+        )
+
     # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593, T608)
     proposals_list = w0m_prs.build_pr_proposals()
     check(

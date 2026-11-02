@@ -88,6 +88,55 @@ class TestAgentProvider(unittest.TestCase):
         resolved = ap.resolve_orca_bin(which_fn=lambda _: None, home_dir=self.tmp_dir)
         self.assertEqual(resolved, str(shim))
 
+    def test_resolve_orca_bin_honors_orca_cli_command_env(self) -> None:
+        custom = self.tmp_dir / "orca-custom"
+        custom.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        os.chmod(custom, 0o755)
+
+        resolved = ap.resolve_orca_bin(
+            env={"ORCA_CLI_COMMAND": str(custom)},
+            which_fn=lambda name: "/usr/bin/orca" if name == "orca" else None,
+            home_dir=self.tmp_dir,
+        )
+        self.assertEqual(resolved, str(custom))
+
+    def test_resolve_orca_bin_skips_gnome_screen_reader(self) -> None:
+        shim_dir = self.tmp_dir / ".config" / "orca" / "linux-orca-cli-shim"
+        shim_dir.mkdir(parents=True)
+        shim = shim_dir / "orca"
+        shim.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        os.chmod(shim, 0o755)
+
+        # Even if /usr/bin/orca (GNOME screen reader) is on PATH, prefer the Orca IDE shim
+        resolved_shim = ap.resolve_orca_bin(
+            env={},
+            which_fn=lambda name: "/usr/bin/orca" if name == "orca" else None,
+            home_dir=self.tmp_dir,
+        )
+        self.assertEqual(resolved_shim, str(shim))
+
+        # Without shim, prefer orca-ide over /usr/bin/orca
+        empty_home = self.tmp_dir / "empty-home"
+        empty_home.mkdir()
+        resolved_ide = ap.resolve_orca_bin(
+            env={},
+            which_fn=lambda name: (
+                "/usr/local/bin/orca-ide"
+                if name == "orca-ide"
+                else ("/usr/bin/orca" if name == "orca" else None)
+            ),
+            home_dir=empty_home,
+        )
+        self.assertEqual(resolved_ide, "/usr/local/bin/orca-ide")
+
+        # Never return /usr/bin/orca or /bin/orca even if nothing else is found
+        resolved_fallback = ap.resolve_orca_bin(
+            env={},
+            which_fn=lambda name: "/usr/bin/orca" if name == "orca" else None,
+            home_dir=empty_home,
+        )
+        self.assertNotIn(resolved_fallback, ("/usr/bin/orca", "/bin/orca"))
+
 
 if __name__ == "__main__":
     unittest.main()
