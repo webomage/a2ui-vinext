@@ -19,7 +19,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 💤 **paused** |
-| [T612](.tasks/T612.md) | **P1** | **Guard Obsidian URI launches per engagement to prevent mobile last-vault fallback and cross-project vault collisions** | web | openspec/specs/per-project-vault-topology | 🟡 **in-progress** |
 | [T290](project/tickets/T290.md) | **P1** | 🆕 **Stage-4 Money had no ticket of its own, and `simulate_payment` is a live billing hole** — found 2026-08-26 on reaching the last unmet stage. Stage-4's exit is *invoices reconcile against Stripe, and simulate_payment is out of the production path*, but it named [[T9]] — **AI token accounting from epic §11**. Same defect stage-2 carried until 2026-08-18: the stage reads as progress whenever the wrong ticket moves. 🔴 `client-api:223` marks an invoice paid AND credits a treasury, and **an authenticated client passes its ownership check on their OWN invoice** — no caller anywhere in source, and `stripe-webhook` already does both writes. ✅ **CLOSED on production 2026-08-26** (release `2026.08.26-1787760232`): the deployed function now answers `400 Unknown action`, identical to the control — it answered `404 Invoice not found` before. A grep could never have told those two apart. ⚠️ Impact is small by LUCK — one invoice, already paid, no Stripe activity yet. 🔀 **Epic moved 2026-09-12**: §33 split into Alfa/Beta, this ticket is now Beta's (§34). | api | ROADMAP §34 | 💤 **paused** |
 
 ## QUEUED & BACKLOG
@@ -34,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T612](.tasks/T612.md) | **P1** | **Guard Obsidian URI launches per engagement to prevent mobile last-vault fallback and cross-project vault collisions** | web | openspec/specs/per-project-vault-topology | ✅ **done** |
 | [T611](.tasks/T611.md) | **P0** | **Fix apps/web @webomage/fingerprint deploy-web Rolldown failure, add workspace-import linkage gate in deps_sync.py, and add tools-install bootstrap for missing governed CLI tools (gauge)** | root, web | docs/DEPS-ALIGNMENT.md | ✅ **done** |
 | [T610](.tasks/T610.md) | **P1** | **Parallelize w0m-prs GitHub delta precheck under 10s, fix Orca run-use CLI flag, and harden Linux Orca binary resolution** | tooling | openspec/changes/2026-11-01-orca-session-naming-and-ax-workflows | ✅ **done** |
 | [T609](.tasks/T609.md) | **P1** | **Declarative hat/role permissions & UI visibility schema, PM Knowledge Hub Worker bundling, Linux obsidian:// handler, and multi-agent provider abstraction** | root, web, api | docs/CP-FEATURE-INDEX.md | ✅ **done** |
