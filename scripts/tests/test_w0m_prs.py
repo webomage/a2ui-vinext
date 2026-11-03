@@ -1020,6 +1020,10 @@ def main() -> int:
         and "compare/master...webomage:feat/eight-zone-window-snapping" in moksha_snap_prop["compare_url"]
         and "Top Half (`E_MAXIMIZE_TOP`) is proposed as the default" in moksha_snap_prop["body"],
     )
+    check(
+        "INTERNAL_OR_SUPERSEDED_BRANCHES excludes T619 feat/w0m-overlay-updater-feed internal branch",
+        "feat/w0m-overlay-updater-feed" in w0m_prs.INTERNAL_OR_SUPERSEDED_BRANCHES,
+    )
 
     print("─" * 60)
     print(f"Results: {checks - len(fails)}/{checks} passed")

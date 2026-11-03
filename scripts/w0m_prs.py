@@ -2671,6 +2671,7 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
 # Internal / archived / superseded sub-branches (excluded from unsubmitted pending branch list)
 INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
     "feat/audit-host-services",
+    "feat/w0m-overlay-updater-feed",  # T619: webomage/orca self-healing overlay release feed runtime branch
     "fix/gemma4-turboquant-sdpa256-bounds",
     "w0m/v1.7.0-astro",
     "PR_restructured",
