@@ -239,7 +239,7 @@ def main(argv: list[str] | None = None) -> int:
             owner = cfg.get("owner")
             cap = cfg.get("cost_ceiling_usd")
             reach = cfg.get("reachability", "governed")
-            print(f"  - {name}: status={st} owner={owner} ceiling=${cap} reachability={reach}")
+            print(f"  [OK] {name}: status={st} owner={owner} ceiling=${cap} reachability={reach}")
         for b_key, b_msg in report.unmeasurable_boundaries.items():
             print(f"  - [UNMEASURABLE:{b_key}] {b_msg}")
         return 0

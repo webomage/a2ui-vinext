@@ -9,7 +9,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: archive
-  version: "2026.11.02-1793667351"
+  version: "2026.11.02-1793677165"
 ---
 
 # w0m-sdlc-archive — the close + lessons gate
@@ -26,8 +26,8 @@ Read `.w0m/sdlc.json`. Use `tickets` (board/dir/sync), `specs`, `tech_debt`, `le
    `{tickets.dir}/{pattern}`. Do not edit `TASKS.md` — `just land` / `just state-save` regenerates it deterministically
    from `.tasks/` (T425), and — if github-mirrored — close the GH issue
    (re-run `tickets.sync`; ticket markdown is the source).
-3. **Archive the spec.** If `specs.system:"openspec"`, invoke `openspec-archive-change` to move the
-   change into the archive and sync deltas into the main specs. (`specs.system:"none"` → skip.)
+3. **Archive the spec & verify corpus reality.** If `specs.system:"openspec"`, invoke `openspec-archive-change` to move the
+   change into the archive, update `.tasks/T##.md` `spec:` to the archived path (`openspec/changes/archive/...`) or canonical `openspec/specs/<cap>/spec.md`, and run `just spec-drift` + `just reality-verify` so zero done-owner active changes or contradicted completed-ticket/spec claims remain. (`specs.system:"none"` → skip.)
 4. **Refresh tech-debt.** Update `{tech_debt.register}` (estate-root `TECH-DEBT.md`): add rows for debt this change introduced (using the explicit `Tracked` grammar: `owner: [[T##]]`, `found-at: [[T##]]`, `accepted: [[T##]]`, or `— (needs a T-row)`), and move any `D##` rows this ticket paid down from the open tables into `## Closed-Debt Ledger` with resolution evidence. Run `just debt-check --enforce` to verify zero stale `owner:` links or open paid rows remain.
 5. **Harvest friction & capture lessons — into the RIGHT register (`{lessons.path}` / `LESSONS.md`), governed by the 4-Home Knowledge Split (T178 AC3–AC5, T613).**
    Run `just lessons-harvest` (when configured in `session_wrapup`) to inspect repeated path/CLI/gate friction from the session, then resolve the target register from `.w0m/sdlc.json -> lessons.path` (or `lessons_surface.file`, defaulting to repo-root `LESSONS.md`).

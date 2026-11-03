@@ -30,6 +30,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -66,25 +67,22 @@ def measure_file(path: Path) -> dict | None:
 
 def resolve_project_root(rel_root: str) -> Path:
     direct = (ROOT / rel_root).resolve()
-    if direct.is_dir():
+    if direct.is_dir() or rel_root in ("", ".") or Path(rel_root).is_absolute():
         return direct
-    # If running in an agent tree or release worktree, resolve relative to host estate
-    for host_estate in [
-        Path.home() / "Projects" / "!self" / "w0m",
-        Path.home() / "Projects" / "@self" / "@wom",
-        Path.home() / "Projects" / "w0m",
-    ]:
-        alt = (host_estate / rel_root).resolve()
-        if alt.is_dir():
-            return alt
-    for parent in [
-        Path.home() / "Projects" / "_self",
-        Path.home() / "Projects" / "!proj",
-        Path.home() / "Projects" / "_proj",
-    ]:
-        alt = (parent / rel_root).resolve()
-        if alt.is_dir():
-            return alt
+    if (ROOT / ".git").is_file():
+        proc = subprocess.run(
+            ["git", "-C", str(ROOT), "rev-parse", "--git-common-dir"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0 and proc.stdout.strip():
+            common_dir = Path(proc.stdout.strip())
+            if not common_dir.is_absolute():
+                common_dir = (ROOT / common_dir).resolve()
+            alt = (common_dir.resolve().parent / rel_root).resolve()
+            if alt.is_dir():
+                return alt
     return direct
 
 

@@ -490,7 +490,7 @@ def probe_live_mcp_and_mlx(root: Path = ESTATE_ROOT, sync_home: bool = False) ->
         conn.request("GET", "/v1/models")
         res = conn.getresponse()
         if res.status == 200:
-            data = json.loads(res.read().decode("utf-8"))
+            data: dict[str, Any] = json.loads(res.read().decode("utf-8"))
             models = [str(m.get("id", "")) for m in data.get("data", []) if isinstance(m, dict)]
             mlx_probe["reachable"] = True
             mlx_probe["served_models"] = models
@@ -518,7 +518,7 @@ def probe_live_mcp_and_mlx(root: Path = ESTATE_ROOT, sync_home: bool = False) ->
             )
             res = conn.getresponse()
             if res.status == 200:
-                comp = json.loads(res.read().decode("utf-8"))
+                comp: dict[str, Any] = json.loads(res.read().decode("utf-8"))
                 mlx_probe["text_completion_ok"] = bool(comp.get("choices"))
                 mlx_probe["completion_model"] = target_model
             conn.close()
@@ -567,7 +567,10 @@ def probe_live_mcp_and_mlx(root: Path = ESTATE_ROOT, sync_home: bool = False) ->
                 proc.kill()
                 out, _ = proc.communicate()
             first_json = next((ln for ln in out.splitlines() if ln.strip().startswith("{")), "")
-            parsed = json.loads(first_json) if first_json else {}
+            parsed: dict[str, Any] = {}
+            if first_json:
+                loaded_rpc: dict[str, Any] = json.loads(first_json)
+                parsed = loaded_rpc
             mcp_probes[name] = {
                 "transport": "stdio",
                 "installed": True,

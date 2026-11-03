@@ -37,6 +37,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -47,6 +48,28 @@ ROOT = HERE.parents[1]                      # …/@wom
 CANONICAL = ROOT / "w0m-web"                # …/w0m-web
 SDLC = ROOT / ".w0m" / "sdlc.json"
 DEFAULT_REGISTRY = ROOT / "project" / "policies" / "clients-policy.json"
+
+
+def resolve_project_root(rel_root: str) -> Path:
+    """Resolve a declared project root relative to ROOT, or via git common-dir inside linked worktrees."""
+    direct = (ROOT / rel_root).resolve()
+    if direct.is_dir() or rel_root in ("", ".") or Path(rel_root).is_absolute():
+        return direct
+    if (ROOT / ".git").is_file():
+        proc = subprocess.run(
+            ["git", "-C", str(ROOT), "rev-parse", "--git-common-dir"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0 and proc.stdout.strip():
+            common_dir = Path(proc.stdout.strip())
+            if not common_dir.is_absolute():
+                common_dir = (ROOT / common_dir).resolve()
+            alt = (common_dir.resolve().parent / rel_root).resolve()
+            if alt.is_dir():
+                return alt
+    return direct
 
 POLICY: Path | None = None                  # resolved from .w0m/sdlc.json -> skills.policy or --policy
 REGISTRY_OVERRIDE: Path | None = None       # --registry <path> (tests)
@@ -496,7 +519,7 @@ def build() -> tuple[dict, list[str], list[str]]:
         if not p.get("enabled"):
             continue
         pid = p["id"]
-        root = (ROOT / p["root"]).resolve()
+        root = resolve_project_root(p["root"])
         if not root.is_dir():
             return {}, [], [f"{pid}: declared root does not exist — {root}"]
         surface_specs, surf_errors = discover_project_surfaces(p, root)

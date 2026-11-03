@@ -280,9 +280,9 @@ def selftest() -> int:
         '      echo "$PUBLIC_SUPABASE_URL" | pnpm exec wrangler secret put PUBLIC_SUPABASE_URL --name {{ project }}\'\n'
     )
     pushes = parse_pushes(recipe)
-    tree = {"w0m-cf": {"w0m-cf/src/index.ts": "const t = env.TELEGRAM_BOT_TOKEN;\nconst g = env.GEMINI_API_KEY;\n",  # pinned worker
+    tree = {"wom7func": {"w0m-cf/src/index.ts": "const t = env.TELEGRAM_BOT_TOKEN;\nconst g = env.GEMINI_API_KEY;\n",  # pinned worker
                          "w0m-cf/worker-configuration.d.ts": "  CLOUDFLARE_API_TOKEN: string;\n"},
-            "w0m-api": {"w0m-api/src/a.ts": "const k = env.ADZUNA_APP_ID; const j = env.JOOBLE_API_KEY;"},  # pinned worker
+            "wom7api": {"w0m-api/src/a.ts": "const k = env.ADZUNA_APP_ID; const j = env.JOOBLE_API_KEY;"},  # pinned worker
             "webomage": {"w0m-web/apps/web/src/x.ts": "import.meta.env.PUBLIC_SUPABASE_URL"}}
     def consumers(k: str) -> list[str]:
         return [] if k == "CF_RUNTIME_API_TOKEN" else ["somewhere.ts"]

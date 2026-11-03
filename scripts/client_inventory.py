@@ -62,6 +62,23 @@ def sh(*args: str) -> tuple[int, str]:
     return r.returncode, (r.stdout or r.stderr).strip()
 
 
+def resolve_project_root(rel_root: str) -> Path:
+    """Resolve a declared project root relative to ROOT, or via git common-dir inside linked worktrees."""
+    direct = (ROOT / rel_root).resolve()
+    if direct.is_dir() or rel_root in ("", ".") or Path(rel_root).is_absolute():
+        return direct
+    if (ROOT / ".git").is_file():
+        code, out = sh("git", "-C", str(ROOT), "rev-parse", "--git-common-dir")
+        if code == 0 and out:
+            common_dir = Path(out)
+            if not common_dir.is_absolute():
+                common_dir = (ROOT / common_dir).resolve()
+            alt = (common_dir.resolve().parent / rel_root).resolve()
+            if alt.is_dir():
+                return alt
+    return direct
+
+
 def tart_vms() -> set[str] | None:
     """Set of local Tart VM names, or None if tart is not installed / fails (T297 AC4).
 
@@ -83,7 +100,7 @@ def tart_vms() -> set[str] | None:
         if reg and isinstance(reg.get("projects"), list):
             for p in reg["projects"]:
                 if isinstance(p, dict) and p.get("id") and p.get("root"):
-                    r = (ROOT / str(p["root"])).resolve()
+                    r = resolve_project_root(str(p["root"]))
                     if (r / "vm-seed").is_dir():
                         seeded.add(f"w0m-{p['id']}")
         return seeded
@@ -258,7 +275,7 @@ def skills_facts(root: Path) -> dict:
 
 def workspace_skills_facts(p: dict, root: Path) -> dict:
     """Resolve skills facts for a project, including per-surface breakdown for multi-surface workspaces (T508 AC10)."""
-    ws_root = (ROOT / p["root"]).resolve() if p.get("repos") else root.resolve()
+    ws_root = resolve_project_root(p["root"]) if p.get("repos") else root.resolve()
     repos_decl = p.get("repos") or {}
     if p.get("role") in ("w0m", "estate") and ws_root == ROOT.resolve() and (CANONICAL / ".w0m" / "skills.json").is_file():
         primary = skills_facts(CANONICAL)
@@ -420,7 +437,7 @@ def inventory(registry: Path = REGISTRY) -> tuple[dict, list[str]]:
                     elif guest not in vms:
                         errors.append(f"{p['id']}: declared Tart guest {guest!r} does not exist in `tart list` (T297 AC4)")
 
-        root = (ROOT / p["root"]).resolve()
+        root = resolve_project_root(p["root"])
         if not root.is_dir():
             errors.append(f"{p['id']}: declared root does not exist — {root}")
             continue
@@ -633,7 +650,7 @@ def inventory(registry: Path = REGISTRY) -> tuple[dict, list[str]]:
             "services_enabled": sum(1 for s in p.get("_effective_services", {}).values() if s["enabled"]),
             "services_total": len(services_decl),
             "services_overrides": {k: v for k, v in p.get("_effective_services", {}).items() if v["source"] == "override"},
-            "workspace_root": str((ROOT / p["root"]).resolve()) if p.get("repos") else None,
+            "workspace_root": str(resolve_project_root(p["root"])) if p.get("repos") else None,
             "git": g,
             "declaration": {
                 "present": decl is not None,
@@ -773,8 +790,13 @@ def report(rep: dict, quiet: bool) -> None:
                        f"exists here BY DECISION, and none will be placed")
             for name, m in g["repos"].items():
                 mark = " ← canonical" if name == g["canonical_repo"] else ""
-                dirty = f"{m['uncommitted']} dirty" if m["uncommitted"] else "clean"
-                print(f"       - {name:14} {m['rel']:28} {m['branch']:>10}  {dirty}{mark}")
+                if m.get("uncloned"):
+                    branch_str = "uncloned"
+                    dirty = "—"
+                else:
+                    branch_str = str(m.get("branch") or "—")
+                    dirty = f"{m['uncommitted']} dirty" if m["uncommitted"] else "clean"
+                print(f"       - {name:14} {m['rel']:28} {branch_str:>10}  {dirty}{mark}")
         if not d["present"]:
             print("     ✗ no declaration file")
         else:

@@ -1037,7 +1037,8 @@ def spawn_session(
         proc_res = subprocess.run(cmd_list, capture_output=True, text=True, timeout=10.0)
         if proc_res.returncode == 0:
             try:
-                create_res = json.loads(proc_res.stdout)
+                loaded_local: dict[str, Any] = json.loads(proc_res.stdout)
+                create_res = loaded_local
             except ValueError:
                 create_res = {"ok": True, "result": {"raw": proc_res.stdout.strip()}}
         else:
@@ -1057,7 +1058,8 @@ def spawn_session(
         )
         if proc_res.returncode == 0:
             try:
-                create_res = json.loads(proc_res.stdout)
+                loaded_remote: dict[str, Any] = json.loads(proc_res.stdout)
+                create_res = loaded_remote
             except ValueError:
                 create_res = {"ok": True, "result": {"raw": proc_res.stdout.strip()}}
         else:
@@ -1569,7 +1571,7 @@ def save_private_workload_state(
     agent_claims: dict[str, Any] = {}
     if reg_path.is_file():
         try:
-            raw_reg = json.loads(reg_path.read_text(encoding="utf-8"))
+            raw_reg: Any = json.loads(reg_path.read_text(encoding="utf-8"))
             if isinstance(raw_reg, dict) and isinstance(raw_reg.get("claims"), dict):
                 agent_claims = raw_reg["claims"]
         except (OSError, ValueError):
@@ -1717,7 +1719,8 @@ def _terminal_hook_state(term: dict[str, Any], hook_entries: dict[str, Any]) -> 
                 break
     if not isinstance(entry, dict):
         return ""
-    payload = entry.get("payload") if isinstance(entry.get("payload"), dict) else {}
+    raw_payload = entry.get("payload")
+    payload = raw_payload if isinstance(raw_payload, dict) else {}
     return str(payload.get("state") or entry.get("state") or "").strip().lower()
 
 
@@ -1845,8 +1848,10 @@ def close_completed_sessions(
             if s_id and s_id not in finalized_session_ids:
                 finalized_session_ids[s_id] = run
 
-    hook_entries = snap.get("hookEntries") if isinstance(snap.get("hookEntries"), dict) else {}
-    terminals = snap.get("terminals") if isinstance(snap.get("terminals"), list) else []
+    raw_hooks = snap.get("hookEntries")
+    hook_entries: dict[str, Any] = raw_hooks if isinstance(raw_hooks, dict) else {}
+    raw_terms = snap.get("terminals")
+    terminals: list[Any] = raw_terms if isinstance(raw_terms, list) else []
 
     active_trees: set[str] = set()
     candidates: list[dict[str, Any]] = []

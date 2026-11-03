@@ -359,6 +359,9 @@
       "agent_tree_land_ff_live_and_remove_pushed_tree"
     ],
     "verification_gates": [
+      "just reality-verify",
+      "just spec-drift",
+      "just dod-check",
       "python3 w0m-web/project/scripts/lessons_check.py",
       "python3 w0m-web/project/scripts/supabase_surface_drift_check.py",
       "just debt-check --enforce",

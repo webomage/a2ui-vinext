@@ -812,7 +812,7 @@ host-check *args:
 
 # Red probes for host-check (T196 AC3) — proves gate flags dead executables and plaintext credentials on fixture.
 host-check-test:
-    @python3 -m unittest scripts/tests/host_surface_check_test.py
+    @python3 scripts/tests/host_surface_check_test.py
 
 # T390 — Unit test suite for push_report.py pre-push warning & advisory extractor.
 push-report-test:

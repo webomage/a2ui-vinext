@@ -63,7 +63,7 @@ def _load_json(path: Path) -> dict[str, Any]:
     if not path.is_file():
         return {}
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data: Any = json.loads(path.read_text(encoding="utf-8"))
         return data if isinstance(data, dict) else {}
     except (OSError, ValueError):
         return {}
@@ -86,7 +86,8 @@ def _semver_tuple(ver: str) -> tuple[int, ...]:
 def build_sandbox_image_manifest(policy_path: Path = TOOLS_POLICY_PATH) -> dict[str, Any]:
     """Derive sandbox tool versions directly from project/policies/tools-policy.json (AC4b)."""
     policy = _load_json(policy_path)
-    tools = policy.get("tools") if isinstance(policy.get("tools"), dict) else {}
+    raw_tools = policy.get("tools")
+    tools: dict[str, Any] = raw_tools if isinstance(raw_tools, dict) else {}
     governed_keys = ("headroom", "serena", "node", "python3", "git", "gh", "uv")
     pinned: dict[str, dict[str, Any]] = {}
     for key in governed_keys:
@@ -296,7 +297,7 @@ def _probe_headroom_json(path: str = "/stats", port: int = HEADROOM_PORT) -> dic
         conn.request("GET", path, headers={"User-Agent": "w0m-t171-cohort-runner"})
         resp = conn.getresponse()
         if resp.status == 200:
-            raw = json.loads(resp.read().decode("utf-8"))
+            raw: Any = json.loads(resp.read().decode("utf-8"))
             return raw if isinstance(raw, dict) else None
     except Exception:
         return None
@@ -308,11 +309,16 @@ def _probe_headroom_json(path: str = "/stats", port: int = HEADROOM_PORT) -> dic
 
 def snapshot_headroom_counters(port: int = HEADROOM_PORT) -> dict[str, int]:
     stats = _probe_headroom_json("/stats", port=port) or {}
-    summary = stats.get("summary") if isinstance(stats.get("summary"), dict) else {}
-    compression = summary.get("compression") if isinstance(summary.get("compression"), dict) else {}
-    requests = stats.get("requests") if isinstance(stats.get("requests"), dict) else {}
-    inbound = stats.get("proxy_inbound") if isinstance(stats.get("proxy_inbound"), dict) else {}
-    tokens = stats.get("tokens") if isinstance(stats.get("tokens"), dict) else {}
+    raw_summary = stats.get("summary")
+    summary: dict[str, Any] = raw_summary if isinstance(raw_summary, dict) else {}
+    raw_comp = summary.get("compression")
+    compression: dict[str, Any] = raw_comp if isinstance(raw_comp, dict) else {}
+    raw_reqs = stats.get("requests")
+    requests: dict[str, Any] = raw_reqs if isinstance(raw_reqs, dict) else {}
+    raw_inbound = stats.get("proxy_inbound")
+    inbound: dict[str, Any] = raw_inbound if isinstance(raw_inbound, dict) else {}
+    raw_tokens = stats.get("tokens")
+    tokens: dict[str, Any] = raw_tokens if isinstance(raw_tokens, dict) else {}
     return {
         "api_requests": int(summary.get("api_requests", 0) or 0),
         "requests_total": int(requests.get("total", 0) or 0),
@@ -464,7 +470,7 @@ def _orca_runtime_rpc(method: str, params: dict[str, Any] | None = None) -> dict
         return {"ok": False, "error": f"Missing {meta_path}"}
 
     try:
-        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        meta: dict[str, Any] = json.loads(meta_path.read_text(encoding="utf-8"))
         endpoint = next(
             (t["endpoint"] for t in (meta.get("transports") or []) if t.get("kind") == "unix"),
             None,
@@ -491,7 +497,7 @@ def _orca_runtime_rpc(method: str, params: dict[str, Any] | None = None) -> dict
                     line, buf = buf.split(b"\n", 1)
                     if not line.strip():
                         continue
-                    frame = json.loads(line.decode("utf-8", errors="replace"))
+                    frame: dict[str, Any] = json.loads(line.decode("utf-8", errors="replace"))
                     if frame.get("_keepalive"):
                         continue
                     if frame.get("id") == req_id:

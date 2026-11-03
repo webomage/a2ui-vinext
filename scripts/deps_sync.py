@@ -37,7 +37,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 # workspace root = .../@wom  (this file is scripts/deps_sync.py)
 ROOT = Path(__file__).resolve().parents[1]
@@ -88,7 +88,7 @@ def semver(spec: str) -> tuple[int, int, int]:
 
 def load(path: Path) -> tuple[dict, str]:
     text = path.read_text(encoding="utf-8")
-    return json.loads(text), text
+    return cast(dict[str, Any], json.loads(text)), text
 
 
 def overrides_of(pkg: dict) -> dict:
@@ -1072,7 +1072,8 @@ def check_workspace_package_imports(web_dir: Path) -> list[str]:
     internal_names: set[str] = set()
     for pj in sorted(pkgs_root.glob("*/package.json")):
         try:
-            name = json.loads(pj.read_text(encoding="utf-8")).get("name")
+            pkg_doc: dict[str, Any] = json.loads(pj.read_text(encoding="utf-8"))
+            name = pkg_doc.get("name")
         except (OSError, ValueError):
             continue
         if isinstance(name, str) and (name.startswith("@webomage/") or name.startswith("@wom/")):
@@ -1093,7 +1094,7 @@ def check_workspace_package_imports(web_dir: Path) -> list[str]:
             if not member_dir.is_dir() or not pj.is_file():
                 continue
             try:
-                manifest = json.loads(pj.read_text(encoding="utf-8"))
+                manifest: dict[str, Any] = json.loads(pj.read_text(encoding="utf-8"))
             except (OSError, ValueError):
                 continue
             own_name = manifest.get("name")

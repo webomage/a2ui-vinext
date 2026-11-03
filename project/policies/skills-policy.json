@@ -55,6 +55,10 @@
       "sandboxed": false,
       "reason": "Ships `scripts/wiki-mode.py` (T128 AC8), a read-only vault methodology inspection and destination-routing helper run on the host via `python3`. Read 2026-10-26: uses Python stdlib only (`argparse`, `json`, `re`, `pathlib`), reads `.vault-meta/mode.json` without writing files, making network calls, or spawning subprocesses."
     },
+    "w0m:security-audit": {
+      "sandboxed": false,
+      "reason": "Ships `validate-findings.cjs` and `validate-coverage-ledger.cjs`, read-only JSON Schema and coverage-ledger validators invoked with `node` on the host during security-audit reporting (`VALIDATION-AND-REPORTING.md:114`). Read 2026-11-02: uses Node stdlib (`node:fs`, `node:path`, `node:util`) only with bounded input/recursion limits (5 MB, depth 64), zero network calls, zero child processes, and zero file writes."
+    },
     "artemio:mmd-validate": {
       "sandboxed": false,
       "reason": "Declared false because it IS false: the client recipe `lint-mmd` runs w0m's canonical `mmd-validate/validate.mjs` with `node` on the host, by an absolute path into the w0m-skills checkout (not the vendored copy). The skill only parses diagrams and writes nothing (read 2026-09-30). The absolute path is a finding for the owner to repair in the client repo, which this policy does not touch (T521 AC8)."

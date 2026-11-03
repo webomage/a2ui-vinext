@@ -804,6 +804,10 @@
         "change_classification": {
           "status": "out",
           "reason": "Governs the estate T-id commit-msg ticket gate (T129 AC3/AC4 in scripts/conventional_commit.py); ticketing does not apply to this tier."
+        },
+        "session_wrapup": {
+          "status": "out",
+          "reason": "Governs the w0m estate's ticket/session closeout checklist (T613/T616: T-id archive, LESSONS.md harvest, agent-tree-land, and STATE.md regeneration); ticketing and estate landing do not apply to this tier."
         }
       },
       "non_contract_surfaces": {
@@ -975,6 +979,10 @@
         "change_classification": {
           "status": "out",
           "reason": "Governs the estate T-id commit-msg ticket gate (T129 AC3/AC4 in scripts/conventional_commit.py); ticketing does not apply to this tier."
+        },
+        "session_wrapup": {
+          "status": "out",
+          "reason": "Governs the w0m estate's ticket/session closeout checklist (T613/T616: T-id archive, LESSONS.md harvest, agent-tree-land, and STATE.md regeneration); ticketing and estate landing do not apply to this tier."
         }
       },
       "non_contract_surfaces": {

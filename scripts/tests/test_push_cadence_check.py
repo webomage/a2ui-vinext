@@ -106,6 +106,22 @@ class MainWithNoUpstream(unittest.TestCase):
             self.assertEqual(rc, 2, out)
             self.assertIn("cannot judge", out)
 
+    def test_advisory_findings_emit_countable_fail_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            home = Path(d)
+            estate = self.estate_with_repos(home / "Projects" / "estate")
+            def fake_git(repo: Path, *args: str) -> str | None:
+                if args == ("rev-parse", "--abbrev-ref", "@{u}"):
+                    return "origin/beta" if repo.name == "w0m-web" else None
+                if args == ("log", "--format=%ct%x09%s", "@{u}.."):
+                    return f"{int(pc.time.time())}\tdocs(T1): done commit"
+                return None
+            with mock.patch.object(pc, "git", side_effect=fake_git):
+                rc, out = self.run_main(estate, home=home)
+            self.assertEqual(rc, 0, out)
+            self.assertIn("[FAIL] 1 finding(s):", out)
+
+
 
 class _Tick(unittest.TextTestResult):
     def addSuccess(self, t):

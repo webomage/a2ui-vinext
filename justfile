@@ -112,8 +112,14 @@ profile-resolver-test:
 ticket-audit *args:
     @python3 scripts/ticket_audit.py {{ args }}
 
+reality-verify *args:
+    @python3 scripts/ticket_audit.py --completed --specs --strict --offline {{ args }}
+
 ticket-audit-test:
     @python3 scripts/tests/test_ticket_audit.py
+
+dod-check-test:
+    @python3 scripts/tests/test_dod_check.py
 
 sync-tickets *args:
     @python3 scripts/sync_github.py {{ args }}
@@ -1607,7 +1613,7 @@ mcp-health *args:
 
 # ── Estate Test Suites & Hook Runners (T160 / T375 / T419) ───────────────────
 test:
-    @python3 scripts/run_suites.py --tier offline --level {{ env_var_or_default("W0M_TEST_LEVEL", "critical") }}
+    @python3 scripts/run_suites.py --tier offline --level {{ env_var_or_default("W0M_TEST_LEVEL", "medium") }}
 
 # T503 — the fast tier only (`"prepush": true` suites): what pre-push and the deploy pre-flight run.
 test-prepush:
@@ -1844,7 +1850,7 @@ consumer-skill-gate *args:
     @python3 w0m-web/project/scripts/consumer_skill_gate.py {{ args }}
 
 consumer-skill-gate-test:
-    @python3 w0m-web/project/scripts/tests/test_consumer_skill_gate.py
+    @cd w0m-web && uv run pytest -q project/scripts/tests/test_consumer_skill_gate.py
 
 lessons-check *args:
     @python3 w0m-web/project/scripts/lessons_check.py {{ args }}
@@ -1868,7 +1874,7 @@ opencode-sync *args:
     @python3 scripts/opencode_config.py --generate {{ args }}
 
 opencode-config-test:
-    @python3 -m unittest scripts/tests/test_opencode_config.py
+    @python3 scripts/tests/test_opencode_config.py
 
 # ── Stripe Reconciliation, Cloud Compute & 4-Identity Selector (T290 / T305 / T306) ──
 stripe-reconcile *args:
@@ -2057,7 +2063,7 @@ content-tools-test:
 
 # ── Per-Engagement Cloudflare R2 Obsidian Vault Sync (T580) ───────────────────
 vault-push-r2 *args:
-    @infisical run --env=beta --silent -- python3 scripts/vault_push_r2.py {{ args }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 scripts/vault_push_r2.py {{ args }}
 
 vault-push-r2-test:
     @python3 scripts/tests/test_vault_push_r2.py

@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -50,8 +51,13 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
 
 ROOT = find_workspace_root()
 WEB = ROOT / "w0m-web" if (ROOT / "w0m-web").is_dir() else ROOT
-TICKETS = WEB / "project" / "tickets"
-BASELINE = WEB / "project" / "dod-baseline.json"
+TICKETS = Path(os.environ["W0M_DOD_TICKETS_DIR"]) if os.environ.get("W0M_DOD_TICKETS_DIR") else (ROOT / ".tasks")
+BASELINE = Path(os.environ["W0M_DOD_BASELINE_FILE"]) if os.environ.get("W0M_DOD_BASELINE_FILE") else (WEB / "project" / "dod-baseline.json")
+
+if not TICKETS.is_dir() or not any(TICKETS.glob("T*.md")):
+    print(f"\n  [UNMEASURABLE] Canonical tickets directory {TICKETS} is missing or holds zero T*.md files.")
+    print("\ndod-check: UNMEASURABLE (empty corpus fails closed; AgDR-0025)")
+    raise SystemExit(2)
 
 
 
@@ -82,11 +88,6 @@ def _ac_growth_all() -> dict[str, int]:
     a bypassed hook. One pass over the whole directory, split by the `diff --git` headers, does the
     same work in seconds. The COUNT DELTA rule is unchanged; only the plumbing is.
     """
-    try:
-        r = subprocess.run(["git", "log", "-p", "--reverse", "--format=%at", "--", "."],
-                           cwd=TICKETS, capture_output=True, text=True, timeout=300)
-    except (OSError, subprocess.SubprocessError):
-        return {}
     grew: dict[str, int] = {}
     delta: dict[str, int] = {}
     t = 0
@@ -98,7 +99,20 @@ def _ac_growth_all() -> dict[str, int]:
                 grew[stem] = max(grew.get(stem, 0), t)
         delta.clear()
 
-    for ln in r.stdout.splitlines():
+    try:
+        proc = subprocess.Popen(
+            ["git", "log", "-p", "--reverse", "--format=%at", "--", "."],
+            cwd=TICKETS,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            errors="replace",
+        )
+    except OSError:
+        return {}
+    assert proc.stdout is not None
+    for raw_ln in proc.stdout:
+        ln = raw_ln.rstrip("\r\n")
         if re.fullmatch(r"\d{9,}", ln):
             flush(); t = int(ln); cur = ""; continue
         if ln.startswith("diff --git "):
@@ -116,6 +130,7 @@ def _ac_growth_all() -> dict[str, int]:
             delta[cur] = delta.get(cur, 0) + 1
         elif ln.startswith("-") and not ln.startswith("---") and _AC_LINE.match(ln[1:]):
             delta[cur] = delta.get(cur, 0) - 1
+    proc.wait(timeout=300)
     flush()
     return grew
 
@@ -136,46 +151,111 @@ if not AC_GROWTH and any(TICKETS.glob("T*.md")):
     raise SystemExit(2)
 
 
-def history(path: Path) -> tuple[int, int] | None:
-    """(newest commit where the AC COUNT rose, newest commit where the DoD BODY changed).
+def _dod_touched_batch(suspect_stems: set[str]) -> dict[str, int] | None:
+    """Compute newest commit time where the DoD BODY changed for all `suspect_stems` in two git calls.
 
-    🔴 Fifth version of the staleness test. Each earlier one was rejected on a measurement:
-      v1  "AC ticked after the DoD"      95/261 — ticking after the DoD is the NORMAL flow.
-      v2  "AC line added"               158/261 — a tick rewrites the line, so it reads as added.
-      v3  "new AC identifier appeared"  108/261 — counted the 2026-08-01 "backfill AC ids onto 232
-          criteria" commit as scope; an identical 19.3d delta across T1-T11 gave it away.
-      v4  count delta, DoD via diff      62/261 — the AC half was right; the DoD half only saw an
-          edit when the `## Definition of Done` HEADING appeared as an ADDED line, so body-only
-          rewrites were invisible. Caught on T281, whose DoD I had just rewritten and which still
-          read stale.
-    ⇒ v5 keeps the count delta (now corpus-wide in one call) and settles the DoD by HASHING the
-    section at each commit — the only way to see a body-only edit. Pass 2 runs ONLY for tickets
-    pass 1 already suspects.
+    Replaces spawning `615 * ~4` per-file `git log` / `git show` subprocesses (~90s after T411 `.tasks/`
+    migration) with a single `git log --raw --reverse` + `git cat-file --batch` pass (< 0.4s), keeping
+    identical `_dod_block(blob)` hash/equality semantics.
     """
-    grew = AC_GROWTH.get(path.stem, 0)
-    if not grew:
-        return (0, 1)                       # never grew -> cannot be stale
-    name = path.name
+    if not suspect_stems:
+        return {}
     try:
-        revs = subprocess.run(["git", "log", "--reverse", "--format=%H %at", "--", name],
-                              cwd=path.parent, capture_output=True, text=True, timeout=60)
+        raw = subprocess.run(
+            ["git", "log", "--reverse", "--raw", "--no-abbrev", "--format=COMMIT %at", "--", "."],
+            cwd=TICKETS,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
     except (OSError, subprocess.SubprocessError):
         return None
-    dod_touched, last = 0, None
-    for line in revs.stdout.splitlines():
-        sha, _, at = line.partition(" ")
-        if not sha:
+    if raw.returncode != 0:
+        return None
+
+    # Collect ordered (stem, at, blob_sha) transitions for suspect stems
+    events: list[tuple[str, int, str]] = []
+    blobs_needed: list[str] = []
+    seen_blobs: set[str] = set()
+    cur_at = 0
+    for ln in raw.stdout.splitlines():
+        if ln.startswith("COMMIT "):
+            cur_at = int(ln.split()[1])
             continue
+        if not ln.startswith(":"):
+            continue
+        meta, _, path_part = ln.partition("\t")
+        m = re.search(r"(?:^|/)(T\d+)\.md$", path_part)
+        if not m:
+            continue
+        stem = m.group(1)
+        if stem not in suspect_stems:
+            continue
+        parts = meta.split()
+        if len(parts) < 5:
+            continue
+        new_blob = parts[3]
+        events.append((stem, cur_at, new_blob))
+        if new_blob != "0" * 40 and new_blob not in seen_blobs:
+            seen_blobs.add(new_blob)
+            blobs_needed.append(new_blob)
+
+    blob_dod: dict[str, str] = {"0" * 40: ""}
+    if blobs_needed:
         try:
-            blob = subprocess.run(["git", "show", f"{sha}:./{name}"],
-                                  cwd=path.parent, capture_output=True, text=True, timeout=30)
+            cf = subprocess.run(
+                ["git", "cat-file", "--batch"],
+                cwd=TICKETS,
+                input=("\n".join(blobs_needed) + "\n").encode("ascii"),
+                capture_output=True,
+                timeout=120,
+            )
         except (OSError, subprocess.SubprocessError):
             return None
-        cur = _dod_block(blob.stdout) if blob.returncode == 0 else ""
-        if cur != last:
-            dod_touched = int(at)
-            last = cur
-    return (grew, dod_touched)
+        if cf.returncode != 0:
+            return None
+        buf = cf.stdout
+        pos = 0
+        n = len(buf)
+        while pos < n:
+            nl = buf.find(b"\n", pos)
+            if nl == -1:
+                break
+            hdr = buf[pos:nl].decode("ascii", errors="replace").split()
+            pos = nl + 1
+            if len(hdr) >= 3 and hdr[1] == "blob":
+                sz = int(hdr[2])
+                content = buf[pos : pos + sz].decode("utf-8", errors="replace")
+                blob_dod[hdr[0]] = _dod_block(content)
+                pos += sz + 1  # trailing LF after blob payload
+
+    dod_touched: dict[str, int] = {}
+    last_dod: dict[str, str | None] = {}
+    for stem, at, blob_sha in events:
+        cur = blob_dod.get(blob_sha, "")
+        if cur != last_dod.get(stem):
+            dod_touched[stem] = at
+            last_dod[stem] = cur
+    for stem in suspect_stems:
+        wt_path = TICKETS / f"{stem}.md"
+        if wt_path.is_file():
+            wt_dod = _dod_block(wt_path.read_text(encoding="utf-8", errors="replace"))
+            if wt_dod != last_dod.get(stem):
+                dod_touched[stem] = max(dod_touched.get(stem, 0), int(wt_path.stat().st_mtime))
+    return dod_touched
+
+
+DOD_TOUCHED = _dod_touched_batch(set(AC_GROWTH))
+
+
+def history(path: Path) -> tuple[int, int] | None:
+    """(newest commit where the AC COUNT rose, newest commit where the DoD BODY changed)."""
+    grew = AC_GROWTH.get(path.stem, 0)
+    if not grew:
+        return (0, 1)  # never grew -> cannot be stale
+    if DOD_TOUCHED is None:
+        return None
+    return (grew, DOD_TOUCHED.get(path.stem, 0))
 
 
 _ap = argparse.ArgumentParser(description="DoD presence, currency and vacuity")
@@ -273,7 +353,8 @@ for u in unmeasurable[:5]:
 # ⚠️ Raising a baseline to go green is the same act as deleting a failing test.
 print()
 try:
-    _RATCHET = json.loads(BASELINE.read_text(encoding="utf-8"))["ratchet"]
+    _baseline_doc: dict[str, dict[str, dict[str, int | str]]] = json.loads(BASELINE.read_text(encoding="utf-8"))
+    _RATCHET = _baseline_doc["ratchet"]
 except (OSError, ValueError, KeyError) as _e:
     # An unreadable baseline is UNMEASURABLE, never a pass — the T242 rule.
     print(f"  [UNMEASURABLE] {BASELINE.name} could not be read -- {_e}")

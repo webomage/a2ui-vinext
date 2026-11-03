@@ -9,7 +9,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: verify
-  version: "2026.11.02-1793666924"
+  version: "2026.11.02-1793677165"
 ---
 
 # w0m-sdlc-verify — the proof gate
@@ -25,9 +25,8 @@ Read `.w0m/sdlc.json`. Use `commands` (test/typecheck/e2e/build), `specs`, `secr
 1. **Automated suite.** Run `commands.test`, `commands.typecheck`, and (if the change has UI/flow
    surface) `commands.e2e` — via `secrets.run` when env is needed. All must be green for the code
    you touched. Pre-existing unrelated failures: note them, don't let them mask new ones.
-2. **Spec verification.** If `specs.system` is set and the ticket has a `spec`, invoke
-   `specs.verify_skill` (e.g. `openspec-verify-change`) — implementation must now match the spec
-   (this is the drift-gate the lifecycle is built to enforce).
+2. **Spec & reality verification.** If `specs.system` is set and the ticket has a `spec`, invoke
+   `specs.verify_skill` (e.g. `openspec-verify-change`) and run `just dod-check --ticket <id>` plus `just ticket-audit <id> --offline` (`just reality-verify` for corpus/spec changes) — implementation, DoD, and spec claims must match live files, exported symbols, and SQL relations with zero contradictions.
 3. **Drive it end-to-end & prove zero unused/unwired parts.** Invoke the `verify` skill (or the project's run/preview flow) to
    actually exercise the changed behavior — hit the endpoint, click the flow, run the command —
    and observe the promised outcome. Verify zero unused/unwired surfaces remain (no dead UI controls, no `.from(...)` or `.upsert({...})` calls to non-existent SQL relations/columns per `supabase_surface_drift_check.py`, no synthetic `200 OK` placeholder fallbacks on missing resources, and live append-only `*_audit_log` triggers on mutable security/privacy/commercial settings). Tests + typecheck alone are not sufficient for a change with

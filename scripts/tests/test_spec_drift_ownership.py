@@ -127,6 +127,15 @@ check("partial closure message contains 'do NOT archive'",
 check("active_changes excludes 'archive'",
       "archive" not in g.active_changes())
 
+# ── T616 Inline YAML `#` Comment Parsing & Live Corpus Zero-Drift Proof ──────────
+check("_clean_fm_val strips inline `#` comment on `done   # verified (T432 AC7)`",
+      g._clean_fm_val("done   # verified (T432 AC7)") == "done",
+      f"got {g._clean_fm_val('done   # verified (T432 AC7)')!r}")
+check("_clean_fm_val preserves quoted values containing `#` before closing quote",
+      g._clean_fm_val('"openspec/changes/2026-11-02-foo"  # trailing comment') == "openspec/changes/2026-11-02-foo")
+check("live estate spec_drift_gate.main([]) exits 0 with zero blocking drift",
+      g.main([]) == 0)
+
 print()
 if failures:
     print(f"❌ {len(failures)} failure(s):")

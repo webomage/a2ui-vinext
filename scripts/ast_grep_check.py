@@ -115,7 +115,7 @@ def run_ast_grep_scan(
         if not line:
             continue
         try:
-            item = json.loads(line)
+            item: dict[str, Any] = json.loads(line)
             rng = item.get("range", {}).get("start", {})
             findings.append(
                 {

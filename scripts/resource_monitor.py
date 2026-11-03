@@ -347,7 +347,7 @@ def probe_docker(
                     if not line:
                         continue
                     try:
-                        obj = json.loads(line)
+                        obj: dict[str, object] = json.loads(line)
                         rows.append(
                             {
                                 "type": str(obj.get("Type", "")),

@@ -13,6 +13,7 @@ import re
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 
 @dataclass
@@ -381,7 +382,7 @@ def main() -> int:
         extra: list[dict[str, str]] = []
         if args.record_event:
             try:
-                ev = json.loads(args.record_event)
+                ev: Any = json.loads(args.record_event)
                 if isinstance(ev, dict):
                     extra.append({str(k): str(v) for k, v in ev.items()})
             except Exception as exc:
@@ -465,7 +466,8 @@ def _build_basename_index(root: Path) -> tuple[dict[str, list[str]], dict[str, l
     sdlc_path = root / ".w0m" / "sdlc.json"
     if sdlc_path.is_file():
         try:
-            declared = json.loads(sdlc_path.read_text(encoding="utf-8")).get("repos", {})
+            sdlc_doc: dict[str, Any] = json.loads(sdlc_path.read_text(encoding="utf-8"))
+            declared = sdlc_doc.get("repos", {})
             for val in declared.values():
                 p = val if isinstance(val, str) else val.get("path")
                 if p and p not in repos and (root / p / ".git").exists():
@@ -626,7 +628,7 @@ def harvest_session_friction(
                 if not line.strip():
                     continue
                 try:
-                    obj = json.loads(line)
+                    obj: dict[str, Any] = json.loads(line)
                     content = str(obj.get("content") or "")
                     if not content and isinstance(obj.get("message"), dict):
                         content = json.dumps(obj["message"])
@@ -657,7 +659,7 @@ def harvest_session_friction(
             if not line.strip():
                 continue
             try:
-                rec = json.loads(line)
+                rec: Any = json.loads(line)
                 if isinstance(rec, dict) and rec.get("fingerprint"):
                     existing_fps.add(str(rec["fingerprint"]))
                     persisted.append(rec)
@@ -734,8 +736,8 @@ def harvest_session_friction(
 
 def print_friction_digest(report: dict[str, object]) -> None:
     """Print human-readable Late-Learn Friction Digest at worktree landing or via `just lessons-harvest`."""
-    total = int(report.get("harvested_count") or 0)
-    new_cnt = int(report.get("newly_recorded_count") or 0)
+    total = int(str(report.get("harvested_count") or 0))
+    new_cnt = int(str(report.get("newly_recorded_count") or 0))
     by_cat: dict[str, list[dict[str, str]]] = report.get("by_category") or {}  # type: ignore[assignment]
     recs: list[dict[str, str]] = report.get("recommendations") or []  # type: ignore[assignment]
 

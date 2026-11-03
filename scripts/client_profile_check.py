@@ -63,6 +63,27 @@ def load_json(path: Path) -> dict | None:
     return v if isinstance(v, dict) else None
 
 
+def resolve_project_root(rel_root: str) -> Path:
+    direct = (ROOT / rel_root).resolve()
+    if direct.is_dir() or rel_root in ("", ".") or Path(rel_root).is_absolute():
+        return direct
+    if (ROOT / ".git").is_file():
+        proc = subprocess.run(
+            ["git", "-C", str(ROOT), "rev-parse", "--git-common-dir"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0 and proc.stdout.strip():
+            common_dir = Path(proc.stdout.strip())
+            if not common_dir.is_absolute():
+                common_dir = (ROOT / common_dir).resolve()
+            alt = (common_dir.resolve().parent / rel_root).resolve()
+            if alt.is_dir():
+                return alt
+    return direct
+
+
 def just_recipes() -> set[str]:
     """Recipe names from the live justfile. `--summary` executes nothing."""
     try:
@@ -202,7 +223,7 @@ def check() -> tuple[list[str], list[str], dict]:
     for p in (reg or {}).get("projects", []):
         if not p.get("enabled"):
             continue
-        decl_path = ROOT / p["root"] / ".w0m" / "sdlc.json"
+        decl_path = resolve_project_root(p["root"]) / ".w0m" / "sdlc.json"
         decl = load_json(decl_path)
         if decl is None:
             continue
@@ -240,7 +261,7 @@ def check() -> tuple[list[str], list[str], dict]:
     for p in (reg or {}).get("projects", []):
         if not p.get("enabled") or p.get("role") not in ("managed", "client"):
             continue
-        decl = load_json(ROOT / p["root"] / ".w0m" / "sdlc.json")
+        decl = load_json(resolve_project_root(p["root"]) / ".w0m" / "sdlc.json")
         present = set(decl or {})
         missing = [k for k in required if k not in present]
         clients.append({

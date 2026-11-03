@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-11-03T00:55:54.876Z",
+  "generatedAt": "2026-11-03T05:32:43.979Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -15,7 +15,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/fact-checker",
-      "integrity": "sha256-4cf971381b9dea8cec5ea090568a7b032bfe388eff8dcc10256c715f9850657e"
+      "integrity": "sha256-2815c6508419ce3fbc903c70fc3e2e512252251cd0fa8a66507923ca133ae13e"
     },
     "feynman": {
       "provider": "w0m-native",
@@ -71,7 +71,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-archive",
-      "integrity": "sha256-9297a2758273877b30c52c64e4a0b9823309532bc398c4ef22efda43eace10ff"
+      "integrity": "sha256-c3ac3ed47cd73f269e76a02c2449dfc2655dd2d183fcbf87ce50472aa0509c35"
     },
     "w0m-sdlc-build": {
       "provider": "w0m-native",
@@ -134,7 +134,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-verify",
-      "integrity": "sha256-66b133303f6a78738844c8fe6e7fbbbf9d1c81a76d58785197eb6d86a24d0524"
+      "integrity": "sha256-b6409817a407cd25ce95cb99dd0162e3716f7768cafe920aa21dbe890c7a7575"
     },
     "w0m-state-load": {
       "provider": "w0m-native",
@@ -176,7 +176,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-ticket-audit",
-      "integrity": "sha256-4f3521ce54a9bb54d9b17cf6084179d92d66112d6c055a18bf1d566461e0ee8b"
+      "integrity": "sha256-dd654ad6793fdcd143be68cf835a4e910a8a5d1b580170e79929e0579e6485d8"
     },
     "eli5": {
       "provider": "w0m-native",

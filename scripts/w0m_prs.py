@@ -21,7 +21,7 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 _SCRIPTS_DIR = str(Path(__file__).resolve().parent)
 if _SCRIPTS_DIR not in sys.path:
@@ -120,7 +120,7 @@ def search_prs(
                 return []
             if res.returncode == 0 and res.stdout.strip():
                 try:
-                    items = json.loads(res.stdout)
+                    items: list[dict[str, Any]] = json.loads(res.stdout)
                     for it in items:
                         it["repository"] = {"nameWithOwner": r}
                     return items
@@ -149,7 +149,7 @@ def search_prs(
         return []
     if res.returncode == 0 and res.stdout.strip():
         try:
-            return json.loads(res.stdout)
+            return cast(list[dict[str, Any]], json.loads(res.stdout))
         except json.JSONDecodeError:
             return []
     return []
@@ -336,7 +336,7 @@ def audit_pr(repo: str, pr_number: int) -> Dict[str, Any]:
         return {"error": res.stderr.strip() or "Failed to view PR"}
 
     try:
-        data = json.loads(res.stdout)
+        data: dict[str, Any] = json.loads(res.stdout)
     except json.JSONDecodeError:
         return {"error": "Invalid JSON viewing PR"}
     # GitHub computes mergeable lazily on first view; retry once if OPEN + UNKNOWN
@@ -352,7 +352,7 @@ def audit_pr(repo: str, pr_number: int) -> Dict[str, Any]:
             retry_res = None
         if retry_res is not None and retry_res.returncode == 0 and retry_res.stdout.strip():
             try:
-                retry_data = json.loads(retry_res.stdout)
+                retry_data: dict[str, Any] = json.loads(retry_res.stdout)
                 if retry_data.get("mergeable"):
                     data["mergeable"] = retry_data["mergeable"]
             except json.JSONDecodeError:
@@ -1311,7 +1311,7 @@ def fetch_rising_projects(
                 timeout=6,
             )
             if res_search.returncode == 0 and res_search.stdout.strip():
-                payload = json.loads(res_search.stdout)
+                payload: dict[str, Any] = json.loads(res_search.stdout)
                 for it in payload.get("items", []):
                     full_name = it.get("full_name", "")
                     if not full_name:
@@ -2336,7 +2336,7 @@ def fetch_repo_feature_board(
         )
         if cp.returncode == 0 and cp.stdout.strip():
             try:
-                payload = json.loads(cp.stdout)
+                payload: dict[str, Any] = json.loads(cp.stdout)
                 nodes = (
                     payload.get("data", {})
                     .get("repository", {})
@@ -2489,7 +2489,7 @@ def vote_github_issue(
         }
     try:
         issue_node = (
-            json.loads(cp_id.stdout)
+            cast(dict[str, Any], json.loads(cp_id.stdout))
             .get("data", {})
             .get("repository", {})
             .get("issue")
@@ -2540,7 +2540,7 @@ def vote_github_issue(
         }
 
     thumbs = (
-        json.loads(cp_mut.stdout)
+        cast(dict[str, Any], json.loads(cp_mut.stdout))
         .get("data", {})
         .get(mutation_name, {})
         .get("subject", {})
@@ -3583,7 +3583,8 @@ def check_prs_delta(
     prev: dict[str, Any] = {}
     if target_file.is_file():
         try:
-            prev = json.loads(target_file.read_text(encoding="utf-8"))
+            loaded_prev: dict[str, Any] = json.loads(target_file.read_text(encoding="utf-8"))
+            prev = loaded_prev
         except (OSError, ValueError):
             prev = {}
 
@@ -3641,7 +3642,8 @@ def check_prs_delta(
         to_save["launch_history"] = prev["launch_history"]
     if "obsolete_prs" not in to_save:
         curr_obs = {f"{p['repo']}#{p['number']}": p for p in (current.get("obsoletePrs") or []) if isinstance(p, dict)}
-        prev_obs = prev.get("obsolete_prs") if isinstance(prev.get("obsolete_prs"), dict) else {}
+        raw_prev_obs = prev.get("obsolete_prs")
+        prev_obs: dict[str, Any] = raw_prev_obs if isinstance(raw_prev_obs, dict) else {}
         to_save["obsolete_prs"] = {**prev_obs, **curr_obs}
     if consume_pending_deltas:
         to_save.pop("pending_deltas", None)
@@ -3770,7 +3772,7 @@ def submit_prepared_prs(
         )
         if existing_cp.returncode == 0 and existing_cp.stdout.strip():
             try:
-                existing_items = json.loads(existing_cp.stdout)
+                existing_items: Any = json.loads(existing_cp.stdout)
                 if isinstance(existing_items, list) and existing_items:
                     results.append(
                         {
@@ -3885,7 +3887,7 @@ def sync_prs_to_orca(
     runs_cp = run_cmd([orca_bin, "orchestration", "run-list", "--json"], check=False, timeout=10.0)
     if runs_cp.returncode == 0 and runs_cp.stdout.strip():
         try:
-            runs_data = (json.loads(runs_cp.stdout).get("result") or {}).get("runs") or []
+            runs_data = (cast(dict[str, Any], json.loads(runs_cp.stdout)).get("result") or {}).get("runs") or []
             for r in runs_data:
                 if not r.get("legacy") and "PRs" in str(r.get("objective") or ""):
                     run_id = r.get("id")
@@ -3908,7 +3910,7 @@ def sync_prs_to_orca(
         )
         if create_run_cp.returncode == 0 and create_run_cp.stdout.strip():
             try:
-                run_id = ((json.loads(create_run_cp.stdout).get("result") or {}).get("run") or {}).get("id")
+                run_id = ((cast(dict[str, Any], json.loads(create_run_cp.stdout)).get("result") or {}).get("run") or {}).get("id")
             except ValueError:
                 pass
     else:
@@ -3916,10 +3918,10 @@ def sync_prs_to_orca(
 
     if run_id:
         tlist_cp = run_cmd([orca_bin, "orchestration", "task-list", "--run", str(run_id), "--json"], check=False, timeout=10.0)
-        existing_tasks = []
+        existing_tasks: list[dict[str, Any]] = []
         if tlist_cp.returncode == 0 and tlist_cp.stdout.strip():
             try:
-                existing_tasks = (json.loads(tlist_cp.stdout).get("result") or {}).get("tasks") or []
+                existing_tasks = (cast(dict[str, Any], json.loads(tlist_cp.stdout)).get("result") or {}).get("tasks") or []
             except ValueError:
                 existing_tasks = []
         for t in existing_tasks:
@@ -3955,7 +3957,7 @@ def sync_prs_to_orca(
             )
             if tcreate_cp.returncode == 0 and tcreate_cp.stdout.strip():
                 try:
-                    task_id = ((json.loads(tcreate_cp.stdout).get("result") or {}).get("task") or {}).get("id")
+                    task_id = ((cast(dict[str, Any], json.loads(tcreate_cp.stdout)).get("result") or {}).get("task") or {}).get("id")
                 except ValueError:
                     pass
 
@@ -3965,7 +3967,7 @@ def sync_prs_to_orca(
     alist_cp = run_cmd([orca_bin, "automations", "list", "--json"], check=False, timeout=10.0)
     if alist_cp.returncode == 0 and alist_cp.stdout.strip():
         try:
-            autos = (json.loads(alist_cp.stdout).get("result") or {}).get("automations") or []
+            autos = (cast(dict[str, Any], json.loads(alist_cp.stdout)).get("result") or {}).get("automations") or []
             for a in autos:
                 if a.get("name") == automation_name:
                     automation_id = a.get("id")
@@ -4007,7 +4009,7 @@ def sync_prs_to_orca(
         )
         if acreate_cp.returncode == 0 and acreate_cp.stdout.strip():
             try:
-                res_obj = json.loads(acreate_cp.stdout).get("result") or {}
+                res_obj = cast(dict[str, Any], json.loads(acreate_cp.stdout)).get("result") or {}
                 automation_id = (res_obj.get("automation") or res_obj).get("id")
             except ValueError:
                 pass
@@ -4653,8 +4655,8 @@ def get_launch_reports(*, limit: int = 15, state_path: Optional[Path] = None) ->
                 if "Upstream PRs" in str(a.get("name") or ""):
                     auto_id = str(a.get("id") or "")
                     auto_name = str(a.get("name") or auto_name)
-                    trig = a.get("trigger") or {}
-                    auto_schedule = str(trig.get("cron") or trig.get("expression") or auto_schedule) if isinstance(trig, dict) else str(trig or auto_schedule)
+                    raw_trig = a.get("trigger")
+                    auto_schedule = str(raw_trig.get("cron") or raw_trig.get("expression") or auto_schedule) if isinstance(raw_trig, dict) else str(raw_trig or auto_schedule)
                     break
         except ValueError:
             pass

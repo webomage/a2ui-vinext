@@ -129,7 +129,7 @@ def main() -> int:
               f"ticket left local.")
         return 0
 
-    print(f"\n  🔴 {len(findings)} finding(s):")
+    print(f"\n  [FAIL] {len(findings)} finding(s):")
     for f in findings:
         print(f"      · {f}")
     print("\n  Unpushed work exists in exactly one place. `git push` in the repos above.")

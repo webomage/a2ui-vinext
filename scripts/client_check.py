@@ -63,6 +63,27 @@ def load_json(path: Path) -> dict | None:
         return None
 
 
+def resolve_project_root(rel_root: str) -> Path:
+    direct = (ROOT / rel_root).resolve()
+    if direct.is_dir() or rel_root in ("", ".") or Path(rel_root).is_absolute():
+        return direct
+    if (ROOT / ".git").is_file():
+        proc = subprocess.run(
+            ["git", "-C", str(ROOT), "rev-parse", "--git-common-dir"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0 and proc.stdout.strip():
+            common_dir = Path(proc.stdout.strip())
+            if not common_dir.is_absolute():
+                common_dir = (ROOT / common_dir).resolve()
+            alt = (common_dir.resolve().parent / rel_root).resolve()
+            if alt.is_dir():
+                return alt
+    return direct
+
+
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     as_json = "--json" in sys.argv
@@ -77,7 +98,7 @@ def main() -> int:
         ids = [p["id"] for p in reg.get("projects", []) if p.get("enabled")]
         print(f"  ✗ '{pid}' is not an enabled project in the registry — have: {', '.join(ids)}")
         return 2
-    root = (ROOT / match[0]["root"]).resolve()
+    root = resolve_project_root(match[0]["root"])
 
     profile = load_json(PROFILE) or {}
     keys = profile.get("keys", {})

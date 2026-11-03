@@ -65,7 +65,8 @@
       ".pytest_cache",
       ".husky/_",
       ".serena",
-      ".superpowers"
+      ".superpowers",
+      ".venv"
     ]
   },
   "vendored": {

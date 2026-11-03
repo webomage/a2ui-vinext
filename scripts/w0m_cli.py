@@ -67,7 +67,7 @@ def _load_json(path: Path) -> dict[str, Any]:
     if not path.is_file():
         return {}
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data: Any = json.loads(path.read_text(encoding="utf-8"))
         return data if isinstance(data, dict) else {}
     except (OSError, json.JSONDecodeError):
         return {}
@@ -143,15 +143,20 @@ def skill_list_data(
     manifest = _load_json(manifest_path)
     lock = _load_json(lock_path)
 
-    declared_raw = manifest.get("skills") if isinstance(manifest.get("skills"), dict) else {}
-    locked_raw = lock.get("skills") if isinstance(lock.get("skills"), dict) else {}
-    excluded_raw = manifest.get("exclude") if isinstance(manifest.get("exclude"), dict) else {}
+    raw_dec = manifest.get("skills")
+    declared_raw: dict[str, Any] = raw_dec if isinstance(raw_dec, dict) else {}
+    raw_lck = lock.get("skills")
+    locked_raw: dict[str, Any] = raw_lck if isinstance(raw_lck, dict) else {}
+    raw_exc = manifest.get("exclude")
+    excluded_raw: dict[str, Any] = raw_exc if isinstance(raw_exc, dict) else {}
 
     rows: list[dict[str, Any]] = []
     all_names = sorted(set(declared_raw.keys()) | set(locked_raw.keys()))
     for name in all_names:
-        dec = declared_raw.get(name) if isinstance(declared_raw.get(name), dict) else {}
-        lck = locked_raw.get(name) if isinstance(locked_raw.get(name), dict) else {}
+        raw_d = declared_raw.get(name)
+        dec: dict[str, Any] = raw_d if isinstance(raw_d, dict) else {}
+        raw_l = locked_raw.get(name)
+        lck: dict[str, Any] = raw_l if isinstance(raw_l, dict) else {}
         rows.append(
             {
                 "name": name,
@@ -176,7 +181,8 @@ def skill_list_data(
 
     if include_registry:
         reg_data = _load_json(skills_repo / "skills-registry.json")
-        reg_skills = reg_data.get("skills") if isinstance(reg_data.get("skills"), dict) else {}
+        raw_reg = reg_data.get("skills")
+        reg_skills: dict[str, Any] = raw_reg if isinstance(raw_reg, dict) else {}
         canonical: list[dict[str, Any]] = []
         for sname, sinfo in sorted(reg_skills.items()):
             info = sinfo if isinstance(sinfo, dict) else {}
@@ -199,7 +205,8 @@ def skill_list_data(
 def skill_search_data(query: str, *, skills_repo: Path = SKILLS_REPO) -> list[dict[str, Any]]:
     q = query.strip().lower()
     reg_data = _load_json(skills_repo / "skills-registry.json")
-    reg_skills = reg_data.get("skills") if isinstance(reg_data.get("skills"), dict) else {}
+    raw_reg = reg_data.get("skills")
+    reg_skills: dict[str, Any] = raw_reg if isinstance(raw_reg, dict) else {}
     skills_dir = skills_repo / "skills"
 
     candidates = set(reg_skills.keys())
@@ -210,7 +217,8 @@ def skill_search_data(query: str, *, skills_repo: Path = SKILLS_REPO) -> list[di
 
     matches: list[dict[str, Any]] = []
     for name in sorted(candidates):
-        info = reg_skills.get(name) if isinstance(reg_skills.get(name), dict) else {}
+        raw_info = reg_skills.get(name)
+        info: dict[str, Any] = raw_info if isinstance(raw_info, dict) else {}
         desc = _extract_skill_description(skills_dir / name / "SKILL.md")
         haystack = f"{name} {info.get('origin', '')} {info.get('upstream', '')} {desc}".lower()
         if not q or q in haystack:
@@ -349,7 +357,8 @@ def project_list_data(
 ) -> list[dict[str, Any]]:
     pol_file = policy_path or (estate_root / "project" / "policies" / "clients-policy.json")
     pol = _load_json(pol_file)
-    declared = pol.get("projects") if isinstance(pol.get("projects"), list) else []
+    raw_projects = pol.get("projects")
+    declared: list[Any] = raw_projects if isinstance(raw_projects, list) else []
     primary_root = _primary_estate_root(estate_root)
 
     rows: list[dict[str, Any]] = []
@@ -374,9 +383,11 @@ def project_list_data(
             remote = f"git@github.com:{p['org_slug']}/{p['project_slug']}.git"
 
         skills_manifest = _load_json(abs_root / ".w0m" / "skills.json") if exists else {}
-        skills_count = len(skills_manifest.get("skills", {})) if isinstance(skills_manifest.get("skills"), dict) else 0
+        raw_sm_skills = skills_manifest.get("skills")
+        skills_count = len(raw_sm_skills) if isinstance(raw_sm_skills, dict) else 0
         sdlc_exists = (abs_root / ".w0m" / "sdlc.json").is_file() if exists else False
-        runtime = p.get("runtime") if isinstance(p.get("runtime"), dict) else {}
+        raw_rt = p.get("runtime")
+        runtime: dict[str, Any] = raw_rt if isinstance(raw_rt, dict) else {}
 
         rows.append(
             {
@@ -584,7 +595,8 @@ def handle_catalog(argv: list[str]) -> int:
         return _run_catalog_sync("--write")
     if sub == "list":
         data = _load_json(CATALOG_JSON_FILE)
-        entities = data.get("entities") if isinstance(data.get("entities"), list) else []
+        raw_entities = data.get("entities")
+        entities: list[Any] = raw_entities if isinstance(raw_entities, list) else []
         if args.kind:
             k_low = args.kind.lower()
             entities = [e for e in entities if isinstance(e, dict) and str(e.get("kind", "")).lower() == k_low]
@@ -596,8 +608,10 @@ def handle_catalog(argv: list[str]) -> int:
             if not isinstance(e, dict):
                 continue
             kind = str(e.get("kind", ""))
-            meta = e.get("metadata") if isinstance(e.get("metadata"), dict) else {}
-            spec = e.get("spec") if isinstance(e.get("spec"), dict) else {}
+            raw_meta = e.get("metadata")
+            meta: dict[str, Any] = raw_meta if isinstance(raw_meta, dict) else {}
+            raw_spec = e.get("spec")
+            spec: dict[str, Any] = raw_spec if isinstance(raw_spec, dict) else {}
             name = str(meta.get("name", ""))
             etype = str(spec.get("type", "-"))
             title = str(meta.get("title") or meta.get("description") or "")[:54]
@@ -905,7 +919,7 @@ def handle_automation(argv: list[str]) -> int:
         return 0
 
     if sub == "sync-orca":
-        from t171_sandbox_cohort_runner import sync_orca_automations  # type: ignore[import-not-found]
+        from t171_sandbox_cohort_runner import sync_orca_automations
 
         sync_res = sync_orca_automations(templates, primary_root=_primary_estate_root(ESTATE_ROOT))
         if is_json:
@@ -917,7 +931,7 @@ def handle_automation(argv: list[str]) -> int:
         return 0 if sync_res.get("ok") else 1
 
     if sub == "status":
-        from t171_sandbox_cohort_runner import list_orca_automations_status  # type: ignore[import-not-found]
+        from t171_sandbox_cohort_runner import list_orca_automations_status
 
         status_res = list_orca_automations_status()
         if is_json:
@@ -934,7 +948,7 @@ def handle_automation(argv: list[str]) -> int:
         return 0 if status_res.get("ok") else 1
 
     if sub in ("cohort", "verify"):
-        from t171_sandbox_cohort_runner import run_all_t171_verifications  # type: ignore[import-not-found]
+        from t171_sandbox_cohort_runner import run_all_t171_verifications
 
         report = run_all_t171_verifications(ESTATE_ROOT)
         if is_json:
@@ -1122,7 +1136,8 @@ def sync_orca_gh_and_worktrees(host: str = "local", user: str = "casualuser") ->
         payload: dict[str, Any] = {"host": "local", "ok": False}
         if res.returncode == 0 and res.stdout.strip():
             try:
-                payload = {"host": "local", **json.loads(res.stdout.strip().splitlines()[-1])}
+                local_sync: dict[str, Any] = json.loads(res.stdout.strip().splitlines()[-1])
+                payload = {"host": "local", **local_sync}
             except ValueError:
                 payload = {"host": "local", "ok": False, "error": res.stdout.strip()[:200]}
         if AGENT_TREE_SCRIPT.is_file():
@@ -1143,7 +1158,8 @@ def sync_orca_gh_and_worktrees(host: str = "local", user: str = "casualuser") ->
             timeout=10.0,
         )
         if res.returncode == 0 and res.stdout.strip():
-            return {"host": host, **json.loads(res.stdout.strip().splitlines()[-1])}
+            remote_sync: dict[str, Any] = json.loads(res.stdout.strip().splitlines()[-1])
+            return {"host": host, **remote_sync}
         return {"host": host, "ok": False, "error": (res.stderr or res.stdout).strip()[:200]}
     except (OSError, subprocess.SubprocessError, ValueError) as exc:
         return {"host": host, "ok": False, "error": str(exc)[:200]}

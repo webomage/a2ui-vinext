@@ -414,15 +414,19 @@ def provision_worktree_fixtures(root: Path, estate: Path = ESTATE) -> None:
             if not df.exists():
                 shutil.copy2(f, df)
 
-    # 5. w0m-skills & mmd-validate node_modules (gitignored in w0m-skills/.gitignore)
-    skills_nm_src = Repo("w0m-skills").abs(estate) / "node_modules"
-    skills_nm_dst = Repo("w0m-skills").abs(root) / "node_modules"
-    if skills_nm_src.exists() and not skills_nm_dst.exists():
-        skills_nm_dst.symlink_to(skills_nm_src)
-    mmd_src = Repo("w0m-skills").abs(estate) / "skills" / "mmd-validate" / "node_modules"
-    mmd_dst = Repo("w0m-skills").abs(root) / "skills" / "mmd-validate" / "node_modules"
-    if mmd_src.exists() and not mmd_dst.exists():
-        mmd_dst.symlink_to(mmd_src)
+    # 5. Member repo node_modules needed by offline typecheck/deno/vitest suites (gitignored in member .gitignore)
+    for repo_name, rel_nm in (
+        ("w0m-skills", "node_modules"),
+        ("w0m-skills", "skills/mmd-validate/node_modules"),
+        ("w0m-api", "node_modules"),
+        ("w0m-cf", "node_modules"),
+        ("w0m-ext", "extension/node_modules"),
+    ):
+        nm_src = Repo(repo_name).abs(estate) / rel_nm
+        nm_dst = Repo(repo_name).abs(root) / rel_nm
+        if nm_src.exists() and not nm_dst.exists():
+            nm_dst.parent.mkdir(parents=True, exist_ok=True)
+            nm_dst.symlink_to(nm_src)
 
     # 6. apps/web/src/.generated snapshots (gitignored in w0m-web/.gitignore)
     gen_src = Repo("w0m-web").abs(estate) / "apps" / "web" / "src" / ".generated"

@@ -148,7 +148,7 @@ def discover_engagement_vaults(
     """Return declared engagement vaults from clients-policy.json."""
     if not policy_path.is_file():
         die(f"Policy file not found: {policy_path}", 2)
-    data = json.loads(policy_path.read_text(encoding="utf-8"))
+    data: dict[str, Any] = json.loads(policy_path.read_text(encoding="utf-8"))
     out: list[dict[str, Any]] = []
     target = filter_engagement.strip().lower() if filter_engagement else None
 

@@ -35,6 +35,7 @@ import shlex
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 WORKSPACE = Path(__file__).resolve().parents[1]  # @wom (estate root)
 REPO = WORKSPACE / "w0m-web"                     # w0m-web/
@@ -55,7 +56,8 @@ POLICY = WORKSPACE / ".w0m" / "sdlc.json"
 
 
 def version_regex() -> re.Pattern[str]:
-    pol = json.loads(POLICY.read_text())["versioning"]
+    pol_doc: dict[str, Any] = json.loads(POLICY.read_text())
+    pol = pol_doc["versioning"]
     # anchored in the policy for whole-string matching; here it must match INSIDE a log line
     return re.compile(pol["regex"].lstrip("^").rstrip("$"))
 
@@ -220,7 +222,7 @@ def previous_release_audit(logs_dir: Path, current_release: str | None = None) -
         if current_release and path.name == f"deploy-{current_release}.audit.json":
             continue
         try:
-            data = json.loads(path.read_text(encoding="utf-8"))
+            data: Any = json.loads(path.read_text(encoding="utf-8"))
             if isinstance(data, dict) and data.get("release"):
                 return data
         except (OSError, ValueError):
@@ -243,12 +245,12 @@ def compute_audit_deltas(
         }
 
     prev_rel = str(previous.get("release") or "")
-    cur_br = int(current.get("browser_errors_count") or 0)  # type: ignore[arg-type]
-    prev_br = int(previous.get("browser_errors_count") or 0)  # type: ignore[arg-type]
-    cur_tr = int(current.get("other_trouble_count") or 0)  # type: ignore[arg-type]
-    prev_tr = int(previous.get("other_trouble_count") or 0)  # type: ignore[arg-type]
-    cur_bw = int(current.get("build_warnings_count") or 0)  # type: ignore[arg-type]
-    prev_bw = int(previous.get("build_warnings_count") or 0)  # type: ignore[arg-type]
+    cur_br = int(str(current.get("browser_errors_count") or 0))
+    prev_br = int(str(previous.get("browser_errors_count") or 0))
+    cur_tr = int(str(current.get("other_trouble_count") or 0))
+    prev_tr = int(str(previous.get("other_trouble_count") or 0))
+    cur_bw = int(str(current.get("build_warnings_count") or 0))
+    prev_bw = int(str(previous.get("build_warnings_count") or 0))
 
     br_delta = cur_br - prev_br
     tr_delta = cur_tr - prev_tr

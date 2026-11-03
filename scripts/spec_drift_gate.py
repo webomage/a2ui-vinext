@@ -42,9 +42,20 @@ TICKETS = os.path.join(ROOT, ".tasks")
 
 TASK_ANY = re.compile(r"^\s*- \[[ xX]\]", re.M)
 TASK_DONE = re.compile(r"^\s*- \[[xX]\]", re.M)
-FM_FIELD = re.compile(r"^(status|spec):\s*[\"']?(.*?)[\"']?\s*$", re.M)
+# Strip optional inline YAML `# ...` comments so `status: done   # meta` parses as `done` (T616 AC2).
+FM_FIELD = re.compile(r"^(status|spec):\s*(.*?)\s*$", re.M)
 # Every change a `spec:` field names — a ticket may legitimately own more than one.
-SPEC_CHANGE = re.compile(r"openspec/changes/([^/\s\"',]+)")
+SPEC_CHANGE = re.compile(r"openspec/changes/([^/\s\"',#]+)")
+
+
+def _clean_fm_val(raw: str) -> str:
+    val = raw.strip()
+    if val and val[0] in ("\"", "'"):
+        q = val[0]
+        end = val.find(q, 1)
+        if end != -1:
+            return val[1:end].strip()
+    return val.split("#", 1)[0].strip().strip("\"'")
 
 
 def _run(args, cwd=ROOT):
@@ -81,7 +92,9 @@ def tickets_by_spec():
     for fn in os.listdir(TICKETS):
         if not (fn.startswith("T") and fn.endswith(".md")):
             continue
-        fields = dict(FM_FIELD.findall(open(os.path.join(TICKETS, fn), encoding="utf-8", errors="ignore").read()))
+        txt = open(os.path.join(TICKETS, fn), encoding="utf-8", errors="ignore").read()
+        fm_part = txt.split("---", 2)[1] if txt.startswith("---") and txt.count("---") >= 2 else txt
+        fields = {k: _clean_fm_val(v) for k, v in FM_FIELD.findall(fm_part)}
         spec = fields.get("spec", "")
         # 🔴 ALL of them, not the last. This was `split("openspec/changes/")[-1]`, which sees
         # exactly ONE change per ticket: a `spec:` naming two changes had every earlier one read

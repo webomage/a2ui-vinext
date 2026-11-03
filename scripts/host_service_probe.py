@@ -147,7 +147,7 @@ def probe_single_target(target: ServiceProbeTarget, timeout: float = 3.0) -> Ser
         )
 
     try:
-        payload = json.loads(raw)
+        payload: Any = json.loads(raw)
         if not isinstance(payload, dict):
             raise ValueError("JSON root is not an object")
     except Exception as exc:

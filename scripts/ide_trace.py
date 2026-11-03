@@ -137,12 +137,28 @@ def openspec_tools() -> tuple[dict[str, str], str | None]:
 # The estate is ONE project spanning SEVEN repos under a single `.w0m/sdlc.json`, so its
 # declaration is a dict keyed by the `repos` map; a single-root project declares a plain list.
 
+def resolve_project_root(rel_root: str) -> Path:
+    direct = (ROOT / rel_root).resolve()
+    if direct.is_dir() or rel_root in ("", ".") or Path(rel_root).is_absolute():
+        return direct
+    if (ROOT / ".git").is_file():
+        code, out = _sh("git", "-C", str(ROOT), "rev-parse", "--git-common-dir")
+        if code == 0 and out:
+            common_dir = Path(out)
+            if not common_dir.is_absolute():
+                common_dir = (ROOT / common_dir).resolve()
+            alt = (common_dir.resolve().parent / rel_root).resolve()
+            if alt.is_dir():
+                return alt
+    return direct
+
+
 def units(reg: dict, tools: dict[str, str], known: set[str] | None = None) -> tuple[list[dict], list[str], list[str]]:
     out, errors = [], []
     for p in reg.get("projects", []):
         if not p.get("enabled"):
             continue
-        proot = (ROOT / p["root"]).resolve()
+        proot = resolve_project_root(p["root"])
         if not proot.is_dir():
             errors.append(f"{p['id']}: declared root does not exist — {proot}")
             continue

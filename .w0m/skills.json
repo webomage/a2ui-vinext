@@ -15,7 +15,7 @@
     "fact-checker": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.08-1788883539"
+      "observed_version": "2026.11.02-1793677165"
     },
     "feynman": {
       "provider": "w0m-native",
@@ -87,7 +87,7 @@
     "w0m-sdlc-archive": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.11.02-1793667351"
+      "observed_version": "2026.11.02-1793677165"
     },
     "w0m-sdlc-build": {
       "provider": "w0m-native",
@@ -132,7 +132,7 @@
     "w0m-sdlc-verify": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.11.02-1793666924"
+      "observed_version": "2026.11.02-1793677165"
     },
     "w0m-state-load": {
       "provider": "w0m-native",
@@ -157,7 +157,7 @@
     "w0m-ticket-audit": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.10.26-1793009642"
+      "observed_version": "2026.11.03-1793683940"
     },
     "webomage-design": {
       "provider": "w0m-native",
