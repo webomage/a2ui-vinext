@@ -2,6 +2,51 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.03-1793721135
+_First deployed: 2026-11-03 16:18:47.998331+00_
+
+### Features
+- **sdlc**: verify completed tickets/specs and restore offline suites (T616) ([T616](file:///.tasks/T616.md))
+- **prs**: add post-rebase obsolete PR management, cgroup-safe session closer, and archive wrap-up (T615) ([T615](file:///.tasks/T615.md))
+- **sdlc**: complete T613/T614 session wrap-up, lessons, reports, and drift recipes (T613, T614) ([T613](file:///.tasks/T613.md), [T614](file:///.tasks/T614.md))
+
+### Fixes
+- **T617**: update tasks_render line pointer in emoji-policy.json ([T617](file:///.tasks/T617.md))
+- **T617**: align tasks_render row status claim check with tasks_bounds ([T617](file:///.tasks/T617.md))
+- **T617**: separate hermetic release lockfile installs from worktree symlinks ([T617](file:///.tasks/T617.md))
+- **T612**: complete Obsidian per-engagement vault launch guard and record lesson ([T612](file:///.tasks/T612.md))
+- **deps**: enforce workspace package import linkage and add tools-install CLI bootstrap (T611) ([T611](file:///.tasks/T611.md))
+- **prs**: paginate PR audits hitting gh pr list 100-item GraphQL cap (T610) ([T610](file:///.tasks/T610.md))
+- **prs**: parallelize GitHub PR delta precheck and harden Orca CLI resolution (T610) ([T610](file:///.tasks/T610.md))
+- **agents**: add multi-agent provider resolver and close T609 (T609) ([T609](file:///.tasks/T609.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `429fd73` | 2026-11-03 16:18:47.998331+00 |
+| demo | `429fd73` | 2026-11-03 16:17:33.214538+00 |
+| job | `429fd73` | 2026-11-03 16:16:07.677293+00 |
+| join | `429fd73` | 2026-11-03 16:14:43.632117+00 |
+| cp | `429fd73` | 2026-11-03 16:13:39.618018+00 |
+| web | `429fd73` | 2026-11-03 16:11:28.595401+00 |
+| release | `429fd73` | 2026-11-03 16:08:55.910025+00 |
+| api | `429fd73` | 2026-11-03 16:08:49.9691+00 |
+
+## 2026.11.02-1793646360
+_First deployed: 2026-11-02 19:41:59.671737+00_
+
+### Features
+- **estate**: split T604 into atomic T605/T606/T607 tickets and register T608 Orca upstream PR proposals (T604, T605, T606, T607, T608) ([T604](file:///.tasks/T604.md), [T605](file:///.tasks/T605.md), [T606](file:///.tasks/T606.md), [T607](file:///.tasks/T607.md), [T608](file:///.tasks/T608.md))
+- **estate**: close T602, T603, T604 — debt hygiene, mobile-first UI & CF/k7 audit ordering ([T602](file:///.tasks/T602.md), [T603](file:///.tasks/T603.md), [T604](file:///.tasks/T604.md))
+- **orca**: make linux-host standalone primary control plane (T596) ([T596](file:///.tasks/T596.md))
+
+### Fixes
+- **prs**: match gh pr list --head without org prefix for ALREADY_OPEN detection and track #37510/#37511 (T608) ([T608](file:///.tasks/T608.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `59cf18c` | 2026-11-02 19:41:59.671737+00 |
+| api | `59cf18c` | 2026-11-02 19:41:53.179405+00 |
+
 ## 2026.11.01-1793550372
 _First deployed: 2026-11-01 16:34:29.240784+00_
 
