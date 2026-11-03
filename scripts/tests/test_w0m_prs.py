@@ -502,8 +502,8 @@ def main() -> int:
     # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593, T608)
     proposals_list = w0m_prs.build_pr_proposals()
     check(
-        "build_pr_proposals returns 13 contribution proposals including T608 Orca PRs",
-        len(proposals_list) == 13
+        "build_pr_proposals returns 22 contribution proposals including T608 and T618 PRs",
+        len(proposals_list) == 22
         and any(p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list),
     )
@@ -986,6 +986,40 @@ def main() -> int:
     # 9. Skill check
     skill_md = ROOT / "w0m-skills/skills/w0m-prs/SKILL.md"
     check("w0m-prs SKILL.md exists in w0m-skills", skill_md.is_file())
+
+    # 10. T618 Linux distro & developer tooling forks + proposals
+    check(
+        "preset w0m-pr includes moksha and Bodhi packaging repos",
+        all(
+            r in w0m_prs.PRESET_REPOS["w0m-pr"]
+            for r in (
+                "JeffHoogland/moksha",
+                "BodhiDev/bodhi-profile-iso",
+                "BodhiDev/bodhi7packages",
+                "BodhiDev/bodhi8packages",
+            )
+        ),
+    )
+    check(
+        "FORK_UPSTREAM_MAP maps moksha and Bodhi packaging forks",
+        w0m_prs.FORK_UPSTREAM_MAP.get("moksha") == "JeffHoogland/moksha"
+        and w0m_prs.FORK_UPSTREAM_MAP.get("bodhi-profile-iso") == "BodhiDev/bodhi-profile-iso"
+        and w0m_prs.FORK_UPSTREAM_MAP.get("bodhi7packages") == "BodhiDev/bodhi7packages"
+        and w0m_prs.FORK_UPSTREAM_MAP.get("bodhi8packages") == "BodhiDev/bodhi8packages",
+    )
+    t618_proposals = [p for p in w0m_prs.build_pr_proposals(forks_dir=Path("/nonexistent-forks")) if p["ticket"] == "T618"]
+    check("build_pr_proposals renders all 9 T618 proposals", len(t618_proposals) == 9)
+    moksha_snap_prop = next(
+        (p for p in t618_proposals if p["key"] == "JeffHoogland/moksha:feat/eight-zone-window-snapping"),
+        None,
+    )
+    check(
+        "Moksha 8-zone proposal targets master base branch and documents Top Half default rationale",
+        moksha_snap_prop is not None
+        and moksha_snap_prop["base_branch"] == "master"
+        and "compare/master...webomage:feat/eight-zone-window-snapping" in moksha_snap_prop["compare_url"]
+        and "Top Half (`E_MAXIMIZE_TOP`) is proposed as the default" in moksha_snap_prop["body"],
+    )
 
     print("─" * 60)
     print(f"Results: {checks - len(fails)}/{checks} passed")

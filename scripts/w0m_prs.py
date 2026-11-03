@@ -58,6 +58,10 @@ PRESET_REPOS = {
         "mizorewww/laya-mlx",
         "oxiglade/mlx-rs",
         "ml-explore/mlx-lm",
+        "JeffHoogland/moksha",
+        "BodhiDev/bodhi-profile-iso",
+        "BodhiDev/bodhi7packages",
+        "BodhiDev/bodhi8packages",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -74,6 +78,10 @@ PRESET_REPOS = {
         "mizorewww/laya-mlx",
         "oxiglade/mlx-rs",
         "ml-explore/mlx-lm",
+        "JeffHoogland/moksha",
+        "BodhiDev/bodhi-profile-iso",
+        "BodhiDev/bodhi7packages",
+        "BodhiDev/bodhi8packages",
     ],
 }
 
@@ -2628,6 +2636,10 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
     "laya-mlx": "mizorewww/laya-mlx",
     "mlx-rs": "oxiglade/mlx-rs",
     "mlx-lm": "ml-explore/mlx-lm",
+    "moksha": "JeffHoogland/moksha",
+    "bodhi-profile-iso": "BodhiDev/bodhi-profile-iso",
+    "bodhi7packages": "BodhiDev/bodhi7packages",
+    "bodhi8packages": "BodhiDev/bodhi8packages",
 }
 
 
@@ -2967,6 +2979,225 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
             "- **`mlx_lm/models/gemma4.py`**: Forwards `logits_to_keep`, strips `mtp.*` / `language_model.mtp.*`, and avoids double-prefixing "
             "`language_model.model.`.\n"
             "- **`tests/test_models.py`**: Adds 3 unit tests (`11/11` Gemma 4 tests passing)."
+        ),
+    },
+    "JeffHoogland/moksha:feat/eight-zone-window-snapping": {
+        "ticket": "T618",
+        "title": "feat(border,actions): add 8-zone window snapping with top-half edge default and Super+Arrow chords",
+        "why": (
+            "Moksha previously supported left/right half maximization (`E_MAXIMIZE_LEFT`, `E_MAXIMIZE_RIGHT`), while dragging a window "
+            "to the top edge only offered full-screen maximize (`max_top_edge`), dragging to the bottom edge or screen corners had no snap "
+            "zone at all, and `Super+Up` / `Super+Down` did not snap to top/bottom halves or compose with left/right halves into corner quarters.\n\n"
+            "**Why Top Half (`E_MAXIMIZE_TOP`) is proposed as the default top-edge drag action**:\n"
+            "1. **4-edge + 4-corner geometric symmetry**: Dragging to any of the 4 screen edges (Left, Right, Top, Bottom) consistently tiles "
+            "to that `50%` half, while dragging within `64px` of any of the 4 screen corners tiles to that `25%` corner quarter.\n"
+            "2. **Eliminating a missing mouse gesture without losing Full Maximize**: Full Maximize already has three fast, muscle-memory "
+            "triggers in Moksha (double-clicking the titlebar, clicking the titlebar Maximize button, and pressing `Super+Up` twice via "
+            "`Top Half -> Full Maximize` promotion), whereas Top Half previously had **zero** mouse gesture—making vertical top/bottom split "
+            "workflows impossible with the mouse alone.\n"
+            "3. **Opt-in toggle for traditional behavior**: Users who prefer top-edge full maximize can enable `\"Maximize fully when dragging "
+            "to top edge\"` (`e_config->snap_top_edge_maximize`) directly in **Settings -> Windows -> Window Geometry -> Maximization**."
+        ),
+        "what_for": (
+            "Gives Moksha users complete 8-zone window tiling (Left/Right/Top/Bottom halves + Top-Left/Top-Right/Bottom-Left/Bottom-Right "
+            "quarters) via mouse edge/corner drag, window border context menu, and `Super+Arrow` keyboard chords, with clean saved-geometry "
+            "restoration on unsnap or drag-away."
+        ),
+        "how": (
+            "- **`src/bin/e_border.h` & `src/bin/e_border.c`**: Adds `E_MAXIMIZE_TOP` (`0x100`), `E_MAXIMIZE_BOTTOM` (`0x200`), and compound "
+            "quarter masks (`E_MAXIMIZE_TOP_LEFT`, `E_MAXIMIZE_TOP_RIGHT`, `E_MAXIMIZE_BOTTOM_LEFT`, `E_MAXIMIZE_BOTTOM_RIGHT`), shelf-obstacle-aware "
+            "zone geometry calculation (`e_zone_useful_geometry_get`), `64px` corner detection + 4-edge drag snapping in `_e_border_eval`, and "
+            "saved-geometry restoration when dragging a snapped window off its zone.\n"
+            "- **`src/bin/e_actions.c`**: Extends `window_maximize_by` (`top`, `bottom`, `top_left`, `top_right`, `bottom_left`, `bottom_right`) "
+            "with quarter chord transitions (`Left + Up -> Top-Left`, `Top-Left + Down -> Left -> Bottom-Left`, `Up + Up -> Top -> Full`, "
+            "`Full + Down -> Top -> Restore`).\n"
+            "- **`src/bin/e_config.{h,c}`, `config/bodhi/e.src`, `e_int_border_menu.c`, & `src/modules/conf_window_manipulation/e_int_config_window_geometry.c`**: "
+            "Adds `snap_top_edge_maximize` (default `0`, `max_top_edge` default `1`), updates `Super+Up`/`Super+Down` defaults, exposes Top/Bottom/Quarter "
+            "entries in the window Maximize menu, and adds the Window Geometry checkbox.\n"
+            "- **Verification**: Full `src/bin`, `src/modules`, and `config` build cleanly with zero compiler warnings (`gcc -Wall`)."
+        ),
+    },
+    "JeffHoogland/moksha:fix/desktop-editor-icon-path-and-size": {
+        "ticket": "T618",
+        "title": "fix(eap_editor): store absolute icon path on border-created .desktop and pick largest _NET_WM_ICON",
+        "why": (
+            "When creating a launcher from a running X11 window via Window Menu -> Create Icon (`e_desktop_border_edit`), `e_eap_editor.c` "
+            "wrote the extracted window icon PNG to `~/.e/e/icons/<bname>-<pid>.png` (`path`), but assigned `desktop->icon = strdup(file)` "
+            "(bare filename without directory). Because `~/.e/e/icons` is not a standard XDG icon theme directory, `efreet_icon_path_find` "
+            "failed to resolve the bare filename after saving—rendering a `?` fallback icon on shelves/IBar—and broke `_e_desktop_edit_free_data`'s "
+            "own `ecore_file_unlink(editor->tmp_image_path)` cleanup on cancel. In addition, `e_desktop_border_edit` unconditionally grabbed "
+            "`bd->client.netwm.icons[0]`, which for many Electron/Chromium/GTK apps is `16x16`, producing blurry upscaled launcher icons, and "
+            "did not strip `/` if `bname` contained a path."
+        ),
+        "what_for": (
+            "Ensures launchers created via Window Menu -> Create Icon immediately resolve their extracted icon across shelves, IBar, and "
+            "menus at crisp highest-available `_NET_WM_ICON` resolution (e.g., `256x256` or `512x512`), sanitize `bname` safely, and unlink "
+            "temporary PNGs cleanly if the dialog is canceled."
+        ),
+        "how": (
+            "- **`src/bin/e_eap_editor.c`**: Scans `bd->client.netwm.icons[0..num_icons-1]` to select the largest `width * height` entry, "
+            "sanitizes `bname` with `ecore_file_file_get(bname)` before building `file`, and stores `desktop->icon = strdup(path)`.\n"
+            "- **Verification**: Clean compilation of `src/bin/enlightenment` with zero warnings."
+        ),
+    },
+    "JeffHoogland/moksha:feat/appimage-diricon-and-rdns-wmclass": {
+        "ticket": "T618",
+        "title": "feat(border): resolve reverse-DNS WM_CLASS, AppImage .DirIcon, >=64px _NET_WM_ICON, and negative client_inset",
+        "why": (
+            "Modern Linux desktop apps packed as AppImages, Flatpaks, or Electron/CSD windows hit four window-icon and frame-geometry edge "
+            "cases in `src/bin/e_border.c`:\n"
+            "1. Apps with reverse-DNS `WM_CLASS` (e.g., `md.obsidian.Obsidian`, `org.telegram.desktop`) missed `.desktop` files named "
+            "`obsidian.desktop` or `telegram.desktop` when `StartupWMClass` was absent.\n"
+            "2. Portable AppImages run from FUSE mounts (`/tmp/.mount_*/...`) without installed `.desktop` entries and often omit `_NET_WM_ICON`, "
+            "falling back to a generic `?` icon despite shipping `.DirIcon` at the mount root.\n"
+            "3. `_e_border_eval0` always rendered `bd->client.netwm.icons[0]`, picking blurry `16x16` icons even when `64x64`–`512x512` "
+            "sizes were present in `_NET_WM_ICON`.\n"
+            "4. `_e_border_client_inset_calc` subtracted `_GTK_FRAME_EXTENTS` from border insets without clamping at `0`, producing negative "
+            "`client_inset.{l,r,t,b}` on borderless GTK3/4 CSD windows."
+        ),
+        "what_for": (
+            "Delivers automatic crisp window/IBar/taskbar icons out of the box for reverse-DNS apps (Obsidian, Telegram, Flatpaks), "
+            "uninstalled FUSE AppImages, and multi-size `_NET_WM_ICON` clients, while preventing negative frame-extents geometry bugs on "
+            "borderless GTK CSD windows."
+        ),
+        "how": (
+            "- **`src/bin/e_border.c`**:\n"
+            "  - `_e_border_client_inset_calc`: Clamps `l`, `r`, `t`, `b` with `MAX(0, ...)`.\n"
+            "  - `_e_border_eval0`: Adds trailing-dot segment fallback (`strrchr(..., '.')`) for `efreet_util_desktop_wm_class_find` / "
+            "`efreet_util_desktop_exec_find`.\n"
+            "  - `_e_border_netwm_best_icon_get`: Prefers the smallest `_NET_WM_ICON` entry `>= 64x64` (falling back to largest available "
+            "if all are `< 64x64`).\n"
+            "  - `_e_border_appimage_diricon_add`: Resolves `/proc/<netwm.pid>/exe` when under `/tmp/.mount_*` and loads `<mount_root>/.DirIcon` "
+            "into Evas when neither `.desktop` nor `_NET_WM_ICON` supplied an icon.\n"
+            "- **Verification**: Clean compilation of `src/bin/enlightenment` with zero warnings."
+        ),
+    },
+    "BodhiDev/bodhi-profile-iso:feat/eight-zone-window-snap-bindings": {
+        "ticket": "T618",
+        "title": "feat(iso): enable top-half edge snap and bind Super+Up/Down to top/bottom window snap",
+        "why": (
+            "With 8-zone window snapping in Moksha (`E_MAXIMIZE_TOP`, `E_MAXIMIZE_BOTTOM`, and corner quarters), the default Bodhi ISO "
+            "profile (`src/ISO/e.src`) still had `max_top_edge: 0` and mapped `Super+Up` (`\"Up\"`, `MODIFIER_WIN`) to `window_maximize_by` "
+            "`\"default\"` (full maximize) and `Super+Down` (`\"Down\"`, `MODIFIER_WIN`) to `window_iconic_toggle` (minimize). Setting "
+            "top-edge drag to Top Half (`snap_top_edge_maximize: 0`) and `Super+Up`/`Super+Down` to `\"default top\"`/`\"default bottom\"` "
+            "makes all 4 edges + 4 corners symmetric out of the box while preserving double `Super+Up` for Full Maximize."
+        ),
+        "what_for": (
+            "Provides symmetric 8-zone mouse edge/corner snapping and `Super+Arrow` half/quarter keyboard tiling out of the box on fresh "
+            "Bodhi Linux installations."
+        ),
+        "how": (
+            "- **`src/ISO/e.src`**: Sets `max_top_edge: 1`, adds `snap_top_edge_maximize: 0`, and updates `Super+Up` (`params: \"default top\"`) "
+            "and `Super+Down` (`action: \"window_maximize_by\"`, `params: \"default bottom\"`).\n"
+            "- **Verification**: Verified round-trip compilation with `/usr/bin/eet -e tmp/e.cfg config src/ISO/e.src 1`."
+        ),
+    },
+    "BodhiDev/bodhi7packages:feat/moksha-snap-and-icon-backports": {
+        "ticket": "T618",
+        "title": "moksha (0.4.2-5): backport 8-zone window snapping and desktop/AppImage icon fixes",
+        "why": (
+            "Bodhi Linux 7.0 (`jammy`) ships `moksha 0.4.2-4`, which lacks 8-zone edge/corner window snapping (top/bottom halves + 4 corners "
+            "with top-half edge default), saves bare filenames instead of full paths for window-created `.desktop` icons (`?` icon regression), "
+            "and misses icons on reverse-DNS `WM_CLASS` apps (e.g., Obsidian) and portable FUSE AppImages."
+        ),
+        "what_for": (
+            "Delivers native 8-zone window snapping and crisp window/IBar/launcher icon resolution to existing Bodhi Linux 7 users via a "
+            "clean `0.4.2-5` Debian quilt patch release without requiring an EFL upgrade."
+        ),
+        "how": (
+            "- **`moksha/debian/patches/{01-eight-zone-window-snapping,02-fix-desktop-editor-icon-path-and-size,03-appimage-diricon-and-rdns-wmclass}.patch` & `series`**: "
+            "Backports all three upstream Moksha commits cleanly onto `0.4.2-4` (`c338b91b4`).\n"
+            "- **`moksha/debian/changelog`**: Adds `0.4.2-5` release entry targeting `jammy`.\n"
+            "- **Verification**: Verified `patch -p1 --fuzz=0` sequential application on `0.4.2-4`, full binary + module compilation, `ldd` "
+            "shared library resolution, and `.deb` packaging."
+        ),
+    },
+    "BodhiDev/bodhi8packages:feat/moksha-snap-and-icon-backports": {
+        "ticket": "T618",
+        "title": "moksha (0.4.2-5): backport 8-zone window snapping and desktop/AppImage icon fixes for noble & trixie",
+        "why": (
+            "Bodhi Linux 8 (`noble` and `trixie` tracks) packages `moksha 0.4.2-4` and shares the same missing 8-zone window snapping and "
+            "desktop/AppImage/reverse-DNS `WM_CLASS` icon resolution gaps as Bodhi 7."
+        ),
+        "what_for": (
+            "Keeps Bodhi 8 (`noble` and `trixie`) `moksha` packages at parity (`0.4.2-5`) with upstream Moksha and Bodhi 7."
+        ),
+        "how": (
+            "- **`moksha/{noble,trixie}/debian/patches/{01-...,02-...,03-...,series}` & `debian/changelog`**: Adds identical `--fuzz=0` "
+            "quilt patches and `0.4.2-5` changelog entries for both `noble` and `trixie`.\n"
+            "- **Verification**: Verified clean `patch -p1 --fuzz=0` sequential application against `0.4.2-4`."
+        ),
+    },
+    "stablyai/orca:fix/linux-cli-stale-appimage-and-dispatcher": {
+        "ticket": "T618",
+        "title": "fix(cli): replace legacy Linux CLI symlinks with bare dispatcher and auto-heal stale AppImage launchers",
+        "why": (
+            "On Linux AppImage installations, two CLI lifecycle regressions broke `orca` terminal commands after upgrades or AppImage moves:\n"
+            "1. `CliInstaller.install()` on Linux returned early when `~/.local/bin/orca` was a symlink pointing to the current target or "
+            "wrote a raw symlink instead of the `# orca-serve-bare-orca-dispatcher` shell wrapper—even though `CliInstaller.remove()` only "
+            "recognizes regular files carrying that marker—leaving bare `orca` invocations without daemon-forwarding dispatch.\n"
+            "2. When an AppImage was upgraded or moved (e.g., old versioned `.AppImage` replaced by a new filename), `~/.orca/cli-launcher` "
+            "retained the deleted old AppImage path (`existsSync === false`). Neither startup nor `cli:status` auto-repaired the dead "
+            "registration, so `orca` failed in terminals until the user manually toggled CLI install in Settings."
+        ),
+        "what_for": (
+            "Guarantees Linux AppImage users get the marked `# orca-serve-bare-orca-dispatcher` wrapper on `CliInstaller.install()` and "
+            "automatically heals `~/.orca/cli-launcher` + `~/.local/bin/orca` whenever a packaged AppImage launches after an older registered "
+            "AppImage path was deleted or moved—without overwriting live side-by-side AppImages."
+        ),
+        "how": (
+            "- **`src/main/cli/linux-bare-orca-dispatcher.ts` & `src/main/cli/cli-installer.ts`**: Exports `installLinuxBareOrcaDispatcherForLauncher` "
+            "and updates `CliInstaller.install()` on Linux to replace legacy symlinks/wrappers with the marked bare-orca dispatcher.\n"
+            "- **`src/main/cli/local-cli-registration-coordinator.ts`, `src/main/ipc/cli.ts`, & `src/main/startup/main-process-runtime-launch.ts`**: "
+            "Detects dead `~/.orca/cli-launcher` paths (`!existsSync(registeredLauncher)`) when `process.env.APPIMAGE` is live and re-installs "
+            "both `~/.orca/cli-launcher` and `~/.local/bin/orca` automatically on startup and `cli:status`.\n"
+            "- **Verification**: `40/40` Vitest tests passing across `cli-installer.test.ts`, `linux-bare-orca-dispatcher.test.ts`, "
+            "`cli-appimage-stale-registration.test.ts`, and `main-process-runtime-launch-activation.test.ts`."
+        ),
+    },
+    "stablyai/orca:fix/webgl-atlas-version-desync-recovery": {
+        "ticket": "T618",
+        "title": "fix(renderer): detect and recover xterm WebGL glyph-atlas version desync on pane reveal",
+        "why": (
+            "On Linux/X11 GPUs (especially AMD/Mesa and multi-pane tab switches), xterm's WebGL renderer can silently desynchronize "
+            "`renderer._glyphRenderer._atlas.version` from `_model.glyphAtlasVersion` across hidden/parked cycles or context pressure—leaving "
+            "revealed terminal panes completely blank or missing glyphs even though `refresh(0, rows - 1)` ran during `presentPaneViewport`."
+        ),
+        "what_for": (
+            "Automatically detects WebGL glyph-atlas version desynchronization after `presentPaneViewport` on pane reveal and triggers a "
+            "bounded one-shot `clearTextureAtlas()` + full viewport `refresh()` recovery so terminal panes never stay blank after tab switching."
+        ),
+        "how": (
+            "- **`src/renderer/src/lib/pane-manager/pane-webgl-atlas-version-desync.ts`**: Inspects xterm's internal WebGL renderer "
+            "(`hasPaneWebglAtlasVersionDesync`) with defensive optional-property guards across xterm versions.\n"
+            "- **`src/renderer/src/lib/pane-manager/pane-reveal-repaint.ts`**: Checks `hasPaneWebglAtlasVersionDesync(pane)` inside "
+            "`schedulePaneRevealPresent`'s settled frame (while preserving `WeakRef` pane lifetime semantics) and escalates at most once "
+            "via `pane.xterm.clearTextureAtlas?.()` + `presentPaneViewport(pane)`.\n"
+            "- **`src/renderer/src/lib/pane-manager/pane-reveal-atlas-desync.test.ts`**: Adds unit tests covering desync detection, single-shot "
+            "escalation, healthy no-op, and missing `clearTextureAtlas` resilience (`11/11` tests passing with `pane-reveal-lifetime.test.ts`)."
+        ),
+    },
+    "bulwarkid/virtual-fido:feat/linux-desktop-hotkey-helper": {
+        "ticket": "T618",
+        "title": "feat(contrib): add Linux desktop user-presence hotkey helper, systemd user unit, and uhid udev rule",
+        "why": (
+            "On Linux desktops (X11/Wayland WMs without a built-in GUI prompt integration), `virtual-fido` requires either writing to a "
+            "`--signal-file` FIFO or typing a newline into `cmd/demo start`'s stdin to approve WebAuthn/FIDO2 user-presence (`UP`) checks—"
+            "forcing users to keep a dedicated terminal open and lacked rootless `/dev/uhid` udev rules and systemd user service templates."
+        ),
+        "what_for": (
+            "Provides a ready-to-install Linux desktop integration (`contrib/linux-desktop/`) with rootless `/dev/uhid` udev permissions, "
+            "a hardened `systemd --user` service, `virtual-fido-ctl`, and a desktop-notification + global-hotkey `virtual-fido-hotkey` "
+            "trigger that works cleanly with both `--signal-file` builds and FIFO-backed `cmd/demo start` setups without blocking if the "
+            "daemon is stopped."
+        ),
+        "how": (
+            "- **`contrib/linux-desktop/70-virtual-fido-uhid.rules`**: Grants `MODE=\"0660\", TAG+=\"uaccess\"` on `/dev/uhid` for active "
+            "local desktop seat users without broad group privileges.\n"
+            "- **`contrib/linux-desktop/virtual-fido-hotkey` & `virtual-fido-ctl`**: Uses `os.open(..., os.O_WRONLY | os.O_NONBLOCK)` on "
+            "FIFOs so pressing a bound desktop hotkey never hangs the WM when no reader is attached, paired with `notify-send` feedback.\n"
+            "- **`contrib/linux-desktop/virtual-fido.service`, `README.md`, & `test_hotkey.py`**: Adds systemd user service template, setup "
+            "docs, and `unittest` suite (`3/3` tests passing)."
         ),
     },
 }
@@ -3685,7 +3916,11 @@ def build_pr_proposals(
         if branch_filter and branch_filter not in (bname, key, upstream_repo):
             continue
         fork_name = next((k for k, v in FORK_UPSTREAM_MAP.items() if v == upstream_repo), upstream_repo.split("/")[-1])
-        default_branch = "v8" if upstream_repo.endswith("/graphify") else ("master" if upstream_repo.endswith("/virtual-fido") else "main")
+        default_branch = (
+            "v8"
+            if upstream_repo.endswith("/graphify")
+            else ("master" if upstream_repo.endswith(("/virtual-fido", "/moksha")) else "main")
+        )
         head_sha = "-"
         if fdir and (fdir / fork_name / ".git").exists():
             sha_cp = run_cmd(
