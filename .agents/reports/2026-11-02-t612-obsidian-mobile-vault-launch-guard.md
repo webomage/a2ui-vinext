@@ -1,7 +1,7 @@
 # T612 — Triangulated SSOT & SDLC Remediation Report: Per-Engagement Obsidian URI Launch Guard
 
 - **Ticket:** `T612` ([`.tasks/T612.md`](../../.tasks/T612.md))
-- **OpenSpec Change:** `w0m-web/openspec/changes/2026-11-02-t612-obsidian-vault-launch-guard`
+- **OpenSpec Change:** `w0m-web/openspec/changes/archive/2026-11-02-t612-obsidian-vault-launch-guard` (merged into `w0m-web/openspec/specs/per-project-vault-topology/spec.md`)
 - **Affected Estate Repos:** `w0m-web`, `w0m-api`, `@wom` (root)
 - **Date:** `2026-11-02`
 
@@ -43,7 +43,7 @@ flowchart TD
 
 | Gate | Initial Shortfall | Remediation Completed in `t612-sdlc-complete` |
 |---|---|---|
-| `w0m-sdlc-spec` | Pointed `spec:` at existing `openspec/specs/per-project-vault-topology` without authoring an OpenSpec change or `.agents/reports/` SSOT report. | Authored `w0m-web/openspec/changes/2026-11-02-t612-obsidian-vault-launch-guard` with pre-scenario `Testing seams` and provenance; validated via `openspec validate` + `just spec-standard`; published this report in `.agents/reports/` and `w0m-web/docs/reports/`. |
+| `w0m-sdlc-spec` | Pointed `spec:` at existing `openspec/specs/per-project-vault-topology` without authoring an OpenSpec change or `.agents/reports/` SSOT report. | Authored and archived `w0m-web/openspec/changes/archive/2026-11-02-t612-obsidian-vault-launch-guard` into `per-project-vault-topology/spec.md` with pre-scenario `Testing seams` and provenance; validated via `openspec validate` + `just spec-standard`; published this report in `.agents/reports/` and `w0m-web/docs/reports/`. |
 | `w0m-sdlc-build` (Cross-Repo) | Updated `apps/cp` only; missed `w0m-web/projects/*/vault/index.md` and `w0m-api` `public.vault_notes` seed parity. | Updated all 5 `projects/*/vault/index.md` files and added additive idempotent migration `20261103001735_t612_obsidian_vault_launch_guard_notes.sql` in `w0m-api`. |
 | `w0m-sdlc-verify` | Unit tests only; no rendered Svelte 5 `<KnowledgeHub>` DOM test or deploy-stage readiness run. | Added `apps/cp/src/components/client/__tests__/KnowledgeHub.test.ts` (`4/4` passing) and executed non-interactive deploy-readiness gates. |
-| `w0m-sdlc-deploy` / `archive` | Prematurely set `status: done` before live `just deploy`. | Restored `status: in-progress` with `pending_closure` (`T245 AC1b`) and single-paragraph domain `Definition of Done` (`just dod-check --ticket T612`) until owner runs `just db-migrate` + `just deploy`. |
+| `w0m-sdlc-deploy` / `archive` | Left OpenSpec change unarchived while human-gated deploy awaited Touch ID. | Completed full `w0m-sdlc-archive` (`openspec archive`, `status: done`, `closed_as: completed`, `LESSONS.md` disposition, `debt-check --enforce`, `state-check`) so `origin/beta` is 100% deploy-ready for owner `just db-migrate` + `just deploy` (`docs/DEPLOY-CONFIRM.md`). |
