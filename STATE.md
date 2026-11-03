@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t612-archive` | 0 | **n/a — NO UPSTREAM** | `1035c79a` |
-| `w0m-api` | `agent/t612-archive` | 0 | **n/a — NO UPSTREAM** | `8aa9bae` |
-| `w0m-cf` | `agent/t612-archive` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
-| `w0m-skills` | `agent/t612-archive` | 0 | **n/a — NO UPSTREAM** | `927da87` |
-| `w0m-ext` | `agent/t612-archive` | 0 | **n/a — NO UPSTREAM** | `71690c3` |
-| `w0m-sec` | `agent/t612-archive` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/t612-archive` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/sdlc-session-wrapup` | 0 | **n/a — NO UPSTREAM** | `a553f107` |
+| `w0m-api` | `agent/sdlc-session-wrapup` | 0 | **n/a — NO UPSTREAM** | `a9e02b9` |
+| `w0m-cf` | `agent/sdlc-session-wrapup` | 0 | **n/a — NO UPSTREAM** | `80bada3` |
+| `w0m-skills` | `agent/sdlc-session-wrapup` | 0 | **n/a — NO UPSTREAM** | `459a8ab` |
+| `w0m-ext` | `agent/sdlc-session-wrapup` | 0 | **n/a — NO UPSTREAM** | `71690c3` |
+| `w0m-sec` | `agent/sdlc-session-wrapup` | 0 | **n/a — NO UPSTREAM** | `0eefaec` |
+| `w0m-mlx/w0m-mlx` | `agent/sdlc-session-wrapup` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 612 TASKS.md rows · 273/612 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 614 TASKS.md rows · 274/614 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t612-archive","dirty":0,"has_upstream":true,"head":"8aa9bae","unpushed":null},"w0m-cf":{"branch":"agent/t612-archive","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/t612-archive","dirty":0,"has_upstream":true,"head":"71690c3","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t612-archive","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t612-archive","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/t612-archive","dirty":0,"has_upstream":true,"head":"927da87","unpushed":null},"w0m-web":{"branch":"agent/t612-archive","dirty":0,"has_upstream":true,"head":"1035c79a","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":612,"specced":273,"specced_open":1,"total":612,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/sdlc-session-wrapup","dirty":0,"has_upstream":true,"head":"a9e02b9","unpushed":null},"w0m-cf":{"branch":"agent/sdlc-session-wrapup","dirty":0,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/sdlc-session-wrapup","dirty":0,"has_upstream":true,"head":"71690c3","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/sdlc-session-wrapup","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/sdlc-session-wrapup","dirty":0,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/sdlc-session-wrapup","dirty":0,"has_upstream":true,"head":"459a8ab","unpushed":null},"w0m-web":{"branch":"agent/sdlc-session-wrapup","dirty":0,"has_upstream":true,"head":"a553f107","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":614,"specced":274,"specced_open":1,"total":614,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,7 +113,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (9):
+#### Completed today (11):
 
 - **T604** — Power free website security audit service with Cloudflare security-audit-skill and surface completed deliverables immediately in Client UI Deliveries (Split into atomic single-responsibility tickets (agy:t605-split-and-orca-prs). Narrowed T604 strictly to Cloudflare security-audit-skill integration, 1-free-audit quota, and immediate Client Portal Deliveries; split visitor fingerprinting into [[T605]], unified 5-target ordering + @k7 infra/migration engine into [[T606]], and Mexico RESICO 626/612 + SAT/INM/KYC self-accounting into [[T607]].)
 - **T605** — Add Simroute-grade smart visitor fingerprinting (@webomage/fingerprint) and canonical email normalization to prevent multi-trial and free-audit farming (Split from [[T604]] and marked done (agy:t605-split-and-orca-prs). Implementation landed in w0m-web/packages/fingerprint/src/index.ts, w0m-web/packages/lib/src/security/passive-audit.ts, w0m-web/apps/web/src/pages/api/security-audit.ts, and w0m-api/supabase/functions/client-register/index.ts (16/16 unit tests passing in fingerprint.test.ts).)
@@ -124,6 +124,8 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T610** — Parallelize w0m-prs GitHub delta precheck under 10s, fix Orca run-use CLI flag, and harden Linux Orca binary resolution ((agy:t610-prs-orca-monitor-fast) — Done (fea7648))
 - **T611** — Fix apps/web @webomage/fingerprint deploy-web Rolldown failure, add workspace-import linkage gate in deps_sync.py, and add tools-install bootstrap for missing governed CLI tools (gauge) ((agy:t611-web-build-and-gauge-tools) — Done)
 - **T612** — Guard Obsidian URI launches per engagement to prevent mobile last-vault fallback and cross-project vault collisions (Archived OpenSpec change into w0m-web/openspec/specs/per-project-vault-topology/spec.md (openspec/changes/archive/-t612-obsidian-vault-launch-guard).)
+- **T613** — Codify SDLC session wrap-up, zero-unused-parts & code-to-schema drift/audit governance (T609/T611 lessons + supabase_surface_drift_check) (Report stored repo-first: .agents/reports/-sdlc-wrapup-zero-unused-and-regular-public-profiles-T613-T614.md (mirrored to w0m-web/docs/reports/).)
+- **T614** — Wire end-to-end regular-user public profiles (/u/<slug>, /u/<slug>/cv, /co/<slug>, cv-pdf?slug=), eliminate synthetic 200 fallbacks, and add append-only profile_public_audit_log (Report stored repo-first: .agents/reports/-sdlc-wrapup-zero-unused-and-regular-public-profiles-T613-T614.md (mirrored to w0m-web/docs/reports/).)
 
 ## 3. Other open threads (in TASKS.md)
 

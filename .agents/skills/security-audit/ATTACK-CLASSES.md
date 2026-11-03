@@ -114,8 +114,8 @@ Other agents hunt subtle bugs. This agent checks the basic exposures that are ea
 - Are there any TODO/FIXME/HACK/XXX comments that reference security? (`TODO: add auth`, `FIXME: validate input`, `HACK: skip permission check`)
 - Is debug mode / dev mode properly gated? Can it be enabled in production via environment variable, query parameter, or header?
 - Are there test/example/seed credentials that work in production?
-- Is there a `/debug`, `/admin`, `/test`, `/status`, `/health`, `/metrics`, `/env`, `/.env`, `/config` endpoint that is unprotected?
-- Are there any `.env`, `.env.local`, `credentials.json`, `*.pem`, `*.key` files checked into the repo?
+- Is there a forbidden `/debug`, `/admin`, `/test`, `/status`, `/health`, `/metrics`, `/env`, `/.env`, or `/config` endpoint that must never be left unprotected?
+- Are there any forbidden `.env`, `.env.local`, `credentials.json`, `*.pem`, or `*.key` filenames tracked in `git ls-files` (check tracked paths only — never read secret file contents)?
 - Does the `.gitignore` actually cover secrets, uploads, and local config?
 - Are dependencies pinned? Are there known CVEs in the dependency tree? (check lockfiles)
 - Are there any `eval()`, `exec()`, `child_process`, `Function()`, `vm.runInContext`, `import()` with dynamic input?

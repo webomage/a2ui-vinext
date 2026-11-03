@@ -166,6 +166,35 @@
       "type": "object",
       "minProperties": 1
     },
+    "session_wrapup": {
+      "type": "object",
+      "required": [
+        "require_archive_before_human_deploy_handoff",
+        "require_zero_unused_parts",
+        "require_audited_change_logs_for_mutable_settings",
+        "reports_canonical_dir",
+        "required_steps",
+        "verification_gates"
+      ],
+      "properties": {
+        "_comment": { "type": "string" },
+        "require_archive_before_human_deploy_handoff": { "type": "boolean" },
+        "require_zero_unused_parts": { "type": "boolean" },
+        "require_audited_change_logs_for_mutable_settings": { "type": "boolean" },
+        "reports_canonical_dir": { "type": "string", "minLength": 1 },
+        "reports_mirror_dir": { "type": "string", "minLength": 1 },
+        "required_steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "verification_gates": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
     "toolchain": {
       "type": "object",
       "minProperties": 1

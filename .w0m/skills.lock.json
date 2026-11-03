@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-11-02T04:31:19.862Z",
+  "generatedAt": "2026-11-03T00:55:54.876Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -43,7 +43,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m",
-      "integrity": "sha256-4446b7343ddc26640333ce8e5afb9ff9b6915837912d624da7da7267c2b44a66"
+      "integrity": "sha256-c786373f610b3e06f3d01eaf0db0f98a4122cf28003599528b27b89974ce62ad"
     },
     "w0m-handoff": {
       "provider": "w0m-native",
@@ -71,7 +71,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-archive",
-      "integrity": "sha256-ead820f07fa022a73e0bdf0bee621fe59ba2664a77dc02f190487cd97ceea943"
+      "integrity": "sha256-9297a2758273877b30c52c64e4a0b9823309532bc398c4ef22efda43eace10ff"
     },
     "w0m-sdlc-build": {
       "provider": "w0m-native",
@@ -85,7 +85,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-deploy",
-      "integrity": "sha256-8069def942ab4b137eef0373cec85dffa1df307b60b34fe2b6e1880d8a7fb81a"
+      "integrity": "sha256-c7611d7f649c72c152c87adaca76493f7ce22dd9e583873c191bfabb80c6367a"
     },
     "w0m-sdlc-new": {
       "provider": "w0m-native",
@@ -134,7 +134,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-verify",
-      "integrity": "sha256-b70346be06ac80b8af6add9ce4860c92286fd487e330cf2f2a5347885b8cef4e"
+      "integrity": "sha256-66b133303f6a78738844c8fe6e7fbbbf9d1c81a76d58785197eb6d86a24d0524"
     },
     "w0m-state-load": {
       "provider": "w0m-native",
@@ -148,7 +148,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-state-save",
-      "integrity": "sha256-31ee524de9eb6de3fb2d5485a069251a914922ae9f76c74e36953dcf64ff16df"
+      "integrity": "sha256-b8994f603df6a82cc219c01d7e197cf2524547e2b4845a57d5908a066a0111fb"
     },
     "w0m-tasks": {
       "provider": "w0m-native",
@@ -226,7 +226,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/security-audit",
-      "integrity": "sha256-8c8ff3ec611eedefefd63991fd2fb0f3b0a46080a3b3bddacc8beab81797e50e"
+      "integrity": "sha256-894d81e5881e6bbaca7e9e7edc8b613471e07f92a31e88cb74e0885676476f0b"
     },
     "webomage-design": {
       "provider": "w0m-native",

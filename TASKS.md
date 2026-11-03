@@ -33,6 +33,8 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T614](.tasks/T614.md) | **P1** | **Wire end-to-end regular-user public profiles (/u/<slug>, /u/<slug>/cv, /co/<slug>, cv-pdf?slug=), eliminate synthetic 200 fallbacks, and add append-only profile_public_audit_log** | tooling, web, api | openspec/specs/resume-publication/spec.md | ✅ **done** |
+| [T613](.tasks/T613.md) | **P1** | **Codify SDLC session wrap-up, zero-unused-parts & code-to-schema drift/audit governance (T609/T611 lessons + supabase_surface_drift_check)** | tooling, web, api, skills | — | ✅ **done** |
 | [T612](.tasks/T612.md) | **P1** | **Guard Obsidian URI launches per engagement to prevent mobile last-vault fallback and cross-project vault collisions** | web | openspec/specs/per-project-vault-topology | ✅ **done** |
 | [T611](.tasks/T611.md) | **P0** | **Fix apps/web @webomage/fingerprint deploy-web Rolldown failure, add workspace-import linkage gate in deps_sync.py, and add tools-install bootstrap for missing governed CLI tools (gauge)** | root, web | docs/DEPS-ALIGNMENT.md | ✅ **done** |
 | [T610](.tasks/T610.md) | **P1** | **Parallelize w0m-prs GitHub delta precheck under 10s, fix Orca run-use CLI flag, and harden Linux Orca binary resolution** | tooling | openspec/changes/2026-11-01-orca-session-naming-and-ax-workflows | ✅ **done** |

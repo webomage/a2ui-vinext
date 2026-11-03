@@ -1840,6 +1840,12 @@ lessons-check *args:
 lessons-check-test:
     @python3 w0m-web/project/scripts/tests/test_lessons_check.py
 
+supabase-surface-drift *args:
+    @python3 w0m-web/project/scripts/supabase_surface_drift_check.py {{ args }}
+
+supabase-surface-drift-test:
+    @python3 w0m-web/project/scripts/tests/test_supabase_surface_drift_check.py
+
 eli5-governance-test:
     @python3 -m unittest w0m-web/project/scripts/tests/test_t270_eli5_governance.py
 

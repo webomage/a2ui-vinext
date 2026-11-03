@@ -69,6 +69,15 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 - **Repo-first storage for all reports & artifacts (`.agents/reports/` & `w0m-web/docs/reports/` FIRST, anti-terminal-overflow, owner direction 2026-10-28).** Always write and store architectural reports, audits, plans, and Mermaid (`.mmd`) diagrams **first inside the repository** in `.agents/reports/` (and mirror to `w0m-web/docs/reports/`), then mirror to the Antigravity artifact directory (`<appDataDir>/brain/<conversation-id>`, `UserFacing: true`) when needed for UI preview. Always link clickable `file://` references in terminal responses to the in-repo `.agents/reports/<name>.md` path (never only the external `~/.gemini/antigravity-cli/brain/` path) so Orca desktop and mobile tabs can load and edit them inside the authorized workspace root.
 - **Close a ticket's open questions with a weighted decision; split big leftovers into a dependent ticket** (owner, 2026-09-24).
   At the end of a ticket, list each remaining question with a recommended answer and its weight (cost, risk, what it unblocks). Leftover scope that is a different kind of work becomes a **new ticket**: `Split from: [[T…]]` in its Links, `blocked_by:` when there is an order, and the original AC reads `[x] … split into [[T…]]` so the original can close (e.g. T437 → T438). Money, accounts and public posts stay owner-only.
+- **Zero unused / unwired parts & audited change-log/drift observability (owner direction 2026-11-02, T613, T614).**
+  Never ship dead UI toggles, queries/mutations referencing non-existent SQL tables/views/columns (`w0m-web/project/scripts/supabase_surface_drift_check.py`), synthetic `200 OK` placeholder fallbacks masking missing rows (`AgDR-0025`), or unreferenced exports/config keys. Mutable security, privacy, public-visibility, and commercial settings MUST record actor, old/new payload, and timestamp in append-only `*_audit_log` tables populated by `SECURITY DEFINER` triggers with `authenticated` `SELECT`-only owner/admin RLS.
+- **Mandatory Session & Ticket Wrap-Up — complete tickets and sessions as `done` before ending or deploy handoff (owner direction 2026-11-02, T613).**
+  Never stop half-closed after `w0m-sdlc-verify` when `just deploy-all` / `just db-migrate` is human-gated (`docs/DEPLOY-CONFIRM.md`). Every finished ticket and session MUST execute full `w0m-sdlc-archive` + Session Wrap-Up (`.w0m/sdlc.json → session_wrapup`):
+  1. Prove zero unused/unwired surfaces and code↔schema drift gates (`supabase_surface_drift_check.py`, `debt-check --enforce`).
+  2. Flip `.tasks/T##.md` to `status: done` + `queue: done` with full AC evidence and explicit lesson disposition (`Lesson captured in LESSONS.md: <heading>` or `Lessons: none (routine delivery)`).
+  3. Run `just lessons-harvest`, record earned transferable rules in `@wom/LESSONS.md`, and pass `w0m-web/project/scripts/lessons_check.py`.
+  4. Mirror all session/IDE brain reports and Mermaid diagrams repo-first into `.agents/reports/` (and `w0m-web/docs/reports/`), passing `just reports-ticket-check` and `just mmd-validate`.
+  5. Run `just state-save`, land all repos via `just agent-tree-land`, fast-forward the live checkout (`git merge --ff-only origin/beta`), remove the pushed agent tree (`just agent-tree-remove <name>`), and verify `just state-check` exits `0` last.
 
 ## Fast Project Info & Indexed Data References
 
@@ -102,8 +111,10 @@ agent — Antigravity, Codex, opencode, Gemini — has no such hook here and mus
 | **Ticket Files & Queue** | `.tasks/T##.md` & `TASKS.md` | `w0m-web/TASKS.md`, `project/tickets/T##.md` |
 | **Technical Debt Register** | `TECH-DEBT.md` & `scripts/debt_register_check.py` | `w0m-web/TECH-DEBT.md`, `w0m-web/project/scripts/debt_register_check.py` |
 | **Lessons & Friction Harvester** | `LESSONS.md`, `scripts/lessons_query.py`, `w0m-web/project/scripts/lessons_check.py` | `w0m-web/LESSONS.md`, `scripts/lessons_check.py` |
+| **Supabase Code↔Schema Drift Gate** | `w0m-web/project/scripts/supabase_surface_drift_check.py` | `scripts/supabase_surface_drift_check.py` |
+| **Estate `justfile` Entrypoints** | `justfile` (`@wom` root), `w0m-api/justfile`, `w0m-cf/justfile`, `w0m-ext/justfile` | `w0m-web/justfile` (`w0m-web` uses root `just` or `pnpm --filter`) |
 | **Agent Tree & Release Scripts** | `w0m-web/project/scripts/agent_tree.py` & `scripts/release.py` | `scripts/agent_tree.py` |
 | **Suite Runner & Registry** | `scripts/run_suites.py` & `w0m-web/project/test-suites.json` | `w0m-web/project/scripts/run_suites.py`, `project/test-suites.json` |
 | **Graph & MCP Ratchet** | `scripts/graph_health.py`, `scripts/mcp_ratchet.py`, `w0m-web/project/mcp-exposure-baseline.json` | `w0m-web/project/scripts/graph_health.py`, `project/mcp-exposure-baseline.json` |
-| **Version & Ticket Doctors** | `w0m-web/project/scripts/version_doctor.py`, `w0m-web/project/scripts/ticket_audit.py` | `scripts/version_doctor.py`, `scripts/ticket_audit.py` |
+| **Version & Ticket Doctors** | `w0m-web/project/scripts/version_doctor.py`, `w0m-web/project/scripts/ticket_audit.py`, `scripts/ticket_schema_check.py`, `scripts/reports_ticket_check.py` | `scripts/version_doctor.py`, `scripts/ticket_audit.py`, `w0m-web/project/scripts/ticket_schema_check.py`, `w0m-web/project/scripts/reports_ticket_check.py` |
 

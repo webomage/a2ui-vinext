@@ -3,7 +3,7 @@ name: w0m
 description: >
   The Grand Orchestrator and entrypoint for the w0m ecosystem. Trigger when starting a new task, making architectural decisions, or needing guidance. Manages access to the deployed w0m-sdlc-* lifecycle gates (new/research/start/spec/build/review/security/verify/deploy/archive) and to whichever optional persona skills a project has declared in its .w0m/skills.json.
 metadata:
-  version: "2026.10.26-1793053633"
+  version: "2026.11.02-1793666924"
 ---
 
 # w0m: Ecosystem Orchestrator
@@ -73,6 +73,7 @@ When invoked:
 2. **Select the Skills**: Determine which combination of the skills listed above is required to complete the task successfully.
 3. **Formulate a Strategy**: Present a step-by-step plan to the user, explicitly stating which skills will be triggered at each phase. Wait for their approval before proceeding to invoke the first skill in your sequence.
 4. **Learn and Reflect**: At the end of a sprint, a debugging session, or whenever a persistent issue is finally solved, capture the lesson so the ecosystem learns from it. Prefer `w0m-lessons` **if this project has declared it**; otherwise write the finding into the project's own durable record (`LESSONS.md`, a `STATE.md` "hard-won knowledge" section, or the ticket's status notes). Do not skip the step because the skill is absent.
+5. **Mandatory Session & Ticket Wrap-Up, Zero Unused Parts & Drift/Audit Governance (T613)**: Never end a ticket or session half-closed after `verify` or when `deploy` is human-gated (`docs/DEPLOY-CONFIRM.md`). Every finished ticket must complete `w0m-sdlc-archive` + Session Wrap-Up: prove zero unused/unwired surfaces and audited change-log/drift gates (`supabase_surface_drift_check.py`, `*_audit_log` triggers), flip `.tasks/T##.md` to `status: done` + `queue: done`, run `just lessons-harvest` + update `LESSONS.md` (`lessons_check.py`), mirror all reports/diagrams repo-first to `.agents/reports/` (`reports-ticket-check`, `mmd-validate`), run `just debt-check --enforce` + `just state-save`, land via `just agent-tree-land`, fast-forward the live checkout, and remove the pushed agent tree (`just agent-tree-remove`).
 
 ⚠️ **Check a skill exists before routing to it.** Three persona skills are top-level canonical and
 therefore deployed with the w0m family: **`w0m-tdd`**, **`w0m-handoff`**, **`w0m-lessons`** (promoted

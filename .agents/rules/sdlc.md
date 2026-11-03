@@ -27,5 +27,11 @@ Before finalizing a spec or design, enforce the Triangulated SSOT Protocol: grou
 **Update the tracking surfaces in the SAME commit as the work.** A stale T-row misleads the next
 agent — this has happened; T89 sat at "started, poller wired" through a session that finished it.
 
+**Zero unused / unwired parts & audited change-log/drift gates (T613, T614):**
+Never leave unwired UI controls, queries to non-existent SQL relations/columns (`w0m-web/project/scripts/supabase_surface_drift_check.py`), synthetic `200 OK` fallbacks on missing resources, or orphan exports. Mutable security, privacy, public-visibility, and commercial settings must write append-only `*_audit_log` rows via database triggers.
+
+**Mandatory Session & Ticket Wrap-Up (`.w0m/sdlc.json → session_wrapup`, T613):**
+Even when live `just deploy-all` / `just db-migrate` awaits human Touch ID confirmation (`docs/DEPLOY-CONFIRM.md`), every finished ticket and session MUST complete `w0m-sdlc-archive` + Session Wrap-Up before ending: flip `.tasks/T##.md` to `status: done` + `queue: done`, run `just lessons-harvest` + land earned rules in `LESSONS.md` (`lessons_check.py`), mirror all reports/diagrams repo-first to `.agents/reports/` (`just reports-ticket-check`, `just mmd-validate`), run `just debt-check --enforce` + `just state-save`, land via `just agent-tree-land`, fast-forward the live checkout (`git merge --ff-only origin/beta`), remove the pushed agent tree (`just agent-tree-remove`), and pass `just state-check` last.
+
 **Not for client/non-w0m projects.** Those gates assume `.w0m/sdlc.json` and w0m conventions —
 use `w0m-skills/GENERIC-SDLC-SET.md` instead.

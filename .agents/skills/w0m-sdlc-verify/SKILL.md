@@ -9,7 +9,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: verify
-  version: "2026.07.27-1785131185"
+  version: "2026.11.02-1793666924"
 ---
 
 # w0m-sdlc-verify — the proof gate
@@ -28,9 +28,9 @@ Read `.w0m/sdlc.json`. Use `commands` (test/typecheck/e2e/build), `specs`, `secr
 2. **Spec verification.** If `specs.system` is set and the ticket has a `spec`, invoke
    `specs.verify_skill` (e.g. `openspec-verify-change`) — implementation must now match the spec
    (this is the drift-gate the lifecycle is built to enforce).
-3. **Drive it end-to-end.** Invoke the `verify` skill (or the project's run/preview flow) to
+3. **Drive it end-to-end & prove zero unused/unwired parts.** Invoke the `verify` skill (or the project's run/preview flow) to
    actually exercise the changed behavior — hit the endpoint, click the flow, run the command —
-   and observe the promised outcome. Tests + typecheck alone are not sufficient for a change with
+   and observe the promised outcome. Verify zero unused/unwired surfaces remain (no dead UI controls, no `.from(...)` or `.upsert({...})` calls to non-existent SQL relations/columns per `supabase_surface_drift_check.py`, no synthetic `200 OK` placeholder fallbacks on missing resources, and live append-only `*_audit_log` triggers on mutable security/privacy/commercial settings). Tests + typecheck alone are not sufficient for a change with
    a runtime surface.
 4. **Map to acceptance.** Mark each acceptance criterion ✅ met with the evidence (test name, e2e
    run, screenshot/output). Any 🟡/⚪ sends the work back to `w0m-sdlc-build`.
@@ -42,4 +42,4 @@ From config `conventions`: conventional commits w/ id, never skip hooks, no coau
 ladder. Report results faithfully — if something failed or was skipped, say so. Absolute dates.
 
 ## Next gate
-`w0m-sdlc-deploy` (only if all criteria are ✅). Otherwise back to `w0m-sdlc-build`.
+`w0m-sdlc-deploy` (only if all criteria are ✅; otherwise back to `w0m-sdlc-build`). **Agent human-gate rule (T613):** When `commands.deploy` / `db-migrate` is human-gated (`docs/DEPLOY-CONFIRM.md`), never stop after `verify` — immediately run `w0m-sdlc-archive` + full Session Wrap-Up (`status: done`, `LESSONS.md` + `lessons_check.py`, repo-first `.agents/reports/`, `just agent-tree-land`, live `--ff-only`, `just agent-tree-remove`) BEFORE handing the human deploy command to the operator.

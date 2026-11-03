@@ -95,17 +95,33 @@ def openspec_tools() -> tuple[dict[str, str], str | None]:
             bin_path = Path(openspec_bin).resolve()
             candidates.append(bin_path.parents[1] / "dist" / "core" / "config.js")
             candidates.append(bin_path.parent / "dist" / "core" / "config.js")
+            shim_txt = read_text(bin_path)
+            if shim_txt:
+                m_shim = re.search(r"#\s*cmd-shim-target=(.+)", shim_txt)
+                if m_shim:
+                    shim_target = Path(m_shim.group(1).strip()).resolve()
+                    candidates.append(shim_target.parents[1] / "dist" / "core" / "config.js")
         except Exception:
             pass
     code_npm, out_npm = _sh("npm", "root", "-g")
     if code_npm == 0 and out_npm.strip():
         candidates.append(Path(out_npm.strip()) / "@fission-ai" / "openspec" / "dist" / "core" / "config.js")
+    code_pnpm, out_pnpm = _sh("pnpm", "root", "-g")
+    if code_pnpm == 0 and out_pnpm.strip():
+        candidates.append(Path(out_pnpm.strip()) / "@fission-ai" / "openspec" / "dist" / "core" / "config.js")
     code, out = _sh("node", "-e",
                     "console.log(require.resolve('@fission-ai/openspec/package.json'))")
     if code == 0 and out.strip():
         candidates.append(Path(out.strip()).parent / "dist" / "core" / "config.js")
-    candidates.append(HOME / "Library/pnpm/global/5/node_modules/@fission-ai/openspec"
-                             "/dist/core/config.js")
+    for pnpm_global_base in (
+        HOME / ".local/share/pnpm/global",
+        HOME / "Library/pnpm/global",
+    ):
+        candidates.append(pnpm_global_base / "5/node_modules/@fission-ai/openspec/dist/core/config.js")
+        if pnpm_global_base.is_dir():
+            candidates.extend(
+                sorted(pnpm_global_base.glob("*/*/node_modules/@fission-ai/openspec/dist/core/config.js"), reverse=True)
+            )
     for c in candidates:
         t = read_text(c)
         if t:

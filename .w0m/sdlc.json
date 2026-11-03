@@ -343,6 +343,30 @@
       "_budget_rationale": "Measured 2026-09-15: 711 lines / 63,311 bytes across 7 theme sections. Bound declared at 1,000 lines / 90 KiB provides headroom while ensuring agents can search and orient without context bloat."
     }
   },
+  "session_wrapup": {
+    "_comment": "T613 — Mandatory Session & Ticket Wrap-Up, Zero Unused/Unwired Parts, and Audited Change-Log/Drift Governance. Ensures finished tickets complete full w0m-sdlc-archive even when live deploy-all / db-migrate awaits human Touch ID confirmation.",
+    "require_archive_before_human_deploy_handoff": true,
+    "require_zero_unused_parts": true,
+    "require_audited_change_logs_for_mutable_settings": true,
+    "reports_canonical_dir": ".agents/reports",
+    "reports_mirror_dir": "w0m-web/docs/reports",
+    "required_steps": [
+      "verify_zero_unused_parts_and_schema_drift",
+      "flip_ticket_status_and_queue_done",
+      "harvest_friction_and_record_lessons_disposition",
+      "mirror_artifacts_to_in_repo_reports",
+      "refresh_tech_debt_tasks_and_state",
+      "agent_tree_land_ff_live_and_remove_pushed_tree"
+    ],
+    "verification_gates": [
+      "python3 w0m-web/project/scripts/lessons_check.py",
+      "python3 w0m-web/project/scripts/supabase_surface_drift_check.py",
+      "just debt-check --enforce",
+      "just reports-ticket-check",
+      "just mmd-validate",
+      "just state-check"
+    ]
+  },
   "toolchain": {
     "_comment": "T119 AC7 / T164 AC4-AC5: the two standard SDLC interfaces and host CLI toolchain policy. Both just and infisical are required:true in project/policies/tools-policy.json; this block is the CONTRACT that gates and health checks read. Verified by `just sdlc-doctor` and `just tools-check`.",
     "commands_via": "just",

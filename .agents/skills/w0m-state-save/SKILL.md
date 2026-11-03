@@ -9,7 +9,7 @@ description: >
 metadata:
   author: w0m
   namespace: w0m
-  version: "2026.09.24-1790282807"
+  version: "2026.11.02-1793666924"
 ---
 
 # w0m-state-save — write the handoff
@@ -83,6 +83,12 @@ atomically via `just land root --ticket T{id}`).
 
 > ⚠️ **`--no-verify` is prohibited here and pointless.** The pre-push `state-check` is the gate;
 > skipping it leaves the drift in place for the next session to trip over.
+
+## Step 5 — Session Wrap-Up Gate (Completed vs Mid-Flight Tickets, T613)
+
+Before ending any session, verify which of the two legal end-states applies:
+- **Completed ticket (`status: done`, `queue: done`)**: You MUST have executed full `w0m-sdlc-archive` — zero unused/unwired surfaces (`supabase_surface_drift_check.py`), audited change logs (`*_audit_log` where applicable), `just lessons-harvest` + `LESSONS.md` + explicit disposition in `.tasks/T{id}.md` (`lessons_check.py`), all session/IDE reports & Mermaid diagrams mirrored repo-first to `.agents/reports/` (`just reports-ticket-check`, `just mmd-validate`), `just debt-check --enforce`, `just state-save`, `just agent-tree-land`, `git merge --ff-only origin/beta` in the live checkout, `just agent-tree-remove <name>`, and `just state-check` last.
+- **Genuinely paused mid-flight ticket (`status: in-progress`)**: Checkpointed in `.tasks/T{id}.md` `## Status notes` with exact remaining ACs and next action so `just state-brief` surfaces it cleanly.
 
 ## Related
 
