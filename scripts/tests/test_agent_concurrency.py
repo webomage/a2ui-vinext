@@ -139,6 +139,16 @@ class TestAgentConcurrency(unittest.TestCase):
         malformed = tb.malformed_rows(rows)
         self.assertEqual(malformed, [], f"tasks_render produced malformed rows: {malformed}")
 
+        # T617 regression: prose containing the substring "done" on a paused/queued row must NOT
+        # prevent tasks_render from updating the leading status claim when the ticket flips to done.
+        stale_row = (
+            "| [T802](.tasks/T802.md) | **P2** | **Second Queued Task** | api | — "
+            "| 💤 **paused** — rotation done, history purge still open |"
+        )
+        synced_row = tr.render_row({"id": "T802", "status": "done", "priority": "P2"}, stale_row)
+        synced_cells = tb.row_status_cells([synced_row])
+        self.assertEqual(tb.row_claim(synced_cells["T802"])[0], "done", synced_row)
+
     def test_sdlc_trace_supports_root_tasks(self):
         """sdlc_trace detects ticket progress in .tasks/T##.md without requiring TASKS.md edits."""
         repo = Path(self.tmpdir) / "trace_repo"

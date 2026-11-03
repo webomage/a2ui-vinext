@@ -46,6 +46,13 @@ try:
 except ImportError:
     pass
 
+tb: Any = None
+try:
+    import tasks_bounds as _tb
+    tb = _tb
+except ImportError:
+    pass
+
 
 STATUS_GLYPHS = {
     "done": "✅",
@@ -55,6 +62,51 @@ STATUS_GLYPHS = {
     "paused": "💤",
     "queued": "⚪",
 }
+_CLAIM_GLYPHS = {
+    "✅": "done",
+    "🔵": "blocked",
+    "⚪": "queued",
+    "🟡": "in-progress",
+    "🟢": "in-progress",
+    "💤": "paused",
+    "⏸️": "paused",
+    "[IN-PROGRESS]": "in-progress",
+    "[BLOCKED]": "blocked",
+    "[QUEUED]": "queued",
+    "[PAUSED]": "paused",
+    "[DONE]": "done",
+}
+_CLAIM_WORDS = ("in-progress", "queued", "blocked", "paused", "done")
+_CLAIM_EMPHASIS = ("🔴", "[P0]")
+
+
+def _claimed_status(cell: str) -> str | None:
+    """Return the declared status of an existing TASKS.md cell (mirroring tasks_bounds.row_claim)."""
+    if tb is not None:
+        return tb.row_claim(cell)[0]
+    t = cell.lstrip()
+    lead = next(
+        (g for g in sorted(list(_CLAIM_GLYPHS) + list(_CLAIM_EMPHASIS), key=len, reverse=True) if t.startswith(g)),
+        None,
+    )
+    if lead is None:
+        return None
+    rest = t[len(lead):].lstrip()
+    low = rest.lower()
+    for w in _CLAIM_WORDS:
+        if low.startswith(w):
+            after = rest[len(w):]
+            if not after.strip() or not after.lstrip()[:1].isalnum():
+                return w
+            break
+    return _CLAIM_GLYPHS.get(lead)
+
+
+def _format_status_cell(glyph: str, status: str) -> str:
+    """Format a default status cell readable by tasks_bounds.row_claim."""
+    if glyph == "🔴":
+        return f"🔴 {status}"
+    return f"{glyph} **{status}**"
 
 
 def parse_frontmatter(text: str) -> dict:
@@ -102,13 +154,13 @@ def render_row(ticket_data: dict, existing_row: str | None = None) -> str:
         if len(cols) == 6 and raw.endswith("|"):
             # Update col 1 (priority) and col 5 (status)
             cols[1] = prio_str
-            # Keep status notes/details if already present, but ensure glyph and status match
+            # Keep status notes/details if already present, but ensure leading status claim matches
             curr_status_cell = cols[5].rstrip("|").strip()
-            # If current status cell already declares this status, keep it, else update
-            if status in curr_status_cell or (status == "done" and "DONE" in curr_status_cell):
+            expected_claim = "done" if status in ("done", "archived") else status
+            if _claimed_status(curr_status_cell) == expected_claim:
                 status_cell = curr_status_cell
             else:
-                status_cell = f"{glyph} **{status}**"
+                status_cell = _format_status_cell(glyph, status)
             cols[5] = status_cell + " |"
             return " | ".join(cols)
 
@@ -125,7 +177,7 @@ def render_row(ticket_data: dict, existing_row: str | None = None) -> str:
     if gh_issue and gh_issue != "0":
         link += f" · [#{gh_issue}](https://github.com/casualuser/webomage.com/issues/{gh_issue})"
 
-    status_cell = f"{glyph} **{status}**"
+    status_cell = _format_status_cell(glyph, status)
     task_text = f"🆕 **{title}**" if status == "queued" else f"**{title}**"
     
     return f"| {link} | {prio_str} | {task_text} | {repos} | {spec} | {status_cell} |"
