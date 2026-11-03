@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T617](.tasks/T617.md) | **P0** | **Fix release worktree node_modules drift, enforce symlink-safe gitignore rules, and verify full deploy app builds** | tooling, web, api, cf, ext, sec | openspec/specs/persistent-stable-worktree | ✅ **done** |
 | [T616](.tasks/T616.md) | **P0** | **Verify completed tickets and specs against live codebase/deploy reality and restore 100% green offline test suites** | tooling, web, api, ext, skills | openspec/specs/ticket-reality-audit-cli | ✅ **done** |
 | [T615](.tasks/T615.md) | **P1** | **Extend PRs & forks monitor with post-rebase obsolete PR management, cgroup-safe completed-session auto-close, and collapsed launch reports UI** | tooling, web | openspec/specs/multi-agent-concurrency/spec.md | ✅ **done** |
 | [T614](.tasks/T614.md) | **P1** | **Wire end-to-end regular-user public profiles (/u/<slug>, /u/<slug>/cv, /co/<slug>, cv-pdf?slug=), eliminate synthetic 200 fallbacks, and add append-only profile_public_audit_log** | tooling, web, api | openspec/specs/resume-publication/spec.md | ✅ **done** |

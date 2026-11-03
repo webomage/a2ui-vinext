@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t615-reality-verify-and-suites` | 0 | **n/a — NO UPSTREAM** | `56eb799c` |
-| `w0m-api` | `agent/t615-reality-verify-and-suites` | **1** | **n/a — NO UPSTREAM** | `c5499ff` |
-| `w0m-cf` | `agent/t615-reality-verify-and-suites` | **1** | **n/a — NO UPSTREAM** | `80bada3` |
-| `w0m-skills` | `agent/t615-reality-verify-and-suites` | 0 | **n/a — NO UPSTREAM** | `807e032` |
-| `w0m-ext` | `agent/t615-reality-verify-and-suites` | **1** | **n/a — NO UPSTREAM** | `67496b7` |
-| `w0m-sec` | `agent/t615-reality-verify-and-suites` | **1** | **n/a — NO UPSTREAM** | `0eefaec` |
-| `w0m-mlx/w0m-mlx` | `agent/t615-reality-verify-and-suites` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t617-release-worktree-deploy-fix` | 0 | **n/a — NO UPSTREAM** | `583aaa65` |
+| `w0m-api` | `agent/t617-release-worktree-deploy-fix` | 0 | **n/a — NO UPSTREAM** | `79e97cd` |
+| `w0m-cf` | `agent/t617-release-worktree-deploy-fix` | 0 | **n/a — NO UPSTREAM** | `74285ec` |
+| `w0m-skills` | `agent/t617-release-worktree-deploy-fix` | 0 | **n/a — NO UPSTREAM** | `807e032` |
+| `w0m-ext` | `agent/t617-release-worktree-deploy-fix` | 0 | **n/a — NO UPSTREAM** | `43bd395` |
+| `w0m-sec` | `agent/t617-release-worktree-deploy-fix` | 0 | **n/a — NO UPSTREAM** | `a99cde1` |
+| `w0m-mlx/w0m-mlx` | `agent/t617-release-worktree-deploy-fix` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 616 TASKS.md rows · 284/616 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 9 TASKS.md rows · 285/617 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t615-reality-verify-and-suites","dirty":1,"has_upstream":true,"head":"c5499ff","unpushed":null},"w0m-cf":{"branch":"agent/t615-reality-verify-and-suites","dirty":1,"has_upstream":true,"head":"80bada3","unpushed":null},"w0m-ext":{"branch":"agent/t615-reality-verify-and-suites","dirty":1,"has_upstream":true,"head":"67496b7","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t615-reality-verify-and-suites","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t615-reality-verify-and-suites","dirty":1,"has_upstream":true,"head":"0eefaec","unpushed":null},"w0m-skills":{"branch":"agent/t615-reality-verify-and-suites","dirty":0,"has_upstream":true,"head":"807e032","unpushed":null},"w0m-web":{"branch":"agent/t615-reality-verify-and-suites","dirty":0,"has_upstream":true,"head":"56eb799c","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":616,"specced":284,"specced_open":1,"total":616,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t617-release-worktree-deploy-fix","dirty":0,"has_upstream":true,"head":"79e97cd","unpushed":null},"w0m-cf":{"branch":"agent/t617-release-worktree-deploy-fix","dirty":0,"has_upstream":true,"head":"74285ec","unpushed":null},"w0m-ext":{"branch":"agent/t617-release-worktree-deploy-fix","dirty":0,"has_upstream":true,"head":"43bd395","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t617-release-worktree-deploy-fix","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t617-release-worktree-deploy-fix","dirty":0,"has_upstream":true,"head":"a99cde1","unpushed":null},"w0m-skills":{"branch":"agent/t617-release-worktree-deploy-fix","dirty":0,"has_upstream":true,"head":"807e032","unpushed":null},"w0m-web":{"branch":"agent/t617-release-worktree-deploy-fix","dirty":0,"has_upstream":true,"head":"583aaa65","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":9,"specced":285,"specced_open":1,"total":617,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -112,6 +112,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
+
+#### Completed today (1):
+
+- **T617** — Fix release worktree node_modules drift, enforce symlink-safe gitignore rules, and verify full deploy app builds ((agy:t617-release-worktree-deploy-fix): Created and claimed T617 (in-progress) on branch agent/t617-release-worktree-deploy-fix BEFORE writing implementation code (T129 AC3/AC4), grounded against owner just deploy-all failure logs (2026.11.02-1793646360 and 2026.11.03-1793712665) and live reproduction of ?? node_modules in w0m-api, w0m-cf, and w0m-ext/extension.)
 
 ## 3. Other open threads (in TASKS.md)
 

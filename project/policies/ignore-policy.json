@@ -99,8 +99,8 @@
       },
       {
         "pattern": "node_modules",
-        "match": "node_modules",
-        "why": "Dependency tree; committing it has broken installs and dwarfs the repo."
+        "match": "^(\\*\\*/)?node_modules$",
+        "why": "Dependency tree; must include unslashed `node_modules` (not only directory-only `node_modules/`) so both installed directories and worktree `node_modules` symlinks stay gitignored (T617)."
       },
       {
         "pattern": "*.pem",

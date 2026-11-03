@@ -382,8 +382,29 @@ def load_manifest(v: str) -> dict[str, str]:
     return json.loads(f.read_text())["repos"]
 
 
-def provision_worktree_fixtures(root: Path, estate: Path = ESTATE) -> None:
-    """Pass through read-only gitignored fixtures and dependencies needed by offline suites."""
+# Relative subdirectories within repos that maintain an independent pnpm-lock.yaml (outside a pnpm-workspace.yaml).
+NESTED_PNPM_DIRS: dict[str, tuple[str, ...]] = {
+    "w0m-ext": ("extension",),
+}
+
+
+def pnpm_lock_targets(repo_path: str, repo_dir: Path) -> list[tuple[str, Path]]:
+    return [
+        (repo_path, repo_dir),
+        *((f"{repo_path}/{sub}", repo_dir / sub) for sub in NESTED_PNPM_DIRS.get(repo_path, ())),
+    ]
+
+
+def provision_worktree_fixtures(root: Path, estate: Path | None = None, *, link_node_modules: bool = True) -> None:
+    """Pass through read-only gitignored fixtures and dependencies needed by offline suites.
+
+    When `link_node_modules=True` (agent trees and `--no-install` worktrees), member-repo `pnpm`
+    `node_modules` trees are symlinked from `estate` for instant offline suite readiness.
+    When `link_node_modules=False` (`release`, `stable`, and `confirmed` worktrees with `install=True`),
+    `pnpm`-managed `node_modules` are NOT symlinked so `pnpm install --frozen-lockfile` runs hermetically
+    from the checked-out lockfiles (`T617`). Standalone npm-locked skill fixtures (`mmd-validate`) remain linked.
+    """
+    estate = estate or ESTATE
     # 1. External dependencies / pinned binaries (_ext is gitignored in root .gitignore)
     ext_src, ext_dst = estate / "_ext", root / "_ext"
     if ext_src.exists() and not ext_dst.exists():
@@ -414,14 +435,17 @@ def provision_worktree_fixtures(root: Path, estate: Path = ESTATE) -> None:
             if not df.exists():
                 shutil.copy2(f, df)
 
-    # 5. Member repo node_modules needed by offline typecheck/deno/vitest suites (gitignored in member .gitignore)
-    for repo_name, rel_nm in (
-        ("w0m-skills", "node_modules"),
-        ("w0m-skills", "skills/mmd-validate/node_modules"),
-        ("w0m-api", "node_modules"),
-        ("w0m-cf", "node_modules"),
-        ("w0m-ext", "extension/node_modules"),
-    ):
+    # 5. Member repo node_modules needed by offline typecheck/deno/vitest suites (gitignored via unslashed `node_modules`)
+    nm_links: list[tuple[str, str]] = [("w0m-skills", "skills/mmd-validate/node_modules")]
+    if link_node_modules:
+        nm_links.extend([
+            ("w0m-skills", "node_modules"),
+            ("w0m-api", "node_modules"),
+            ("w0m-cf", "node_modules"),
+            ("w0m-ext", "node_modules"),
+            ("w0m-ext", "extension/node_modules"),
+        ])
+    for repo_name, rel_nm in nm_links:
         nm_src = Repo(repo_name).abs(estate) / rel_nm
         nm_dst = Repo(repo_name).abs(root) / rel_nm
         if nm_src.exists() and not nm_dst.exists():
@@ -455,13 +479,13 @@ def worktree(v: str, install: bool = True) -> Path:
             src, dst = Repo(path).abs() / rel, Repo(path).abs(root) / rel
             if src.exists() and not dst.exists():
                 (shutil.copytree if src.is_dir() else shutil.copy2)(src, dst)
-    provision_worktree_fixtures(root)
+    provision_worktree_fixtures(root, link_node_modules=not install)
     if install:
         for path in shas:
-            d = Repo(path).abs(root)
-            if (d / "pnpm-lock.yaml").exists() and not (d / "node_modules").exists():
-                print(f"installing dependencies in {path} …", flush=True)
-                subprocess.run(["pnpm", "install", "--frozen-lockfile", "--prefer-offline"], cwd=d, check=True)
+            for label, target_dir in pnpm_lock_targets(path, Repo(path).abs(root)):
+                if (target_dir / "pnpm-lock.yaml").exists() and not (target_dir / "node_modules").exists():
+                    print(f"installing dependencies in {label} …", flush=True)
+                    subprocess.run(["pnpm", "install", "--frozen-lockfile", "--prefer-offline"], cwd=target_dir, check=True)
     print(f"release {v} checked out at {root}; next: just release-deploy {v}")
     return root
 
@@ -760,7 +784,7 @@ def _stable_sync_unlocked(install: bool) -> Path:
             src, dst = r.abs() / rel, r.abs(s_root) / rel
             if src.exists() and not dst.exists():
                 (shutil.copytree if src.is_dir() else shutil.copy2)(src, dst)
-    provision_worktree_fixtures(s_root)
+    provision_worktree_fixtures(s_root, link_node_modules=not install)
 
     # Lockfile-driven dependency installation
     if install:
@@ -773,16 +797,16 @@ def _stable_sync_unlocked(install: bool) -> Path:
                 cache = {}
         new_cache = dict(cache)
         for r in repos:
-            d = r.abs(s_root)
-            changed, h = check_lockfile_changed(r.path, d, cache)
-            if changed:
-                print(f"installing dependencies in {r.path} (lockfile changed) …", flush=True)
-                subprocess.run(["pnpm", "install", "--frozen-lockfile", "--prefer-offline"], cwd=d, check=True)
-                if h:
-                    new_cache[r.path] = h
-            else:
-                if h:
-                    print(f"dependencies in {r.path} up to date (lockfile unchanged)")
+            for label, target_dir in pnpm_lock_targets(r.path, r.abs(s_root)):
+                changed, h = check_lockfile_changed(label, target_dir, cache)
+                if changed:
+                    print(f"installing dependencies in {label} (lockfile changed) …", flush=True)
+                    subprocess.run(["pnpm", "install", "--frozen-lockfile", "--prefer-offline"], cwd=target_dir, check=True)
+                    if h:
+                        new_cache[label] = h
+                else:
+                    if h:
+                        print(f"dependencies in {label} up to date (lockfile unchanged)")
         lock_cache_file.write_text(json.dumps(new_cache, indent=2) + "\n")
 
     print(f"stable worktree synchronized at {s_root}")
@@ -835,7 +859,7 @@ def _stable_promote_unlocked(install: bool) -> Path:
             src, dst = r.abs() / rel, r.abs(c_root) / rel
             if src.exists() and not dst.exists():
                 (shutil.copytree if src.is_dir() else shutil.copy2)(src, dst)
-    provision_worktree_fixtures(c_root)
+    provision_worktree_fixtures(c_root, link_node_modules=not install)
 
     if install:
         lock_cache_file = CONFIRMED_LOCKFILES
@@ -847,16 +871,16 @@ def _stable_promote_unlocked(install: bool) -> Path:
                 cache = {}
         new_cache = dict(cache)
         for r in repos:
-            d = r.abs(c_root)
-            changed, h = check_lockfile_changed(r.path, d, cache)
-            if changed:
-                print(f"installing dependencies in confirmed/{r.path} (lockfile changed) …", flush=True)
-                subprocess.run(["pnpm", "install", "--frozen-lockfile", "--prefer-offline"], cwd=d, check=True)
-                if h:
-                    new_cache[r.path] = h
-            else:
-                if h:
-                    print(f"dependencies in confirmed/{r.path} up to date (lockfile unchanged)")
+            for label, target_dir in pnpm_lock_targets(r.path, r.abs(c_root)):
+                changed, h = check_lockfile_changed(label, target_dir, cache)
+                if changed:
+                    print(f"installing dependencies in confirmed/{label} (lockfile changed) …", flush=True)
+                    subprocess.run(["pnpm", "install", "--frozen-lockfile", "--prefer-offline"], cwd=target_dir, check=True)
+                    if h:
+                        new_cache[label] = h
+                else:
+                    if h:
+                        print(f"dependencies in confirmed/{label} up to date (lockfile unchanged)")
         lock_cache_file.write_text(json.dumps(new_cache, indent=2) + "\n")
 
     promoted = {
@@ -1333,7 +1357,7 @@ def self_test() -> int:
             CONFIRMED=fake_conf, CONFIRMED_ROOT=fake_conf / "w0m",
             CONFIRMED_LOCKFILES=fake_conf / ".lockfiles.json", CONFIRMED_PROMOTED=fake_promoted,
             estate_repos=lambda: [Repo("."), Repo("w0m-web")],
-            provision_worktree_fixtures=lambda root: None,
+            provision_worktree_fixtures=lambda *a, **kw: None,
             git=fake_git))
 
         cases.append(("stable-promote refuses when no e2e-stable result exists", raises(lambda: stable_promote(install=False))))
@@ -1347,6 +1371,110 @@ def self_test() -> int:
         promoted_data = json.loads(fake_promoted.read_text()) if fake_promoted.exists() else {}
         cases.append(("stable-promote advances confirmed worktree and writes promoted.json when e2e-stable passed",
                       promoted_path == fake_conf / "w0m" and promoted_data.get("repos") == {".": "aaa", "w0m-web": "bbb"}))
+
+    # T617 probes: symlink-safe .gitignore across governed JS repos + hermetic vs symlinked node_modules provisioning
+    with tempfile.TemporaryDirectory() as tmp_gi:
+        base_gi = Path(tmp_gi)
+        ext_target = base_gi / "shared_nm"
+        ext_target.mkdir()
+        gi_dirty: list[str] = []
+        for repo_name, rel_links in (
+            ("w0m-api", ("node_modules",)),
+            ("w0m-cf", ("node_modules",)),
+            ("w0m-ext", ("node_modules", "extension/node_modules")),
+            ("w0m-skills", ("node_modules", "skills/mmd-validate/node_modules")),
+            ("w0m-web", ("node_modules",)),
+            ("w0m-sec", ("node_modules",)),
+        ):
+            src_gi = ESTATE / repo_name / ".gitignore"
+            if not src_gi.exists():
+                continue
+            rdir = base_gi / repo_name
+            rdir.mkdir(parents=True)
+            git(rdir, "init", "--quiet")
+            shutil.copy2(src_gi, rdir / ".gitignore")
+            git(rdir, "add", ".gitignore")
+            for rel_nm in rel_links:
+                dst_nm = rdir / rel_nm
+                dst_nm.parent.mkdir(parents=True, exist_ok=True)
+                dst_nm.symlink_to(ext_target)
+            st = [ln for ln in git(rdir, "status", "--porcelain").splitlines() if not ln.startswith("A  .gitignore")]
+            if st:
+                gi_dirty.append(f"{repo_name}: {st}")
+        cases.append(("every governed JS .gitignore ignores symlinked node_modules (0 untracked in git status, T617)",
+                      gi_dirty == []))
+
+    with tempfile.TemporaryDirectory() as tmp_pf:
+        base_pf = Path(tmp_pf)
+        fake_est = base_pf / "estate"
+        for repo_name, rel_nm in (
+            ("w0m-skills", "node_modules"),
+            ("w0m-skills", "skills/mmd-validate/node_modules"),
+            ("w0m-api", "node_modules"),
+            ("w0m-cf", "node_modules"),
+            ("w0m-ext", "node_modules"),
+            ("w0m-ext", "extension/node_modules"),
+        ):
+            (fake_est / repo_name / rel_nm).mkdir(parents=True, exist_ok=True)
+        (fake_est / "_ext").mkdir(parents=True, exist_ok=True)
+
+        wt_agent = base_pf / "agent_wt"
+        wt_agent.mkdir()
+        provision_worktree_fixtures(wt_agent, estate=fake_est, link_node_modules=True)
+        cases.append(("provision_worktree_fixtures(link_node_modules=True) links pnpm and mmd-validate node_modules for agent trees (T617)",
+                      (wt_agent / "w0m-api" / "node_modules").is_symlink()
+                      and (wt_agent / "w0m-cf" / "node_modules").is_symlink()
+                      and (wt_agent / "w0m-ext" / "extension" / "node_modules").is_symlink()
+                      and (wt_agent / "w0m-skills" / "skills" / "mmd-validate" / "node_modules").is_symlink()))
+
+        wt_rel = base_pf / "release_wt"
+        wt_rel.mkdir()
+        provision_worktree_fixtures(wt_rel, estate=fake_est, link_node_modules=False)
+        cases.append(("provision_worktree_fixtures(link_node_modules=False) skips pnpm node_modules symlinks so frozen-lockfile install runs hermetically (T617)",
+                      not (wt_rel / "w0m-api" / "node_modules").exists()
+                      and not (wt_rel / "w0m-cf" / "node_modules").exists()
+                      and not (wt_rel / "w0m-ext" / "extension" / "node_modules").exists()
+                      and (wt_rel / "w0m-skills" / "skills" / "mmd-validate" / "node_modules").is_symlink()))
+
+    with tempfile.TemporaryDirectory() as tmp_wt, contextlib.ExitStack() as stack_wt:
+        base_wt = Path(tmp_wt)
+        fake_rel = base_wt / "releases"
+        ver = "2026.11.03-1793713000"
+        (fake_rel / ver).mkdir(parents=True)
+        (fake_rel / ver / "manifest.json").write_text(json.dumps({
+            "repos": {".": "1111111111", "w0m-api": "2222222222", "w0m-ext": "3333333333"}
+        }))
+        fake_est_wt = base_wt / "estate"
+        (fake_est_wt / "w0m-api" / "node_modules").mkdir(parents=True)
+        (fake_est_wt / "w0m-ext" / "extension" / "node_modules").mkdir(parents=True)
+        pnpm_cwds: list[Path] = []
+
+        def fake_wt_git(repo: Path, *args: str, check: bool = True) -> str:
+            if args[:2] == ("worktree", "add"):
+                dest = Path(args[3])
+                (dest / ".git").mkdir(parents=True, exist_ok=True)
+                if dest.name == "w0m-api":
+                    (dest / "pnpm-lock.yaml").write_text("lockfileVersion: '9.0'\n")
+                elif dest.name == "w0m-ext":
+                    (dest / "pnpm-lock.yaml").write_text("lockfileVersion: '9.0'\n")
+                    (dest / "extension").mkdir(parents=True, exist_ok=True)
+                    (dest / "extension" / "pnpm-lock.yaml").write_text("lockfileVersion: '9.0'\n")
+            return ""
+
+        def fake_pnpm_run(cmd: object, **kw: object) -> subprocess.CompletedProcess:
+            cwd = Path(str(kw.get("cwd", "")))
+            pnpm_cwds.append(cwd)
+            (cwd / "node_modules").mkdir(parents=True, exist_ok=True)
+            return subprocess.CompletedProcess(cmd, 0)  # type: ignore[arg-type]
+
+        stack_wt.enter_context(mock.patch.multiple(me, RELEASES=fake_rel, ESTATE=fake_est_wt, git=fake_wt_git))
+        stack_wt.enter_context(mock.patch.object(subprocess, "run", fake_pnpm_run))
+        with contextlib.redirect_stdout(io.StringIO()):
+            wt_out = worktree(ver, install=True)
+        cases.append(("worktree(install=True) installs root and nested w0m-ext/extension lockfiles hermetically without symlinks (T617)",
+                      pnpm_cwds == [wt_out / "w0m-api", wt_out / "w0m-ext", wt_out / "w0m-ext" / "extension"]
+                      and not (wt_out / "w0m-api" / "node_modules").is_symlink()
+                      and not (wt_out / "w0m-ext" / "extension" / "node_modules").is_symlink()))
 
     for name, ok in cases:
         print(f"  {'✅' if ok else '❌'} {name}")

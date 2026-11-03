@@ -27,7 +27,7 @@ class TestPackageManifestsNoNpx(unittest.TestCase):
         scripts = data.get("scripts", {})
         for name, cmd in scripts.items():
             self.assertNotIn("npx", cmd.split(), f"apps/cp script '{name}' invokes npx: {cmd}")
-        self.assertIn("pnpm dlx pagefind", scripts.get("build:search", ""))
+        self.assertIn("pnpm dlx pagefind@1.5.2", scripts.get("build:search", ""))
 
     def test_web_package_json(self):
         web_pkg = WEB / "apps" / "web" / "package.json"
@@ -36,7 +36,7 @@ class TestPackageManifestsNoNpx(unittest.TestCase):
         scripts = data.get("scripts", {})
         for name, cmd in scripts.items():
             self.assertNotIn("npx", cmd.split(), f"apps/web script '{name}' invokes npx: {cmd}")
-        self.assertIn("pnpm dlx pagefind", scripts.get("build:search", ""))
+        self.assertIn("pnpm dlx pagefind@1.5.2", scripts.get("build:search", ""))
 
 
 class TestSkillsToolchainNoNpx(unittest.TestCase):
