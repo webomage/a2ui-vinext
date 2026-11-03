@@ -530,6 +530,459 @@ def main() -> int:
             submit_agent_refused["ok"] is False and "REFUSED-AGENT" in str(submit_agent_refused.get("error", "")),
         )
 
+    # 8g. Post-rebase PR obsolescence, fork alignment, collapsed launch reports & settled run close (T613)
+    with tempfile.TemporaryDirectory() as tmp_git_root:
+        groot = Path(tmp_git_root)
+        upstream_repo = groot / "upstream"
+        fork_repo = groot / "fork"
+        upstream_repo.mkdir()
+        subprocess.run(["git", "-C", str(upstream_repo), "init", "-b", "main"], check=True, capture_output=True)
+        subprocess.run(["git", "-C", str(upstream_repo), "config", "user.email", "test@example.com"], check=True)
+        subprocess.run(["git", "-C", str(upstream_repo), "config", "user.name", "Test"], check=True)
+        (upstream_repo / "app.txt").write_text("line1\nline2\nline3\nline4\nline5\n", encoding="utf-8")
+        (upstream_repo / "old_workflow.yml").write_text("legacy: true\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(upstream_repo), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(upstream_repo), "commit", "-m", "init"], check=True, capture_output=True)
+
+        subprocess.run(["git", "clone", "--quiet", str(upstream_repo), str(fork_repo)], check=True)
+        subprocess.run(["git", "-C", str(fork_repo), "config", "user.email", "test@example.com"], check=True)
+        subprocess.run(["git", "-C", str(fork_repo), "config", "user.name", "Test"], check=True)
+        subprocess.run(["git", "-C", str(fork_repo), "remote", "add", "upstream", str(upstream_repo)], check=True)
+
+        # Branch 1: patch-equivalent (cherry-merged upstream)
+        subprocess.run(["git", "-C", str(fork_repo), "checkout", "-q", "-b", "feat/patch-eq", "main"], check=True)
+        (fork_repo / "feature.txt").write_text("hello world\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(fork_repo), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(fork_repo), "commit", "-m", "feat: add feature"], check=True, capture_output=True)
+
+        # Branch 2: empty-after-rebase (upstream lands identical result via two commits so patch-id differs)
+        subprocess.run(["git", "-C", str(fork_repo), "checkout", "-q", "-b", "feat/tree-eq", "main"], check=True)
+        (fork_repo / "same.txt").write_text("partA\npartB\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(fork_repo), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(fork_repo), "commit", "-m", "feat: combined same"], check=True, capture_output=True)
+
+        # Branch 3: cleanly rebaseable (even when upstream deletes unrelated old_workflow.yml)
+        subprocess.run(["git", "-C", str(fork_repo), "checkout", "-q", "-b", "feat/clean-rebase", "main"], check=True)
+        (fork_repo / "independent.txt").write_text("independent\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(fork_repo), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(fork_repo), "commit", "-m", "feat: independent"], check=True, capture_output=True)
+
+        # Branch 3b: cleanly rebaseable with non-overlapping edit in app.txt
+        subprocess.run(["git", "-C", str(fork_repo), "checkout", "-q", "-b", "feat/clean-same-file", "main"], check=True)
+        (fork_repo / "app.txt").write_text("line1\nline2\nline3\nline4\nfork-line5\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(fork_repo), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(fork_repo), "commit", "-m", "feat: edit line5"], check=True, capture_output=True)
+
+        # Branch 4: conflicting with upstream
+        subprocess.run(["git", "-C", str(fork_repo), "checkout", "-q", "-b", "feat/conflict", "main"], check=True)
+        (fork_repo / "app.txt").write_text("fork-conflicting-line1\nline2\nline3\nline4\nline5\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(fork_repo), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(fork_repo), "commit", "-m", "feat: conflicting change"], check=True, capture_output=True)
+        subprocess.run(["git", "-C", str(fork_repo), "checkout", "-q", "main"], check=True)
+
+        # Advance upstream: merge patch-eq content, delete old_workflow.yml, land same.txt in 2 commits, and modify app.txt line1
+        (upstream_repo / "feature.txt").write_text("hello world\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(upstream_repo), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(upstream_repo), "commit", "-m", "upstream: feature"], check=True, capture_output=True)
+        subprocess.run(["git", "-C", str(upstream_repo), "rm", "-q", "old_workflow.yml"], check=True)
+        subprocess.run(["git", "-C", str(upstream_repo), "commit", "-m", "upstream: drop old workflow"], check=True, capture_output=True)
+        (upstream_repo / "same.txt").write_text("partA\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(upstream_repo), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(upstream_repo), "commit", "-m", "upstream: partA"], check=True, capture_output=True)
+        (upstream_repo / "same.txt").write_text("partA\npartB\n", encoding="utf-8")
+        (upstream_repo / "app.txt").write_text("upstream-line1\nline2\nline3\nline4\nline5\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(upstream_repo), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(upstream_repo), "commit", "-m", "upstream: partB and app"], check=True, capture_output=True)
+        subprocess.run(["git", "-C", str(fork_repo), "fetch", "upstream", "--quiet"], check=True)
+
+        objs_before = subprocess.run(
+            ["git", "-C", str(fork_repo), "count-objects"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+
+        align_patch = w0m_prs.evaluate_pr_alignment(fork_repo, "feat/patch-eq", "upstream/main")
+        check(
+            "evaluate_pr_alignment detects OBSOLETE_PATCH_EQUIVALENT",
+            align_patch["isObsolete"] is True and align_patch["alignmentStatus"] == "OBSOLETE_PATCH_EQUIVALENT",
+        )
+        align_tree = w0m_prs.evaluate_pr_alignment(fork_repo, "feat/tree-eq", "upstream/main")
+        check(
+            "evaluate_pr_alignment detects OBSOLETE_EMPTY_AFTER_REBASE via 3-way merge-tree",
+            align_tree["isObsolete"] is True and align_tree["alignmentStatus"] == "OBSOLETE_EMPTY_AFTER_REBASE",
+        )
+        align_clean = w0m_prs.evaluate_pr_alignment(fork_repo, "feat/clean-rebase", "upstream/main")
+        check(
+            "evaluate_pr_alignment detects CLEAN_REBASEABLE when upstream deletes unrelated files",
+            align_clean["isObsolete"] is False and align_clean["alignmentStatus"] == "CLEAN_REBASEABLE",
+        )
+        align_same_file = w0m_prs.evaluate_pr_alignment(fork_repo, "feat/clean-same-file", "upstream/main")
+        objs_after = subprocess.run(
+            ["git", "-C", str(fork_repo), "count-objects"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        check(
+            "evaluate_pr_alignment resolves non-overlapping same-file merge without writing loose objects",
+            align_same_file["isObsolete"] is False
+            and align_same_file["alignmentStatus"] == "CLEAN_REBASEABLE"
+            and objs_before == objs_after,
+        )
+        align_conf = w0m_prs.evaluate_pr_alignment(fork_repo, "feat/conflict", "upstream/main")
+        check(
+            "evaluate_pr_alignment detects CONFLICTING_NEEDS_REBASE",
+            align_conf["isObsolete"] is False and align_conf["alignmentStatus"] == "CONFLICTING_NEEDS_REBASE",
+        )
+
+        # Launch report formatting: collapsed-by-default <details> without open attribute
+        report_md = w0m_prs.format_launch_report(
+            {
+                "runNumber": 32,
+                "timestamp": "2026-11-02T19:45:00Z",
+                "status": "completed",
+                "deltas": [{"type": "OBSOLETE_PR", "summary": "stablyai/orca#99999 became OBSOLETE_PATCH_EQUIVALENT"}],
+                "forkUpdates": [{"repo": "graphify", "action": "fast_forward", "message": "Fast-forwarded 36 commits"}],
+                "obsoletePrs": [
+                    {
+                        "repo": "stablyai/orca",
+                        "number": 99999,
+                        "branch": "feat/patch-eq",
+                        "alignmentStatus": "OBSOLETE_PATCH_EQUIVALENT",
+                        "closeCommand": "gh pr close 99999 -R stablyai/orca --comment 'Superseded upstream'",
+                    }
+                ],
+                "closedSessions": [{"handle": "term_old_30", "reason": "completed_automation_run"}],
+                "openPrs": [
+                    {
+                        "repo": "stablyai/orca",
+                        "number": 37511,
+                        "url": "https://github.com/stablyai/orca/pull/37511",
+                        "mergeable": "MERGEABLE",
+                        "alignmentStatus": "UP_TO_DATE",
+                        "reviewDecision": "NONE",
+                        "ciStatus": "PASS",
+                        "feedback": "-",
+                    }
+                ],
+                "candidateBranches": [],
+                "worktrees": [],
+            }
+        )
+        check(
+            "format_launch_report wraps sections in collapsed-by-default <details> blocks",
+            "<details>" in report_md
+            and "<details open" not in report_md
+            and "<summary><b>" in report_md
+            and "OBSOLETE_PATCH_EQUIVALENT" in report_md
+            and "term_old_30" in report_md,
+        )
+
+        # Settled automation terminal self-close safety check
+        close_calls: list[list[str]] = []
+
+        def _fake_settle_cmd(cmd: list[str], check=False, cwd=None, timeout=None):
+            m = MagicMock()
+            m.returncode = 0
+            m.stderr = ""
+            if "automations" in cmd and "runs" in cmd:
+                m.stdout = json.dumps(
+                    {
+                        "ok": True,
+                        "result": {
+                            "runs": [
+                                {
+                                    "id": "run_32",
+                                    "runNumber": 32,
+                                    "status": "completed",
+                                    "terminalSessionId": "tab-32",
+                                    "terminalPaneKey": "tab-32:leaf-32",
+                                    "outputSnapshot": {"content": "saved report"},
+                                }
+                            ]
+                        },
+                    }
+                )
+            elif "terminal" in cmd and "list" in cmd:
+                m.stdout = json.dumps(
+                    {
+                        "ok": True,
+                        "result": {
+                            "terminals": [
+                                {"handle": "term_32", "tabId": "tab-32", "leafId": "leaf-32"}
+                            ]
+                        },
+                    }
+                )
+            elif "terminal" in cmd and "close" in cmd:
+                close_calls.append(cmd)
+                m.stdout = json.dumps({"ok": True})
+            else:
+                m.stdout = json.dumps({"ok": True})
+            return m
+
+        with (
+            patch("w0m_prs.run_cmd", side_effect=_fake_settle_cmd),
+            patch("w0m_prs.resolve_orca_bin", return_value="/tmp/orca-shim"),
+        ):
+            settled_res = w0m_prs.close_run_when_settled(
+                automation_id="auto_1",
+                terminal_handle="term_32",
+                hook_status_dir=groot / "empty_hooks",
+                max_wait_sec=2.0,
+                poll_interval_sec=0.05,
+            )
+        check(
+            "close_run_when_settled closes automation terminal after outputSnapshot is persisted",
+            settled_res["closed"] is True and len(close_calls) == 1 and "term_32" in close_calls[0],
+        )
+
+        # Must abort without closing if hook reports session is actively working
+        hooks_dir = groot / "active_hooks"
+        hooks_dir.mkdir()
+        (hooks_dir / "active.json").write_text(
+            json.dumps({"paneKey": "tab-32:leaf-32", "payload": {"state": "working"}}),
+            encoding="utf-8",
+        )
+        close_calls.clear()
+        with (
+            patch("w0m_prs.run_cmd", side_effect=_fake_settle_cmd),
+            patch("w0m_prs.resolve_orca_bin", return_value="/tmp/orca-shim"),
+        ):
+            busy_res = w0m_prs.close_run_when_settled(
+                automation_id="auto_1",
+                terminal_handle="term_32",
+                hook_status_dir=hooks_dir,
+                max_wait_sec=0.2,
+                poll_interval_sec=0.05,
+            )
+        check(
+            "close_run_when_settled aborts when user/agent starts a new working turn",
+            busy_res["closed"] is False and len(close_calls) == 0,
+        )
+
+        # v2 hook schema: {"version": 2, "entries": {"<paneKey>": {...}}}
+        hooks_v2_dir = groot / "active_hooks_v2"
+        hooks_v2_dir.mkdir()
+        (hooks_v2_dir / "last-status.json").write_text(
+            json.dumps(
+                {
+                    "version": 2,
+                    "entries": {
+                        "tab-32:leaf-32": {
+                            "paneKey": "tab-32:leaf-32",
+                            "tabId": "tab-32",
+                            "payload": {"state": "working"},
+                        }
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        close_calls.clear()
+        with (
+            patch("w0m_prs.run_cmd", side_effect=_fake_settle_cmd),
+            patch("w0m_prs.resolve_orca_bin", return_value="/tmp/orca-shim"),
+        ):
+            busy_v2_res = w0m_prs.close_run_when_settled(
+                automation_id="auto_1",
+                terminal_handle="term_32",
+                hook_status_dir=hooks_v2_dir,
+                max_wait_sec=0.2,
+                poll_interval_sec=0.05,
+            )
+        check(
+            "close_run_when_settled unwraps v2 last-status.json entries dict and aborts while working",
+            busy_v2_res["closed"] is False and busy_v2_res.get("reason") == "session_working" and len(close_calls) == 0,
+        )
+
+        # 8h. Cgroup-safe --daemon closer, canonical precheck path, --fresh-session & --ignore-worktrees (T615 AC4)
+        fake_host_estate = groot / "Projects" / "!self" / "w0m"
+        (fake_host_estate / "scripts").mkdir(parents=True)
+        (fake_host_estate / "scripts" / "w0m_prs.py").write_text("# stub\n", encoding="utf-8")
+        fake_worktree_estate = groot / ".w0m" / "work-prs" / "prs-obsolete-session-ui" / "w0m"
+        (fake_worktree_estate / "scripts").mkdir(parents=True)
+        resolved_canon = w0m_prs.resolve_canonical_estate_root(
+            workspace_root=fake_worktree_estate, home_dir=groot
+        )
+        check(
+            "resolve_canonical_estate_root maps ephemeral ~/.w0m/work* trees back to live host estate",
+            resolved_canon == fake_host_estate,
+        )
+
+        # Detached --daemon closer via systemd-run --user --collect on Linux + Popen fallback
+        sd_calls: list[list[str]] = []
+
+        def _fake_sd_run(cmd: list[str], check=False, cwd=None, timeout=None):
+            sd_calls.append(cmd)
+            m = MagicMock()
+            m.returncode = 0
+            m.stdout = "Running as unit: run-test.service\n"
+            m.stderr = ""
+            return m
+
+        with (
+            patch("w0m_prs.sys.platform", "linux"),
+            patch("w0m_prs.shutil.which", side_effect=lambda b: "/usr/bin/systemd-run" if b == "systemd-run" else None),
+            patch("w0m_prs.run_cmd", side_effect=_fake_sd_run),
+            patch.dict("os.environ", {"ORCA_CLI_COMMAND": "/tmp/orca-shim"}, clear=False),
+        ):
+            daemon_sd = w0m_prs.spawn_detached_closer(
+                terminal_handle="term_42",
+                automation_id="auto_1",
+                initial_delay_sec=2.0,
+                max_wait_sec=60.0,
+                poll_interval_sec=0.5,
+            )
+        check(
+            "spawn_detached_closer uses systemd-run --user --collect on Linux to escape tool-runner cgroup",
+            daemon_sd["ok"] is True
+            and daemon_sd["mechanism"] == "systemd-run"
+            and len(sd_calls) == 1
+            and "--user" in sd_calls[0]
+            and "--collect" in sd_calls[0]
+            and any(a.startswith("--setenv=ORCA_CLI_COMMAND=") for a in sd_calls[0]),
+        )
+
+        popen_calls: list[tuple[list[str], dict]] = []
+
+        def _fake_popen(cmd: list[str], **kwargs):
+            popen_calls.append((cmd, kwargs))
+            p = MagicMock()
+            p.pid = 42424
+            return p
+
+        with (
+            patch("w0m_prs.shutil.which", return_value=None),
+            patch("w0m_prs.subprocess.Popen", side_effect=_fake_popen),
+        ):
+            daemon_fb = w0m_prs.spawn_detached_closer(
+                terminal_handle="term_42",
+                initial_delay_sec=2.0,
+                max_wait_sec=60.0,
+                poll_interval_sec=0.5,
+            )
+        check(
+            "spawn_detached_closer falls back to Popen(start_new_session=True) when systemd-run is absent",
+            daemon_fb["ok"] is True
+            and daemon_fb["mechanism"] == "setsid"
+            and len(popen_calls) == 1
+            and popen_calls[0][1].get("start_new_session") is True,
+        )
+
+        # check_prs_delta: include_worktrees=False ignores WORKTREE_DELTA + pending_deltas handoff to reconcile
+        delta_state_file = groot / "delta_handoff_state.json"
+        base_disc = {
+            "openPrCount": 1,
+            "openPrs": [
+                {
+                    "repo": "stablyai/orca",
+                    "number": 37511,
+                    "title": "feat: mobile tabs",
+                    "state": "OPEN",
+                    "mergeable": "MERGEABLE",
+                    "alignmentStatus": "UP_TO_DATE",
+                    "isObsolete": False,
+                    "reviewDecision": "NONE",
+                    "ciStatus": "PASS",
+                    "commentsCount": 2,
+                    "reviewsCount": 0,
+                    "feedback": "-",
+                }
+            ],
+            "obsoletePrCount": 0,
+            "obsoletePrs": [],
+            "pendingBranchCount": 0,
+            "pendingBranches": [],
+            "agentTreeCount": 1,
+            "agentTrees": [{"name": "t615-work", "clean": False, "dirty_repos": ["."]}],
+        }
+        w0m_prs.check_prs_delta(
+            state_path=delta_state_file, current_override=base_disc, include_worktrees=False
+        )
+        wt_only_disc = {
+            **base_disc,
+            "agentTrees": [{"name": "t615-work", "clean": False, "dirty_repos": [".", "w0m-web", "w0m-api"]}],
+        }
+        wt_delta_res = w0m_prs.check_prs_delta(
+            state_path=delta_state_file,
+            current_override=wt_only_disc,
+            include_worktrees=False,
+            record_pending_deltas=True,
+        )
+        check(
+            "check_prs_delta(include_worktrees=False) ignores unrelated agent worktree dirty-repo churn",
+            wt_delta_res["changed"] is False and wt_delta_res["deltaCount"] == 0,
+        )
+        pr_changed_disc = {
+            **wt_only_disc,
+            "openPrs": [{**base_disc["openPrs"][0], "reviewDecision": "APPROVED"}],
+        }
+        pr_precheck_res = w0m_prs.check_prs_delta(
+            state_path=delta_state_file,
+            current_override=pr_changed_disc,
+            include_worktrees=False,
+            record_pending_deltas=True,
+        )
+        # Subsequent reconcile call sees identical state_file snapshot — must consume pending_deltas!
+        reconcile_delta_res = w0m_prs.check_prs_delta(
+            state_path=delta_state_file,
+            current_override=pr_changed_disc,
+            include_worktrees=False,
+            consume_pending_deltas=True,
+        )
+        check(
+            "check_prs_delta hands off precheck pending_deltas to subsequent reconcile run",
+            pr_precheck_res["changed"] is True
+            and reconcile_delta_res["changed"] is True
+            and reconcile_delta_res["deltaCount"] == 1
+            and "APPROVED" in reconcile_delta_res["deltas"][0],
+        )
+
+        # sync_prs_to_orca uses --fresh-session, --enabled, canonical precheck path & --daemon prompt
+        recorded_t615_cmds: list[list[str]] = []
+
+        def _fake_t615_orca_cmd(cmd: list[str], check=False, cwd=None, timeout=None):
+            recorded_t615_cmds.append(cmd)
+            m = MagicMock()
+            m.returncode = 0
+            m.stderr = ""
+            if "automations" in cmd and "list" in cmd:
+                m.stdout = json.dumps(
+                    {
+                        "ok": True,
+                        "result": {
+                            "automations": [
+                                {"id": "auto_existing", "name": "w0m Upstream PRs & Fork Branches Monitor"}
+                            ]
+                        },
+                    }
+                )
+            else:
+                m.stdout = json.dumps({"ok": True, "result": {}})
+            return m
+
+        with (
+            patch("w0m_prs.run_cmd", side_effect=_fake_t615_orca_cmd),
+            patch("w0m_prs.resolve_orca_bin", return_value="/tmp/orca-shim"),
+            patch("w0m_prs.resolve_agent_provider", return_value="antigravity"),
+            patch("w0m_prs.resolve_canonical_estate_root", return_value=fake_host_estate),
+            patch("w0m_prs.check_prs_delta", side_effect=lambda **kw: {"changed": False}),
+        ):
+            sync_t615 = w0m_prs.sync_prs_to_orca(dry_run=False, discovered_override=sample_discovered)
+        edit_cmds = [c for c in recorded_t615_cmds if "automations" in c and "edit" in c]
+        check(
+            "sync_prs_to_orca configures --fresh-session, --enabled, canonical precheck --ignore-worktrees, and --daemon closer",
+            len(edit_cmds) == 1
+            and "--fresh-session" in edit_cmds[0]
+            and "--reuse-session" not in edit_cmds[0]
+            and "--enabled" in edit_cmds[0]
+            and str(fake_host_estate / "scripts" / "w0m_prs.py") in sync_t615["precheck"]
+            and "--ignore-worktrees" in sync_t615["precheck"]
+            and "--daemon" in " ".join(edit_cmds[0]),
+        )
+
     # 9. Skill check
     skill_md = ROOT / "w0m-skills/skills/w0m-prs/SKILL.md"
     check("w0m-prs SKILL.md exists in w0m-skills", skill_md.is_file())

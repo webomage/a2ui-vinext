@@ -10,9 +10,12 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -750,6 +753,34 @@ def find_workspace_root(start_path: Path | None = None) -> Path:
         if (parent / ".git").exists() and (parent / "w0m-web").is_dir():
             return parent
     return Path(__file__).resolve().parents[1]
+
+
+def resolve_canonical_estate_root(
+    workspace_root: Path | None = None,
+    home_dir: Path | None = None,
+) -> Path:
+    """Resolve the persistent host estate checkout (`T615` AC4).
+
+    When invoked from inside an ephemeral `~/.w0m/work*` or `~/.w0m/releases*` worktree,
+    maps back to the live host estate root so Orca automations never persist temporary
+    worktree paths in `precheck` commands.
+    """
+    ws = (workspace_root or find_workspace_root()).resolve()
+    home = (home_dir or Path.home()).resolve()
+    w0m_ephemeral_root = home / ".w0m"
+    try:
+        is_ephemeral = ws == w0m_ephemeral_root or w0m_ephemeral_root in ws.parents
+    except OSError:
+        is_ephemeral = False
+    if is_ephemeral:
+        for candidate in (
+            home / "Projects" / "!self" / "w0m",
+            home / "Projects" / "@self" / "@wom",
+            home / "Projects" / "w0m",
+        ):
+            if (candidate / "scripts" / "w0m_prs.py").is_file():
+                return candidate
+    return ws
 
 
 def resolve_forks_dir(specified: Optional[str] = None) -> Optional[Path]:
@@ -2984,6 +3015,303 @@ def discover_worktrees_summary() -> list[dict[str, Any]]:
     return trees
 
 
+SUPERSEDED_PRS: dict[str, dict[str, str]] = {}
+
+
+def _git_plumbing(repo_path: Path, args: list[str], *, env_extra: Optional[dict[str, str]] = None) -> subprocess.CompletedProcess[str]:
+    env = {**os.environ, "LC_ALL": "C"}
+    if env_extra:
+        env.update(env_extra)
+    return subprocess.run(
+        ["git", *args],
+        cwd=repo_path,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+        timeout=15.0,
+    )
+
+
+def evaluate_pr_alignment(
+    repo_path: Path,
+    branch_or_ref: str,
+    upstream_ref: str = "upstream/main",
+    *,
+    pr_state: str = "OPEN",
+    superseded_by: str = "",
+) -> dict[str, Any]:
+    """Evaluate a fork/PR branch against `upstream_ref` without mutating the working tree (`T613` AC1).
+
+    Classifies into:
+    - `UP_TO_DATE`
+    - `CLEAN_REBASEABLE`
+    - `CONFLICTING_NEEDS_REBASE`
+    - `OBSOLETE_PATCH_EQUIVALENT` (`git cherry` reports 0 `+` commits or 0 ahead)
+    - `OBSOLETE_EMPTY_AFTER_REBASE` (clean 3-way merge produces identical tree OID to `upstream_ref`)
+    - `OBSOLETE_UPSTREAM_MERGED`
+    - `OBSOLETE_SUPERSEDED`
+    """
+    st_upper = (pr_state or "OPEN").upper()
+    if st_upper == "MERGED":
+        return {
+            "branch": branch_or_ref,
+            "upstreamRef": upstream_ref,
+            "alignmentStatus": "OBSOLETE_UPSTREAM_MERGED",
+            "isObsolete": True,
+            "aheadUpstream": 0,
+            "behindUpstream": 0,
+            "reason": "Merged upstream",
+        }
+    if superseded_by:
+        return {
+            "branch": branch_or_ref,
+            "upstreamRef": upstream_ref,
+            "alignmentStatus": "OBSOLETE_SUPERSEDED",
+            "isObsolete": True,
+            "aheadUpstream": 0,
+            "behindUpstream": 0,
+            "reason": f"Superseded by {superseded_by}",
+        }
+
+    head_ref = ""
+    for cand in (f"refs/heads/{branch_or_ref}", f"refs/remotes/origin/{branch_or_ref}", branch_or_ref):
+        v = _git_plumbing(repo_path, ["rev-parse", "--verify", "--quiet", f"{cand}^{{commit}}"])
+        if v.returncode == 0 and v.stdout.strip():
+            head_ref = cand
+            break
+    if not head_ref:
+        return {
+            "branch": branch_or_ref,
+            "upstreamRef": upstream_ref,
+            "alignmentStatus": "UNAVAILABLE_LOCAL_REF",
+            "isObsolete": False,
+            "aheadUpstream": 0,
+            "behindUpstream": 0,
+            "reason": "Branch ref not present locally",
+        }
+
+    up_verify = _git_plumbing(repo_path, ["rev-parse", "--verify", "--quiet", f"{upstream_ref}^{{commit}}"])
+    if up_verify.returncode != 0:
+        return {
+            "branch": branch_or_ref,
+            "upstreamRef": upstream_ref,
+            "alignmentStatus": "NO_UPSTREAM_REF",
+            "isObsolete": False,
+            "aheadUpstream": 0,
+            "behindUpstream": 0,
+            "reason": f"Missing {upstream_ref}",
+        }
+
+    counts_cp = _git_plumbing(repo_path, ["rev-list", "--left-right", "--count", f"{upstream_ref}...{head_ref}"])
+    behind, ahead = 0, 0
+    if counts_cp.returncode == 0 and counts_cp.stdout.strip():
+        parts = counts_cp.stdout.strip().split()
+        if len(parts) == 2:
+            behind, ahead = int(parts[0]), int(parts[1])
+
+    if ahead == 0:
+        return {
+            "branch": branch_or_ref,
+            "upstreamRef": upstream_ref,
+            "alignmentStatus": "OBSOLETE_PATCH_EQUIVALENT",
+            "isObsolete": True,
+            "aheadUpstream": 0,
+            "behindUpstream": behind,
+            "reason": "Branch has 0 commits ahead of upstream",
+        }
+
+    cherry_cp = _git_plumbing(repo_path, ["cherry", upstream_ref, head_ref])
+    if cherry_cp.returncode == 0:
+        plus_lines = [ln for ln in cherry_cp.stdout.splitlines() if ln.startswith("+ ")]
+        if len(plus_lines) == 0:
+            return {
+                "branch": branch_or_ref,
+                "upstreamRef": upstream_ref,
+                "alignmentStatus": "OBSOLETE_PATCH_EQUIVALENT",
+                "isObsolete": True,
+                "aheadUpstream": ahead,
+                "behindUpstream": behind,
+                "reason": "All branch commits are patch-equivalent in upstream (`git cherry`)",
+            }
+
+    if behind == 0:
+        return {
+            "branch": branch_or_ref,
+            "upstreamRef": upstream_ref,
+            "alignmentStatus": "UP_TO_DATE",
+            "isObsolete": False,
+            "aheadUpstream": ahead,
+            "behindUpstream": 0,
+            "reason": "Branch is rebased onto latest upstream HEAD",
+        }
+
+    mb_cp = _git_plumbing(repo_path, ["merge-base", upstream_ref, head_ref])
+    if mb_cp.returncode != 0 or not mb_cp.stdout.strip():
+        return {
+            "branch": branch_or_ref,
+            "upstreamRef": upstream_ref,
+            "alignmentStatus": "CONFLICTING_NEEDS_REBASE",
+            "isObsolete": False,
+            "aheadUpstream": ahead,
+            "behindUpstream": behind,
+            "reason": "No common merge-base with upstream",
+        }
+    mb = mb_cp.stdout.strip()
+    up_tree_cp = _git_plumbing(repo_path, ["rev-parse", f"{upstream_ref}^{{tree}}"])
+    up_tree = up_tree_cp.stdout.strip()
+
+    # Perform an index-only 3-way merge (`git read-tree --aggressive -i -m`) inside a temp GIT_INDEX_FILE.
+    # Never touches the working tree OR `.git/objects` (100% read-only on the repo object store).
+    any_resolved_differs_from_upstream = False
+    with tempfile.TemporaryDirectory(prefix="w0m-prs-idx-") as tmp_idx_dir:
+        idx_path = str(Path(tmp_idx_dir) / "index")
+        idx_env = {"GIT_INDEX_FILE": idx_path}
+        rt = _git_plumbing(
+            repo_path,
+            ["read-tree", "--aggressive", "-i", "-m", mb, upstream_ref, head_ref],
+            env_extra=idx_env,
+        )
+        if rt.returncode != 0:
+            return {
+                "branch": branch_or_ref,
+                "upstreamRef": upstream_ref,
+                "alignmentStatus": "CONFLICTING_NEEDS_REBASE",
+                "isObsolete": False,
+                "aheadUpstream": ahead,
+                "behindUpstream": behind,
+                "reason": "3-way tree read failed due to structural conflict",
+            }
+
+        unmerged_cp = _git_plumbing(repo_path, ["ls-files", "-u"], env_extra=idx_env)
+        if unmerged_cp.stdout.strip():
+            # Group stages (1=base, 2=ours/upstream, 3=theirs/head) per path and run `git merge-file -p`
+            by_path: dict[str, dict[str, tuple[str, str]]] = {}
+            for uline in unmerged_cp.stdout.splitlines():
+                meta, _, fpath = uline.partition("\t")
+                mparts = meta.split()
+                if len(mparts) == 3 and fpath:
+                    mode_str, blob_sha, stage_str = mparts
+                    by_path.setdefault(fpath, {})[stage_str] = (mode_str, blob_sha)
+
+            for idx_num, (fpath, stages) in enumerate(by_path.items()):
+                s1 = stages.get("1")
+                s2 = stages.get("2")
+                s3 = stages.get("3")
+                # Resolve trivial unchanged-on-one-side cases if left unmerged
+                if s2 is not None and s3 is not None and s2 == s3:
+                    _git_plumbing(repo_path, ["update-index", "--force-remove", "--", fpath], env_extra=idx_env)
+                    _git_plumbing(
+                        repo_path,
+                        ["update-index", "--add", "--cacheinfo", f"{s2[0]},{s2[1]},{fpath}"],
+                        env_extra=idx_env,
+                    )
+                    continue
+                if s1 is not None and s3 == s1:
+                    # Head did not modify `fpath`; upstream's state (`s2` or deleted) wins cleanly.
+                    _git_plumbing(repo_path, ["update-index", "--force-remove", "--", fpath], env_extra=idx_env)
+                    if s2 is not None:
+                        _git_plumbing(
+                            repo_path,
+                            ["update-index", "--add", "--cacheinfo", f"{s2[0]},{s2[1]},{fpath}"],
+                            env_extra=idx_env,
+                        )
+                    continue
+                if s1 is not None and s2 == s1:
+                    # Upstream did not modify `fpath`; head modified or deleted it (`s3 != s2`).
+                    any_resolved_differs_from_upstream = True
+                    continue
+
+                if s2 is None or s3 is None:
+                    # True modify/delete or add/delete conflict
+                    return {
+                        "branch": branch_or_ref,
+                        "upstreamRef": upstream_ref,
+                        "alignmentStatus": "CONFLICTING_NEEDS_REBASE",
+                        "isObsolete": False,
+                        "aheadUpstream": ahead,
+                        "behindUpstream": behind,
+                        "reason": f"Modify/delete conflict in {fpath}",
+                    }
+                f_base = Path(tmp_idx_dir) / f"b_{idx_num}"
+                f_ours = Path(tmp_idx_dir) / f"o_{idx_num}"
+                f_theirs = Path(tmp_idx_dir) / f"t_{idx_num}"
+                if s1 is not None:
+                    b1 = subprocess.run(["git", "cat-file", "blob", s1[1]], cwd=repo_path, capture_output=True)
+                    f_base.write_bytes(b1.stdout if b1.returncode == 0 else b"")
+                else:
+                    f_base.write_bytes(b"")
+                b2 = subprocess.run(["git", "cat-file", "blob", s2[1]], cwd=repo_path, capture_output=True)
+                b3 = subprocess.run(["git", "cat-file", "blob", s3[1]], cwd=repo_path, capture_output=True)
+                f_ours.write_bytes(b2.stdout if b2.returncode == 0 else b"")
+                f_theirs.write_bytes(b3.stdout if b3.returncode == 0 else b"")
+
+                mf = subprocess.run(
+                    ["git", "merge-file", "-p", str(f_ours), str(f_base), str(f_theirs)],
+                    cwd=repo_path,
+                    capture_output=True,
+                )
+                if mf.returncode != 0:
+                    return {
+                        "branch": branch_or_ref,
+                        "upstreamRef": upstream_ref,
+                        "alignmentStatus": "CONFLICTING_NEEDS_REBASE",
+                        "isObsolete": False,
+                        "aheadUpstream": ahead,
+                        "behindUpstream": behind,
+                        "reason": f"Content conflict in {fpath}",
+                    }
+                # Compute blob OID without `-w` (zero writes to `.git/objects`).
+                ho = subprocess.run(
+                    ["git", "hash-object", "--stdin"],
+                    cwd=repo_path,
+                    input=mf.stdout,
+                    capture_output=True,
+                )
+                merged_blob = ho.stdout.decode("utf-8", errors="replace").strip() if ho.returncode == 0 else ""
+                if not merged_blob or merged_blob != s2[1] or s2[0] != s3[0]:
+                    # Clean merge whose resulting blob differs from upstream (`s2`), so tree != up_tree.
+                    any_resolved_differs_from_upstream = True
+                else:
+                    # Merged blob equals `s2[1]` (which already exists in `.git/objects`).
+                    _git_plumbing(
+                        repo_path,
+                        ["update-index", "--force-remove", "--", fpath],
+                        env_extra=idx_env,
+                    )
+                    _git_plumbing(
+                        repo_path,
+                        ["update-index", "--add", "--cacheinfo", f"{s2[0]},{s2[1]},{fpath}"],
+                        env_extra=idx_env,
+                    )
+
+        identical_to_upstream = False
+        if not any_resolved_differs_from_upstream:
+            di_cp = _git_plumbing(repo_path, ["diff-index", "--quiet", "--cached", upstream_ref], env_extra=idx_env)
+            identical_to_upstream = di_cp.returncode == 0
+
+    if identical_to_upstream:
+        return {
+            "branch": branch_or_ref,
+            "upstreamRef": upstream_ref,
+            "alignmentStatus": "OBSOLETE_EMPTY_AFTER_REBASE",
+            "isObsolete": True,
+            "aheadUpstream": ahead,
+            "behindUpstream": behind,
+            "reason": "3-way merge onto upstream produces identical tree OID (0 diff)",
+        }
+
+    return {
+        "branch": branch_or_ref,
+        "upstreamRef": upstream_ref,
+        "alignmentStatus": "CLEAN_REBASEABLE",
+        "isObsolete": False,
+        "aheadUpstream": ahead,
+        "behindUpstream": behind,
+        "reason": f"Cleanly rebaseable onto {upstream_ref} (-{behind}/+{ahead})",
+    }
+
+
 def _inspect_fork_and_branches(repo_path: Path, fetch: bool) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     fork_name = repo_path.name
     upstream_repo = FORK_UPSTREAM_MAP.get(fork_name, f"upstream/{fork_name}")
@@ -2992,6 +3320,7 @@ def _inspect_fork_and_branches(repo_path: Path, fetch: bool) -> tuple[dict[str, 
         "fork": fork_name,
         "upstream_repo": upstream_repo,
         "branch": fork_info.get("branch", "beta"),
+        "upstream_ref": fork_info.get("upstream_ref", "-"),
         "ahead_upstream": int(fork_info.get("ahead_upstream") or 0),
         "behind_upstream": int(fork_info.get("behind_upstream") or 0),
         "dirty_count": int(fork_info.get("dirty_count") or 0),
@@ -3046,6 +3375,10 @@ def _inspect_fork_and_branches(repo_path: Path, fetch: bool) -> tuple[dict[str, 
             continue
         if ahead_u <= 0 or behind_u > 0:
             continue
+        align = evaluate_pr_alignment(repo_path, ref_short, upstream_ref)
+        if align.get("isObsolete"):
+            seen_branch_names.add(bname)
+            continue
         seen_branch_names.add(bname)
         proposal_key = f"{upstream_repo}:{bname}"
         proposal = CONTRIBUTION_PROPOSALS.get(proposal_key)
@@ -3064,6 +3397,7 @@ def _inspect_fork_and_branches(repo_path: Path, fetch: bool) -> tuple[dict[str, 
                 "ticket": proposal.get("ticket", "") if proposal else "",
                 "ahead_upstream": ahead_u,
                 "behind_upstream": behind_u,
+                "alignmentStatus": align.get("alignmentStatus", "UP_TO_DATE"),
                 "open_prs_in_repo": 0,
                 "compare_url": compare_url,
                 "has_proposal": proposal is not None,
@@ -3079,7 +3413,7 @@ def discover_new_prs_and_branches(
     forks_dir: Optional[Path] = None,
     fetch: bool = False,
 ) -> dict[str, Any]:
-    """Discover active upstream PRs, unsubmitted PR-ready feature branches across `w0m-pr/*`, and active worktrees (`T599` AC3, `T593` AC4)."""
+    """Discover active upstream PRs, unsubmitted PR-ready feature branches across `w0m-pr/*`, and active worktrees (`T599` AC3, `T593` AC4, `T613` AC1)."""
     fdir = forks_dir or resolve_forks_dir()
     fork_repo_paths: list[Path] = []
     if fdir and fdir.is_dir():
@@ -3110,12 +3444,14 @@ def discover_new_prs_and_branches(
             valid_items.append(p)
 
         for (repo_name, num, p), info in zip(valid_open, _audit_pr_items_concurrent(valid_items)):
+            head_branch = str((info if "error" not in info else p).get("headRefName") or p.get("headRefName") or "")
             if "error" in info:
                 entry = {
                     "repo": repo_name,
                     "number": num,
                     "title": p.get("title", ""),
                     "state": (p.get("state") or "OPEN").upper(),
+                    "headRefName": head_branch,
                     "mergeable": "UNKNOWN",
                     "reviewDecision": "NONE",
                     "ciStatus": "N/A",
@@ -3130,6 +3466,7 @@ def discover_new_prs_and_branches(
                     "number": num,
                     "title": info.get("title", ""),
                     "state": (info.get("state") or "OPEN").upper(),
+                    "headRefName": head_branch,
                     "mergeable": info.get("mergeable", "UNKNOWN"),
                     "reviewDecision": info.get("reviewDecision", "NONE"),
                     "ciStatus": info.get("ciStatus", "N/A"),
@@ -3144,13 +3481,63 @@ def discover_new_prs_and_branches(
         fork_results = forks_fut.result()
         agent_trees = trees_fut.result()
 
+    upstream_to_fork_path: dict[str, tuple[Path, str]] = {}
     pending_branches: list[dict[str, Any]] = []
     fork_worktrees: list[dict[str, Any]] = []
-    for fork_wt, branches in fork_results:
+    for rp, (fork_wt, branches) in zip(fork_repo_paths, fork_results):
         fork_worktrees.append(fork_wt)
+        upstream_to_fork_path[fork_wt["upstream_repo"]] = (rp, str(fork_wt.get("upstream_ref") or "upstream/main"))
         for b in branches:
             b["open_prs_in_repo"] = len(open_repos_with_pr.get(b["upstream_repo"], []))
             pending_branches.append(b)
+
+    obsolete_prs: list[dict[str, Any]] = []
+    for entry in open_prs:
+        pr_key = f"{entry['repo']}#{entry['number']}"
+        superseded_by = (SUPERSEDED_PRS.get(pr_key) or {}).get("superseded_by", "")
+        fork_pair = upstream_to_fork_path.get(entry["repo"])
+        if fork_pair and entry.get("headRefName") and fork_pair[1] != "-":
+            align = evaluate_pr_alignment(
+                fork_pair[0],
+                entry["headRefName"],
+                fork_pair[1],
+                pr_state=entry["state"],
+                superseded_by=superseded_by,
+            )
+            if align["alignmentStatus"] == "UNAVAILABLE_LOCAL_REF":
+                align["alignmentStatus"] = (
+                    "CONFLICTING_NEEDS_REBASE" if entry["mergeable"] == "CONFLICTING" else "UP_TO_DATE"
+                )
+        else:
+            is_obs = entry["state"] == "MERGED" or bool(superseded_by)
+            status_val = (
+                "OBSOLETE_UPSTREAM_MERGED"
+                if entry["state"] == "MERGED"
+                else (
+                    "OBSOLETE_SUPERSEDED"
+                    if superseded_by
+                    else ("CONFLICTING_NEEDS_REBASE" if entry["mergeable"] == "CONFLICTING" else "UP_TO_DATE")
+                )
+            )
+            align = {
+                "alignmentStatus": status_val,
+                "isObsolete": is_obs,
+                "aheadUpstream": 0,
+                "behindUpstream": 0,
+                "reason": "",
+            }
+        entry["alignmentStatus"] = align["alignmentStatus"]
+        entry["isObsolete"] = bool(align["isObsolete"])
+        entry["aheadUpstream"] = int(align.get("aheadUpstream", 0))
+        entry["behindUpstream"] = int(align.get("behindUpstream", 0))
+        if entry["isObsolete"]:
+            comment_msg = f"Closing as superseded / already landed upstream ({entry['alignmentStatus']})."
+            entry["closeCommand"] = (
+                f"gh pr close {entry['number']} -R {entry['repo']} --comment {json.dumps(comment_msg)}"
+            )
+            obsolete_prs.append(entry)
+        else:
+            entry["closeCommand"] = ""
 
     return {
         "generatedAt": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -3158,6 +3545,8 @@ def discover_new_prs_and_branches(
         "preset": preset,
         "openPrCount": len(open_prs),
         "openPrs": open_prs,
+        "obsoletePrCount": len(obsolete_prs),
+        "obsoletePrs": obsolete_prs,
         "pendingBranchCount": len(pending_branches),
         "pendingBranches": pending_branches,
         "agentTreeCount": len(agent_trees),
@@ -3173,12 +3562,15 @@ def check_prs_delta(
     state_path: Optional[Path] = None,
     forks_dir: Optional[Path] = None,
     current_override: Optional[dict[str, Any]] = None,
+    include_worktrees: bool = True,
+    record_pending_deltas: bool = False,
+    consume_pending_deltas: bool = False,
 ) -> dict[str, Any]:
-    """Compare live PR + fork branch state against `~/.w0m/state/prs-watch-state.json` (`T599` AC3).
+    """Compare live PR + fork branch state against `~/.w0m/state/prs-watch-state.json` (`T599` AC3, `T615` AC1/AC4).
 
     Used as the zero-token shell `--precheck` gate for Orca Automations:
-    - Returns `changed=True` (CLI exits `0`) when any PR state/mergeability/review/CI/comment count
-      or pending fork branch changes.
+    - Returns `changed=True` (CLI exits `0`) when any PR state/mergeability/review/CI/comment count,
+      rebase obsolescence status, or pending fork branch changes.
     - Returns `changed=False` (CLI exits `1`) when nothing changed, so Orca skips LLM invocation (`skipped_precheck`).
     """
     target_file = state_path or (Path.home() / ".w0m" / "state" / "prs-watch-state.json")
@@ -3206,7 +3598,13 @@ def check_prs_delta(
         old = prev_prs.get(key)
         if old is None:
             deltas.append(f"NEW_PR {key} ({p.get('title')})")
+            if p.get("isObsolete"):
+                deltas.append(f"OBSOLETE_PR {key} ({p.get('alignmentStatus')})")
             continue
+        if bool(p.get("isObsolete")) and not bool(old.get("isObsolete")):
+            deltas.append(f"OBSOLETE_PR {key} ({p.get('alignmentStatus')})")
+        elif "alignmentStatus" in p and "alignmentStatus" in old and old.get("alignmentStatus") != p.get("alignmentStatus"):
+            deltas.append(f"PR_DELTA {key} alignmentStatus: {old.get('alignmentStatus')} -> {p.get('alignmentStatus')}")
         for field in ("state", "mergeable", "reviewDecision", "ciStatus", "commentsCount", "reviewsCount", "feedback"):
             if old.get(field) != p.get(field):
                 deltas.append(f"PR_DELTA {key} {field}: {old.get(field)} -> {p.get(field)}")
@@ -3219,7 +3617,7 @@ def check_prs_delta(
         elif old_b.get("head_sha") != b.get("head_sha"):
             deltas.append(f"BRANCH_UPDATED {bkey}: {old_b.get('head_sha')} -> {b.get('head_sha')}")
 
-    if "agentTrees" in current and "agentTrees" in prev:
+    if include_worktrees and "agentTrees" in current and "agentTrees" in prev:
         prev_trees = {t["name"]: t for t in (prev.get("agentTrees") or []) if isinstance(t, dict) and t.get("name")}
         curr_trees = {t["name"]: t for t in (current.get("agentTrees") or []) if isinstance(t, dict) and t.get("name")}
         for tname, tinfo in curr_trees.items():
@@ -3234,10 +3632,29 @@ def check_prs_delta(
             if tname not in curr_trees:
                 deltas.append(f"WORKTREE_REMOVED {tname}")
 
-    target_file.write_text(json.dumps(current, indent=2) + "\n", encoding="utf-8")
+    prev_pending = [str(x) for x in (prev.get("pending_deltas") or []) if str(x)]
+    if consume_pending_deltas and prev_pending:
+        deltas = list(dict.fromkeys([*prev_pending, *deltas]))
+
+    to_save = dict(current)
+    if "launch_history" not in to_save and isinstance(prev.get("launch_history"), list):
+        to_save["launch_history"] = prev["launch_history"]
+    if "obsolete_prs" not in to_save:
+        curr_obs = {f"{p['repo']}#{p['number']}": p for p in (current.get("obsoletePrs") or []) if isinstance(p, dict)}
+        prev_obs = prev.get("obsolete_prs") if isinstance(prev.get("obsolete_prs"), dict) else {}
+        to_save["obsolete_prs"] = {**prev_obs, **curr_obs}
+    if consume_pending_deltas:
+        to_save.pop("pending_deltas", None)
+    elif record_pending_deltas:
+        merged_pending = list(dict.fromkeys([*prev_pending, *deltas]))
+        if merged_pending:
+            to_save["pending_deltas"] = merged_pending
+    elif prev_pending and "pending_deltas" not in to_save:
+        to_save["pending_deltas"] = prev_pending
+
+    target_file.write_text(json.dumps(to_save, indent=2) + "\n", encoding="utf-8")
     try:
-        import os as _os
-        _os.chmod(target_file, 0o600)
+        os.chmod(target_file, 0o600)
     except OSError:
         pass
 
@@ -3247,6 +3664,7 @@ def check_prs_delta(
         "deltas": deltas,
         "stateFile": str(target_file),
         "openPrCount": current.get("openPrCount", 0),
+        "obsoletePrCount": current.get("obsoletePrCount", 0),
         "pendingBranchCount": current.get("pendingBranchCount", 0),
         "agentTreeCount": current.get("agentTreeCount", 0),
     }
@@ -3427,7 +3845,11 @@ def sync_prs_to_orca(
     resolved_provider = resolve_agent_provider(provider)
 
     workspace_root = find_workspace_root()
-    precheck_cmd = f"python3 {workspace_root / 'scripts' / 'w0m_prs.py'} check-delta --preset {preset}"
+    canonical_root = resolve_canonical_estate_root(workspace_root)
+    precheck_cmd = (
+        f"python3 {canonical_root / 'scripts' / 'w0m_prs.py'} check-delta "
+        f"--preset {preset} --ignore-worktrees --close-settled"
+    )
     automation_name = "w0m Upstream PRs & Fork Branches Monitor"
     task_title = (
         f"Monitor {len(open_prs)} open upstream PRs, {len(pending_branches)} PR-ready w0m-pr branches "
@@ -3553,8 +3975,11 @@ def sync_prs_to_orca(
             pass
 
     prompt_text = (
-        "Run `just prs-discover`, `just prs-open`, and `just agent-tree-list`. Summarize any PR review/CI/mergeability "
-        "deltas, newly prepared PR-ready branches in w0m-pr/*, or worktree changes and update the Orca task."
+        "Run `just prs-reconcile --sync-orca` to align clean w0m-pr/* forks with upstream, detect and detach any "
+        "post-rebase obsolete PRs, record a collapsed-by-default `<details>` launch report on the Orca PRs task, "
+        "and close completed idle agent sessions. Then if `$ORCA_TERMINAL_HANDLE` is set, run "
+        "`python3 scripts/w0m_prs.py close-run-when-settled --daemon --terminal \"$ORCA_TERMINAL_HANDLE\" --initial-delay 2` "
+        "and reply with the concise collapsed `<details>` launch summary."
     )
     if not automation_id:
         acreate_cp = run_cmd(
@@ -3574,7 +3999,7 @@ def sync_prs_to_orca(
                 resolved_provider,
                 "--workspace",
                 worktree,
-                "--reuse-session",
+                "--fresh-session",
                 "--json",
             ],
             check=False,
@@ -3586,7 +4011,7 @@ def sync_prs_to_orca(
                 automation_id = (res_obj.get("automation") or res_obj).get("id")
             except ValueError:
                 pass
-    elif existing_agent_id != resolved_provider:
+    else:
         run_cmd(
             [
                 orca_bin,
@@ -3601,6 +4026,8 @@ def sync_prs_to_orca(
                 precheck_cmd,
                 "--trigger",
                 trigger,
+                "--fresh-session",
+                "--enabled",
                 "--json",
             ],
             check=False,
@@ -3625,6 +4052,688 @@ def sync_prs_to_orca(
         "agentTreeCount": len(agent_trees),
         "discovered": discovered,
     }
+
+
+def _details_block(title: str, body: str) -> str:
+    """Wrap Markdown inside a collapsed-by-default `<details>` block (never `open`) with clean blank lines."""
+    return f"<details>\n\n<summary><b>{title}</b></summary>\n\n{body.strip()}\n\n</details>"
+
+
+def format_launch_report(payload: dict[str, Any]) -> str:
+    """Format a PRs monitor launch report using collapsed-by-default `<details>` sections (`T613` AC3)."""
+    run_num = payload.get("runNumber") or "latest"
+    ts = payload.get("timestamp") or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    status_str = str(payload.get("status") or "completed")
+    deltas = payload.get("deltas") or []
+    fork_updates = payload.get("forkUpdates") or []
+    obsolete_prs = payload.get("obsoletePrs") or []
+    closed_sessions = payload.get("closedSessions") or []
+    open_prs = payload.get("openPrs") or []
+    candidates = payload.get("candidateBranches") or []
+    worktrees = payload.get("worktrees") or []
+
+    headline = payload.get("headline") or (
+        f"Run #{run_num} ({ts}, {status_str}) — {len(deltas)} delta(s), "
+        f"{len(open_prs)} open PR(s), {len(obsolete_prs)} obsolete PR(s), "
+        f"{len(closed_sessions)} completed session(s) closed."
+    )
+
+    delta_lines: list[str] = []
+    if deltas:
+        for d in deltas:
+            if isinstance(d, dict):
+                delta_lines.append(f"- **{d.get('type', 'DELTA')}**: {d.get('summary', '')}")
+            else:
+                delta_lines.append(f"- `{d}`")
+    else:
+        delta_lines.append("- No PR/branch state deltas since previous snapshot.")
+    if fork_updates:
+        for fu in fork_updates:
+            delta_lines.append(f"- Fork `{fu.get('repo')}` [`{fu.get('action')}`]: {fu.get('message', '')}")
+    block_deltas = _details_block(
+        f"Deltas & Fork Alignment ({len(deltas)} deltas, {len(fork_updates)} fork updates)",
+        "\n".join(delta_lines),
+    )
+
+    if obsolete_prs:
+        obs_lines = []
+        for op in obsolete_prs:
+            cmd_hint = f" — `{op.get('closeCommand')}`" if op.get("closeCommand") else ""
+            obs_lines.append(
+                f"- **{op.get('repo')}#{op.get('number')}** (`{op.get('branch') or op.get('headRefName') or '-'}`) "
+                f"→ `{op.get('alignmentStatus')}`{cmd_hint}"
+            )
+        obs_body = "\n".join(obs_lines)
+    else:
+        obs_body = "- Zero obsolete PRs detected after upstream rebase check."
+    block_obsolete = _details_block(f"Obsolete PRs After Upstream Rebase ({len(obsolete_prs)})", obs_body)
+
+    pr_lines = [
+        "| Repo & PR | Mergeable | Alignment | Review | CI | Feedback |",
+        "| :--- | :--- | :--- | :--- | :--- | :--- |",
+    ]
+    for p in open_prs:
+        url = p.get("url") or f"https://github.com/{p.get('repo')}/pull/{p.get('number')}"
+        pr_lines.append(
+            f"| [{p.get('repo')}#{p.get('number')}]({url}) | `{p.get('mergeable', 'UNKNOWN')}` | "
+            f"`{p.get('alignmentStatus', 'UP_TO_DATE')}` | `{p.get('reviewDecision', 'NONE')}` | "
+            f"`{p.get('ciStatus', 'N/A')}` | {p.get('feedback', '-')} |"
+        )
+    if candidates:
+        pr_lines.append("")
+        pr_lines.append("**Unsubmitted PR-Ready Fork Branches:**")
+        for b in candidates:
+            pr_lines.append(
+                f"- `{b.get('upstream_repo')}` ← `{b.get('branch')}@{b.get('head_sha')}` (+{b.get('ahead_upstream')})"
+            )
+    block_prs = _details_block(
+        f"Open Upstream PRs ({len(open_prs)}) & Candidate Branches ({len(candidates)})",
+        "\n".join(pr_lines),
+    )
+
+    sess_lines: list[str] = []
+    if closed_sessions:
+        for cs in closed_sessions:
+            sess_lines.append(f"- Closed `{cs.get('handle')}` (`{cs.get('reason', 'completed')}`)")
+    else:
+        sess_lines.append("- No completed idle agent sessions required closing.")
+    if worktrees:
+        for wt in worktrees:
+            st = "clean" if wt.get("clean") else f"dirty ({', '.join(wt.get('dirty_repos') or [])})"
+            sess_lines.append(f"- Worktree `{wt.get('name')}` (`{wt.get('agent_id', '-')}`): {st}")
+    block_sessions = _details_block(
+        f"Worktrees ({len(worktrees)}) & Closed Completed Sessions ({len(closed_sessions)})",
+        "\n".join(sess_lines),
+    )
+
+    return "\n\n".join([headline, block_deltas, block_obsolete, block_prs, block_sessions])
+
+
+def _default_orca_hooks_dir() -> Path:
+    if sys.platform.startswith("darwin"):
+        return Path.home() / "Library" / "Application Support" / "orca" / "agent-hooks"
+    xdg = os.environ.get("XDG_CONFIG_HOME")
+    base = Path(xdg) if xdg else (Path.home() / ".config")
+    return base / "orca" / "agent-hooks"
+
+
+def spawn_detached_closer(
+    *,
+    terminal_handle: Optional[str] = None,
+    automation_id: Optional[str] = None,
+    initial_delay_sec: float = 2.0,
+    max_wait_sec: float = 60.0,
+    poll_interval_sec: float = 0.5,
+) -> dict[str, Any]:
+    """Spawn `close-run-when-settled` outside the agent tool-runner cgroup/PGID (`T615` AC4).
+
+    On Linux with `systemd-run`, launches a transient `--user --collect` unit in `user.slice`
+    with Orca CLI/runtime environment variables forwarded so synchronous tool-call teardown
+    cannot `SIGKILL` the background closer before `outputSnapshot` settles. Falls back to
+    `subprocess.Popen(..., start_new_session=True)` when `systemd-run` is unavailable.
+    """
+    handle = (terminal_handle or os.environ.get("ORCA_TERMINAL_HANDLE") or "").strip()
+    if not handle:
+        return {"ok": False, "spawned": False, "reason": "missing_terminal_handle"}
+
+    inner_cmd = [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        "close-run-when-settled",
+        "--terminal",
+        handle,
+        "--initial-delay",
+        str(initial_delay_sec),
+        "--max-wait",
+        str(max_wait_sec),
+        "--poll-interval",
+        str(poll_interval_sec),
+    ]
+    if automation_id:
+        inner_cmd.extend(["--automation-id", str(automation_id)])
+
+    sd_bin = shutil.which("systemd-run") if sys.platform.startswith("linux") else None
+    if sd_bin:
+        sd_cmd = [sd_bin, "--user", "--collect"]
+        for env_key in (
+            "ORCA_CLI_COMMAND",
+            "ORCA_USER_DATA_PATH",
+            "ORCA_RUNTIME_SOURCE_PROFILE_PATH",
+            "XDG_CONFIG_HOME",
+            "HOME",
+            "PATH",
+        ):
+            env_val = os.environ.get(env_key)
+            if env_val:
+                sd_cmd.append(f"--setenv={env_key}={env_val}")
+        sd_cmd.extend(inner_cmd)
+        sd_cp = run_cmd(sd_cmd, check=False, timeout=8.0)
+        if sd_cp.returncode == 0:
+            return {
+                "ok": True,
+                "spawned": True,
+                "mechanism": "systemd-run",
+                "handle": handle,
+                "unit": sd_cp.stdout.strip(),
+            }
+
+    proc = subprocess.Popen(
+        inner_cmd,
+        start_new_session=True,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        close_fds=True,
+    )
+    return {
+        "ok": True,
+        "spawned": True,
+        "mechanism": "setsid",
+        "handle": handle,
+        "pid": proc.pid,
+    }
+
+
+def close_run_when_settled(
+    *,
+    automation_id: Optional[str] = None,
+    terminal_handle: Optional[str] = None,
+    hook_status_dir: Optional[Path] = None,
+    initial_delay_sec: float = 0.0,
+    max_wait_sec: float = 60.0,
+    poll_interval_sec: float = 0.5,
+) -> dict[str, Any]:
+    """Wait until Orca persists `outputSnapshot` on a finalized automation run and close its tab (`T615` AC2/AC4).
+
+    Aborts without closing if hook telemetry indicates the pane is actively `working` / `permission`.
+    """
+    handle = (terminal_handle or os.environ.get("ORCA_TERMINAL_HANDLE") or "").strip()
+    if not handle:
+        return {"ok": False, "closed": False, "reason": "missing_terminal_handle"}
+
+    if initial_delay_sec > 0:
+        time.sleep(initial_delay_sec)
+
+    orca_bin = resolve_orca_bin()
+    hdir = hook_status_dir if hook_status_dir is not None else _default_orca_hooks_dir()
+
+    tlist_cp = run_cmd([orca_bin, "terminal", "list", "--json"], check=False, timeout=8.0)
+    tab_id = ""
+    pane_key = ""
+    if tlist_cp.returncode == 0 and tlist_cp.stdout.strip():
+        try:
+            tdata = json.loads(tlist_cp.stdout)
+            terms = ((tdata.get("result") or {}).get("terminals") or tdata.get("terminals") or [])
+            matched = next((t for t in terms if isinstance(t, dict) and t.get("handle") == handle), None)
+            if matched is None and terms:
+                return {"ok": True, "closed": False, "reason": "already_closed"}
+            if isinstance(matched, dict):
+                tab_id = str(matched.get("tabId") or "")
+                leaf_id = str(matched.get("leafId") or "")
+                if tab_id and leaf_id:
+                    pane_key = f"{tab_id}:{leaf_id}"
+        except ValueError:
+            pass
+
+    t0 = time.monotonic()
+    last_reason = "timeout_waiting_for_settle"
+    while True:
+        # 1. Check hook telemetry — never close while working or awaiting permission
+        is_busy = False
+        if hdir.is_dir():
+            for hf in hdir.glob("*.json"):
+                try:
+                    hobj = json.loads(hf.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    continue
+                if isinstance(hobj, dict) and isinstance(hobj.get("entries"), dict):
+                    entries = list(hobj["entries"].values())
+                elif isinstance(hobj, dict) and "paneKey" not in hobj and "payload" not in hobj:
+                    entries = list(hobj.values())
+                else:
+                    entries = [hobj]
+                for ent in entries:
+                    if not isinstance(ent, dict):
+                        continue
+                    epk = str(ent.get("paneKey") or "")
+                    etab = str(ent.get("tabId") or "")
+                    if (pane_key and epk == pane_key) or (tab_id and etab == tab_id):
+                        st = str(((ent.get("payload") or {}).get("state")) or ent.get("state") or "").lower()
+                        if st in ("working", "running", "thinking", "tool-use", "permission"):
+                            is_busy = True
+                            break
+                if is_busy:
+                    break
+
+        if is_busy:
+            last_reason = "session_working"
+        else:
+            runs_cmd = [orca_bin, "automations", "runs", "--limit", "15", "--json"]
+            if automation_id:
+                runs_cmd.extend(["--id", automation_id])
+            rcp = run_cmd(runs_cmd, check=False, timeout=8.0)
+            if rcp.returncode == 0 and rcp.stdout.strip():
+                try:
+                    rdata = json.loads(rcp.stdout)
+                    runs = ((rdata.get("result") or {}).get("runs") or [])
+                    active_match = any(
+                        isinstance(r, dict)
+                        and str(r.get("status") or "").lower() in ("pending", "dispatched", "running")
+                        and ((pane_key and r.get("terminalPaneKey") == pane_key) or (tab_id and r.get("terminalSessionId") == tab_id))
+                        for r in runs
+                    )
+                    if active_match:
+                        last_reason = "run_still_dispatched"
+                    else:
+                        fin = next(
+                            (
+                                r
+                                for r in runs
+                                if isinstance(r, dict)
+                                and str(r.get("status") or "").lower()
+                                in ("completed", "skipped", "skipped_precheck", "cancelled", "dispatch_failed")
+                                and (str(r.get("status") or "").lower() != "completed" or bool(r.get("outputSnapshot")))
+                                and (
+                                    (pane_key and r.get("terminalPaneKey") == pane_key)
+                                    or (tab_id and r.get("terminalSessionId") == tab_id)
+                                    or (not pane_key and not tab_id)
+                                )
+                            ),
+                            None,
+                        )
+                        if fin is not None:
+                            ccp = run_cmd(
+                                [orca_bin, "terminal", "close", "--terminal", handle, "--tab", "--json"],
+                                check=False,
+                                timeout=8.0,
+                            )
+                            return {
+                                "ok": ccp.returncode == 0,
+                                "closed": ccp.returncode == 0,
+                                "handle": handle,
+                                "runId": fin.get("id"),
+                                "runNumber": fin.get("runNumber"),
+                            }
+                        last_reason = "awaiting_output_snapshot"
+                except ValueError:
+                    last_reason = "invalid_runs_json"
+
+        if (time.monotonic() - t0) >= max_wait_sec:
+            break
+        time.sleep(max(0.01, poll_interval_sec))
+
+    return {"ok": True, "closed": False, "handle": handle, "reason": last_reason}
+
+
+def reconcile_prs_and_forks(
+    *,
+    author: str = CANONICAL_CONTRIBUTOR,
+    preset: str = "w0m-pr",
+    forks_dir: Optional[Path] = None,
+    state_path: Optional[Path] = None,
+    worktree: str = "active",
+    align_forks: bool = True,
+    fetch: bool = True,
+    sync_orca: bool = False,
+    close_sessions: bool = True,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Align clean `w0m-pr/*` forks, detect/detach obsolete PRs, close completed sessions, and persist collapsed launch report (`T613` AC1-AC3)."""
+    fdir = forks_dir or resolve_forks_dir()
+    target_state = state_path or (Path.home() / ".w0m" / "state" / "prs-watch-state.json")
+    target_state.parent.mkdir(parents=True, exist_ok=True)
+
+    fork_updates: list[dict[str, Any]] = []
+    if align_forks and fdir and fdir.is_dir():
+        targets = sorted([d for d in fdir.iterdir() if d.is_dir() and (d / ".git").exists()])
+        for d in targets:
+            if dry_run:
+                st = inspect_fork(d, fetch=fetch)
+                action = "skipped_dirty" if st.get("dirty_count", 0) > 0 else (
+                    "would_fast_forward" if st.get("behind_upstream", 0) > 0 and st.get("ahead_upstream", 0) == 0 else "up_to_date"
+                )
+                fork_updates.append({"repo": d.name, "success": True, "action": action, "message": st.get("status", "")})
+            else:
+                res_u = update_fork(d, rebase=False, fetch=fetch)
+                if res_u.get("action") != "up_to_date":
+                    fork_updates.append(res_u)
+
+    discovered = discover_new_prs_and_branches(author=author, preset=preset, forks_dir=fdir, fetch=False)
+    delta_res = check_prs_delta(
+        author=author,
+        preset=preset,
+        state_path=target_state,
+        forks_dir=fdir,
+        current_override=discovered,
+        include_worktrees=False,
+        consume_pending_deltas=True,
+    )
+
+    obsolete_prs = discovered.get("obsoletePrs") or []
+    closed_sessions: list[dict[str, Any]] = []
+    pruned_trees: list[str] = []
+    detached_urls: list[str] = []
+
+    if close_sessions:
+        try:
+            scripts_dir = str(Path(__file__).resolve().parent)
+            if scripts_dir not in sys.path:
+                sys.path.insert(0, scripts_dir)
+            import orca_sessions as _osess
+
+            c_res = _osess.close_completed_sessions(dry_run=dry_run)
+            closed_sessions = list(c_res.get("closed") or [])
+            pruned_trees = list(c_res.get("prunedTrees") or [])
+        except Exception:
+            pass
+
+    orca_bin = resolve_orca_bin()
+    automation_id = None
+    run_number: Any = None
+    orch_run_id = None
+    orch_task_id = None
+
+    if sync_orca and not dry_run:
+        obsolete_urls = [str(p["url"]) for p in obsolete_prs if p.get("url")]
+        if obsolete_urls:
+            rm_cp = run_cmd(
+                [orca_bin, "reference", "remove", *obsolete_urls, "--worktree", worktree, "--json"],
+                check=False,
+                timeout=10.0,
+            )
+            if rm_cp.returncode == 0:
+                detached_urls = obsolete_urls
+
+        alist_cp = run_cmd([orca_bin, "automations", "list", "--json"], check=False, timeout=8.0)
+        if alist_cp.returncode == 0 and alist_cp.stdout.strip():
+            try:
+                autos = (json.loads(alist_cp.stdout).get("result") or {}).get("automations") or []
+                for a in autos:
+                    if "Upstream PRs" in str(a.get("name") or ""):
+                        automation_id = a.get("id")
+                        break
+            except ValueError:
+                pass
+        if automation_id:
+            aruns_cp = run_cmd(
+                [orca_bin, "automations", "runs", "--id", str(automation_id), "--limit", "1", "--json"],
+                check=False,
+                timeout=8.0,
+            )
+            if aruns_cp.returncode == 0 and aruns_cp.stdout.strip():
+                try:
+                    latest_runs = (json.loads(aruns_cp.stdout).get("result") or {}).get("runs") or []
+                    if latest_runs:
+                        run_number = latest_runs[0].get("runNumber")
+                except ValueError:
+                    pass
+
+    state_data: dict[str, Any] = {}
+    if target_state.is_file():
+        try:
+            state_data = json.loads(target_state.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            state_data = {}
+
+    history: list[dict[str, Any]] = list(state_data.get("launch_history") or [])
+    if run_number is None:
+        prev_nums = [int(h["runNumber"]) for h in history if isinstance(h, dict) and str(h.get("runNumber", "")).isdigit()]
+        run_number = (max(prev_nums) + 1) if prev_nums else 1
+
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    headline = (
+        f"{delta_res['deltaCount']} delta(s), {len(discovered.get('openPrs') or [])} open PR(s), "
+        f"{len(obsolete_prs)} obsolete PR(s), {len(closed_sessions)} session(s) closed"
+    )
+    report_payload = {
+        "runNumber": run_number,
+        "timestamp": now_iso,
+        "status": "completed",
+        "headline": headline,
+        "deltas": delta_res["deltas"],
+        "forkUpdates": fork_updates,
+        "obsoletePrs": obsolete_prs,
+        "closedSessions": closed_sessions,
+        "openPrs": discovered.get("openPrs") or [],
+        "candidateBranches": discovered.get("pendingBranches") or [],
+        "worktrees": discovered.get("agentTrees") or [],
+    }
+    report_md = format_launch_report(report_payload)
+    history_entry = {
+        "runNumber": run_number,
+        "timestamp": now_iso,
+        "status": "completed",
+        "headline": headline,
+        "deltaCount": delta_res["deltaCount"],
+        "obsoleteCount": len(obsolete_prs),
+        "closedSessionsCount": len(closed_sessions),
+        "markdown": report_md,
+    }
+    history = [h for h in history if not (isinstance(h, dict) and h.get("runNumber") == run_number)]
+    history.insert(0, history_entry)
+    state_data["launch_history"] = history[:25]
+    state_data["obsolete_prs"] = {f"{p['repo']}#{p['number']}": p for p in obsolete_prs}
+    if not dry_run:
+        target_state.write_text(json.dumps(state_data, indent=2) + "\n", encoding="utf-8")
+        try:
+            os.chmod(target_state, 0o600)
+        except OSError:
+            pass
+
+    if sync_orca and not dry_run:
+        runs_cp = run_cmd([orca_bin, "orchestration", "run-list", "--json"], check=False, timeout=8.0)
+        if runs_cp.returncode == 0 and runs_cp.stdout.strip():
+            try:
+                for r in (json.loads(runs_cp.stdout).get("result") or {}).get("runs") or []:
+                    if "Upstream PRs" in str(r.get("objective") or ""):
+                        orch_run_id = r.get("id")
+                        break
+            except ValueError:
+                pass
+        if orch_run_id:
+            t_cp = run_cmd(
+                [orca_bin, "orchestration", "task-list", "--run", str(orch_run_id), "--json"],
+                check=False,
+                timeout=8.0,
+            )
+            if t_cp.returncode == 0 and t_cp.stdout.strip():
+                try:
+                    tasks = (json.loads(t_cp.stdout).get("result") or {}).get("tasks") or []
+                    if tasks:
+                        orch_task_id = tasks[0].get("id")
+                except ValueError:
+                    pass
+        if orch_run_id and orch_task_id:
+            run_cmd(
+                [
+                    orca_bin,
+                    "orchestration",
+                    "task-update",
+                    "--id",
+                    str(orch_task_id),
+                    "--run",
+                    str(orch_run_id),
+                    "--status",
+                    "completed",
+                    "--result",
+                    report_md,
+                    "--json",
+                ],
+                check=False,
+                timeout=10.0,
+            )
+
+    return {
+        "ok": True,
+        "dryRun": dry_run,
+        "runNumber": run_number,
+        "timestamp": now_iso,
+        "headline": headline,
+        "deltaCount": delta_res["deltaCount"],
+        "deltas": delta_res["deltas"],
+        "forkUpdates": fork_updates,
+        "obsoletePrCount": len(obsolete_prs),
+        "obsoletePrs": obsolete_prs,
+        "detachedReferenceUrls": detached_urls,
+        "closedSessions": closed_sessions,
+        "prunedTrees": pruned_trees,
+        "orchestrationTaskId": orch_task_id,
+        "markdown": report_md,
+    }
+
+
+def close_obsolete_prs(
+    *,
+    author: str = CANONICAL_CONTRIBUTOR,
+    preset: str = "w0m-pr",
+    forks_dir: Optional[Path] = None,
+    dry_run: bool = True,
+) -> dict[str, Any]:
+    """List or close post-rebase obsolete upstream PRs (`T613` AC1, human-gated per `T435`)."""
+    discovered = discover_new_prs_and_branches(author=author, preset=preset, forks_dir=forks_dir, fetch=False)
+    obsolete = discovered.get("obsoletePrs") or []
+    if not dry_run:
+        if os.environ.get("CLAUDECODE") or os.environ.get("AI_AGENT") or os.environ.get("W0M_PRS_CLOSE_CONFIRMED") != "1":
+            return {
+                "ok": False,
+                "dryRun": False,
+                "error": (
+                    "REFUSED-AGENT: Closing external upstream GitHub PRs requires human Touch ID confirmation "
+                    "(`just prs-obsolete-close` from a human terminal, T435). Use `--dry-run` to inspect proposals."
+                ),
+                "count": len(obsolete),
+                "obsoletePrs": obsolete,
+            }
+    results: list[dict[str, Any]] = []
+    for op in obsolete:
+        if dry_run:
+            results.append({**op, "actionStatus": "PROPOSED_CLOSE"})
+            continue
+        comment_msg = f"Closing as superseded / already landed upstream ({op.get('alignmentStatus')})."
+        cp = run_cmd(
+            ["gh", "pr", "close", str(op["number"]), "-R", str(op["repo"]), "--comment", comment_msg],
+            check=False,
+            timeout=20.0,
+        )
+        results.append(
+            {
+                **op,
+                "actionStatus": "CLOSED" if cp.returncode == 0 else "FAILED",
+                "stderr": cp.stderr.strip() if cp.returncode != 0 else "",
+            }
+        )
+    return {"ok": True, "dryRun": dry_run, "count": len(results), "results": results}
+
+
+def get_launch_reports(*, limit: int = 15, state_path: Optional[Path] = None) -> dict[str, Any]:
+    """Return bounded collapsed-by-default launch reports for Orca's PRs Updates task & Control Panel UI (`T613` AC3)."""
+    target_state = state_path or (Path.home() / ".w0m" / "state" / "prs-watch-state.json")
+    state_data: dict[str, Any] = {}
+    if target_state.is_file():
+        try:
+            state_data = json.loads(target_state.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            state_data = {}
+
+    by_run: dict[Any, dict[str, Any]] = {}
+    for item in state_data.get("launch_history") or []:
+        if isinstance(item, dict):
+            by_run[item.get("runNumber") or item.get("timestamp")] = item
+
+    orca_bin = resolve_orca_bin()
+    auto_id = ""
+    auto_name = "w0m Upstream PRs & Fork Branches Monitor"
+    auto_schedule = "*/15 * * * *"
+    task_id = ""
+
+    alist_cp = run_cmd([orca_bin, "automations", "list", "--json"], check=False, timeout=6.0)
+    if alist_cp.returncode == 0 and alist_cp.stdout.strip():
+        try:
+            for a in (json.loads(alist_cp.stdout).get("result") or {}).get("automations") or []:
+                if "Upstream PRs" in str(a.get("name") or ""):
+                    auto_id = str(a.get("id") or "")
+                    auto_name = str(a.get("name") or auto_name)
+                    trig = a.get("trigger") or {}
+                    auto_schedule = str(trig.get("cron") or trig.get("expression") or auto_schedule) if isinstance(trig, dict) else str(trig or auto_schedule)
+                    break
+        except ValueError:
+            pass
+
+    if auto_id:
+        rcp = run_cmd([orca_bin, "automations", "runs", "--id", auto_id, "--limit", str(limit), "--json"], check=False, timeout=6.0)
+        if rcp.returncode == 0 and rcp.stdout.strip():
+            try:
+                for r in (json.loads(rcp.stdout).get("result") or {}).get("runs") or []:
+                    if not isinstance(r, dict):
+                        continue
+                    rnum = r.get("runNumber")
+                    if rnum in by_run:
+                        continue
+                    rstatus = str(r.get("status") or "completed")
+                    started_ms = r.get("startedAt") or r.get("scheduledAt") or 0
+                    ts_iso = (
+                        datetime.fromtimestamp(float(started_ms) / 1000.0, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                        if started_ms
+                        else ""
+                    )
+                    snap_content = str(((r.get("outputSnapshot") or {}).get("content")) or r.get("errorMessage") or "").strip()
+                    summary_line = (
+                        "Skipped by zero-token precheck (no PR/branch deltas)"
+                        if rstatus == "skipped_precheck"
+                        else f"Automation launch #{rnum} ({rstatus})"
+                    )
+                    body_md = _details_block(
+                        f"Launch #{rnum} Output ({rstatus})",
+                        snap_content[:2400] if snap_content else f"- Status: `{rstatus}`",
+                    )
+                    by_run[rnum] = {
+                        "runNumber": rnum,
+                        "timestamp": ts_iso,
+                        "status": rstatus,
+                        "headline": summary_line,
+                        "deltaCount": 0 if rstatus == "skipped_precheck" else 1,
+                        "obsoleteCount": 0,
+                        "closedSessionsCount": 0,
+                        "markdown": body_md,
+                    }
+            except ValueError:
+                pass
+
+    reports = sorted(
+        by_run.values(),
+        key=lambda x: (int(x["runNumber"]) if str(x.get("runNumber", "")).isdigit() else 0, str(x.get("timestamp") or "")),
+        reverse=True,
+    )[: max(1, limit)]
+
+    return {
+        "task": {
+            "automationId": auto_id,
+            "taskId": task_id,
+            "name": auto_name,
+            "schedule": auto_schedule,
+        },
+        "reports": reports,
+    }
+
+
+def get_prs_enriched(
+    *,
+    author: str = CANONICAL_CONTRIBUTOR,
+    preset: str = "w0m-pr",
+    forks_dir: Optional[Path] = None,
+    limit: int = 30,
+) -> list[dict[str, Any]]:
+    """Return upstream PRs enriched with `alignmentStatus`, `isObsolete`, and `closeCommand` for Control Panel UI (`T613` AC3)."""
+    disc = discover_new_prs_and_branches(author=author, preset=preset, forks_dir=forks_dir, fetch=False)
+    items: list[dict[str, Any]] = []
+    for p in (disc.get("openPrs") or [])[: max(1, limit)]:
+        items.append(
+            {
+                **p,
+                "repository": {"nameWithOwner": p.get("repo", "")},
+            }
+        )
+    return items
 
 
 def cmd_discover(args: argparse.Namespace) -> None:
@@ -3712,7 +4821,24 @@ def cmd_submit(args: argparse.Namespace) -> None:
 def cmd_check_delta(args: argparse.Namespace) -> None:
     forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
     state_path = Path(args.state_file) if getattr(args, "state_file", None) else None
-    res = check_prs_delta(author=args.author, preset=args.preset, state_path=state_path, forks_dir=forks_dir)
+    if getattr(args, "close_settled", False):
+        try:
+            scripts_dir = str(Path(__file__).resolve().parent)
+            if scripts_dir not in sys.path:
+                sys.path.insert(0, scripts_dir)
+            import orca_sessions as _osess
+
+            _osess.close_completed_sessions(dry_run=False)
+        except Exception:
+            pass
+    res = check_prs_delta(
+        author=args.author,
+        preset=args.preset,
+        state_path=state_path,
+        forks_dir=forks_dir,
+        include_worktrees=not bool(getattr(args, "ignore_worktrees", False)),
+        record_pending_deltas=True,
+    )
     if args.json:
         print(json.dumps(res, indent=2))
     else:
@@ -3890,6 +5016,16 @@ def main() -> None:
     p_delta.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target")
     p_delta.add_argument("--dir", type=str, help="Path to w0m-pr directory")
     p_delta.add_argument("--state-file", type=str, help="Override state file path")
+    p_delta.add_argument(
+        "--ignore-worktrees",
+        action="store_true",
+        help="Ignore unrelated ~/.w0m/work/* dirty-repo churn when checking PR deltas",
+    )
+    p_delta.add_argument(
+        "--close-settled",
+        action="store_true",
+        help="Reap finalized completed Orca automation run tabs before checking deltas",
+    )
     p_delta.add_argument("--json", action="store_true", help="Output structured JSON")
     p_delta.set_defaults(func=cmd_check_delta)
 
@@ -3936,10 +5072,184 @@ def main() -> None:
     p_submit.add_argument("--json", action="store_true", help="Output structured JSON")
     p_submit.set_defaults(func=cmd_submit)
 
+    _register_t613_subparsers(subparsers)
+
     args = parser.parse_args()
     args.func(args)
 
 
+def cmd_reconcile(args: argparse.Namespace) -> None:
+    forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
+    state_path = Path(args.state_file) if getattr(args, "state_file", None) else None
+    res = reconcile_prs_and_forks(
+        author=args.author,
+        preset=args.preset,
+        forks_dir=forks_dir,
+        state_path=state_path,
+        worktree=args.worktree,
+        align_forks=not bool(args.no_align),
+        fetch=not bool(args.no_fetch),
+        sync_orca=bool(args.sync_orca),
+        close_sessions=not bool(args.no_close_sessions),
+        dry_run=bool(args.dry_run),
+    )
+    if args.json:
+        print(json.dumps(res, indent=2))
+        return
+    print(res["markdown"])
+
+
+def cmd_obsolete(args: argparse.Namespace) -> None:
+    forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
+    res = close_obsolete_prs(
+        author=args.author,
+        preset=args.preset,
+        forks_dir=forks_dir,
+        dry_run=not bool(args.close),
+    )
+    if args.json:
+        print(json.dumps(res, indent=2))
+        if not res.get("ok"):
+            sys.exit(2)
+        return
+    if not res.get("ok"):
+        print(res.get("error", "Refused"), file=sys.stderr)
+        sys.exit(2)
+    print(f"=== Post-Rebase Obsolete Upstream PRs ({res['count']}) ===")
+    if not res["results"]:
+        print("  ✓ Zero open PRs are obsolete against upstream.")
+        return
+    for r in res["results"]:
+        print(
+            f"  [{r['actionStatus']}] {r['repo']}#{r['number']} ({r.get('headRefName', '-')}) -> {r['alignmentStatus']}\n"
+            f"    Command: {r.get('closeCommand', '')}"
+        )
+
+
+def cmd_launch_reports(args: argparse.Namespace) -> None:
+    state_path = Path(args.state_file) if getattr(args, "state_file", None) else None
+    res = get_launch_reports(limit=int(args.limit), state_path=state_path)
+    if args.json:
+        print(json.dumps(res, indent=2))
+        return
+    print(f"=== {res['task']['name']} — Launch Reports ({len(res['reports'])}) ===")
+    for rep in res["reports"]:
+        print(f"\n{rep.get('markdown') or rep.get('headline')}")
+
+
+def cmd_prs_enriched(args: argparse.Namespace) -> None:
+    forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
+    items = get_prs_enriched(
+        author=args.author,
+        preset=args.preset,
+        forks_dir=forks_dir,
+        limit=int(args.limit),
+    )
+    if args.json:
+        print(json.dumps(items, indent=2))
+        return
+    for it in items:
+        obs_tag = f" [OBSOLETE: {it['alignmentStatus']}]" if it.get("isObsolete") else f" [{it.get('alignmentStatus', 'UP_TO_DATE')}]"
+        print(f"  {it['repo']}#{it['number']}{obs_tag} | {it.get('mergeable')} | {it.get('title')}")
+
+
+def cmd_close_run_when_settled(args: argparse.Namespace) -> None:
+    if getattr(args, "daemon", False):
+        dres = spawn_detached_closer(
+            terminal_handle=getattr(args, "terminal", None),
+            automation_id=getattr(args, "automation_id", None),
+            initial_delay_sec=float(args.initial_delay),
+            max_wait_sec=float(args.max_wait),
+            poll_interval_sec=float(args.poll_interval),
+        )
+        if args.json:
+            print(json.dumps(dres, indent=2))
+        elif dres.get("spawned"):
+            print(f"[SPAWNED DETACHED CLOSER] handle={dres.get('handle')} mechanism={dres.get('mechanism')}")
+        else:
+            print(f"[SKIPPED CLOSER] reason={dres.get('reason')}")
+        return
+
+    res = close_run_when_settled(
+        automation_id=getattr(args, "automation_id", None),
+        terminal_handle=getattr(args, "terminal", None),
+        initial_delay_sec=float(args.initial_delay),
+        max_wait_sec=float(args.max_wait),
+        poll_interval_sec=float(args.poll_interval),
+    )
+    if args.json:
+        print(json.dumps(res, indent=2))
+    elif res.get("closed"):
+        print(f"[CLOSED SETTLED RUN TAB] handle={res.get('handle')} run=#{res.get('runNumber')}")
+    else:
+        print(f"[SKIPPED CLOSE] handle={res.get('handle')} reason={res.get('reason')}")
+
+
+def _register_t613_subparsers(subparsers: Any) -> None:
+    p_rec = subparsers.add_parser(
+        "reconcile",
+        help="Align clean w0m-pr/* forks, detect obsolete PRs, close completed sessions, and emit collapsed launch report",
+    )
+    p_rec.add_argument("--author", type=str, default=CANONICAL_CONTRIBUTOR, help="GitHub author username")
+    p_rec.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target")
+    p_rec.add_argument("--dir", type=str, help="Path to w0m-pr directory")
+    p_rec.add_argument("--state-file", type=str, help="Override state file path")
+    p_rec.add_argument("--worktree", type=str, default="active", help="Orca worktree selector")
+    p_rec.add_argument("--no-align", action="store_true", help="Skip fast-forwarding w0m-pr/* base branches")
+    p_rec.add_argument("--no-fetch", action="store_true", help="Skip git fetch during fork alignment")
+    p_rec.add_argument("--sync-orca", action="store_true", help="Update Orca task & detach obsolete PR references")
+    p_rec.add_argument("--no-close-sessions", action="store_true", help="Skip closing completed idle agent sessions")
+    p_rec.add_argument("--dry-run", action="store_true", help="Preview actions without mutating git or Orca")
+    p_rec.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_rec.set_defaults(func=cmd_reconcile)
+
+    p_obs = subparsers.add_parser(
+        "obsolete", help="Audit or close upstream PRs rendered obsolete after upstream rebase (T435 human-gated)"
+    )
+    p_obs.add_argument("--author", type=str, default=CANONICAL_CONTRIBUTOR, help="GitHub author username")
+    p_obs.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target")
+    p_obs.add_argument("--dir", type=str, help="Path to w0m-pr directory")
+    p_obs.add_argument("--close", action="store_true", help="Close obsolete PRs (requires human confirmation gate)")
+    p_obs.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_obs.set_defaults(func=cmd_obsolete)
+
+    p_lr = subparsers.add_parser(
+        "launch-reports", help="List collapsed-by-default PRs monitor launch reports for Orca task & CP UI"
+    )
+    p_lr.add_argument("--limit", type=int, default=15, help="Max launch reports to return")
+    p_lr.add_argument("--state-file", type=str, help="Override state file path")
+    p_lr.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_lr.set_defaults(func=cmd_launch_reports)
+
+    p_pe = subparsers.add_parser(
+        "prs-enriched", help="Return open PRs enriched with rebase alignment and obsolescence status"
+    )
+    p_pe.add_argument("--author", type=str, default=CANONICAL_CONTRIBUTOR, help="GitHub author username")
+    p_pe.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target")
+    p_pe.add_argument("--dir", type=str, help="Path to w0m-pr directory")
+    p_pe.add_argument("--limit", type=int, default=30, help="Maximum PRs to return")
+    p_pe.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_pe.set_defaults(func=cmd_prs_enriched)
+
+    p_crs = subparsers.add_parser(
+        "close-run-when-settled",
+        help="Wait until Orca persists outputSnapshot for an automation run and safely close its terminal tab",
+    )
+    p_crs.add_argument("--automation-id", type=str, default=None, help="Optional Orca automation ID")
+    p_crs.add_argument("--terminal", type=str, default=None, help="Orca terminal handle (default: $ORCA_TERMINAL_HANDLE)")
+    p_crs.add_argument("--initial-delay", type=float, default=0.0, help="Initial delay in seconds before polling")
+    p_crs.add_argument("--max-wait", type=float, default=60.0, help="Max seconds to wait for run settle")
+    p_crs.add_argument("--poll-interval", type=float, default=0.5, help="Polling interval in seconds")
+    p_crs.add_argument(
+        "--daemon",
+        action="store_true",
+        help="Spawn detached outside agent tool-runner cgroup (systemd-run --user --collect on Linux, setsid fallback)",
+    )
+    p_crs.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_crs.set_defaults(func=cmd_close_run_when_settled)
+
+
 if __name__ == "__main__":
     main()
+
 

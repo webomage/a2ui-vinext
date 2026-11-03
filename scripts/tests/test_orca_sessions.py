@@ -399,6 +399,90 @@ class TestOrcaSessions(unittest.TestCase):
         self.assertEqual(osess._select_hosts("all", sys_platform="darwin", hostname="MacBook-Pro.local"), ["local", "linux-host"])
         print("  [PASS] Linux primary control plane routes standalone without loopback SSH or macOS dependency")
 
+    def test_close_completed_sessions_spares_working_and_dirty_trees(self) -> None:
+        snap = _make_sample_snapshot("local")
+        snap["terminals"] = [
+            {
+                "handle": "term_active_w0m",
+                "worktreeId": "w0m::/home/aleksei/Projects/!self/w0m",
+                "worktreePath": "/home/aleksei/Projects/!self/w0m",
+                "tabId": "tab-active-1",
+                "leafId": "leaf-active-1",
+                "title": "Active Agent",
+            },
+            {
+                "handle": "term_auto_completed",
+                "worktreeId": "w0m::/home/aleksei/Projects/!self/w0m",
+                "worktreePath": "/home/aleksei/Projects/!self/w0m",
+                "tabId": "tab-auto-old",
+                "leafId": "leaf-auto-old",
+                "title": "Monitor Run 29",
+            },
+            {
+                "handle": "term_landed_tree",
+                "worktreeId": "w0m::/home/aleksei/.w0m/work/landed-job/w0m",
+                "worktreePath": "/home/aleksei/.w0m/work/landed-job/w0m",
+                "tabId": "tab-landed",
+                "leafId": "leaf-landed",
+                "title": "T610 Landed",
+            },
+            {
+                "handle": "term_dirty_tree",
+                "worktreeId": "w0m::/home/aleksei/.w0m/work/dirty-job/w0m",
+                "worktreePath": "/home/aleksei/.w0m/work/dirty-job/w0m",
+                "tabId": "tab-dirty",
+                "leafId": "leaf-dirty",
+                "title": "T612 Dirty",
+            },
+            {
+                "handle": "term_client_proj",
+                "worktreeId": "proj::/home/aleksei/Projects/!proj/pandatransfer",
+                "worktreePath": "/home/aleksei/Projects/!proj/pandatransfer",
+                "tabId": "tab-client",
+                "leafId": "leaf-client",
+                "title": "Client Project",
+                "orphaned": True,
+            },
+        ]
+        snap["hookEntries"] = {
+            "tab-active-1:leaf-active-1": {"payload": {"state": "working"}},
+            "tab-auto-old:leaf-auto-old": {"payload": {"state": "done"}},
+            "tab-landed:leaf-landed": {"payload": {"state": "done"}},
+            "tab-dirty:leaf-dirty": {"payload": {"state": "done"}},
+            "tab-client:leaf-client": {"payload": {"state": "done"}},
+        }
+        tree_states = {
+            "landed-job": {"clean": True, "ahead": 0},
+            "dirty-job": {"clean": False, "ahead": 1},
+        }
+        automation_runs = [
+            {
+                "id": "run_29",
+                "runNumber": 29,
+                "status": "completed",
+                "terminalSessionId": "tab-auto-old",
+                "terminalPaneKey": "tab-auto-old:leaf-auto-old",
+                "outputSnapshot": {"content": "done"},
+            }
+        ]
+        closed_handles: list[str] = []
+
+        res = osess.close_completed_sessions(
+            snapshot=snap,
+            automation_runs=automation_runs,
+            tree_states=tree_states,
+            exclude_handles={"term_current_self"},
+            dry_run=False,
+            close_fn=lambda h: closed_handles.append(h) or True,
+            prune_trees_fn=lambda: ["landed-job"],
+        )
+        self.assertEqual(set(closed_handles), {"term_auto_completed", "term_landed_tree"})
+        self.assertNotIn("term_active_w0m", closed_handles)
+        self.assertNotIn("term_dirty_tree", closed_handles)
+        self.assertNotIn("term_client_proj", closed_handles)
+        self.assertEqual(res["prunedTrees"], ["landed-job"])
+        print("  [PASS] close_completed_sessions closes only finalized automation runs & landed idle w0m sessions")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -316,6 +316,18 @@ prs-proposals *args:
 prs-submit *args:
     @python3 scripts/w0m_prs.py submit {{ args }}
 
+prs-reconcile *args:
+    @python3 scripts/w0m_prs.py reconcile {{ args }}
+
+prs-obsolete *args:
+    @python3 scripts/w0m_prs.py obsolete {{ args }}
+
+prs-obsolete-close *args: (_confirm "prs-obsolete-close")
+    @env W0M_PRS_CLOSE_CONFIRMED=1 python3 scripts/w0m_prs.py obsolete --close {{ args }}
+
+prs-launch-reports *args:
+    @python3 scripts/w0m_prs.py launch-reports {{ args }}
+
 prs-test:
     @python3 scripts/tests/test_w0m_prs.py
 
@@ -2068,6 +2080,9 @@ orca-state-load *args:
 
 orca-archive *args:
     @python3 scripts/orca_sessions.py archive {{ args }}
+
+orca-close-completed *args:
+    @python3 scripts/orca_sessions.py close-completed {{ args }}
 
 orca-sessions-test:
     @python3 scripts/tests/test_orca_sessions.py

@@ -94,21 +94,35 @@ def normalize_host_target(
 
 
 def resolve_local_orca_cli(home_dir: Path | None = None) -> str:
-    """Resolve the local `orca` CLI binary across Linux (`~/.local/bin/orca`) and macOS."""
-    found = shutil.which("orca")
-    if found:
-        return found
+    """Resolve the local `orca` CLI binary across Linux (`~/.config/orca/linux-orca-cli-shim/orca`, `~/.local/bin/orca`) and macOS, skipping `/usr/bin/orca` screen reader."""
+    env_cli = os.environ.get("ORCA_CLI_COMMAND", "").strip()
+    if env_cli:
+        return env_cli
     home = home_dir or Path.home()
+    shim_bin = home / ".config" / "orca" / "linux-orca-cli-shim" / "orca"
+    if shim_bin.is_file():
+        return str(shim_bin)
     linux_bin = home / ".local" / "bin" / "orca"
     if linux_bin.is_file():
         return str(linux_bin)
     mac_bin = Path("/Applications/Orca.app/Contents/Resources/bin/orca")
     if mac_bin.is_file():
         return str(mac_bin)
-    return "orca"
+    which_ide = shutil.which("orca-ide")
+    if which_ide:
+        return which_ide
+    found = shutil.which("orca")
+    if found and os.path.realpath(found) not in ("/usr/bin/orca", "/bin/orca") and found not in ("/usr/bin/orca", "/bin/orca"):
+        return found
+    return "orca-ide"
 
 IDLE_STATES: frozenset[str] = frozenset({"done", "tui-idle", "idle", "stopped", "dormant"})
 ACTIVE_STATES: frozenset[str] = frozenset({"working", "running", "thinking", "tool-use"})
+FINALIZED_AUTOMATION_RUN_STATES: frozenset[str] = frozenset(
+    {"completed", "skipped", "skipped_precheck", "cancelled", "dispatch_failed"}
+)
+ACTIVE_AUTOMATION_RUN_STATES: frozenset[str] = frozenset({"pending", "dispatched", "running"})
+AGENT_TREE_PATH_RE = re.compile(r"/\.w0m/work[^/]*/([^/]+)/w0m(?:/|$)")
 
 UUID_RE = re.compile(r"\b([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b", re.I)
 CONV_FLAG_RE = re.compile(
@@ -1676,6 +1690,289 @@ def load_private_workload_state(*, state_dir: Path | None = None, home_dir: Path
         return {"ok": False, "error": str(exc)}
 
 
+def _is_w0m_terminal(term: dict[str, Any]) -> bool:
+    """Return True strictly for w0m estate/worktree terminals (never client project workspaces per T302)."""
+    wt_path = str(term.get("worktreePath") or "")
+    wt_id = str(term.get("worktreeId") or "")
+    if "!proj/" in wt_path or "_proj/" in wt_path or "!proj/" in wt_id or "_proj/" in wt_id:
+        return False
+    if wt_id.startswith("w0m::"):
+        return True
+    if wt_path.endswith("/w0m") or "/w0m/" in wt_path:
+        return True
+    return False
+
+
+def _terminal_hook_state(term: dict[str, Any], hook_entries: dict[str, Any]) -> str:
+    tab_id = str(term.get("tabId") or "")
+    leaf_id = str(term.get("leafId") or "")
+    pane_key = f"{tab_id}:{leaf_id}" if (tab_id and leaf_id) else ""
+    entry = hook_entries.get(pane_key) if pane_key else None
+    if not isinstance(entry, dict):
+        for cand in hook_entries.values():
+            if not isinstance(cand, dict):
+                continue
+            if (pane_key and cand.get("paneKey") == pane_key) or (tab_id and cand.get("tabId") == tab_id):
+                entry = cand
+                break
+    if not isinstance(entry, dict):
+        return ""
+    payload = entry.get("payload") if isinstance(entry.get("payload"), dict) else {}
+    return str(payload.get("state") or entry.get("state") or "").strip().lower()
+
+
+def _load_local_tree_states(home_dir: Path | None = None) -> tuple[dict[str, dict[str, Any]], Any]:
+    """Inspect `~/.w0m/work/*/w0m` via `agent_tree.py` to determine clean + 0-ahead status per set."""
+    home = home_dir or Path.home()
+    work_root = home / ".w0m" / "work"
+    at_script = Path(__file__).resolve().parents[1] / "w0m-web" / "project" / "scripts" / "agent_tree.py"
+    states: dict[str, dict[str, Any]] = {}
+    at_mod: Any = None
+    if not at_script.is_file() or not work_root.is_dir():
+        return states, None
+    try:
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("w0m_agent_tree_mod", at_script)
+        if spec and spec.loader:
+            at_mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(at_mod)
+            for s in at_mod.list_sets(work_root):
+                try:
+                    rows = at_mod.status(s.root)
+                    clean = not any(r.dirty or not r.branch.startswith(at_mod.BRANCH_PREFIX) for r in rows)
+                    ahead = sum(r.ahead for r in rows)
+                    states[s.name] = {"clean": clean, "ahead": ahead, "root": str(s.root)}
+                except Exception:
+                    states[s.name] = {"clean": False, "ahead": 1, "root": str(s.root)}
+    except Exception:
+        pass
+    return states, at_mod
+
+
+def _load_orca_automation_runs(
+    cli_bin: str,
+    *,
+    automation_id: str | None = None,
+    eff_host: str = "local",
+    limit: int = 50,
+) -> list[dict[str, Any]]:
+    cmd = [cli_bin, "automations", "runs", "--limit", str(limit), "--json"]
+    if automation_id:
+        cmd.extend(["--id", automation_id])
+    if eff_host != "local":
+        cmd.extend(["--environment", eff_host])
+    try:
+        cp = subprocess.run(cmd, capture_output=True, text=True, timeout=10.0)
+        if cp.returncode == 0 and cp.stdout.strip():
+            data = json.loads(cp.stdout)
+            res = data.get("result") if isinstance(data, dict) else {}
+            runs = (res or {}).get("runs") if isinstance(res, dict) else None
+            if isinstance(runs, list):
+                return [r for r in runs if isinstance(r, dict)]
+    except (OSError, ValueError, subprocess.SubprocessError):
+        pass
+    return []
+
+
+def close_completed_sessions(
+    *,
+    snapshot: dict[str, Any] | None = None,
+    automation_runs: list[dict[str, Any]] | None = None,
+    tree_states: dict[str, dict[str, Any]] | None = None,
+    exclude_handles: set[str] | None = None,
+    host: str = "local",
+    automation_id: str | None = None,
+    dry_run: bool = False,
+    home_dir: Path | None = None,
+    close_fn: Any = None,
+    prune_trees_fn: Any = None,
+) -> dict[str, Any]:
+    """Safely close finalized Orca automation run tabs and landed idle `w0m` agent sessions (`T613` AC2).
+
+    Safety invariants:
+    - Never closes terminals in `exclude_handles` (or current `ORCA_TERMINAL_HANDLE`).
+    - Never closes non-`w0m` / client workspaces (`T302`).
+    - Never closes terminals whose hook state is `working` / `running` / `permission`.
+    - Never closes agent-tree terminals whose set has uncommitted tracked changes (`clean=False`) or unpushed commits (`ahead > 0`).
+    """
+    home = home_dir or Path.home()
+    eff_host = normalize_host_target("local" if host == "all" else host)
+    snap = snapshot if snapshot is not None else (
+        collect_local_snapshot(host_label="local", home_dir=home)
+        if eff_host == "local"
+        else collect_remote_snapshot(eff_host)
+    )
+    cli_bin = resolve_local_orca_cli(home)
+    runs = (
+        automation_runs
+        if automation_runs is not None
+        else _load_orca_automation_runs(cli_bin, automation_id=automation_id, eff_host=eff_host)
+    )
+    at_mod: Any = None
+    if tree_states is not None:
+        resolved_trees = tree_states
+    elif eff_host == "local":
+        resolved_trees, at_mod = _load_local_tree_states(home)
+    else:
+        resolved_trees = {}
+
+    excluded = {str(h).strip() for h in (exclude_handles or set()) if str(h).strip()}
+    self_handle = os.environ.get("ORCA_TERMINAL_HANDLE", "").strip()
+    if self_handle:
+        excluded.add(self_handle)
+
+    active_pane_keys: set[str] = set()
+    active_session_ids: set[str] = set()
+    finalized_pane_keys: dict[str, dict[str, Any]] = {}
+    finalized_session_ids: dict[str, dict[str, Any]] = {}
+
+    for run in runs:
+        r_status = str(run.get("status") or "").strip().lower()
+        p_key = str(run.get("terminalPaneKey") or "").strip()
+        s_id = str(run.get("terminalSessionId") or "").strip()
+        if r_status in ACTIVE_AUTOMATION_RUN_STATES:
+            if p_key:
+                active_pane_keys.add(p_key)
+            if s_id:
+                active_session_ids.add(s_id)
+        elif r_status in FINALIZED_AUTOMATION_RUN_STATES:
+            # For completed runs, require persisted outputSnapshot so we never race Orca's observer.
+            if r_status == "completed" and not run.get("outputSnapshot"):
+                continue
+            if p_key and p_key not in finalized_pane_keys:
+                finalized_pane_keys[p_key] = run
+            if s_id and s_id not in finalized_session_ids:
+                finalized_session_ids[s_id] = run
+
+    hook_entries = snap.get("hookEntries") if isinstance(snap.get("hookEntries"), dict) else {}
+    terminals = snap.get("terminals") if isinstance(snap.get("terminals"), list) else []
+
+    active_trees: set[str] = set()
+    candidates: list[dict[str, Any]] = []
+    skipped: list[dict[str, Any]] = []
+
+    for term in terminals:
+        if not isinstance(term, dict):
+            continue
+        handle = str(term.get("handle") or "").strip()
+        if not handle:
+            continue
+        wt_path = str(term.get("worktreePath") or "")
+        tree_match = AGENT_TREE_PATH_RE.search(wt_path)
+        tree_name = tree_match.group(1) if tree_match else ""
+        h_state = _terminal_hook_state(term, hook_entries)
+
+        if not _is_w0m_terminal(term):
+            skipped.append({"handle": handle, "reason": "non_w0m_workspace", "worktreePath": wt_path})
+            continue
+        if handle in excluded:
+            if tree_name:
+                active_trees.add(tree_name)
+            skipped.append({"handle": handle, "reason": "excluded_self", "worktreePath": wt_path})
+            continue
+        if h_state in ACTIVE_STATES or h_state == "permission":
+            if tree_name:
+                active_trees.add(tree_name)
+            skipped.append({"handle": handle, "reason": f"active_state:{h_state}", "worktreePath": wt_path})
+            continue
+
+        tab_id = str(term.get("tabId") or "").strip()
+        leaf_id = str(term.get("leafId") or "").strip()
+        pane_key = f"{tab_id}:{leaf_id}" if (tab_id and leaf_id) else ""
+
+        if (pane_key and pane_key in active_pane_keys) or (tab_id and tab_id in active_session_ids):
+            skipped.append({"handle": handle, "reason": "active_automation_run", "worktreePath": wt_path})
+            continue
+
+        matched_run = finalized_pane_keys.get(pane_key) or finalized_session_ids.get(tab_id)
+        if matched_run is not None:
+            candidates.append(
+                {
+                    "handle": handle,
+                    "reason": "completed_automation_run",
+                    "runId": matched_run.get("id"),
+                    "runNumber": matched_run.get("runNumber"),
+                    "title": term.get("title") or "",
+                    "worktreePath": wt_path,
+                }
+            )
+            continue
+
+        if tree_name:
+            tstate = resolved_trees.get(tree_name)
+            if not isinstance(tstate, dict):
+                skipped.append({"handle": handle, "reason": "unknown_tree_state", "tree": tree_name})
+                continue
+            if not bool(tstate.get("clean", False)) or int(tstate.get("ahead", 1)) > 0:
+                skipped.append({"handle": handle, "reason": "dirty_or_unpushed_tree", "tree": tree_name})
+                continue
+            if h_state in IDLE_STATES:
+                candidates.append(
+                    {
+                        "handle": handle,
+                        "reason": "landed_agent_tree",
+                        "tree": tree_name,
+                        "title": term.get("title") or "",
+                        "worktreePath": wt_path,
+                    }
+                )
+            else:
+                active_trees.add(tree_name)
+                skipped.append({"handle": handle, "reason": f"unsettled_hook:{h_state or 'none'}", "tree": tree_name})
+            continue
+
+        skipped.append({"handle": handle, "reason": "live_root_session_preserved", "worktreePath": wt_path})
+
+    def _default_close(h: str) -> bool:
+        cmd_list = [cli_bin, "terminal", "close", "--terminal", h, "--tab", "--json"]
+        if eff_host != "local":
+            cmd_list.extend(["--environment", eff_host])
+        try:
+            cp = subprocess.run(cmd_list, capture_output=True, text=True, timeout=10.0)
+            return cp.returncode == 0
+        except (OSError, subprocess.SubprocessError):
+            return False
+
+    closer = close_fn or _default_close
+    closed: list[dict[str, Any]] = []
+    closed_tree_names: set[str] = set()
+
+    for cand in candidates:
+        if dry_run:
+            closed.append({**cand, "dryRun": True})
+            if cand.get("tree"):
+                closed_tree_names.add(str(cand["tree"]))
+        else:
+            if closer(cand["handle"]):
+                closed.append(cand)
+                if cand.get("tree"):
+                    closed_tree_names.add(str(cand["tree"]))
+
+    pruned_trees: list[str] = []
+    if not dry_run:
+        if prune_trees_fn is not None:
+            pruned_trees = list(prune_trees_fn() or [])
+        elif at_mod is not None and closed_tree_names:
+            work_root = home / ".w0m" / "work"
+            for tname in sorted(closed_tree_names - active_trees):
+                try:
+                    at_mod.remove(work_root, tname, force=False)
+                    pruned_trees.append(tname)
+                except Exception:
+                    pass
+
+    return {
+        "ok": True,
+        "host": host,
+        "dryRun": dry_run,
+        "closed": closed,
+        "closedHandles": [c["handle"] for c in closed],
+        "prunedTrees": pruned_trees,
+        "skipped": skipped,
+    }
+
+
 def archive_host_sessions(
     host: str = "linux-host",
     *,
@@ -1684,7 +1981,7 @@ def archive_host_sessions(
     dest_root: Path | None = None,
     home_dir: Path | None = None,
 ) -> dict[str, Any]:
-    """Collect brain Markdown artifacts from `host` into `~/.w0m/state/sessions/<host>/` and optionally close tabs (`T599` AC1/AC2)."""
+    """Collect brain Markdown artifacts from `host` into `~/.w0m/state/sessions/<host>/` and optionally close completed tabs (`T599` AC1/AC2, `T613` AC2)."""
     home = home_dir or Path.home()
     base_dest = dest_root or (home / ".w0m" / "state" / "sessions" / host)
     base_dest.mkdir(parents=True, exist_ok=True)
@@ -1728,28 +2025,18 @@ def archive_host_sessions(
         collected.append({"conversation_id": cid, "artifactCount": len(files), "artifacts": files, "path": str(cdir)})
 
     closed_handles: list[str] = []
+    pruned_trees: list[str] = []
     if close_terminals:
-        cli_bin = resolve_local_orca_cli(home)
-        for term in snap.get("terminals") or []:
-            wt_path = str(term.get("worktreePath") or "")
-            handle = str(term.get("handle") or "")
-            if not handle or "w0m" not in wt_path:
-                continue
-            cmd_list = [cli_bin, "terminal", "close", "--terminal", handle, "--tab", "--json"]
-            if eff_host != "local":
-                cmd_list.extend(["--environment", eff_host])
-            try:
-                res = subprocess.run(cmd_list, capture_output=True, text=True, timeout=10.0)
-                if res.returncode == 0:
-                    closed_handles.append(handle)
-            except (OSError, subprocess.SubprocessError):
-                pass
+        close_res = close_completed_sessions(snapshot=snap, host=host, home_dir=home, dry_run=False)
+        closed_handles = list(close_res.get("closedHandles") or [])
+        pruned_trees = list(close_res.get("prunedTrees") or [])
 
     return {
         "ok": True,
         "host": host,
         "collected": collected,
         "closedTerminals": closed_handles,
+        "prunedTrees": pruned_trees,
     }
 
 
@@ -1819,6 +2106,17 @@ def main(argv: list[str] | None = None) -> int:
     p_arch.add_argument("--close-terminals", action="store_true", help="Close completed w0m Orca terminal tabs on host")
     p_arch.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
 
+    # close-completed (T613 AC2)
+    p_close = sub.add_parser(
+        "close-completed",
+        help="Safely close finalized Orca automation run tabs and landed idle w0m agent sessions",
+    )
+    p_close.add_argument("--host", dest="close_host", default="local", help="Target host (default: local)")
+    p_close.add_argument("--automation-id", default=None, help="Optional automation ID filter")
+    p_close.add_argument("--exclude-handle", action="append", default=None, help="Terminal handle(s) to spare")
+    p_close.add_argument("--dry-run", action="store_true", help="Report tabs that would be closed without closing")
+    p_close.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+
     # Support top-level flags when invoked without subcommand (`just orca-sessions --json`)
     parser.add_argument("--host", default="all", help="Host selector: all, local, linux-host (default: all)")
     parser.add_argument("--include-dormant", action="store_true", help="Include dormant brain transcripts")
@@ -1866,6 +2164,23 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 f"[ARCHIVED] host={res['host']} conversations={len(res['collected'])} "
                 f"closedTerminals={len(res['closedTerminals'])}"
+            )
+        return 0
+
+    if cmd == "close-completed":
+        res = close_completed_sessions(
+            host=getattr(args, "close_host", "local"),
+            automation_id=args.automation_id,
+            exclude_handles=set(args.exclude_handle or ()),
+            dry_run=bool(args.dry_run),
+        )
+        if args.json:
+            print(json.dumps(res, indent=2))
+        else:
+            mode = "DRY-RUN" if res.get("dryRun") else "CLOSED"
+            print(
+                f"[{mode}] host={res['host']} closed={len(res['closed'])} "
+                f"prunedTrees={res['prunedTrees']} handles={res['closedHandles']}"
             )
         return 0
 
