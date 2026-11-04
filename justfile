@@ -899,7 +899,7 @@ goldens-check-test:
 smoke-live url="https://webomage.com":
     @echo "🔎 Live smoke against {{ url }} (non-blocking — reports, does not gate)..."
     -@cd w0m-web && E2E_BASE_URL={{ url }} gauge run specs/web/live-smoke.spec
-    -@python3 scripts/live_verify_helper.py crawler-smoke --url {{ url }}
+    -@python3 scripts/live_verify_helper.py crawler-smoke
 
 _assert-clean-tree:
     @[ -x w0m-api/node_modules/.bin/tsx ] || pnpm --dir w0m-api install --frozen-lockfile --prefer-offline

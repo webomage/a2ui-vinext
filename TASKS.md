@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T640](.tasks/T640.md) | **P1** | **Audit connected services & pgvector vs ClickHouse, retire leaky browser OTel, enable native Worker observability, and batch WarpScene WebGL draw calls** | web | openspec/specs/security-posture-audit/spec.md | ✅ **done** |
 | [T639](.tasks/T639.md) · [#639](https://github.com/casualuser/webomage.com/issues/639) | **P1** | **Repair T638 Definition of Done and schema, promote dod-check to prepush, and retry transient Wrangler 100312 deploy errors** | tooling, web | — | ✅ **done** |
 | [T638](.tasks/T638.md) | **P2** | **Orca Desktop & Mobile: built-in *top & Docker TUI monitor launcher (staged for next overlay release) + HP host monitor tooling** | web | — | ✅ **done** |
 | [T637](.tasks/T637.md) · [#637](https://github.com/casualuser/webomage.com/issues/637) | **P1** | **Regenerate stale docs/CODEMAP.md after T634 and wire codemap-refresh pre-commit + codemap-check prepush gate to prevent post-Touch-ID deploy failures** | web, tooling | — | ✅ **done** |
