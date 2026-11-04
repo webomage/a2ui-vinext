@@ -499,13 +499,14 @@ def main() -> int:
             and live_sync["orchestrationTaskId"] == "task_t610",
         )
 
-    # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593, T608)
+    # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593, T608, T621)
     proposals_list = w0m_prs.build_pr_proposals()
     check(
-        "build_pr_proposals returns 22 contribution proposals including T608 and T618 PRs",
-        len(proposals_list) == 22
+        "build_pr_proposals returns 23 contribution proposals including T608, T618, and T621 PRs",
+        len(proposals_list) == 23
         and any(p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo" for p in proposals_list)
-        and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list),
+        and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list)
+        and any(p["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter" for p in proposals_list),
     )
     check(
         "build_pr_proposals formats structured Why / What For / How markdown body",

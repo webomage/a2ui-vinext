@@ -2672,6 +2672,8 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
 INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
     "feat/audit-host-services",
     "feat/w0m-overlay-updater-feed",  # T619: webomage/orca self-healing overlay release feed runtime branch
+    "fix/mobile-live-input-prompt-backload",  # T621: webomage/orca overlay branch
+    "feat/subagent-display-and-floating-category",  # T621: webomage/orca overlay branch
     "fix/gemma4-turboquant-sdpa256-bounds",
     "w0m/v1.7.0-astro",
     "PR_restructured",
@@ -3199,6 +3201,32 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
             "FIFOs so pressing a bound desktop hotkey never hangs the WM when no reader is attached, paired with `notify-send` feedback.\n"
             "- **`contrib/linux-desktop/virtual-fido.service`, `README.md`, & `test_hotkey.py`**: Adds systemd user service template, setup "
             "docs, and `unittest` suite (`3/3` tests passing)."
+        ),
+    },
+    "stablyai/orca:feat/mobile-terminal-triple-tap-enter": {
+        "ticket": "T621",
+        "title": "feat(mobile): send Enter on terminal triple-tap gesture",
+        "why": (
+            "In mobile terminal sessions—especially interactive TUI selection prompts and comment fields such as Antigravity (`agy`) "
+            "approval/feedback dialogs—submitting a choice or free-text comment without opening the secondary key sheet or toggling input "
+            "modes is awkward: tapping the Message-mode send button without a trailing newline in inline TUI prompts can leave input "
+            "uncommitted, and adding custom key chords just to send `Enter` (`\\r`) adds unnecessary friction."
+        ),
+        "what_for": (
+            "Lets mobile users triple-tap anywhere on the terminal viewport to immediately send an `Enter` (`\\r`) keystroke—with optional "
+            "toggle in Settings (`Triple-tap for Enter`, enabled by default), light haptic feedback, and Live Input pending-edit flush so "
+            "typed prompt text is committed in order before `\\r` arrives."
+        ),
+        "how": (
+            "- **`mobile/src/terminal/document/touch-tap-selection.ts`, `terminal-webview-messages.ts`, & `TerminalWebView.tsx`**: Detects "
+            "bounded 3-tap sequences (`<= 300ms` inter-tap, `<= 24px` drift) inside the terminal WebView gesture state machine without "
+            "delaying single-tap focus or double-tap word selection, emitting `{ type: 'triple-tap' }` when enabled.\n"
+            "- **`mobile/src/session/use-mobile-session-terminal-triple-tap.ts`**: Flushes pending Live Input edits before sending `\\r` via "
+            "`sendAccessoryTerminalBytes` and triggers light haptic impact.\n"
+            "- **`mobile/src/settings/terminal-triple-tap-enter-preference.ts` & `MobileTerminalSettingsSection.tsx`**: Persists the "
+            "default-enabled `terminalTripleTapEnter` preference in SecureStore and exposes a toggle in Terminal Settings.\n"
+            "- **Verification**: `79/79` mobile Vitest tests passing (including `use-mobile-session-terminal-triple-tap.test.tsx` and "
+            "`touch-tap-selection.test.ts`), `0` localization drift, and `0` `oxlint` warnings/errors."
         ),
     },
 }

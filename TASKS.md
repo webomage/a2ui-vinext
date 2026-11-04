@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T621](.tasks/T621.md) | **P1** | **Implement Orca mobile triple-tap Enter PR branch, Live Input terminal prompt backload, and mobile/desktop subagent flat/tree modes + Floating agents category** | tooling | — | ✅ **done** |
 | [T619](.tasks/T619.md) | **P1** | **Implement self-healing webomage/orca overlay release feed and auto-updater pipeline** | tooling | — | ✅ **done** |
 | [T618](.tasks/T618.md) | **P1** | **Backport Bodhi/Moksha 8-zone window snapping + desktop icon fixes and prepare 9 upstream PR branches across Moksha, Bodhi, Orca, and Virtual-FIDO** | tooling, web | — | ✅ **done** |
 | [T617](.tasks/T617.md) | **P0** | **Fix release worktree node_modules drift, enforce symlink-safe gitignore rules, and verify full deploy app builds** | tooling, web, api, cf, ext, sec | openspec/specs/persistent-stable-worktree | ✅ **done** |
