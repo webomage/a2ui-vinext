@@ -1274,7 +1274,7 @@ Command Groups:
   preflight          Run estate preflight checks (`--fast`)
   prs                Audit upstream open-source PRs (`w0m-pr/`)
   vm, k8s, cloud     Portable infrastructure & FinOps commands (`w0m_portable_cli.py`)
-  llm, spec, notify  Portable LLM, OpenSpec & Telegram telemetry commands (`w0m_portable_cli.py`)
+  llm, spec, notify  Portable LLM, OpenSpec (`spec-driven` default: `status|list|init|new|validate`) & Telegram commands
   install            Install `~/.local/bin/w0m` executable shim on PATH
 """
 

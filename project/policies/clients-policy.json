@@ -591,18 +591,119 @@
       "note": "T307 \u2014 the @k7 developer tooling & Rust TUI family. Managed workspace of 7 repositories with k7d as the Tart VM & daemon control panel."
     },
     {
-      "id": "mob",
+      "id": "solar",
       "role": "managed",
-      "root": "mob",
+      "root": "mob/solar",
+      "enabled": true,
+      "org_slug": "aleksei-tcelishchev",
+      "project_slug": "solar",
+      "knowledge_hub": {
+        "vault_slug": "solar",
+        "engagement_public_id": "eg-solar",
+        "r2_bucket": "wom-engagement-vaults",
+        "r2_prefix": "engagements/eg-solar",
+        "corpus_root": "w0m-web/projects/solar/vault",
+        "allowed_prefixes": [
+          "index.md",
+          "guides/",
+          "mocs/",
+          "notes/",
+          "sources/",
+          "claims/",
+          "assets/"
+        ],
+        "guide_prefixes": [
+          "guides/"
+        ],
+        "tech_prefixes": [
+          "tech/"
+        ],
+        "denied_prefixes": [
+          "inbox/",
+          ".obsidian/",
+          "internal/",
+          ".w0m/",
+          "openspec/"
+        ]
+      },
       "runtime": {
         "substrate": "host"
       },
       "repos": {
-        "solar": "solar/solar",
-        "mantrabox": "mantrabox/mantrabox",
-        "mantrabox-flutter": "mantrabox/mantrabox.flutter"
+        "solar": "solar",
+        "solar-apple": "solar.apple",
+        "solar-flutter": "solar.flutter",
+        "solar-google": "solar.google"
       },
       "canonical_repo": "solar",
+      "vcs": {
+        "provider": "github",
+        "repo": "casualuser/Solar",
+        "default_branch": "main"
+      },
+      "services": {
+        "deploys": {
+          "enabled": false,
+          "reason": "Mobile App Store / Google Play builds and paired-device deployments are executed directly by Aleksei outside w0m web deploy pipelines."
+        }
+      },
+      "external_services": [
+        {
+          "service_key": "supabase",
+          "title": "Supabase (Portal Tenancy, Engagement, Contracts & Vault Metadata)",
+          "category": "database",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "Supabase Free (Shared pqbbjgeapylcengbuvee)",
+          "monthly_base_usd": 0,
+          "unit_label": "Tenant-keyed rows (aleksei-tcelishchev, eg-solar, solar)",
+          "resources": [
+            "org:c6420001-6420-4000-8000-000000000001",
+            "project:c6420021-6420-4000-8000-000000000001"
+          ]
+        },
+        {
+          "service_key": "cloudflare",
+          "title": "Cloudflare R2 Engagement Vault (wom-engagement-vaults/engagements/eg-solar)",
+          "category": "storage",
+          "reachability": "w0m_managed",
+          "attribution_class": "attributable",
+          "current_plan": "Cloudflare Free Tier R2 ($0 egress)",
+          "monthly_base_usd": 0,
+          "unit_label": "Isolated R2 engagement vault prefix engagements/eg-solar",
+          "resources": [
+            "r2:wom-engagement-vaults:engagements/eg-solar"
+          ]
+        },
+        {
+          "service_key": "github",
+          "title": "GitHub Repositories (Solar, Solar.Sensor, Solar.Flutter, Solar.Google)",
+          "category": "vcs",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "GitHub Free",
+          "monthly_base_usd": 0,
+          "unit_label": "4 managed mobile repositories under casualuser",
+          "resources": [
+            "repo:casualuser/Solar",
+            "repo:casualuser/Solar.Sensor",
+            "repo:casualuser/Solar.Flutter",
+            "repo:casualuser/Solar.Google"
+          ]
+        }
+      ],
+      "role_assignments": {
+        "aleksei": {
+          "identity_key": "aleksei-personal",
+          "hats": [
+            "client",
+            "pm",
+            "tl",
+            "dev"
+          ],
+          "note": "Aleksei acts as Client patron (aleksei-tcelishchev / eg-solar) and Indie delivery operator (PM, Tech Lead, Dev) under webomage."
+        }
+      },
       "identity": {
         "git_user_name": "Aleksei Tcelishchev",
         "git_user_email": "casualuser@gmail.com",
@@ -610,8 +711,128 @@
         "gh_account": "casualuser",
         "gh_config_dir": "~/.config/gh-w0m"
       },
+      "note": "T348 / T642 — Solar mobile & wearable sensor suite (solar, solar.apple, solar.flutter, solar.google) onboarded under Aleksei Tcelishchev (`aleksei-tcelishchev`, `aleksei@webomage.com`) as Client with active delivery engagement `eg-solar` vs contractor `webomage` and Indie delivery hats (`pm`, `tech-lead`, `dev`)."
+    },
+    {
+      "id": "mantrabox",
+      "role": "managed",
+      "root": "mob/mantrabox",
       "enabled": true,
-      "note": "T348 \u2014 the @mob mobile apps portfolio (solar, mantrabox, birds-echo) onboarded as Indie projects for Aleksei (aleksei@webomage.com), where Aleksei acts as both Client patron and Indie Operator holding PM/TPM/Dev delivery roles."
+      "org_slug": "aleksei-tcelishchev",
+      "project_slug": "mantrabox",
+      "knowledge_hub": {
+        "vault_slug": "mantrabox",
+        "engagement_public_id": "eg-mantrabox",
+        "r2_bucket": "wom-engagement-vaults",
+        "r2_prefix": "engagements/eg-mantrabox",
+        "corpus_root": "w0m-web/projects/mantrabox/vault",
+        "allowed_prefixes": [
+          "index.md",
+          "guides/",
+          "mocs/",
+          "notes/",
+          "sources/",
+          "claims/",
+          "assets/"
+        ],
+        "guide_prefixes": [
+          "guides/"
+        ],
+        "tech_prefixes": [
+          "tech/"
+        ],
+        "denied_prefixes": [
+          "inbox/",
+          ".obsidian/",
+          "internal/",
+          ".w0m/",
+          "openspec/"
+        ]
+      },
+      "runtime": {
+        "substrate": "host"
+      },
+      "repos": {
+        "mantrabox": "mantrabox",
+        "mantrabox-flutter": "mantrabox.flutter",
+        "mantrabox-slint": "mantrabox.slint"
+      },
+      "canonical_repo": "mantrabox",
+      "vcs": {
+        "provider": "github",
+        "repo": "casualuser/mantrabox",
+        "default_branch": "main"
+      },
+      "services": {
+        "deploys": {
+          "enabled": false,
+          "reason": "Mobile App Store / native Slint & Flutter builds are executed directly by Aleksei outside w0m web deploy pipelines."
+        }
+      },
+      "external_services": [
+        {
+          "service_key": "supabase",
+          "title": "Supabase (Portal Tenancy, Engagement, Contracts & Vault Metadata)",
+          "category": "database",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "Supabase Free (Shared pqbbjgeapylcengbuvee)",
+          "monthly_base_usd": 0,
+          "unit_label": "Tenant-keyed rows (aleksei-tcelishchev, eg-mantrabox, mantrabox)",
+          "resources": [
+            "org:c6420001-6420-4000-8000-000000000001",
+            "project:c6420022-6420-4000-8000-000000000002"
+          ]
+        },
+        {
+          "service_key": "cloudflare",
+          "title": "Cloudflare R2 Engagement Vault (wom-engagement-vaults/engagements/eg-mantrabox)",
+          "category": "storage",
+          "reachability": "w0m_managed",
+          "attribution_class": "attributable",
+          "current_plan": "Cloudflare Free Tier R2 ($0 egress)",
+          "monthly_base_usd": 0,
+          "unit_label": "Isolated R2 engagement vault prefix engagements/eg-mantrabox",
+          "resources": [
+            "r2:wom-engagement-vaults:engagements/eg-mantrabox"
+          ]
+        },
+        {
+          "service_key": "github",
+          "title": "GitHub Repositories (mantrabox, mantrabox.flutter, mantrabox.slint)",
+          "category": "vcs",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "GitHub Free",
+          "monthly_base_usd": 0,
+          "unit_label": "3 managed mobile repositories under casualuser",
+          "resources": [
+            "repo:casualuser/mantrabox",
+            "repo:casualuser/mantrabox.flutter",
+            "repo:casualuser/mantrabox.slint"
+          ]
+        }
+      ],
+      "role_assignments": {
+        "aleksei": {
+          "identity_key": "aleksei-personal",
+          "hats": [
+            "client",
+            "pm",
+            "tl",
+            "dev"
+          ],
+          "note": "Aleksei acts as Client patron (aleksei-tcelishchev / eg-mantrabox) and Indie delivery operator (PM, Tech Lead, Dev) under webomage."
+        }
+      },
+      "identity": {
+        "git_user_name": "Aleksei Tcelishchev",
+        "git_user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_rsa",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "note": "T348 / T642 — MantraBox audio & mindfulness mobile app suite (mantrabox, mantrabox.flutter, mantrabox.slint) onboarded under Aleksei Tcelishchev (`aleksei-tcelishchev`, `aleksei@webomage.com`) as Client with active delivery engagement `eg-mantrabox` vs contractor `webomage` and Indie delivery hats (`pm`, `tech-lead`, `dev`)."
     }
   ],
   "state_surface_candidates": [

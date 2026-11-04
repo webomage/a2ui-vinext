@@ -3256,23 +3256,25 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
         ),
     },
     "stablyai/orca:feat/mobile-four-side-edge-arrows": {
-        "ticket": "T635",
-        "title": "feat(mobile): add sticky 4-side edge navigation arrows inside panes",
+        "ticket": "T635 / T641",
+        "title": "feat(mobile): add sticky 4-side edge arrows, bottom-right settings dock, and zoom-stable Gamepad HUD",
         "why": (
             "Navigating long transcripts, file/diff previews, session tabs, and interactive terminal prompts one-handed on mobile requires "
-            "either stretching to top tab bars or keeping the software keyboard / accessory dock open just to press arrow keys."
+            "either stretching to top tab bars or keeping the software keyboard / accessory dock open; furthermore, pinch-zooming terminal "
+            "WebViews scales overlay controls out of reach, and top-right mode chips crowd pane headers."
         ),
         "what_for": (
-            "Renders sticky 4-side inner-edge navigation controls (`↑`, `↓`, `←`, `→`) inside active Terminal, Native Chat, and File/Diff/Markdown "
-            "panes with three switchable ergonomic styles (`Edge Pills`, `Edge Strips`, `Floating Orbs`, plus `Off`), hold-to-repeat terminal "
-            "arrow dispatch with `Ctrl`/`Alt`/`Shift` modifier support, and persistent Settings + `•••` menu controls."
+            "Renders sticky 4-side inner-edge navigation controls (`Edge Pills`, `Edge Strips`, `Floating Orbs`) PLUS a console-style "
+            "`Gamepad HUD` mode (bottom-left D-pad + bottom-right `Tab` / `Alt+M` / `Esc` / `Enter` diamond cluster) inside a zoom-stable "
+            "`visualViewport` counter-scaled HUD, with the quick-switcher + `⚙` settings button docked bottom-right."
         ),
         "how": (
-            "- **`mobile/src/navigation/edge-arrows/*` & `use-session-edge-navigation.ts`**: Mounts a keyboard- and dock-aware 4-side overlay "
-            "routing directional presses to terminal arrow keys (`400ms -> 45ms` repeat), transcript/file page scrolling, and session tab cycling.\n"
-            "- **`EdgeNavigationSettingsSection.tsx` & `EdgeNavigationModeSheet.tsx`**: Persists `edgeNavigationMode` and quick-switcher chip "
-            "visibility in `orca:terminal-accessory-layout` and exposes controls in `TerminalShortcutSettings` and the session `•••` menu.\n"
-            "- **Verification**: `27/27` edge-navigation Vitest assertions, `tsc --noEmit`, `verify:mobile-localization`, and `oxlint` clean."
+            "- **`mobile/src/navigation/edge-arrows/*` & `use-zoom-stable-viewport.ts`**: Wraps all 4 modes in a `1 / scale` `visualViewport` "
+            "HUD (`transformOrigin: 'top left'`), docks `edge-arrow-flavour-chip` + `edge-arrow-settings-button` bottom-right (lifting above "
+            "native-chat jump-to-tail FAB), and adds `EdgeGamepadPad.tsx` with hold-to-repeat D-pad and terminal action cluster.\n"
+            "- **`EdgeNavigationSettingsSection.tsx` & `EdgeNavigationModeSheet.tsx`**: Persists `'pills' | 'strips' | 'orbs' | 'gamepad' | 'off'` "
+            "in `orca:terminal-accessory-layout` while keeping existing modes intact.\n"
+            "- **Verification**: `8/8` edge-navigation Vitest tests, `verify:mobile-localization`, `build-mobile-web-app-bundle`, and `oxlint` clean."
         ),
     },
     "stablyai/orca:fix/terminal-smooth-resize-and-replay": {

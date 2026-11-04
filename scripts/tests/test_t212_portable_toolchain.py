@@ -370,3 +370,124 @@ def test_t567_ac6_unified_w0m_cli_subcommands_replace_k7_tuis(tmp_path: Path) ->
         assert payload["ok"] is True
         assert payload["subcommand"] == subcmd
 
+
+def test_t640_w0m_spec_openspec_default_lifecycle(tmp_path: Path) -> None:
+    """T643 AC2 & AC4: `w0m spec` defaults to OpenSpec (`spec-driven`) and supports status/init/new/list/validate."""
+    env = _env_with_brew()
+    proj = tmp_path / "openspec-consumer"
+    proj.mkdir(parents=True)
+
+    # 1. `spec status --json` on uninitialized repo exits 0 with OpenSpec `spec-driven` defaults
+    st_res = subprocess.run(
+        ["python3", str(PORTABLE_CLI), "--project", str(proj), "spec", "status", "--json"],
+        cwd=proj,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert st_res.returncode == 0, st_res.stderr
+    st_payload: Any = json.loads(st_res.stdout)
+    assert st_payload["ok"] is True
+    assert st_payload["subcommand"] == "spec"
+    assert st_payload["spec_system"] == "openspec"
+    assert st_payload["schema"] == "spec-driven"
+    assert st_payload["tool"] == "openspec"
+    assert st_payload["initialized"] is False
+
+    # 2. `spec validate --json` fails closed (exit 1) before `spec init`
+    val_uninit = subprocess.run(
+        ["python3", str(PORTABLE_CLI), "--project", str(proj), "spec", "validate", "--json"],
+        cwd=proj,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert val_uninit.returncode == 1
+    assert json.loads(val_uninit.stdout)["ok"] is False
+
+    # 3. `spec init --json` scaffolds `openspec/config.yaml` (`schema: spec-driven`) + authoring standard
+    init_res = subprocess.run(
+        ["python3", str(PORTABLE_CLI), "--project", str(proj), "spec", "init", "--json"],
+        cwd=proj,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert init_res.returncode == 0, init_res.stderr
+    assert (proj / "openspec" / "config.yaml").read_text(encoding="utf-8") == "schema: spec-driven\n"
+    assert (proj / "openspec" / "SPEC-AUTHORING-STANDARD.md").is_file()
+
+    # 4. `spec new 2026-11-04-demo-capability --json` strips date prefix for domain slug and scaffolds delta spec
+    new_res = subprocess.run(
+        [
+            "python3",
+            str(PORTABLE_CLI),
+            "--project",
+            str(proj),
+            "spec",
+            "new",
+            "2026-11-04-demo-capability",
+            "--json",
+        ],
+        cwd=proj,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert new_res.returncode == 0, new_res.stderr
+    new_payload: Any = json.loads(new_res.stdout)
+    assert new_payload["ok"] is True
+    assert new_payload["change"] == "2026-11-04-demo-capability"
+    assert new_payload["domain"] == "demo-capability"
+    delta_spec = proj / "openspec" / "changes" / "2026-11-04-demo-capability" / "specs" / "demo-capability" / "spec.md"
+    assert delta_spec.is_file()
+
+    # 5. `spec list --json` reports the active change
+    list_res = subprocess.run(
+        ["python3", str(PORTABLE_CLI), "--project", str(proj), "spec", "list", "--json"],
+        cwd=proj,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert list_res.returncode == 0, list_res.stderr
+    list_payload: Any = json.loads(list_res.stdout)
+    assert "2026-11-04-demo-capability" in list_payload["active_changes"]
+
+    # 6. `spec validate --json` passes on valid RFC-2119 + Scenario delta spec
+    val_ok = subprocess.run(
+        ["python3", str(PORTABLE_CLI), "--project", str(proj), "spec", "validate", "--json"],
+        cwd=proj,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert val_ok.returncode == 0, f"validate failed: {val_ok.stdout}\n{val_ok.stderr}"
+    val_ok_payload: Any = json.loads(val_ok.stdout)
+    assert val_ok_payload["ok"] is True
+    assert val_ok_payload["checked_specs"] == 1
+    assert val_ok_payload["issues"] == []
+
+    # 7. Malformed spec (missing RFC-2119 keyword and Scenario block) fails closed with exit 1
+    delta_spec.write_text("## ADDED Requirements\n\n### Requirement: weak spec\nIt works.\n", encoding="utf-8")
+    val_bad = subprocess.run(
+        ["python3", str(PORTABLE_CLI), "--project", str(proj), "spec", "validate", "--no-cli", "--json"],
+        cwd=proj,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert val_bad.returncode == 1
+    val_bad_payload: Any = json.loads(val_bad.stdout)
+    assert val_bad_payload["ok"] is False
+    assert any("Scenario" in issue for issue in val_bad_payload["issues"])
+    assert any("RFC 2119" in issue for issue in val_bad_payload["issues"])
+
+

@@ -438,11 +438,12 @@ def inventory(registry: Path = REGISTRY) -> tuple[dict, list[str]]:
                         errors.append(f"{p['id']}: declared Tart guest {guest!r} does not exist in `tart list` (T297 AC4)")
 
         root = resolve_project_root(p["root"])
-        if not root.is_dir():
+        repos_decl = p.get("repos")
+        is_optional_portfolio = p.get("id") in ("k7", "mob", "solar", "mantrabox") and bool(repos_decl)
+        if not root.is_dir() and not is_optional_portfolio:
             errors.append(f"{p['id']}: declared root does not exist — {root}")
             continue
 
-        repos_decl = p.get("repos")
         if not repos_decl:
             g = git_facts(root)
             if not g["is_repo_root"]:
@@ -519,7 +520,7 @@ def inventory(registry: Path = REGISTRY) -> tuple[dict, list[str]]:
             continue
 
         members, bad = {}, False
-        uncloned_portfolio = p.get("id") in ("k7", "mob") and not any(
+        uncloned_portfolio = p.get("id") in ("k7", "mob", "solar", "mantrabox") and not any(
             (root / rel).resolve().is_dir() for rel in repos_decl.values()
         )
         if uncloned_portfolio:

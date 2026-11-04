@@ -1035,7 +1035,7 @@ def main() -> int:
         "feat/w0m-overlay-updater-feed" in w0m_prs.INTERNAL_OR_SUPERSEDED_BRANCHES,
     )
     t633_proposals = [
-        p for p in w0m_prs.build_pr_proposals(forks_dir=Path("/nonexistent-forks")) if p["ticket"] == "T635"
+        p for p in w0m_prs.build_pr_proposals(forks_dir=Path("/nonexistent-forks")) if "T635" in p["ticket"]
     ]
     check(
         "build_pr_proposals renders all 3 T635 Orca proposals (4-tap Alt+M, 4-side edge arrows, smooth resize)",
@@ -1045,7 +1045,8 @@ def main() -> int:
             "stablyai/orca:feat/mobile-terminal-4-tap-alt-m",
             "stablyai/orca:feat/mobile-four-side-edge-arrows",
             "stablyai/orca:fix/terminal-smooth-resize-and-replay",
-        },
+        }
+        and any("Gamepad HUD" in p["body"] and "T641" in p["ticket"] for p in t633_proposals),
     )
 
     t638_proposals = [

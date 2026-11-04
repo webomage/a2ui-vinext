@@ -280,7 +280,7 @@ def discover_project_surfaces(p: dict, root: Path) -> tuple[list[tuple[str, Path
     canonical = p.get("canonical_repo")
     errors: list[str] = []
 
-    uncloned_portfolio = pid in ("k7", "mob") and bool(repos_decl) and not any(
+    uncloned_portfolio = pid in ("k7", "mob", "solar", "mantrabox") and bool(repos_decl) and not any(
         (root / rel).resolve().is_dir() for rel in repos_decl.values()
     )
 
@@ -520,13 +520,13 @@ def build() -> tuple[dict, list[str], list[str]]:
             continue
         pid = p["id"]
         root = resolve_project_root(p["root"])
-        if not root.is_dir():
+        repos_decl = p.get("repos") or {}
+        if not root.is_dir() and not (pid in ("k7", "mob", "solar", "mantrabox") and bool(repos_decl)):
             return {}, [], [f"{pid}: declared root does not exist — {root}"]
         surface_specs, surf_errors = discover_project_surfaces(p, root)
         if surf_errors:
             return {}, [], surf_errors
-        repos_decl = p.get("repos") or {}
-        uncloned_portfolio = pid in ("k7", "mob") and bool(repos_decl) and not any(
+        uncloned_portfolio = pid in ("k7", "mob", "solar", "mantrabox") and bool(repos_decl) and not any(
             (root / rel).resolve().is_dir() for rel in repos_decl.values()
         )
         surfaces = []
