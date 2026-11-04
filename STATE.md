@@ -44,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/cp-me-account-apis` | 0 | **n/a — NO UPSTREAM** | `8a9537443` |
-| `w0m-api` | `agent/cp-me-account-apis` | 0 | **n/a — NO UPSTREAM** | `fec32ce` |
-| `w0m-cf` | `agent/cp-me-account-apis` | 0 | **n/a — NO UPSTREAM** | `fd711dc` |
-| `w0m-skills` | `agent/cp-me-account-apis` | 0 | **n/a — NO UPSTREAM** | `807e032` |
-| `w0m-ext` | `agent/cp-me-account-apis` | 0 | **n/a — NO UPSTREAM** | `2fbde31` |
-| `w0m-sec` | `agent/cp-me-account-apis` | 0 | **n/a — NO UPSTREAM** | `a99cde1` |
-| `w0m-mlx/w0m-mlx` | `agent/cp-me-account-apis` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t627-orca-apply-ci-cleanup` | 0 | **n/a — NO UPSTREAM** | `8a9537443` |
+| `w0m-api` | `agent/t627-orca-apply-ci-cleanup` | 0 | **n/a — NO UPSTREAM** | `733e49c` |
+| `w0m-cf` | `agent/t627-orca-apply-ci-cleanup` | 0 | **n/a — NO UPSTREAM** | `fd711dc` |
+| `w0m-skills` | `agent/t627-orca-apply-ci-cleanup` | 0 | **n/a — NO UPSTREAM** | `807e032` |
+| `w0m-ext` | `agent/t627-orca-apply-ci-cleanup` | 0 | **n/a — NO UPSTREAM** | `2fbde31` |
+| `w0m-sec` | `agent/t627-orca-apply-ci-cleanup` | 0 | **n/a — NO UPSTREAM** | `a99cde1` |
+| `w0m-mlx/w0m-mlx` | `agent/t627-orca-apply-ci-cleanup` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 625 TASKS.md rows · 288/625 specced (1/6 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 626 TASKS.md rows · 288/626 specced (1/6 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T620","T17"],"repos":{"w0m-api":{"branch":"agent/cp-me-account-apis","dirty":0,"has_upstream":true,"head":"fec32ce","unpushed":null},"w0m-cf":{"branch":"agent/cp-me-account-apis","dirty":0,"has_upstream":true,"head":"fd711dc","unpushed":null},"w0m-ext":{"branch":"agent/cp-me-account-apis","dirty":0,"has_upstream":true,"head":"2fbde31","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/cp-me-account-apis","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/cp-me-account-apis","dirty":0,"has_upstream":true,"head":"a99cde1","unpushed":null},"w0m-skills":{"branch":"agent/cp-me-account-apis","dirty":0,"has_upstream":true,"head":"807e032","unpushed":null},"w0m-web":{"branch":"agent/cp-me-account-apis","dirty":0,"has_upstream":true,"head":"8a9537443","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":625,"specced":288,"specced_open":1,"total":625,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T620","T17"],"repos":{"w0m-api":{"branch":"agent/t627-orca-apply-ci-cleanup","dirty":0,"has_upstream":true,"head":"733e49c","unpushed":null},"w0m-cf":{"branch":"agent/t627-orca-apply-ci-cleanup","dirty":0,"has_upstream":true,"head":"fd711dc","unpushed":null},"w0m-ext":{"branch":"agent/t627-orca-apply-ci-cleanup","dirty":0,"has_upstream":true,"head":"2fbde31","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t627-orca-apply-ci-cleanup","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t627-orca-apply-ci-cleanup","dirty":0,"has_upstream":true,"head":"a99cde1","unpushed":null},"w0m-skills":{"branch":"agent/t627-orca-apply-ci-cleanup","dirty":0,"has_upstream":true,"head":"807e032","unpushed":null},"w0m-web":{"branch":"agent/t627-orca-apply-ci-cleanup","dirty":0,"has_upstream":true,"head":"8a9537443","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":626,"specced":288,"specced_open":1,"total":626,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,7 +115,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (8):
+#### Completed today (9):
 
 - **T617** — Fix release worktree node_modules drift, enforce symlink-safe gitignore rules, and verify full deploy app builds ((agy:t617-release-worktree-deploy-fix): Created and claimed T617 (in-progress) on branch agent/t617-release-worktree-deploy-fix BEFORE writing implementation code (T129 AC3/AC4), grounded against owner just deploy-all failure logs (2026.11.02-1793646360 and 2026.11.03-1793712665) and live reproduction of ?? node_modules in w0m-api, w0m-cf, and w0m-ext/extension.)
 - **T618** — Backport Bodhi/Moksha 8-zone window snapping + desktop icon fixes and prepare 9 upstream PR branches across Moksha, Bodhi, Orca, and Virtual-FIDO ((agy:t618-linux-distro-oss-prs): Created and claimed T618 (in-progress) on branch agent/t618-linux-distro-oss-prs inside /home/aleksei/.w0m/work/t618-linux-distro-oss-prs/w0m before modifying estate code (T129 AC3/AC4).)
@@ -125,6 +125,7 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T623** — Compact top-left Enterprise/RPG mode icon switcher with Alt+M & 4-tap gestures, mobile header logo filter corruption fix, and Personal Information verification check-mark rounds ((agy:t619-social-signal-insights): Created and claimed ticket (in-progress) in isolated agent tree /home/aleksei/.w0m/work/t619-social-signal-insights/w0m BEFORE editing UI files (T129 AC3/AC4).)
 - **T624** — Multi-platform social & GitHub signal tracing (Telegram, Threads, LinkedIn, X, Reddit, GitHub) lacks unified automated/on-demand connectivity, ToS-aware CF Edge Reader extraction, and 1-click insight promotion to todos, tasks, and projects ((agy:t619-social-signal-insights): Created and claimed ticket (in-progress) in isolated agent tree /home/aleksei/.w0m/work/t619-social-signal-insights/w0m BEFORE writing implementation code (T129 AC3/AC4), grounded against owner decisions (combined epic/spec, both automated + on-demand execution, optional ToS-aware CF Jina-Reader analogue in w0m-cf, and 1-click Insights Triage Inbox + Telegram Bot push for Todo / Task / Project promotion).)
 - **T626** — Fix /me/account 403 Forbidden on MFA/PAT/Identities proxy APIs, unblock first-factor /api/me/mfa enrollment, and enforce explicit CP API route-table coverage ((agy:cp-me-account-apis): Shipped w0m-web commit 8a9537443 (180/180 Vitest tests across 7 files, 0 oxlint warnings/errors, cp_nav_policy_test.py + supabase_surface_drift_check.py exit 0), wrote .agents/reports/2026-11-03-t626-cp-me-account-apis-and-mfa-enroll.md, appended LESSONS.md rule, and closed T626 as completed.)
+- **T627** — Replace Bash orca-overlay-update with stdlib Python scripts/orca_overlay_update.py (fixing EXIT trap crash) and clean up webomage GitHub Actions workflows and run history ((agy:t627-orca-apply-ci-cleanup): Replaced Bash orca-overlay-update with stdlib Python scripts/orca_overlay_update.py (5/5 tests in scripts/tests/test_orca_overlay_update.py + ruff clean + live just orca-apply / just orca-status verified), disabled 71 noisy GitHub Actions workflows and deleted 1,707 failed/legacy runs across webomage/ (0 failed runs remaining across all 33 repos), recorded LESSONS.md + .agents/reports/2026-11-03-t627-orca-apply-fix-and-actions-cleanup.md, and closed T627 as completed.)
 
 ## 3. Other open threads (in TASKS.md)
 
