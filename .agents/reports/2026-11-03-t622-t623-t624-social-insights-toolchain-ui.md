@@ -70,7 +70,7 @@ flowchart LR
    - Exposes `POST /api/reader/extract` and MCP tools `edge_read`, `social_search`, and `social_trace` authenticated with `WEBHOOK_SECRET` / `API_AUTH_TOKEN`.
    - Enforces `robots.txt` parsing (`User-Agent: WebomageEdgeReader`, `Disallow` / `Allow` longest-prefix match, `Crawl-delay`), `Retry-After` propagation, SSRF private/loopback IP rejection, and hard ToS blocklists (`451 blocked_tos` on LinkedIn authenticated/Sales Navigator scraping per `T98` and Telegram MTProto user-account scraping per `T550`).
    - Reuses the existing `0 */6 * * *` cron trigger in `w0m-cf/src/index.ts` without exceeding Cloudflare's 5-cron trigger ceiling.
-2. **Database & Append-Only Audit Provenance (`__KEEP_MIGRATION_20261103213000_T624__`)**:
+2. **Database & Append-Only Audit Provenance (`20261103213000_t621_social_signals_and_insights.sql`)**:
    - Widens `outreach_clips`, `outreach_threads`, and `source_links` CHECK constraints to `'github'`, `'reddit'`, and `'x'`.
    - Creates `social_watch_targets`, `social_signals` (deduplicated on `(profile_id, platform, signal_kind, external_id)` with `wom_jsonb_has_credential_keys(raw_payload)` guard), `social_insights` (with `promoted_todo_id uuid references public.todo_items(id)`), and append-only `social_signal_audit_log` populated by `SECURITY DEFINER` triggers (`T614`) and protected by explicit `X24` column grants.
    - Preserves `source_links` write-lock (`REVOKE INSERT/UPDATE/DELETE FROM authenticated`) by exposing `SECURITY DEFINER` RPC `public.wom_link_social_insight_source(...)` that verifies `social_insights.profile_id = public.current_profile_id()` before linking promoted todos/tasks/projects.
