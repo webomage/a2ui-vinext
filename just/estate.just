@@ -3194,6 +3194,9 @@ status-dashboard-refresh:
 cp-feature-index-refresh:
     @cd w0m-web && python3 project/scripts/cp_feature_index.py && git add docs/CP-FEATURE-INDEX.md
 
+codemap-refresh:
+    @cd w0m-web && python3 project/scripts/codemap_gen.py --write && git add docs/CODEMAP.md
+
 # Astro build smoke check for apps/demo (T566 AC4 / T149 AC3)
 build-demo:
     @cd w0m-web && pnpm --filter demo build

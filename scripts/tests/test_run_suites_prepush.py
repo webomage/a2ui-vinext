@@ -67,8 +67,8 @@ class TestRealRegistry(unittest.TestCase):
 
     def test_the_ratchets_that_failed_a_deploy_are_flagged(self):
         flagged = {s["name"] for s in rs.select_suites(self.suites, "offline", prepush=True)}
-        for name in ("spec-standard-gate", "ac-recipe-check", "ds-conformance-selftest", "suites-drift"):
-            self.assertIn(name, flagged, f"{name} failed a deploy on 2026-09-30 / 2026-10-06 and is not in the prepush tier")
+        for name in ("spec-standard-gate", "ac-recipe-check", "ds-conformance-selftest", "suites-drift", "codemap-check"):
+            self.assertIn(name, flagged, f"{name} failed a deploy on 2026-09-30 / 2026-10-06 / 2026-11-04 and is not in the prepush tier")
 
     def test_the_prepush_tier_stays_small(self):
         n = len(rs.select_suites(self.suites, "offline", prepush=True))
