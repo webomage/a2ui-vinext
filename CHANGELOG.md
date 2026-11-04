@@ -2,6 +2,51 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.04-1793824626
+_First deployed: 2026-11-04 21:03:51.604516+00_
+
+### Features
+- **orca**: stage *top & Docker TUI monitor launcher + HP monitor tooling (T638) ([T638](file:///.tasks/T638.md))
+
+### Fixes
+- **deploy**: repair T638 DoD, gate dod-check in prepush, and retry Wrangler 100312 (T639) ([T638](file:///.tasks/T638.md), [T639](file:///.tasks/T639.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `1ced624` | 2026-11-04 21:03:51.604516+00 |
+| demo | `1ced624` | 2026-11-04 21:03:00.269457+00 |
+| job | `1ced624` | 2026-11-04 21:02:06.233559+00 |
+| join | `1ced624` | 2026-11-04 21:00:36.950206+00 |
+| cp | `1ced624` | 2026-11-04 20:59:21.010303+00 |
+| web | `1ced624` | 2026-11-04 20:57:09.777908+00 |
+| release | `1ced624` | 2026-11-04 20:54:38.370331+00 |
+| api | `1ced624` | 2026-11-04 20:54:32.791941+00 |
+
+## 2026.11.04-1793813884
+_First deployed: 2026-11-04 17:56:02.340792+00_
+
+### Features
+- **orca,prs**: batch T635 edge arrows, 4-tap Alt+M, smooth resize & v1.4.249-w0m.2 ([T635](file:///.tasks/T635.md))
+- **estate**: audit 7 vault sources and separate tech, client, and public guides (T634) ([T634](file:///.tasks/T634.md))
+- **T628, T629, T630, T631, T632**: ship AgDR-0055, vault/todos/audit features, and SuperPM w0m co-owner role ([T628](file:///.tasks/T628.md), [T629](file:///.tasks/T629.md), [T630](file:///.tasks/T630.md), [T631](file:///.tasks/T631.md), [T632](file:///.tasks/T632.md))
+- **prs,rules**: add short just pr-open/orca-apply aliases and permanent multiline copy-paste rule (T621) ([T621](file:///.tasks/T621.md))
+- **estate**: close T622, T623, T624 with social trace cli, toolchain policy, lessons, and state ([T622](file:///.tasks/T622.md), [T623](file:///.tasks/T623.md), [T624](file:///.tasks/T624.md))
+- **orca**: triple-tap Enter PR branch, Live Input backload, subagent modes & Floating category (T621) ([T621](file:///.tasks/T621.md))
+- **T619**: implement self-healing webomage/orca overlay release feed ([T619](file:///.tasks/T619.md))
+- **prs**: register Bodhi/Moksha forks and 9 prepared upstream PR proposals (T618) ([T618](file:///.tasks/T618.md))
+
+### Fixes
+- **estate**: close T637 codemap-refresh hook and prepush gate ([T637](file:///.tasks/T637.md))
+- **estate**: close T633 deploy-all worker-env-check and vitest regressions ([T633](file:///.tasks/T633.md))
+- **T627**: replace Bash orca-overlay-update with Python CLI and clean up webomage Actions ([T627](file:///.tasks/T627.md))
+- **estate**: close T625 deploy-all suite regressions and record lesson ([T625](file:///.tasks/T625.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| web | `576e27e` | 2026-11-04 17:56:02.340792+00 |
+| release | `576e27e` | 2026-11-04 17:53:00.861227+00 |
+| api | `576e27e` | 2026-11-04 17:52:55.046228+00 |
+
 ## 2026.11.03-1793721135
 _First deployed: 2026-11-03 16:18:47.998331+00_
 
