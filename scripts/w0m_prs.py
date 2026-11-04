@@ -3301,6 +3301,31 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
             "`document-parse-time-effects.test.ts`, `native-document-bundle.test.ts`) Vitest suites, `tsc --noEmit`, and `oxlint` clean."
         ),
     },
+    "stablyai/orca:feat/system-and-docker-monitors": {
+        "ticket": "T638",
+        "title": "feat(terminal,mobile): add built-in *top and Docker TUI monitor launcher",
+        "why": (
+            "Developers regularly inspect host CPU/RAM, Docker/Podman containers, GPU load, disk usage, and I/O (`btop`, `htop`, "
+            "`lazydocker`, `ctop`, `docker stats`, `nvtop`, `radeontop`, `ncdu`, `duf`, `iotop`, `nethogs`, `top`), yet launching "
+            "any of them inside Orca currently requires opening a blank terminal tab and typing the command by hand—which is "
+            "especially slow on Orca Mobile."
+        ),
+        "what_for": (
+            "Auto-detects installed system, container, GPU, disk, and network `*top` TUIs on the workspace's execution host "
+            "(`local`, `wsl`, or paired `runtime`) with zero subprocess spawning and surfaces one-click/one-tap `Monitors` launchers "
+            "in the Desktop `+` dropdown submenu, the Desktop `+` search omnibox, and the Mobile `New Tab -> Monitors (*top)` sheet."
+        ),
+        "how": (
+            "- **Shared & Host Preflight (`src/shared/system-monitors.ts`, `src/main/preflight/system-monitor-detection.ts`)**: "
+            "Typed 21-tool catalog across System, Docker/Containers/Kubernetes, GPU, Disk, and I/O & Network probed via bounded "
+            "PATH directory scans (`detectAgentCommandsOnHost`), exposed over Electron IPC (`preflight:detectMonitors`) and "
+            "execution-host-routed RPC (`preflight.detectMonitors`).\n"
+            "- **Desktop & Mobile Launchers (`TabBarSystemMonitorsSubmenu.tsx`, `tab-create-menu-options.ts`, `MobileSystemMonitorsSheet.tsx`)**: "
+            "Adds `Monitors` submenu + `+` search omnibox items on Desktop and `Monitors (*top)` action sheet on Mobile with "
+            "`shell-ready` startup delivery and fallback presets when paired to older hosts.\n"
+            "- **Verification**: `oxlint`, `tsc --noEmit`, Desktop & Mobile localization catalogs, and Desktop + Mobile Vitest suites clean."
+        ),
+    },
 }
 
 

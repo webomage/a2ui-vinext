@@ -502,8 +502,8 @@ def main() -> int:
     # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593, T608, T621)
     proposals_list = w0m_prs.build_pr_proposals()
     check(
-        "build_pr_proposals returns 26 contribution proposals including T608, T618, T621, and T635 PRs",
-        len(proposals_list) == 26
+        "build_pr_proposals returns 27 contribution proposals including T608, T618, T621, T635, and T638 PRs",
+        len(proposals_list) == 27
         and any(p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter" for p in proposals_list),
@@ -1046,6 +1046,16 @@ def main() -> int:
             "stablyai/orca:feat/mobile-four-side-edge-arrows",
             "stablyai/orca:fix/terminal-smooth-resize-and-replay",
         },
+    )
+
+    t638_proposals = [
+        p for p in w0m_prs.build_pr_proposals(forks_dir=Path("/nonexistent-forks")) if p["ticket"] == "T638"
+    ]
+    check(
+        "build_pr_proposals renders T638 Orca system and Docker monitors proposal",
+        len(t638_proposals) == 1
+        and t638_proposals[0]["key"] == "stablyai/orca:feat/system-and-docker-monitors"
+        and "lazydocker" in t638_proposals[0]["body"],
     )
 
     print("─" * 60)
