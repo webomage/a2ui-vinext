@@ -683,7 +683,7 @@ deploy-web: (_confirm "deploy-web")
     @just _assert-provisioned web
     @echo "🔍 Building pagefind search index..."
     @cd w0m-web/apps/web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run build:search
-    @cd w0m-web/apps/web/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_WEB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web/apps/web/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_WEB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py web "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/join (join.webomage.com)
@@ -691,7 +691,7 @@ deploy-join: (_confirm "deploy-join")
     @echo "Building and deploying apps/join to Cloudflare Workers (Version: {{ deploy_version }})..."
     @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter join build
     @just _assert-provisioned join
-    @cd w0m-web/apps/join/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOIN:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web/apps/join/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOIN:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py join "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/job (job.webomage.com)
@@ -699,14 +699,14 @@ deploy-job: (_confirm "deploy-job")
     @echo "Building and deploying apps/job to Cloudflare Workers (Version: {{ deploy_version }})..."
     @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter job build
     @just _assert-provisioned job
-    @cd w0m-web/apps/job/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web/apps/job/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py job "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/demo (demo.webomage.com — T79 demo showcase) to Cloudflare Workers
 deploy-demo: (_confirm "deploy-demo")
     @echo "Building and deploying apps/demo to Cloudflare Workers (Version: {{ deploy_version }})..."
     @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter demo build
-    @cd w0m-web/apps/demo/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_DEMO:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web/apps/demo/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_DEMO:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py demo "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/cp (cp.w0m.xyz)
@@ -714,13 +714,13 @@ deploy-cp: (_confirm "deploy-cp")
     @echo "Building and deploying apps/cp to Cloudflare Workers (Version: {{ deploy_version }})..."
     @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter cp build
     @just _assert-provisioned cp
-    @cd w0m-web/apps/cp/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_CP:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web/apps/cp/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_CP:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py cp "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy w0m-cf to Cloudflare
 deploy-workers: (_confirm "deploy-workers")
     @echo "Deploying w0m-cf to Cloudflare Workflows (Version: {{ deploy_version }})..."
-    @cd w0m-cf && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec wrangler deploy --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-cf && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py w0m-cf "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy all functions in parallel using Supabase CLI

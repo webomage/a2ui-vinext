@@ -67,12 +67,19 @@ class TestRealRegistry(unittest.TestCase):
 
     def test_the_ratchets_that_failed_a_deploy_are_flagged(self):
         flagged = {s["name"] for s in rs.select_suites(self.suites, "offline", prepush=True)}
-        for name in ("spec-standard-gate", "ac-recipe-check", "ds-conformance-selftest", "suites-drift", "codemap-check"):
+        for name in (
+            "spec-standard-gate",
+            "ac-recipe-check",
+            "ds-conformance-selftest",
+            "suites-drift",
+            "codemap-check",
+            "dod-check",
+        ):
             self.assertIn(name, flagged, f"{name} failed a deploy on 2026-09-30 / 2026-10-06 / 2026-11-04 and is not in the prepush tier")
 
     def test_the_prepush_tier_stays_small(self):
         n = len(rs.select_suites(self.suites, "offline", prepush=True))
-        self.assertLessEqual(n, 15, f"{n} suites in the prepush tier: it exists to be fast, so it is not where every suite goes")
+        self.assertLessEqual(n, 16, f"{n} suites in the prepush tier: it exists to be fast, so it is not where every suite goes")
 
 
 class TestRunnerHygiene(unittest.TestCase):

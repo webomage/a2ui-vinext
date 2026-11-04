@@ -9,6 +9,10 @@ db-tunnel:
 deploy-function-test:
     @python3 scripts/tests/test_deploy_function.py
 
+# T639 offline unit & red-probe suite for scripts/wrangler_deploy.py (transient 100312 retry; never deploys).
+wrangler-deploy-test:
+    @python3 scripts/tests/test_wrangler_deploy.py
+
 confirm-log:
     @tail -40 w0m-web/.git/w0m-confirm.log 2>/dev/null || echo "(no confirmations recorded yet)"
 
