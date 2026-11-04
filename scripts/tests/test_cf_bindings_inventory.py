@@ -98,10 +98,16 @@ def test_live_estate_inventory_matches_measured_wrangler_configs() -> None:
     assert by_name["wom7func"]["bindings"]["browser"] == ["BROWSER"]  # pinned worker
     assert len(by_name["wom7func"]["crons"]) == 5  # pinned worker
 
-    # webomage (apps/web) has SESSION + SETTINGS KV namespaces, CF_WORKERS + W0M_API services, and PUBLIC_ASSETS R2
+    # webomage (apps/web) has SESSION + SETTINGS KV namespaces, CF_WORKERS + WOM7API services, and PUBLIC_ASSETS + VAULT_R2 R2 buckets
     assert len(by_name["webomage"]["bindings"]["kv_namespaces"]) == 2
-    assert by_name["webomage"]["bindings"]["r2_buckets"] == ["PUBLIC_ASSETS->wom-public-assets"]
+    assert by_name["webomage"]["bindings"]["r2_buckets"] == [
+        "PUBLIC_ASSETS->wom-public-assets",
+        "VAULT_R2->wom-engagement-vaults",
+    ]
     assert by_name["webomage-cp"]["bindings"]["r2_buckets"] == ["VAULT_R2->wom-engagement-vaults"]
+    assert by_name["webomage-cp"]["bindings"]["ai"] == ["AI"]
+    assert by_name["webomage-job"]["bindings"]["r2_buckets"] == ["VAULT_R2->wom-engagement-vaults"]
+    assert by_name["webomage-job"]["bindings"]["ai"] == ["AI"]
 
     # Candidates verified absent from all wrangler configs
     unconfigured = set(inventory["unconfigured_binding_types"])
