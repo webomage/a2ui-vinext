@@ -44,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t621-pr-open-alias` | 0 | **n/a — NO UPSTREAM** | `291086003` |
-| `w0m-api` | `agent/t621-pr-open-alias` | 0 | **n/a — NO UPSTREAM** | `fec32ce` |
-| `w0m-cf` | `agent/t621-pr-open-alias` | 0 | **n/a — NO UPSTREAM** | `fd711dc` |
-| `w0m-skills` | `agent/t621-pr-open-alias` | 0 | **n/a — NO UPSTREAM** | `807e032` |
-| `w0m-ext` | `agent/t621-pr-open-alias` | 0 | **n/a — NO UPSTREAM** | `2fbde31` |
-| `w0m-sec` | `agent/t621-pr-open-alias` | 0 | **n/a — NO UPSTREAM** | `a99cde1` |
-| `w0m-mlx/w0m-mlx` | `agent/t621-pr-open-alias` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t625-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `01c823d5b` |
+| `w0m-api` | `agent/t625-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `fec32ce` |
+| `w0m-cf` | `agent/t625-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `fd711dc` |
+| `w0m-skills` | `agent/t625-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `807e032` |
+| `w0m-ext` | `agent/t625-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `2fbde31` |
+| `w0m-sec` | `agent/t625-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `a99cde1` |
+| `w0m-mlx/w0m-mlx` | `agent/t625-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 624 TASKS.md rows · 287/624 specced (1/6 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 625 TASKS.md rows · 287/625 specced (1/6 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T620","T17"],"repos":{"w0m-api":{"branch":"agent/t621-pr-open-alias","dirty":0,"has_upstream":true,"head":"fec32ce","unpushed":null},"w0m-cf":{"branch":"agent/t621-pr-open-alias","dirty":0,"has_upstream":true,"head":"fd711dc","unpushed":null},"w0m-ext":{"branch":"agent/t621-pr-open-alias","dirty":0,"has_upstream":true,"head":"2fbde31","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t621-pr-open-alias","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t621-pr-open-alias","dirty":0,"has_upstream":true,"head":"a99cde1","unpushed":null},"w0m-skills":{"branch":"agent/t621-pr-open-alias","dirty":0,"has_upstream":true,"head":"807e032","unpushed":null},"w0m-web":{"branch":"agent/t621-pr-open-alias","dirty":0,"has_upstream":true,"head":"291086003","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":624,"specced":287,"specced_open":1,"total":624,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T620","T17"],"repos":{"w0m-api":{"branch":"agent/t625-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"fec32ce","unpushed":null},"w0m-cf":{"branch":"agent/t625-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"fd711dc","unpushed":null},"w0m-ext":{"branch":"agent/t625-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"2fbde31","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t625-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t625-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"a99cde1","unpushed":null},"w0m-skills":{"branch":"agent/t625-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"807e032","unpushed":null},"w0m-web":{"branch":"agent/t625-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"01c823d5b","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":625,"specced":287,"specced_open":1,"total":625,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,7 +115,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (7):
+#### Completed today (8):
 
 - **T617** — Fix release worktree node_modules drift, enforce symlink-safe gitignore rules, and verify full deploy app builds ((agy:t617-release-worktree-deploy-fix): Created and claimed T617 (in-progress) on branch agent/t617-release-worktree-deploy-fix BEFORE writing implementation code (T129 AC3/AC4), grounded against owner just deploy-all failure logs (2026.11.02-1793646360 and 2026.11.03-1793712665) and live reproduction of ?? node_modules in w0m-api, w0m-cf, and w0m-ext/extension.)
 - **T618** — Backport Bodhi/Moksha 8-zone window snapping + desktop icon fixes and prepare 9 upstream PR branches across Moksha, Bodhi, Orca, and Virtual-FIDO ((agy:t618-linux-distro-oss-prs): Created and claimed T618 (in-progress) on branch agent/t618-linux-distro-oss-prs inside /home/aleksei/.w0m/work/t618-linux-distro-oss-prs/w0m before modifying estate code (T129 AC3/AC4).)
@@ -124,6 +124,7 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T622** — Essential stdout-filtering, shell-inspection, and multi-harness CLIs (rg, fd, yq, bat, sqlite3, tree, ruff, curl, gpg, htmlq, mlr, sd, fzf, shellcheck, pdftotext, code-review-graph) are misclassified in out_of_scope or ungoverned while tool_usage_probe misses YAML hook entry commands ((agy:t619-social-signal-insights): Created and claimed ticket (in-progress) in isolated agent tree /home/aleksei/.w0m/work/t619-social-signal-insights/w0m BEFORE editing tools-policy.json or toolchain scripts (T129 AC3/AC4), covering rg, fd, yq, jq, bat, sqlite3, tree, ruff, curl, gpg, htmlq, mlr, sd, fzf, shellcheck, pdftotext, code-review-graph, Homebrew git, and the tool_usage_probe.py YAML entry: fix.)
 - **T623** — Compact top-left Enterprise/RPG mode icon switcher with Alt+M & 4-tap gestures, mobile header logo filter corruption fix, and Personal Information verification check-mark rounds ((agy:t619-social-signal-insights): Created and claimed ticket (in-progress) in isolated agent tree /home/aleksei/.w0m/work/t619-social-signal-insights/w0m BEFORE editing UI files (T129 AC3/AC4).)
 - **T624** — Multi-platform social & GitHub signal tracing (Telegram, Threads, LinkedIn, X, Reddit, GitHub) lacks unified automated/on-demand connectivity, ToS-aware CF Edge Reader extraction, and 1-click insight promotion to todos, tasks, and projects ((agy:t619-social-signal-insights): Created and claimed ticket (in-progress) in isolated agent tree /home/aleksei/.w0m/work/t619-social-signal-insights/w0m BEFORE writing implementation code (T129 AC3/AC4), grounded against owner decisions (combined epic/spec, both automated + on-demand execution, optional ToS-aware CF Jina-Reader analogue in w0m-cf, and 1-click Insights Triage Inbox + Telegram Bot push for Todo / Task / Project promotion).)
+- **T625** — deploy-all blocking suite failures across codemap-check, reality-verify (retired admin-todos-api spec refs), and vitest (7-provider OAuth registry + SocialInsightsHub placeholder) ((agy:t625-deploy-gates-fix): Created and claimed T625 (in-progress) in /home/aleksei/.w0m/work/t625-deploy-gates-fix/w0m BEFORE editing code (T129 AC3/AC4).)
 
 ## 3. Other open threads (in TASKS.md)
 
