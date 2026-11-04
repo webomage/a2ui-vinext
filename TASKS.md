@@ -34,7 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T625](.tasks/T625.md) | **P1** | **deploy-all blocking suite failures across codemap-check, reality-verify (retired admin-todos-api spec refs), and vitest (7-provider OAuth registry + SocialInsightsHub placeholder)** | web, tooling | — | ✅ **done** |
+| [T626](.tasks/T626.md) | **P1** | **Fix /me/account 403 Forbidden on MFA/PAT/Identities proxy APIs, unblock first-factor /api/me/mfa enrollment, and enforce explicit CP API route-table coverage** | web | openspec/specs/profile-auth-mfa-pat/spec.md | ✅ **done** |
 | [T624](.tasks/T624.md) | **P1** | **Multi-platform social & GitHub signal tracing (Telegram, Threads, LinkedIn, X, Reddit, GitHub) lacks unified automated/on-demand connectivity, ToS-aware CF Edge Reader extraction, and 1-click insight promotion to todos, tasks, and projects** | web, api, cf, ext, tooling | openspec/specs/social-signal-insights | ✅ **done** |
 | [T623](.tasks/T623.md) | **P1** | **Compact top-left Enterprise/RPG mode icon switcher with Alt+M & 4-tap gestures, mobile header logo filter corruption fix, and Personal Information verification check-mark rounds** | web | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T622](.tasks/T622.md) | **P1** | **Essential stdout-filtering, shell-inspection, and multi-harness CLIs (rg, fd, yq, bat, sqlite3, tree, ruff, curl, gpg, htmlq, mlr, sd, fzf, shellcheck, pdftotext, code-review-graph) are misclassified in out_of_scope or ungoverned while tool_usage_probe misses YAML hook entry commands** | tooling | — | ✅ **done** |
