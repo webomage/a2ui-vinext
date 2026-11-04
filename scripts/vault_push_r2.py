@@ -112,7 +112,7 @@ def is_client_safe_vault_file(
     allowed_prefixes: list[str],
     denied_prefixes: list[str],
 ) -> bool:
-    """Return True if a relative file path inside a project vault is safe to sync to R2."""
+    """Return True if a relative file path inside a project vault is safe for client viewers."""
     norm = rel_path.replace("\\", "/").lstrip("/")
     if not norm or norm.endswith("/.gitkeep") or norm == ".gitkeep":
         return False
@@ -121,9 +121,12 @@ def is_client_safe_vault_file(
     if norm in SAFE_OBSIDIAN_CONFIG_FILES:
         return True
 
-    denied = set(DEFAULT_DENIED_PREFIXES) | {
-        p for p in denied_prefixes if p != ".obsidian/"
-    } | {".obsidian/"}
+    # Client-safe tier ALWAYS denies `tech/` regardless of allowed_prefixes
+    denied = (
+        set(DEFAULT_DENIED_PREFIXES)
+        | {p for p in denied_prefixes if p != ".obsidian/"}
+        | {".obsidian/", "tech/"}
+    )
     for prefix in denied:
         if norm == prefix or norm.startswith(prefix) or f"/{prefix}" in norm:
             return False
@@ -136,8 +139,51 @@ def is_client_safe_vault_file(
         text = raw_bytes.decode("utf-8", errors="replace")
         if INTERNAL_CONTENT_RE.search(text):
             return False
+        if re.search(r"(?m)^audience\s*:\s*['\"]?tech['\"]?\s*$", text):
+            return False
 
     return True
+
+
+def is_syncable_vault_file(
+    rel_path: str,
+    raw_bytes: bytes,
+    allowed_prefixes: list[str],
+    denied_prefixes: list[str],
+    tech_prefixes: list[str] | None = None,
+    audience_tier: str = "all",
+) -> bool:
+    """Return True if a vault file should be pushed to R2 for gateway-enforced serving (T634).
+
+    - `audience_tier="client"`: strictly client-safe files (`guides/`, `mocs/`, etc.; zero `tech/`).
+    - `audience_tier="all"` (default): client-safe files PLUS declared `tech_prefixes` (`tech/`),
+      while still blocking `inbox/`, `.obsidian/plugins/`, `internal/`, and estate tracker files.
+      `vault-r2-gateway.ts` enforces `viewerTier` (`tech` vs `client`) per authenticated caller.
+    """
+    if is_client_safe_vault_file(rel_path, raw_bytes, allowed_prefixes, denied_prefixes):
+        return True
+    if audience_tier == "client":
+        return False
+
+    norm = rel_path.replace("\\", "/").lstrip("/")
+    if not norm or norm.endswith("/.gitkeep") or norm == ".gitkeep":
+        return False
+
+    declared_tech = list(tech_prefixes or ["tech/"])
+    hard_denied = (
+        set(DEFAULT_DENIED_PREFIXES)
+        | {
+            p
+            for p in denied_prefixes
+            if p != ".obsidian/" and p not in declared_tech
+        }
+        | {".obsidian/"}
+    )
+    for prefix in hard_denied:
+        if norm == prefix or norm.startswith(prefix) or f"/{prefix}" in norm:
+            return False
+
+    return any(norm == p or norm.startswith(p) for p in declared_tech)
 
 
 def discover_engagement_vaults(
@@ -187,13 +233,18 @@ def discover_engagement_vaults(
                 "vault_dir": vault_dir,
                 "allowed_prefixes": list(kh.get("allowed_prefixes") or []),
                 "denied_prefixes": list(kh.get("denied_prefixes") or []),
+                "guide_prefixes": list(kh.get("guide_prefixes") or ["guides/"]),
+                "tech_prefixes": list(kh.get("tech_prefixes") or ["tech/"]),
             }
         )
     return out
 
 
-def collect_vault_files(vault_meta: dict[str, Any]) -> list[tuple[str, Path, bytes]]:
-    """Walk an engagement vault directory and return client-safe (rel_path, full_path, bytes)."""
+def collect_vault_files(
+    vault_meta: dict[str, Any],
+    audience_tier: str = "all",
+) -> list[tuple[str, Path, bytes]]:
+    """Walk an engagement vault directory and return syncable (rel_path, full_path, bytes)."""
     vault_dir: Path = vault_meta["vault_dir"]
     if not vault_dir.is_dir():
         return []
@@ -203,11 +254,13 @@ def collect_vault_files(vault_meta: dict[str, Any]) -> list[tuple[str, Path, byt
             continue
         rel = p.relative_to(vault_dir).as_posix()
         raw = p.read_bytes()
-        if is_client_safe_vault_file(
+        if is_syncable_vault_file(
             rel,
             raw,
             vault_meta["allowed_prefixes"],
             vault_meta["denied_prefixes"],
+            vault_meta.get("tech_prefixes"),
+            audience_tier=audience_tier,
         ):
             collected.append((rel, p, raw))
     return collected
@@ -233,15 +286,20 @@ def ensure_bucket_and_cors(s3: Any, bucket: str, dry_run: bool) -> None:
         print(f"  ⚠️  CORS update warning on {bucket}: {e}", file=sys.stderr)
 
 
-def push_vault(s3: Any, vault_meta: dict[str, Any], dry_run: bool) -> tuple[int, int]:
+def push_vault(
+    s3: Any,
+    vault_meta: dict[str, Any],
+    dry_run: bool,
+    audience_tier: str = "all",
+) -> tuple[int, int]:
     bucket = vault_meta["r2_bucket"]
     prefix = vault_meta["r2_prefix"]
     eg_id = vault_meta["engagement_public_id"]
     vault_slug = vault_meta["vault_slug"]
-    files = collect_vault_files(vault_meta)
+    files = collect_vault_files(vault_meta, audience_tier=audience_tier)
     if not files:
         die(
-            f"engagement vault '{eg_id}' ({vault_meta['corpus_root']}) has 0 client-safe files to push."
+            f"engagement vault '{eg_id}' ({vault_meta['corpus_root']}) has 0 syncable files to push."
         )
 
     pushed_count = 0
@@ -387,6 +445,12 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Upload built w0m-ext iOS packages (.xpi / .zip) to r2://wom-engagement-vaults/releases/w0m-ext/",
     )
+    ap.add_argument(
+        "--audience",
+        choices=("all", "client"),
+        default="all",
+        help="Audience tier to push to R2 ('all' includes tech/ for gateway-gated staff sync; 'client' pushes only client-safe objects)",
+    )
     ap.add_argument("--policy", type=Path, default=DEFAULT_POLICY)
     args = ap.parse_args(argv)
 
@@ -415,7 +479,7 @@ def main(argv: list[str] | None = None) -> int:
     total_files = 0
     total_bytes = 0
     for v in vaults:
-        f_cnt, b_cnt = push_vault(s3, v, args.dry_run)
+        f_cnt, b_cnt = push_vault(s3, v, args.dry_run, audience_tier=args.audience)
         total_files += f_cnt
         total_bytes += b_cnt
 

@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T634](.tasks/T634.md) | **P1** | **Separate project docs vault sources into tech-internal engineering docs, client operational guides, and public web instructions across repo, Supabase, R2, and KnowledgeHub** | web, api, tooling | openspec/specs/per-project-vault-topology/spec.md | ✅ **done** |
 | [T633](.tasks/T633.md) · [#633](https://github.com/casualuser/webomage.com/issues/633) | **P1** | **deploy-all blocking suite failures across worker-env-check (security-audit process.env & locals.runtime) and vitest (release-worktree obsidian dist & roles .in().in() mock)** | web, ext, tooling | — | ✅ **done** |
 | [T632](.tasks/T632.md) | **P1** | **Surface active-hat tool availability across CP and render project milestones, visual roadmap, progress infographic, and role-scoped stats on both tech and client project vaults** | web, tooling | openspec/specs/per-project-vault-topology/spec.md | ✅ **done** |
 | [T631](.tasks/T631.md) | **P0** | **SuperPM & w0m (co-)owner role (w0m.exec.owner) for Aleksei & Elena with cross-project PM authority, transitive owner hat collapse, and project-scoped assigned-PM permissions** | api, web, tooling | openspec/specs/hat-management/spec.md | ✅ **done** |

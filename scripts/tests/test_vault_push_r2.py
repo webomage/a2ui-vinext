@@ -27,26 +27,61 @@ class TestVaultPushR2(unittest.TestCase):
         for eg_id, meta in by_eg.items():
             self.assertEqual(meta["r2_bucket"], "wom-engagement-vaults")
             self.assertEqual(meta["r2_prefix"], f"engagements/{eg_id}")
-            files = vpr.collect_vault_files(meta)
-            rel_paths = {rel for rel, _, _ in files}
-            self.assertIn("index.md", rel_paths, f"{eg_id} missing index.md")
-            self.assertIn("mocs/architecture.md", rel_paths, f"{eg_id} missing mocs/architecture.md")
+            files_all = vpr.collect_vault_files(meta, audience_tier="all")
+            rel_paths_all = {rel for rel, _, _ in files_all}
+            self.assertIn("index.md", rel_paths_all, f"{eg_id} missing index.md")
+            self.assertIn("mocs/architecture.md", rel_paths_all, f"{eg_id} missing mocs/architecture.md")
             self.assertIn(
-                "notes/mobile-sync-user-guide.md",
-                rel_paths,
-                f"{eg_id} missing notes/mobile-sync-user-guide.md",
+                "guides/user-guide.md",
+                rel_paths_all,
+                f"{eg_id} missing guides/user-guide.md",
             )
-            self.assertIn(".obsidian/app.json", rel_paths, f"{eg_id} missing .obsidian/app.json")
+            self.assertIn(
+                "guides/obsidian-sync-guide.md",
+                rel_paths_all,
+                f"{eg_id} missing guides/obsidian-sync-guide.md",
+            )
+            self.assertIn(
+                "tech/architecture-and-stack.md",
+                rel_paths_all,
+                f"{eg_id} missing tech/architecture-and-stack.md",
+            )
+            self.assertIn(".obsidian/app.json", rel_paths_all, f"{eg_id} missing .obsidian/app.json")
 
-    def test_client_safe_filter_blocks_inbox_plugins_and_internal_urls(self) -> None:
-        allowed = ["index.md", "mocs/", "notes/", "sources/", "claims/"]
-        denied = ["inbox/", ".obsidian/", "internal/", ".w0m/", "openspec/"]
+            files_client = vpr.collect_vault_files(meta, audience_tier="client")
+            rel_paths_client = {rel for rel, _, _ in files_client}
+            self.assertIn("guides/user-guide.md", rel_paths_client)
+            self.assertIn("guides/obsidian-sync-guide.md", rel_paths_client)
+            self.assertFalse(
+                any(rel.startswith("tech/") for rel in rel_paths_client),
+                f"{eg_id} leaked tech/ into audience_tier='client'",
+            )
+
+    def test_client_safe_filter_blocks_inbox_plugins_tech_and_internal_urls(self) -> None:
+        allowed = ["index.md", "guides/", "mocs/", "notes/", "sources/", "claims/"]
+        denied = ["inbox/", ".obsidian/", "internal/", "tech/", ".w0m/", "openspec/"]
 
         self.assertTrue(
             vpr.is_client_safe_vault_file("index.md", b"# Safe Index", allowed, denied)
         )
         self.assertTrue(
+            vpr.is_client_safe_vault_file("guides/user-guide.md", b"# Guide", allowed, denied)
+        )
+        self.assertTrue(
             vpr.is_client_safe_vault_file(".obsidian/app.json", b"{}", allowed, denied)
+        )
+        self.assertFalse(
+            vpr.is_client_safe_vault_file("tech/architecture-and-stack.md", b"# Tech", allowed, denied)
+        )
+        self.assertTrue(
+            vpr.is_syncable_vault_file(
+                "tech/architecture-and-stack.md",
+                b"# Tech",
+                allowed,
+                denied,
+                tech_prefixes=["tech/"],
+                audience_tier="all",
+            )
         )
         self.assertFalse(
             vpr.is_client_safe_vault_file(

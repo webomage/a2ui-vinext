@@ -53,14 +53,28 @@ class TestInitProjectVault(unittest.TestCase):
         self.assertTrue((target_root / "sources").is_dir())
         self.assertTrue((target_root / "claims").is_dir())
         self.assertTrue((target_root / "notes").is_dir())
+        self.assertTrue((target_root / "guides").is_dir())
         self.assertTrue((target_root / "mocs").is_dir())
+        self.assertTrue((target_root / "tech").is_dir())
         self.assertTrue((target_root / "assets").is_dir())
         self.assertTrue((target_root / ".obsidian").is_dir())
         self.assertTrue((target_root / ".obsidian" / "app.json").is_file())
+        self.assertTrue((target_root / "guides" / "user-guide.md").is_file())
+        self.assertTrue((target_root / "guides" / "obsidian-sync-guide.md").is_file())
+        self.assertTrue((target_root / "tech" / "architecture-and-stack.md").is_file())
 
         content = (target_root / "index.md").read_text()
         self.assertIn("project: test-client", content)
         self.assertIn("[[mocs/", content)
+        self.assertIn("[[guides/user-guide", content)
+        self.assertIn("[[guides/obsidian-sync-guide", content)
+        self.assertIn("Ready Vault", content)
+
+        tech_text = (target_root / "tech" / "architecture-and-stack.md").read_text()
+        self.assertIn("audience: tech", tech_text)
+        guide_text = (target_root / "guides" / "obsidian-sync-guide.md").read_text()
+        self.assertIn("audience: client", guide_text)
+        self.assertIn("w0m-obsidian-sync", guide_text)
 
     def test_init_is_idempotent(self):
         target_root = self.tmp_dir / "projects" / "test-client" / "vault"

@@ -40,11 +40,18 @@
         "corpus_root": "w0m-web/projects/w0m/vault",
         "allowed_prefixes": [
           "index.md",
+          "guides/",
           "mocs/",
           "notes/",
           "sources/",
           "claims/",
           "assets/"
+        ],
+        "guide_prefixes": [
+          "guides/"
+        ],
+        "tech_prefixes": [
+          "tech/"
         ],
         "denied_prefixes": [
           "inbox/",
@@ -69,11 +76,18 @@
         "corpus_root": "w0m-web/projects/1945/vault",
         "allowed_prefixes": [
           "index.md",
+          "guides/",
           "mocs/",
           "notes/",
           "sources/",
           "claims/",
           "assets/"
+        ],
+        "guide_prefixes": [
+          "guides/"
+        ],
+        "tech_prefixes": [
+          "tech/"
         ],
         "denied_prefixes": [
           "inbox/",
@@ -139,11 +153,18 @@
         "corpus_root": "w0m-web/projects/artemio/vault",
         "allowed_prefixes": [
           "index.md",
+          "guides/",
           "mocs/",
           "notes/",
           "sources/",
           "claims/",
           "assets/"
+        ],
+        "guide_prefixes": [
+          "guides/"
+        ],
+        "tech_prefixes": [
+          "tech/"
         ],
         "denied_prefixes": [
           "inbox/",
@@ -291,11 +312,18 @@
         "corpus_root": "w0m-web/projects/servicios777/vault",
         "allowed_prefixes": [
           "index.md",
+          "guides/",
           "mocs/",
           "notes/",
           "sources/",
           "claims/",
           "assets/"
+        ],
+        "guide_prefixes": [
+          "guides/"
+        ],
+        "tech_prefixes": [
+          "tech/"
         ],
         "denied_prefixes": [
           "inbox/",
@@ -366,11 +394,18 @@
         "corpus_root": "w0m-web/projects/personaje0/vault",
         "allowed_prefixes": [
           "index.md",
+          "guides/",
           "mocs/",
           "notes/",
           "sources/",
           "claims/",
           "assets/"
+        ],
+        "guide_prefixes": [
+          "guides/"
+        ],
+        "tech_prefixes": [
+          "tech/"
         ],
         "denied_prefixes": [
           "inbox/",

@@ -44,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t633-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `d2f3a193d` |
-| `w0m-api` | `agent/t633-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `733e49c` |
-| `w0m-cf` | `agent/t633-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `fd711dc` |
-| `w0m-skills` | `agent/t633-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `807e032` |
-| `w0m-ext` | `agent/t633-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `cb2ee79` |
-| `w0m-sec` | `agent/t633-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `a99cde1` |
-| `w0m-mlx/w0m-mlx` | `agent/t633-deploy-gates-fix` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/vault-tech-public-guides` | 0 | **n/a — NO UPSTREAM** | `7ec8ccaf8` |
+| `w0m-api` | `agent/vault-tech-public-guides` | 0 | **n/a — NO UPSTREAM** | `a5069d8` |
+| `w0m-cf` | `agent/vault-tech-public-guides` | 0 | **n/a — NO UPSTREAM** | `fd711dc` |
+| `w0m-skills` | `agent/vault-tech-public-guides` | 0 | **n/a — NO UPSTREAM** | `807e032` |
+| `w0m-ext` | `agent/vault-tech-public-guides` | 0 | **n/a — NO UPSTREAM** | `cb2ee79` |
+| `w0m-sec` | `agent/vault-tech-public-guides` | 0 | **n/a — NO UPSTREAM** | `a99cde1` |
+| `w0m-mlx/w0m-mlx` | `agent/vault-tech-public-guides` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 633 TASKS.md rows · 293/633 specced (1/6 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 633 TASKS.md rows · 294/634 specced (1/6 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T620","T17"],"repos":{"w0m-api":{"branch":"agent/t633-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"733e49c","unpushed":null},"w0m-cf":{"branch":"agent/t633-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"fd711dc","unpushed":null},"w0m-ext":{"branch":"agent/t633-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"cb2ee79","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t633-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t633-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"a99cde1","unpushed":null},"w0m-skills":{"branch":"agent/t633-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"807e032","unpushed":null},"w0m-web":{"branch":"agent/t633-deploy-gates-fix","dirty":0,"has_upstream":true,"head":"d2f3a193d","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":633,"specced":293,"specced_open":1,"total":633,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T620","T17"],"repos":{"w0m-api":{"branch":"agent/vault-tech-public-guides","dirty":0,"has_upstream":true,"head":"a5069d8","unpushed":null},"w0m-cf":{"branch":"agent/vault-tech-public-guides","dirty":0,"has_upstream":true,"head":"fd711dc","unpushed":null},"w0m-ext":{"branch":"agent/vault-tech-public-guides","dirty":0,"has_upstream":true,"head":"cb2ee79","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/vault-tech-public-guides","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/vault-tech-public-guides","dirty":0,"has_upstream":true,"head":"a99cde1","unpushed":null},"w0m-skills":{"branch":"agent/vault-tech-public-guides","dirty":0,"has_upstream":true,"head":"807e032","unpushed":null},"w0m-web":{"branch":"agent/vault-tech-public-guides","dirty":0,"has_upstream":true,"head":"7ec8ccaf8","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":633,"specced":294,"specced_open":1,"total":634,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,9 +115,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (1):
+#### Completed today (2):
 
 - **T633** — deploy-all blocking suite failures across worker-env-check (security-audit process.env & locals.runtime) and vitest (release-worktree obsidian dist & roles .in().in() mock) ((agy:t633-deploy-gates-fix — completed): Replaced locals.runtime.env + process.env. reads in apps/cp/src/pages/api/client/security-audit.ts and apps/web/src/pages/api/security-audit.ts with cloudflare:workers env + import.meta.env (AgDR-0023) and added makePoisonLocals() in security-audit-order.test.ts (just worker-env-check + 5/5 tests green). Added options.outDir to w0m-ext/obsidian-w0m/scripts/build.mjs and ephemeral os.tmpdir() compilation in vault-r2-gateway.test.ts (4/4 obsidian-w0m/scripts/test.mjs + 13/13 vault-r2-gateway.test.ts green with w0m-ext/obsidian-w0m/dist/ absent). Replaced user_roles mock in project-pm-assignment.test.ts with an Object.assign(promise, ...) PostgREST filter accumulator (5/5 tests + oxlint green). Lesson disposition: recorded transferable Worker env + clean release-worktree dist/ + PostgREST mock rule in @wom/LESSONS.md.)
+- **T634** — Separate project docs vault sources into tech-internal engineering docs, client operational guides, and public web instructions across repo, Supabase, R2, and KnowledgeHub ((agy:vault-tech-public-guides): Completed T634 (status: done, queue: done) across w0m-api, w0m-web, and @wom root; recorded transferable audience-parity & pg_catalog.sha256 trigger lesson in LESSONS.md. Owner Touch ID rollout steps (docs/DEPLOY-CONFIRM.md): just db-migrate, just vault-push-r2, and just deploy-all.)
 
 ## 3. Other open threads (in TASKS.md)
 

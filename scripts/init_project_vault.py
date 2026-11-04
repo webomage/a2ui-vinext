@@ -54,13 +54,14 @@ def init_vault(
 
     target.mkdir(parents=True, exist_ok=True)
 
-    # Required subdirectories
-    subdirs = ["inbox", "sources", "claims", "notes", "mocs", "assets", ".obsidian"]
+    # Required subdirectories (T371 + T634 audience-separated guides/ and tech/)
+    subdirs = ["inbox", "sources", "claims", "notes", "guides", "mocs", "tech", "assets", ".obsidian"]
     for sub in subdirs:
         d = target / sub
         d.mkdir(parents=True, exist_ok=True)
 
     today = datetime.date.today().isoformat()
+    audience_default = "public" if project_id == "w0m" else "client"
 
     # Default .obsidian/ configuration
     app_json = target / ".obsidian" / "app.json"
@@ -92,15 +93,20 @@ def init_vault(
                     "showOrphans": True,
                     "colorGroups": [
                         {"query": "path:mocs", "color": {"a": 1, "rgb": 3717112}},
+                        {"query": "path:guides", "color": {"a": 1, "rgb": 2596065}},
                         {"query": "path:notes", "color": {"a": 1, "rgb": 5793268}},
                         {"query": "path:claims", "color": {"a": 1, "rgb": 14720619}},
                         {"query": "path:sources", "color": {"a": 1, "rgb": 15047814}},
+                        {"query": "path:tech", "color": {"a": 1, "rgb": 11184895}},
                     ],
                 },
                 indent=2,
             )
             + "\n"
         )
+
+    eng_id = project.get("knowledge_hub", {}).get("engagement_public_id", f"eg-{project_id}")
+    org_slug = project.get("org_slug", project_id)
 
     # Master Map of Content (index.md)
     index_md = target / "index.md"
@@ -110,35 +116,39 @@ id: MOC-{project_id}
 title: "{project_id.capitalize()} Knowledge Base & Map of Content"
 project: {project_id}
 type: moc
+audience: {audience_default}
 created: {today}
 tags: [moc, project-vault, karpathy-wiki]
 ---
 
 # {project_id.capitalize()} Knowledge Base
 
-Welcome to the **{project_id}** project knowledge base. This vault implements the **Karpathy LLM Wiki pattern**:
-every piece of intelligence has an explicit lifecycle from raw intake to verified atomic claims, synthesized domain models, and navigational Maps of Content.
+Welcome to the **{project_id}** project knowledge base. This vault separates operational guides (`guides/`), executive Maps of Content (`mocs/`), and staff-only engineering specifications (`tech/`).
 
-## Primary Maps of Content (MOCs) & Guides
-- [[mocs/architecture|System Architecture & Components]]
-- [[mocs/requirements|Client Requirements & Specs]]
+## Operational Guides & Maps of Content
+- [[guides/user-guide|Operational User Guide & Daily Workflows]]
+- [[guides/obsidian-sync-guide|Obsidian Desktop & Mobile Sync Guide]]
+- [[mocs/architecture|System Overview & Capability Map]]
+- [[mocs/requirements|Client Requirements & Scope]]
 - [[mocs/deliverables|Deliverables & Milestones]]
-- [[notes/mobile-sync-user-guide|Obsidian Mobile & Cloudflare R2 Sync User Guide]]
+- [[mocs/roadmap-and-progress|Live Roadmap & Progress]]
 
 ## Directory Architecture
-| Directory | Role | Lifecycle Stage |
+| Directory | Audience | Purpose |
 |---|---|---|
-| `inbox/` | Unprocessed meeting transcripts, chat dumps, agent drops | Raw & transient |
-| `sources/` | Immutable client briefs, PRDs, contracts, external documentation | Immutable truth |
-| `claims/` | Atomic verified facts extracted from sources | Verified claims |
-| `notes/` | Synthesized system models, technical guides, decisions | Living knowledge |
-| `mocs/` | Thematic navigation indices and high-level summaries | Navigation |
-| `assets/` | Architecture diagrams, mockups, images | Attachments |
+| `guides/` | `{audience_default}` | Step-by-step operational instructions and Obsidian sync onboarding |
+| `mocs/` | `{audience_default}` | High-level capability overviews, requirements, and milestone summaries |
+| `notes/` | `{audience_default}` | Curated domain notes and agreed decisions |
+| `claims/` | `{audience_default}` | Atomic verified domain facts |
+| `sources/` | `{audience_default}` | Approved briefs and stakeholder reference documents |
+| `tech/` | `tech` | Staff-only engineering stack, API contracts, and delivery gates |
+| `inbox/` | denied | Raw unprocessed drops (never synced to portal or R2) |
+| `assets/` | `{audience_default}` | Diagrams and visual workflow guides |
 
-## Desktop, Mobile & Web Access
-- **Native Desktop Obsidian**: `obsidian://open?vault={project_id}`
-- **Client Portal Web UI**: `/o/{project.get("org_slug", project_id)}/projects/vault`
-- **Mobile R2 Sync Gateway**: `https://cp.webomage.com/api/vault/r2/{project.get("knowledge_hub", {}).get("engagement_public_id", f"eg-{project_id}")}`
+## Portal, Desktop & Mobile Access
+- **Client Portal Knowledge Hub**: `https://cp.webomage.com/o/{org_slug}/projects/vault`
+- **Cloudflare R2 Sync Endpoint**: `https://cp.webomage.com/api/vault/r2/{eng_id}`
+- **Native Desktop Obsidian** *(requires downloading the **Ready Vault (`.zip`)** and opening that folder in Obsidian first)*: `obsidian://open?vault={project_id}`
 """
         index_md.write_text(index_content)
 
@@ -147,16 +157,17 @@ every piece of intelligence has an explicit lifecycle from raw intake to verifie
     if not arch_moc.exists():
         arch_moc.write_text(f"""---
 id: MOC-{project_id}-architecture
-title: "{project_id.capitalize()} System Architecture"
+title: "{project_id.capitalize()} System Overview"
 project: {project_id}
 type: moc
+audience: {audience_default}
 created: {today}
 tags: [moc, architecture]
 ---
 
-# {project_id.capitalize()} Architecture MOC
+# {project_id.capitalize()} System Overview
 
-- Core stack components, API boundaries, and database models.
+- Customer-facing capabilities, service boundaries, and operational touchpoints.
 """)
 
     reqs_moc = target / "mocs" / "requirements.md"
@@ -166,6 +177,7 @@ id: MOC-{project_id}-requirements
 title: "{project_id.capitalize()} Requirements & Specifications"
 project: {project_id}
 type: moc
+audience: {audience_default}
 created: {today}
 tags: [moc, requirements]
 ---
@@ -182,6 +194,7 @@ id: MOC-{project_id}-deliverables
 title: "{project_id.capitalize()} Deliverables & Milestones"
 project: {project_id}
 type: moc
+audience: {audience_default}
 created: {today}
 tags: [moc, deliverables]
 ---
@@ -191,52 +204,76 @@ tags: [moc, deliverables]
 - Milestones, client sprint releases, and verified deliverables.
 """)
 
-    eng_id = project.get("knowledge_hub", {}).get("engagement_public_id", f"eg-{project_id}")
-    org_slug = project.get("org_slug", project_id)
-    mobile_guide = target / "notes" / "mobile-sync-user-guide.md"
-    if not mobile_guide.exists():
-        mobile_guide.write_text(f"""---
-id: NOTE-{project_id}-mobile-sync-guide
-title: "Obsidian Mobile & Desktop Sync User Guide ({eng_id})"
+    user_guide = target / "guides" / "user-guide.md"
+    if not user_guide.exists():
+        user_guide.write_text(f"""---
+id: GUIDE-{project_id}-user-guide
+title: "{project_id.capitalize()} Operational User Guide"
 project: {project_id}
-type: note
+type: guide
+audience: {audience_default}
 created: {today}
-tags: [user-guide, obsidian-mobile, cloudflare-r2, webdav]
+tags: [guide, user-guide, workflows]
 ---
 
-# Obsidian Mobile & Desktop Sync User Guide ({eng_id})
+# {project_id.capitalize()} Operational User Guide
 
-This engagement vault (`{project_id}`) is backed by isolated **Cloudflare R2** storage (`r2://wom-engagement-vaults/engagements/{eng_id}/`) and exposed over an authenticated WebDAV gateway so you can read, edit, and sync notes from **Obsidian Mobile (iOS & Android)**, **Obsidian Desktop**, or the **Client Portal Knowledge Hub** (`/o/{org_slug}/projects/vault`).
+Step-by-step instructions for operating **{project_id}** day to day and collaborating in the Client Portal (`/o/{org_slug}/projects/vault`).
 
-## Step 1 — Copy Your Per-Engagement Credentials in the Client Portal
-1. Open the Knowledge Hub at `https://cp.webomage.com/o/{org_slug}/projects/vault`.
-2. Click **📱 Connect Mobile App (CF R2)** in the top toolbar.
-3. Click **☁️ Sync R2 Vault** once to ensure the latest MOCs and notes are seeded into your R2 prefix.
-4. Copy the three WebDAV connection values:
-   - **WebDAV Server Address:** `https://cp.webomage.com/api/vault/r2/{eng_id}`
-   - **Username:** Your signed-in Webomage email address
-   - **Password:** Your active JWT Access Token (click **🔑 Copy Access Token**)
-
-## Step 2 — Configure Obsidian Mobile (iOS / Android) via "Remotely Save"
-1. Install **Obsidian** from the iOS App Store or Google Play Store and create a local vault named `{project_id}`.
-2. Open **Settings → Community Plugins → Turn on Community Plugins → Browse**.
-3. Search for **Remotely Save**, tap **Install**, then **Enable**.
-4. Open **Remotely Save** settings and configure:
-   - **Choose A Remote Service:** `WebDAV`
-   - **Server Address:** `https://cp.webomage.com/api/vault/r2/{eng_id}`
-   - **Username:** `<your-email>`
-   - **Password:** `<your-jwt-access-token>`
-   - **Auth Type:** `Basic`
-5. Tap **Check** to verify connectivity (`207 Multi-Status`), then tap the **Remotely Save** ribbon icon in the sidebar to sync all MOCs and notes (`[[index]]`, `[[mocs/architecture]]`, `[[mocs/requirements]]`, `[[mocs/deliverables]]`).
-
-## Security & Boundary Rules
-- **Strict Per-Engagement Isolation:** Your credentials only authorize access to `engagements/{eng_id}/`. Cross-engagement requests are rejected (`403 Forbidden`).
-- **Allowed Paths:** Markdown notes in `index.md`, `mocs/`, `notes/`, `claims/`, `sources/`, and safe `.obsidian/` workspace settings (`app.json`, `graph.json`, `appearance.json`).
-- **Denied Paths:** Raw `inbox/` drops and executable `.obsidian/plugins/` bundles are blocked at the gateway to prevent unreviewed or executable code from syncing across devices.
+## Quick Navigation
+- Review project milestones in [[mocs/deliverables|Deliverables & Milestones]].
+- Connect Obsidian on desktop or mobile via [[guides/obsidian-sync-guide|Obsidian Sync Guide]].
 """)
 
-    # Place .gitkeep or READMEs in subdirectories
-    for d_name in ["inbox", "sources", "claims", "notes", "assets"]:
+    obsidian_guide = target / "guides" / "obsidian-sync-guide.md"
+    if not obsidian_guide.exists():
+        obsidian_guide.write_text(f"""---
+id: GUIDE-{project_id}-obsidian-sync
+title: "Obsidian Desktop & Mobile Sync Guide ({eng_id})"
+project: {project_id}
+type: guide
+audience: {audience_default}
+created: {today}
+tags: [guide, obsidian, sync, cloudflare-r2]
+---
+
+# Obsidian Desktop & Mobile Sync Guide ({eng_id})
+
+Sync your **{project_id}** vault (`{eng_id}`) across Obsidian Desktop and Mobile using the **Webomage Vault Sync (`w0m-obsidian-sync`)** plugin and a revocable sync token (`w0m_vst_...`).
+
+## Step 1 — Download the Ready Vault Starter `.zip`
+1. Open `https://cp.webomage.com/o/{org_slug}/projects/vault` and click **Connect Obsidian**.
+2. Click **Download Ready Vault (`.zip`)**, unzip it into your Obsidian folder, and open that folder as a vault in Obsidian (`obsidian://open?vault={project_id}` works once registered).
+
+## Step 2 — Mint & Connect Your Revocable Sync Token
+1. In the **Connect Obsidian** modal, mint a per-device token (`w0m_vst_...`).
+2. Click **1-Click Connect (`obsidian://w0m-connect`)** or paste the Sync Endpoint (`https://cp.webomage.com/api/vault/r2/{eng_id}`) and Sync Token into **Settings → Webomage Vault Sync**.
+3. Run **Sync Now** to pull the latest guides and Maps of Content.
+
+## Audience & Security Boundaries
+- **Per-Engagement Isolation:** Tokens are SHA-256 hashed at rest, revocable per device, and scoped strictly to `{eng_id}`.
+- **Audience Separation:** Client sync tokens sync operational `guides/` and `mocs/`; internal `tech/` engineering runbooks remain restricted to authorized delivery staff.
+""")
+
+    tech_arch = target / "tech" / "architecture-and-stack.md"
+    if not tech_arch.exists():
+        tech_arch.write_text(f"""---
+id: TECH-{project_id}-architecture
+title: "{project_id.capitalize()} Engineering Stack & Architecture"
+project: {project_id}
+type: tech
+audience: tech
+created: {today}
+tags: [tech, architecture, internal]
+---
+
+# {project_id.capitalize()} Engineering Stack & Architecture
+
+Internal delivery reference (`audience: tech`) covering runtime topology, repository layout, bindings, and deployment verification gates for **{project_id}**.
+""")
+
+    # Place .gitkeep in empty subdirectories
+    for d_name in ["inbox", "sources", "claims", "notes", "guides", "tech", "assets"]:
         keep = target / d_name / ".gitkeep"
         if not keep.exists() and not any((target / d_name).iterdir()):
             keep.touch()

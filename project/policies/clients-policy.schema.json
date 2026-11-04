@@ -748,6 +748,24 @@
             "minLength": 1
           }
         },
+        "guide_prefixes": {
+          "type": "array",
+          "minItems": 1,
+          "description": "T634 — Client/public operational guide & instruction prefixes within corpus_root (e.g. ['guides/']).",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "tech_prefixes": {
+          "type": "array",
+          "minItems": 1,
+          "description": "T634 — Internal engineering & technical reference prefixes within corpus_root visible strictly to tech/contractor/owner/admin viewers and blocked for client viewers (e.g. ['tech/']).",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
         "denied_prefixes": {
           "type": "array",
           "minItems": 1,
