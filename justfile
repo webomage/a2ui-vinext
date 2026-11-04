@@ -2103,10 +2103,13 @@ orca-sessions-test:
     @python3 scripts/tests/test_orca_sessions.py
 
 orca-status:
-    @"$HOME/.local/bin/orca-overlay-update" --status
+    @python3 scripts/orca_overlay_update.py --status
 
-orca-apply:
-    @"$HOME/.local/bin/orca-overlay-update" --apply --wait
+orca-apply *args:
+    @python3 scripts/orca_overlay_update.py --apply --wait {{ args }}
+
+orca-overlay-test:
+    @python3 scripts/tests/test_orca_overlay_update.py
 
 moksha-apply:
     sudo dpkg -i "$HOME/.local/share/moksha-backport/moksha_0.4.2-4+w0m1_amd64.deb" && "$HOME/.local/bin/moksha-apply-native-snap"

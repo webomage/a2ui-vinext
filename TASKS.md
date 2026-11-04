@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T627](.tasks/T627.md) | **P1** | **Replace Bash orca-overlay-update with stdlib Python scripts/orca_overlay_update.py (fixing EXIT trap crash) and clean up webomage GitHub Actions workflows and run history** | tooling | — | ✅ **done** |
 | [T626](.tasks/T626.md) | **P1** | **Fix /me/account 403 Forbidden on MFA/PAT/Identities proxy APIs, unblock first-factor /api/me/mfa enrollment, and enforce explicit CP API route-table coverage** | web | openspec/specs/profile-auth-mfa-pat/spec.md | ✅ **done** |
 | [T624](.tasks/T624.md) | **P1** | **Multi-platform social & GitHub signal tracing (Telegram, Threads, LinkedIn, X, Reddit, GitHub) lacks unified automated/on-demand connectivity, ToS-aware CF Edge Reader extraction, and 1-click insight promotion to todos, tasks, and projects** | web, api, cf, ext, tooling | openspec/specs/social-signal-insights | ✅ **done** |
 | [T623](.tasks/T623.md) | **P1** | **Compact top-left Enterprise/RPG mode icon switcher with Alt+M & 4-tap gestures, mobile header logo filter corruption fix, and Personal Information verification check-mark rounds** | web | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
