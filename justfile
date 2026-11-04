@@ -319,8 +319,17 @@ prs-orca-sync *args:
 prs-proposals *args:
     @python3 scripts/w0m_prs.py proposals {{ args }}
 
-prs-submit *args:
-    @python3 scripts/w0m_prs.py submit {{ args }}
+prs-submit-dry *args:
+    @python3 scripts/w0m_prs.py submit --dry-run {{ args }}
+
+pr-dry *args:
+    @python3 scripts/w0m_prs.py submit --dry-run {{ args }}
+
+prs-submit *args: (_confirm "prs-submit")
+    @env W0M_PRS_SUBMIT_CONFIRMED=1 python3 scripts/w0m_prs.py submit --no-dry-run {{ args }}
+
+pr-open *args: (_confirm "prs-submit")
+    @env W0M_PRS_SUBMIT_CONFIRMED=1 python3 scripts/w0m_prs.py submit --no-dry-run {{ args }}
 
 prs-reconcile *args:
     @python3 scripts/w0m_prs.py reconcile {{ args }}
@@ -2092,6 +2101,15 @@ orca-close-completed *args:
 
 orca-sessions-test:
     @python3 scripts/tests/test_orca_sessions.py
+
+orca-status:
+    @"$HOME/.local/bin/orca-overlay-update" --status
+
+orca-apply:
+    @"$HOME/.local/bin/orca-overlay-update" --apply --wait
+
+moksha-apply:
+    sudo dpkg -i "$HOME/.local/share/moksha-backport/moksha_0.4.2-4+w0m1_amd64.deb" && "$HOME/.local/bin/moksha-apply-native-snap"
 
 # ── Multi-Platform Social & Developer Signal Tracing CLI (T624) ────────────────
 social-trace *args:

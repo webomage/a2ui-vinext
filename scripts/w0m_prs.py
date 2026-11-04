@@ -3932,6 +3932,25 @@ def check_prs_delta(
     }
 
 
+def _select_matching_proposal_keys(branch_filter: Optional[str]) -> set[str]:
+    """Resolve matching `CONTRIBUTION_PROPOSALS` keys via exact match first, then substring fallback."""
+    if not branch_filter or not branch_filter.strip():
+        return set(CONTRIBUTION_PROPOSALS.keys())
+    needle = branch_filter.strip().lower()
+    exact_matches: set[str] = set()
+    substring_matches: set[str] = set()
+    for key, prop in CONTRIBUTION_PROPOSALS.items():
+        upstream_repo, bname = key.split(":", 1)
+        fork_name = next((k for k, v in FORK_UPSTREAM_MAP.items() if v == upstream_repo), upstream_repo.split("/")[-1])
+        exact_fields = (bname, key, upstream_repo, fork_name, str(prop.get("ticket", "")))
+        if any(needle == f.lower() for f in exact_fields if f):
+            exact_matches.add(key)
+        sub_fields = (*exact_fields, str(prop.get("title", "")))
+        if any(needle in f.lower() for f in sub_fields if f):
+            substring_matches.add(key)
+    return exact_matches if exact_matches else substring_matches
+
+
 def build_pr_proposals(
     *,
     branch_filter: Optional[str] = None,
@@ -3939,11 +3958,12 @@ def build_pr_proposals(
 ) -> list[dict[str, Any]]:
     """Build structured Why / What For / How PR proposals for all prepared contribution branches (`T593` AC4)."""
     fdir = forks_dir or resolve_forks_dir()
+    matched_keys = _select_matching_proposal_keys(branch_filter)
     items: list[dict[str, Any]] = []
     for key, prop in CONTRIBUTION_PROPOSALS.items():
-        upstream_repo, bname = key.split(":", 1)
-        if branch_filter and branch_filter not in (bname, key, upstream_repo):
+        if key not in matched_keys:
             continue
+        upstream_repo, bname = key.split(":", 1)
         fork_name = next((k for k, v in FORK_UPSTREAM_MAP.items() if v == upstream_repo), upstream_repo.split("/")[-1])
         default_branch = (
             "v8"
@@ -5041,7 +5061,8 @@ def cmd_discover(args: argparse.Namespace) -> None:
 
 def cmd_proposals(args: argparse.Namespace) -> None:
     forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
-    items = build_pr_proposals(branch_filter=getattr(args, "branch", None), forks_dir=forks_dir)
+    branch_filter = getattr(args, "branch", None) or getattr(args, "query", None)
+    items = build_pr_proposals(branch_filter=branch_filter, forks_dir=forks_dir)
     if args.json:
         print(json.dumps({"count": len(items), "proposals": items}, indent=2))
         return
@@ -5057,8 +5078,9 @@ def cmd_proposals(args: argparse.Namespace) -> None:
 
 def cmd_submit(args: argparse.Namespace) -> None:
     forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
+    branch_filter = getattr(args, "branch", None) or getattr(args, "query", None)
     res = submit_prepared_prs(
-        branch_filter=getattr(args, "branch", None),
+        branch_filter=branch_filter,
         forks_dir=forks_dir,
         dry_run=bool(args.dry_run),
     )
@@ -5318,7 +5340,8 @@ def main() -> None:
     p_props = subparsers.add_parser(
         "proposals", help="List structured Why/What For/How PR proposals for prepared w0m-pr branches"
     )
-    p_props.add_argument("--branch", type=str, default=None, help="Filter by branch or repo name")
+    p_props.add_argument("query", nargs="?", default=None, help="Optional branch, ticket, repo, or keyword filter")
+    p_props.add_argument("--branch", type=str, default=None, help="Filter by branch, ticket, repo, or keyword")
     p_props.add_argument("--dir", type=str, help="Path to w0m-pr directory")
     p_props.add_argument("--json", action="store_true", help="Output structured JSON")
     p_props.set_defaults(func=cmd_proposals)
@@ -5327,7 +5350,8 @@ def main() -> None:
     p_submit = subparsers.add_parser(
         "submit", help="Submit prepared w0m-pr upstream PRs (requires human confirmation or --dry-run)"
     )
-    p_submit.add_argument("--branch", type=str, default=None, help="Specific branch or repo to submit")
+    p_submit.add_argument("query", nargs="?", default=None, help="Optional branch, ticket, repo, or keyword filter")
+    p_submit.add_argument("--branch", type=str, default=None, help="Specific branch, ticket, repo, or keyword to submit")
     p_submit.add_argument("--dir", type=str, help="Path to w0m-pr directory")
     p_submit.add_argument(
         "--dry-run",

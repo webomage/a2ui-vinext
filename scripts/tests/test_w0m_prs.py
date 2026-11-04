@@ -517,6 +517,15 @@ def main() -> int:
             for p in proposals_list
         ),
     )
+    triple_tap_props = w0m_prs.build_pr_proposals(branch_filter="triple-tap")
+    t621_props = w0m_prs.build_pr_proposals(branch_filter="t621")
+    check(
+        "build_pr_proposals resolves case-insensitive keyword ('triple-tap') and ticket ('t621') filters cleanly",
+        len(triple_tap_props) == 1
+        and triple_tap_props[0]["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter"
+        and len(t621_props) == 1
+        and t621_props[0]["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter",
+    )
     submit_dry = w0m_prs.submit_prepared_prs(dry_run=True)
     check(
         "submit_prepared_prs dry-run marks matched branch DRY_RUN_READY",

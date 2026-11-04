@@ -40,5 +40,5 @@
 ## 3. Upstream PR Submission (`T435` Human Confirmation Gate)
 
 Per `T435`, external PR creation against `stablyai/orca` requires human confirmation:
-- **Compare URL**: `https://github.com/stablyai/orca/compare/main...webomage:orca:feat/mobile-terminal-triple-tap-enter?expand=1`
-- **CLI Submission Command**: `just prs-submit --branch feat/mobile-terminal-triple-tap-enter --no-dry-run`
+- **Compare URL**: `https://github.com/stablyai/orca/compare/main...webomage:feat/mobile-terminal-triple-tap-enter?expand=1`
+- **CLI Submission Command**: `just pr-open triple-tap` (or `just pr-dry triple-tap` to preview)
