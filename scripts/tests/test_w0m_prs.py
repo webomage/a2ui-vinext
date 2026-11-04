@@ -502,8 +502,8 @@ def main() -> int:
     # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593, T608, T621)
     proposals_list = w0m_prs.build_pr_proposals()
     check(
-        "build_pr_proposals returns 23 contribution proposals including T608, T618, and T621 PRs",
-        len(proposals_list) == 23
+        "build_pr_proposals returns 26 contribution proposals including T608, T618, T621, and T635 PRs",
+        len(proposals_list) == 26
         and any(p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter" for p in proposals_list),
@@ -1033,6 +1033,19 @@ def main() -> int:
     check(
         "INTERNAL_OR_SUPERSEDED_BRANCHES excludes T619 feat/w0m-overlay-updater-feed internal branch",
         "feat/w0m-overlay-updater-feed" in w0m_prs.INTERNAL_OR_SUPERSEDED_BRANCHES,
+    )
+    t633_proposals = [
+        p for p in w0m_prs.build_pr_proposals(forks_dir=Path("/nonexistent-forks")) if p["ticket"] == "T635"
+    ]
+    check(
+        "build_pr_proposals renders all 3 T635 Orca proposals (4-tap Alt+M, 4-side edge arrows, smooth resize)",
+        len(t633_proposals) == 3
+        and {p["key"] for p in t633_proposals}
+        == {
+            "stablyai/orca:feat/mobile-terminal-4-tap-alt-m",
+            "stablyai/orca:feat/mobile-four-side-edge-arrows",
+            "stablyai/orca:fix/terminal-smooth-resize-and-replay",
+        },
     )
 
     print("─" * 60)

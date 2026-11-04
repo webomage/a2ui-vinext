@@ -3229,6 +3229,78 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
             "`touch-tap-selection.test.ts`), `0` localization drift, and `0` `oxlint` warnings/errors."
         ),
     },
+    "stablyai/orca:feat/mobile-terminal-4-tap-alt-m": {
+        "ticket": "T635",
+        "title": "feat(mobile): send Alt+M on terminal 4-tap gesture",
+        "why": (
+            "Interactive CLI coding agents (Claude Code, Antigravity `agy`, Codex, OpenCode) bind `Alt+M` (`\\x1bm`) to cycle execution/permission "
+            "modes on the fly, yet mobile software keyboards have no `Alt` modifier key—forcing mobile users to open accessory modal sheets "
+            "or maintain custom shortcut keys just to toggle agent modes."
+        ),
+        "what_for": (
+            "Adds an independently toggleable `4-tap for Alt+M` terminal gesture (`Terminal Settings -> Gestures`, enabled by default) that "
+            "sends `Alt+M` (`\\x1bm`, encoded via `encodeTerminalKeyForModes` with Live Input flush and selection haptic feedback) on four "
+            "consecutive single-finger taps without opening the software keyboard."
+        ),
+        "how": (
+            "- **`mobile/src/terminal/document/surface-tap.ts`, `terminal-webview-messages.ts`, & `use-terminal-webview-controller.ts`**: "
+            "Detects 4 consecutive single-finger non-link taps (`<= 400ms` inter-tap, `<= 45px` radius) inside the terminal WebView, "
+            "disqualifying streaks on scroll, pinch, selection, or movement past tap slop, and emitting `{ type: 'terminal-quad-tap' }`.\n"
+            "- **`mobile/src/session/use-mobile-session-terminal-quad-tap.ts`**: Flushes pending Live Input bytes and sends mode-encoded "
+            "`\\x1bm` via `handleAccessoryKey`.\n"
+            "- **`mobile/src/terminal/terminal-accessory-layout.ts` & `TerminalShortcutSettings.tsx`**: Persists `quadTapAltMEnabled` "
+            "(default `true`) inside the bridge-allowlisted terminal accessory layout preference and exposes a separate `4-tap for Alt+M` "
+            "switch under `GESTURES`.\n"
+            "- **Verification**: Mobile `tsc --noEmit`, `verify:mobile-localization`, `oxlint`, and Vitest suites (`surface-tap`, "
+            "`use-mobile-session-terminal-quad-tap`, and `terminal-accessory-layout`) passing with `0` errors."
+        ),
+    },
+    "stablyai/orca:feat/mobile-four-side-edge-arrows": {
+        "ticket": "T635",
+        "title": "feat(mobile): add sticky 4-side edge navigation arrows inside panes",
+        "why": (
+            "Navigating long transcripts, file/diff previews, session tabs, and interactive terminal prompts one-handed on mobile requires "
+            "either stretching to top tab bars or keeping the software keyboard / accessory dock open just to press arrow keys."
+        ),
+        "what_for": (
+            "Renders sticky 4-side inner-edge navigation controls (`↑`, `↓`, `←`, `→`) inside active Terminal, Native Chat, and File/Diff/Markdown "
+            "panes with three switchable ergonomic styles (`Edge Pills`, `Edge Strips`, `Floating Orbs`, plus `Off`), hold-to-repeat terminal "
+            "arrow dispatch with `Ctrl`/`Alt`/`Shift` modifier support, and persistent Settings + `•••` menu controls."
+        ),
+        "how": (
+            "- **`mobile/src/navigation/edge-arrows/*` & `use-session-edge-navigation.ts`**: Mounts a keyboard- and dock-aware 4-side overlay "
+            "routing directional presses to terminal arrow keys (`400ms -> 45ms` repeat), transcript/file page scrolling, and session tab cycling.\n"
+            "- **`EdgeNavigationSettingsSection.tsx` & `EdgeNavigationModeSheet.tsx`**: Persists `edgeNavigationMode` and quick-switcher chip "
+            "visibility in `orca:terminal-accessory-layout` and exposes controls in `TerminalShortcutSettings` and the session `•••` menu.\n"
+            "- **Verification**: `27/27` edge-navigation Vitest assertions, `tsc --noEmit`, `verify:mobile-localization`, and `oxlint` clean."
+        ),
+    },
+    "stablyai/orca:fix/terminal-smooth-resize-and-replay": {
+        "ticket": "T635",
+        "title": "fix(terminal,mobile): hold painted surface across SIGWINCH resize and ?2026 repaint bursts",
+        "why": (
+            "Interactive CLI coding agents (`claude`, `codex`, `agy`, `opencode`) render rich transcripts in the normal scrollback buffer "
+            "rather than the alternate screen (`?1049h`). When a Desktop split pane, sidebar, or Mobile viewport/keyboard resizes (`SIGWINCH`), "
+            "these TUIs clear and re-stream their entire conversation transcript across multiple PTY chunks—producing a jarring top-to-bottom "
+            "long-scrolling waterfall on both Desktop xterm and Mobile WebView."
+        ),
+        "what_for": (
+            "Freezes the last painted terminal frame across foreground `SIGWINCH` resize/reflow repaint bursts and coalesces multi-chunk "
+            "synchronized output (`\\x1b[?2026h...\\x1b[?2026l`) on Mobile so layout and window-size redraws reveal settled output in one "
+            "clean swap without scrolling waterfalls or input latency."
+        ),
+        "how": (
+            "- **Desktop (`src/renderer/src/components/terminal-pane/pty-connection/pty-resize-repaint-hold.ts`)**: Captures the painted "
+            "`.xterm-screen` canvas via `beginTerminalReplayPresentation` on foreground `SIGWINCH`, holds across queued/parsed repaint chunks "
+            "(`90ms` initial wait, `48ms` post-parse settle, `380ms` max cap), restores bottom scroll anchor when previously pinned, and yields "
+            "immediately on user keystrokes.\n"
+            "- **Mobile (`mobile/src/terminal/terminal-write-coalescer.ts` & `mobile/src/terminal/document/resize-repaint-hold.ts`)**: Adds "
+            "`beginResizeBurst()` (`220ms` burst / `56ms` quiet settle) and DECSET `?2026` frame-boundary holding (`160ms` safety cap) to the "
+            "bridge coalescer, paired with a WebView canvas bitmap hold across `resize`/`reflow` redraws.\n"
+            "- **Verification**: Desktop (`pty-resize-repaint-hold.test.ts`) and Mobile (`terminal-write-coalescer.test.ts`, "
+            "`document-parse-time-effects.test.ts`, `native-document-bundle.test.ts`) Vitest suites, `tsc --noEmit`, and `oxlint` clean."
+        ),
+    },
 }
 
 
@@ -3615,6 +3687,7 @@ def _inspect_fork_and_branches(repo_path: Path, fetch: bool) -> tuple[dict[str, 
             or bname in seen_branch_names
             or bname in ACTIVE_OPEN_PR_HEAD_BRANCHES
             or bname in INTERNAL_OR_SUPERSEDED_BRANCHES
+            or bname.startswith("overlay/")
         ):
             continue
         if "casualuser" not in author_email.lower() and "tcelishchev" not in author_name.lower():

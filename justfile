@@ -2105,6 +2105,9 @@ orca-sessions-test:
 orca-status:
     @python3 scripts/orca_overlay_update.py --status
 
+orca-release:
+    @python3 scripts/orca_overlay_update.py --trigger
+
 orca-apply *args:
     @python3 scripts/orca_overlay_update.py --apply --wait {{ args }}
 
