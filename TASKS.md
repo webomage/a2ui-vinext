@@ -25,7 +25,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T636](.tasks/T636.md) | **P1** | 🆕 **Harden first-party web apps and codebase to pass Webomage perimeter, Lighthouse, and codebase audits, and add Lighthouse report service** | web, api, sec | openspec/specs/security-posture-audit/spec.md | ⚪ **queued** |
 | [T620](.tasks/T620.md) | **P2** | 🆕 **Audit all required and actively used host, agent, and custom-fork tools across workstations** | tooling | — | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
@@ -36,6 +35,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T637](.tasks/T637.md) · [#637](https://github.com/casualuser/webomage.com/issues/637) | **P1** | **Regenerate stale docs/CODEMAP.md after T634 and wire codemap-refresh pre-commit + codemap-check prepush gate to prevent post-Touch-ID deploy failures** | web, tooling | — | ✅ **done** |
+| [T636](.tasks/T636.md) | **P1** | 🆕 **Harden first-party web apps and codebase to pass Webomage perimeter, Lighthouse, and codebase audits, and add Lighthouse report service** | web, api, sec | openspec/specs/security-posture-audit/spec.md | ✅ **done** |
 | [T635](.tasks/T635.md) | **P1** | **Batch Orca Mobile 4-side edge arrows, 4-tap Alt+M gesture, smooth SIGWINCH/?2026 resize repaint hold, and overlay/* adaptation into single v1.4.249-w0m.2 release** | tooling | — | ✅ **done** |
 | [T634](.tasks/T634.md) | **P1** | **Separate project docs vault sources into tech-internal engineering docs, client operational guides, and public web instructions across repo, Supabase, R2, and KnowledgeHub** | web, api, tooling | openspec/specs/per-project-vault-topology/spec.md | ✅ **done** |
 | [T633](.tasks/T633.md) · [#633](https://github.com/casualuser/webomage.com/issues/633) | **P1** | **deploy-all blocking suite failures across worker-env-check (security-audit process.env & locals.runtime) and vitest (release-worktree obsidian dist & roles .in().in() mock)** | web, ext, tooling | — | ✅ **done** |

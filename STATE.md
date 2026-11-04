@@ -15,9 +15,8 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T636](/home/aleksei/Projects/!self/w0m/.tasks/T636.md) | ⚠️ not mirrored | P1 | queued | security | 75 | Harden first-party web apps and codebase to pass Webomage perimeter, Lighth 📄 live spec |
-| 2 | [T620](/home/aleksei/Projects/!self/w0m/.tasks/T620.md) | ⚠️ not mirrored | P2 | queued | tools | 25 | Audit all required and actively used host, agent, and custom-fork tools across workstati |
-| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 1 | [T620](/home/aleksei/Projects/!self/w0m/.tasks/T620.md) | ⚠️ not mirrored | P2 | queued | tools | 25 | Audit all required and actively used host, agent, and custom-fork tools across workstati |
+| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -25,17 +24,16 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 7 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **7** are
+> ⚠️ **0 of 6 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **6** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T636](/home/aleksei/Projects/!self/w0m/.tasks/T636.md) | ⚠️ not mirrored | P1 | queued | security | 0/5 | `░░░░░░░░░░` 0% | — | Harden first-party web apps and codebase to pass Webomage pe |
-| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
-| 3 | [T620](/home/aleksei/Projects/!self/w0m/.tasks/T620.md) | ⚠️ not mirrored | P2 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | Audit all required and actively used host, agent, and custom |
+| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 2 | [T620](/home/aleksei/Projects/!self/w0m/.tasks/T620.md) | ⚠️ not mirrored | P2 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | Audit all required and actively used host, agent, and custom |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -46,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t637-codemap-prepush-fix` | 0 | **n/a — NO UPSTREAM** | `bb0f1d487` |
-| `w0m-api` | `agent/t637-codemap-prepush-fix` | 0 | **n/a — NO UPSTREAM** | `a5069d8` |
-| `w0m-cf` | `agent/t637-codemap-prepush-fix` | 0 | **n/a — NO UPSTREAM** | `fd711dc` |
-| `w0m-skills` | `agent/t637-codemap-prepush-fix` | 0 | **n/a — NO UPSTREAM** | `807e032` |
-| `w0m-ext` | `agent/t637-codemap-prepush-fix` | 0 | **n/a — NO UPSTREAM** | `cb2ee79` |
-| `w0m-sec` | `agent/t637-codemap-prepush-fix` | 0 | **n/a — NO UPSTREAM** | `a99cde1` |
-| `w0m-mlx/w0m-mlx` | `agent/t637-codemap-prepush-fix` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t636-audit-hardening-and-pricing` | 0 | **n/a — NO UPSTREAM** | `48f8a5b18` |
+| `w0m-api` | `agent/t636-audit-hardening-and-pricing` | 0 | **n/a — NO UPSTREAM** | `3612ace` |
+| `w0m-cf` | `agent/t636-audit-hardening-and-pricing` | 0 | **n/a — NO UPSTREAM** | `fd711dc` |
+| `w0m-skills` | `agent/t636-audit-hardening-and-pricing` | 0 | **n/a — NO UPSTREAM** | `807e032` |
+| `w0m-ext` | `agent/t636-audit-hardening-and-pricing` | 0 | **n/a — NO UPSTREAM** | `cb2ee79` |
+| `w0m-sec` | `agent/t636-audit-hardening-and-pricing` | 0 | **n/a — NO UPSTREAM** | `b0b2a41` |
+| `w0m-mlx/w0m-mlx` | `agent/t636-audit-hardening-and-pricing` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 7 open · 637 TASKS.md rows · 295/637 specced (2/7 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 637 TASKS.md rows · 295/637 specced (1/6 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T636","T620","T17"],"repos":{"w0m-api":{"branch":"agent/t637-codemap-prepush-fix","dirty":0,"has_upstream":true,"head":"a5069d8","unpushed":null},"w0m-cf":{"branch":"agent/t637-codemap-prepush-fix","dirty":0,"has_upstream":true,"head":"fd711dc","unpushed":null},"w0m-ext":{"branch":"agent/t637-codemap-prepush-fix","dirty":0,"has_upstream":true,"head":"cb2ee79","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t637-codemap-prepush-fix","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t637-codemap-prepush-fix","dirty":0,"has_upstream":true,"head":"a99cde1","unpushed":null},"w0m-skills":{"branch":"agent/t637-codemap-prepush-fix","dirty":0,"has_upstream":true,"head":"807e032","unpushed":null},"w0m-web":{"branch":"agent/t637-codemap-prepush-fix","dirty":0,"has_upstream":true,"head":"bb0f1d487","unpushed":null}},"tickets":{"open":7,"rowless_open":[],"rows":637,"specced":295,"specced_open":2,"total":637,"unmirrored_open":3}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T620","T17"],"repos":{"w0m-api":{"branch":"agent/t636-audit-hardening-and-pricing","dirty":0,"has_upstream":true,"head":"3612ace","unpushed":null},"w0m-cf":{"branch":"agent/t636-audit-hardening-and-pricing","dirty":0,"has_upstream":true,"head":"fd711dc","unpushed":null},"w0m-ext":{"branch":"agent/t636-audit-hardening-and-pricing","dirty":0,"has_upstream":true,"head":"cb2ee79","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t636-audit-hardening-and-pricing","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t636-audit-hardening-and-pricing","dirty":0,"has_upstream":true,"head":"b0b2a41","unpushed":null},"w0m-skills":{"branch":"agent/t636-audit-hardening-and-pricing","dirty":0,"has_upstream":true,"head":"807e032","unpushed":null},"w0m-web":{"branch":"agent/t636-audit-hardening-and-pricing","dirty":0,"has_upstream":true,"head":"48f8a5b18","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":637,"specced":295,"specced_open":1,"total":637,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -117,11 +115,12 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (4):
+#### Completed today (5):
 
 - **T633** — deploy-all blocking suite failures across worker-env-check (security-audit process.env & locals.runtime) and vitest (release-worktree obsidian dist & roles .in().in() mock) ((agy:t633-deploy-gates-fix — completed): Replaced locals.runtime.env + process.env. reads in apps/cp/src/pages/api/client/security-audit.ts and apps/web/src/pages/api/security-audit.ts with cloudflare:workers env + import.meta.env (AgDR-0023) and added makePoisonLocals() in security-audit-order.test.ts (just worker-env-check + 5/5 tests green). Added options.outDir to w0m-ext/obsidian-w0m/scripts/build.mjs and ephemeral os.tmpdir() compilation in vault-r2-gateway.test.ts (4/4 obsidian-w0m/scripts/test.mjs + 13/13 vault-r2-gateway.test.ts green with w0m-ext/obsidian-w0m/dist/ absent). Replaced user_roles mock in project-pm-assignment.test.ts with an Object.assign(promise, ...) PostgREST filter accumulator (5/5 tests + oxlint green). Lesson disposition: recorded transferable Worker env + clean release-worktree dist/ + PostgREST mock rule in @wom/LESSONS.md.)
 - **T634** — Separate project docs vault sources into tech-internal engineering docs, client operational guides, and public web instructions across repo, Supabase, R2, and KnowledgeHub ((agy:vault-tech-public-guides): Completed T634 (status: done, queue: done) across w0m-api, w0m-web, and @wom root; recorded transferable audience-parity & pg_catalog.sha256 trigger lesson in LESSONS.md. Owner Touch ID rollout steps (docs/DEPLOY-CONFIRM.md): just db-migrate, just vault-push-r2, and just deploy-all.)
 - **T635** — Batch Orca Mobile 4-side edge arrows, 4-tap Alt+M gesture, smooth SIGWINCH/?2026 resize repaint hold, and overlay/* adaptation into single v1.4.249-w0m.2 release ((agy:t633-orca-edge-arrows-quad-tap) — Done)
+- **T636** — Harden first-party web apps for perimeter & Lighthouse audits, add Lighthouse report service, align pricing, and wire 3-path onboarding funnel ((agy:t636-audit-hardening-and-pricing — implemented, verified & archived via w0m-sdlc-archive))
 - **T637** — Regenerate stale docs/CODEMAP.md after T634 and wire codemap-refresh pre-commit + codemap-check prepush gate to prevent post-Touch-ID deploy failures ((agy:t637-codemap-prepush-fix — completed): Regenerated w0m-web/docs/CODEMAP.md (3,370 symbols, 1,212 edges) and w0m-web/docs/STATUS-DASHBOARD.html, added codemap-refresh to just/estate.just + w0m-web/.pre-commit-config.yaml, promoted codemap-check to "prepush": true in w0m-web/project/test-suites.json (15/15 prepush suites), and pinned "codemap-check" in scripts/tests/test_run_suites_prepush.py. Lesson disposition: recorded transferable generated-doc pre-commit refresh + prepush: true rule in @wom/LESSONS.md.)
 
 ## 3. Other open threads (in TASKS.md)
