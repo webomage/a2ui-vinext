@@ -2093,6 +2093,16 @@ orca-close-completed *args:
 orca-sessions-test:
     @python3 scripts/tests/test_orca_sessions.py
 
+# ── Multi-Platform Social & Developer Signal Tracing CLI (T624) ────────────────
+social-trace *args:
+    @python3 scripts/social_trace.py {{ args }}
+
+social-search platform query *args:
+    @python3 scripts/social_trace.py --platform {{ platform }} --query "{{ query }}" {{ args }}
+
+social-trace-test:
+    @python3 scripts/tests/test_social_trace.py
+
 
 
 

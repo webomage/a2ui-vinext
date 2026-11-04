@@ -66,7 +66,16 @@ def ver_tuple(s: str) -> tuple[int, int, int]:
     return (int(major), int(minor), int(patch or 0))
 
 
-BREW_FORMULA = {"aws": "awscli", "az": "azure-cli", "psql": "libpq"}  # tool name -> brew formula when they differ
+BREW_FORMULA = {
+    "aws": "awscli",
+    "az": "azure-cli",
+    "gpg": "gnupg",
+    "mlr": "miller",
+    "pdftotext": "poppler",
+    "psql": "libpq",
+    "rg": "ripgrep",
+    "sqlite3": "sqlite",
+}  # tool name -> brew formula when they differ
 
 
 def brew_latest() -> dict[str, str]:

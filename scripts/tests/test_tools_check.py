@@ -204,11 +204,37 @@ class ProbeAndOutOfScopeCoverageTests(unittest.TestCase):
                     f"{false_pos} variable/comment must not be counted as a CLI invocation",
                 )
 
+    def test_probe_catches_yaml_entry_and_bash_c_invocations(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            pc = root / ".pre-commit-config.yaml"
+            pc.write_text(
+                "repos:\n"
+                "  - repo: local\n"
+                "    hooks:\n"
+                "      - id: ruff\n"
+                "        entry: ruff check\n"
+                "      - id: filter\n"
+                "        entry: bash -c 'yq \".tools\" tools.yaml | rg required'\n"
+                "        ruff: false\n",
+                encoding="utf-8",
+            )
+            scanned, hits = tool_usage_probe.scan_usage(
+                tools=["ruff", "yq", "rg", "fd"],
+                files=[pc],
+                root=root,
+            )
+            self.assertEqual(scanned, 1)
+            self.assertEqual(sum(n for n, _ in hits["ruff"]), 1)
+            self.assertEqual(sum(n for n, _ in hits["yq"]), 1)
+            self.assertEqual(sum(n for n, _ in hits["rg"]), 1)
+            self.assertEqual(sum(n for n, _ in hits["fd"]), 0)
+
     def test_estate_tools_policy_covers_all_27_candidates_with_zero_problems(self) -> None:
         policy_path = tools_check.resolve_policy_path(ROOT)
         policy: dict[str, Any] = json.loads(policy_path.read_text(encoding="utf-8"))
         self.assertEqual(tools_check.validate_out_of_scope(policy), [])
-        self.assertGreaterEqual(len(tool_usage_probe.TOOLS), 35)
+        self.assertGreaterEqual(len(tool_usage_probe.TOOLS), 44)
         for governed_cli in (
             "pnpm",
             "pre-commit",
@@ -219,11 +245,30 @@ class ProbeAndOutOfScopeCoverageTests(unittest.TestCase):
             "cloudflared",
             "caddy",
             "mkcert",
+            "rg",
+            "fd",
+            "yq",
+            "ruff",
+            "sqlite3",
+            "bat",
+            "tree",
+            "curl",
+            "gpg",
+            "htmlq",
+            "mlr",
+            "sd",
+            "fzf",
+            "shellcheck",
+            "pdftotext",
+            "code-review-graph",
         ):
             self.assertIn(governed_cli, policy["tools"])
+            self.assertNotIn(governed_cli, policy["out_of_scope"])
 
         scanned, hits = tool_usage_probe.scan_usage()
         self.assertGreater(scanned, 500, "estate corpus must not be vacuous")
+        self.assertGreaterEqual(sum(n for n, _ in hits["ruff"]), 1)
+        self.assertGreaterEqual(sum(n for n, _ in hits["curl"]), 10)
         problems = tool_usage_probe.verify_policy_coverage(policy, hits)
         self.assertEqual(problems, [])
 

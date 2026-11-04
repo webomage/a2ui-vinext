@@ -236,13 +236,25 @@
           "scope": "events:read",
           "description": "Read contribution and repository activity events",
           "capability": "activity.read"
+        },
+        {
+          "scope": "stars",
+          "description": "Read repositories you starred and inbound stargazer timestamps",
+          "capability": "stars.read"
+        },
+        {
+          "scope": "public_repo",
+          "description": "Read inbound/outbound repository forks and create issue tasks on opted-in repositories",
+          "capability": "forks.read"
         }
       ],
       "capabilities": [
         "profile.read",
         "repos.read",
         "prs.read",
-        "activity.read"
+        "activity.read",
+        "stars.read",
+        "forks.read"
       ],
       "docs": "docs/backend/connectors/github-app.md",
       "note": "GitHub App service connection (/api/connections/github/{start,callback}) → public.connections; distinct from Supabase GitHub sign-in identity (T442)."
@@ -319,15 +331,15 @@
     {
       "key": "reddit",
       "title": "Reddit",
-      "implemented": false,
+      "implemented": true,
       "entity": "person",
       "priority": "high",
       "transport": "api",
       "mcp_url": null,
       "headless": true,
       "evidence": {
-        "date": "2026-09-16",
-        "method": "Measured in T94 (docs/backend/CONNECTOR-RESEARCH-MATRIX.md): OAuth2 authorization_code with duration=permanent refresh token (1h access token); no official MCP."
+        "date": "2026-11-03",
+        "method": "OAuth 2.0 authorization_code (duration=permanent, Basic client auth token exchange/refresh at https://www.reddit.com/api/v1/access_token) + structured public .json/.rss read & search (T624, T94, AgDR-0034)."
       },
       "scopes": [
         {
@@ -337,22 +349,77 @@
         },
         {
           "scope": "read",
-          "description": "Read posts and comments in subscribed subreddits",
+          "description": "Read posts, comments, and subreddit search results",
           "capability": "posts.read"
         },
         {
           "scope": "history",
-          "description": "Read user submission and comment history",
+          "description": "Read user submission, comment, and upvoted history",
           "capability": "history.read"
+        },
+        {
+          "scope": "save",
+          "description": "Read saved Reddit threads and comments for insight extraction",
+          "capability": "saved.read"
         }
       ],
       "capabilities": [
         "identity.read",
         "posts.read",
-        "history.read"
+        "history.read",
+        "saved.read"
       ],
       "docs": "docs/backend/CONNECTOR-RESEARCH-MATRIX.md",
-      "note": "T94(b) — declared, NOT implemented. HIGH PRIORITY per owner ask 2026-09-16 (see project/tickets/T94.md Status notes). OAuth2 authorization_code, 1h access tokens, refreshable; rung 2 (read sync) on the depth ladder, no webhook, no official MCP. New Data API apps must register with Reddit by 2026-09-30 — sequence the adapter build accordingly."
+      "note": "T624 / T94(b) — Connected via unified /api/connections/reddit/{start,callback} flow (REDDIT_CLIENT_ID / REDDIT_CLIENT_SECRET) → public.connections, plus unauthenticated public subreddit .json/.rss search."
+    },
+    {
+      "key": "x",
+      "title": "X (Twitter)",
+      "implemented": true,
+      "entity": "person",
+      "transport": "api",
+      "mcp_url": null,
+      "headless": true,
+      "evidence": {
+        "date": "2026-11-03",
+        "method": "X API v2 OAuth 2.0 PKCE S256 (https://api.x.com/2/oauth2/token) with strict monthly read-budget ceiling (max_monthly_reads) + zero-cost official publish.twitter.com/oembed and user-initiated w0m-ext clipping (T624, AgDR-0034)."
+      },
+      "scopes": [
+        {
+          "scope": "users.read",
+          "description": "Read your X account handle and profile metadata",
+          "capability": "profile.read"
+        },
+        {
+          "scope": "tweet.read",
+          "description": "Read posts and search results within configured monthly read budget",
+          "capability": "posts.read"
+        },
+        {
+          "scope": "bookmark.read",
+          "description": "Read your bookmarked X posts for insight extraction",
+          "capability": "bookmarks.read"
+        },
+        {
+          "scope": "like.read",
+          "description": "Read your liked X posts for insight extraction",
+          "capability": "likes.read"
+        },
+        {
+          "scope": "offline.access",
+          "description": "Refresh OAuth 2.0 tokens for scheduled background sync",
+          "capability": "token.refresh"
+        }
+      ],
+      "capabilities": [
+        "profile.read",
+        "posts.read",
+        "bookmarks.read",
+        "likes.read",
+        "token.refresh"
+      ],
+      "docs": "docs/backend/CONNECTOR-RESEARCH-MATRIX.md",
+      "note": "T624 — Connected via unified /api/connections/x/{start,callback} OAuth 2.0 PKCE flow (X_CLIENT_ID / X_CLIENT_SECRET) with hard monthly read-budget ceiling; status URLs extract free via publish.twitter.com/oembed."
     },
     {
       "key": "threads",

@@ -53,7 +53,7 @@ REPOS = [
     "w0m-mlx/w0m-mlx",
 ]
 
-# Full T164 / T595 candidate CLI surface (35 host CLI candidates).
+# Full T164 / T595 / T622 candidate CLI surface (44 host CLI candidates).
 TOOLS = [
     "ansible",
     "ast-grep",
@@ -62,18 +62,25 @@ TOOLS = [
     "cargo",
     "cloudflared",
     "cmake",
+    "code-review-graph",
     "colima",
+    "curl",
     "direnv",
     "docker",
     "fd",
+    "fzf",
     "git",
     "go",
+    "gpg",
     "helm",
+    "htmlq",
     "java",
     "jq",
     "kubectl",
     "mkcert",
+    "mlr",
     "ncdu",
+    "pdftotext",
     "pip3",
     "pnpm",
     "podman",
@@ -83,7 +90,9 @@ TOOLS = [
     "rg",
     "ruff",
     "rustc",
+    "sd",
     "sg",
+    "shellcheck",
     "sqlite3",
     "tree",
     "uv",
@@ -97,7 +106,12 @@ CODE_SUFFIXES = {".py", ".mjs", ".js", ".ts"}
 SUFFIXES = SHELL_SUFFIXES | CODE_SUFFIXES
 NAMES = {"justfile", "Makefile", "pre-commit", "pre-push", "commit-msg", "post-commit"}
 
-SHELL_PREFIX = r"(?:^|\|\||&&|[|;`]|\$\(|\b(?:xargs|sudo|then|do|else)\s+|\bsh\s+-c\s+[\"\x27])\s*"
+SHELL_PREFIX = (
+    r"(?:^|\|\||&&|[|;`]|\$\("
+    r"|\b(?:xargs|sudo|then|do|else)\s+"
+    r"|\b(?:ba)?sh\s+-c\s+[\"\x27]"
+    r"|\bentry:\s*[\"\x27]?)\s*"
+)
 
 
 def resolve_policy_path(root: Path | None = None) -> Path:

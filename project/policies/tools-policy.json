@@ -26,6 +26,15 @@
       "auto": "none",
       "note": "azure jumphost IaC. Manual."
     },
+    "bat": {
+      "min": "0.24.0",
+      "known_good": "0.26.1",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "bat --version",
+      "note": "T622 — syntax-aware file and line-range stdout inspector (`bat -p -r <start>:<end>`) promoted from `out_of_scope` for multi-harness shell ergonomics."
+    },
     "caddy": {
       "min": "2.8.0",
       "known_good": "2.11.2",
@@ -63,6 +72,15 @@
       "smoke": "cloudflared --version",
       "note": "T595 — Cloudflare Tunnel daemon invoked by `just db-tunnel` (`cloudflared tunnel --config w0m-api/cloudflared/wom.yml run wom`). `required: false` because commit/push/deploy gates do not open a tunnel (`brew install cloudflared`)."
     },
+    "code-review-graph": {
+      "min": "2.3.0",
+      "known_good": "2.3.9",
+      "required": false,
+      "source": "uv",
+      "auto": "none",
+      "smoke": "code-review-graph --version",
+      "note": "T388 / T622 — AST code-review graph extractor and visualizer invoked 3 times in `justfile` (`just crg-serve`, `just crg-open`, `just crg-extract` on port `8765`). Install via `uv tool install code-review-graph`."
+    },
     "codegraph": {
       "min": "1.4.0",
       "known_good": "1.6.2",
@@ -81,6 +99,15 @@
       "smoke": "colima version",
       "note": "T480 / T595 — primary Apple Silicon Virtualization.framework OCI container runtime provider invoked by `scripts/oci_sandbox.py` (`just oci-status`, `just oci-up`, `just db-local-up`). `required: false` because non-container workflows and alternative OCI providers (`docker`, `podman`, `tart`) can run without it (`brew install colima`)."
     },
+    "curl": {
+      "min": "8.0.0",
+      "known_good": "8.23.0",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "curl --version",
+      "note": "T622 — HTTP probe and transport CLI with 14 command-position invocations across `just/estate.just`, `justfile`, and governed `SKILL.md` workflows."
+    },
     "deno": {
       "min": "2.0.0",
       "known_good": "2.9.8",
@@ -97,6 +124,24 @@
       "auto": "none",
       "smoke": "docker --version",
       "note": "T164 AC1 — container CLI invoked by `w0m-api/scripts/db_baseline.py` (4 subprocess calls: `docker info`, `docker run -d ... postgres:15`, `docker rm -f`) for ephemeral Postgres 15 baseline verification (`just db-baseline-verify` / `just db-baseline-build`). `required: false` because commit/push gates never spin up containers; `auto: none` so engine upgrades stay deliberate."
+    },
+    "fd": {
+      "min": "10.0.0",
+      "known_good": "10.5.0",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "fd --version",
+      "note": "T622 — fast `.gitignore`-aware file finder promoted from `out_of_scope` to `required: true` because non-Claude shell harnesses (e.g. Antigravity CLI `agy` on Linux) do not bundle an internal glob binary."
+    },
+    "fzf": {
+      "min": "0.50.0",
+      "known_good": "0.74.5",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "fzf --version",
+      "note": "T622 — interactive selector and non-interactive stdout fuzzy filter (`fzf --filter <query>`)."
     },
     "gauge": {
       "min": "1.6.0",
@@ -128,7 +173,7 @@
     },
     "git": {
       "min": "2.39.0",
-      "known_good": "2.54.0",
+      "known_good": "2.56.0",
       "required": true,
       "source": "brew",
       "auto": "none",
@@ -144,6 +189,16 @@
       "version_arg": "version",
       "smoke": "gitleaks version",
       "note": "pre-commit secret-scan gate (uses `gitleaks version`)"
+    },
+    "gpg": {
+      "min": "2.4.0",
+      "known_good": "2.5.24",
+      "required": true,
+      "source": "brew",
+      "formula": "gnupg",
+      "auto": "minor",
+      "smoke": "gpg --version",
+      "note": "T622 — GnuPG (`gnupg`) commit-signing CLI mandated by `AGENTS.md` for `-S` GPG-signed commits on `github.com/webomage/<repo>` public forks."
     },
     "graphify": {
       "min": "0.9.30",
@@ -161,6 +216,15 @@
       "auto": "none",
       "smoke": "headroom --version",
       "note": "T456 / T595 (AgDR-0052) — installed via `webomage/tap/headroom` (`brew install webomage/tap/headroom`) built from `github.com/webomage/headroom` `beta` branch (continuously aligned to latest upstream official release `0.39.0` + our open PR tweaks `feat/omlx-proxy-routing` & `feat/audit-host-services` on top, ad-hoc signed with `codesign --force --sign -`). Managed as a Homebrew launchd service on `127.0.0.1:8787` via `just headroom-start` / `just headroom-status` (`scripts/headroom_service.py`)."
+    },
+    "htmlq": {
+      "min": "0.4.0",
+      "known_good": "0.4.0",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "htmlq --version",
+      "note": "T622 — `jq`-style CSS-selector stdout filter for HTML streams (`curl -s <url> | htmlq 'article a'`)."
     },
     "infisical": {
       "min": "0.40.0",
@@ -198,6 +262,16 @@
       "smoke": "mkcert --version",
       "note": "T595 — local CA certificate generator invoked by `just dev-stack` (`mkcert -install`) for local HTTPS subdomain development (`*.w0m.local`). `required: false` because standard port-based dev runs over HTTP."
     },
+    "mlr": {
+      "min": "6.10.0",
+      "known_good": "6.22.0",
+      "required": false,
+      "source": "brew",
+      "formula": "miller",
+      "auto": "minor",
+      "smoke": "mlr --version",
+      "note": "T622 — Miller (`miller`) structured stdout filter, join, and query engine for CSV, TSV, JSON, and JSONL (`transcript.jsonl`, LinkedIn export CSVs)."
+    },
     "mypy": {
       "min": "1.15.0",
       "known_good": "2.4.1",
@@ -225,6 +299,15 @@
       "smoke": "omlx --version",
       "note": "T184 AC3 / T595 (AgDR-0052) — THE local LLM serving tool on Apple Silicon (`omlx serve` on `:8888`, routed behind Headroom `:8787`). Installed via `webomage/tap/omlx` (`brew install webomage/tap/omlx`) built from `github.com/webomage/omlx` `beta` branch (continuously aligned to latest upstream official release `0.7.3` + our PR `#3743` `fix/menubar-adopt-external-omlx` and Gemma 4 `_safe_fused_mse_decode_kernel` `dim > 256` guard on top, ad-hoc signed with `codesign --force --sign -`)."
     },
+    "openspec": {
+      "min": "1.11.0",
+      "known_good": "1.16.0",
+      "required": false,
+      "source": "pnpm",
+      "auto": "none",
+      "smoke": "openspec --version",
+      "note": "Spec-driven change workflow (`@fission-ai/openspec`; the bare `openspec` npm package is a dead placeholder). 🔴 ADDED 2026-08-30 — it was UNGOVERNED until then, with no floor at all, which is the wrong posture for the one tool that WRITES agent surfaces into every repo: it generates 10 skills + 10 workflows per declared tool into .agent/, .claude/, .opencode/ and keeps no memory of `--tools`, regenerating from whatever is on disk. ⚠️ `min` is 1.11.0 while 1.6.0 is what is installed, so this reports DRIFT on purpose. The floor is set to what the estate needs, not to what is running — setting it to 1.6.0 to stay green is the same act as raising a ratchet. Two things land in 1.11.0 that the estate wants: Antigravity moves to the shared `.agents/` root (matching Antigravity's own documented default, where `.agent/` is now only backward-compat), and 1.8.0 added a vendor-neutral `agents` target writing `.agents/skills/` for AGENTS.md-aware assistants. 🔴 UPGRADE IS NOT A NO-OP — measured on a scratch repo 2026-08-30: `update --force` on a 1.6.0 layout COPIES to `.agents/` and LEAVES `.agent/` in place (duplication, not migration, despite the release note), and it detected and generated for `codex` from 'legacy artifacts' though codex was never declared. A fresh `init` on 1.11.0 is clean (`.agents/` only). Plan the upgrade per repo with the leftover `.agent/` removed deliberately, not as a side effect."
+    },
     "osv-scanner": {
       "min": "2.0.0",
       "known_good": "2.7.0",
@@ -233,6 +316,17 @@
       "auto": "minor",
       "smoke": "osv-scanner scan --lockfile=pnpm-lock.yaml",
       "note": "pre-commit advisory gate"
+    },
+    "pdftotext": {
+      "min": "24.0.0",
+      "known_good": "26.10.0",
+      "required": false,
+      "source": "brew",
+      "formula": "poppler",
+      "version_arg": "-v",
+      "auto": "minor",
+      "smoke": "pdftotext -v",
+      "note": "T622 — Poppler (`poppler`) PDF text extractor invoked in `w0m-web/project/scripts/cv_public.py` (`shutil.which('pdftotext')` + subprocess) to audit rendered CV PDFs."
     },
     "pnpm": {
       "min": "10.32.0",
@@ -279,6 +373,25 @@
       "smoke": "python3 --version",
       "note": "T595 (AgDR-0052) — standardized on Homebrew (`brew install python` for Latest `3.15.2`, `brew install python@3.12` for stable `3.12.x` floor) across macOS and Linux. `min: 3.12.0` enforces the active stable floor; `known_good: 3.15.2` tracks current Latest Homebrew Python."
     },
+    "rg": {
+      "min": "14.0.0",
+      "known_good": "15.2.0",
+      "required": true,
+      "source": "brew",
+      "formula": "ripgrep",
+      "auto": "minor",
+      "smoke": "rg --version",
+      "note": "T622 — Ripgrep (`ripgrep`) regex search and stdout stream filter (`| rg ...`) promoted from `out_of_scope` to `required: true`. Non-Claude harnesses (`agy` on Linux) do not bundle `rg`, and `wiki-cli/SKILL.md` + `w0m-ext/openspec/AGENTS.md` invoke `rg` directly (estate multi-repo grep still uses `just search`)."
+    },
+    "ruff": {
+      "min": "0.10.0",
+      "known_good": "0.17.3",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "ruff --version",
+      "note": "T622 — fast Python linter invoked as a `language: system` pre-commit hook (`entry: ruff check`) in `w0m-sec/.pre-commit-config.yaml`. Previously misclassified in `out_of_scope` because `tool_usage_probe.py` missed YAML `entry:` lines."
+    },
     "rustc": {
       "min": "1.95.0",
       "known_good": "1.99.1",
@@ -306,6 +419,15 @@
       "smoke": "rustup --version",
       "note": "T235 AC1 / T273 AC1 — the toolchain manager, and the reason the other Rust entries carry `auto: none`: it self-updates via `rustup update`, so wiring them to any package manager would fight it. It is the upgrade path for this whole group and provisions the `wasm32-unknown-unknown` target (`rustup target add wasm32-unknown-unknown`) required by `w0m-cf/crates/w0m-wasm-utils` (T273)."
     },
+    "sd": {
+      "min": "1.0.0",
+      "known_good": "1.0.0",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "sd --version",
+      "note": "T622 — portable regex stream find-and-replace CLI avoiding macOS BSD `sed -i ''` vs Linux GNU `sed -i` flags. ⚠️ Upstream `chmln/sd` v1.1.0 Homebrew bottle reports `sd 1.0.0` on `sd --version`; `known_good` tracks measured `--version` output."
+    },
     "semgrep": {
       "min": "1.100.0",
       "known_good": "1.183.0",
@@ -324,6 +446,25 @@
       "version_cmd": "uvx --quiet --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena --version",
       "smoke": "uvx --quiet --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena project health-check .",
       "note": "🔴 DO NOT INSTALL THE `serena` MARKETPLACE PLUGIN. Removed 2026-08-31 (`claude plugin uninstall serena@claude-plugins-official`). It is authored by Oraios — serena's own upstream — and distributed through Anthropic's official marketplace, so it looks like the sanctioned way to get this tool. It is not compatible with governing it. The plugin ships NOTHING but a manifest and one .mcp.json whose entire content launches `uvx --from git+https://github.com/oraios/serena` with NO ref, so it resolves upstream's DEFAULT BRANCH on every start. Its own version is a marketplace commit SHA describing the WRAPPER, so pinning the plugin does not pin serena — there is no configuration that reconciles the two. Installed 2026-08-12 22:19Z; commit 5b02bbef rewrote all three .serena/project.yml files to the `language_servers:` schema at 2026-08-13 05:16 -0500, under seven hours later, and the pinned 1.6.1 was dead from then until 2026-08-31. Keeping both registrations is the one arrangement that cannot work: they fight over the same config file, and the ungoverned one wins silently. `just mcp-health` now catches a repeat the same day. LSP-backed symbol edits + diagnostics over MCP (T166). PyPI package is **serena-agent**, NOT `serena` — `serena` on PyPI is an unrelated project at 0.9.1, so installing it gets you the wrong software. 🔴 PINNED 2026-08-05 (T166 AC1b): the launch in ~/.claude.json was `uvx --from git+https://github.com/oraios/serena`, which re-resolved the DEFAULT BRANCH on every start — the one tool that can rewrite source at symbol granularity had no version, no lockfile and no integrity check, and was running an unreleased **1.6.2.dev0**. min/known_good were literally unenforceable against a moving branch. 🔴 EXTENDED & FORKED 2026-09-20 (T170): Pinned to w0m-maintained fork tag `v1.7.0-w0m.1` (casualuser/serena) adding @astrojs/language-server support (AstroLanguageServer under solidlsp) with upstream PR #2085. The smoke test exercises project loading (`serena project health-check .`) rather than just `--version`, so broken schemas or missing language providers fail organically. ⚠️ Bumping this means editing BOTH this entry and the `args` in ~/.claude.json — the version lives in the MCP launch line, not in a lockfile. ⚠️ Needs a `projects` key in ~/.serena/serena_config.yml or it fails to boot. Installed by Headroom as its default --code-memory backend, not chosen independently."
+    },
+    "shellcheck": {
+      "min": "0.10.0",
+      "known_good": "0.11.0",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "shellcheck --version",
+      "note": "T622 — static analyzer for POSIX/bash shell scripts and git hooks."
+    },
+    "sqlite3": {
+      "min": "3.40.0",
+      "known_good": "3.54.1",
+      "required": true,
+      "source": "brew",
+      "formula": "sqlite",
+      "auto": "minor",
+      "smoke": "sqlite3 --version",
+      "note": "T622 — SQLite (`sqlite`) interactive/stdout query CLI promoted from `out_of_scope` for inspecting `.codegraph/graph.db` and local SQLite state."
     },
     "sshpass": {
       "min": "1.06",
@@ -362,6 +503,15 @@
       "smoke": "terraform --version",
       "note": "T595 (AgDR-0052) — standardized on `source: brew` across macOS and Linux instead of single-language `tfenv`."
     },
+    "tree": {
+      "min": "2.1.0",
+      "known_good": "2.3.2",
+      "required": false,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "tree --version",
+      "note": "T622 — structured directory hierarchy stdout formatter (`tree -L 2 -I node_modules`) promoted from `out_of_scope`."
+    },
     "uv": {
       "min": "0.5.0",
       "known_good": "0.13.6",
@@ -399,6 +549,15 @@
       "smoke": "worker-build --version",
       "note": "T273 AC1 — Cloudflare `workers-rs` build tool (`wasm32-unknown-unknown` target). `required: false` on multi-OS hosts; `w0m-cf/crates/w0m-wasm-utils` compiles as `#![no_std]` `cdylib` (`550` B raw / `389` B gzip) to avoid pulling the `worker` crate's allocator into the 1 MiB Cloudflare Workers Free tier bundle budget (`AgDR-0044`)."
     },
+    "yq": {
+      "min": "4.40.0",
+      "known_good": "4.54.1",
+      "required": true,
+      "source": "brew",
+      "auto": "minor",
+      "smoke": "yq --version",
+      "note": "T622 — `mikefarah/yq` structured YAML, TOML, XML, and Markdown-frontmatter stdout filter & query CLI (`jq` counterpart for `.pre-commit-config.yaml`, `config.toml`, `.tasks/T*.md`, and GitHub workflows), promoted from `out_of_scope`."
+    },
     "zeroclaw": {
       "min": "0.8.3",
       "known_good": "0.8.3",
@@ -407,24 +566,13 @@
       "auto": "none",
       "smoke": "zeroclaw --version",
       "note": "T153 — local AI agent runtime (Rust, 31 MB at ~/.cargo/bin/zeroclaw). 🔴 UNDECLARED HERE UNTIL 2026-08-10: installed since 2026-07-27, the subject of a P1 ticket, and invisible to `tools-check` the whole time — the same gap omlx/tart had on 2026-08-09. ⚠️ PROVENANCE CORRECTION: T153 records it as 'installed via cargo'. It is NOT — `cargo install --list` has no entry and neither .crates.toml nor .crates2.json mentions it, so it was built or dropped into ~/.cargo/bin by hand. 🔴 DO NOT WIRE AUTO-UPDATE TO crates.io: the crate NAMED `zeroclaw` there is 0.1.7 (updated 2026-02-27) while this binary is 0.8.3 — a DIFFERENT package. `cargo install zeroclaw` would replace an agent runtime with an unrelated crate. Resolve by content, never by name — the same rule wom7skills applies to skills. ✅ The real upgrade path is its own subcommand: `zeroclaw update`. `auto: none` DELIBERATELY, and this is the reason: the runtime's config still has allowed_roots = ['/'] with workspace_only = false, and forbidden_paths omits ~/.zeroclaw/.secret_key, ~/.infisical and ~/.claude (T153 AC5, NOT STARTED). Auto-pulling an unreviewed binary weekly into that much filesystem access is a supply-chain decision, not a chore. Widen to auto once T153 has hardened the profile."
-    },
-    "openspec": {
-      "min": "1.11.0",
-      "known_good": "1.16.0",
-      "required": false,
-      "source": "pnpm",
-      "auto": "none",
-      "smoke": "openspec --version",
-      "note": "Spec-driven change workflow (`@fission-ai/openspec`; the bare `openspec` npm package is a dead placeholder). 🔴 ADDED 2026-08-30 — it was UNGOVERNED until then, with no floor at all, which is the wrong posture for the one tool that WRITES agent surfaces into every repo: it generates 10 skills + 10 workflows per declared tool into .agent/, .claude/, .opencode/ and keeps no memory of `--tools`, regenerating from whatever is on disk. ⚠️ `min` is 1.11.0 while 1.6.0 is what is installed, so this reports DRIFT on purpose. The floor is set to what the estate needs, not to what is running — setting it to 1.6.0 to stay green is the same act as raising a ratchet. Two things land in 1.11.0 that the estate wants: Antigravity moves to the shared `.agents/` root (matching Antigravity's own documented default, where `.agent/` is now only backward-compat), and 1.8.0 added a vendor-neutral `agents` target writing `.agents/skills/` for AGENTS.md-aware assistants. 🔴 UPGRADE IS NOT A NO-OP — measured on a scratch repo 2026-08-30: `update --force` on a 1.6.0 layout COPIES to `.agents/` and LEAVES `.agent/` in place (duplication, not migration, despite the release note), and it detected and generated for `codex` from 'legacy artifacts' though codex was never declared. A fresh `init` on 1.11.0 is clean (`.agents/` only). Plan the upgrade per repo with the leftover `.agent/` removed deliberately, not as a side effect."
     }
   },
   "_out_of_scope_comment": "T164 AC1 — host CLIs probed by `scripts/tool_usage_probe.py` (`just tools-usage`) that have ZERO command-position / subprocess invocations across the estate's justfiles, scripts, and git hooks, and are deliberately excluded from `tools` so the policy governs real workflow dependencies rather than whatever happens to be installed on a workstation.",
   "out_of_scope": {
     "ansible": "0 command-position uses across the estate; IaC is managed via Terraform (`w0m-api/cloudflare`, `w0m-api/monitoring`) and Cloudflare Wrangler, with no Ansible playbooks.",
-    "bat": "0 command-position uses; interactive terminal pager/cat replacement, never invoked by scripts, recipes, or git hooks.",
     "cmake": "0 command-position uses; native C/C++ build generator not invoked directly by any estate recipe (`w0m-mlx` compiles via `cargo`).",
     "direnv": "0 command-position uses; `.env` and `.envrc` files are prohibited across the estate in favour of `infisical run` process injection (T119 AC2b / T135 §6).",
-    "fd": "0 command-position uses; interactive file finder (`fd = os.open(...)` in Python scripts is a local file-descriptor variable, not a CLI call).",
     "go": "0 command-position uses; no Go stack or module exists in the estate (`stacks-policy.json` runtimes are `node`, `deno`, `python`, `rust`).",
     "helm": "0 command-position uses; no Kubernetes/Helm charts exist in the estate (compute runs on Cloudflare Workers/Pages and Supabase).",
     "java": "0 command-position uses; no JVM stack or tooling exists in the estate.",
@@ -432,12 +580,7 @@
     "ncdu": "0 command-position uses; interactive disk-usage TUI, never invoked by scripts, recipes, or git hooks.",
     "pip3": "0 command-position uses; Python package management in estate recipes uses `uv` (`uv pip install`, `uv run`, `uv tool install`), never raw `pip3`.",
     "redis-cli": "0 command-position uses; no Redis instance or client workflow exists in the estate.",
-    "rg": "0 command-position uses; `just search` (`scripts/estate_search.py`) runs `LC_ALL=C git --no-pager grep` per repo, and agent harnesses bundle their own ripgrep.",
-    "ruff": "0 command-position uses; retired from TS/Rust repos in T135 task 3.1 and not wired into any recipe or hook (`py-typecheck` uses `mypy`).",
     "sg": "0 command-position uses; `ast-grep` is invoked by its full binary name (`ast-grep scan`) because `/usr/bin/sg` on Linux is `newgrp` (shadow-utils).",
-    "sqlite3": "0 command-position uses; Python scripts use the stdlib `sqlite3` module in-process rather than shelling out to the `sqlite3` CLI.",
-    "tree": "0 command-position uses; interactive directory printer (`graph-tree`, `agent-tree`, `context-tree` are `just` recipe names, and `tree = ...` in Python/TS is a local variable).",
-    "wget": "0 command-position uses; HTTP probes in recipes and hooks use `curl` or Python `urllib.request`.",
-    "yq": "0 command-position uses; YAML/JSON parsing in recipes and scripts uses `jq` or Python `json`/`yaml`."
+    "wget": "0 command-position uses; HTTP probes in recipes and hooks use `curl` or Python `urllib.request`."
   }
 }
