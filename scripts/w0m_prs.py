@@ -3256,25 +3256,27 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
         ),
     },
     "stablyai/orca:feat/mobile-four-side-edge-arrows": {
-        "ticket": "T635 / T641",
-        "title": "feat(mobile): add sticky 4-side edge arrows, bottom-right settings dock, and zoom-stable Gamepad HUD",
+        "ticket": "T635 / T641 / T646",
+        "title": "feat(mobile): add sticky 4-side edge arrows (Floating Orbs default), opt-in bottom-right switcher dock, and zoom-stable Gamepad HUD",
         "why": (
             "Navigating long transcripts, file/diff previews, session tabs, and interactive terminal prompts one-handed on mobile requires "
             "either stretching to top tab bars or keeping the software keyboard / accessory dock open; furthermore, pinch-zooming terminal "
-            "WebViews scales overlay controls out of reach, and top-right mode chips crowd pane headers."
+            "WebViews scales overlay controls out of reach, and always-on corner mode chips crowd pane surfaces."
         ),
         "what_for": (
-            "Renders sticky 4-side inner-edge navigation controls (`Edge Pills`, `Edge Strips`, `Floating Orbs`) PLUS a console-style "
-            "`Gamepad HUD` mode (bottom-left D-pad + bottom-right `Tab` / `Alt+M` / `Esc` / `Enter` diamond cluster) inside a zoom-stable "
-            "`visualViewport` counter-scaled HUD, with the quick-switcher + `⚙` settings button docked bottom-right."
+            "Renders sticky 4-side inner-edge navigation controls defaulting out-of-the-box to compact half-transparent `Floating Orbs` "
+            "(`'orbs'`, alongside selectable `Edge Pills`, `Edge Strips`, `Gamepad HUD`, and `Off`) inside a zoom-stable `visualViewport` "
+            "counter-scaled HUD, while keeping the bottom-right quick-switcher chip + `⚙` settings button hidden by default "
+            "(`DEFAULT_EDGE_SWITCHER_CHIP_HIDDEN = true`, opt-in via `Show quick-switcher chip`)."
         ),
         "how": (
-            "- **`mobile/src/navigation/edge-arrows/*` & `use-zoom-stable-viewport.ts`**: Wraps all 4 modes in a `1 / scale` `visualViewport` "
-            "HUD (`transformOrigin: 'top left'`), docks `edge-arrow-flavour-chip` + `edge-arrow-settings-button` bottom-right (lifting above "
-            "native-chat jump-to-tail FAB), and adds `EdgeGamepadPad.tsx` with hold-to-repeat D-pad and terminal action cluster.\n"
-            "- **`EdgeNavigationSettingsSection.tsx` & `EdgeNavigationModeSheet.tsx`**: Persists `'pills' | 'strips' | 'orbs' | 'gamepad' | 'off'` "
-            "in `orca:terminal-accessory-layout` while keeping existing modes intact.\n"
-            "- **Verification**: `8/8` edge-navigation Vitest tests, `verify:mobile-localization`, `build-mobile-web-app-bundle`, and `oxlint` clean."
+            "- **`mobile/src/navigation/edge-arrows/*` & `use-zoom-stable-viewport.ts`**: Defaults `DEFAULT_EDGE_NAVIGATION_MODE` to `'orbs'` "
+            "and `DEFAULT_EDGE_SWITCHER_CHIP_HIDDEN` to `true`, wraps all 4 modes in a `1 / scale` `visualViewport` HUD "
+            "(`transformOrigin: 'top left'`), docks the opt-in `edge-arrow-flavour-chip` + `edge-arrow-settings-button` bottom-right (lifting "
+            "above native-chat jump-to-tail FAB), and adds `EdgeGamepadPad.tsx` with hold-to-repeat D-pad and terminal action cluster.\n"
+            "- **`terminal-accessory-layout.ts`, `EdgeNavigationSettingsSection.tsx`, & `EdgeNavigationModeSheet.tsx`**: Persists `'pills' | "
+            "'strips' | 'orbs' | 'gamepad' | 'off'` and explicit boolean `edgeSwitcherChipHidden` (`true` or `false`) in `orca:terminal-accessory-layout`.\n"
+            "- **Verification**: `10/10` edge-navigation Vitest tests, `verify:mobile-localization`, `build-mobile-web-app-bundle`, and `oxlint` clean."
         ),
     },
     "stablyai/orca:fix/terminal-smooth-resize-and-replay": {

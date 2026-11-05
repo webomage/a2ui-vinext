@@ -315,6 +315,11 @@ def main(argv: list[str] | None = None) -> int:
         rc = trigger_overlay_build(overlay_repo)
         if rc != 0:
             return rc
+        if args.wait:
+            for _ in range(6):
+                if _active_ci_run_id(overlay_repo):
+                    break
+                time.sleep(3)
 
     return apply_overlay(
         appimage_path,

@@ -1046,7 +1046,13 @@ def main() -> int:
             "stablyai/orca:feat/mobile-four-side-edge-arrows",
             "stablyai/orca:fix/terminal-smooth-resize-and-replay",
         }
-        and any("Gamepad HUD" in p["body"] and "T641" in p["ticket"] for p in t633_proposals),
+        and any(
+            "Gamepad HUD" in p["body"]
+            and "DEFAULT_EDGE_SWITCHER_CHIP_HIDDEN = true" in p["body"]
+            and "T641" in p["ticket"]
+            and "T646" in p["ticket"]
+            for p in t633_proposals
+        ),
     )
 
     t638_proposals = [
