@@ -389,6 +389,68 @@ class SessionCompleteTests(unittest.TestCase):
         recipes = {s.get("recipe") for s in suites.get("suites", [])}
         self.assertIn("session-complete-test", recipes)
 
+    def test_sync_tickets_to_github_full_sync_scope_degrade_and_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_str:
+            wt = Path(tmp_str) / "w0m"
+            (wt / "scripts").mkdir(parents=True)
+            (wt / "scripts" / "sync_github.py").write_text("# stub\n", encoding="utf-8")
+
+            # 1. Dry-run and skip make zero subprocess calls
+            with mock.patch.object(sc, "_run") as m_none:
+                self.assertEqual(
+                    sc.sync_tickets_to_github(wt, ["T650"], dry_run=True)["mode"],
+                    "dry_run",
+                )
+                self.assertEqual(
+                    sc.sync_tickets_to_github(wt, ["T650"], skip=True)["mode"],
+                    "skipped",
+                )
+                m_none.assert_not_called()
+
+            # 2. Full sync happy path
+            calls_ok: list[list[str]] = []
+
+            def fake_ok(cmd: list[str], *, cwd: Path, check: bool = False, timeout: float | None = None):
+                calls_ok.append(list(cmd))
+                return subprocess.CompletedProcess(cmd, 0, "  T650 -> #650\n", "")
+
+            with mock.patch.object(sc, "_run", side_effect=fake_ok):
+                res_ok = sc.sync_tickets_to_github(wt, ["T650", "t651"])
+            self.assertEqual(res_ok["mode"], "full_sync")
+            self.assertEqual(res_ok["tickets"], ["T650", "T651"])
+            self.assertEqual(len(calls_ok), 1)
+            self.assertIn("--tickets", calls_ok[0])
+            self.assertIn("T650,T651", calls_ok[0])
+
+            # 3. Missing read:project scope retries once with --issues-only so GitHub Issues still close
+            calls_deg: list[list[str]] = []
+
+            def fake_missing_scope(cmd: list[str], *, cwd: Path, check: bool = False, timeout: float | None = None):
+                calls_deg.append(list(cmd))
+                if "--issues-only" not in cmd:
+                    return subprocess.CompletedProcess(
+                        cmd,
+                        1,
+                        "",
+                        "FATAL: gh project list failed (missing required scopes [read:project])",
+                    )
+                return subprocess.CompletedProcess(cmd, 0, "  T650 -> #650\n", "")
+
+            with mock.patch.object(sc, "_run", side_effect=fake_missing_scope):
+                res_deg = sc.sync_tickets_to_github(wt, ["T650"])
+            self.assertEqual(res_deg["mode"], "issues_only_missing_project_scope")
+            self.assertEqual(len(calls_deg), 2)
+            self.assertIn("--issues-only", calls_deg[1])
+
+            # 4. Non-scope failure fails closed (AgDR-0025: zero silent fallbacks)
+            def fake_hard_fail(cmd: list[str], *, cwd: Path, check: bool = False, timeout: float | None = None):
+                return subprocess.CompletedProcess(cmd, 1, "", "FATAL: active gh account is 'wrong'")
+
+            with mock.patch.object(sc, "_run", side_effect=fake_hard_fail):
+                with self.assertRaises(sc.SessionCompleteError) as cm:
+                    sc.sync_tickets_to_github(wt, ["T650"])
+            self.assertEqual(cm.exception.step, "github_ticket_sync_failed")
+
 
 if __name__ == "__main__":
     unittest.main()

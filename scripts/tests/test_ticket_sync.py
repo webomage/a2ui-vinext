@@ -100,17 +100,18 @@ class Harness:
 
     def __enter__(self):
         self._saved = (sg.TICKETS_DIR, sg.MANIFEST, sg.INDEX, sg.RUN,
-                       sg.DRY, sg.FORCE_ALL, sg.VERIFY)
+                       sg.DRY, sg.FORCE_ALL, sg.VERIFY, sg.ISSUES_ONLY, sg.ONLY_TICKETS)
         sg.TICKETS_DIR = self.dir / "tickets"
         sg.MANIFEST = self.dir / "manifest.json"
         sg.INDEX = self.index_path
         sg.RUN = self.gh
-        sg.DRY = sg.FORCE_ALL = sg.VERIFY = False
+        sg.DRY = sg.FORCE_ALL = sg.VERIFY = sg.ISSUES_ONLY = False
+        sg.ONLY_TICKETS = None
         return self
 
     def __exit__(self, *a):
         (sg.TICKETS_DIR, sg.MANIFEST, sg.INDEX, sg.RUN,
-         sg.DRY, sg.FORCE_ALL, sg.VERIFY) = self._saved
+         sg.DRY, sg.FORCE_ALL, sg.VERIFY, sg.ISSUES_ONLY, sg.ONLY_TICKETS) = self._saved
 
     def index_now(self) -> dict:
         return json.loads(self.index_path.read_text())["tickets"]
@@ -469,6 +470,85 @@ with Harness({"T1": ticket_md("T1", "x")},
     rc = sg.main()
     check("RED — AC8/AC9: a failed `project item-add` makes the sync exit non-zero instead of vanishing",
           rc == 1)
+
+
+# ── 12. T650 — fail-closed project list, --tickets subset, and --issues-only ────────
+
+print("\n[T650] fail-closed project list, --tickets subset, and --issues-only")
+check("T650: ISSUE_FETCH_LIMIT raised >= 5000 for 650+ ticket corpus", sg.ISSUE_FETCH_LIMIT >= 5000)
+check("T650: _parse_only_tickets normalises CSV and bare numeric IDs",
+      sg._parse_only_tickets(["--tickets", "T650, 651", "--ticket=t12"]) == {"T650", "T651", "T12"}
+      and sg._parse_only_tickets(["--check"]) is None)
+
+with Harness({"T1": ticket_md("T1", "x", status="done")},
+             [issue(1, TITLE, CLEAN_LABELS, state="OPEN")]) as h:
+    def project_list_missing_scope(args):
+        if len(args) >= 3 and (args[1], args[2]) == ("project", "list"):
+            return 1, "", "error: your authentication token is missing required scopes [read:project]"
+        return h.gh(args)
+    sg.RUN = project_list_missing_scope
+    try:
+        sg.main()
+        stopped_on_project_list = False
+    except SystemExit:
+        stopped_on_project_list = True
+    check("RED — T650: failed `gh project list` (missing read:project) stops immediately",
+          stopped_on_project_list)
+    check("RED — T650: failed `gh project list` NEVER falls through to `gh project create`",
+          h.gh.count("project", "create") == 0 and h.gh.count("issue", "close") == 0)
+
+# Targeted `--tickets T2` mutates only T2 and preserves T1/T3 hashes in tickets-sync-index.json
+with Harness(three,
+             [issue(1, "T1 — stale", CLEAN_LABELS),
+              issue(2, "T2 — stale", CLEAN_LABELS),
+              issue(3, "T3 — stale", CLEAN_LABELS)],
+             index={"projection_version": sg.PROJECTION_VERSION,
+                    "tickets": {"T1": "keep-t1", "T3": "keep-t3"}}) as h:
+    sg.ONLY_TICKETS = {"T2"}
+    rc_sub = sg.main()
+    idx_after = h.index_now()
+    check("T650: --tickets T2 exits 0 and mutates ONLY T2",
+          rc_sub == 0 and h.gh.count("issue", "edit") == 1
+          and any("2" == c[3] for c in h.gh.calls if (c[1], c[2]) == ("issue", "edit")))
+    check("T650: --tickets T2 preserves untouched index hashes for T1 and T3",
+          idx_after.get("T1") == "keep-t1" and idx_after.get("T3") == "keep-t3"
+          and idx_after.get("T2") not in (None, "keep-t2"))
+
+with Harness({"T1": ticket_md("T1", "x")}, synced_issue) as h:
+    sg.ONLY_TICKETS = {"T99999"}
+    rc_unknown = sg.main()
+    check("RED — T650: --tickets with unknown ID refuses vacuous sync (exit 1, zero mutations)",
+          rc_unknown == 1 and h.gh.mutating == [])
+
+# `--issues-only` closes done issues + backfills gh_issue without calling Projects v2 or marking board hash clean
+with Harness({"T1": ticket_md("T1", "x", status="done", gh_issue=None)},
+             [issue(42, TITLE, CLEAN_LABELS, state="OPEN")],
+             index={"projection_version": sg.PROJECTION_VERSION,
+                    "tickets": {"T9": "keep-t9"}}) as h:
+    sg.ISSUES_ONLY = True
+    rc_io = sg.main()
+    t1_after = (h.dir / "tickets" / "T1.md").read_text(encoding="utf-8")
+    idx_io = h.index_now()
+    check("T650: --issues-only closes done issue and backfills gh_issue",
+          rc_io == 0 and h.gh.count("issue", "close") == 1 and "gh_issue: 42" in t1_after)
+    check("T650: --issues-only makes ZERO project list / project item-add calls",
+          h.gh.count("project", "list") == 0 and h.gh.count("project", "item-add") == 0)
+    check("T650: --issues-only does NOT record T1 as board-synced in tickets-sync-index.json",
+          "T1" not in idx_io and idx_io.get("T9") == "keep-t9")
+
+# `ensure_labels()` skips `gh label create` when `gh label list` already matches color & description
+with Harness({"T1": ticket_md("T1", "x")}, []) as h:
+    def labels_already_current(args):
+        if len(args) >= 3 and (args[1], args[2]) == ("label", "list"):
+            return 0, json.dumps([
+                {"name": "P1", "color": "d93f0b", "description": "Priority 1"},
+                {"name": "repo:web", "color": "ededed", "description": "repo:web"},
+            ]), ""
+        return h.gh(args)
+    sg.RUN = labels_already_current
+    sg.ensure_labels(sg.load_tickets())
+    check("T650: ensure_labels skips `gh label create` when labels already match on GitHub",
+          h.gh.count("label", "create") == 0)
 
 
 # ── meta ────────────────────────────────────────────────────────────────────────────

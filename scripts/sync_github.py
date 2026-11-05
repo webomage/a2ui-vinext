@@ -31,10 +31,12 @@ drift permanent — the exact freeze this design avoids.
 board fields; without the bump its new fields would ship into an index reporting everything synced.
 
 Usage:
-    python3 scripts/sync_github.py            # indexed sync (skips unchanged)
-    python3 scripts/sync_github.py --all      # force a full sweep
-    python3 scripts/sync_github.py --dry-run  # print planned actions only, mutate nothing
-    python3 scripts/sync_github.py --verify    # audit recorded gh_issue numbers, no mutation
+    python3 scripts/sync_github.py                       # indexed sync (skips unchanged)
+    python3 scripts/sync_github.py --all                 # force a full sweep
+    python3 scripts/sync_github.py --tickets T650,T651   # targeted subset sync (preserves index)
+    python3 scripts/sync_github.py --issues-only         # sync Issues without Projects v2 calls
+    python3 scripts/sync_github.py --dry-run             # print planned actions only, mutate nothing
+    python3 scripts/sync_github.py --verify              # audit recorded gh_issue numbers, no mutation
 
 Exit codes: 0 ok · 1 one or more tickets failed to sync · 2 configuration/auth error.
 
@@ -44,10 +46,14 @@ Requires: gh CLI authenticated as an account that can resolve REPO, with 'repo' 
 from __future__ import annotations
 import hashlib
 import json
+import os
 import pathlib
 import re
 import subprocess
 import sys
+import threading
+import time
+from typing import Any
 
 import yaml
 
@@ -85,6 +91,7 @@ ACCOUNT = _VCS.get("gh_account", REPO.split("/", 1)[0])
 from board_identity import (  # noqa: E402
     BoardIdentityError,
     describe as _describe_board,
+    graphql_root as _graphql_root,
     load as _load_board,
     load_board_projection_config as _load_board_config,
 )
@@ -104,9 +111,38 @@ if not TICKETS_DIR.is_dir():
 MANIFEST = ROOT / "project" / "tickets.json"
 INDEX = ROOT / "project" / "tickets-sync-index.json"
 
+def _parse_only_tickets(argv: list[str]) -> set[str] | None:
+    """Parse optional `--tickets T1,T2` / `--ticket T1` flags without choking on foreign argv
+    when imported by read-only callers like `state_doctor.py`."""
+    selected: set[str] = set()
+    found_flag = False
+    idx = 0
+    while idx < len(argv):
+        arg = argv[idx]
+        raw_val: str | None = None
+        if arg in ("--tickets", "--ticket") and idx + 1 < len(argv):
+            found_flag = True
+            raw_val = argv[idx + 1]
+            idx += 2
+        elif arg.startswith("--tickets=") or arg.startswith("--ticket="):
+            found_flag = True
+            raw_val = arg.split("=", 1)[1]
+            idx += 1
+        else:
+            idx += 1
+            continue
+        for tok in (raw_val or "").split(","):
+            cleaned = tok.strip().upper()
+            if cleaned:
+                selected.add(cleaned if cleaned.startswith("T") else f"T{cleaned}")
+    return selected if found_flag else None
+
+
 DRY = "--dry-run" in sys.argv
 FORCE_ALL = "--all" in sys.argv
 VERIFY = "--verify" in sys.argv
+ISSUES_ONLY = "--issues-only" in sys.argv
+ONLY_TICKETS: set[str] | None = _parse_only_tickets(sys.argv[1:])
 
 # Bump when the projected field set changes (e.g. T141 adds board fields). Invalidates every entry.
 # 2 — T228 (2026-08-16): the label projection changed shape. `area:` is now built from `area`
@@ -116,8 +152,8 @@ PROJECTION_VERSION = 2
 
 # How many issues a single list fetch will pull. `gh issue list` paginates internally up to this.
 # If a run ever returns exactly this many we cannot tell a full page from a truncation, so we fail
-# loudly rather than mirror against a silently truncated view (there are already ~145 issues).
-ISSUE_FETCH_LIMIT = 1000
+# loudly rather than mirror against a silently truncated view (T650: raised 1000 -> 5000 at 650 tickets).
+ISSUE_FETCH_LIMIT = 5000
 
 # status -> whether the issue should be CLOSED. `paused` deliberately stays OPEN: T141 measured that
 # closing a paused issue makes the board display it as Done, destroying the very nuance T32 was set
@@ -191,11 +227,46 @@ def _real_run(args: list[str]) -> tuple[int, str, str]:
 RUN = _real_run
 
 
-def sh(args: list[str], check=True) -> str:
-    code, out, err = RUN(args)
-    if check and code != 0:
-        raise RuntimeError(f"$ {' '.join(args)}\n{err}")
-    return out
+_RATE_LIMIT_ERRORS = (
+    "secondary rate limit",
+    "submitted too quickly",
+    "abuse detection",
+)
+_NETWORK_TRANSIENT_ERRORS = (
+    "connection reset by peer",
+    "tls handshake timeout",
+    "unexpected eof",
+    "unknown owner type",
+    "http 502",
+    "http 503",
+    "http 504",
+    "bad gateway",
+    "service unavailable",
+)
+
+
+def sh(args: list[str], check: bool = True) -> str:
+    max_attempts = 3 if RUN is _real_run else 0
+    attempt = 0
+    while True:
+        code, out, err = RUN(args)
+        if code == 0:
+            return out
+        err_low = err.lower()
+        is_rate = any(m in err_low for m in _RATE_LIMIT_ERRORS)
+        is_net = any(m in err_low for m in _NETWORK_TRANSIENT_ERRORS)
+        if attempt < max_attempts and (is_rate or is_net):
+            wait_s = (15.0, 30.0, 60.0)[attempt] if is_rate else (2.0, 5.0, 10.0)[attempt]
+            attempt += 1
+            print(
+                f" [WARN] transient GitHub error on {' '.join(args[:3])}; "
+                f"retrying in {int(wait_s)}s ({attempt}/{max_attempts})"
+            )
+            time.sleep(wait_s)
+            continue
+        if check:
+            raise RuntimeError(f"$ {' '.join(args)}\n{err}")
+        return out
 
 
 # ── pure core (no I/O — this is what the unit tests drive) ───────────────────────────
@@ -295,6 +366,35 @@ def sync_board_item_fields(
     if not proj_id or not item_id or not board_fields_meta:
         return 0
     desired = desired_board_fields(ticket, board_cfg)
+    if RUN is _real_run:
+        clauses: list[str] = []
+        for field_name, want_val in desired.items():
+            if not want_val:
+                continue
+            fmeta = board_fields_meta.get(field_name)
+            if not fmeta or not fmeta.get("id"):
+                continue
+            field_id = str(fmeta["id"])
+            options = fmeta.get("options")
+            if isinstance(options, dict):
+                opt_id = options.get(want_val)
+                if not opt_id:
+                    continue
+                val_expr = f"singleSelectOptionId: {json.dumps(str(opt_id))}"
+            else:
+                val_expr = f"text: {json.dumps(want_val)}"
+            alias = f"f{len(clauses)}"
+            clauses.append(
+                f"{alias}: updateProjectV2ItemFieldValue(input:{{ "
+                f"projectId:{json.dumps(proj_id)}, itemId:{json.dumps(item_id)}, "
+                f"fieldId:{json.dumps(field_id)}, value:{{ {val_expr} }} }}) "
+                f"{{ projectV2Item {{ id }} }}"
+            )
+        if not clauses:
+            return 0
+        sh(["gh", "api", "graphql", "-f", f"query=mutation {{ {' '.join(clauses)} }}"], check=True)
+        return len(clauses)
+
     writes = 0
     for field_name, want_val in desired.items():
         if not want_val:
@@ -611,21 +711,69 @@ def ensure_account():
         sys.exit(f"FATAL: gh cannot resolve {REPO} (got '{who}'). Active account wrong or no access.")
 
 
-def ensure_labels(tickets: list[dict]):
+_LABEL_IDS: dict[str, str] = {}
+
+
+def ensure_labels(tickets: list[dict]) -> None:
     """Upsert every label ANY ticket actually uses — not just the hardcoded set — so a later
     `gh issue create --label <x>` can never fail on a missing label (that would abort the sync)."""
+    global _LABEL_IDS
+    _LABEL_IDS = {}
     used: set[str] = set()
     for t in tickets:
         used |= desired_labels(t)
+    if not used:
+        return
+
+    existing: dict[str, tuple[str, str]] = {}
+    if not DRY:
+        code, out, _ = RUN(
+            ["gh", "label", "list", "--repo", REPO, "--limit", "500", "--json", "id,name,color,description"]
+        )
+        if code == 0 and out and out.lstrip().startswith("["):
+            try:
+                raw_labels: Any = json.loads(out)
+                for row in raw_labels:
+                    if isinstance(row, dict) and row.get("name"):
+                        lname = str(row["name"])
+                        existing[lname] = (
+                            str(row.get("color") or "").lower().lstrip("#"),
+                            str(row.get("description") or ""),
+                        )
+                        if row.get("id"):
+                            _LABEL_IDS[lname] = str(row["id"])
+            except json.JSONDecodeError:
+                existing = {}
+
+    mutated_any = False
     for name in sorted(used):
         color, desc = LABELS.get(
             name, (AREA_COLOR if name.startswith("area:") else "ededed", name))
         if DRY:
             print(f"  [dry] label {name}")
             continue
+        if existing.get(name) == (color.lower(), desc):
+            continue
         # --force upserts (create or update color/description) without erroring if it exists
         sh(["gh", "label", "create", name, "--color", color, "--description", desc,
             "--force", "--repo", REPO], check=False)
+        mutated_any = True
+
+    if mutated_any and not DRY and RUN is _real_run:
+        code2, out2, _ = RUN(
+            ["gh", "label", "list", "--repo", REPO, "--limit", "500", "--json", "id,name"]
+        )
+        if code2 == 0 and out2 and out2.lstrip().startswith("["):
+            try:
+                refreshed_labels: Any = json.loads(out2)
+                for row in refreshed_labels:
+                    if isinstance(row, dict) and row.get("name") and row.get("id"):
+                        _LABEL_IDS[str(row["name"])] = str(row["id"])
+            except json.JSONDecodeError:
+                pass
+
+
+_LAST_PROJECT_ID: str = ""
 
 
 def get_or_create_project() -> tuple[str, str]:
@@ -640,12 +788,37 @@ def get_or_create_project() -> tuple[str, str]:
     A title mismatch is fatal rather than a warning. It means the declaration and the live board
     have diverged, and the whole point of declaring an identity is that we stop guessing which of
     the two is right.
+
+    🔴 T650 (AgDR-0025): `gh project list` MUST NOT ignore non-zero exit status. Previously `check=False`
+    swallowed missing `read:project` scope / GraphQL errors as `items = []`, mistaking a failed read for
+    "board does not exist" and falling through to `gh project create`.
     """
-    out = sh(["gh", "project", "list", "--owner", OWNER, "--format", "json"], check=False)
+    global _LAST_PROJECT_ID
+    _LAST_PROJECT_ID = ""
+    code, out, err = RUN(["gh", "project", "list", "--owner", OWNER, "--format", "json"])
+    if code != 0:
+        gh_cfg = os.environ.get("GH_CONFIG_DIR", "~/.config/gh")
+        scope_hint = ""
+        if "read:project" in err or "project" in err.lower():
+            scope_hint = (
+                f" Active GH_CONFIG_DIR ({gh_cfg}) lacks Projects v2 scope — refresh via: "
+                f"GH_CONFIG_DIR={gh_cfg} gh auth refresh -h github.com -s project,read:project "
+                f"(or pass --issues-only explicitly to sync GitHub Issues without board mutations)."
+            )
+        sys.exit(
+            f"FATAL: gh project list --owner {OWNER} failed (exit {code}: "
+            f"{err[:240] or 'no stderr'}). Refusing to mistake a failed board read for an absent "
+            f"board and create a duplicate '{PROJECT_TITLE}'.{scope_hint}"
+        )
     try:
-        items = json.loads(out).get("projects", []) if out else []
-    except json.JSONDecodeError:
-        items = []
+        json_text = out[out.find("{"):] if (out and "{" in out) else out
+        parsed: Any = json.loads(json_text) if json_text else {}
+        items = parsed.get("projects", []) if isinstance(parsed, dict) else []
+    except json.JSONDecodeError as exc:
+        sys.exit(
+            f"FATAL: gh project list --owner {OWNER} returned invalid JSON ({exc}). "
+            f"Refusing to fall through to project creation."
+        )
 
     by_number = {int(p["number"]): p for p in items if str(p.get("number", "")).isdigit()}
     live = by_number.get(PROJECT_NUMBER)
@@ -654,6 +827,7 @@ def get_or_create_project() -> tuple[str, str]:
             sys.exit(f"FATAL: {_describe_board(BOARD)} is declared, but #{PROJECT_NUMBER} under "
                      f"{OWNER} is titled '{live.get('title')}'. Fix `.w0m/sdlc.json → board` or the "
                      f"board — do not let a run pick which one is right.")
+        _LAST_PROJECT_ID = str(live.get("id") or "")
         return str(live["number"]), live.get("url", "")
 
     same_title = [p for p in items if p.get("title") == PROJECT_TITLE]
@@ -667,9 +841,126 @@ def get_or_create_project() -> tuple[str, str]:
         print(f"  [dry] create project '{PROJECT_TITLE}' under {OWNER}")
         return "", ""
     out = sh(["gh", "project", "create", "--owner", OWNER, "--title", PROJECT_TITLE, "--format", "json"])
-    p = json.loads(out)
+    p: dict[str, Any] = json.loads(out[out.find("{"):] if "{" in out else out)
+    _LAST_PROJECT_ID = str(p.get("id") or "")
     print(f"  created board #{p['number']} — update `.w0m/sdlc.json → board.number` to match")
     return str(p["number"]), p.get("url", "")
+
+
+def _fetch_board_fields_meta(proj_num: str) -> dict[str, dict[str, Any]]:
+    """Load Projects v2 field IDs and single-select option IDs so targeted sync runs can populate
+    board item fields (`Status`, `Priority`, `Area`, `Epic`) immediately after `item-add`."""
+    if not proj_num:
+        return {}
+    code, out, _ = RUN(["gh", "project", "field-list", proj_num, "--owner", OWNER, "--format", "json"])
+    if code != 0 or not out or "{" not in out:
+        return {}
+    try:
+        payload: Any = json.loads(out[out.find("{"):])
+    except json.JSONDecodeError:
+        return {}
+    fields = payload.get("fields") if isinstance(payload, dict) else None
+    if not isinstance(fields, list):
+        return {}
+    meta: dict[str, dict[str, Any]] = {}
+    for fld in fields:
+        if not isinstance(fld, dict) or not fld.get("name") or not fld.get("id"):
+            continue
+        entry: dict[str, Any] = {"id": str(fld["id"])}
+        opts = fld.get("options")
+        if isinstance(opts, list):
+            entry["options"] = {
+                str(o["name"]): str(o["id"])
+                for o in opts
+                if isinstance(o, dict) and o.get("name") and o.get("id")
+            }
+        meta[str(fld["name"])] = entry
+    return meta
+
+
+def _fetch_existing_board_items() -> dict[int, tuple[str, dict[str, str]]]:
+    """Fetch `issue_number -> (project_item_id, current_field_values)` across the declared board via
+    paginated GraphQL so bulk runs skip redundant `item-add` AND skip unchanged board field writes."""
+    owner_root = _graphql_root(BOARD)
+    owner_key = str(BOARD["owner_type"])
+    by_issue: dict[int, tuple[str, dict[str, str]]] = {}
+    cursor = "null"
+    while True:
+        q = (
+            "{ %s { projectV2(number:%d) { items(first:100, after:%s) { "
+            "pageInfo { hasNextPage endCursor } "
+            "nodes { id content { ... on Issue { number } } "
+            "fieldValues(first:15) { nodes { "
+            "... on ProjectV2ItemFieldSingleSelectValue { name field { ... on ProjectV2FieldCommon { name } } } "
+            "... on ProjectV2ItemFieldTextValue { text field { ... on ProjectV2FieldCommon { name } } } "
+            "} } } } } } }"
+            % (owner_root, PROJECT_NUMBER, cursor)
+        )
+        out = sh(["gh", "api", "graphql", "-f", f"query={q}"], check=True)
+        parsed_page: Any = json.loads(out or "{}")
+        items_obj = (
+            ((parsed_page.get("data") or {}).get(owner_key) or {}).get("projectV2") or {}
+        ).get("items") or {}
+        for node in items_obj.get("nodes") or []:
+            if not isinstance(node, dict) or not node.get("id"):
+                continue
+            num = (node.get("content") or {}).get("number")
+            if isinstance(num, int):
+                cur_vals: dict[str, str] = {}
+                for fv in ((node.get("fieldValues") or {}).get("nodes") or []):
+                    if isinstance(fv, dict) and isinstance(fv.get("field"), dict):
+                        fname = fv["field"].get("name")
+                        fval = fv.get("name") if fv.get("name") is not None else fv.get("text")
+                        if fname and fval is not None:
+                            cur_vals[str(fname)] = str(fval)
+                by_issue[num] = (str(node["id"]), cur_vals)
+        page_info = items_obj.get("pageInfo") or {}
+        if not page_info.get("hasNextPage") or not page_info.get("endCursor"):
+            break
+        cursor = json.dumps(str(page_info["endCursor"]))
+    return by_issue
+
+
+def _fetch_repo_node_id() -> str:
+    return sh(["gh", "repo", "view", REPO, "--json", "id", "-q", ".id"], check=True).strip()
+
+
+def _board_field_clauses(
+    alias_prefix: str,
+    proj_id: str,
+    item_id: str,
+    ticket: dict,
+    board_fields_meta: dict[str, dict[str, Any]],
+    current_vals: dict[str, str] | None = None,
+) -> list[str]:
+    if not proj_id or not item_id or not board_fields_meta:
+        return []
+    desired = desired_board_fields(ticket)
+    clauses: list[str] = []
+    for idx_f, (field_name, want_val) in enumerate(desired.items()):
+        if not want_val:
+            continue
+        if current_vals is not None and current_vals.get(field_name) == want_val:
+            continue
+        fmeta = board_fields_meta.get(field_name)
+        if not fmeta or not fmeta.get("id"):
+            continue
+        field_id = str(fmeta["id"])
+        options = fmeta.get("options")
+        if isinstance(options, dict):
+            opt_id = options.get(want_val)
+            if not opt_id:
+                continue
+            val_expr = f"singleSelectOptionId: {json.dumps(str(opt_id))}"
+        else:
+            val_expr = f"text: {json.dumps(want_val)}"
+        clauses.append(
+            f"{alias_prefix}_{idx_f}: updateProjectV2ItemFieldValue(input:{{ "
+            f"projectId:{json.dumps(proj_id)}, itemId:{json.dumps(item_id)}, "
+            f"fieldId:{json.dumps(field_id)}, value:{{ {val_expr} }} }}) "
+            f"{{ projectV2Item {{ id }} }}"
+        )
+    return clauses
 
 
 def load_tickets() -> list[dict]:
@@ -787,6 +1078,11 @@ def fetch_issues() -> dict[int, dict]:
         int(r["number"]): {
             "title": r["title"],
             "labels": {lb["name"] for lb in (r.get("labels") or [])},
+            "label_ids": {
+                str(lb["name"]): str(lb["id"])
+                for lb in (r.get("labels") or [])
+                if isinstance(lb, dict) and lb.get("name") and lb.get("id")
+            },
             "closed": str(r.get("state", "")).lower() == "closed",
             # GitHub reports the enum (`NOT_PLANNED`); the CLI takes prose ("not planned"). Normalise
             # to the CLI's spelling here so exactly one comparison is needed downstream.
@@ -906,15 +1202,30 @@ def main() -> int:
 
     ensure_account()
     tickets = load_tickets()
-    print(f"→ {len(tickets)} tickets. Repo={REPO} "
-          f"dry={DRY} all={FORCE_ALL} verify={VERIFY}")
+    live_ids = {t["id"] for t in tickets}
+    if ONLY_TICKETS is not None:
+        if not ONLY_TICKETS:
+            print(" [FAIL] --tickets passed with zero ticket IDs (refusing vacuous sync)")
+            return 1
+        unknown = sorted(ONLY_TICKETS - live_ids)
+        if unknown:
+            print(f" [FAIL] unknown ticket(s) in --tickets: {', '.join(unknown)}")
+            return 1
+        candidate_tickets = [t for t in tickets if t["id"] in ONLY_TICKETS]
+    else:
+        candidate_tickets = tickets
+
+    scope_note = f" subset={len(candidate_tickets)}" if ONLY_TICKETS is not None else ""
+    mode_note = " issues_only=True" if ISSUES_ONLY else ""
+    print(f"→ {len(tickets)} tickets.{scope_note} Repo={REPO} "
+          f"dry={DRY} all={FORCE_ALL} verify={VERIFY}{mode_note}")
 
     print("→ fetching issues (one call)…")
     issues = fetch_issues()
     print(f"   {len(issues)} issues")
 
     if VERIFY:
-        return run_verify(tickets, issues)
+        return run_verify(candidate_tickets, issues)
 
     index = load_index()
     hashes: dict[str, str] = dict(index)
@@ -930,7 +1241,7 @@ def main() -> int:
     # `issues`, so a number without a live issue is not a state this loop can produce. Carrying
     # them as separate values let phase 2 claim it could — see the note there.
     work: list[tuple[dict, dict, str, tuple[int, dict] | None]] = []
-    for t in tickets:
+    for t in candidate_tickets:
         tid = t["id"]
         projection = projection_of(t, summary_of(tid))
         phash = projection_hash(projection)
@@ -955,13 +1266,13 @@ def main() -> int:
 
         if found is not None and not needs_sync(tid, projection, index, found[1]):
             skipped += 1
-            hashes[tid] = phash
+            if not ISSUES_ONLY:
+                hashes[tid] = phash
             continue
         work.append((t, projection, phash, found))
 
     if not work:
-        if not DRY:
-            live_ids = {t["id"] for t in tickets}
+        if not DRY and not ISSUES_ONLY:
             save_index({k: v for k, v in hashes.items() if k in live_ids})
         print(f"\n✓ nothing to sync. skipped={skipped} (zero mutating calls)")
         return 0
@@ -969,71 +1280,303 @@ def main() -> int:
     print(f"→ {len(work)} ticket(s) to sync, {skipped} unchanged")
     print("→ ensuring labels…")
     ensure_labels([t for t, *_ in work])
-    print("→ ensuring project…")
-    proj_num, proj_url = get_or_create_project()
-    print(f"   project #{proj_num} {proj_url}")
+    proj_num, proj_url, proj_id = "", "", ""
+    board_fields_meta: dict[str, dict[str, Any]] = {}
+    if ISSUES_ONLY:
+        print(" [INFO] --issues-only active: skipping Projects v2 board resolution and item mutations")
+    else:
+        print("→ ensuring project…")
+        proj_num, proj_url = get_or_create_project()
+        proj_id = _LAST_PROJECT_ID
+        print(f"   project #{proj_num} {proj_url}")
+        if proj_num and not DRY:
+            board_fields_meta = _fetch_board_fields_meta(proj_num)
 
-    # ── phase 2: mutate ──────────────────────────────────────────────────────────────
-    for t, projection, phash, found in work:
+    state_lock = threading.Lock()
+    checkpoint_counter = 0
+
+    def _checkpoint_if_needed(force: bool = False) -> None:
+        nonlocal checkpoint_counter
+        if DRY or ISSUES_ONLY:
+            return
+        checkpoint_counter += 1
+        if force or checkpoint_counter % 20 == 0:
+            save_index({k: v for k, v in hashes.items() if k in live_ids})
+
+    def _mutate_one(item: tuple[dict, dict, str, tuple[int, dict] | None]) -> None:
+        nonlocal created, updated, failed
+        t, projection, phash, found = item
         tid = t["id"]
         try:
             if DRY:
                 print(f"  [dry] {'update' if found else 'create'} {tid} → "
                       f"{('#' + str(found[0])) if found else '(new)'}")
-                continue
+                return
 
             # A recorded number pointing at an issue that no longer exists is NOT handled here —
             # it is handled in phase 1, which drops the dead number and re-resolves by title,
-            # falling through to this create when nothing matches. T188 first added a third
-            # branch for it (`num is not None and live is None`, raising a diagnosis); a test
-            # written to exercise that branch proved it never runs, because phase 1 has already
-            # made the state unreachable. The pairing above now says so in the type.
+            # falling through to this create when nothing matches.
             if found is None:
                 url = sh(["gh", "issue", "create", "--repo", REPO,
                           "--title", projection["title"], "--body", projection["body"],
                           "--label", ",".join(projection["labels"])])
                 num = int(url.rstrip("/").split("/")[-1])
-                created += 1
+                is_create = True
                 if projection["closed"]:
-                    sh(["gh", "issue", "close", str(num), "--repo", REPO], check=False)
+                    close_args = ["gh", "issue", "close", str(num), "--repo", REPO]
+                    want_reason = projection.get("reason")
+                    if want_reason:
+                        close_args += ["--reason", want_reason]
+                    sh(close_args, check=False)
             else:
                 num, live = found
                 push_issue(num, projection, live)
-                updated += 1
+                is_create = False
 
             backfill(tid, num)
             if proj_num:
                 # T141 AC8 & AC9: `check=True` so a failing `item-add` is never silently swallowed.
                 item_out = sh(["gh", "project", "item-add", proj_num, "--owner", OWNER,
-                               "--url", f"https://github.com/{REPO}/issues/{num}"], check=True)
-                if item_out and item_out.lstrip().startswith("{"):
+                               "--url", f"https://github.com/{REPO}/issues/{num}",
+                               "--format", "json"], check=True)
+                if item_out and "{" in item_out:
                     try:
-                        item_data = json.loads(item_out)
+                        item_data: dict[str, Any] = json.loads(item_out[item_out.find("{"):])
                     except json.JSONDecodeError:
                         item_data = {}
-                    if item_data.get("id") and item_data.get("project_id") and item_data.get("fields_meta"):
+                    eff_proj_id = str(item_data.get("project_id") or proj_id)
+                    eff_fields = item_data.get("fields_meta") or board_fields_meta
+                    if item_data.get("id") and eff_proj_id and eff_fields:
                         sync_board_item_fields(
-                            str(item_data["project_id"]),
+                            eff_proj_id,
                             str(item_data["id"]),
                             t,
-                            item_data["fields_meta"],
+                            eff_fields,
                         )
-            hashes[tid] = phash
-            print(f"  {tid} → #{num}")
+            with state_lock:
+                if is_create:
+                    created += 1
+                else:
+                    updated += 1
+                if not ISSUES_ONLY:
+                    hashes[tid] = phash
+                _checkpoint_if_needed()
+                print(f"  {tid} → #{num}")
         except Exception as e:                                    # noqa: BLE001 — see below
             # A single bad ticket must not stop the mirror, but it must NEVER be silent: this ran
             # detached for months and a TypeError on one malformed cell stopped the whole sync with
             # an empty log. Count it, name it, and exit non-zero at the end.
-            failed += 1
-            print(f"  ✗ {tid}: {type(e).__name__}: {e}")
+            with state_lock:
+                failed += 1
+                print(f"  ✗ {tid}: {type(e).__name__}: {e}")
 
+    def _batch_update_chunk(
+        chunk: list[tuple[dict, dict, str, tuple[int, dict]]],
+        board_map: dict[int, tuple[str, dict[str, str]]],
+    ) -> None:
+        nonlocal updated, failed
+        var_decls: list[str] = []
+        var_args: list[str] = []
+        issue_clauses: list[str] = []
+        board_clauses: list[str] = []
+        need_field_followup: list[tuple[int, dict]] = []
+
+        for idx_u, (t, projection, _phash, (num, live)) in enumerate(chunk):
+            node_id = str(live.get("node_id") or "")
+            if not node_id or any(lb not in _LABEL_IDS for lb in projection["labels"]):
+                _mutate_one((t, projection, _phash, (num, live)))
+                continue
+            t_var = f"t{idx_u}"
+            b_var = f"b{idx_u}"
+            var_decls.extend([f"${t_var}: String!", f"${b_var}: String!"])
+            var_args.extend(["-f", f"{t_var}={projection['title']}", "-f", f"{b_var}={projection['body']}"])
+
+            foreign_ids = [
+                lid for lname, lid in (live.get("label_ids") or {}).items() if not is_owned(lname)
+            ]
+            want_ids = [_LABEL_IDS[lb] for lb in sorted(projection["labels"])]
+            all_label_ids = sorted(set(foreign_ids + want_ids))
+            labels_lit = "[" + ",".join(json.dumps(x) for x in all_label_ids) + "]"
+
+            issue_clauses.append(
+                f"u{idx_u}: updateIssue(input:{{ id:{json.dumps(node_id)}, "
+                f"title:${t_var}, body:${b_var}, labelIds:{labels_lit} }}) {{ issue {{ number }} }}"
+            )
+            want_reason = projection.get("reason")
+            if projection["closed"] and not live["closed"]:
+                r_part = f", stateReason:{want_reason.upper().replace(' ', '_')}" if want_reason else ""
+                issue_clauses.append(
+                    f"c{idx_u}: closeIssue(input:{{ issueId:{json.dumps(node_id)}{r_part} }}) {{ issue {{ number }} }}"
+                )
+            elif not projection["closed"] and live["closed"]:
+                issue_clauses.append(
+                    f"c{idx_u}: reopenIssue(input:{{ issueId:{json.dumps(node_id)} }}) {{ issue {{ number }} }}"
+                )
+            elif projection["closed"] and live["closed"] and want_reason and live.get("reason") != want_reason:
+                enum_val = want_reason.upper().replace(" ", "_")
+                issue_clauses.append(
+                    f"c{idx_u}: updateIssue(input:{{ id:{json.dumps(node_id)}, "
+                    f"stateInput:{{ value:CLOSED, stateReason:{enum_val} }} }}) {{ issue {{ number }} }}"
+                )
+
+            if proj_id and not ISSUES_ONLY:
+                existing_entry = board_map.get(num)
+                if existing_entry is not None:
+                    existing_item_id, cur_vals = existing_entry
+                    board_clauses.extend(
+                        _board_field_clauses(f"bf{idx_u}", proj_id, existing_item_id, t, board_fields_meta, cur_vals)
+                    )
+                else:
+                    issue_clauses.append(
+                        f"a{idx_u}: addProjectV2ItemById(input:{{ projectId:{json.dumps(proj_id)}, "
+                        f"contentId:{json.dumps(node_id)} }}) {{ item {{ id }} }}"
+                    )
+                    need_field_followup.append((idx_u, t))
+
+        if not issue_clauses:
+            return
+
+        header = f"mutation({', '.join(var_decls)})" if var_decls else "mutation"
+        query = f"{header} {{ {' '.join(issue_clauses)} }}"
+        try:
+            raw_resp = sh(["gh", "api", "graphql", "-f", f"query={query}", *var_args], check=True)
+            resp_json: Any = json.loads(raw_resp or "{}")
+            if isinstance(resp_json, dict) and resp_json.get("errors"):
+                raise RuntimeError(json.dumps(resp_json["errors"])[:300])
+            data_obj = resp_json.get("data") if isinstance(resp_json, dict) else {}
+            if need_field_followup and isinstance(data_obj, dict) and proj_id and board_fields_meta:
+                for idx_u, t_follow in need_field_followup:
+                    added_item = ((data_obj.get(f"a{idx_u}") or {}).get("item") or {}).get("id")
+                    if added_item:
+                        board_clauses.extend(
+                            _board_field_clauses(f"ff{idx_u}", proj_id, str(added_item), t_follow, board_fields_meta)
+                        )
+            # Execute board-field updates in small <= 16-mutation sub-batches to stay well under GitHub's 10s limit
+            for b_start in range(0, len(board_clauses), 16):
+                sub = board_clauses[b_start:b_start + 16]
+                sh(["gh", "api", "graphql", "-f", f"query=mutation {{ {' '.join(sub)} }}"], check=True)
+
+            for t, _projection, phash, (num, _live) in chunk:
+                tid = t["id"]
+                backfill(tid, num)
+                with state_lock:
+                    updated += 1
+                    if not ISSUES_ONLY:
+                        hashes[tid] = phash
+                    _checkpoint_if_needed()
+                    print(f"  {tid} → #{num}")
+        except Exception:  # noqa: BLE001 — isolate bad item via per-ticket fallback
+            for t, projection, phash, pair in chunk:
+                _mutate_one((t, projection, phash, pair))
+
+    def _batch_finalize_created(
+        created_batch: list[tuple[dict, dict, str, int, str]]
+    ) -> None:
+        nonlocal created
+        clauses: list[str] = []
+        for idx_b, (_t, projection, _phash, _num, node_id) in enumerate(created_batch):
+            if projection["closed"]:
+                want_reason = projection.get("reason")
+                r_part = f", stateReason:{want_reason.upper().replace(' ', '_')}" if want_reason else ""
+                clauses.append(
+                    f"c{idx_b}: closeIssue(input:{{ issueId:{json.dumps(node_id)}{r_part} }}) {{ issue {{ number }} }}"
+                )
+            if proj_id and not ISSUES_ONLY:
+                clauses.append(
+                    f"a{idx_b}: addProjectV2ItemById(input:{{ projectId:{json.dumps(proj_id)}, "
+                    f"contentId:{json.dumps(node_id)} }}) {{ item {{ id }} }}"
+                )
+        if clauses:
+            raw_resp = sh(["gh", "api", "graphql", "-f", f"query=mutation {{ {' '.join(clauses)} }}"], check=True)
+            resp_json: Any = json.loads(raw_resp or "{}")
+            data_obj = resp_json.get("data") if isinstance(resp_json, dict) else {}
+            if isinstance(data_obj, dict) and proj_id and board_fields_meta and not ISSUES_ONLY:
+                f_clauses: list[str] = []
+                for idx_b, (t_b, _proj_b, _phash_b, _num_b, _nid_b) in enumerate(created_batch):
+                    added_id = ((data_obj.get(f"a{idx_b}") or {}).get("item") or {}).get("id")
+                    if added_id:
+                        f_clauses.extend(
+                            _board_field_clauses(f"cf{idx_b}", proj_id, str(added_id), t_b, board_fields_meta)
+                        )
+                for b_start in range(0, len(f_clauses), 16):
+                    sub_f = f_clauses[b_start:b_start + 16]
+                    sh(["gh", "api", "graphql", "-f", f"query=mutation {{ {' '.join(sub_f)} }}"], check=True)
+
+        for t_b, _proj_b, phash_b, num_b, _nid_b in created_batch:
+            tid_b = t_b["id"]
+            with state_lock:
+                created += 1
+                if not ISSUES_ONLY:
+                    hashes[tid_b] = phash_b
+                _checkpoint_if_needed()
+                print(f"  {tid_b} → #{num_b}")
+
+    # ── phase 2: mutate ──────────────────────────────────────────────────────────────
+    try:
+        if DRY or RUN is not _real_run or len(work) <= 1:
+            for item in work:
+                _mutate_one(item)
+        else:
+            updates_work = [(t, p, h, f) for t, p, h, f in work if f is not None]
+            creates_work = [(t, p, h) for t, p, h, f in work if f is None]
+            existing_board_map = (
+                _fetch_existing_board_items()
+                if (proj_id and not ISSUES_ONLY and len(updates_work) > 10)
+                else {}
+            )
+
+            chunk_size = 5
+            for start_i in range(0, len(updates_work), chunk_size):
+                _batch_update_chunk(updates_work[start_i:start_i + chunk_size], existing_board_map)
+
+            if creates_work:
+                repo_node_id = _fetch_repo_node_id()
+                pending_created: list[tuple[dict, dict, str, int, str]] = []
+                for idx_c, (t_c, proj_c, phash_c) in enumerate(creates_work):
+                    tid_c = t_c["id"]
+                    try:
+                        if idx_c > 0:
+                            time.sleep(0.6)
+                        want_ids_c = [_LABEL_IDS[lb] for lb in sorted(proj_c["labels"]) if lb in _LABEL_IDS]
+                        labels_lit_c = "[" + ",".join(json.dumps(x) for x in want_ids_c) + "]"
+                        q_create = (
+                            f"mutation($t: String!, $b: String!) {{ "
+                            f"createIssue(input:{{ repositoryId:{json.dumps(repo_node_id)}, "
+                            f"title:$t, body:$b, labelIds:{labels_lit_c} }}) "
+                            f"{{ issue {{ id number }} }} }}"
+                        )
+                        out_c = sh(
+                            ["gh", "api", "graphql", "-f", f"query={q_create}",
+                             "-f", f"t={proj_c['title']}", "-f", f"b={proj_c['body']}"],
+                            check=True,
+                        )
+                        parsed_c: Any = json.loads(out_c or "{}")
+                        iss_obj = (((parsed_c.get("data") or {}).get("createIssue") or {}).get("issue") or {})
+                        num_c = int(iss_obj["number"])
+                        nid_c = str(iss_obj["id"])
+                        backfill(tid_c, num_c)
+                        pending_created.append((t_c, proj_c, phash_c, num_c, nid_c))
+                        if len(pending_created) >= chunk_size:
+                            _batch_finalize_created(pending_created)
+                            pending_created = []
+                    except Exception as e:  # noqa: BLE001
+                        with state_lock:
+                            failed += 1
+                            print(f"  ✗ {tid_c}: {type(e).__name__}: {e}")
+                if pending_created:
+                    _batch_finalize_created(pending_created)
+    finally:
+        if not DRY and not ISSUES_ONLY:
+            # Drop index entries for tickets that no longer exist, or the index grows forever.
+            save_index({k: v for k, v in hashes.items() if k in live_ids})
+
+    # Refresh derived tickets.json after backfills so committed manifest reflects current state
     if not DRY:
-        # Drop index entries for tickets that no longer exist, or the index grows forever.
-        live_ids = {t["id"] for t in tickets}
-        save_index({k: v for k, v in hashes.items() if k in live_ids})
+        load_tickets()
 
+    proj_disp = f"#{proj_num}" if proj_num else "skipped(--issues-only)"
     print(f"\n{'✗' if failed else '✓'} done. created={created} updated={updated} "
-          f"skipped={skipped} failed={failed} project=#{proj_num}")
+          f"skipped={skipped} failed={failed} project={proj_disp}")
     return 1 if failed else 0
 
 

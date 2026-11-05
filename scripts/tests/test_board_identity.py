@@ -227,6 +227,34 @@ check("a title that disagrees with the declaration is fatal",
       "is titled" in sync_src,
       "a mismatch means declaration and board have diverged; a run must not pick which is right")
 
+# ── break 3 (T650): a failed `gh project list` must NEVER fall through to `gh project create` ─
+_project_create_called = False
+_saved_sg_run = sg.RUN
+
+
+def _project_list_fails(args: list[str]) -> tuple[int, str, str]:
+    global _project_create_called
+    if args[:3] == ["gh", "project", "list"]:
+        return 1, "", "error: your authentication token is missing required scopes [read:project]"
+    if args[:3] == ["gh", "project", "create"]:
+        _project_create_called = True
+        return 0, '{"number": 99, "url": "https://example/99"}', ""
+    return 0, "", ""
+
+
+sg.RUN = _project_list_fails
+try:
+    sg.get_or_create_project()
+    _project_list_stopped = False
+except SystemExit:
+    _project_list_stopped = True
+finally:
+    sg.RUN = _saved_sg_run
+
+check("a failed `gh project list` STOPS the run without calling `gh project create` (T650)",
+      _project_list_stopped and not _project_create_called,
+      "ignoring `gh project list` exit code mistook missing read:project scope for an absent board")
+
 print()
 if failures:
     print(f"{len(failures)} failure(s):")

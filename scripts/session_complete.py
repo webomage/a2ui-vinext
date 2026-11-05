@@ -1345,6 +1345,11 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--commit-message", default=None, help="Custom umbrella commit message")
     ap.add_argument("--dry-run", action="store_true", help="Validate and preview wrap-up without mutating or landing")
     ap.add_argument("--skip-land", action="store_true", help="Normalize, verify gates, and commit locally without pushing")
+    ap.add_argument(
+        "--skip-gh-sync",
+        action="store_true",
+        help="Skip targeted GitHub Issue + Projects v2 sync during wrap-up (offline mode)",
+    )
     ap.add_argument("--keep-tree", action="store_true", help="Keep agent tree directory after landing")
     ap.add_argument("--skip-gates", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument(
@@ -1360,6 +1365,75 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--allow-no-ticket", action="store_true", help="Allow wrap-up when zero tickets are targeted")
     ap.add_argument("--json", action="store_true", help="Emit machine-readable JSON summary")
     return ap
+
+
+def sync_tickets_to_github(
+    worktree_root: Path,
+    target_tickets: Sequence[str],
+    *,
+    skip: bool = False,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Mirror closed/updated target tickets to GitHub Issues + Projects v2 (`T651`).
+
+    Runs BEFORE `harvest_and_refresh_surfaces()` and `commit_dirty_repos()` so backfilled `gh_issue:`
+    keys, `w0m-web/project/tickets.json`, and `w0m-web/project/tickets-sync-index.json` are committed
+    in the same wrap-up commit (preventing stale-open GitHub issues in `webomage/wom7board`).
+    """
+    tids = [t.strip().upper() for t in target_tickets if t and t.strip()]
+    if dry_run:
+        return {"mode": "dry_run", "tickets": tids}
+    if skip:
+        return {"mode": "skipped", "tickets": tids}
+    if not tids:
+        return {"mode": "no_tickets", "tickets": []}
+
+    sync_script = worktree_root / "scripts" / "sync_github.py"
+    if not sync_script.is_file():
+        return {"mode": "missing_script", "tickets": tids}
+
+    csv_tids = ",".join(tids)
+    print(
+        f"[session-complete] Syncing ticket(s) {csv_tids} to GitHub tracker ...",
+        file=sys.stderr,
+        flush=True,
+    )
+    proc = _run(
+        [sys.executable, str(sync_script), "--tickets", csv_tids],
+        cwd=worktree_root,
+    )
+    if proc.returncode == 0:
+        return {
+            "mode": "full_sync",
+            "tickets": tids,
+            "output": (proc.stdout or "").strip()[-800:],
+        }
+
+    combined = f"{proc.stderr or ''}\n{proc.stdout or ''}"
+    if "read:project" in combined or "lacks Projects v2 scope" in combined:
+        print(
+            "[session-complete] [WARN] active GH_CONFIG_DIR lacks read:project scope; "
+            "syncing GitHub Issues via --issues-only so closed tickets never stay open on GitHub "
+            "(refresh Projects v2 scope via: gh auth refresh -h github.com -s project,read:project)",
+            file=sys.stderr,
+            flush=True,
+        )
+        proc_issues = _run(
+            [sys.executable, str(sync_script), "--tickets", csv_tids, "--issues-only"],
+            cwd=worktree_root,
+        )
+        if proc_issues.returncode == 0:
+            return {
+                "mode": "issues_only_missing_project_scope",
+                "tickets": tids,
+                "output": (proc_issues.stdout or "").strip()[-800:],
+            }
+        combined = f"{proc_issues.stderr or ''}\n{proc_issues.stdout or ''}"
+
+    raise SessionCompleteError(
+        "github_ticket_sync_failed",
+        f"sync_github.py --tickets {csv_tids} failed (exit {proc.returncode}):\n{combined.strip()[-1500:]}",
+    )
 
 
 def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[str, Any]]:
@@ -1410,6 +1484,13 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
         dry_run=bool(args.dry_run),
     )
 
+    gh_sync_info = sync_tickets_to_github(
+        wt_root,
+        targets,
+        skip=bool(args.skip_gh_sync or args.skip_land),
+        dry_run=bool(args.dry_run),
+    )
+
     surfaces_info = harvest_and_refresh_surfaces(
         wt_root,
         set_name=ctx.set_name,
@@ -1425,6 +1506,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
             "renumberedTickets": renumbered,
             "normalizedTickets": ticket_results,
             "mirroredReports": mirrored_reports,
+            "githubSync": gh_sync_info,
             "surfaces": surfaces_info,
             "configuredGates": list((sdlc_config.get("session_wrapup") or {}).get("verification_gates") or []),
         }
@@ -1480,6 +1562,12 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                     for tid in targets
                 ]
                 mirrored_reports = mirror_reports(wt_root, sdlc_config, targets, dry_run=False)
+                gh_sync_info = sync_tickets_to_github(
+                    wt_root,
+                    targets,
+                    skip=bool(args.skip_gh_sync),
+                    dry_run=False,
+                )
                 surfaces_info = harvest_and_refresh_surfaces(wt_root, set_name=ctx.set_name, dry_run=False)
                 primary_tid = targets[0] if targets else "T0"
                 committed = commit_dirty_repos(
@@ -1523,6 +1611,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
         "renumberedTickets": renumbered,
         "normalizedTickets": ticket_results,
         "mirroredReports": mirrored_reports,
+        "githubSync": gh_sync_info,
         "surfaces": surfaces_info,
         "verificationGates": gate_results,
         "deployCert": deploy_cert_info,
@@ -1548,6 +1637,9 @@ def _print_human_summary(summary: dict[str, Any]) -> None:
         print(f"  renumbered   : {pairs}")
     if summary.get("mirroredReports"):
         print(f"  mirrored     : {len(summary['mirroredReports'])} report(s) -> {', '.join(summary['mirroredReports'])}")
+    gh_sync = summary.get("githubSync") or {}
+    if gh_sync.get("mode"):
+        print(f"  gh sync      : {gh_sync.get('mode')} ({len(gh_sync.get('tickets') or [])} ticket(s))")
     if summary.get("dryRun"):
         print(f"  gates queued : {len(summary.get('configuredGates') or [])}")
         return
