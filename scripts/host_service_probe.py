@@ -7,8 +7,7 @@ Ensures every local or remote host endpoint replies with BOTH:
 
 Probed services:
   - `web`              (`http://127.0.0.1:4321/api/health`) -> `service == "web"`, `status == "ok"`
-  - `job`              (`http://127.0.0.1:4322/api/health`) -> `service == "job"`, `status == "ok"`
-  - `join`             (`http://127.0.0.1:4323/api/health`) -> `service == "join"`, `status == "ok"`
+  - `me`               (`http://127.0.0.1:4323/api/health`) -> `service == "me"`, `status == "ok"`
   - `demo`             (`http://127.0.0.1:4324/api/health`) -> `service == "demo"`, `status == "ok"`
   - `cp`               (`http://127.0.0.1:4325/api/health`) -> `service == "cp"`, `status == "ok"`
   - `supabase-auth`    (`http://127.0.0.1:54321/auth/v1/health`) -> `name == "GoTrue"`, `version` prefix `"v2."`
@@ -28,8 +27,7 @@ from typing import Any
 
 ASTRO_APP_SPECS: tuple[tuple[str, int], ...] = (
     ("web", 4321),
-    ("job", 4322),
-    ("join", 4323),
+    ("me", 4323),
     ("demo", 4324),
     ("cp", 4325),
 )

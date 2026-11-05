@@ -665,7 +665,7 @@ confirm-enroll-totp:
 # `astro: command not found` (T431, 2026-09-23). Guarded by `just deploy-elevation-test`.
 # Build all web workspaces and stamp release metadata
 build:
-    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web --filter cp --filter join --filter job --filter demo build
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web --filter cp --filter me --filter demo build
     @python3 w0m-web/project/scripts/stamp_build.py \
         --version "{{ deploy_version }}" --at "{{ deploy_at }}" --commit "{{ deploy_commit }}"
 
@@ -686,21 +686,13 @@ deploy-web: (_confirm "deploy-web")
     @cd w0m-web/apps/web/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_WEB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py web "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
-# Deploy apps/join (join.webomage.com)
-deploy-join: (_confirm "deploy-join")
-    @echo "Building and deploying apps/join to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter join build
-    @just _assert-provisioned join
-    @cd w0m-web/apps/join/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOIN:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py join "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
-
-# Deploy apps/job (job.webomage.com)
-deploy-job: (_confirm "deploy-job")
-    @echo "Building and deploying apps/job to Cloudflare Workers (Version: {{ deploy_version }})..."
-    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter job build
-    @just _assert-provisioned job
-    @cd w0m-web/apps/job/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_JOB:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py job "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
+# Deploy apps/me (me.webomage.com)
+deploy-me: (_confirm "deploy-me")
+    @echo "Building and deploying apps/me to Cloudflare Workers (Version: {{ deploy_version }})..."
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter me build
+    @just _assert-provisioned me
+    @cd w0m-web/apps/me/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_ME:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py me "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/demo (demo.webomage.com — T79 demo showcase) to Cloudflare Workers
 deploy-demo: (_confirm "deploy-demo")
@@ -1178,11 +1170,11 @@ e2e-local *specs:
     # superuser. The first two were overridden; the rest reached live (ats.steps.ts connects with
     # DATABASE_URL; the dev server dispatches to the live worker). All are pinned to loopback below, in BOTH
     # env blocks. The worker URL points at a port nothing listens on: a dispatch fails loudly, not live.
-    local_urls="DATABASE_URL=$db PUBLIC_CP_URL=http://localhost:4325 PUBLIC_WEB_URL=http://localhost:4321 PUBLIC_JOIN_URL=http://localhost:4323 PUBLIC_JOB_URL=http://localhost:4322 WORKERS_WEBHOOK_URL=http://127.0.0.1:1 UPWORK_CALLBACK_URL=http://127.0.0.1:1"
+    local_urls="DATABASE_URL=$db PUBLIC_CP_URL=http://localhost:4325 PUBLIC_WEB_URL=http://localhost:4321 PUBLIC_ME_URL=http://localhost:4323 WORKERS_WEBHOOK_URL=http://127.0.0.1:1 UPWORK_CALLBACK_URL=http://127.0.0.1:1"
     # T478 — every app port must be FREE, or the run is not local. Measured 2026-09-28: `pnpm run dev`
-    # SKIPS an app whose port is taken, so four dev servers left running since 2026-09-25 against the LIVE
-    # project answered this suite's /cp, /join and /job requests. A server we did not start is refused, not reused.
-    for p in 4321 4322 4323 4324 4325; do
+    # SKIPS an app whose port is taken, so dev servers left running against the LIVE
+    # project answered this suite's requests. A server we did not start is refused, not reused.
+    for p in 4321 4323 4324 4325; do
       if lsof -nP -iTCP:$p -sTCP:LISTEN >/dev/null 2>&1; then
         echo "  ❌ port $p is already in use (pid $(lsof -nP -tiTCP:$p -sTCP:LISTEN | head -1)) — this run would not be local."
         echo "     Stop it first (\`just stop-dev\`), then rerun."; exit 2
@@ -1213,11 +1205,11 @@ e2e-local *specs:
     DEV=$!
     # Kill by PORT, not only the parent pid: `pnpm -r --parallel` children outlive $DEV, and the first T478 run
     # left web listening on :4321 after the recipe exited.
-    trap 'kill $DEV 2>/dev/null || true; for p in 4321 4322 4323 4324 4325 9229 9230 9231 9232 9233 9234; do lsof -nP -tiTCP:$p -sTCP:LISTEN 2>/dev/null | xargs kill 2>/dev/null || true; done' EXIT
+    trap 'kill $DEV 2>/dev/null || true; for p in 4321 4323 4324 4325 9229 9230 9231 9232 9233 9234; do lsof -nP -tiTCP:$p -sTCP:LISTEN 2>/dev/null | xargs kill 2>/dev/null || true; done' EXIT
     if ! python3 ../scripts/host_service_probe.py --expect-version "$expected_ver" --wait 60; then
       echo "  ❌ dev servers failed service+version verification:"; tail -20 /tmp/w0m-e2e-local-dev.log; exit 1
     fi
-    echo "  ✅ all 5 Astro dev servers + Supabase GoTrue verified (service identity + version $expected_ver)"
+    echo "  ✅ all 4 Astro dev servers + Supabase GoTrue verified (service identity + version $expected_ver)"
     parallel_flags=""
     if [ "${W0M_E2E_PARALLEL:-1}" != "0" ]; then
       parallel_flags="--parallel -n ${W0M_E2E_WORKERS:-4}"
@@ -1686,7 +1678,6 @@ stop-dev:
     - caddy stop 2>/dev/null || true
     - lsof -ti:443 -ti:80 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
     - lsof -ti:4321 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
-    - lsof -ti:4322 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
     - lsof -ti:4323 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
     - lsof -ti:4324 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
     - lsof -ti:4325 -sTCP:LISTEN | xargs kill -9 2>/dev/null || true
@@ -1700,13 +1691,13 @@ stop-dev:
 
 # Start the full local estate stack with *.w0m.local SSL reverse proxy (T449)
 dev-stack: stop-dev
-    @sh -c 'if [ ! -f "$HOME/.w0m/certs/w0m.local.pem" ]; then mkdir -p "$HOME/.w0m/certs" && mkcert -cert-file "$HOME/.w0m/certs/w0m.local.pem" -key-file "$HOME/.w0m/certs/w0m.local-key.pem" "*.w0m.local" "w0m.local" "web.localhost" "cp.localhost" "admin.localhost" "job.localhost" "join.localhost" "demo.localhost" "func.localhost" "*.localhost" "localhost" "127.0.0.1"; fi'
+    @sh -c 'if [ ! -f "$HOME/.w0m/certs/w0m.local.pem" ]; then mkdir -p "$HOME/.w0m/certs" && mkcert -cert-file "$HOME/.w0m/certs/w0m.local.pem" -key-file "$HOME/.w0m/certs/w0m.local-key.pem" "*.w0m.local" "w0m.local" "web.localhost" "cp.localhost" "admin.localhost" "me.localhost" "demo.localhost" "func.localhost" "*.localhost" "localhost" "127.0.0.1"; fi'
     @python3 scripts/hosts_check.py || true
     @echo "Starting Caddy SSL reverse proxy on port 443..."
     @caddy start --config Caddyfile.local
     @echo "Starting w0m-cf worker on port 8790..."
     @sh -c 'cd w0m-cf && nohup infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm exec wrangler dev --port 8790 --show-interactive-dev-session=false > /tmp/w0m-cf-dev.log 2>&1 < /dev/null &'
-    @echo "Starting 5 Astro apps with subdomain root bases..."
+    @echo "Starting 4 Astro apps with subdomain root bases..."
     cd w0m-web && SUBDOMAIN_DEV=1 infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm run dev
 
 # ── TypeSafe System One & Jev Image Processing (T558 / T556 / T434) ─────────

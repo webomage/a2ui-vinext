@@ -104,8 +104,7 @@ class TestDeployElevation(unittest.TestCase):
             "deploy-all",
             "deploy-web",
             "deploy-cp",
-            "deploy-join",
-            "deploy-job",
+            "deploy-me",
             "deploy-demo",
             "deploy-workers",
             "deploy-functions",
@@ -161,7 +160,7 @@ class TestDeployElevation(unittest.TestCase):
         outside the workspace and the app scripts cannot see w0m-web/node_modules/.bin (astro)."""
         body = (ROOT / "justfile").read_text(encoding="utf-8")
         lines = [ln for ln in body.splitlines() if "pnpm --filter" in ln and "build" in ln and not ln.lstrip().startswith("#")]
-        self.assertGreaterEqual(len(lines), 6, "expected the build + 5 deploy-<app> build lines")
+        self.assertGreaterEqual(len(lines), 5, "expected the build + 4 deploy-<app> build lines")
         for ln in lines:
             self.assertRegex(ln, r"^\s+@?cd w0m-web && ", f"root pnpm build not run from w0m-web: {ln.strip()}")
 

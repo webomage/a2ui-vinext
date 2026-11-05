@@ -162,7 +162,7 @@
     "webomage-design": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.11.01-1793590298"
+      "observed_version": "2026.11.04-1793849799"
     }
   },
   "auto_recommend": true

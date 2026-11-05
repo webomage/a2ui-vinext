@@ -9,8 +9,7 @@ REQUIRED_DOMAINS = [
     "web.w0m.local",
     "cp.w0m.local",
     "admin.w0m.local",
-    "join.w0m.local",
-    "job.w0m.local",
+    "me.w0m.local",
     "demo.w0m.local",
     "func.w0m.local",
 ]

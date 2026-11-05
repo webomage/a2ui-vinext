@@ -2,7 +2,7 @@
 name: webomage-design
 description: "Use this skill to generate, audit, and refine well-branded interfaces, responsive layouts, and UI components for Webomage (@webomage/ui + w0m-web/design-system). Enforces dark-first glassmorphic tokens, per-app [data-app] brand theming, 25 canonical @webomage/ui primitives, and the AgDR-0054 Mobile-First Multi-Orientation Responsive Contract (Mobile Portrait/Landscape, Tablet Vertical 768x1024, Tablet Horizontal 1024x768, and Desktop Well-Wrapped 1200px-1440px+)."
 metadata:
-  version: "2026.11.01-1793590298"
+  version: "2026.11.04-1793849799"
 ---
 
 # Webomage Design System (`webomage-design`)
@@ -20,7 +20,7 @@ Canonical design system skill for the **Webomage (`@wom`)** estate (`w0m-web/des
 
 ## 2. 4-Posture Mobile-First Multi-Orientation Responsive Contract (`AgDR-0054`, `T603`)
 
-All `w0m` UI surfaces (`apps/web`, `apps/cp`, `apps/join`, `apps/job`, `apps/demo`, `@webomage/ui`) are **mobile-first** while explicitly supporting tablet vertical, tablet horizontal, and well-wrapped desktop postures:
+All `w0m` UI surfaces (`apps/web`, `apps/cp`, `apps/me`, `apps/demo`, `@webomage/ui`) are **mobile-first** while explicitly supporting tablet vertical, tablet horizontal, and well-wrapped desktop postures:
 
 1. **Mobile First (`0px–767px`, Portrait `375×812` & Landscape `812×375`)**:
    - Base CSS rules target mobile without `@media` wrappers (`grid-template-columns: minmax(0, 1fr)`, `16px` gutter, `>= 44px` tap targets, zero horizontal page overflow).

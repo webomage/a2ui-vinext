@@ -118,25 +118,16 @@ sync-api-secrets: (_confirm "sync-api-secrets")
         fi; \
       done'
 
-# Sync secrets to apps/join (join.webomage.com)
-sync-join-secrets: (_confirm "sync-join-secrets")
-    @echo "Syncing secrets from Infisical to apps/join (webomage-join)..."
+# Sync secrets to apps/me (me.webomage.com)
+sync-me-secrets: (_confirm "sync-me-secrets")
+    @echo "Syncing secrets from Infisical to apps/me (webomage-me)..."
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
-      echo "$PUBLIC_SUPABASE_URL" | pnpm exec wrangler secret put PUBLIC_SUPABASE_URL --name webomage-join && \
-      echo "$PUBLIC_SUPABASE_ANON_KEY" | pnpm exec wrangler secret put PUBLIC_SUPABASE_ANON_KEY --name webomage-join && \
-      echo "$SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SERVICE_ROLE_KEY --name webomage-join && \
-      echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name webomage-join'
-
-# Sync secrets to apps/job (job.webomage.com)
-sync-job-secrets: (_confirm "sync-job-secrets")
-    @echo "Syncing secrets from Infisical to apps/job (webomage-job)..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
-      echo "$PUBLIC_SUPABASE_URL" | pnpm exec wrangler secret put PUBLIC_SUPABASE_URL --name webomage-job && \
-      echo "$PUBLIC_SUPABASE_ANON_KEY" | pnpm exec wrangler secret put PUBLIC_SUPABASE_ANON_KEY --name webomage-job && \
-      echo "$SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SERVICE_ROLE_KEY --name webomage-job && \
-      echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name webomage-job && \
-      echo "$WORKERS_WEBHOOK_URL" | pnpm exec wrangler secret put WORKERS_WEBHOOK_URL --name webomage-job && \
-      echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WORKERS_WEBHOOK_SECRET --name webomage-job'
+      echo "$PUBLIC_SUPABASE_URL" | pnpm exec wrangler secret put PUBLIC_SUPABASE_URL --name webomage-me && \
+      echo "$PUBLIC_SUPABASE_ANON_KEY" | pnpm exec wrangler secret put PUBLIC_SUPABASE_ANON_KEY --name webomage-me && \
+      echo "$SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SERVICE_ROLE_KEY --name webomage-me && \
+      echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name webomage-me && \
+      echo "$WORKERS_WEBHOOK_URL" | pnpm exec wrangler secret put WORKERS_WEBHOOK_URL --name webomage-me && \
+      echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WORKERS_WEBHOOK_SECRET --name webomage-me'
 
 # Sync secrets to apps/cp (cp.w0m.xyz)
 sync-cp-secrets: (_confirm "sync-cp-secrets")

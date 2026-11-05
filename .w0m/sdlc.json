@@ -729,8 +729,7 @@
       "consumers": [
         "deploy-functions",
         "deploy-web",
-        "deploy-join",
-        "deploy-job",
+        "deploy-me",
         "deploy-demo",
         "deploy-workers",
         "deploy-cp",

@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T646](.tasks/T646.md) | **P1** | **Unify job & join portals + personal /me/* + public /u/* into me.webomage.com (apps/me) and realign cp.webomage.com strictly around org, project, crew & admin** | web, api, cf, ext, sec, tooling | openspec/changes/archive/2026-11-04-t646-me-cp-portal-unification | ✅ **done** |
 | [T645](.tasks/T645.md) | **P1** | **Add in-session `just session-complete` SDLC wrap-up CLI (`scripts/session_complete.py`) and normalize post-deploy Orca session surfaces** | tooling, web | — | ✅ **done** |
 | [T644](.tasks/T644.md) | **P1** | **Expand @wom/kyc, Supabase identity/fiscal schema, and CP self-accounting to Costa Rica, Mexico 612/626, and 12 LATAM IT-hub countries** | api, web, tooling | openspec/specs/w0m-kyc/spec.md | ✅ **done** |
 | [T643](.tasks/T643.md) · [#643](https://github.com/casualuser/webomage.com/issues/643) | **P2** | **Sync w0m_portable_cli w0m spec to OpenSpec spec-driven default and reconcile K7-FAMILY.md with recovered @k7 repos** | skills, web, tooling | — | ✅ **done** |

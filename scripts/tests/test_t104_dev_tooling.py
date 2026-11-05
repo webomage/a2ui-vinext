@@ -7,9 +7,9 @@ Verifies:
 - AC2: `oxlint` is wired in `w0m-web/.pre-commit-config.yaml` on staged JS/TS/Svelte/Astro files.
 - AC3: `w0m-web/package.json` pins the `undici` override (`>=7.29.1 <8`) so `jsdom` resolves internal
   `lib/handler/wrap-handler.js` cleanly under Vitest without runner aborts.
-- AC4: `w0m-web/apps/join/tsconfig.json` and `w0m-web/apps/job/tsconfig.json` declare explicit
+- AC4: `w0m-web/apps/me/tsconfig.json` declares explicit
   `include` (`src/**/*`) and `exclude` (`../cp`, `node_modules`, `dist`, `.astro`) scopes.
-- AC5: All 5 workspace apps (`web`, `cp`, `demo`, `job`, `join`) are gated in `w0m-web/package.json`
+- AC5: All 4 workspace apps (`web`, `cp`, `demo`, `me`) are gated in `w0m-web/package.json`
   `scripts.typecheck`, and `.svelte` script blocks are gated by `svelte-typecheck-ratchet` (T278).
 - AC6: `python3 scripts/discovery.py --enforce` exits 0 across all declared stacks and recipes.
 """
@@ -91,9 +91,9 @@ def test_ac3_undici_override_and_vitest_jsdom_resolution() -> None:
     assert "wrap-handler.js" not in out
 
 
-def test_ac4_join_and_job_tsconfig_scopes() -> None:
-    """AC4: `apps/join/tsconfig.json` and `apps/job/tsconfig.json` have explicit include/exclude boundaries."""
-    for app in ("join", "job"):
+def test_ac4_me_tsconfig_scopes() -> None:
+    """AC4: `apps/me/tsconfig.json` has explicit include/exclude boundaries."""
+    for app in ("me",):
         tsconfig_path = WEB / "apps" / app / "tsconfig.json"
         data = json.loads(tsconfig_path.read_text(encoding="utf-8"))
         include = data.get("include", [])
@@ -105,19 +105,19 @@ def test_ac4_join_and_job_tsconfig_scopes() -> None:
             )
 
 
-def test_ac5_all_five_apps_in_typecheck_and_svelte_ratchet() -> None:
-    """AC5: All 5 workspace apps are in `scripts.typecheck` and `svelte-typecheck-ratchet` baseline."""
+def test_ac5_all_four_apps_in_typecheck_and_svelte_ratchet() -> None:
+    """AC5: All 4 workspace apps are in `scripts.typecheck` and `svelte-typecheck-ratchet` baseline."""
     pkg = json.loads((WEB / "package.json").read_text(encoding="utf-8"))
     tc_script = pkg.get("scripts", {}).get("typecheck", "")
     gated_apps = set(re.findall(r"--filter\s+(\S+)\s+exec\s+astro\s+check", tc_script))
-    assert gated_apps == {"cp", "demo", "job", "join", "web"}, (
-        f"Expected all 5 apps in scripts.typecheck, got {sorted(gated_apps)}"
+    assert gated_apps == {"cp", "demo", "me", "web"}, (
+        f"Expected all 4 apps in scripts.typecheck, got {sorted(gated_apps)}"
     )
 
     svelte_baseline = json.loads(
         (WEB / "project" / "svelte-typecheck-baseline.json").read_text(encoding="utf-8")
     )
-    assert set(svelte_baseline.get("apps", {}).keys()) == {"cp", "demo", "job", "join", "web"}
+    assert set(svelte_baseline.get("apps", {}).keys()) == {"cp", "demo", "me", "web"}
 
 
 def test_ac6_discovery_enforce_passes() -> None:

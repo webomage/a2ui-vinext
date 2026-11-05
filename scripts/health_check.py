@@ -47,8 +47,7 @@ import urllib.request
 TARGETS = [
     ("web", "https://webomage.com/api/health"),
     ("cp", "https://cp.webomage.com/api/health"),
-    ("join", "https://join.webomage.com/api/health"),
-    ("job", "https://job.webomage.com/api/health"),
+    ("me", "https://me.webomage.com/api/health"),
     ("demo", "https://demo.webomage.com/api/health"),
 ]
 TIMEOUT = 15

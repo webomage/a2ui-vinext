@@ -26,7 +26,7 @@ import subprocess
 import sys
 import threading
 import time
-from typing import Sequence
+from typing import Any, Sequence
 
 DEFAULT_MAX_ATTEMPTS = 3
 DEFAULT_BACKOFF_S = (4.0, 12.0)
@@ -71,7 +71,7 @@ def classify_transient_failure(output: str) -> str | None:
     return None
 
 
-def _stream_pipe(pipe, sink, chunks: list[str]) -> None:
+def _stream_pipe(pipe: Any, sink: Any, chunks: list[str]) -> None:
     try:
         for line in iter(pipe.readline, ""):
             sink.write(line)

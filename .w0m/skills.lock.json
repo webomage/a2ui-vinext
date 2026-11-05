@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-11-03T05:32:43.979Z",
+  "generatedAt": "2026-11-05T05:04:44.488Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -233,7 +233,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/webomage-design",
-      "integrity": "sha256-3f2438a019f7731d240852e1f00eefc8670e0d073d153bd09684bba8b63ced15"
+      "integrity": "sha256-7c130aed972f2cfd708c850a59f010c4a7f15c48888177cc669d0f9648166701"
     }
   }
 }

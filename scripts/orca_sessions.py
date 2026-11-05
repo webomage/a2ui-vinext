@@ -1768,7 +1768,7 @@ def _load_orca_automation_runs(
     try:
         cp = subprocess.run(cmd, capture_output=True, text=True, timeout=10.0)
         if cp.returncode == 0 and cp.stdout.strip():
-            data = json.loads(cp.stdout)
+            data: Any = json.loads(cp.stdout)
             res = data.get("result") if isinstance(data, dict) else {}
             runs = (res or {}).get("runs") if isinstance(res, dict) else None
             if isinstance(runs, list):

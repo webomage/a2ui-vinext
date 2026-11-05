@@ -19,6 +19,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+from typing import Any
 
 UPSTREAM_REPO = "stablyai/orca"
 WORKFLOW_FILE = "w0m-overlay-release.yml"
@@ -73,11 +74,12 @@ def _compute_sha512_b64(file_path: Path) -> str:
     return base64.b64encode(digest.digest()).decode("ascii")
 
 
-def _gh_json(endpoint: str) -> dict | None:
+def _gh_json(endpoint: str) -> dict[str, Any] | None:
     res = subprocess.run(["gh", "api", endpoint], capture_output=True, text=True, check=False)
     if res.returncode != 0 or not res.stdout.strip():
         return None
-    return json.loads(res.stdout)
+    parsed: dict[str, Any] = json.loads(res.stdout)
+    return parsed
 
 
 def show_status(appimage_path: Path, backup_path: Path, overlay_repo: str) -> int:
@@ -179,7 +181,7 @@ def _active_ci_run_id(overlay_repo: str) -> str:
     if res.returncode != 0 or not res.stdout.strip():
         return ""
     try:
-        runs = json.loads(res.stdout)
+        runs: list[dict[str, Any]] = json.loads(res.stdout)
     except json.JSONDecodeError:
         return ""
     for run in runs:

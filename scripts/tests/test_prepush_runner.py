@@ -217,7 +217,7 @@ class TestPrepushRunner(unittest.TestCase):
 
     def test_run_typecheck_bounded_concurrency_and_fixed_order(self):
         web_root = ROOT / "w0m-web"
-        # Pass case: prints all 5 apps in fixed package.json order (web, cp, demo, job, join)
+        # Pass case: prints all 4 apps in fixed package.json order (web, cp, demo, me)
         res_ok = self.run_cmd(
             "run-typecheck",
             "--concurrency",
@@ -227,10 +227,10 @@ class TestPrepushRunner(unittest.TestCase):
             env_extra={"W0M_TYPECHECK_CMD_TEMPLATE": "echo 'Result (10 files): - 0 errors - 0 warnings - 0 hints [{app}]'"},
         )
         self.assertEqual(res_ok.returncode, 0)
-        positions = [res_ok.stdout.index(f"[typecheck:{app}]") for app in ("web", "cp", "demo", "job", "join")]
+        positions = [res_ok.stdout.index(f"[typecheck:{app}]") for app in ("web", "cp", "demo", "me")]
         self.assertEqual(positions, sorted(positions))
         self.assertIn(
-            "[typecheck:cp] scope: astro check covers .astro/.ts; 117 .svelte file(s) excluded by astro check -> gated by svelte-typecheck-ratchet",
+            "[typecheck:cp] scope: astro check covers .astro/.ts; 123 .svelte file(s) excluded by astro check -> gated by svelte-typecheck-ratchet",
             res_ok.stdout,
         )
 
@@ -241,10 +241,10 @@ class TestPrepushRunner(unittest.TestCase):
             "3",
             "--web-root",
             str(web_root),
-            env_extra={"W0M_TYPECHECK_CMD_TEMPLATE": "if [ '{app}' = 'cp' ] || [ '{app}' = 'job' ]; then exit 1; fi"},
+            env_extra={"W0M_TYPECHECK_CMD_TEMPLATE": "if [ '{app}' = 'cp' ] || [ '{app}' = 'me' ]; then exit 1; fi"},
         )
         self.assertEqual(res_fail.returncode, 1)
-        self.assertIn("cp, job", res_fail.stderr)
+        self.assertIn("cp, me", res_fail.stderr)
 
     def test_host_ram_scaling_and_global_lock(self):
         from prepush_runner import (

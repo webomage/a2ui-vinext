@@ -73,7 +73,7 @@ def test_parse_wrangler_config_extracts_bindings(tmp_path: Path) -> None:
 
 def test_live_estate_inventory_matches_measured_wrangler_configs() -> None:
     inventory = cbi.build_estate_inventory(ROOT)
-    assert inventory["config_count"] == 7
+    assert inventory["config_count"] == 6
     assert inventory["total_cron_triggers"] == 5
 
     by_name = {w["worker_name"]: w for w in inventory["workers"]}
@@ -83,8 +83,7 @@ def test_live_estate_inventory_matches_measured_wrangler_configs() -> None:
         "webomage",
         "webomage-cp",
         "webomage-demo",
-        "webomage-job",
-        "webomage-join",
+        "webomage-me",
     }
 
     # pinned worker wom7api has 19 workflows, AI binding, and CHAT_MEMORY Durable Object, 0 crons
@@ -106,8 +105,8 @@ def test_live_estate_inventory_matches_measured_wrangler_configs() -> None:
     ]
     assert by_name["webomage-cp"]["bindings"]["r2_buckets"] == ["VAULT_R2->wom-engagement-vaults"]
     assert by_name["webomage-cp"]["bindings"]["ai"] == ["AI"]
-    assert by_name["webomage-job"]["bindings"]["r2_buckets"] == ["VAULT_R2->wom-engagement-vaults"]
-    assert by_name["webomage-job"]["bindings"]["ai"] == ["AI"]
+    assert by_name["webomage-me"]["bindings"]["r2_buckets"] == ["VAULT_R2->wom-engagement-vaults"]
+    assert by_name["webomage-me"]["bindings"]["ai"] == ["AI"]
 
     # Candidates verified absent from all wrangler configs
     unconfigured = set(inventory["unconfigured_binding_types"])

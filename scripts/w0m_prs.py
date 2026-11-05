@@ -4648,7 +4648,7 @@ def close_run_when_settled(
     pane_key = ""
     if tlist_cp.returncode == 0 and tlist_cp.stdout.strip():
         try:
-            tdata = json.loads(tlist_cp.stdout)
+            tdata: dict[str, Any] = json.loads(tlist_cp.stdout)
             terms = ((tdata.get("result") or {}).get("terminals") or tdata.get("terminals") or [])
             matched = next((t for t in terms if isinstance(t, dict) and t.get("handle") == handle), None)
             if matched is None and terms:
@@ -4669,7 +4669,7 @@ def close_run_when_settled(
         if hdir.is_dir():
             for hf in hdir.glob("*.json"):
                 try:
-                    hobj = json.loads(hf.read_text(encoding="utf-8"))
+                    hobj: Any = json.loads(hf.read_text(encoding="utf-8"))
                 except (OSError, ValueError):
                     continue
                 if isinstance(hobj, dict) and isinstance(hobj.get("entries"), dict):
@@ -4700,7 +4700,7 @@ def close_run_when_settled(
             rcp = run_cmd(runs_cmd, check=False, timeout=8.0)
             if rcp.returncode == 0 and rcp.stdout.strip():
                 try:
-                    rdata = json.loads(rcp.stdout)
+                    rdata: dict[str, Any] = json.loads(rcp.stdout)
                     runs = ((rdata.get("result") or {}).get("runs") or [])
                     active_match = any(
                         isinstance(r, dict)
@@ -4833,7 +4833,8 @@ def reconcile_prs_and_forks(
         alist_cp = run_cmd([orca_bin, "automations", "list", "--json"], check=False, timeout=8.0)
         if alist_cp.returncode == 0 and alist_cp.stdout.strip():
             try:
-                autos = (json.loads(alist_cp.stdout).get("result") or {}).get("automations") or []
+                alist_obj: dict[str, Any] = json.loads(alist_cp.stdout)
+                autos = (alist_obj.get("result") or {}).get("automations") or []
                 for a in autos:
                     if "Upstream PRs" in str(a.get("name") or ""):
                         automation_id = a.get("id")
@@ -4848,7 +4849,8 @@ def reconcile_prs_and_forks(
             )
             if aruns_cp.returncode == 0 and aruns_cp.stdout.strip():
                 try:
-                    latest_runs = (json.loads(aruns_cp.stdout).get("result") or {}).get("runs") or []
+                    aruns_obj: dict[str, Any] = json.loads(aruns_cp.stdout)
+                    latest_runs = (aruns_obj.get("result") or {}).get("runs") or []
                     if latest_runs:
                         run_number = latest_runs[0].get("runNumber")
                 except ValueError:
@@ -4857,7 +4859,8 @@ def reconcile_prs_and_forks(
     state_data: dict[str, Any] = {}
     if target_state.is_file():
         try:
-            state_data = json.loads(target_state.read_text(encoding="utf-8"))
+            loaded_state: dict[str, Any] = json.loads(target_state.read_text(encoding="utf-8"))
+            state_data = loaded_state
         except (OSError, ValueError):
             state_data = {}
 
@@ -4910,7 +4913,8 @@ def reconcile_prs_and_forks(
         runs_cp = run_cmd([orca_bin, "orchestration", "run-list", "--json"], check=False, timeout=8.0)
         if runs_cp.returncode == 0 and runs_cp.stdout.strip():
             try:
-                for r in (json.loads(runs_cp.stdout).get("result") or {}).get("runs") or []:
+                runs_obj: dict[str, Any] = json.loads(runs_cp.stdout)
+                for r in (runs_obj.get("result") or {}).get("runs") or []:
                     if "Upstream PRs" in str(r.get("objective") or ""):
                         orch_run_id = r.get("id")
                         break
@@ -4924,7 +4928,8 @@ def reconcile_prs_and_forks(
             )
             if t_cp.returncode == 0 and t_cp.stdout.strip():
                 try:
-                    tasks = (json.loads(t_cp.stdout).get("result") or {}).get("tasks") or []
+                    tasks_obj: dict[str, Any] = json.loads(t_cp.stdout)
+                    tasks = (tasks_obj.get("result") or {}).get("tasks") or []
                     if tasks:
                         orch_task_id = tasks[0].get("id")
                 except ValueError:
@@ -5017,7 +5022,8 @@ def get_launch_reports(*, limit: int = 15, state_path: Optional[Path] = None) ->
     state_data: dict[str, Any] = {}
     if target_state.is_file():
         try:
-            state_data = json.loads(target_state.read_text(encoding="utf-8"))
+            loaded_state2: dict[str, Any] = json.loads(target_state.read_text(encoding="utf-8"))
+            state_data = loaded_state2
         except (OSError, ValueError):
             state_data = {}
 
@@ -5035,7 +5041,8 @@ def get_launch_reports(*, limit: int = 15, state_path: Optional[Path] = None) ->
     alist_cp = run_cmd([orca_bin, "automations", "list", "--json"], check=False, timeout=6.0)
     if alist_cp.returncode == 0 and alist_cp.stdout.strip():
         try:
-            for a in (json.loads(alist_cp.stdout).get("result") or {}).get("automations") or []:
+            alist_obj2: dict[str, Any] = json.loads(alist_cp.stdout)
+            for a in (alist_obj2.get("result") or {}).get("automations") or []:
                 if "Upstream PRs" in str(a.get("name") or ""):
                     auto_id = str(a.get("id") or "")
                     auto_name = str(a.get("name") or auto_name)
@@ -5049,7 +5056,8 @@ def get_launch_reports(*, limit: int = 15, state_path: Optional[Path] = None) ->
         rcp = run_cmd([orca_bin, "automations", "runs", "--id", auto_id, "--limit", str(limit), "--json"], check=False, timeout=6.0)
         if rcp.returncode == 0 and rcp.stdout.strip():
             try:
-                for r in (json.loads(rcp.stdout).get("result") or {}).get("runs") or []:
+                rcp_obj: dict[str, Any] = json.loads(rcp.stdout)
+                for r in (rcp_obj.get("result") or {}).get("runs") or []:
                     if not isinstance(r, dict):
                         continue
                     rnum = r.get("runNumber")

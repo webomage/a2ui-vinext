@@ -4,7 +4,7 @@
 Checks and synchronizes versions across governed package.json manifests:
 - Workspace root: @wom/package.json
 - Monorepo: w0m-web/package.json
-- Astro apps: apps/web, apps/cp, apps/demo, apps/job, apps/join
+- Astro apps: apps/web, apps/cp, apps/demo, apps/me
 
 Standard library only. Python per w0m tool ladder.
 """
@@ -30,8 +30,7 @@ GOVERNED_MANIFEST_RELPATHS = [
     Path("w0m-web/apps/web/package.json"),    # Astro web app
     Path("w0m-web/apps/cp/package.json"),     # Astro cp app
     Path("w0m-web/apps/demo/package.json"),   # Astro demo app
-    Path("w0m-web/apps/job/package.json"),    # Astro job app
-    Path("w0m-web/apps/join/package.json"),   # Astro join app
+    Path("w0m-web/apps/me/package.json"),     # Astro me app
 ]
 
 

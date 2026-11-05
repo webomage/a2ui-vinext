@@ -234,13 +234,12 @@ class TestDepsSyncUpperBounds(unittest.TestCase):
         pkgs = {name: deps_sync.load(path)[0] for name, path in repos.items() if path.exists()}
         ws_pkgs = deps_sync.discover_workspace_packages(repos, pkgs)
         ws_keys = [ws_key for ws_key, _, _, _ in ws_pkgs]
-        self.assertEqual(len(ws_pkgs), 19)
+        self.assertEqual(len(ws_pkgs), 18)
         for expected_key in (
             "w0m-web",
             "w0m-web/apps/web",
             "w0m-web/apps/cp",
-            "w0m-web/apps/join",
-            "w0m-web/apps/job",
+            "w0m-web/apps/me",
             "w0m-web/apps/demo",
             "w0m-web/packages/lib",
             "w0m-api",
@@ -253,7 +252,7 @@ class TestDepsSyncUpperBounds(unittest.TestCase):
         hard, warn, _, report = deps_sync.evaluate_policy_detailed(policy, repos, pkgs)
         self.assertEqual(hard, [])
         summary = deps_sync.format_summary(policy, pkgs, warn, report)
-        self.assertIn("(19 package.json across 5 repos)", summary)
+        self.assertIn("(18 package.json across 5 repos)", summary)
 
     def test_t56_ac2_ac3_ac4_dynamic_minor_lag_and_intra_repo_workspace_exceptions(self) -> None:
         self.assertEqual(deps_sync.compute_minor_lag("^2.87.1", "^2.110.7"), 23)

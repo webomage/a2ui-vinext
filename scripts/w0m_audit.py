@@ -49,8 +49,7 @@ API_ROOT = MONO_ROOT / "w0m-api"
 APPS = {  # app → public host serving /api/health
     "web": "https://webomage.com",
     "cp": "https://cp.webomage.com",
-    "join": "https://join.webomage.com",
-    "job": "https://job.webomage.com",
+    "me": "https://me.webomage.com",
     "demo": "https://demo.webomage.com",
 }
 WORKER_HEALTH = "https://wom7func.webomage.workers.dev/health"
@@ -377,7 +376,7 @@ SECURITY_STATE = WEB_ROOT / "project" / "security-state.json"
 SECURITY_STALE_DAYS = 7
 SAFE_BROWSING_URL = "https://safebrowsing.googleapis.com/v4/threatMatches:find"
 REPUTATION_DOMAINS = ("https://webomage.com", "https://cp.webomage.com",
-                      "https://join.webomage.com", "https://demo.webomage.com")
+                      "https://me.webomage.com", "https://demo.webomage.com")
 
 
 def _safe_browsing_lookup(api_key):

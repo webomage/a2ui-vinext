@@ -14,14 +14,8 @@ https://w0m.local, https://web.w0m.local, https://web.localhost {
 	reverse_proxy localhost:4321
 }
 
-# Job portal - :4322
-https://job.w0m.local, https://job.localhost {
-	import tls_config
-	reverse_proxy localhost:4322
-}
-
-# Join / onboarding portal - :4323
-https://join.w0m.local, https://join.localhost {
+# Me personal & talent portal - :4323
+https://me.w0m.local, https://me.localhost {
 	import tls_config
 	reverse_proxy localhost:4323
 }

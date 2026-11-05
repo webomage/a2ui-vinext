@@ -799,6 +799,37 @@ relations:
 - type: partOf
   targetRef: system:default/w0m
 ---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: mcp-zeroclaw-acp
+  namespace: default
+  title: 'MCP Server: zeroclaw-acp'
+  description: 'T153 AC3: w0m -> ZeroClaw Agent Communication Protocol (ACP) server
+    over JSON-RPC 2.0 stdio (`~/.cargo/bin/zeroclaw acp`).'
+  annotations:
+    w0m.dev/mcp-required: 'false'
+    w0m.dev/mcp-scope: host
+    w0m.dev/mcp-transport: stdio
+    w0m.dev/source-register: .w0m/sdlc.json
+  tags:
+  - mcp
+  - mcp-server
+  - stdio
+  - host
+spec:
+  type: mcp-server
+  lifecycle: production
+  owner: group:default/platform
+  definition: 'T153 AC3: w0m -> ZeroClaw Agent Communication Protocol (ACP) server
+    over JSON-RPC 2.0 stdio (`~/.cargo/bin/zeroclaw acp`).'
+  system: system:default/w0m
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
 apiVersion: w0m.dev/v1alpha1
 kind: AiResource
 metadata:
@@ -864,7 +895,7 @@ metadata:
   title: 'Skill: fact-checker'
   description: Governed agent skill `fact-checker` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.09.08-1788883539
+    w0m.dev/skill-observed-version: 2026.11.02-1793677165
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -915,6 +946,33 @@ relations:
 apiVersion: w0m.dev/v1alpha1
 kind: AiResource
 metadata:
+  name: skill-figma-designer
+  namespace: default
+  title: 'Skill: figma-designer'
+  description: Governed agent skill `figma-designer` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
   name: skill-firecrawl
   namespace: default
   title: 'Skill: firecrawl'
@@ -943,12 +1001,66 @@ relations:
 apiVersion: w0m.dev/v1alpha1
 kind: AiResource
 metadata:
+  name: skill-landing-page-design
+  namespace: default
+  title: 'Skill: landing-page-design'
+  description: Governed agent skill `landing-page-design` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
   name: skill-mmd-validate
   namespace: default
   title: 'Skill: mmd-validate'
   description: Governed agent skill `mmd-validate` (provider=w0m-native, version=canonical).
   annotations:
     w0m.dev/skill-observed-version: 2026.10.26-1793055094
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
+  name: skill-security-audit
+  namespace: default
+  title: 'Skill: security-audit'
+  description: Governed agent skill `security-audit` (provider=w0m-native, version=canonical).
+  annotations:
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1032,7 +1144,7 @@ metadata:
   title: 'Skill: w0m'
   description: Governed agent skill `w0m` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.10.26-1793053633
+    w0m.dev/skill-observed-version: 2026.11.02-1793666924
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1200,7 +1312,7 @@ metadata:
   title: 'Skill: w0m-sdlc-archive'
   description: Governed agent skill `w0m-sdlc-archive` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.10.21-1792643707
+    w0m.dev/skill-observed-version: 2026.11.02-1793677165
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1256,7 +1368,7 @@ metadata:
   title: 'Skill: w0m-sdlc-deploy'
   description: Governed agent skill `w0m-sdlc-deploy` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.07.27-1785131185
+    w0m.dev/skill-observed-version: 2026.11.02-1793666924
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1424,7 +1536,7 @@ metadata:
   title: 'Skill: w0m-sdlc-start'
   description: Governed agent skill `w0m-sdlc-start` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.10.26-1793009642
+    w0m.dev/skill-observed-version: 2026.11.01-1793588043
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1452,7 +1564,7 @@ metadata:
   title: 'Skill: w0m-sdlc-verify'
   description: Governed agent skill `w0m-sdlc-verify` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.07.27-1785131185
+    w0m.dev/skill-observed-version: 2026.11.02-1793677165
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1508,7 +1620,7 @@ metadata:
   title: 'Skill: w0m-state-save'
   description: Governed agent skill `w0m-state-save` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.09.24-1790282807
+    w0m.dev/skill-observed-version: 2026.11.02-1793666924
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1592,7 +1704,35 @@ metadata:
   title: 'Skill: w0m-ticket-audit'
   description: Governed agent skill `w0m-ticket-audit` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.10.26-1793009642
+    w0m.dev/skill-observed-version: 2026.11.03-1793683940
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
+  name: skill-webomage-design
+  namespace: default
+  title: 'Skill: webomage-design'
+  description: Governed agent skill `webomage-design` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-observed-version: 2026.11.04-1793849799
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
@@ -1659,6 +1799,7 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
 relations:
 - type: ownedBy
   targetRef: group:default/platform
@@ -1714,6 +1855,7 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
 relations:
 - type: ownedBy
   targetRef: group:default/platform
@@ -1770,6 +1912,7 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
 relations:
 - type: ownedBy
   targetRef: group:default/platform
@@ -1831,6 +1974,7 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
 relations:
 - type: ownedBy
   targetRef: group:default/platform
@@ -1887,6 +2031,7 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
 relations:
 - type: ownedBy
   targetRef: group:default/platform
@@ -1945,6 +2090,7 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
 relations:
 - type: ownedBy
   targetRef: group:default/platform
@@ -1993,6 +2139,7 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
 relations:
 - type: ownedBy
   targetRef: group:default/platform
@@ -2041,6 +2188,7 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
 relations:
 - type: ownedBy
   targetRef: group:default/platform
@@ -2095,6 +2243,7 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
 relations:
 - type: ownedBy
   targetRef: group:default/platform
@@ -2167,6 +2316,12 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
+  dependsOn:
+  - airesource:default/skill-webomage-design
+  - airesource:default/skill-landing-page-design
+  - airesource:default/skill-figma-designer
+  - airesource:default/skill-security-audit
 relations:
 - type: ownedBy
   targetRef: group:default/platform
@@ -2221,6 +2376,7 @@ spec:
   - api:default/mcp-supabase
   - api:default/mcp-upwork
   - api:default/mcp-w0m-cf-mcp
+  - api:default/mcp-zeroclaw-acp
 relations:
 - type: ownedBy
   targetRef: group:default/platform

@@ -5,13 +5,15 @@ timestamp: 2026-10-19T16:00:00-05:00
 agent: antigravity
 model: gemini-2.5-pro
 trigger: user-prompt
-status: accepted
-superseded_by:
+status: superseded
+superseded_by: AgDR-0056
 supersedes:
 ticket: T560
 ---
 
 # AgDR-0033 — Jobs portal boundary: commercial, career, and multi-platform outreach in `apps/job`; technical project delivery in `apps/cp`
+
+> **Status note (2026-11-04, `AgDR-0056` / `T646`):** Portal-boundary clauses **1 and 2** below (`job.webomage.com` vs `cp.webomage.com` split) are **superseded by [`AgDR-0056`](./AgDR-0056-me-personal-portal-unification-and-cp-org-realignment.md)**, which unifies `apps/job` + `apps/join` + personal `/me/*` + public `/u/*` into `me.webomage.com` (`apps/me`) and repatriates all `/o/[org]/*` commercial/recruiting routes back to `cp.webomage.com` (`apps/cp`). Clauses **3 and 4** (Provider-Agnostic Outreach & Clipping Vault and `w0m-ext` Clipper) remain active.
 
 ## Y-statement
 

@@ -48,8 +48,7 @@ WORKER_SOURCES: dict[str, list[str]] = {
     "wom7api": ["w0m-api/src"],  # pinned worker
     "webomage": ["w0m-web/apps/web/src", "w0m-web/packages/lib/src"],
     "webomage-cp": ["w0m-web/apps/cp/src", "w0m-web/packages/lib/src"],
-    "webomage-join": ["w0m-web/apps/join/src", "w0m-web/apps/cp/src", "w0m-web/packages/lib/src"],
-    "webomage-job": ["w0m-web/apps/job/src", "w0m-web/apps/cp/src", "w0m-web/packages/lib/src"],
+    "webomage-me": ["w0m-web/apps/me/src", "w0m-web/apps/cp/src", "w0m-web/packages/lib/src"],
     "webomage-demo": ["w0m-web/apps/demo/src", "w0m-web/packages/lib/src"],
 }
 

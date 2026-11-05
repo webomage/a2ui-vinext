@@ -58,7 +58,8 @@ def _http_get_json(url: str, headers: dict[str, str] | None = None) -> Any:
         req_headers.update(headers)
     req = urllib.request.Request(url, headers=req_headers)
     with urllib.request.urlopen(req, timeout=15) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+        parsed: Any = json.loads(resp.read().decode("utf-8"))
+        return parsed
 
 
 def _http_get_text(url: str, headers: dict[str, str] | None = None) -> str:
@@ -86,11 +87,13 @@ def delegate_cf_reader(url: str, endpoint_base: str, bearer: str, respect_robots
     )
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
-            return json.loads(resp.read().decode("utf-8"))
+            ok_body: dict[str, Any] = json.loads(resp.read().decode("utf-8"))
+            return ok_body
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
         try:
-            return json.loads(body)
+            err_body: dict[str, Any] = json.loads(body)
+            return err_body
         except json.JSONDecodeError:
             return {"ok": False, "status": exc.code, "error": body[:300]}
 

@@ -139,8 +139,7 @@
     "wrangler_configs": [
       "w0m-web/apps/web/wrangler.jsonc",
       "w0m-web/apps/cp/wrangler.jsonc",
-      "w0m-web/apps/join/wrangler.jsonc",
-      "w0m-web/apps/job/wrangler.jsonc",
+      "w0m-web/apps/me/wrangler.jsonc",
       "w0m-web/apps/demo/wrangler.jsonc",
       "w0m-api/wrangler.jsonc",
       "w0m-cf/wrangler.jsonc"

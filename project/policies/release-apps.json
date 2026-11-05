@@ -16,15 +16,10 @@
       "deploy": "deploy-cp",
       "inputs": ["apps/cp", "packages", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "tsconfig.json", "turbo.json", "@umbrella:justfile"]
     },
-    "join": {
+    "me": {
       "repo": "w0m-web",
-      "deploy": "deploy-join",
-      "inputs": ["apps/join", "packages", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "tsconfig.json", "turbo.json", "@umbrella:justfile"]
-    },
-    "job": {
-      "repo": "w0m-web",
-      "deploy": "deploy-job",
-      "inputs": ["apps/job", "packages", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "tsconfig.json", "turbo.json", "@umbrella:justfile"]
+      "deploy": "deploy-me",
+      "inputs": ["apps/me", "packages", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "tsconfig.json", "turbo.json", "@umbrella:justfile"]
     },
     "demo": {
       "repo": "w0m-web",

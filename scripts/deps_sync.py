@@ -428,7 +428,7 @@ def discover_workspace_packages(
     """Enumerate every `package.json` in each repo's pnpm workspace, not just the root (T56 AC1).
 
     Returns a deterministic list of `(ws_key, repo_name, pkg_path, pkg_dict)` tuples where
-    `ws_key` is the workspace-qualified identifier (e.g. `"w0m-web"`, `"w0m-web/apps/join"`,
+    `ws_key` is the workspace-qualified identifier (e.g. `"w0m-web"`, `"w0m-web/apps/me"`,
     `"w0m-web/packages/lib"`, `"w0m-ext/extension"`).
     """
     discovered: list[tuple[str, str, Path, dict]] = []
@@ -498,7 +498,7 @@ def _lookup_lagging_entry(
     repo_name: str,
     is_root: bool,
 ) -> tuple[str | None, object]:
-    """Match a workspace key (`w0m-web/apps/join` or `w0m-ext/extension`) against `lagging` (T56 AC4)."""
+    """Match a workspace key (`w0m-web/apps/me` or `w0m-ext/extension`) against `lagging` (T56 AC4)."""
     if ws_key in lagging:
         return ws_key, lagging[ws_key]
     if is_root and repo_name in lagging:

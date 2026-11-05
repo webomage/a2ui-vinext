@@ -110,14 +110,14 @@ class WranglerDeployRetryTests(unittest.TestCase):
             self.assertEqual(counter.read_text(), "3")
             self.assertIn("failed after 3 attempt(s)", res.stderr)
 
-    def test_root_justfile_wraps_all_six_wrangler_deploys(self) -> None:
+    def test_root_justfile_wraps_all_five_wrangler_deploys(self) -> None:
         body = (ROOT / "justfile").read_text(encoding="utf-8")
         deploy_lines = [
             ln.strip()
             for ln in body.splitlines()
             if "pnpm exec wrangler deploy" in ln and not ln.lstrip().startswith("#")
         ]
-        self.assertEqual(len(deploy_lines), 6, f"expected 6 wrangler deploy lines, got {len(deploy_lines)}")
+        self.assertEqual(len(deploy_lines), 5, f"expected 5 wrangler deploy lines, got {len(deploy_lines)}")
         for ln in deploy_lines:
             self.assertIn(
                 "scripts/wrangler_deploy.py",
