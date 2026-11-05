@@ -228,8 +228,8 @@ def check_versioning(problems: list[str], notes: list[str]) -> None:
     """
     for recipe, owns in (("version-check", "the estate's release-version producers"),
                          ("skills-version-check", "the skill corpus's own versions")):
-        # From w0m-api — the justfile lives here and its recipes use bare paths relative to it.
-        code, out = sh("just", recipe, cwd=ROOT / "w0m-api", timeout=180)
+        # Layout L2 (AgDR-0050): canonical recipes live in ROOT / "justfile".
+        code, out = sh("just", recipe, cwd=ROOT, timeout=180)
         if code == 0:
             continue
         tail = " · ".join(line.strip() for line in out.splitlines()[-2:] if line.strip())
@@ -237,6 +237,29 @@ def check_versioning(problems: list[str], notes: list[str]) -> None:
             notes.append(f"{recipe}: timed out — conformance for {owns} is UNVERIFIED, not clean")
         else:
             problems.append(f"{recipe} failed (exit {code}) — {owns} are non-conformant: {tail}")
+
+
+def _estate_member_repos(root: Path | None = None) -> list[Path]:
+    """Return active `w0m-*` member repo directories (including nested `w0m-mlx/w0m-mlx`, AgDR-0012 / AgDR-0050)."""
+    base = root or ROOT
+    repos: list[Path] = []
+    for candidate in sorted(base.glob("w0m-*")):
+        if (candidate / ".git").exists():
+            repos.append(candidate)
+        elif candidate.name == "w0m-mlx" and (candidate / "w0m-mlx" / ".git").exists():
+            repos.append(candidate / "w0m-mlx")
+    return repos
+
+
+def _repo_has_precommit_hook(repo: Path) -> bool:
+    """Resolve `hooks/pre-commit` across both normal `.git/` dirs and `agent-tree` git worktrees."""
+    if (repo / ".git" / "hooks" / "pre-commit").exists():
+        return True
+    rc, git_hook = sh("git", "-C", str(repo), "rev-parse", "--git-path", "hooks/pre-commit")
+    if rc != 0 or not git_hook:
+        return False
+    hp = Path(git_hook) if Path(git_hook).is_absolute() else (repo / git_hook)
+    return hp.exists()
 
 
 def _hook_gap(exempt: dict) -> list[tuple[Path, str]]:
@@ -247,7 +270,8 @@ def _hook_gap(exempt: dict) -> list[tuple[Path, str]]:
     thing they would disagree about is whether a gate is running at all.
     """
     gap: list[tuple[Path, str]] = []
-    for repo in sorted(ROOT.glob("wom7*")):
+    targets = ([ROOT] if (ROOT / ".git").exists() else []) + _estate_member_repos(ROOT)
+    for repo in targets:
         if not (repo / ".git").exists() or repo.name in exempt:
             continue
         pc = (repo / ".pre-commit-config.yaml").exists()
@@ -255,7 +279,7 @@ def _hook_gap(exempt: dict) -> list[tuple[Path, str]]:
         if not (pc or husky):
             continue
         hookspath = sh("git", "-C", str(repo), "config", "--get", "core.hooksPath")[1]
-        installed = (repo / ".git" / "hooks" / "pre-commit").exists() or bool(hookspath)
+        installed = _repo_has_precommit_hook(repo) or bool(hookspath)
         if not installed:
             gap.append((repo, "husky" if husky else "pre-commit"))
     return gap
@@ -318,7 +342,7 @@ def install_hooks(exempt: dict) -> int:
         print(f"🔴 still not installed after the attempt: {', '.join(r.name for r, _ in still)}")
         return 1
     if failures:
-        print(f"⚠️  installer reported errors but detection is now clean: {'; '.join(failures)}")
+        print(f"[WARN] installer reported errors but detection is now clean: {'; '.join(failures)}")
     print(f"✅ hooks: {len(gap)} repo(s) fixed; re-detection confirms 0 remaining")
     return 0
 
@@ -426,7 +450,7 @@ def check_board_drift_contract(problems: list[str], notes: list[str]) -> None:
     `lifecycle_map`, `fields`) and fail closed if the input ticket set is empty or `paused` is
     conflated with `done`.
     """
-    sys.path.insert(0, str(CANONICAL / "project" / "scripts"))
+    sys.path.insert(0, str(ROOT / "scripts"))
     try:
         import board_identity as _bi
         cfg = _bi.load_board_projection_config(sdlc_path())
@@ -491,22 +515,23 @@ def main() -> int:
     recipes = tc.get("canonical_recipes") or FALLBACK_RECIPES
     exempt = tc.get("exempt", {})
 
-    code, _ = sh("just", "--justfile", str(CANONICAL / "justfile"), "--list")
+    root_justfile = ROOT / "justfile"
+    code, _ = sh("just", "--justfile", str(root_justfile), "--list")
     if code != 0:
         problems.append("the canonical justfile does not parse — every gate command is broken")
     else:
         missing = [
             r for r in recipes
-            if sh("just", "--justfile", str(CANONICAL / "justfile"), "--show", r)[0] != 0
+            if sh("just", "--justfile", str(root_justfile), "--show", r)[0] != 0
         ]
         if missing:
             problems.append(f"justfile is missing canonical recipe(s): {', '.join(missing)}")
 
-    for repo in sorted(ROOT.glob("wom7*")):
-        if not (repo / ".git").exists() or repo.name in exempt:
+    for repo in _estate_member_repos(ROOT):
+        if repo.name in exempt:
             continue
-        if not (repo / "justfile").exists():
-            problems.append(f"{repo.name}: no justfile (symlink the canonical one, or "
+        if sh("just", "--list", cwd=repo)[0] != 0:
+            problems.append(f"{repo.name}: `just --list` fails (add/fix justfile, verify Layout L2 root fallback, or "
                             f"declare it in .w0m/sdlc.json -> toolchain.exempt)")
 
     # ── interface 2: secrets -> infisical (floor covered by check_all_tools) ──
@@ -521,13 +546,14 @@ def main() -> int:
     if not secrets.get("run"):
         problems.append(".w0m/sdlc.json secrets.run is not set — gates cannot inject secrets")
 
-    for repo in sorted(ROOT.glob("wom7*")):
-        if not (repo / ".git").exists() or repo.name in exempt:
+    for repo in _estate_member_repos(ROOT):
+        if repo.name in exempt:
             continue
         if not (
             (repo / ".infisical.yaml").exists()
             or (repo / ".infisical.json").exists()
             or (ROOT / ".infisical.yaml").exists()
+            or (ROOT / ".infisical.json").exists()
         ):
             notes.append(
                 f"{repo.name}: no .infisical.yaml/.infisical.json — add one, or declare it in "

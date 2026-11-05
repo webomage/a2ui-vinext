@@ -387,6 +387,126 @@ class HealthcheckIntegrationTests(unittest.TestCase):
                 hc.resolve_cf_ai_model("w0m-llm-personnel", justifications_path=bad_just)
 
 
+class T620AuditAndProvenanceTests(unittest.TestCase):
+    def test_non_uvx_version_cmd_requires_path_presence_and_extracts_semver(self) -> None:
+        spec = {
+            "source": "deb-backport",
+            "version_cmd": "python3 -c 'print(\"0.4.2-4+w0m1\")'",
+        }
+        self.assertIsNone(
+            tools_check.installed_version("__absent_moksha_binary__", "--version", spec),
+            "non-uvx version_cmd must return None when binary is absent from PATH",
+        )
+        self.assertEqual(
+            tools_check.installed_version("python3", "--version", spec),
+            "0.4.2",
+        )
+
+    def test_presence_probe_verifies_zero_exit_and_returns_known_good(self) -> None:
+        ok_spec = {
+            "source": "source-fork",
+            "version_probe": "presence",
+            "known_good": "0.1.0",
+        }
+        self.assertEqual(
+            tools_check.installed_version("python3", "--version", ok_spec),
+            "0.1.0",
+        )
+        self.assertIsNone(
+            tools_check.installed_version("python3", "--definitely-invalid-flag-t620", ok_spec),
+        )
+
+    def test_detect_provenance_and_path_shadows_without_false_positive_on_brew_over_usr_bin(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            tmp = Path(d)
+            local_bin = tmp / "local_bin"
+            brew_bin = tmp / "home/linuxbrew/.linuxbrew/bin"
+            usr_bin = tmp / "usr/bin"
+            for directory in (local_bin, brew_bin, usr_bin):
+                directory.mkdir(parents=True)
+
+            # 1) Normal Homebrew precedence over /usr/bin: must NOT warn
+            for target_dir in (brew_bin, usr_bin):
+                f = target_dir / "git"
+                f.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+                f.chmod(0o755)
+
+            # 2) Standalone binary in local_bin declared source=brew (no brew binary installed): [PROVENANCE]
+            j = local_bin / "just"
+            j.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            j.chmod(0o755)
+
+            # 3) User shim in local_bin shadowing an installed Homebrew binary: [SHADOW]
+            for idx, target_dir in enumerate((local_bin, brew_bin)):
+                s = target_dir / f"shadowed_real_{idx}"
+                s.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+                s.chmod(0o755)
+                (target_dir / "terraform").symlink_to(s)
+
+            fake_path = f"{local_bin}:{brew_bin}:{usr_bin}"
+            notices = tools_check.detect_provenance_issues(
+                {
+                    "git": {"source": "brew"},
+                    "just": {"source": "brew"},
+                    "terraform": {"source": "brew"},
+                },
+                path_env=fake_path,
+                has_brew=True,
+            )
+            joined = "\n".join(notices)
+            self.assertNotIn("git:", joined)
+            self.assertIn("[PROVENANCE] just:", joined)
+            self.assertIn("[SHADOW] terraform:", joined)
+
+    def test_ephemeral_runner_probe_enforces_zero_npx_and_abi_must_pin(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            pkg = root / "package.json"
+            pkg.write_text(
+                json.dumps(
+                    {
+                        "scripts": {
+                            "search:ok": "pnpm dlx pagefind@1.5.2 --site dist",
+                            "search:bad": "pnpm dlx pagefind --site dist",
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            pc = root / ".pre-commit-config.yaml"
+            pc.write_text(
+                "repos:\n"
+                "  - repo: local\n"
+                "    hooks:\n"
+                "      - id: oxlint\n"
+                "        entry: npx oxlint\n",
+                encoding="utf-8",
+            )
+            recs = tool_usage_probe.scan_ephemeral_runners(files=[pkg, pc], root=root)
+            problems = tool_usage_probe.verify_ephemeral_runners(
+                recs,
+                {
+                    "ephemeral_policy": {
+                        "forbid_npx": True,
+                        "must_pin": {"pagefind": "1.5.2"},
+                    }
+                },
+            )
+            joined = "\n".join(problems)
+            self.assertIn("npx oxlint", joined)
+            self.assertIn("`pnpm dlx pagefind` is unpinned", joined)
+            self.assertEqual(len(problems), 2)
+
+    def test_sdlc_doctor_discovers_w0m_member_repos_and_worktree_hooks(self) -> None:
+        import sdlc_doctor
+
+        members = sdlc_doctor._estate_member_repos(ROOT)
+        names = {m.name for m in members}
+        for expected in ("w0m-web", "w0m-api", "w0m-cf", "w0m-ext", "w0m-sec", "w0m-skills"):
+            self.assertIn(expected, names)
+        self.assertTrue(sdlc_doctor._repo_has_precommit_hook(ROOT))
+
+
 class _Result(unittest.TextTestResult):
     """House style (scripts/run_suites.py counts them): one ✅/❌ line per check on stdout."""
 

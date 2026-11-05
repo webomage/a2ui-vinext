@@ -135,15 +135,19 @@ def bump_level(cur: tuple[int, int, int], new: tuple[int, int, int]) -> str:
 def installed_version(tool: str, arg: str = "--version", spec: dict[str, Any] | None = None) -> str | None:
     """First semver anywhere in the tool's version output, or None if not found/installed.
 
-    Normally probes `<tool> <arg>` after a PATH lookup. `source: uvx` tools have NO binary on
-    PATH — uvx materialises them per-run from a pinned package — so a `which` check reports them
-    missing forever and their `min`/`known_good` are never actually enforced. T166 AC1 requires
-    serena's version be "checked like every other tool"; for that class the declared `smoke`
-    command IS the probe. Run it as a real argv (never a shell string) so a policy file cannot
-    become a command-injection surface.
+    Normally probes `<tool> <arg>` after a PATH lookup.
+    - `source: uvx` tools have NO binary on PATH — uvx materialises them per-run from a pinned
+      package — so their declared `version_cmd` or `smoke` command IS the probe (T166 AC1).
+    - Non-`uvx` tools that declare `version_cmd` (e.g. `moksha` via `dpkg-query` so X11 session
+      binaries are never executed, or `duf` whose Homebrew bottle prints `duf (built from source)`)
+      first verify `shutil.which(tool)` is on PATH and then run `version_cmd` as real argv (T620).
+    - Non-`uvx` tools with `version_probe: "presence"` (e.g. untagged Go/AppImage wrappers like
+      `virtual-fido` and `w0m-obsidian-uri --ensure-links`) verify `<tool> <arg>` exits 0 and
+      return `known_good` (T620).
     """
-    if (spec or {}).get("source") == "uvx":
-        cmd = (spec or {}).get("version_cmd") or (spec or {}).get("smoke")
+    cfg = spec or {}
+    if cfg.get("source") == "uvx":
+        cmd = cfg.get("version_cmd") or cfg.get("smoke")
         if not cmd:
             return None
         try:
@@ -155,12 +159,111 @@ def installed_version(tool: str, arg: str = "--version", spec: dict[str, Any] | 
 
     if shutil.which(tool) is None:
         return None
+
+    ver_cmd = cfg.get("version_cmd")
+    if isinstance(ver_cmd, str) and ver_cmd.strip():
+        try:
+            out = subprocess.run(shlex.split(ver_cmd), capture_output=True, text=True, timeout=45)
+        except (OSError, subprocess.SubprocessError, ValueError):
+            return None
+        if out.returncode != 0:
+            return None
+        m = SEMVER.search(out.stdout or "") or SEMVER.search(out.stderr or "")
+        return m.group(0) if m else None
+
+    if cfg.get("version_probe") == "presence":
+        try:
+            out = subprocess.run([tool, arg], capture_output=True, text=True, timeout=45)
+        except (OSError, subprocess.SubprocessError):
+            return None
+        if out.returncode != 0:
+            return None
+        return str(cfg.get("known_good") or cfg.get("min") or "0.1.0")
+
     try:
         out = subprocess.run([tool, arg], capture_output=True, text=True, timeout=45)
     except (OSError, subprocess.SubprocessError):
         return None
     m = SEMVER.search(out.stdout or "") or SEMVER.search(out.stderr or "")
     return m.group(0) if m else None
+
+
+def all_path_candidates(tool: str, path_env: str | None = None) -> list[tuple[Path, Path]]:
+    """Return deduplicated `(entry_path, resolved_path)` executables for `tool` in `PATH` order (`T620` AC3)."""
+    raw_path = path_env if path_env is not None else os.environ.get("PATH", "")
+    seen_targets: set[Path] = set()
+    found: list[tuple[Path, Path]] = []
+    for segment in raw_path.split(os.pathsep):
+        seg = segment.strip()
+        if not seg:
+            continue
+        candidate = Path(seg) / tool
+        try:
+            if not candidate.is_file() or not os.access(candidate, os.X_OK):
+                continue
+            resolved = candidate.resolve()
+        except OSError:
+            continue
+        if resolved not in seen_targets:
+            seen_targets.add(resolved)
+            found.append((candidate, resolved))
+    return found
+
+
+def _is_homebrew_path(entry_path: Path, resolved_path: Path) -> bool:
+    """True when `entry_path` or its symlink target resides inside a macOS or Linuxbrew prefix."""
+    for p_str in (entry_path.as_posix(), resolved_path.as_posix()):
+        if (
+            p_str.startswith("/opt/homebrew/")
+            or p_str.startswith("/home/linuxbrew/.linuxbrew/")
+            or p_str.startswith("/usr/local/Cellar/")
+            or p_str.startswith("/usr/local/opt/")
+            or "/Cellar/" in p_str
+            or "/linuxbrew/" in p_str
+        ):
+            return True
+    return False
+
+
+def detect_provenance_issues(
+    tools: dict[str, Any],
+    path_env: str | None = None,
+    has_brew: bool | None = None,
+) -> list[str]:
+    """Detect `source: brew` provenance mismatches and non-Homebrew `PATH` shadows (`T620` AC3)."""
+    notices: list[str] = []
+    brew_present = (
+        has_brew
+        if has_brew is not None
+        else (shutil.which("brew", path=path_env) is not None)
+    )
+    for name, spec in sorted(tools.items()):
+        if name.startswith("_") or not isinstance(spec, dict):
+            continue
+        src = str(spec.get("source", "manual"))
+        if src == "uvx":
+            continue
+        candidates = all_path_candidates(name, path_env=path_env)
+        if not candidates:
+            continue
+        first_entry, first_resolved = candidates[0]
+        first_is_brew = _is_homebrew_path(first_entry, first_resolved)
+
+        # Check if a user/version-manager shim shadows an installed Homebrew binary behind it on PATH
+        shadowed_brew = next(
+            (c_entry for c_entry, c_res in candidates[1:] if _is_homebrew_path(c_entry, c_res)),
+            None,
+        )
+        if not first_is_brew and shadowed_brew is not None:
+            notices.append(
+                f"[SHADOW] {name}: {first_entry} shadows Homebrew binary {shadowed_brew} on PATH"
+            )
+        elif src == "brew" and brew_present and not first_is_brew and not spec.get("custom_fork"):
+            notices.append(
+                f"[PROVENANCE] {name}: declared source=brew but PATH resolves {first_entry} "
+                f"(invisible to `just tools-outdated` / `just tools-upgrade`)"
+            )
+    return notices
 
 
 CACHE = ROOT / "project" / ".tools-outdated.json"  # gitignored, per-machine; written by the weekly run
@@ -452,6 +555,7 @@ def evaluate_toolchain(
         if isinstance(out_of_scope_raw, dict)
         else {}
     )
+    provenance_notices = detect_provenance_issues(tools)
 
     return {
         "policy_path": str(target_path),
@@ -462,6 +566,7 @@ def evaluate_toolchain(
         "warns": warns,
         "drift_req": drift_req,
         "infos": infos,
+        "provenance_notices": provenance_notices,
         "out_of_scope": out_of_scope,
         "required_problems": len(fails),
     }
@@ -526,6 +631,11 @@ def main() -> int:
         print("\n  drift / optional (informational):")
         for i in infos:
             print(f"    · {i}")
+    prov_notices: list[str] = report.get("provenance_notices", [])
+    if prov_notices:
+        print("\n  provenance / PATH shadows (advisory, T620):")
+        for pnote in prov_notices:
+            print(f"    · {pnote}")
     if warns:
         print("\n [WARN] below min (optional tools):")
         for w in warns:

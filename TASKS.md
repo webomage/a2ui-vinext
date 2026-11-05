@@ -25,7 +25,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
-| [T620](.tasks/T620.md) | **P2** | 🆕 **Audit all required and actively used host, agent, and custom-fork tools across workstations** | tooling | — | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | P3 | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 💤 **paused** |
@@ -59,6 +58,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T623](.tasks/T623.md) | **P1** | **Compact top-left Enterprise/RPG mode icon switcher with Alt+M & 4-tap gestures, mobile header logo filter corruption fix, and Personal Information verification check-mark rounds** | web | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T622](.tasks/T622.md) | **P1** | **Essential stdout-filtering, shell-inspection, and multi-harness CLIs (rg, fd, yq, bat, sqlite3, tree, ruff, curl, gpg, htmlq, mlr, sd, fzf, shellcheck, pdftotext, code-review-graph) are misclassified in out_of_scope or ungoverned while tool_usage_probe misses YAML hook entry commands** | tooling | — | ✅ **done** |
 | [T621](.tasks/T621.md) | **P1** | **Implement Orca mobile triple-tap Enter PR branch, Live Input terminal prompt backload, and mobile/desktop subagent flat/tree modes + Floating agents category** | tooling | — | ✅ **done** |
+| [T620](.tasks/T620.md) | **P2** | 🆕 **Audit all required and actively used host, agent, and custom-fork tools across workstations** | tooling | — | ✅ **done** |
 | [T619](.tasks/T619.md) | **P1** | **Implement self-healing webomage/orca overlay release feed and auto-updater pipeline** | tooling | — | ✅ **done** |
 | [T618](.tasks/T618.md) | **P1** | **Backport Bodhi/Moksha 8-zone window snapping + desktop icon fixes and prepare 9 upstream PR branches across Moksha, Bodhi, Orca, and Virtual-FIDO** | tooling, web | — | ✅ **done** |
 | [T617](.tasks/T617.md) | **P0** | **Fix release worktree node_modules drift, enforce symlink-safe gitignore rules, and verify full deploy app builds** | tooling, web, api, cf, ext, sec | openspec/specs/persistent-stable-worktree | ✅ **done** |

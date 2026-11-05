@@ -110,6 +110,31 @@ class TestJustfilesNoRunnableNpx(unittest.TestCase):
     def test_w0m_ext_justfile(self):
         self._assert_no_runnable_npx(EXT / "justfile")
 
+    def test_root_justfile_and_estate_just(self):
+        self._assert_no_runnable_npx(ROOT / "justfile")
+        self._assert_no_runnable_npx(ROOT / "just" / "estate.just")
+
+
+class TestPreCommitConfigsNoNpx(unittest.TestCase):
+    """T620 AC1: Verify .pre-commit-config.yaml across all estate repos never invoke npx."""
+
+    def test_pre_commit_hooks_use_pnpm_exec_not_npx(self):
+        checked = 0
+        for rel in (".", "w0m-web", "w0m-api", "w0m-cf", "w0m-ext", "w0m-sec", "w0m-skills"):
+            pc = (ROOT if rel == "." else ROOT / rel) / ".pre-commit-config.yaml"
+            if not pc.exists():
+                continue
+            checked += 1
+            for line_no, line in enumerate(pc.read_text(encoding="utf-8").splitlines(), start=1):
+                stripped = line.strip()
+                if stripped.startswith("#"):
+                    continue
+                self.assertIsNone(
+                    re.search(r"\bnpx\s+", stripped),
+                    f"{rel}/.pre-commit-config.yaml:{line_no} invokes npx instead of pnpm exec: {stripped}",
+                )
+        self.assertGreaterEqual(checked, 6, "Expected at least 6 .pre-commit-config.yaml files across estate")
+
 
 def run_all() -> int:
     print("\n=== NPX AUDIT TEST SUITE (T398) ===")

@@ -1,6 +1,40 @@
 {
   "_comment": "Host CLI tools the w0m workflow depends on. Unlike npm deps (deps-policy.json) these are installed per-machine, so version checks are ADVISORY. Per tool: `min` (floor the workflow needs), `known_good` (last verified working), `source` (how it updates — tools-upgrade knows `brew` and `gcloud` in-place; others report-only), `auto` (max bump tools-upgrade may auto-apply: patch|minor|major|none), optional `smoke` (a cheap post-upgrade compatibility command, run from the w0m-web dir). `auto:none` = detected + reported but NEVER auto-updated (prod-gating / behavior-sensitive). Checked by project/scripts/tools_check.py (`just tools-check`, `--outdated`) and project/scripts/tools_upgrade.py (`just tools-upgrade`).",
+  "abi_policy": {
+    "linux_x86_64": {
+      "distro_floor": "Ubuntu 22.04 LTS / Bodhi Linux 7.0",
+      "glibc_min": "2.35",
+      "isa_ceiling": "x86-64-v2",
+      "avx2_allowed": false,
+      "note": "T617 / T620 — Linux workstation (`AMD A10-5745M APU`) supports `sse4_2`, `aes`, `avx`, `bmi1`, `fma` without `avx2`/`bmi2`. Prebuilt static binaries targeting `x86-64-v3` (`AVX2`) crash with `SIGILL` (`exit 132`); pin `x86-64-v2`-compatible builds (e.g. `pagefind@1.5.2`) or compile from source."
+    },
+    "darwin_arm64": {
+      "os_floor": "macOS 15+",
+      "isa_ceiling": "arm64",
+      "codesign": "codesign --force --sign -",
+      "note": "AgDR-0052 / T620 — Apple Silicon workstation (`/opt/homebrew`); custom `webomage/tap` Mach-O binaries (`headroom`, `omlx`) must carry ad-hoc `codesign` signatures."
+    }
+  },
+  "ephemeral_policy": {
+    "forbid_npx": true,
+    "must_pin": {
+      "pagefind": "1.5.2",
+      "serena": "v1.7.0-w0m.1"
+    },
+    "note": "T398 / T617 / T620 — `npx` is prohibited across tracked hooks, manifests, recipes, and scripts (use `pnpm exec` for workspace binaries and `pnpm dlx` for standalone CLIs). ABI- or schema-sensitive ephemeral binaries (`pagefind@1.5.2`, `serena@v1.7.0-w0m.1`) must remain explicitly version-pinned."
+  },
   "tools": {
+    "agy": {
+      "min": "1.0.0",
+      "known_good": "1.5.0",
+      "required": false,
+      "source": "gh-release",
+      "linux_source": "gh-release (~/.local/bin/agy)",
+      "macos_source": "gh-release (~/.local/bin/agy)",
+      "auto": "none",
+      "smoke": "agy --version",
+      "note": "T620 — Google Antigravity CLI agent harness declared in `scripts/agent_provider.py` (`orca_id: antigravity`) and `.w0m/sdlc.json -> ide_surfaces.antigravity`."
+    },
     "ast-grep": {
       "min": "0.38.0",
       "known_good": "0.51.0",
@@ -35,6 +69,17 @@
       "smoke": "bat --version",
       "note": "T622 — syntax-aware file and line-range stdout inspector (`bat -p -r <start>:<end>`) promoted from `out_of_scope` for multi-harness shell ergonomics."
     },
+    "btop": {
+      "min": "1.3.0",
+      "known_good": "1.4.8",
+      "required": false,
+      "source": "brew",
+      "linux_source": "brew",
+      "macos_source": "brew",
+      "auto": "minor",
+      "smoke": "btop --version",
+      "note": "T638 / T620 — non-root CPU/RAM/disk/network workstation monitor TUI provisioned via Homebrew for Orca Monitors sidebar presets (`feat/monitors-sidebar-presets`)."
+    },
     "caddy": {
       "min": "2.8.0",
       "known_good": "2.11.2",
@@ -63,6 +108,17 @@
       "smoke": "cargo-clippy --version",
       "note": "T235 AC1 — the linter. 🔬 DECLARED UNDER ITS REAL BINARY NAME. T235 was filed claiming \"clippy MISSING\"; it is installed — the binary is `cargo-clippy`, and probing the bare name `clippy` returns nothing. tools-check does `shutil.which(<key>)`, so declaring this as `clippy` would have re-committed the exact error the ticket was corrected for. ⚠️ Version scheme differs: clippy 0.1.N ships with rustc 1.N. Floor **0.1.95**, RAISED with the toolchain 2026-08-19 and MEASURED off the pinned toolchain rather than inferred: `rustup run 1.95 cargo-clippy --version` → `clippy 0.1.95`."
     },
+    "claude": {
+      "min": "1.0.0",
+      "known_good": "2.1.0",
+      "required": false,
+      "source": "npm",
+      "linux_source": "npm (@anthropic-ai/claude-code) | native",
+      "macos_source": "npm (@anthropic-ai/claude-code) | native",
+      "auto": "none",
+      "smoke": "claude --version",
+      "note": "T620 — Anthropic Claude Code CLI agent harness declared in `scripts/agent_provider.py` (`orca_id: claude`) and `.w0m/sdlc.json -> ide_surfaces.claude_code`."
+    },
     "cloudflared": {
       "min": "2024.1.0",
       "known_good": "2026.3.0",
@@ -89,6 +145,17 @@
       "auto": "none",
       "note": "npm global (nvs). Update via npm/pnpm."
     },
+    "codex": {
+      "min": "0.1.0",
+      "known_good": "0.104.0",
+      "required": false,
+      "source": "npm",
+      "linux_source": "npm (@openai/codex) | brew",
+      "macos_source": "brew | npm (@openai/codex)",
+      "auto": "none",
+      "smoke": "codex --version",
+      "note": "T620 — OpenAI Codex CLI agent harness declared in `scripts/agent_provider.py` (`orca_id: codex`) and `.w0m/sdlc.json -> ide_surfaces.codex`."
+    },
     "colima": {
       "min": "0.8.0",
       "known_good": "0.10.3",
@@ -98,6 +165,18 @@
       "version_arg": "version",
       "smoke": "colima version",
       "note": "T480 / T595 — primary Apple Silicon Virtualization.framework OCI container runtime provider invoked by `scripts/oci_sandbox.py` (`just oci-status`, `just oci-up`, `just db-local-up`). `required: false` because non-container workflows and alternative OCI providers (`docker`, `podman`, `tart`) can run without it (`brew install colima`)."
+    },
+    "ctop": {
+      "min": "0.7.0",
+      "known_good": "0.7.7",
+      "required": false,
+      "source": "brew",
+      "linux_source": "brew",
+      "macos_source": "brew",
+      "version_arg": "-v",
+      "auto": "minor",
+      "smoke": "ctop -v",
+      "note": "T638 / T620 — container metrics TUI provisioned via Homebrew for Orca Monitors sidebar presets (`ctop -v`)."
     },
     "curl": {
       "min": "8.0.0",
@@ -124,6 +203,18 @@
       "auto": "none",
       "smoke": "docker --version",
       "note": "T164 AC1 — container CLI invoked by `w0m-api/scripts/db_baseline.py` (4 subprocess calls: `docker info`, `docker run -d ... postgres:15`, `docker rm -f`) for ephemeral Postgres 15 baseline verification (`just db-baseline-verify` / `just db-baseline-build`). `required: false` because commit/push gates never spin up containers; `auto: none` so engine upgrades stay deliberate."
+    },
+    "duf": {
+      "min": "0.8.0",
+      "known_good": "0.9.1",
+      "required": false,
+      "source": "brew",
+      "linux_source": "brew",
+      "macos_source": "brew",
+      "version_cmd": "brew list --versions duf",
+      "auto": "minor",
+      "smoke": "duf --version",
+      "note": "T638 / T620 — mounted-filesystem disk usage utility provisioned via Homebrew for Orca Monitors. Homebrew bottle prints `duf (built from source)` on `--version`, so `version_cmd` queries `brew list --versions duf`."
     },
     "fd": {
       "min": "10.0.0",
@@ -162,6 +253,17 @@
       "smoke": "gcloud version",
       "note": "self-updates via `gcloud components update --quiet` (NOT brew). Versions are rolling, not semver — `auto:major` just means 'auto-update to latest' (the level cap is nominal). Smoke = `gcloud version` runs offline & reports the new version."
     },
+    "gemini": {
+      "min": "0.1.0",
+      "known_good": "0.34.0",
+      "required": false,
+      "source": "npm",
+      "linux_source": "npm (@google/gemini-cli) | brew",
+      "macos_source": "brew | npm (@google/gemini-cli)",
+      "auto": "none",
+      "smoke": "gemini --version",
+      "note": "T620 — Google Gemini CLI agent harness declared in `scripts/agent_provider.py` (`orca_id: gemini`)."
+    },
     "gh": {
       "min": "2.60.0",
       "known_good": "2.103.3",
@@ -190,6 +292,28 @@
       "smoke": "gitleaks version",
       "note": "pre-commit secret-scan gate (uses `gitleaks version`)"
     },
+    "google-chrome": {
+      "min": "120.0.0",
+      "known_good": "155.0.8059",
+      "required": false,
+      "source": "apt-cask",
+      "linux_source": "apt (google-chrome-stable)",
+      "macos_source": "cask (google-chrome)",
+      "auto": "none",
+      "smoke": "google-chrome --version",
+      "note": "T620 / T636 — Chromium/Chrome browser runtime used for headless Lighthouse web audits, Gauge browser E2E (`just e2e`), and `w0m-pixel-clone` visual-diff captures."
+    },
+    "goose": {
+      "min": "1.0.0",
+      "known_good": "1.56.0",
+      "required": false,
+      "source": "gh-release",
+      "linux_source": "gh-release (~/.local/bin/goose)",
+      "macos_source": "brew | gh-release",
+      "auto": "none",
+      "smoke": "goose --version",
+      "note": "T620 — Block Goose CLI agent harness declared in `scripts/agent_provider.py` (`orca_id: goose`)."
+    },
     "gpg": {
       "min": "2.4.0",
       "known_good": "2.5.24",
@@ -215,7 +339,10 @@
       "source": "brew",
       "auto": "none",
       "smoke": "headroom --version",
-      "note": "T456 / T595 (AgDR-0052) — installed via `webomage/tap/headroom` (`brew install webomage/tap/headroom`) built from `github.com/webomage/headroom` `beta` branch (continuously aligned to latest upstream official release `0.39.0` + our open PR tweaks `feat/omlx-proxy-routing` & `feat/audit-host-services` on top, ad-hoc signed with `codesign --force --sign -`). Managed as a Homebrew launchd service on `127.0.0.1:8787` via `just headroom-start` / `just headroom-status` (`scripts/headroom_service.py`)."
+      "note": "T456 / T595 (AgDR-0052) — installed via `webomage/tap/headroom` (`brew install webomage/tap/headroom`) built from `github.com/webomage/headroom` `beta` branch (continuously aligned to latest upstream official release `0.39.0` + our open PR tweaks `feat/omlx-proxy-routing` & `feat/audit-host-services` on top, ad-hoc signed with `codesign --force --sign -`). Managed as a Homebrew launchd service on `127.0.0.1:8787` via `just headroom-start` / `just headroom-status` (`scripts/headroom_service.py`).",
+      "custom_fork": "webomage/headroom@beta",
+      "linux_source": "brew (webomage/tap/headroom)",
+      "macos_source": "brew (webomage/tap/headroom)"
     },
     "htmlq": {
       "min": "0.4.0",
@@ -253,6 +380,17 @@
       "smoke": "just --summary",
       "note": "task runner — every recipe"
     },
+    "lazydocker": {
+      "min": "0.23.0",
+      "known_good": "0.25.2",
+      "required": false,
+      "source": "brew",
+      "linux_source": "brew",
+      "macos_source": "brew",
+      "auto": "minor",
+      "smoke": "lazydocker --version",
+      "note": "T638 / T620 — interactive Docker/OCI container TUI provisioned via Homebrew for Orca Monitors sidebar presets."
+    },
     "mkcert": {
       "min": "1.4.4",
       "known_good": "1.4.4",
@@ -271,6 +409,19 @@
       "auto": "minor",
       "smoke": "mlr --version",
       "note": "T622 — Miller (`miller`) structured stdout filter, join, and query engine for CSV, TSV, JSON, and JSONL (`transcript.jsonl`, LinkedIn export CSVs)."
+    },
+    "moksha": {
+      "min": "0.4.2",
+      "known_good": "0.4.2",
+      "required": false,
+      "source": "deb-backport",
+      "custom_fork": "webomage/moksha@beta",
+      "linux_source": "deb-backport (webomage/moksha 0.4.2-4+w0m1, just moksha-apply)",
+      "macos_source": "n/a (Bodhi Linux X11 desktop)",
+      "version_cmd": "dpkg-query -W -f=${Version} moksha",
+      "auto": "none",
+      "smoke": "dpkg-query -W -f=${Version} moksha",
+      "note": "T618 / T620 — custom-patched Bodhi Linux 7.0 X11 window manager (`webomage/moksha@beta`: 8-zone quarter snap, workspace persistence, keybinding layout switcher) packaged as `~/.local/share/moksha-backport/moksha_0.4.2-4+w0m1_amd64.deb` (`just moksha-apply`). Probed via `dpkg-query` so X11 session binaries are never invoked directly."
     },
     "mypy": {
       "min": "1.15.0",
@@ -297,7 +448,21 @@
       "source": "brew",
       "auto": "minor",
       "smoke": "omlx --version",
-      "note": "T184 AC3 / T595 (AgDR-0052) — THE local LLM serving tool on Apple Silicon (`omlx serve` on `:8888`, routed behind Headroom `:8787`). Installed via `webomage/tap/omlx` (`brew install webomage/tap/omlx`) built from `github.com/webomage/omlx` `beta` branch (continuously aligned to latest upstream official release `0.7.3` + our PR `#3743` `fix/menubar-adopt-external-omlx` and Gemma 4 `_safe_fused_mse_decode_kernel` `dim > 256` guard on top, ad-hoc signed with `codesign --force --sign -`)."
+      "note": "T184 AC3 / T595 (AgDR-0052) — THE local LLM serving tool on Apple Silicon (`omlx serve` on `:8888`, routed behind Headroom `:8787`). Installed via `webomage/tap/omlx` (`brew install webomage/tap/omlx`) built from `github.com/webomage/omlx` `beta` branch (continuously aligned to latest upstream official release `0.7.3` + our PR `#3743` `fix/menubar-adopt-external-omlx` and Gemma 4 `_safe_fused_mse_decode_kernel` `dim > 256` guard on top, ad-hoc signed with `codesign --force --sign -`).",
+      "custom_fork": "webomage/omlx@beta",
+      "linux_source": "n/a (Apple Silicon MLX)",
+      "macos_source": "brew (webomage/tap/omlx)"
+    },
+    "opencode": {
+      "min": "0.1.0",
+      "known_good": "1.2.0",
+      "required": false,
+      "source": "brew",
+      "linux_source": "brew",
+      "macos_source": "brew",
+      "auto": "minor",
+      "smoke": "opencode --version",
+      "note": "T620 — OpenCode CLI agent harness declared in `scripts/agent_provider.py` (`orca_id: opencode`) and `.w0m/sdlc.json -> ide_surfaces.opencode`."
     },
     "openspec": {
       "min": "1.11.0",
@@ -307,6 +472,18 @@
       "auto": "none",
       "smoke": "openspec --version",
       "note": "Spec-driven change workflow (`@fission-ai/openspec`; the bare `openspec` npm package is a dead placeholder). 🔴 ADDED 2026-08-30 — it was UNGOVERNED until then, with no floor at all, which is the wrong posture for the one tool that WRITES agent surfaces into every repo: it generates 10 skills + 10 workflows per declared tool into .agent/, .claude/, .opencode/ and keeps no memory of `--tools`, regenerating from whatever is on disk. ⚠️ `min` is 1.11.0 while 1.6.0 is what is installed, so this reports DRIFT on purpose. The floor is set to what the estate needs, not to what is running — setting it to 1.6.0 to stay green is the same act as raising a ratchet. Two things land in 1.11.0 that the estate wants: Antigravity moves to the shared `.agents/` root (matching Antigravity's own documented default, where `.agent/` is now only backward-compat), and 1.8.0 added a vendor-neutral `agents` target writing `.agents/skills/` for AGENTS.md-aware assistants. 🔴 UPGRADE IS NOT A NO-OP — measured on a scratch repo 2026-08-30: `update --force` on a 1.6.0 layout COPIES to `.agents/` and LEAVES `.agent/` in place (duplication, not migration, despite the release note), and it detected and generated for `codex` from 'legacy artifacts' though codex was never declared. A fresh `init` on 1.11.0 is clean (`.agents/` only). Plan the upgrade per repo with the leftover `.agent/` removed deliberately, not as a side effect."
+    },
+    "orca": {
+      "min": "1.4.248",
+      "known_good": "1.4.249",
+      "required": false,
+      "source": "overlay-appimage",
+      "custom_fork": "webomage/orca@beta",
+      "linux_source": "overlay-appimage (~/Apps/orca-linux.AppImage + just orca-apply)",
+      "macos_source": "overlay-dmg (/Applications/Orca.app, webomage/orca)",
+      "auto": "none",
+      "smoke": "orca --version",
+      "note": "T619 / T627 / T638 / T620 — multi-worktree agent IDE and `orca-cli` shim (`~/.config/orca/linux-orca-cli-shim/orca` & `~/.local/bin/orca`), invoked directly by `scripts/land.py`, `scripts/orca_sessions.py`, `scripts/orca_overlay_update.py`, and `w0m-web/project/scripts/agent_tree.py`. Built from `webomage/orca` self-healing GitHub Actions overlay releases (`v1.4.249-w0m.3`) so Electron auto-updates pull the 15-branch w0m patch stack rather than stock `stablyai/orca`."
     },
     "osv-scanner": {
       "min": "2.0.0",
@@ -412,7 +589,7 @@
     },
     "rustup": {
       "min": "1.27.0",
-      "known_good": "1.29.2",
+      "known_good": "1.29.3",
       "required": false,
       "source": "rustup",
       "auto": "none",
@@ -445,7 +622,8 @@
       "auto": "none",
       "version_cmd": "uvx --quiet --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena --version",
       "smoke": "uvx --quiet --from git+https://github.com/casualuser/serena.git@v1.7.0-w0m.1 serena project health-check .",
-      "note": "🔴 DO NOT INSTALL THE `serena` MARKETPLACE PLUGIN. Removed 2026-08-31 (`claude plugin uninstall serena@claude-plugins-official`). It is authored by Oraios — serena's own upstream — and distributed through Anthropic's official marketplace, so it looks like the sanctioned way to get this tool. It is not compatible with governing it. The plugin ships NOTHING but a manifest and one .mcp.json whose entire content launches `uvx --from git+https://github.com/oraios/serena` with NO ref, so it resolves upstream's DEFAULT BRANCH on every start. Its own version is a marketplace commit SHA describing the WRAPPER, so pinning the plugin does not pin serena — there is no configuration that reconciles the two. Installed 2026-08-12 22:19Z; commit 5b02bbef rewrote all three .serena/project.yml files to the `language_servers:` schema at 2026-08-13 05:16 -0500, under seven hours later, and the pinned 1.6.1 was dead from then until 2026-08-31. Keeping both registrations is the one arrangement that cannot work: they fight over the same config file, and the ungoverned one wins silently. `just mcp-health` now catches a repeat the same day. LSP-backed symbol edits + diagnostics over MCP (T166). PyPI package is **serena-agent**, NOT `serena` — `serena` on PyPI is an unrelated project at 0.9.1, so installing it gets you the wrong software. 🔴 PINNED 2026-08-05 (T166 AC1b): the launch in ~/.claude.json was `uvx --from git+https://github.com/oraios/serena`, which re-resolved the DEFAULT BRANCH on every start — the one tool that can rewrite source at symbol granularity had no version, no lockfile and no integrity check, and was running an unreleased **1.6.2.dev0**. min/known_good were literally unenforceable against a moving branch. 🔴 EXTENDED & FORKED 2026-09-20 (T170): Pinned to w0m-maintained fork tag `v1.7.0-w0m.1` (casualuser/serena) adding @astrojs/language-server support (AstroLanguageServer under solidlsp) with upstream PR #2085. The smoke test exercises project loading (`serena project health-check .`) rather than just `--version`, so broken schemas or missing language providers fail organically. ⚠️ Bumping this means editing BOTH this entry and the `args` in ~/.claude.json — the version lives in the MCP launch line, not in a lockfile. ⚠️ Needs a `projects` key in ~/.serena/serena_config.yml or it fails to boot. Installed by Headroom as its default --code-memory backend, not chosen independently."
+      "note": "🔴 DO NOT INSTALL THE `serena` MARKETPLACE PLUGIN. Removed 2026-08-31 (`claude plugin uninstall serena@claude-plugins-official`). It is authored by Oraios — serena's own upstream — and distributed through Anthropic's official marketplace, so it looks like the sanctioned way to get this tool. It is not compatible with governing it. The plugin ships NOTHING but a manifest and one .mcp.json whose entire content launches `uvx --from git+https://github.com/oraios/serena` with NO ref, so it resolves upstream's DEFAULT BRANCH on every start. Its own version is a marketplace commit SHA describing the WRAPPER, so pinning the plugin does not pin serena — there is no configuration that reconciles the two. Installed 2026-08-12 22:19Z; commit 5b02bbef rewrote all three .serena/project.yml files to the `language_servers:` schema at 2026-08-13 05:16 -0500, under seven hours later, and the pinned 1.6.1 was dead from then until 2026-08-31. Keeping both registrations is the one arrangement that cannot work: they fight over the same config file, and the ungoverned one wins silently. `just mcp-health` now catches a repeat the same day. LSP-backed symbol edits + diagnostics over MCP (T166). PyPI package is **serena-agent**, NOT `serena` — `serena` on PyPI is an unrelated project at 0.9.1, so installing it gets you the wrong software. 🔴 PINNED 2026-08-05 (T166 AC1b): the launch in ~/.claude.json was `uvx --from git+https://github.com/oraios/serena`, which re-resolved the DEFAULT BRANCH on every start — the one tool that can rewrite source at symbol granularity had no version, no lockfile and no integrity check, and was running an unreleased **1.6.2.dev0**. min/known_good were literally unenforceable against a moving branch. 🔴 EXTENDED & FORKED 2026-09-20 (T170): Pinned to w0m-maintained fork tag `v1.7.0-w0m.1` (casualuser/serena) adding @astrojs/language-server support (AstroLanguageServer under solidlsp) with upstream PR #2085. The smoke test exercises project loading (`serena project health-check .`) rather than just `--version`, so broken schemas or missing language providers fail organically. ⚠️ Bumping this means editing BOTH this entry and the `args` in ~/.claude.json — the version lives in the MCP launch line, not in a lockfile. ⚠️ Needs a `projects` key in ~/.serena/serena_config.yml or it fails to boot. Installed by Headroom as its default --code-memory backend, not chosen independently.",
+      "custom_fork": "casualuser/serena@v1.7.0-w0m.1"
     },
     "shellcheck": {
       "min": "0.10.0",
@@ -521,15 +699,44 @@
       "smoke": "uv --version",
       "note": "required:true, and doubly so: 2 command-position uses in the canonical justfile (`uv pip install -r pyproject.toml`, `uv run playwright install chromium`, lines ~538-539) AND it is the declared `source` of graphify — a governed tool whose install instructions are `uv tool install`. It was undeclared while a tool that depends on it was governed. ⚠️ `uv --version` embeds a commit hash after the semver; first-semver parsing gets it right, leave version_arg unset."
     },
+    "virtual-fido": {
+      "min": "0.1.0",
+      "known_good": "0.1.0",
+      "required": false,
+      "source": "source-fork",
+      "custom_fork": "webomage/virtual-fido@beta",
+      "linux_source": "source-fork (webomage/virtual-fido -> ~/.local/bin/virtual-fido)",
+      "macos_source": "source-fork (webomage/virtual-fido)",
+      "version_arg": "--help",
+      "version_probe": "presence",
+      "auto": "none",
+      "smoke": "virtual-fido --help",
+      "note": "T618 / T620 — custom-patched Go USB/IP CTAP2/U2F passkey authenticator (`webomage/virtual-fido`, upstream PR #48) paired with `virtual-fido-ctl` and `virtual-fido-hotkey` on Linux workstations. Upstream carries no semver release tags (`v0.0.0-...`), so `version_probe: presence` verifies `--help` exits 0."
+    },
+    "w0m-obsidian-uri": {
+      "min": "0.1.0",
+      "known_good": "0.1.0",
+      "required": false,
+      "source": "AppImage",
+      "linux_source": "AppImage (~/Apps/Obsidian.AppImage + ~/.local/bin/w0m-obsidian-uri)",
+      "macos_source": "cask (obsidian via w0m-api/scripts/open_vault.py)",
+      "version_arg": "--ensure-links",
+      "version_probe": "presence",
+      "auto": "none",
+      "smoke": "w0m-obsidian-uri --ensure-links",
+      "note": "T609 AC3 / T620 — headless Linux URI & vault-registry wrapper (`~/.local/bin/w0m-obsidian-uri`) forwarding `obsidian://` deep links to `~/Apps/Obsidian.AppImage` after ensuring `~/.w0m/vaults/<slug>` symlinks exist (`--ensure-links` runs headlessly without spawning the GUI)."
+    },
     "warp-cli": {
       "min": "2024.1.0",
-      "known_good": "2026.3.846.0",
+      "known_good": "2026.8.2110",
       "required": false,
       "source": "cask",
       "auto": "none",
       "version_arg": "--version",
       "smoke": "warp-cli --accept-tos --version",
-      "note": "T595 — Cloudflare WARP client CLI invoked by `just check-warp` (in `_deploy-all-chain` and `deploy-api`). `required: false` because offline gates and standard `just deploy` do not invoke `check-warp`; install via `brew install --cask cloudflare-warp` on machines running `deploy-all` or `deploy-api`."
+      "note": "T595 — Cloudflare WARP client CLI invoked by `just check-warp` (in `_deploy-all-chain` and `deploy-api`). `required: false` because offline gates and standard `just deploy` do not invoke `check-warp`; install via `brew install --cask cloudflare-warp` on machines running `deploy-all` or `deploy-api`.",
+      "linux_source": "apt (cloudflare-warp)",
+      "macos_source": "cask (cloudflare-warp)"
     },
     "wasm-pack": {
       "min": "0.13.0",
@@ -573,11 +780,12 @@
     "ansible": "0 command-position uses across the estate; IaC is managed via Terraform (`w0m-api/cloudflare`, `w0m-api/monitoring`) and Cloudflare Wrangler, with no Ansible playbooks.",
     "cmake": "0 command-position uses; native C/C++ build generator not invoked directly by any estate recipe (`w0m-mlx` compiles via `cargo`).",
     "direnv": "0 command-position uses; `.env` and `.envrc` files are prohibited across the estate in favour of `infisical run` process injection (T119 AC2b / T135 §6).",
-    "go": "0 command-position uses; no Go stack or module exists in the estate (`stacks-policy.json` runtimes are `node`, `deno`, `python`, `rust`).",
+    "go": "0 command-position uses across the 7 @wom estate repos (`stacks-policy.json` runtimes are `node`, `deno`, `python`, `rust`); installed optionally via Homebrew only when compiling external Go OSS forks such as `w0m-pr/virtual-fido`.",
     "helm": "0 command-position uses; no Kubernetes/Helm charts exist in the estate (compute runs on Cloudflare Workers/Pages and Supabase).",
     "java": "0 command-position uses; no JVM stack or tooling exists in the estate.",
     "kubectl": "0 command-position uses; no Kubernetes cluster or manifest exists in the estate.",
-    "ncdu": "0 command-position uses; interactive disk-usage TUI, never invoked by scripts, recipes, or git hooks.",
+    "minikube": "0 command-position uses across the estate; no local Kubernetes cluster workflow exists (compute runs on Cloudflare Workers/Pages, Supabase, and OCI sandboxes via Colima/Docker/Podman).",
+    "ncdu": "0 command-position uses across estate scripts, recipes, and git hooks; optional interactive disk-usage TUI preset in Orca Monitors (T638).",
     "pip3": "0 command-position uses; Python package management in estate recipes uses `uv` (`uv pip install`, `uv run`, `uv tool install`), never raw `pip3`.",
     "redis-cli": "0 command-position uses; no Redis instance or client workflow exists in the estate.",
     "sg": "0 command-position uses; `ast-grep` is invoked by its full binary name (`ast-grep scan`) because `/usr/bin/sg` on Linux is `newgrp` (shadow-utils).",

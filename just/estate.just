@@ -1369,11 +1369,11 @@ model-test:
 
 ext-supabase-start:
     @echo "Starting local Supabase for w0m-ext..."
-    @cd w0m-ext && pnpm dlx supabase start
+    @cd w0m-ext && supabase start
 
 ext-supabase-stop:
     @echo "Stopping local Supabase for w0m-ext..."
-    @cd w0m-ext && pnpm dlx supabase stop
+    @cd w0m-ext && supabase stop
 
 crawler-deploy: (_confirm "crawler-deploy")
     @echo "Deploying w0m-web/cf-crawler..."
