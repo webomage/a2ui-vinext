@@ -27,6 +27,7 @@ whether `cwd` is an isolated `~/.w0m/work/<set>/w0m` agent tree or the canonical
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
 import json
 import os
@@ -1086,10 +1087,48 @@ def ensure_prepush_deps(worktree_root: Path) -> None:
     _run(["pnpm", "install", "--frozen-lockfile", "--prefer-offline"], cwd=web_dir, check=True)
 
 
+def certify_estate_tree(
+    estate_root: Path,
+    *,
+    canonical_root: Path | None = None,
+    source: str = "session-complete",
+) -> dict[str, Any] | None:
+    """Certify the clean estate tree-set (`check-guardrails` + `offline/medium`) into `~/.cache/w0m/deploy-cert/` (T650)."""
+    cert_script = estate_root / "scripts" / "deploy_cert.py"
+    if not cert_script.is_file():
+        return None
+    cmd = [
+        sys.executable,
+        str(cert_script),
+        "--root",
+        str(estate_root),
+        "certify",
+        "--source",
+        source,
+        "--json",
+    ]
+    if canonical_root is not None:
+        cmd.extend(["--canonical-root", str(canonical_root)])
+    print(f"[session-complete] Certifying estate tree-set ({source}) ...", file=sys.stderr, flush=True)
+    proc = _run(cmd, cwd=estate_root, check=False)
+    if proc.returncode != 0:
+        tail = ((proc.stderr or "") + "\n" + (proc.stdout or "")).strip()[-2500:]
+        raise SessionCompleteError(
+            "deploy_cert_failed",
+            f"Estate tree-set certification failed (exit {proc.returncode}):\n{tail}",
+        )
+    if proc.stdout.strip():
+        with contextlib.suppress(json.JSONDecodeError):
+            parsed: dict[str, Any] = json.loads(proc.stdout)
+            return parsed
+    return {"ok": True}
+
+
 def land_and_cleanup_tree(
     ctx: SessionContext,
     *,
     remove_tree: bool = True,
+    certify_after_land: bool = True,
 ) -> dict[str, Any]:
     wt_root = Path(ctx.worktree_root)
     canon_root = Path(ctx.canonical_root)
@@ -1138,6 +1177,17 @@ def land_and_cleanup_tree(
                     f"{' '.join(land_cmd)} (exit {land_proc.returncode}):\n{tail}",
                 )
 
+        post_land_cert: dict[str, Any] | None = None
+        if certify_after_land:
+            # If `land` did not rebase, this is an instant <0.1s cache HIT; if a concurrent push caused
+            # `land` to rebase onto a new `origin/beta` tip, this certifies the exact landed SHA set
+            # while `wt_root` is still clean and intact right before tree removal.
+            post_land_cert = certify_estate_tree(
+                wt_root,
+                canonical_root=canon_root,
+                source="session-complete-post-land",
+            )
+
         # CRITICAL: Switch working directory out of `~/.w0m/work/<set>/w0m` to `canonical_root`
         # BEFORE removing the agent tree so subsequent subprocesses never fail with dead `getcwd`.
         os.chdir(str(canon_root))
@@ -1161,6 +1211,7 @@ def land_and_cleanup_tree(
             "landOutput": land_proc.stdout.strip()[-1200:],
             "canonicalFastForward": ff_outcomes,
             "treeRemoved": removed,
+            "postLandCert": post_land_cert,
         }
 
     pushed: dict[str, str] = {}
@@ -1393,6 +1444,14 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
     if not args.skip_gates and targets:
         gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
 
+    deploy_cert_info: dict[str, Any] | None = None
+    if not args.skip_gates:
+        deploy_cert_info = certify_estate_tree(
+            wt_root,
+            canonical_root=Path(ctx.canonical_root),
+            source="session-complete-pre-land",
+        )
+
     land_info: dict[str, Any] = {"mode": "skipped"}
     finalize_info: dict[str, Any] = {"mode": "skipped"}
     if not args.skip_land:
@@ -1430,11 +1489,25 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                 )
                 if not args.skip_gates and targets:
                     gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
+                if not args.skip_gates:
+                    deploy_cert_info = certify_estate_tree(
+                        wt_root,
+                        canonical_root=Path(ctx.canonical_root),
+                        source="session-complete-late-sync",
+                    )
 
         land_info = land_and_cleanup_tree(
             ctx,
             remove_tree=not bool(args.keep_tree),
+            certify_after_land=not bool(args.skip_gates),
         )
+        if land_info.get("mode") == "canonical_direct_push" and not args.skip_gates:
+            canon_p = Path(ctx.canonical_root)
+            deploy_cert_info = certify_estate_tree(
+                canon_p,
+                canonical_root=canon_p,
+                source="session-complete-direct-push",
+            )
         finalize_info = archive_and_finalize_session(
             ctx,
             close_completed_others=bool(args.close_completed_others),
@@ -1452,6 +1525,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
         "mirroredReports": mirrored_reports,
         "surfaces": surfaces_info,
         "verificationGates": gate_results,
+        "deployCert": deploy_cert_info,
         "committedRepos": committed,
         "landing": land_info,
         "finalization": finalize_info,

@@ -497,12 +497,18 @@ def _is_meta_selftest(s: dict) -> bool:
 
 
 def select_suites(
-    suites: list[dict], tier: str, prepush: bool = False, level: str = "full"
+    suites: list[dict],
+    tier: str,
+    prepush: bool = False,
+    level: str = "full",
+    skip_prepush: bool = False,
 ) -> list[dict]:
     """Which suites a run covers. `prepush` selects by the registry's `"prepush": true` flag and by nothing else (T503)."""
     if prepush or level == "critical":
         return [s for s in suites if s.get("prepush") is True]
     by_tier = [s for s in suites if tier == "all" or s.get("tier", "offline") == tier]
+    if skip_prepush:
+        by_tier = [s for s in by_tier if s.get("prepush") is not True]
     if level == "medium":
         return [
             s for s in by_tier
@@ -539,6 +545,8 @@ def main() -> int:
     ap.add_argument("--drift", action="store_true", help="only report registry drift")
     ap.add_argument("--prepush", action="store_true",
                     help="run only the suites flagged \"prepush\": true (fast, deterministic ratchets; used by pre-push and the deploy pre-flight)")
+    ap.add_argument("--skip-prepush", action="store_true",
+                    help="exclude suites flagged \"prepush\": true when _deploy-preflight already ran them on the same commit set (T650)")
     args = ap.parse_args()
     if args.level == "critical":
         args.prepush = True
@@ -589,8 +597,9 @@ def main() -> int:
         for pr in problems:
             print(f"   · {pr}")
         return 1
-    picked = select_suites(suites, args.tier, args.prepush, args.level)
-    label = "prepush" if args.prepush else f"tier={args.tier} level={args.level}"
+    picked = select_suites(suites, args.tier, args.prepush, args.level, skip_prepush=bool(args.skip_prepush))
+    skip_lbl = " (skip-prepush)" if args.skip_prepush and not args.prepush else ""
+    label = "prepush" if args.prepush else f"tier={args.tier} level={args.level}{skip_lbl}"
     if not picked:
         print(f"❌ run-suites: no suites in {label}")
         return 1

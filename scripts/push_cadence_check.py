@@ -46,7 +46,13 @@ def detached_mirror_kind(estate: Path, home: Path, env: "os._Environ[str] | dict
     live checkout does not. The path test is a real parent-path test: a sibling such as `~/.w0m/releases-old` is not a mirror."""
     if env.get("W0M_RELEASE_WORKTREE") == "1":
         return "release worktree"
-    for sub_dir, kind in ((".w0m/releases", "release worktree"), (".w0m/stable", "stable worktree")):
+    if env.get("W0M_PRELAND_CERTIFY") == "1":
+        return "pre-land agent tree certification"
+    for sub_dir, kind in (
+        (".w0m/releases", "release worktree"),
+        (".w0m/stable", "stable worktree"),
+        (".w0m/work", "agent worktree"),
+    ):
         if estate == home / sub_dir or (home / sub_dir) in estate.parents:
             return kind
     return None

@@ -756,14 +756,7 @@ check-infisical:
     @python3 scripts/check_infisical.py --project-id {{ infisical_project_id }}
 
 check-guardrails:
-    @echo "🛡  Pre-deploy security gate (secrets + test-admin + connection-strings)..."
-    @cd w0m-api && pre-commit run gitleaks --all-files
-    @cd w0m-web && pre-commit run gitleaks --all-files
-    @cd w0m-web && pre-commit run guard-test-admin --all-files
-    @echo "🔑 Inline-credential connection-string scan (gitleaks gap — T32)..."
-    @cd w0m-api && if git --no-pager grep -nEI '(postgres|postgresql|mysql|mongodb|redis|amqp)://[A-Za-z0-9._%+-]+:[A-Za-z0-9._%+~!-]{6,}@' -- ':!*.md'; then echo "❌ inline credential in tracked files — remove + rotate (see T32)"; exit 1; fi
-    @cd w0m-web && if git --no-pager grep -nEI '(postgres|postgresql|mysql|mongodb|redis|amqp)://[A-Za-z0-9._%+-]+:[A-Za-z0-9._%+~!-]{6,}@' -- ':!*.md'; then echo "❌ inline credential in tracked files — remove + rotate (see T32)"; exit 1; fi
-    @echo "✅ security gate passed"
+    @python3 scripts/deploy_cert.py guardrails
 
 check-warp:
     @echo "Checking Cloudflare WARP and deploy-host reachability..."
@@ -990,7 +983,7 @@ _deploy-chain: _deploy-preflight (_confirm "deploy") _deploy-gates _deploy-ship
 # The fast tier of the suite registry (`"prepush": true`) plus the STATE.md drift gate: everything that is deterministic, offline and takes seconds.
 # Pre-push runs the same set (w0m-web/.husky/pre-push), so a red ratchet is normally found where the change is made, not at deploy time.
 _deploy-preflight:
-    @python3 scripts/run_suites.py --prepush
+    @python3 scripts/deploy_cert.py preflight
     @just state-check
 
 # Note: `goldens` is excluded from `_deploy-gates` because booting the local Astro dev server + Playwright browser matrix inside a deploy run halts memory-constrained hosts. Run `just goldens` standalone when needed.
@@ -1306,7 +1299,7 @@ host-probe *args:
 t480-gauge-test:
     @python3 -m pytest scripts/tests/test_t480_gauge_fail_fast.py -q -p no:cacheprovider
 
-_deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp check-infisical _deploy-gates db-migrate _deploy-ship _post-deploy-knowledge
+_deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp _deploy-gates db-migrate _deploy-ship _post-deploy-knowledge
 
 _post-deploy-knowledge:
     #!/usr/bin/env bash
@@ -1631,9 +1624,19 @@ mcp-declared-test:
 mcp-health *args:
     @python3 scripts/mcp_health.py {{ args }}
 
-# ── Estate Test Suites & Hook Runners (T160 / T375 / T419) ───────────────────
+# ── Estate Test Suites & Hook Runners (T160 / T375 / T419 / T650) ────────────
 test:
-    @python3 scripts/run_suites.py --tier offline --level {{ env_var_or_default("W0M_TEST_LEVEL", "medium") }}
+    @python3 scripts/deploy_cert.py test --level {{ env_var_or_default("W0M_TEST_LEVEL", "medium") }}
+
+# T650 (AgDR-0057) — certify the clean 10-repo estate tree-set (`check-guardrails` + `offline/medium`) into `~/.cache/w0m/deploy-cert/`.
+certify:
+    @python3 scripts/deploy_cert.py certify
+
+certify-status:
+    @python3 scripts/deploy_cert.py status
+
+certify-test:
+    @python3 scripts/tests/test_deploy_cert.py
 
 # T503 — the fast tier only (`"prepush": true` suites): what pre-push and the deploy pre-flight run.
 test-prepush:
