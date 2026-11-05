@@ -64,12 +64,12 @@ Claude Code runs session-start hooks automatically (`.claude/settings.local.json
 - **Repo-first storage for reports & diagrams (`.agents/reports/` & `w0m-web/docs/reports/` FIRST).** Store reports, audits, plans, and `.mmd` diagrams in `.agents/reports/` (and mirror to `w0m-web/docs/reports/`) before mirroring to IDE brain artifacts; link `file://` references to workspace paths.
 - **Close open questions with weighted decisions; split leftover scope into dependent tickets** (`Split from: [[T…]]`, `blocked_by:`, `[x] … split into [[T…]]`). Money, accounts, and public posts stay owner-only.
 - **Zero unused / unwired parts & audited change-log/drift observability (T613, T614).** Never ship dead UI toggles, queries to missing SQL relations/columns (`w0m-web/project/scripts/supabase_surface_drift_check.py`), synthetic `200 OK` fallbacks (`AgDR-0025`), or orphan exports/config keys. Mutable security, privacy, public-visibility, and commercial settings MUST log actor, old/new payload, and timestamp via `SECURITY DEFINER` triggers into append-only `*_audit_log` tables.
-- **Mandatory Session & Ticket Wrap-Up — finish tickets/sessions as `done` before ending or deploy handoff (T613, T616).** Execute full `w0m-sdlc-archive` + `.w0m/sdlc.json → session_wrapup`:
+- **Mandatory Session & Ticket Wrap-Up — run `just session-complete` from inside the session before ending or deploy handoff (T613, T616, T640).** Execute full `w0m-sdlc-archive` + `.w0m/sdlc.json → session_wrapup` via **`just session-complete [T## ...]`** directly from inside the active session (sparing the caller's live terminal):
   1. Pass drift, reality, spec, and debt gates (`supabase_surface_drift_check.py`, `just reality-verify`, `just spec-drift`, `just dod-check`, `just debt-check --enforce`).
-  2. Flip `.tasks/T##.md` to `status: done` + `queue: done` with AC evidence and explicit lesson disposition.
+  2. Flip `.tasks/T##.md` to `status: done` + `queue: done` + `closed_as: completed` with AC evidence and explicit lesson disposition.
   3. Run `just lessons-harvest`, record transferable rules in `@wom/LESSONS.md`, and pass `w0m-web/project/scripts/lessons_check.py`.
   4. Mirror reports/diagrams repo-first to `.agents/reports/` (`w0m-web/docs/reports/`), passing `just reports-ticket-check` and `just mmd-validate`.
-  5. Run `just state-save`, land via `just agent-tree-land`, fast-forward live checkout (`git merge --ff-only origin/beta`), remove the pushed agent tree (`just agent-tree-remove <name>`), and verify `just state-check` exits `0` last.
+  5. Run `just state-save`, land via `just agent-tree-land`, fast-forward live checkout (`git merge --ff-only origin/beta`), remove the pushed agent tree (`just agent-tree-remove <name>`), archive the session transcript, and verify `just state-check` exits `0` last.
 
 ## Fast Project Info & Indexed Data References
 

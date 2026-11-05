@@ -1083,6 +1083,15 @@ agent-tree-test:
 t531-layers-test:
     @python3 -m pytest w0m-web/project/scripts/tests/test_t531_layers.py -q -p no:cacheprovider
 
+# T640 — single-command in-session SDLC wrap-up (`session_wrapup`), gates, landing, live sync, and transcript archive.
+[no-cd]
+[positional-arguments]
+session-complete *args:
+    @python3 "{{justfile_directory()}}/scripts/session_complete.py" "$@"
+
+session-complete-test:
+    @python3 -m pytest scripts/tests/test_session_complete.py -q -p no:cacheprovider
+
 [no-cd]
 [positional-arguments]
 commit *args:

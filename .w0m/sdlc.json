@@ -344,7 +344,9 @@
     }
   },
   "session_wrapup": {
-    "_comment": "T613 — Mandatory Session & Ticket Wrap-Up, Zero Unused/Unwired Parts, and Audited Change-Log/Drift Governance. Ensures finished tickets complete full w0m-sdlc-archive even when live deploy-all / db-migrate awaits human Touch ID confirmation.",
+    "_comment": "T613 / T640 — Mandatory Session & Ticket Wrap-Up, Zero Unused/Unwired Parts, and Audited Change-Log/Drift Governance. Run `just session-complete` from inside the active session before ending or handing off human-gated deploys.",
+    "command": "just session-complete",
+    "script": "scripts/session_complete.py",
     "require_archive_before_human_deploy_handoff": true,
     "require_zero_unused_parts": true,
     "require_audited_change_logs_for_mutable_settings": true,
