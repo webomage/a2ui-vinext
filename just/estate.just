@@ -51,7 +51,7 @@ sync-env:
 # Sync Infisical secrets to Cloudflare Pages project (Production)
 sync-cf-secrets project="webomage": (_confirm "sync-cf-secrets")
     @echo "Syncing secrets from Infisical to Cloudflare Pages project {{ project }}"
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
       echo "$PUBLIC_SUPABASE_URL" | pnpm exec wrangler secret put PUBLIC_SUPABASE_URL --name {{ project }} && \
       echo "$PUBLIC_SUPABASE_ANON_KEY" | pnpm exec wrangler secret put PUBLIC_SUPABASE_ANON_KEY --name {{ project }} && \
       echo "$SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SERVICE_ROLE_KEY --name {{ project }} && \
@@ -84,7 +84,7 @@ sync-cf-secrets project="webomage": (_confirm "sync-cf-secrets")
 # in. Reversed, the first sync would have silently replaced a working token with an unchecked one.
 sync-cfworkers-secrets: (_confirm "sync-cfworkers-secrets")
     @echo "Syncing secrets from Infisical to Cloudflare Workflows project: w0m-cf"
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
+    @cd w0m-cf && infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
       echo "$SUPABASE_URL" | pnpm exec wrangler secret put SUPABASE_URL --name wom7func && \
       echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name wom7func && \
       echo "$CLOUDFLARE_ACCOUNT_ID" | pnpm exec wrangler secret put CLOUDFLARE_ACCOUNT_ID --name wom7func && \
@@ -103,7 +103,7 @@ sync-cfworkers-secrets: (_confirm "sync-cfworkers-secrets")
 # (`public.admin_secrets`) or synced from Infisical when present, and this loop never pushes an EMPTY one over a working secret.
 sync-api-secrets: (_confirm "sync-api-secrets")
     @echo "Syncing secrets from Infisical to w0m-api Cloudflare Worker..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
+    @cd w0m-api && infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
       echo "$SUPABASE_URL" | pnpm exec wrangler secret put SUPABASE_URL --name wom7api && \
       echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name wom7api && \
       echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WEBHOOK_SECRET --name wom7api && \
@@ -121,7 +121,11 @@ sync-api-secrets: (_confirm "sync-api-secrets")
 # Sync secrets to apps/me (me.webomage.com)
 sync-me-secrets: (_confirm "sync-me-secrets")
     @echo "Syncing secrets from Infisical to apps/me (webomage-me)..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
+      if ! pnpm exec wrangler deployments list --name webomage-me >/dev/null 2>&1; then \
+        echo "ℹ️  webomage-me Worker does not exist on Cloudflare yet — run '\''just deploy-all'\'' first (deploy-me bootstraps secrets automatically on first deploy)."; \
+        exit 0; \
+      fi && \
       echo "$PUBLIC_SUPABASE_URL" | pnpm exec wrangler secret put PUBLIC_SUPABASE_URL --name webomage-me && \
       echo "$PUBLIC_SUPABASE_ANON_KEY" | pnpm exec wrangler secret put PUBLIC_SUPABASE_ANON_KEY --name webomage-me && \
       echo "$SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SERVICE_ROLE_KEY --name webomage-me && \
@@ -132,7 +136,7 @@ sync-me-secrets: (_confirm "sync-me-secrets")
 # Sync secrets to apps/cp (cp.w0m.xyz)
 sync-cp-secrets: (_confirm "sync-cp-secrets")
     @echo "Syncing secrets from Infisical to apps/cp (webomage-cp)..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
       echo "$PUBLIC_SUPABASE_URL" | pnpm exec wrangler secret put PUBLIC_SUPABASE_URL --name webomage-cp && \
       echo "$PUBLIC_SUPABASE_ANON_KEY" | pnpm exec wrangler secret put PUBLIC_SUPABASE_ANON_KEY --name webomage-cp && \
       echo "$SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SERVICE_ROLE_KEY --name webomage-cp && \
@@ -148,7 +152,7 @@ sync-cp-secrets: (_confirm "sync-cp-secrets")
 # ⚠️ No Hume, LinkedIn, or webhook secrets: demo runs sandboxed with no external integrations.
 sync-demo-secrets: (_confirm "sync-demo-secrets")
     @echo "Syncing secrets from Infisical to apps/demo (webomage-demo)..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c ' \
       echo "$PUBLIC_SUPABASE_URL" | pnpm exec wrangler secret put PUBLIC_SUPABASE_URL --name webomage-demo && \
       echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name webomage-demo'
 
@@ -163,10 +167,19 @@ db-psql-ssl:
 
 # Cloudflare Terraform helpers
 cf-plan:
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" terraform -chdir=w0m-api/cloudflare plan'
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c ' \
+      CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
+        terraform -chdir=w0m-api/cloudflare init -input=false >/dev/null && \
+      CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
+        terraform -chdir=w0m-api/cloudflare plan -lock=false'
 
 cf-apply: (_confirm "cf-apply")
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" terraform -chdir=w0m-api/cloudflare apply'
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c ' \
+      CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
+        terraform -chdir=w0m-api/cloudflare init -input=false >/dev/null && \
+      python3 scripts/retire_cf_worker_domains.py join.webomage.com job.webomage.com && \
+      CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
+        terraform -chdir=w0m-api/cloudflare apply -auto-approve -lock=false'
 
 # Azure jumphost Terraform helpers
 azure-jumphost-plan:
@@ -3001,6 +3014,8 @@ supabase-auth-drift-check:
 # reviewing `supabase-settings-plan` BEFORE invoking this, not a terraform y/n prompt.
 supabase-settings-apply: (_confirm "supabase-settings-apply")
     @cd w0m-api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
+      AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
+        terraform init -input=false >/dev/null && \
       AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
         terraform apply -auto-approve -lock=false'
 

@@ -164,6 +164,46 @@ class TestDeployElevation(unittest.TestCase):
         for ln in lines:
             self.assertRegex(ln, r"^\s+@?cd w0m-web && ", f"root pnpm build not run from w0m-web: {ln.strip()}")
 
+    def test_root_secret_sync_recipes_cd_into_owning_workspace(self):
+        """Every `sync-*-secrets` recipe in `just/estate.just` invoking `wrangler` must `cd` into the
+        workspace owning `node_modules/.bin/wrangler` (T648)."""
+        estate = (ROOT / "just" / "estate.just").read_text(encoding="utf-8")
+        expected = {
+            "sync-cf-secrets": "w0m-web",
+            "sync-cfworkers-secrets": "w0m-cf",
+            "sync-api-secrets": "w0m-api",
+            "sync-me-secrets": "w0m-web",
+            "sync-cp-secrets": "w0m-web",
+            "sync-demo-secrets": "w0m-web",
+        }
+        for recipe, workspace in expected.items():
+            m = re.search(
+                rf"^{re.escape(recipe)}[^\n]*:[^\n]*\n((?:    [^\n]*\n)+)",
+                estate,
+                flags=re.MULTILINE,
+            )
+            self.assertIsNotNone(m, f"Missing recipe {recipe} in just/estate.just")
+            block = m.group(1) if m else ""
+            self.assertIn(
+                f"cd {workspace} && ",
+                block,
+                f"{recipe} must `cd {workspace} && ` before running `pnpm exec wrangler`",
+            )
+
+    def test_terraform_lockfiles_carry_multiplatform_h1_hashes(self):
+        """Every Terraform `.terraform.lock.hcl` in `w0m-api` must lock at least 4 `h1:` directory
+        hashes (`darwin_arm64`, `darwin_amd64`, `linux_amd64`, `linux_arm64`) so `~/.terraformrc`
+        `plugin_cache_dir` never fails cross-OS provider verification (T648)."""
+        for stack in ("cloudflare", "supabase-settings", "monitoring"):
+            lock = ROOT / "w0m-api" / stack / ".terraform.lock.hcl"
+            self.assertTrue(lock.is_file(), f"Missing Terraform lockfile: {lock}")
+            h1_count = sum(1 for ln in lock.read_text(encoding="utf-8").splitlines() if '"h1:' in ln)
+            self.assertGreaterEqual(
+                h1_count,
+                4,
+                f"{lock} has only {h1_count} h1: hash(es); run `terraform providers lock` for darwin+linux",
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

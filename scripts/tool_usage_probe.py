@@ -337,7 +337,7 @@ def scan_usage(
 
         if p.name == "package.json":
             try:
-                pkg_data = json.loads(text)
+                pkg_data: dict[str, Any] = json.loads(text)
             except ValueError:
                 continue
             scripts = pkg_data.get("scripts")
@@ -354,7 +354,7 @@ def scan_usage(
                 hits[t].append((n, rel_str))
         elif p.name == ".mcp.json":
             try:
-                mcp_data = json.loads(text)
+                mcp_data: dict[str, Any] = json.loads(text)
             except ValueError:
                 continue
             servers = mcp_data.get("mcpServers")
@@ -483,9 +483,10 @@ def scan_ephemeral_runners(
         # Skip skill markdown/resource prose directories when scanning shell snippets inside skills
         if p.name == "package.json":
             try:
-                scripts = json.loads(text).get("scripts", {})
+                pkg_raw: dict[str, Any] = json.loads(text)
             except ValueError:
                 continue
+            scripts = pkg_raw.get("scripts", {})
             if not isinstance(scripts, dict):
                 continue
             for cmd_val in scripts.values():
@@ -499,9 +500,10 @@ def scan_ephemeral_runners(
                     _add("uvx", m.group("spec"), rel_str, m.group("from_spec"))
         elif p.name == ".mcp.json":
             try:
-                servers = json.loads(text).get("mcpServers", {})
+                mcp_raw: dict[str, Any] = json.loads(text)
             except ValueError:
                 continue
+            servers = mcp_raw.get("mcpServers", {})
             if not isinstance(servers, dict):
                 continue
             for srv in servers.values():

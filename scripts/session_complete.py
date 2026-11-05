@@ -231,7 +231,7 @@ def detect_session_context(
         proc = _run([sys.executable, str(ai_script), "whoami", "--json"], cwd=wt_root)
         if proc.returncode == 0 and proc.stdout.strip():
             try:
-                ai_data = json.loads(proc.stdout)
+                ai_data: Any = json.loads(proc.stdout)
                 if isinstance(ai_data, dict) and str(ai_data.get("agent_id") or "").strip():
                     agent_id = str(ai_data["agent_id"]).strip()
             except json.JSONDecodeError:
@@ -526,7 +526,7 @@ def wait_for_land_lock(work_root: Path | None, *, timeout_seconds: float = 1200.
         holder_pid: int | None = None
         holder_set = "unknown"
         try:
-            meta = json.loads(lock_file.read_text(encoding="utf-8"))
+            meta: Any = json.loads(lock_file.read_text(encoding="utf-8"))
             if isinstance(meta, dict):
                 raw_pid = meta.get("pid")
                 if isinstance(raw_pid, int):
@@ -844,7 +844,7 @@ def load_sdlc_config(worktree_root: Path) -> dict[str, Any]:
     if not sdlc_path.is_file():
         raise SessionCompleteError("missing_sdlc_config", f"Missing {sdlc_path}")
     try:
-        data = json.loads(sdlc_path.read_text(encoding="utf-8"))
+        data: Any = json.loads(sdlc_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise SessionCompleteError("invalid_sdlc_config", f"Corrupt {sdlc_path}: {exc}") from exc
     if not isinstance(data, dict):
@@ -902,7 +902,7 @@ def run_verification_gates(
                 f"Gate failed ({label}, exit {proc.returncode}):\n{tail}",
             )
         try:
-            payload = json.loads(proc.stdout or "{}")
+            payload: dict[str, Any] = json.loads(proc.stdout or "{}")
         except json.JSONDecodeError as exc:
             raise SessionCompleteError(
                 "verification_gate_failed",
@@ -1209,7 +1209,8 @@ def archive_and_finalize_session(
         )
         if res.returncode == 0 and res.stdout.strip():
             try:
-                archive_info = {"archived": True, **json.loads(res.stdout)}
+                raw_archive: dict[str, Any] = json.loads(res.stdout)
+                archive_info = {"archived": True, **raw_archive}
             except json.JSONDecodeError:
                 archive_info = {"archived": True, "raw": res.stdout.strip()}
 
@@ -1221,7 +1222,8 @@ def archive_and_finalize_session(
         res = _run(cmd, cwd=canon_root)
         if res.returncode == 0 and res.stdout.strip():
             try:
-                closed_others_info = json.loads(res.stdout)
+                raw_closed: dict[str, Any] = json.loads(res.stdout)
+                closed_others_info = raw_closed
             except json.JSONDecodeError:
                 closed_others_info = {"raw": res.stdout.strip()}
 

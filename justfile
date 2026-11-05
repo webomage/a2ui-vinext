@@ -692,6 +692,16 @@ deploy-me: (_confirm "deploy-me")
     @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter me build
     @just _assert-provisioned me
     @cd w0m-web/apps/me/dist/server && infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --config wrangler.json --var DEPLOY_VERSION:{{ deploy_version }} --var APP_VERSION:${W0M_APP_VERSION_ME:-{{ deploy_version }}} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
+    @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c ' \
+      if ! pnpm exec wrangler secret list --name webomage-me --format json 2>/dev/null | grep -q "\"PUBLIC_SUPABASE_URL\""; then \
+        echo "🔐 First-deploy bootstrap: provisioning production secrets on webomage-me..." && \
+        echo "$PUBLIC_SUPABASE_URL" | pnpm exec wrangler secret put PUBLIC_SUPABASE_URL --name webomage-me && \
+        echo "$PUBLIC_SUPABASE_ANON_KEY" | pnpm exec wrangler secret put PUBLIC_SUPABASE_ANON_KEY --name webomage-me && \
+        echo "$SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SERVICE_ROLE_KEY --name webomage-me && \
+        echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name webomage-me && \
+        echo "$WORKERS_WEBHOOK_URL" | pnpm exec wrangler secret put WORKERS_WEBHOOK_URL --name webomage-me && \
+        echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WORKERS_WEBHOOK_SECRET --name webomage-me; \
+      fi'
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py me "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
 # Deploy apps/demo (demo.webomage.com — T79 demo showcase) to Cloudflare Workers

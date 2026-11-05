@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t646-orca-orbs-default` | 0 | **n/a — NO UPSTREAM** | `92546d723` |
-| `w0m-api` | `agent/t646-orca-orbs-default` | 0 | **n/a — NO UPSTREAM** | `02cfc5b` |
-| `w0m-cf` | `agent/t646-orca-orbs-default` | 0 | **n/a — NO UPSTREAM** | `ec5189e` |
-| `w0m-skills` | `agent/t646-orca-orbs-default` | 0 | **n/a — NO UPSTREAM** | `318355d` |
-| `w0m-ext` | `agent/t646-orca-orbs-default` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
-| `w0m-sec` | `agent/t646-orca-orbs-default` | 0 | **n/a — NO UPSTREAM** | `d5a3f8e` |
-| `w0m-mlx/w0m-mlx` | `agent/t646-orca-orbs-default` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t648-rollout-tf-wrangler-fix` | 0 | **n/a — NO UPSTREAM** | `92546d723` |
+| `w0m-api` | `agent/t648-rollout-tf-wrangler-fix` | 0 | **n/a — NO UPSTREAM** | `428d244` |
+| `w0m-cf` | `agent/t648-rollout-tf-wrangler-fix` | 0 | **n/a — NO UPSTREAM** | `ec5189e` |
+| `w0m-skills` | `agent/t648-rollout-tf-wrangler-fix` | 0 | **n/a — NO UPSTREAM** | `318355d` |
+| `w0m-ext` | `agent/t648-rollout-tf-wrangler-fix` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
+| `w0m-sec` | `agent/t648-rollout-tf-wrangler-fix` | 0 | **n/a — NO UPSTREAM** | `d5a3f8e` |
+| `w0m-mlx/w0m-mlx` | `agent/t648-rollout-tf-wrangler-fix` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 647 TASKS.md rows · 299/647 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 648 TASKS.md rows · 300/648 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t646-orca-orbs-default","dirty":0,"has_upstream":true,"head":"02cfc5b","unpushed":null},"w0m-cf":{"branch":"agent/t646-orca-orbs-default","dirty":0,"has_upstream":true,"head":"ec5189e","unpushed":null},"w0m-ext":{"branch":"agent/t646-orca-orbs-default","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t646-orca-orbs-default","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t646-orca-orbs-default","dirty":0,"has_upstream":true,"head":"d5a3f8e","unpushed":null},"w0m-skills":{"branch":"agent/t646-orca-orbs-default","dirty":0,"has_upstream":true,"head":"318355d","unpushed":null},"w0m-web":{"branch":"agent/t646-orca-orbs-default","dirty":0,"has_upstream":true,"head":"92546d723","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":647,"specced":299,"specced_open":1,"total":647,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t648-rollout-tf-wrangler-fix","dirty":0,"has_upstream":true,"head":"428d244","unpushed":null},"w0m-cf":{"branch":"agent/t648-rollout-tf-wrangler-fix","dirty":0,"has_upstream":true,"head":"ec5189e","unpushed":null},"w0m-ext":{"branch":"agent/t648-rollout-tf-wrangler-fix","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t648-rollout-tf-wrangler-fix","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t648-rollout-tf-wrangler-fix","dirty":0,"has_upstream":true,"head":"d5a3f8e","unpushed":null},"w0m-skills":{"branch":"agent/t648-rollout-tf-wrangler-fix","dirty":0,"has_upstream":true,"head":"318355d","unpushed":null},"w0m-web":{"branch":"agent/t648-rollout-tf-wrangler-fix","dirty":0,"has_upstream":true,"head":"92546d723","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":648,"specced":300,"specced_open":1,"total":648,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,9 +113,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (1):
+#### Completed today (2):
 
 - **T647** — Orca Mobile: default 4-side arrow keys to Floating Orbs and hide quick-switcher chips by default ((agy:t647-orca-orbs-default): Completed T647 end-to-end: pushed GPG-signed 8ef1a4cd93b (feat/mobile-four-side-edge-arrows), squashed single-commit 6d100c5d9c0 (overlay/feat/mobile-four-side-edge-arrows), and a994b168137 (beta) to webomage/orca; verified 15-branch overlay assembly + tsrs + Vitest + Mobile OTA bundle (278f141728c5...); built and installed webomage/orca@v1.4.250-w0m.1 (run 41974728545, SHA-512 verified -> ~/Apps/orca-linux.AppImage); updated scripts/w0m_prs.py (92/92 tests) and scripts/orca_overlay_update.py; Lesson disposition: recorded boolean opt-out->opt-in persistence and Moksha Config.SaveBlock rules in LESSONS.md (lessons_check.py 0 findings).)
+- **T648** — Fix rollout friction: multi-platform Terraform locks & retired Worker domain handoff, root secret-sync workspace paths, and first-deploy webomage-me secret bootstrap ((agy:t648-rollout-tf-wrangler-fix) — Completed (done))
 
 ## 3. Other open threads (in TASKS.md)
 
