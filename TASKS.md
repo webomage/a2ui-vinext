@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T649](.tasks/T649.md) | **P1** | **Fix deploy-all blocking suite failures: lighthouse-funnel-hygiene apps/me cutover & tool_usage_probe mypy narrowing** | web, tooling | openspec/specs/me-personal-portal/spec.md | ✅ **done** |
 | [T648](.tasks/T648.md) | **P1** | **Fix rollout friction: multi-platform Terraform locks & retired Worker domain handoff, root secret-sync workspace paths, and first-deploy webomage-me secret bootstrap** | api, tooling | openspec/specs/me-personal-portal/spec.md | ✅ **done** |
 | [T647](.tasks/T647.md) | **P1** | **Orca Mobile: default 4-side arrow keys to Floating Orbs and hide quick-switcher chips by default** | tooling | — | ✅ **done** |
 | [T646](.tasks/T646.md) | **P1** | **Unify job & join portals + personal /me/* + public /u/* into me.webomage.com (apps/me) and realign cp.webomage.com strictly around org, project, crew & admin** | web, api, cf, ext, sec, tooling | openspec/changes/archive/2026-11-04-t646-me-cp-portal-unification | ✅ **done** |

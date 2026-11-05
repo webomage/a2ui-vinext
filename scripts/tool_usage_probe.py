@@ -560,7 +560,8 @@ def verify_ephemeral_runners(
     if not isinstance(eph, dict):
         return problems
     forbid_npx = bool(eph.get("forbid_npx", True))
-    must_pin = eph.get("must_pin") if isinstance(eph.get("must_pin"), dict) else {}
+    raw_pin = eph.get("must_pin")
+    must_pin: dict[str, Any] = raw_pin if isinstance(raw_pin, dict) else {}
 
     for rec in records:
         runner = rec["runner"]
