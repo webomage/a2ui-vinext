@@ -2,6 +2,25 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.05-1793917778
+_First deployed: 2026-11-05 22:42:56.48643+00_
+
+### Features
+- **portal**: unify me.webomage.com and realign cp.webomage.com org boundary (T646) ([T646](file:///.tasks/T646.md))
+- **T620**: audit host, agent, ephemeral & custom-fork tools across estate ([T620](file:///.tasks/T620.md))
+- **T644**: close T644 Costa Rica, MX 612/626, and 12-country LATAM KYC/fiscal engine ([T644](file:///.tasks/T644.md))
+- **estate**: sync OpenSpec CLI, Orca Gamepad HUD, and solar/mantrabox engagements (T641, T642, T643) ([T641](file:///.tasks/T641.md), [T642](file:///.tasks/T642.md), [T643](file:///.tasks/T643.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `7be5064` | 2026-11-05 22:42:56.48643+00 |
+| demo | `7be5064` | 2026-11-05 22:42:13.094138+00 |
+| me | `7be5064` | 2026-11-05 22:41:25.460332+00 |
+| cp | `7be5064` | 2026-11-05 22:39:08.149032+00 |
+| web | `7be5064` | 2026-11-05 22:36:40.276731+00 |
+| release | `7be5064` | 2026-11-05 22:33:53.279989+00 |
+| api | `7be5064` | 2026-11-05 22:33:47.366578+00 |
+
 ## 2026.11.04-1793824626
 _First deployed: 2026-11-04 21:03:51.604516+00_
 
