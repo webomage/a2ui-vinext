@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t650-deploy-cert-cache` | 0 | **n/a — NO UPSTREAM** | `0f492b69e` |
-| `w0m-api` | `agent/t650-deploy-cert-cache` | 0 | **n/a — NO UPSTREAM** | `428d244` |
-| `w0m-cf` | `agent/t650-deploy-cert-cache` | 0 | **n/a — NO UPSTREAM** | `ec5189e` |
-| `w0m-skills` | `agent/t650-deploy-cert-cache` | 0 | **n/a — NO UPSTREAM** | `318355d` |
-| `w0m-ext` | `agent/t650-deploy-cert-cache` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
-| `w0m-sec` | `agent/t650-deploy-cert-cache` | 0 | **n/a — NO UPSTREAM** | `d5a3f8e` |
-| `w0m-mlx/w0m-mlx` | `agent/t650-deploy-cert-cache` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t650-gh-tickets-sync` | 0 | **n/a — NO UPSTREAM** | `567903c03` |
+| `w0m-api` | `agent/t650-gh-tickets-sync` | 0 | **n/a — NO UPSTREAM** | `428d244` |
+| `w0m-cf` | `agent/t650-gh-tickets-sync` | 0 | **n/a — NO UPSTREAM** | `ec5189e` |
+| `w0m-skills` | `agent/t650-gh-tickets-sync` | 0 | **n/a — NO UPSTREAM** | `318355d` |
+| `w0m-ext` | `agent/t650-gh-tickets-sync` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
+| `w0m-sec` | `agent/t650-gh-tickets-sync` | 0 | **n/a — NO UPSTREAM** | `d5a3f8e` |
+| `w0m-mlx/w0m-mlx` | `agent/t650-gh-tickets-sync` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 650 TASKS.md rows · 301/650 specced (1/5 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 651 TASKS.md rows · 301/651 specced (1/5 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t650-deploy-cert-cache","dirty":0,"has_upstream":true,"head":"428d244","unpushed":null},"w0m-cf":{"branch":"agent/t650-deploy-cert-cache","dirty":0,"has_upstream":true,"head":"ec5189e","unpushed":null},"w0m-ext":{"branch":"agent/t650-deploy-cert-cache","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t650-deploy-cert-cache","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t650-deploy-cert-cache","dirty":0,"has_upstream":true,"head":"d5a3f8e","unpushed":null},"w0m-skills":{"branch":"agent/t650-deploy-cert-cache","dirty":0,"has_upstream":true,"head":"318355d","unpushed":null},"w0m-web":{"branch":"agent/t650-deploy-cert-cache","dirty":0,"has_upstream":true,"head":"0f492b69e","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":650,"specced":301,"specced_open":1,"total":650,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t650-gh-tickets-sync","dirty":0,"has_upstream":true,"head":"428d244","unpushed":null},"w0m-cf":{"branch":"agent/t650-gh-tickets-sync","dirty":0,"has_upstream":true,"head":"ec5189e","unpushed":null},"w0m-ext":{"branch":"agent/t650-gh-tickets-sync","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t650-gh-tickets-sync","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t650-gh-tickets-sync","dirty":0,"has_upstream":true,"head":"d5a3f8e","unpushed":null},"w0m-skills":{"branch":"agent/t650-gh-tickets-sync","dirty":0,"has_upstream":true,"head":"318355d","unpushed":null},"w0m-web":{"branch":"agent/t650-gh-tickets-sync","dirty":0,"has_upstream":true,"head":"567903c03","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":651,"specced":301,"specced_open":1,"total":651,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,12 +113,13 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (4):
+#### Completed today (5):
 
 - **T647** — Orca Mobile: default 4-side arrow keys to Floating Orbs and hide quick-switcher chips by default ((agy:t647-orca-orbs-default): Completed T647 end-to-end: pushed GPG-signed 8ef1a4cd93b (feat/mobile-four-side-edge-arrows), squashed single-commit 6d100c5d9c0 (overlay/feat/mobile-four-side-edge-arrows), and a994b168137 (beta) to webomage/orca; verified 15-branch overlay assembly + tsrs + Vitest + Mobile OTA bundle (278f141728c5...); built and installed webomage/orca@v1.4.250-w0m.1 (run 41974728545, SHA-512 verified -> ~/Apps/orca-linux.AppImage); updated scripts/w0m_prs.py (92/92 tests) and scripts/orca_overlay_update.py; Lesson disposition: recorded boolean opt-out->opt-in persistence and Moksha Config.SaveBlock rules in LESSONS.md (lessons_check.py 0 findings).)
 - **T648** — Fix rollout friction: multi-platform Terraform locks & retired Worker domain handoff, root secret-sync workspace paths, and first-deploy webomage-me secret bootstrap ((agy:t648-rollout-tf-wrangler-fix) — Completed (done))
 - **T649** — Fix deploy-all blocking suite failures: lighthouse-funnel-hygiene apps/me cutover & tool_usage_probe mypy narrowing ((agy:t649-fix-deploy-typecheck-vitest) — Completed (done))
 - **T650** — Certify estate tree-set offline gates in session-complete and reuse verified SHA certificates in deploy / deploy-all ((agy:t650-deploy-cert-cache) — Completed (done))
+- **T651** — Fix GitHub ticket mirror fail-closed board resolution, wire session-complete close sync, and reconcile 246 stale-open + 119 unmirrored issues ((agy:t650-gh-tickets-sync) — Verified & Reconciled)
 
 ## 3. Other open threads (in TASKS.md)
 

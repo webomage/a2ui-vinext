@@ -19,7 +19,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 💤 **paused** |
-| [T651](.tasks/T651.md) · [#651](https://github.com/casualuser/webomage.com/issues/651) | **P1** | **Fix GitHub ticket mirror fail-closed board resolution, wire session-complete close sync, and reconcile 246 stale-open + 119 unmirrored issues** | tooling, web | — | 🟡 **in-progress** |
 | [T290](project/tickets/T290.md) | **P1** | 🆕 **Stage-4 Money had no ticket of its own, and `simulate_payment` is a live billing hole** — found 2026-08-26 on reaching the last unmet stage. Stage-4's exit is *invoices reconcile against Stripe, and simulate_payment is out of the production path*, but it named [[T9]] — **AI token accounting from epic §11**. Same defect stage-2 carried until 2026-08-18: the stage reads as progress whenever the wrong ticket moves. 🔴 `client-api:223` marks an invoice paid AND credits a treasury, and **an authenticated client passes its ownership check on their OWN invoice** — no caller anywhere in source, and `stripe-webhook` already does both writes. ✅ **CLOSED on production 2026-08-26** (release `2026.08.26-1787760232`): the deployed function now answers `400 Unknown action`, identical to the control — it answered `404 Invoice not found` before. A grep could never have told those two apart. ⚠️ Impact is small by LUCK — one invoice, already paid, no Stripe activity yet. 🔀 **Epic moved 2026-09-12**: §33 split into Alfa/Beta, this ticket is now Beta's (§34). | api | ROADMAP §34 | 💤 **paused** |
 
 ## QUEUED & BACKLOG
@@ -34,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T651](.tasks/T651.md) · [#651](https://github.com/casualuser/webomage.com/issues/651) | **P1** | **Fix GitHub ticket mirror fail-closed board resolution, wire session-complete close sync, and reconcile 246 stale-open + 119 unmirrored issues** | tooling, web | — | ✅ **done** |
 | [T650](.tasks/T650.md) | **P1** | **Certify estate tree-set offline gates in session-complete and reuse verified SHA certificates in deploy / deploy-all** | web, tooling | — | ✅ **done** |
 | [T649](.tasks/T649.md) | **P1** | **Fix deploy-all blocking suite failures: lighthouse-funnel-hygiene apps/me cutover & tool_usage_probe mypy narrowing** | web, tooling | openspec/specs/me-personal-portal/spec.md | ✅ **done** |
 | [T648](.tasks/T648.md) | **P1** | **Fix rollout friction: multi-platform Terraform locks & retired Worker domain handoff, root secret-sync workspace paths, and first-deploy webomage-me secret bootstrap** | api, tooling | openspec/specs/me-personal-portal/spec.md | ✅ **done** |
