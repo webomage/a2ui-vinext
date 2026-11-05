@@ -74,12 +74,13 @@ class TestRealRegistry(unittest.TestCase):
             "suites-drift",
             "codemap-check",
             "dod-check",
+            "automation-health",
         ):
-            self.assertIn(name, flagged, f"{name} failed a deploy on 2026-09-30 / 2026-10-06 / 2026-11-04 and is not in the prepush tier")
+            self.assertIn(name, flagged, f"{name} failed a deploy on 2026-09-30 / 2026-10-06 / 2026-11-04 / 2026-11-05 and is not in the prepush tier")
 
     def test_the_prepush_tier_stays_small(self):
         n = len(rs.select_suites(self.suites, "offline", prepush=True))
-        self.assertLessEqual(n, 16, f"{n} suites in the prepush tier: it exists to be fast, so it is not where every suite goes")
+        self.assertLessEqual(n, 17, f"{n} suites in the prepush tier: it exists to be fast, so it is not where every suite goes")
 
 
 class TestRunnerHygiene(unittest.TestCase):

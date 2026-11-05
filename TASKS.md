@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T652](.tasks/T652.md) | **P1** | **Fix preflight --fast failures and wire bounded automation-health staleness ceilings across estate hooks and session-complete** | web, api, sec, tooling | — | ✅ **done** |
 | [T651](.tasks/T651.md) · [#651](https://github.com/casualuser/webomage.com/issues/651) | **P1** | **Fix GitHub ticket mirror fail-closed board resolution, wire session-complete close sync, and reconcile 246 stale-open + 119 unmirrored issues** | tooling, web | — | ✅ **done** |
 | [T650](.tasks/T650.md) | **P1** | **Certify estate tree-set offline gates in session-complete and reuse verified SHA certificates in deploy / deploy-all** | web, tooling | — | ✅ **done** |
 | [T649](.tasks/T649.md) | **P1** | **Fix deploy-all blocking suite failures: lighthouse-funnel-hygiene apps/me cutover & tool_usage_probe mypy narrowing** | web, tooling | openspec/specs/me-personal-portal/spec.md | ✅ **done** |

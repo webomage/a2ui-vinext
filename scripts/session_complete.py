@@ -33,6 +33,7 @@ import json
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import time
@@ -1124,6 +1125,32 @@ def certify_estate_tree(
     return {"ok": True}
 
 
+def refresh_canonical_graph_union(canon_root: Path) -> dict[str, Any]:
+    """Refresh `~/.graphify/global-graph.json` against `canon_root` after landing (`T652`)."""
+    graph_script = canon_root / "scripts" / "graph_global.py"
+    if not graph_script.is_file():
+        return {"refreshed": False, "reason": "missing_graph_global_script"}
+    if shutil.which("graphify") is None:
+        return {"refreshed": False, "reason": "graphify_absent"}
+
+    cmd = [
+        sys.executable,
+        str(graph_script),
+        "--root",
+        str(canon_root),
+        "--auto-rebuild-stale",
+    ]
+    print("[session-complete] Refreshing canonical knowledge-graph union ...", file=sys.stderr, flush=True)
+    proc = _run(cmd, cwd=canon_root, check=False)
+    if proc.returncode != 0:
+        tail = ((proc.stderr or "") + "\n" + (proc.stdout or "")).strip()[-2000:]
+        raise SessionCompleteError(
+            "graph_union_refresh_failed",
+            f"Canonical graph union refresh failed (exit {proc.returncode}):\n{tail}",
+        )
+    return {"refreshed": True, "output": proc.stdout.strip()[-1200:]}
+
+
 def land_and_cleanup_tree(
     ctx: SessionContext,
     *,
@@ -1194,6 +1221,7 @@ def land_and_cleanup_tree(
 
         ff_targets = [rel_path for rel_path, _ in _discover_estate_repos(canon_root)]
         ff_outcomes = fast_forward_canonical_checkout(canon_root, ff_targets)
+        graph_refresh = refresh_canonical_graph_union(canon_root)
 
         removed = False
         if remove_tree:
@@ -1210,6 +1238,7 @@ def land_and_cleanup_tree(
             "set_name": ctx.set_name,
             "landOutput": land_proc.stdout.strip()[-1200:],
             "canonicalFastForward": ff_outcomes,
+            "graphUnionRefresh": graph_refresh,
             "treeRemoved": removed,
             "postLandCert": post_land_cert,
         }
@@ -1226,9 +1255,11 @@ def land_and_cleanup_tree(
             _git(repo_dir, "rebase", BASE_REF, check=True)
         _git(repo_dir, "push", "origin", f"HEAD:{TARGET_BRANCH}", check=True)
         pushed[rel_path] = _git(repo_dir, "rev-parse", "HEAD").stdout.strip()
+    graph_refresh_direct = refresh_canonical_graph_union(canon_root) if pushed else {"refreshed": False, "reason": "nothing_pushed"}
     return {
         "mode": "canonical_direct_push",
         "pushed": pushed,
+        "graphUnionRefresh": graph_refresh_direct,
         "treeRemoved": False,
     }
 

@@ -451,6 +451,56 @@ class SessionCompleteTests(unittest.TestCase):
                     sc.sync_tickets_to_github(wt, ["T650"])
             self.assertEqual(cm.exception.step, "github_ticket_sync_failed")
 
+    def test_refresh_canonical_graph_union_runs_auto_rebuild_stale_and_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_str:
+            canon = Path(tmp_str) / "w0m"
+            (canon / "scripts").mkdir(parents=True)
+
+            # 1. Missing script skips cleanly
+            self.assertEqual(
+                sc.refresh_canonical_graph_union(canon),
+                {"refreshed": False, "reason": "missing_graph_global_script"},
+            )
+
+            (canon / "scripts" / "graph_global.py").write_text("# stub\n", encoding="utf-8")
+
+            # 2. Missing graphify binary skips cleanly
+            with mock.patch.object(sc.shutil, "which", return_value=None):
+                self.assertEqual(
+                    sc.refresh_canonical_graph_union(canon),
+                    {"refreshed": False, "reason": "graphify_absent"},
+                )
+
+            # 3. Invokes graph_global.py --root <canon> --auto-rebuild-stale
+            recorded: list[list[str]] = []
+
+            def fake_graph_ok(cmd: list[str], *, cwd: Path, check: bool = False, timeout: float | None = None):
+                recorded.append(list(cmd))
+                return subprocess.CompletedProcess(cmd, 0, "union refresh ok\n", "")
+
+            with (
+                mock.patch.object(sc.shutil, "which", return_value="/usr/bin/graphify"),
+                mock.patch.object(sc, "_run", side_effect=fake_graph_ok),
+            ):
+                res = sc.refresh_canonical_graph_union(canon)
+            self.assertTrue(res["refreshed"])
+            self.assertEqual(len(recorded), 1)
+            self.assertIn("--root", recorded[0])
+            self.assertIn(str(canon), recorded[0])
+            self.assertIn("--auto-rebuild-stale", recorded[0])
+
+            # 4. Non-zero exit fails closed (AgDR-0025)
+            def fake_graph_fail(cmd: list[str], *, cwd: Path, check: bool = False, timeout: float | None = None):
+                return subprocess.CompletedProcess(cmd, 1, "", "🔴 failed: w0m-web")
+
+            with (
+                mock.patch.object(sc.shutil, "which", return_value="/usr/bin/graphify"),
+                mock.patch.object(sc, "_run", side_effect=fake_graph_fail),
+            ):
+                with self.assertRaises(sc.SessionCompleteError) as cm_graph:
+                    sc.refresh_canonical_graph_union(canon)
+            self.assertEqual(cm_graph.exception.step, "graph_union_refresh_failed")
+
 
 if __name__ == "__main__":
     unittest.main()

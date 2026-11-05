@@ -211,6 +211,32 @@ def _git(repo: Path, *args: str) -> str:
     return proc.stdout.strip() if proc.returncode == 0 else ""
 
 
+def _is_benign_obsidian_churn(repo: Path, status_line: str) -> bool:
+    """True when `status_line` is unstaged whitespace/EOF-newline-only churn on `.obsidian/*.json` (T652).
+
+    Obsidian Desktop rewrites `.obsidian/app.json` without a trailing newline whenever the vault is open.
+    Any staged change, untracked file, non-JSON path, or substantive content diff returns False.
+    """
+    stripped = status_line.lstrip()
+    if stripped.startswith("?"):
+        return False
+    parts = stripped.split(maxsplit=1)
+    if len(parts) != 2:
+        return False
+    _code, rel_path = parts
+    rel_path = rel_path.strip('"')
+    if "/.obsidian/" not in f"/{rel_path}" or not rel_path.endswith(".json"):
+        return False
+    if not (repo / rel_path).is_file():
+        return False
+    if _git(repo, "diff", "--cached", "--name-only", "--", rel_path):
+        return False
+    substantive = _git(
+        repo, "diff", "--ignore-all-space", "--ignore-blank-lines", "--", rel_path
+    )
+    return substantive == ""
+
+
 def check_repos() -> dict:
     """Enumerate from disk, then compare against what sdlc.json declares.
 
@@ -259,8 +285,12 @@ def check_repos() -> dict:
     notes: list[str] = []          # reported, but never a conformance failure (client mode)
     dirty_total = 0
     for repo in found:
-        dirty = len([ln for ln in _git(repo, "status", "--porcelain").splitlines() if ln])
+        porcelain_lines = [ln for ln in _git(repo, "status", "--porcelain").splitlines() if ln]
+        benign_obsidian = [ln for ln in porcelain_lines if _is_benign_obsidian_churn(repo, ln)]
+        dirty = len(porcelain_lines) - len(benign_obsidian)
         dirty_total += dirty
+        if benign_obsidian:
+            notes.append(f"{repo.name}: {len(benign_obsidian)} obsidian whitespace-only churn (vault open)")
         branch = _git(repo, "branch", "--show-current")
         ahead = _git(repo, "rev-list", "--count", "@{u}..HEAD")
         # 🔑 Working-tree state is a different question from declaration conformance, and only in
@@ -495,6 +525,8 @@ FULL_CHILDREN = [
     # T535 AC5: names a stale or failing Upwork feed. It reads the live database, so it lives here (full mode) and not in the SessionStart fast mode, which makes no network
     # call. An unreachable database fails it ("could not measure"), which is the honest answer: unmeasured is never healthy.
     ("upwork-feed", ["just", "upwork-freshness"], 90, "Upwork feed freshness (T535 AC5)"),
+    ("auto-health", ["python3", "scripts/automation_health.py"], 30,
+     "Automation & sync staleness ceilings (T652)"),
     ("estate-cfg", ["python3", "scripts/estate_config_versioned.py"], 60,
      "estate-root config is versioned (T294 AC4 / D32)"),
 ]

@@ -369,8 +369,19 @@
       "just debt-check --enforce",
       "just reports-ticket-check",
       "just mmd-validate",
+      "just automation-health",
       "just state-check"
     ]
+  },
+  "automation_health": {
+    "_comment": "T652 — Bounded staleness ceilings & zero-swallowed-hook guard (`AgDR-0025`). Prevents background syncs, graph union merges, or deploy snapshot producers from silently turning off behind `[INFO]` or `|| true`.",
+    "command": "just automation-health",
+    "test": "just automation-health-test",
+    "script": "scripts/automation_health.py",
+    "max_pending_ticket_mirror": 25,
+    "max_graph_union_commit_lag": 25,
+    "forbid_detached_git_log_hooks": true,
+    "forbid_swallowed_deploy_snapshots": true
   },
   "toolchain": {
     "_comment": "T119 AC7 / T164 AC4-AC5: the two standard SDLC interfaces and host CLI toolchain policy. Both just and infisical are required:true in project/policies/tools-policy.json; this block is the CONTRACT that gates and health checks read. Verified by `just sdlc-doctor` and `just tools-check`.",
@@ -569,6 +580,7 @@
       },
       "headroom-proxy": {
         "enabled": true,
+        "required": false,
         "transport": "local-http",
         "bind": "127.0.0.1:8787",
         "auth": "none (loopback-only)",

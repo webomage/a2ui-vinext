@@ -539,7 +539,7 @@ metadata:
   annotations:
     w0m.dev/mcp-auth: none (loopback-only)
     w0m.dev/mcp-bind: 127.0.0.1:8787
-    w0m.dev/mcp-required: 'true'
+    w0m.dev/mcp-required: 'false'
     w0m.dev/mcp-scope: global
     w0m.dev/mcp-transport: local-http
     w0m.dev/source-register: .w0m/sdlc.json

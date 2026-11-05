@@ -676,9 +676,9 @@ _assert-provisioned app:
 deploy-web: (_confirm "deploy-web")
     @echo "Building and deploying apps/web to Cloudflare Workers (Version: {{ deploy_version }})..."
     @echo "📸 Updating static snapshots..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/apps/web/scripts/snapshot-settings.mjs || true
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/apps/web/scripts/snapshot-blueprints.mjs || true
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/apps/web/scripts/snapshot-knowledge.mjs || true
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/apps/web/scripts/snapshot-settings.mjs
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/apps/web/scripts/snapshot-blueprints.mjs
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- node w0m-web/apps/web/scripts/snapshot-knowledge.mjs
     @cd w0m-web && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- pnpm --filter web build
     @just _assert-provisioned web
     @echo "🔍 Building pagefind search index..."
@@ -1303,10 +1303,21 @@ _deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp _deploy-
 
 _post-deploy-knowledge:
     #!/usr/bin/env bash
-    # A release worktree is a throwaway snapshot: indexing it would register its paths in the code graphs. The
-    # main estate refreshes its own knowledge (`just knowledge-light`).
-    if [ -n "${W0M_RELEASE_WORKTREE:-}" ]; then echo "knowledge refresh skipped in a release worktree (T473)"; exit 0; fi
-    just knowledge-light || true
+    set -euo pipefail
+    # T473 / T652: A release worktree is a throwaway snapshot, so never index its worktree path; instead resolve
+    # the canonical estate checkout from `--git-common-dir` and refresh canonical knowledge + graph union cleanly
+    # (never skip forever under W0M_RELEASE_WORKTREE and never swallow failures with `|| true`).
+    if [ -n "${W0M_RELEASE_WORKTREE:-}" ]; then
+        CANONICAL_ROOT="$(cd "$(git rev-parse --path-format=absolute --git-common-dir)/.." && pwd)"
+        if [ -d "$CANONICAL_ROOT/w0m-web" ] && command -v graphify >/dev/null 2>&1; then
+            python3 "$CANONICAL_ROOT/scripts/graph_global.py" --root "$CANONICAL_ROOT" --auto-rebuild-stale
+        fi
+        exit 0
+    fi
+    just knowledge-light
+    if command -v graphify >/dev/null 2>&1; then
+        python3 scripts/graph_global.py --auto-rebuild-stale
+    fi
 
 # Every bare `just <recipe>` in a recipe body must name a recipe that justfile defines — the
 # `-`-prefixed call above named one that only w0m-api has, silently, from T421 to T431 run 7.
@@ -1637,6 +1648,13 @@ certify-status:
 
 certify-test:
     @python3 scripts/tests/test_deploy_cert.py
+
+# T652 — bounded staleness ceilings & zero-swallowed-hook guard (`scripts/automation_health.py`).
+automation-health *args:
+    @python3 scripts/automation_health.py {{ args }}
+
+automation-health-test:
+    @python3 scripts/tests/test_automation_health.py
 
 # T503 — the fast tier only (`"prepush": true` suites): what pre-push and the deploy pre-flight run.
 test-prepush:
