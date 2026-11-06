@@ -265,36 +265,78 @@ def main() -> int:
         ):
             failures += 1
 
-    # 10. init_tinybird_schemas: dry-run default + red probe on non-HTTPS URL or missing token on --apply
-    posted_tb: list[str] = []
+    # 10. init_tinybird_schemas: dry-run default (8 datasources + 6 pipes), check mode, token redaction, and red probes
+    posted_tb: list[tuple[str, str]] = []
 
     def fake_tb_poster(url: str, data: bytes, headers: dict[str, str]) -> tuple[int, str]:
-        posted_tb.append(url)
+        posted_tb.append((url, data.decode("utf-8")))
         return 200, "{}"
 
     ok_tb_dry, count_tb_dry = init_tinybird_schemas.init_schemas(
-        base_url="https://api.tinybird.co",
+        base_url=init_tinybird_schemas.DEFAULT_TINYBIRD_URL,
         token="",
         apply=False,
         poster=fake_tb_poster,
     )
     if not _check(
-        "init_tinybird_schemas dry-run previews 3 datasources without POSTing to Tinybird",
-        ok_tb_dry and count_tb_dry == 3 and len(posted_tb) == 0,
+        "init_tinybird_schemas dry-run previews 8 NDJSON datasources + 6 pipes without POSTing to Tinybird",
+        ok_tb_dry and count_tb_dry == 8 and len(init_tinybird_schemas.PIPES) == 6 and len(posted_tb) == 0,
+    ):
+        failures += 1
+
+    ok_tb_rest, count_tb_rest = init_tinybird_schemas.init_schemas(
+        base_url=init_tinybird_schemas.DEFAULT_TINYBIRD_URL,
+        token="fake-token",
+        apply=True,
+        poster=fake_tb_poster,
+        use_forward=False,
+    )
+    if not _check(
+        "init_tinybird_schemas REST fallback POSTs all 8 NDJSON datasources with engine_ttl on observability_logs",
+        ok_tb_rest
+        and count_tb_rest == 8
+        and len(posted_tb) == 8
+        and all("format=ndjson" in body for _, body in posted_tb)
+        and any("name=observability_logs" in body and "engine_ttl=" in body for _, body in posted_tb),
+    ):
+        failures += 1
+
+    tb_probe_marker = "unit-test-marker-" + ("x" * 12)
+
+    def fake_tb_getter(url: str, headers: dict[str, str]) -> tuple[int, str]:
+        if "/v0/datasources" in url:
+            return 200, json.dumps({"datasources": [{"name": d["name"]} for d in init_tinybird_schemas.DATASOURCES]})
+        return 200, json.dumps({"pipes": [{"name": p["name"], "type": "endpoint"} for p in init_tinybird_schemas.PIPES]})
+
+    ok_tb_chk, summary_tb_chk = init_tinybird_schemas.check_live_schemas(
+        base_url=init_tinybird_schemas.DEFAULT_TINYBIRD_URL,
+        token=tb_probe_marker,
+        getter=fake_tb_getter,
+        run_forward_check=False,
+    )
+    redacted_sample = init_tinybird_schemas._redact_secret(f"header: {tb_probe_marker}", tb_probe_marker)
+    if not _check(
+        "init_tinybird_schemas check_live_schemas verifies all 8 datasources + 6 pipes and redacts tokens",
+        ok_tb_chk
+        and summary_tb_chk["missing_datasources"] == []
+        and summary_tb_chk["missing_endpoint_pipes"] == []
+        and tb_probe_marker not in redacted_sample,
     ):
         failures += 1
 
     ok_tb_http, _ = init_tinybird_schemas.init_schemas(
-        base_url="http://api.tinybird.co",
+        base_url="http://api.northamerica-northeast2.gcp.tinybird.co",
         token="fake-token",
         apply=True,
         poster=fake_tb_poster,
+        use_forward=False,
     )
     ok_tb_notok, _ = init_tinybird_schemas.init_schemas(
-        base_url="https://api.tinybird.co",
+        base_url=init_tinybird_schemas.DEFAULT_TINYBIRD_URL,
         token="",
         apply=True,
         poster=fake_tb_poster,
+        use_forward=False,
     )
     if not _check(
         "RED PROBE: init_tinybird_schemas rejects non-https URL and missing token on --apply",

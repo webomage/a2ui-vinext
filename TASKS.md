@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T658](.tasks/T658.md) · [#null](https://github.com/casualuser/webomage.com/issues/null) | **P1** | **Tinybird ClickHouse Free-Tier Unification: canonicalize 8 datasources + 6 pipes in Forward SSOT, fix EU host & marketJobs drift, wire non-blocking worker telemetry, and gate schema sync** | web, api, cf | w0m-web/openspec/specs/observability-logging/spec.md | ✅ **done** |
 | [T657](.tasks/T657.md) | **P1** | **Fix MCP sudo PTY keystroke theft, rebase headroom#4597 and mlx-rs#442, and submit remaining stablyai/orca PRs with visual proof** | web, tooling | — | ✅ **done** |
 | [T656](.tasks/T656.md) | **P1** | **Unify AuthWidget across web and sidebar, consolidate ContextSwitcher + SidebarHatSwitcher into one sidebar control, expose full Me tools on cp, and fix web CTA link contrast** | web | openspec/specs/identity-surface/spec.md | ✅ **done** |
 | [T655](.tasks/T655.md) · [#655](https://github.com/casualuser/webomage.com/issues/655) | **P1** | **Full auto-mode upstream PR compliance engine (AgDR-0058) and estate-wide external PR contribution-rules audit & remediation** | web, skills, tooling | — | ✅ **done** |

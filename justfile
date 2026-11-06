@@ -1305,7 +1305,7 @@ host-probe *args:
 t480-gauge-test:
     @python3 -m pytest scripts/tests/test_t480_gauge_fail_fast.py -q -p no:cacheprovider
 
-_deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp _deploy-gates db-migrate _deploy-ship _post-deploy-knowledge
+_deploy-all-chain: _deploy-preflight (_confirm "deploy-all") check-warp _deploy-gates db-migrate tinybird-apply _deploy-ship _post-deploy-knowledge
 
 _post-deploy-knowledge:
     #!/usr/bin/env bash
@@ -2070,6 +2070,15 @@ tinybird-schemas-init *args:
 
 tinybird-init *args:
     @python3 w0m-api/scripts/init_tinybird_schemas.py {{ args }}
+
+tinybird-check:
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/init_tinybird_schemas.py --check
+
+tinybird-apply: (_confirm "tinybird-apply")
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 w0m-api/scripts/init_tinybird_schemas.py --apply
+
+tinybird-surface-test:
+    @python3 scripts/tests/test_tinybird_surface_drift.py
 
 t516-tools-test:
     @python3 scripts/tests/test_t516_tools.py

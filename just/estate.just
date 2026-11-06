@@ -94,7 +94,8 @@ sync-cfworkers-secrets: (_confirm "sync-cfworkers-secrets")
       echo "$TELEGRAM_BOT_TOKEN" | pnpm exec wrangler secret put TELEGRAM_BOT_TOKEN --name wom7func && \
       test -n "$R2_READONLY_ACCESS_KEY_ID" && test -n "$R2_READONLY_SECRET_ACCESS_KEY" && \
       echo "$R2_READONLY_ACCESS_KEY_ID"     | pnpm exec wrangler secret put R2_READONLY_ACCESS_KEY_ID     --name wom7func && \
-      echo "$R2_READONLY_SECRET_ACCESS_KEY" | pnpm exec wrangler secret put R2_READONLY_SECRET_ACCESS_KEY --name wom7func'
+      echo "$R2_READONLY_SECRET_ACCESS_KEY" | pnpm exec wrangler secret put R2_READONLY_SECRET_ACCESS_KEY --name wom7func && \
+      if [ -n "${TINYBIRD_TOKEN:-}" ]; then echo "$TINYBIRD_TOKEN" | pnpm exec wrangler secret put TINYBIRD_TOKEN --name wom7func; fi'
 
 # Sync secrets to w0m-api (Cloudflare Worker)
 # ⚠️ CLOUDFLARE_API_TOKEN is the account API token with D1/KV/Browser Rendering permissions (read by src/workflows/pdf-generator.ts).
@@ -110,6 +111,7 @@ sync-api-secrets: (_confirm "sync-api-secrets")
       echo "$CLOUDFLARE_ACCOUNT_ID" | pnpm exec wrangler secret put CLOUDFLARE_ACCOUNT_ID --name wom7api && \
       echo "$CLOUDFLARE_API_TOKEN" | pnpm exec wrangler secret put CLOUDFLARE_API_TOKEN --name wom7api && \
       echo "$MISTRAL_API_KEY" | pnpm exec wrangler secret put MISTRAL_API_KEY --name wom7api && \
+      if [ -n "${TINYBIRD_TOKEN:-}" ]; then echo "$TINYBIRD_TOKEN" | pnpm exec wrangler secret put TINYBIRD_TOKEN --name wom7api; fi && \
       for n in ADZUNA_APP_ID ADZUNA_APP_KEY JOOBLE_API_KEY; do \
         if [ -n "$(printenv $n)" ]; then \
           printenv $n | pnpm exec wrangler secret put $n --name wom7api || exit 1; \
@@ -144,7 +146,9 @@ sync-cp-secrets: (_confirm "sync-cp-secrets")
       echo "$LINKEDIN_APP_ID" | pnpm exec wrangler secret put LINKEDIN_APP_ID --name webomage-cp && \
       echo "$LINKEDIN_APP_SECRET" | pnpm exec wrangler secret put LINKEDIN_APP_SECRET --name webomage-cp && \
       echo "$WORKERS_WEBHOOK_URL" | pnpm exec wrangler secret put WORKERS_WEBHOOK_URL --name webomage-cp && \
-      echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WORKERS_WEBHOOK_SECRET --name webomage-cp'
+      echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WORKERS_WEBHOOK_SECRET --name webomage-cp && \
+      if [ -n "${TINYBIRD_TOKEN:-}" ]; then echo "$TINYBIRD_TOKEN" | pnpm exec wrangler secret put TINYBIRD_TOKEN --name webomage-cp; fi && \
+      if [ -n "${TINYBIRD_URL:-}" ]; then echo "$TINYBIRD_URL" | pnpm exec wrangler secret put TINYBIRD_URL --name webomage-cp; fi'
 
 # Sync secrets to apps/demo (demo.webomage.com)
 # T79 demo showcase: minimal secrets footprint — only read-only anon Supabase URL

@@ -23,7 +23,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 GATES = ("test", "check-guardrails")
-MUTATORS = ("db-migrate", "deploy", "_deploy-apps", "_deploy-ship")
+MUTATORS = ("db-migrate", "tinybird-apply", "deploy", "_deploy-apps", "_deploy-ship")
 
 
 def recipes() -> dict:
