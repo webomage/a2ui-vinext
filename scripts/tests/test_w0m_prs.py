@@ -570,16 +570,40 @@ def main() -> int:
         submit_mlx_lm["ok"] is False
         and all(r["status"] == "REFUSED-REPO-POLICY" for r in submit_mlx_lm["results"]),
     )
-    submit_ui_held = w0m_prs.submit_prepared_prs(
-        branch_filter="stablyai/orca:feat/system-and-docker-monitors",
-        forks_dir=Path("/nonexistent-forks"),
-        dry_run=False,
-    )
+    with patch.dict(
+        w0m_prs.PROPOSAL_COMPLIANCE_META,
+        {
+            "stablyai/orca:feat/system-and-docker-monitors": {
+                **w0m_prs.PROPOSAL_COMPLIANCE_META["stablyai/orca:feat/system-and-docker-monitors"],
+                "visual_proof_urls": [],
+            }
+        },
+    ):
+        submit_ui_held = w0m_prs.submit_prepared_prs(
+            branch_filter="stablyai/orca:feat/system-and-docker-monitors",
+            forks_dir=Path("/nonexistent-forks"),
+            dry_run=False,
+        )
     check(
         "submit_prepared_prs holds UI PRs without uploaded screenshots (HELD-NEEDS-VISUAL-PROOF) instead of faking N/A",
         submit_ui_held["ok"] is False
         and len(submit_ui_held["results"]) == 1
         and submit_ui_held["results"][0]["status"] == "HELD-NEEDS-VISUAL-PROOF",
+    )
+    t657_ui_keys = (
+        "stablyai/orca:feat/mobile-terminal-4-tap-alt-m",
+        "stablyai/orca:feat/subagent-display-and-floating-category",
+        "stablyai/orca:feat/system-and-docker-monitors",
+    )
+    check(
+        "T657: all 3 previously held stablyai/orca UI proposals wire @2x visual_proof_urls and pass DRY_RUN_READY",
+        all(
+            any(
+                r["key"] == k and r["status"] == "DRY_RUN_READY"
+                for r in submit_dry["results"]
+            )
+            for k in t657_ui_keys
+        ),
     )
     orca_theme_prop = next(
         p for p in proposals_list if p["key"] == "stablyai/orca:fix/mobile-terminal-theme-enforcement"

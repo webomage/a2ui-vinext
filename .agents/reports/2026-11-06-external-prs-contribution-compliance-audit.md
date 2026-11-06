@@ -1,7 +1,7 @@
-# External Upstream PRs — Target Contribution Rules Audit, Remediation & Full Auto-Mode Submission (`T655` / `AgDR-0058`)
+# External Upstream PRs — Target Contribution Rules Audit, Remediation & Full Auto-Mode Submission (`T655` / `T657` / `AgDR-0058`)
 
 **Date:** 2026-11-06  
-**Ticket:** `T655`  
+**Tickets:** `T655`, `T657`  
 **Decision Record:** [`AgDR-0058`](../../docs/decisions/AgDR-0058-gate-enforced-auto-mode-upstream-pr-governance.md) (amends `T435` blanket external-PR block while preserving Touch ID gates on `just deploy*`, `just db-migrate`, secret sync, and `AgDR-0047` security disclosures)  
 **Engine:** [`scripts/w0m_prs.py`](../../scripts/w0m_prs.py) (`compliance` & `auto` subcommands; `just pr-compliance` & `just pr-auto`)
 
@@ -9,17 +9,17 @@
 
 ## 1. Executive Summary
 
-- **Governance Cutover (`AgDR-0058`):** Replaced `T435`'s blanket human Touch ID gate on upstream PR creation/closure with a deterministic **6-gate target-compliance engine** in `scripts/w0m_prs.py` (`94/94` `test_w0m_prs.py` + `91/91` `test_confirm_step.py` passing).
-- **Open External PR Remediation (`23` pre-existing PRs):**
+- **Governance Cutover (`AgDR-0058`):** Replaced `T435`'s blanket human Touch ID gate on upstream PR creation/closure with a deterministic **6-gate target-compliance engine** in `scripts/w0m_prs.py` (`95/95` `test_w0m_prs.py` + `91/91` `test_confirm_step.py` passing).
+- **Open External PR Remediation & Rebase Sweep (`23` pre-existing PRs):**
   - Remediated **`15` non-compliant PR descriptions** (`14` `stablyai/orca` PRs upgraded to the mandatory 11-section `.github/pull_request_template.md` with `Fixes #<issue>` linkage across `7` reused upstream issues + `7` newly created 1:1 issues `#38849`–`#38855`; plus `jundot/omlx#3743` upgraded to `omlx`'s 3-section template).
-  - Rebased and force-with-lease pushed GPG-signed `471b47030c` to `webomage:fix/mobile-landscape-safe-area-insets`, healing **`stablyai/orca#37034`** from `CONFLICTING` to **`MERGEABLE`**.
-  - Verified **`7` already-compliant PRs** (`Graphify-Labs/graphify#4727`, `Neywa-Labs/mlx-vlm#2288`, `bulwarkid/virtual-fido#48`, `headroomlabs-ai/headroom#4597`, `mizorewww/laya-mlx#27`, `openai/tart-guest-agent#62`, `oxiglade/mlx-rs#442`) without unnecessary edits.
+  - Rebased and remediated **`headroomlabs-ai/headroom#4597`** (`5c45c8f9`, `MERGEABLE`) onto `upstream/main` (`c01cf07d`), resolving maintainer `JerrettDavis`'s `P1` credential-isolation finding so `ProxyConfig.anthropic_extra_headers` (`x-api-key`, `Authorization`) never leak into or override `HEADROOM_OMLX_API_KEY` on local `oMLX` routes (`115/115` `pytest` + GitHub Actions CI green).
+  - Rebased and adapted **`oxiglade/mlx-rs#442`** (`a2951b08`, `MERGEABLE`) onto `upstream/main` (`adf439bf` / `#443`–`#451`), migrating Gemma 4 to `mlx-lm/src/arch/{activation,attention}.rs` (`GeGlu`, `AttentionMasks`), `Result`-returning `cache.info(index)?`, and two-phase `step.evaluate(&[&logits])?.commit()` (`xtask verify-oracle-boundary` `12/12` `pass`).
+  - Rebased **`stablyai/orca#37034`** (`471b47030c`), **`stablyai/orca#37510`** (`b7e67d00834`, extracting `local-issue-repository-override.ts` for `max-lines: 300`), and **`stablyai/orca#38612`** (`8c7d1b9ac9a`) onto latest `upstream/main` (`MERGEABLE`).
   - Hard-blocked **`ml-explore/mlx-lm#2026`** (`SKIPPED-POLICY (banned)`) per `ml-explore/mlx-lm`'s strict zero-AI-automation rule (`CONTRIBUTING.md:14-15` / `AGENTS.md:10-28`).
-- **Full Auto-Mode Upstream Submission (`16` unsubmitted branches evaluated):**
-  - **Submitted `12` compliant PRs (`0` failures):** `JeffHoogland/moksha` (`#310`, `#311`, `#312`), `BodhiDev/bodhi-profile-iso` (`#2`), `BodhiDev/bodhi7packages` (`#10`), `BodhiDev/bodhi8packages` (`#8`), `bulwarkid/virtual-fido` (`#56`), and `stablyai/orca` (`#38857`, `#38858`, `#38859`, `#38861`, `#38863`, auto-linking `#21204`, `#32242`, `#38856`, `#38860`, `#38862`).
-  - **Held `3` UI branches honestly (`HELD-NEEDS-VISUAL-PROOF`):** `feat/mobile-terminal-4-tap-alt-m`, `feat/subagent-display-and-floating-category`, and `feat/system-and-docker-monitors` (refusing to fabricate `` `N/A` `` under `## Visual Proof`).
-  - **Refused `1` conflicting branch (`REFUSED-CONFLICT-UPSTREAM`):** `fix/linux-cli-stale-appimage-and-dispatcher` (modify/delete conflict in `src/main/ipc/cli-appimage-stale-registration.test.ts` after upstream `#35578`/`#38061`).
-- **Final Live Totals:** **`35` open `webomage/*` external PRs** (`34/35` template-compliant; `33/35` `MERGEABLE`).
+- **Full Auto-Mode Upstream Submission (`16/16` prepared branches submitted, `0` held, `0` conflicts):**
+  - **`T655` wave (`12` PRs):** `JeffHoogland/moksha` (`#310`, `#311`, `#312`), `BodhiDev/bodhi-profile-iso` (`#2`), `BodhiDev/bodhi7packages` (`#10`), `BodhiDev/bodhi8packages` (`#8`), `bulwarkid/virtual-fido` (`#56`), and `stablyai/orca` (`#38857`, `#38858`, `#38859`, `#38861`, `#38863`).
+  - **`T657` wave (`4` remaining `stablyai/orca` PRs):** Rebased `fix/linux-cli-stale-appimage-and-dispatcher` (`355962fe32` → `#38991`, `Fixes #38990`) and captured `5` genuine `@2x` dark-mode visual proof PNGs hosted on `webomage/orca` `pr-assets/t657-visual-proof` to submit `feat/system-and-docker-monitors` (`#38987`, `Fixes #38986`), `feat/mobile-terminal-4-tap-alt-m` (`#38993`, `Fixes #38992`), and `feat/subagent-display-and-floating-category` (`#38995`, `Fixes #38994`).
+- **Final Live Totals:** **`39` open `webomage/*` external PRs** (**`39/39` `MERGEABLE`**; `38/39` template-compliant, with only human-gated `ml-explore/mlx-lm#2026` awaiting manual browser paste).
 
 ---
 
@@ -69,21 +69,21 @@ flowchart TD
 
 ---
 
-## 4. Complete Inventory of All `35` Open External PRs
+## 4. Complete Inventory of All `39` Open External PRs
 
-### 4A. Pre-Existing Open External PRs (`23` Audited & Remediated)
+### 4A. Pre-Existing Open External PRs (`23` Audited, Rebased & Remediated)
 
 | # | Repository & PR | Head Branch → Base | Linked Issue | Mergeable | Action Taken | Compliance Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 1 | [`Graphify-Labs/graphify#4727`](https://github.com/Graphify-Labs/graphify/pull/4727) | `feat/global-graph-sync-and-status` → `v8` | — | `MERGEABLE` | Untouched (`pr-standards: SUCCESS`) | `COMPLIANT` |
 | 2 | [`Neywa-Labs/mlx-vlm#2288`](https://github.com/Neywa-Labs/mlx-vlm/pull/2288) | `fix/turboquant-dim512-threadgroup-fallback` → `main` | — | `MERGEABLE` | Untouched (`Check commit signatures: SUCCESS`) | `COMPLIANT` |
 | 3 | [`bulwarkid/virtual-fido#48`](https://github.com/bulwarkid/virtual-fido/pull/48) | `macos_release` → `master` | — | `MERGEABLE` | Untouched | `COMPLIANT` |
-| 4 | [`headroomlabs-ai/headroom#4597`](https://github.com/headroomlabs-ai/headroom/pull/4597) | `feat/omlx-proxy-routing` → `main` | — | `CONFLICTING` | Untouched (`headroom-pr-governance: SUCCESS`; see §6) | `COMPLIANT_WITH_WARNINGS` |
+| 4 | [`headroomlabs-ai/headroom#4597`](https://github.com/headroomlabs-ai/headroom/pull/4597) | `feat/omlx-proxy-routing` → `main` | — | **`MERGEABLE`** | **Rebased (`5c45c8f9`) + Fixed `P1` credential isolation** (`115/115` `pytest`) | `COMPLIANT` |
 | 5 | [`jundot/omlx#3743`](https://github.com/jundot/omlx/pull/3743) | `fix/menubar-adopt-external-omlx` → `main` | — | `MERGEABLE` | **Remediated** (`Summary` / `Validation` / `Checklist`) | `COMPLIANT` |
 | 6 | [`mizorewww/laya-mlx#27`](https://github.com/mizorewww/laya-mlx/pull/27) | `fix/native-serve-tests-and-torchless-calibration` → `main` | — | `MERGEABLE` | Untouched | `COMPLIANT` |
 | 7 | [`ml-explore/mlx-lm#2026`](https://github.com/ml-explore/mlx-lm/pull/2026) | `perf/gemma4-kv-shared-prefill-and-moe-sanitize` → `main` | — | `MERGEABLE` | **Skipped (`AUTOMATION_BANNED`)** — human UI paste in §6 | `NON_COMPLIANT` (Human-Only) |
 | 8 | [`openai/tart-guest-agent#62`](https://github.com/openai/tart-guest-agent/pull/62) | `feat/media-clipboard-and-file-transfer` → `main` | — | `MERGEABLE` | Untouched (`APPROVED` by `sylvesterkaczmarek`) | `COMPLIANT` |
-| 9 | [`oxiglade/mlx-rs#442`](https://github.com/oxiglade/mlx-rs/pull/442) | `feat/mlx-lm-gemma4-arch` → `main` | — | `CONFLICTING` | Untouched (needs architectural rebase; see §6) | `COMPLIANT_WITH_WARNINGS` |
+| 9 | [`oxiglade/mlx-rs#442`](https://github.com/oxiglade/mlx-rs/pull/442) | `feat/mlx-lm-gemma4-arch` → `main` | — | **`MERGEABLE`** | **Rebased (`a2951b08`) + Adopted `arch/{activation,attention}.rs` & `Result` cache** | `COMPLIANT` |
 | 10 | [`stablyai/orca#16597`](https://github.com/stablyai/orca/pull/16597) | `feat/zeroclaw-agent-connector` → `main` | `Fixes #38849` | `MERGEABLE` | **Remediated** (11-section template + created `#38849`) | `COMPLIANT_WITH_WARNINGS` (UI screenshot optional) |
 | 11 | [`stablyai/orca#21148`](https://github.com/stablyai/orca/pull/21148) | `feat/macos-deep-link-shortcuts` → `main` | `Fixes #21158` | `MERGEABLE` | **Remediated** (11-section template + linked `#21158`) | `COMPLIANT` |
 | 12 | [`stablyai/orca#21157`](https://github.com/stablyai/orca/pull/21157) | `feat/macos-deep-link-worktree` → `main` | `Fixes #21159` | `MERGEABLE` | **Remediated** (11-section template + linked `#21159`) | `COMPLIANT` |
@@ -94,12 +94,12 @@ flowchart TD
 | 17 | [`stablyai/orca#37033`](https://github.com/stablyai/orca/pull/37033) | `feat/obsidian-ofm-engine` → `main` | `Fixes #3040` | `MERGEABLE` | **Remediated** (11-section template + linked `#3040`) | `COMPLIANT_WITH_WARNINGS` (UI screenshot optional) |
 | 18 | [`stablyai/orca#37034`](https://github.com/stablyai/orca/pull/37034) | `fix/mobile-landscape-safe-area-insets` → `main` | `Fixes #24490` | **`MERGEABLE`** | **Rebased (`471b47030c`) + Remediated** (`#24490`) | `COMPLIANT_WITH_WARNINGS` (UI screenshot optional) |
 | 19 | [`stablyai/orca#37035`](https://github.com/stablyai/orca/pull/37035) | `fix/mobile-markdown-external-tab-read` → `main` | `Fixes #32115` | `MERGEABLE` | **Remediated** (11-section template + linked `#32115`) | `COMPLIANT` |
-| 20 | [`stablyai/orca#37510`](https://github.com/stablyai/orca/pull/37510) | `feat/nested-subfolder-git-and-sdlc-repo` → `main` | `Fixes #23385` | `MERGEABLE` | **Remediated** (11-section + contrasted `#32872`) | `COMPLIANT` |
+| 20 | [`stablyai/orca#37510`](https://github.com/stablyai/orca/pull/37510) | `feat/nested-subfolder-git-and-sdlc-repo` → `main` | `Fixes #23385` | **`MERGEABLE`** | **Rebased (`b7e67d00834`) + Remediated** (`#23385`) | `COMPLIANT` |
 | 21 | [`stablyai/orca#37511`](https://github.com/stablyai/orca/pull/37511) | `feat/mobile-session-tab-reorder` → `main` | `Fixes #38853` | `MERGEABLE` | **Remediated** (11-section template + created `#38853`) | `COMPLIANT_WITH_WARNINGS` (UI screenshot optional) |
 | 22 | [`stablyai/orca#37995`](https://github.com/stablyai/orca/pull/37995) | `feat/mobile-terminal-triple-tap-enter` → `main` | `Fixes #38854` | `MERGEABLE` | **Remediated** (11-section template + created `#38854`) | `COMPLIANT_WITH_WARNINGS` (UI screenshot optional) |
-| 23 | [`stablyai/orca#38612`](https://github.com/stablyai/orca/pull/38612) | `feat/mobile-four-side-edge-arrows` → `main` | `Fixes #38855` | `MERGEABLE` | **Remediated** (11-section template + created `#38855`) | `COMPLIANT_WITH_WARNINGS` (UI screenshot optional) |
+| 23 | [`stablyai/orca#38612`](https://github.com/stablyai/orca/pull/38612) | `feat/mobile-four-side-edge-arrows` → `main` | `Fixes #38855` | **`MERGEABLE`** | **Rebased (`8c7d1b9ac9a`) + Remediated** (`#38855`) | `COMPLIANT_WITH_WARNINGS` (UI screenshot optional) |
 
-### 4B. Newly Auto-Submitted Upstream PRs (`12` Opened via `just pr-auto`)
+### 4B. Newly Auto-Submitted Upstream PRs (`16` Opened via `just pr-auto`)
 
 | # | Repository & New PR | Head Branch → Base | SHA (GPG) | Linked Issue | Template Profile | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -115,21 +115,20 @@ flowchart TD
 | 33 | [`stablyai/orca#38859`](https://github.com/stablyai/orca/pull/38859) | `fix/mobile-terminal-theme-enforcement` → `main` | `fca701fafc` (`G`) | `Fixes #32242` | `orca_11_section` | `SUBMITTED` (`COMPLIANT`) |
 | 34 | [`stablyai/orca#38861`](https://github.com/stablyai/orca/pull/38861) | `perf/terminal-chat-redraw-and-tab-caching` → `main` | `77f8d1a3b0` (`G`) | `Fixes #38860` | `orca_11_section` | `SUBMITTED` (`COMPLIANT`) |
 | 35 | [`stablyai/orca#38863`](https://github.com/stablyai/orca/pull/38863) | `fix/mobile-live-input-prompt-backload` → `main` | `9f8a46b1aa` (`G`) | `Fixes #38862` | `orca_11_section` | `SUBMITTED` (`COMPLIANT`) |
+| 36 | [`stablyai/orca#38987`](https://github.com/stablyai/orca/pull/38987) | `feat/system-and-docker-monitors` → `main` | `de4ddf07e9` (`G`) | `Fixes #38986` | `orca_11_section` + `@2x` PNGs | `SUBMITTED` (`COMPLIANT`) |
+| 37 | [`stablyai/orca#38991`](https://github.com/stablyai/orca/pull/38991) | `fix/linux-cli-stale-appimage-and-dispatcher` → `main` | `355962fe32` (`G`) | `Fixes #38990` | `orca_11_section` | `SUBMITTED` (`COMPLIANT`) |
+| 38 | [`stablyai/orca#38993`](https://github.com/stablyai/orca/pull/38993) | `feat/mobile-terminal-4-tap-alt-m` → `main` | `6f154f8e05` (`G`) | `Fixes #38992` | `orca_11_section` + `@2x` PNG | `SUBMITTED` (`COMPLIANT`) |
+| 39 | [`stablyai/orca#38995`](https://github.com/stablyai/orca/pull/38995) | `feat/subagent-display-and-floating-category` → `main` | `01a571be9d` (`G`) | `Fixes #38994` | `orca_11_section` + `@2x` PNGs | `SUBMITTED` (`COMPLIANT`) |
 
 ---
 
-## 5. Held & Refused Prepared Branches (`4` Branches)
+## 5. Held & Refused Prepared Branches (`0` Remaining)
 
-| Upstream Repo | Branch (`head_sha`) | Gate Verdict | Reason & Unblock Path |
-| :--- | :--- | :--- | :--- |
-| `stablyai/orca` | `fix/linux-cli-stale-appimage-and-dispatcher` (`7efd78152a`) | `REFUSED-CONFLICT-UPSTREAM` | Standalone 3-way merge against `upstream/main` hits a modify/delete conflict in `src/main/ipc/cli-appimage-stale-registration.test.ts` after upstream `#35578` / `#38061`. Rebase standalone branch onto latest `upstream/main` (matching `overlay/fix/linux-cli-stale-appimage-and-dispatcher`) and re-run `just pr-auto`. |
-| `stablyai/orca` | `feat/mobile-terminal-4-tap-alt-m` (`6f154f8e05`) | `HELD-NEEDS-VISUAL-PROOF` | Adds `Terminal Settings -> Gestures -> 4-tap for Alt+M` switch (`visual_change=True`). Capture screenshot, add GitHub attachment URL to `visual_proof_urls`, then run `just pr-auto`. |
-| `stablyai/orca` | `feat/subagent-display-and-floating-category` (`01a571be9d`) | `HELD-NEEDS-VISUAL-PROOF` | Adds sidebar floating-session grouping & subagent badges (`visual_change=True`). Capture before/after screenshot, add URL to `visual_proof_urls`, then run `just pr-auto`. |
-| `stablyai/orca` | `feat/system-and-docker-monitors` (`de4ddf07e9`) | `HELD-NEEDS-VISUAL-PROOF` | Adds Desktop `+ -> Monitors` submenu & Mobile `Monitors (*top)` sheet (`visual_change=True`). Capture screenshot, add URL to `visual_proof_urls`, then run `just pr-auto`. |
+All `4` previously held/refused `stablyai/orca` branches from `T655` (`fix/linux-cli-stale-appimage-and-dispatcher`, `feat/mobile-terminal-4-tap-alt-m`, `feat/subagent-display-and-floating-category`, and `feat/system-and-docker-monitors`) were rebased and supplied with `@2x` dark-mode visual proof screenshots on `webomage/orca` `pr-assets/t657-visual-proof` (`b1b9ca3`), passing all `6` gates and submitting cleanly as `#38987`, `#38991`, `#38993`, and `#38995` under `T657`.
 
 ---
 
-## 6. Human-Only & Maintainer-Review Follow-Ups
+## 6. Human-Only Follow-Up (`1` PR)
 
 ### 6A. `ml-explore/mlx-lm#2026` — Manual Browser Edit Required (`AUTOMATION_BANNED`)
 
@@ -144,15 +143,6 @@ To bring [`ml-explore/mlx-lm#2026`](https://github.com/ml-explore/mlx-lm/pull/20
 - Issue fixed (if any): N/A
 - AI usage disclosure: <brief note in your own words on how AI assisted coding/testing>
 ```
-
-### 6B. Maintainer-Review & Conflict Rebase Queue (`2` PRs)
-
-1. **[`headroomlabs-ai/headroom#4597`](https://github.com/headroomlabs-ai/headroom/pull/4597) (`CHANGES_REQUESTED` + `CONFLICTING`):**
-   - Maintainer `JerrettDavis` flagged a valid `P1` in `headroom/proxy/handlers/anthropic.py:1478`: when `request_provider_route.kind == "omlx"` and no route API key is configured, `ctx.headers` strips `x-api-key` / `authorization`, but `ctx.original_headers` later re-merges `anthropic_extra_headers`, reintroducing cloud credentials toward the local `oMLX` upstream.
-   - Fix that header-filtering order, rebase `feat/omlx-proxy-routing` onto `upstream/main`, run `pytest`, and push to `origin/feat/omlx-proxy-routing`.
-2. **[`oxiglade/mlx-rs#442`](https://github.com/oxiglade/mlx-rs/pull/442) (`CONFLICTING`):**
-   - Maintainer `dcvz` merged sibling architecture PRs `#443`–`#451` and extracted shared helpers into `mlx-lm/src/arch/{attention,activation}.rs` plus updated `CacheStep` methods to return `Result`.
-   - Rebase `feat/mlx-lm-gemma4-arch` onto `upstream/main`, adopt `arch::{attention,activation}` and `Result` cache signatures, verify `cargo test`, and push.
 
 ---
 

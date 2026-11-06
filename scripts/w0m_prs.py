@@ -3470,11 +3470,11 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
         "how": (
             "- **`src/main/cli/linux-bare-orca-dispatcher.ts` & `src/main/cli/cli-installer.ts`**: Exports `installLinuxBareOrcaDispatcherForLauncher` "
             "and updates `CliInstaller.install()` on Linux to replace legacy symlinks/wrappers with the marked bare-orca dispatcher.\n"
-            "- **`src/main/cli/local-cli-registration-coordinator.ts`, `src/main/ipc/cli.ts`, & `src/main/startup/main-process-runtime-launch.ts`**: "
+            "- **`src/main/cli/local-cli-registration-coordinator.ts`**: "
             "Detects dead `~/.orca/cli-launcher` paths (`!existsSync(registeredLauncher)`) when `process.env.APPIMAGE` is live and re-installs "
-            "both `~/.orca/cli-launcher` and `~/.local/bin/orca` automatically on startup and `cli:status`.\n"
-            "- **Verification**: `40/40` Vitest tests passing across `cli-installer.test.ts`, `linux-bare-orca-dispatcher.test.ts`, "
-            "`cli-appimage-stale-registration.test.ts`, and `main-process-runtime-launch-activation.test.ts`."
+            "both `~/.orca/cli-launcher` and `~/.local/bin/orca` automatically during CLI registration/status checks.\n"
+            "- **Verification**: `13/13` Vitest tests passing across `cli-installer.test.ts` and "
+            "`local-cli-registration-coordinator.test.ts`."
         ),
     },
     "stablyai/orca:fix/webgl-atlas-version-desync-recovery": {
@@ -4043,7 +4043,7 @@ PROPOSAL_COMPLIANCE_META: dict[str, dict[str, Any]] = {
             "Fixes `orca` terminal commands breaking on Linux after updating or moving an `.AppImage` by automatically refreshing "
             "stale `~/.orca/cli-launcher` paths and installing the proper `~/.local/bin/orca` wrapper script."
         ),
-        "linked_issue": None,
+        "linked_issue": 38990,
         "issue_kind": "bug",
         "issue_title": "[Bug]: Linux AppImage upgrades leave stale ~/.orca/cli-launcher paths and legacy ~/.local/bin/orca symlinks",
         "visual_change": False,
@@ -4099,10 +4099,13 @@ PROPOSAL_COMPLIANCE_META: dict[str, dict[str, Any]] = {
             "Lets you 4-tap on a mobile terminal screen to send `Alt+M` so you can switch agent modes (like Plan/Auto mode in "
             "Claude Code or Antigravity) even though phone keyboards don't have an `Alt` key."
         ),
-        "linked_issue": None,
+        "linked_issue": 38992,
         "issue_kind": "feature",
         "issue_title": "[Feature]: 4-tap terminal gesture on Orca Mobile to send Alt+M mode-cycle shortcut",
         "visual_change": True,
+        "visual_proof_urls": [
+            "![Mobile Terminal Shortcuts — 4-tap for Alt+M gesture toggle (@2x dark)](https://raw.githubusercontent.com/webomage/orca/pr-assets/t657-visual-proof/t657/mobile-quad-tap-alt-m-settings-dark-2x.png)"
+        ],
         "risk_level": "Low",
         "risk_summary": (
             "Scoped to mobile terminal 4-tap streak detection and persisted `quadTapAltMEnabled` toggle under Terminal Settings -> "
@@ -4218,10 +4221,14 @@ PROPOSAL_COMPLIANCE_META: dict[str, dict[str, Any]] = {
             "Groups floating and subagent sessions neatly in the sidebar and shows live subagent count/status badges so multi-agent "
             "runs are easy to scan at a glance."
         ),
-        "linked_issue": None,
+        "linked_issue": 38994,
         "issue_kind": "feature",
         "issue_title": "[Feature]: Group floating/subagent sessions in sidebar and display live subagent activity badges",
         "visual_change": True,
+        "visual_proof_urls": [
+            "![Floating sidebar section with flat subagent activity rows (@2x dark)](https://raw.githubusercontent.com/webomage/orca/pr-assets/t657-visual-proof/t657/subagent-floating-flat-dark-2x.png)",
+            "![Floating sidebar section with collapsible subagent tree hierarchy (@2x dark)](https://raw.githubusercontent.com/webomage/orca/pr-assets/t657-visual-proof/t657/subagent-floating-tree-dark-2x.png)",
+        ],
         "risk_level": "Low",
         "risk_summary": (
             "Scoped to sidebar session grouping projection and subagent badge rendering; underlying worktree and session records "
@@ -4233,10 +4240,14 @@ PROPOSAL_COMPLIANCE_META: dict[str, dict[str, Any]] = {
             "Auto-detects installed system, Docker, GPU, disk, and network monitors (`btop`, `htop`, `lazydocker`, `nvtop`, etc.) "
             "and lets you launch them in one click from Desktop `+ -> Monitors` or Mobile `New Tab -> Monitors (*top)`."
         ),
-        "linked_issue": None,
+        "linked_issue": 38986,
         "issue_kind": "feature",
         "issue_title": "[Feature]: One-click *top and Docker TUI monitor detection and launcher across Desktop and Mobile",
         "visual_change": True,
+        "visual_proof_urls": [
+            "![Desktop New Tab -> Monitors submenu (@2x dark)](https://raw.githubusercontent.com/webomage/orca/pr-assets/t657-visual-proof/t657/system-monitors-desktop-submenu-dark-2x.png)",
+            "![Mobile Monitors (*top) action sheet (@2x dark)](https://raw.githubusercontent.com/webomage/orca/pr-assets/t657-visual-proof/t657/system-monitors-mobile-sheet-dark-2x.png)",
+        ],
         "risk_level": "Low",
         "risk_summary": (
             "Uses bounded zero-subprocess `PATH` directory scans (`detectAgentCommandsOnHost`) and opens standard terminal tabs "

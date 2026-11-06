@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/identity-sidebar-sync` | 0 | **n/a — NO UPSTREAM** | `c1c590bee` |
-| `w0m-api` | `agent/identity-sidebar-sync` | 0 | **n/a — NO UPSTREAM** | `5b8db2f` |
-| `w0m-cf` | `agent/identity-sidebar-sync` | 0 | **n/a — NO UPSTREAM** | `ec5189e` |
-| `w0m-skills` | `agent/identity-sidebar-sync` | 0 | **n/a — NO UPSTREAM** | `c35f81b` |
-| `w0m-ext` | `agent/identity-sidebar-sync` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
-| `w0m-sec` | `agent/identity-sidebar-sync` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/identity-sidebar-sync` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t657-prs-rebase-and-visual-proof` | 0 | **n/a — NO UPSTREAM** | `1979cad9f` |
+| `w0m-api` | `agent/t657-prs-rebase-and-visual-proof` | 0 | **n/a — NO UPSTREAM** | `5b8db2f` |
+| `w0m-cf` | `agent/t657-prs-rebase-and-visual-proof` | 0 | **n/a — NO UPSTREAM** | `ec5189e` |
+| `w0m-skills` | `agent/t657-prs-rebase-and-visual-proof` | 0 | **n/a — NO UPSTREAM** | `c35f81b` |
+| `w0m-ext` | `agent/t657-prs-rebase-and-visual-proof` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
+| `w0m-sec` | `agent/t657-prs-rebase-and-visual-proof` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/t657-prs-rebase-and-visual-proof` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 656 TASKS.md rows · 303/656 specced (1/5 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 657 TASKS.md rows · 303/657 specced (1/5 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/identity-sidebar-sync","dirty":0,"has_upstream":true,"head":"5b8db2f","unpushed":null},"w0m-cf":{"branch":"agent/identity-sidebar-sync","dirty":0,"has_upstream":true,"head":"ec5189e","unpushed":null},"w0m-ext":{"branch":"agent/identity-sidebar-sync","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/identity-sidebar-sync","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/identity-sidebar-sync","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/identity-sidebar-sync","dirty":0,"has_upstream":true,"head":"c35f81b","unpushed":null},"w0m-web":{"branch":"agent/identity-sidebar-sync","dirty":0,"has_upstream":true,"head":"c1c590bee","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":656,"specced":303,"specced_open":1,"total":656,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t657-prs-rebase-and-visual-proof","dirty":0,"has_upstream":true,"head":"5b8db2f","unpushed":null},"w0m-cf":{"branch":"agent/t657-prs-rebase-and-visual-proof","dirty":0,"has_upstream":true,"head":"ec5189e","unpushed":null},"w0m-ext":{"branch":"agent/t657-prs-rebase-and-visual-proof","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t657-prs-rebase-and-visual-proof","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t657-prs-rebase-and-visual-proof","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t657-prs-rebase-and-visual-proof","dirty":0,"has_upstream":true,"head":"c35f81b","unpushed":null},"w0m-web":{"branch":"agent/t657-prs-rebase-and-visual-proof","dirty":0,"has_upstream":true,"head":"1979cad9f","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":657,"specced":303,"specced_open":1,"total":657,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,10 +113,11 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (2):
+#### Completed today (3):
 
 - **T655** — Full auto-mode upstream PR compliance engine (AgDR-0058) and estate-wide external PR contribution-rules audit & remediation (Live Remediation & Full Auto-Mode Submission: Remediated 15 open PRs (14 stablyai/orca PRs + jundot/omlx#3743), healed stablyai/orca#37034 (471b47030c -> MERGEABLE), left ml-explore/mlx-lm#2026 untouched (AUTOMATION_BANNED), and auto-submitted 12 compliant PRs (JeffHoogland/moksha#310–#312, BodhiDev/bodhi-profile-iso#2, BodhiDev/bodhi7packages#10, BodhiDev/bodhi8packages#8, bulwarkid/virtual-fido#56, stablyai/orca#38857–#38859, #38861, #38863) while honestly holding 3 UI PRs (HELD-NEEDS-VISUAL-PROOF) and 1 conflicting PR (REFUSED-CONFLICT-UPSTREAM). Published .agents/reports/-external-prs-contribution-compliance-audit.md (mirrored to w0m-web/docs/reports/).)
 - **T656** — Unify AuthWidget across web and sidebar, consolidate ContextSwitcher + SidebarHatSwitcher into one sidebar control, expose full Me tools on cp, and fix web CTA link contrast ((agy:identity-sidebar-sync): Completed AC1–AC5 implementation, OpenSpec reconciliation (openspec/specs/identity-surface/spec.md, openspec/specs/web/header_ui.md, packages/ui/src/lib/components/header/UI-SPEC.md), and homepage golden baseline updates (screenshots/goldens/en--home_.png))
+- **T657** — Fix MCP sudo PTY keystroke theft, rebase headroom#4597 and mlx-rs#442, and submit remaining stablyai/orca PRs with visual proof ((agy:t657-prs-rebase-and-visual-proof): Completed AC2–AC5: rebased and pushed headroomlabs-ai/headroom#4597 (5c45c8f9, 115/115 pytest), oxiglade/mlx-rs#442 (a2951b08, verify-oracle-boundary 12/12), and stablyai/orca branches fix/linux-cli-stale-appimage-and-dispatcher (355962fe32), feat/nested-subfolder-git-and-sdlc-repo (b7e67d00834), and feat/mobile-four-side-edge-arrows (8c7d1b9ac9a). Captured 5 @2x dark-mode visual proof PNGs on pr-assets/t657-visual-proof (b1b9ca3), wired visual_proof_urls in scripts/w0m_prs.py (95/95 just prs-test), submitted #38987, #38991, #38993, and #38995 via just pr-auto (39/39 open external PRs MERGEABLE), updated .agents/reports/2026-11-06-external-prs-contribution-compliance-audit.md + w0m-web/docs/reports/ mirror, and recorded lesson in LESSONS.md (NEVER WIRE UNPINNED npx -y MCP SERVERS WITH SYSTEM-INSTALL postinstall HOOKS — ORPHANED sudo CHILDREN STEAL /dev/tty KEYSTROKES).)
 
 ## 3. Other open threads (in TASKS.md)
 
