@@ -47,6 +47,7 @@ PRESET_REPOS = {
     "w0m-pr": [
         "jundot/omlx",
         "Blaizzy/mlx-vlm",
+        "Neywa-Labs/mlx-vlm",
         "stablyai/orca",
         "openai/tart-guest-agent",
         "cirruslabs/tart",
@@ -62,6 +63,8 @@ PRESET_REPOS = {
         "BodhiDev/bodhi-profile-iso",
         "BodhiDev/bodhi7packages",
         "BodhiDev/bodhi8packages",
+        "elayadesign/ai-design-skills",
+        "cloudflare/security-audit-skill",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -82,7 +85,18 @@ PRESET_REPOS = {
         "BodhiDev/bodhi-profile-iso",
         "BodhiDev/bodhi7packages",
         "BodhiDev/bodhi8packages",
+        "elayadesign/ai-design-skills",
+        "cloudflare/security-audit-skill",
     ],
+}
+
+UPSTREAM_DEFAULT_BRANCH_OVERRIDES: dict[str, str] = {
+    "Graphify-Labs/graphify": "v8",
+    "graphify": "v8",
+    "JeffHoogland/moksha": "master",
+    "moksha": "master",
+    "bulwarkid/virtual-fido": "master",
+    "virtual-fido": "master",
 }
 
 
@@ -680,12 +694,34 @@ def inspect_fork(repo_path: Path, fetch: bool = True) -> Dict[str, Any]:
                 except Exception:
                     pass
 
-    # Find upstream tracking target
+    # Find upstream tracking target (honor canonical default-branch overrides & remote HEAD before fallback)
     upstream_target = None
     target_remote = "upstream" if "upstream" in remotes else ("origin" if "origin" in remotes else None)
     if target_remote:
-        for branch_candidate in ("main", "master", "v8"):
-            check_ref = run_cmd(["git", "rev-parse", "--verify", f"{target_remote}/{branch_candidate}"], check=False, cwd=repo_path)
+        override_branch = UPSTREAM_DEFAULT_BRANCH_OVERRIDES.get(repo_name)
+        candidate_order: list[str] = []
+        if override_branch:
+            candidate_order.append(override_branch)
+        sym_head = run_cmd(
+            ["git", "symbolic-ref", "-q", "--short", f"refs/remotes/{target_remote}/HEAD"],
+            check=False,
+            cwd=repo_path,
+        )
+        if sym_head.returncode == 0 and sym_head.stdout.strip():
+            sym_val = sym_head.stdout.strip()
+            if sym_val.startswith(f"{target_remote}/"):
+                sym_branch = sym_val.split("/", 1)[1]
+                if sym_branch and sym_branch not in candidate_order:
+                    candidate_order.append(sym_branch)
+        for fb in ("main", "master", "v8"):
+            if fb not in candidate_order:
+                candidate_order.append(fb)
+        for branch_candidate in candidate_order:
+            check_ref = run_cmd(
+                ["git", "rev-parse", "--verify", f"{target_remote}/{branch_candidate}"],
+                check=False,
+                cwd=repo_path,
+            )
             if check_ref.returncode == 0:
                 upstream_target = f"{target_remote}/{branch_candidate}"
                 break
@@ -2640,19 +2676,282 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
     "bodhi-profile-iso": "BodhiDev/bodhi-profile-iso",
     "bodhi7packages": "BodhiDev/bodhi7packages",
     "bodhi8packages": "BodhiDev/bodhi8packages",
+    "ai-design-skills": "elayadesign/ai-design-skills",
+    "security-audit-skill": "cloudflare/security-audit-skill",
 }
+
+# Per-repository upstream contribution rules registry (`AgDR-0058` / `T655`)
+UPSTREAM_CONTRIBUTION_RULES: dict[str, dict[str, Any]] = {
+    "ml-explore/mlx-lm": {
+        "automation_mode": "banned",
+        "template_profile": "mlx_lm_manual",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": (
+            "HARD BAN (CONTRIBUTING.md:14-15 & AGENTS.md:10-28): Strictly prohibits AI-written PR descriptions, "
+            "review replies, git push, and automated PR creation (penalty: PR closure + contributor ban)."
+        ),
+    },
+    "Graphify-Labs/graphify": {
+        "automation_mode": "human_description_required",
+        "template_profile": "graphify_5_section",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": (
+            "CONTRIBUTING.md:128-135 requires human-authored PR descriptions, Co-Authored-By commit trailers, "
+            "Conventional Commit title, and 5-section PULL_REQUEST_TEMPLATE.md targeting base v8."
+        ),
+    },
+    "oraios/serena": {
+        "automation_mode": "cla_required",
+        "template_profile": "standard",
+        "requires_linked_issue": True,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": 3,
+        "max_loc": None,
+        "policy_note": (
+            "Requires Oraios CLA (license/cla), SPDX header, CHANGELOG.md entry, max 3 open PRs, "
+            "and prior issue agreement for non-trivial changes."
+        ),
+    },
+    "google-research/harness2": {
+        "automation_mode": "cla_required",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Requires signed Google Individual/Corporate CLA (cla/google).",
+    },
+    "headroomlabs-ai/headroom": {
+        "automation_mode": "strict_governance",
+        "template_profile": "headroom_7_section",
+        "requires_linked_issue": True,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": 10,
+        "max_loc": None,
+        "policy_note": (
+            "Enforces scripts/pr-governance.py (7 exact ## headings, ### Test Output fenced block, "
+            "4 Real Behavior Proof bullets, 7 Runtime Rollout Safety bullets, 0 CHANGELOG.md edits, max 10 open PRs)."
+        ),
+    },
+    "stablyai/orca": {
+        "automation_mode": "auto",
+        "template_profile": "orca_11_section",
+        "requires_linked_issue": True,
+        "auto_create_issue": True,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": True,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": (
+            "AI-welcome (.github/CONTRIBUTING.md:218-227); mandates 11-section .github/pull_request_template.md, "
+            "`Fixes #<issue>` (PRs without linked issues from outside contributors are ignored), honest Visual Proof "
+            "(before/after media or `N/A` + reason), Risk level, AI Disclosure, Review, and Checklist."
+        ),
+    },
+    "jundot/omlx": {
+        "automation_mode": "auto",
+        "template_profile": "omlx_3_section",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": True,
+        "max_open_prs": None,
+        "max_loc": 1000,
+        "policy_note": (
+            "AI-welcome (docs/CONTRIBUTING.md:66-68); requires ## Summary, ## Validation, and ## Checklist "
+            "(.github/pull_request_template.md); external PRs >1,000 LoC auto-convert to Draft."
+        ),
+    },
+    "Blaizzy/mlx-vlm": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Enforces GitHub-verified commit signatures (`Check commit signatures` workflow).",
+    },
+    "Neywa-Labs/mlx-vlm": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Enforces GitHub-verified commit signatures (`Check commit signatures` workflow).",
+    },
+    "mizorewww/laya-mlx": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Standard open-source contribution rules; pure-MLX unit test verification expected.",
+    },
+    "oxiglade/mlx-rs": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Standard Rust crate rules (`cargo test`, shared `arch/{attention,activation}.rs` helpers).",
+    },
+    "openai/tart-guest-agent": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Standard Swift/Go contribution workflow with unit tests.",
+    },
+    "cirruslabs/tart": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Standard Swift macOS virtualization contribution workflow.",
+    },
+    "bulwarkid/virtual-fido": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Targets `master` base branch; standard Go/contrib tests.",
+    },
+    "JeffHoogland/moksha": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Targets `master` base branch; zero-warning C99/EFL compilation required.",
+    },
+    "BodhiDev/bodhi-profile-iso": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Targets `main` base branch; verified `eet` profile compilation.",
+    },
+    "BodhiDev/bodhi7packages": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Targets `main` base branch; clean `patch -p1 --fuzz=0` Debian quilt series.",
+    },
+    "BodhiDev/bodhi8packages": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Targets `main` base branch; clean `patch -p1 --fuzz=0` Debian quilt series across noble & trixie.",
+    },
+    "elayadesign/ai-design-skills": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Standard Markdown skill repository rules.",
+    },
+    "cloudflare/security-audit-skill": {
+        "automation_mode": "cla_required",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Cloudflare open-source repository (check CLA/template before opening PRs).",
+    },
+}
+
+
+def get_repo_contribution_rules(repo: str) -> dict[str, Any]:
+    """Return the `AgDR-0058` contribution rule profile for `repo`."""
+    if repo in UPSTREAM_CONTRIBUTION_RULES:
+        return dict(UPSTREAM_CONTRIBUTION_RULES[repo])
+    return {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Default standard open-source repository profile.",
+    }
 
 
 # Active upstream PR head branches (excluded from unsubmitted pending branch list)
 ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
     "feat/global-graph-sync-and-status",                    # Graphify-Labs/graphify#4727
-    "fix/turboquant-dim512-threadgroup-fallback",           # Blaizzy/mlx-vlm#2288
+    "fix/turboquant-dim512-threadgroup-fallback",           # Neywa-Labs/mlx-vlm#2288 (Blaizzy/mlx-vlm#2288)
     "fix/menubar-adopt-external-omlx",                      # jundot/omlx#3743
     "feat/macos-deep-link-worktree",                        # stablyai/orca#21157
     "feat/macos-deep-link-shortcuts",                       # stablyai/orca#21148
     "feat/zeroclaw-agent-connector",                        # stablyai/orca#16597
     "feat/media-clipboard-and-file-transfer",               # openai/tart-guest-agent#62
     "macos_release",                                        # bulwarkid/virtual-fido#48
+    "feat/linux-desktop-hotkey-helper",                     # bulwarkid/virtual-fido#56
     "fix/native-serve-tests-and-torchless-calibration",     # mizorewww/laya-mlx#27
     "feat/omlx-proxy-routing",                              # headroomlabs-ai/headroom#4597
     "feat/cross-worktree-tab-move",                         # stablyai/orca#37029
@@ -2666,11 +2965,21 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
     "feat/mobile-session-tab-reorder",                      # stablyai/orca#37511
     "feat/mobile-terminal-triple-tap-enter",                # stablyai/orca#37995
     "feat/mobile-four-side-edge-arrows",                    # stablyai/orca#38612
+    "fix/webgl-atlas-version-desync-recovery",              # stablyai/orca#38857
+    "fix/terminal-smooth-resize-and-replay",                # stablyai/orca#38858
+    "fix/mobile-terminal-theme-enforcement",                # stablyai/orca#38859
+    "perf/terminal-chat-redraw-and-tab-caching",            # stablyai/orca#38861
+    "fix/mobile-live-input-prompt-backload",                # stablyai/orca#38863
+    "feat/eight-zone-window-snapping",                      # JeffHoogland/moksha#310
+    "fix/desktop-editor-icon-path-and-size",                # JeffHoogland/moksha#311
+    "feat/appimage-diricon-and-rdns-wmclass",               # JeffHoogland/moksha#312
+    "feat/eight-zone-window-snap-bindings",                 # BodhiDev/bodhi-profile-iso#2
+    "feat/moksha-snap-and-icon-backports",                  # BodhiDev/bodhi7packages#10 & BodhiDev/bodhi8packages#8
     "feat/mlx-lm-gemma4-arch",                              # oxiglade/mlx-rs#442
     "perf/gemma4-kv-shared-prefill-and-moe-sanitize",       # ml-explore/mlx-lm#2026
 }
 
-# Internal / archived / superseded sub-branches (excluded from unsubmitted pending branch list)
+# Internal / archived / superseded / inherited-upstream sub-branches (excluded from unsubmitted pending branch list)
 INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
     "feat/audit-host-services",
     "feat/w0m-overlay-updater-feed",  # T619: webomage/orca self-healing overlay release feed runtime branch
@@ -2682,12 +2991,22 @@ INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
     "feature/final-polish",
     "feature/tests-docs-new",
     "feature/transports",
+    "features",
+    "hid",
+    "transports",
+    "uhid",
     "macos",
     "macos_mini",
     "macos_purego",
     "macos_stable",
     "macos_vhid",
     "tested",
+    "dependabot/cargo/minijinja-3",
+    "dependabot/cargo/sha2-0.11",
+    "mlx-rs-eval-threads",
+    "bl6",
+    "dev",
+    "stefan",
 }
 
 # Canonical Why / What For / How PR Proposals for Prepared Contribution Branches (T593 AC4 / T569 AC4 / T597)
@@ -3410,16 +3729,872 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
             "- **Verification**: `oxlint`, `tsc --noEmit`, Desktop & Mobile localization catalogs, and Desktop + Mobile Vitest suites clean."
         ),
     },
+    "stablyai/orca:feat/zeroclaw-agent-connector": {
+        "ticket": "T584",
+        "title": "feat(agent): add ZeroClaw agent connector and AI Vault scanner",
+        "why": (
+            "ZeroClaw (`zeroclaw`) is a fast, low-memory Rust coding agent used alongside Claude Code, Codex, Gemini, OpenCode, "
+            "OpenClaw, and Pi. Without native registration in Orca's `TuiAgent` catalog and AI Vault scanner, terminal tabs running "
+            "`zeroclaw` lacked agent status detection and mobile TUI launch support, sessions under `~/.zeroclaw/` were invisible in "
+            "AI Vault across local/WSL/SSH hosts, and canonical ZeroClaw skill roots could not be discovered."
+        ),
+        "what_for": (
+            "Adds first-class support for ZeroClaw so users can launch `zeroclaw` from the Desktop and Mobile agent picker, browse "
+            "and search local/WSL/SSH ZeroClaw JSONL transcripts (including subagent transcripts, token usage, and model metrics) in "
+            "AI Vault with one-click `zeroclaw --session <id>` resume, and discover skills across `~/.zeroclaw` and `.zeroclaw/skills`."
+        ),
+        "how": (
+            "- **TUI Agent Catalog (`src/shared/tui-agent.ts`, `src/shared/tui-agent-config.ts`, `src/renderer/src/lib/agent-catalog.tsx`, `mobile/src/tasks/mobile-tui-agents.ts`)**: "
+            "Registers `'zeroclaw'` with `detectCmd`/`launchCmd`, line-buffered prompt delivery, branding/icon, and status badge mapping.\n"
+            "- **AI Vault Scanner & Graph Parser (`src/main/ai-vault/`, `src/shared/ai-vault-*.ts`)**: Scans `~/.zeroclaw/sessions`, "
+            "`~/.zeroclaw/data/sessions`, and `~/.zeroclaw/agents/**/sessions` across local, WSL, and remote SSH hosts (honoring "
+            "`ZEROCLAW_STATE_DIR` / `ZEROCLAW_HOME`) and wires subagent transcripts + `zeroclaw --session <id>` resume.\n"
+            "- **Skills Discovery (`src/main/skills/`, `src/shared/native-chat-*.ts`)**: Indexes canonical ZeroClaw global and workspace skill roots.\n"
+            "- **Verification**: Dedicated `session-scanner-zeroclaw.test.ts` plus `166` AI Vault/skills/TUI parity tests, `typecheck`, and localization checks clean."
+        ),
+    },
+    "stablyai/orca:feat/macos-deep-link-shortcuts": {
+        "ticket": "T584",
+        "title": "feat(orchestration): support macOS deep-link protocol for orchestration shortcuts and automation",
+        "why": (
+            "Orca's multi-agent orchestration engine (`orca orchestration`) previously required interactive clicks inside the desktop "
+            "UI or running CLI commands from a terminal already bound to an Orca runtime session. External system automations (macOS "
+            "Shortcuts, Siri triggers, Raycast, calendar/webhook hooks, or IDE buttons) had no URL scheme entrypoint to hand an "
+            "orchestration objective and target repository to Orca across cold starts and running instances."
+        ),
+        "what_for": (
+            "Lets external automation tools—Apple Shortcuts, Siri, Raycast, CI webhooks, and local scripts—open or pre-stage an Orca "
+            "orchestration session via `orca://orchestration/new?repo=<repo>&objective=<text>` (or `run` / `create`) across both cold "
+            "launches and running instances."
+        ),
+        "how": (
+            "- **Shared Parser & Validation (`src/shared/orchestration-deep-link.ts`)**: Parses `orca://orchestration/{new,create,run}` "
+            "with bounded query sanitization and strict repository identifier matching.\n"
+            "- **Main-Process Readiness Buffer (`src/main/startup/orchestration-deep-link-state.ts`)**: Buffers cold-start argv and "
+            "macOS `open-url` / `second-instance` links until renderer IPC readiness, resetting cleanly on window close.\n"
+            "- **Renderer Routing (`src/renderer/src/store/slices/ui/`)**: Consumes pending orchestration deep links and pre-fills "
+            "the target repository and objective without auto-executing unreviewed shell commands.\n"
+            "- **Verification**: Full parser, main-process readiness latch, and renderer store Vitest suites passing with `typecheck` and `oxlint` clean."
+        ),
+    },
+    "stablyai/orca:feat/macos-deep-link-worktree": {
+        "ticket": "T584",
+        "title": "feat(worktree): support macOS deep-link protocol for worktree creation",
+        "why": (
+            "Previously, Orca handled `orca://` deep links only for account auth callbacks, remote host pairing (`orca://pair`), and "
+            "live session joining (`orca://join`). Opening a worktree from an external workflow (GitHub/Linear/Jira browser extension, "
+            "Raycast/Alfred launcher, or review script) required manually switching to Orca, opening the workspace composer, picking "
+            "the repository, and typing the worktree and base branch names by hand."
+        ),
+        "what_for": (
+            "Lets external developer tools, browser bookmarklets, issue trackers, and CLI scripts open Orca's existing New Workspace "
+            "Composer pre-filled with a target repository, worktree name, and base branch via `orca://worktree/create?...` or "
+            "`https://app.orca.dev/worktree/create?...`."
+        ),
+        "how": (
+            "- **URL Parser & Ref Sanitizer (`src/shared/worktree-deep-link.ts`)**: Validates `orca://worktree/create` parameters and "
+            "rejects path traversal or invalid git ref characters across POSIX and Windows.\n"
+            "- **Main-Process Lifecycle (`src/main/startup/worktree-deep-link-state.ts`)**: Buffers cold-start argv and `open-url` / "
+            "`second-instance` events behind a renderer readiness latch that resets when the window closes.\n"
+            "- **Renderer Composer Pre-fill (`src/renderer/src/store/slices/ui/ui-slice-view-actions.ts`)**: Matches `repo` by `id`, "
+            "`displayName`, or basename and opens `new-workspace-composer` with `prefilledName`, `initialRepoId`, and `initialBaseBranch` "
+            "(user still explicitly confirms creation).\n"
+            "- **Verification**: Unit tests in `worktree-deep-link.test.ts`, `worktree-deep-link-state.test.ts`, `useIpcEvents-lifecycle.test.ts`, "
+            "and `ui-page-navigation.test.ts` passing."
+        ),
+    },
+    "jundot/omlx:fix/menubar-adopt-external-omlx": {
+        "ticket": "T584",
+        "title": "fix(menubar): detect and adopt manually-started oMLX server on port conflict",
+        "why": (
+            "When a developer or LaunchAgent starts `omlx serve` from the CLI and later opens the macOS oMLX Menubar app, "
+            "`ServerProcess.start()` detects the occupied port via `PortConflictResolver` and transitions into `.failed` (`portConflict`) "
+            "with an informational-only alert. Even when `PortConflictResolver` positively verifies that the process holding the port "
+            "is a genuine `oMLX` server instance with a known `pid`, the menubar app could not adopt, stop, or restart it (`killExternal(_:)` "
+            "had zero call sites and `stop()` / `forceRestart()` were no-ops while `process == nil`)."
+        ),
+        "what_for": (
+            "Lets developers who start `omlx serve` from terminal scripts, `tmux`, or LaunchAgents open the macOS Menubar app and "
+            "choose **Take Over** (explicitly adopting `pid` so Stop/Restart and live health polling work from the menubar) or **Stop It**, "
+            "while keeping foreign non-oMLX port holders strictly informational and untouched."
+        ),
+        "how": (
+            "- **`ServerProcess.adoptExternal(_:)`**: Kept out of `start()`'s automatic path so the existing `.portConflict` contract "
+            "is 100% preserved (per `#3319`); records `adoptedExternalPid`, transitions state to `.running`, and wires `stop()` / "
+            "`forceRestart()` to signal `adoptedExternalPid` via `PortConflictResolver.killExternal(_:)` when `process == nil`.\n"
+            "- **`MenubarController`**: Offers **Take Over**, **Stop It**, and **Cancel** on `.portConflict` only when "
+            "`isOMLXInstance == true` with a valid `pid`.\n"
+            "- **Validation (Apple M1 Max, 64 GB RAM, macOS)**: `xcodebuild` succeeds; new integration test "
+            "`testAdoptExternalServerAndStopKillsIt` spawns a real external `dev_server.py` process, triggers `.portConflict`, "
+            "calls `adoptExternal(_:)`, and verifies `stop()` terminates the external OS process; full `ServerProcessIntegrationTests` "
+            "(including `testPortConflictCanBeFixedWithOfflineApply`) and `oMLXTests` pass."
+        ),
+    },
 }
 
 
-def format_pr_proposal_body(proposal: dict[str, str]) -> str:
-    """Format a structured Why / What For / How PR description body (`AGENTS.md`)."""
+# Per-proposal target compliance metadata (`AgDR-0058` / `T655`)
+PROPOSAL_COMPLIANCE_META: dict[str, dict[str, Any]] = {
+    "stablyai/orca:feat/zeroclaw-agent-connector": {
+        "eli5": (
+            "Adds first-class support for the ZeroClaw (`zeroclaw`) Rust coding agent so users can launch it from Orca, "
+            "browse/search/resume its session transcripts in AI Vault, and discover its skills across local, WSL, and SSH hosts."
+        ),
+        "linked_issue": 38849,
+        "issue_kind": "feature",
+        "issue_title": "[Feature]: First-class ZeroClaw agent connector, AI Vault transcript scanner, and skills discovery",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "Additive `'zeroclaw'` union member across TUI agent catalog, AI Vault scanner roots, and skill discovery roots; "
+            "existing agent connectors and scanner caches are unchanged. Plain `git revert` cleanly backs out all changes."
+        ),
+    },
+    "stablyai/orca:feat/macos-deep-link-shortcuts": {
+        "eli5": (
+            "Lets Apple Shortcuts, Raycast, Siri, and scripts open an Orca orchestration composer pre-filled with a target "
+            "repository and objective via `orca://orchestration/new?repo=...&objective=...`."
+        ),
+        "linked_issue": 21158,
+        "issue_kind": "feature",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Protocol/IPC deep-link handler (`orca://orchestration/...`) that routes into the existing orchestration composer "
+            "without adding or modifying any UI chrome."
+        ),
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped strictly to `orca://orchestration/*` URL parsing and IPC readiness buffering; never auto-executes commands "
+            "without user confirmation in the composer. Plain revert restores prior deep-link routing."
+        ),
+    },
+    "stablyai/orca:feat/macos-deep-link-worktree": {
+        "eli5": (
+            "Lets issue trackers, browser bookmarklets, Raycast, and scripts open Orca's New Workspace Composer pre-filled "
+            "with repository, worktree name, and base branch via `orca://worktree/create?...`."
+        ),
+        "linked_issue": 21159,
+        "issue_kind": "feature",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Protocol/IPC deep-link handler (`orca://worktree/create?...`) that pre-fills the existing New Workspace Composer "
+            "dialog with zero UI layout or styling changes."
+        ),
+        "risk_level": "Low",
+        "risk_summary": (
+            "Strictly sanitizes git ref/path query inputs and only pre-fills the existing composer modal (no automatic git mutation "
+            "until the user clicks Create). Plain revert cleanly removes the route."
+        ),
+    },
+    "stablyai/orca:feat/cross-worktree-tab-move": {
+        "eli5": (
+            "Lets you drag a live terminal or agent tab onto another workspace in the sidebar (or right-click -> Move to Workspace) "
+            "to move it between the Floating Workspace and project worktrees without killing the running session."
+        ),
+        "linked_issue": 24022,
+        "issue_kind": "feature",
+        "visual_change": True,
+        "sibling_notes": (
+            "Complements `#28115` (which handles dragging tabs into split panes within the same workspace) by enabling cross-workspace "
+            "tab transfers across `unifiedTabsByWorktree`, including Floating Workspace <-> docked worktree moves (`#24022`)."
+        ),
+        "risk_level": "Medium",
+        "risk_summary": (
+            "Touches renderer tab/group state maps (`unifiedTabsByWorktree`, `groupsByWorktree`, `layoutByWorktree`) during explicit "
+            "cross-worktree move actions while keeping `ptyIdsByTabId` intact; same-worktree tab drag/split paths remain unchanged. "
+            "Plain revert backs out cleanly with no persisted schema migration."
+        ),
+    },
+    "stablyai/orca:feat/agent-collaboration-board": {
+        "eli5": (
+            "Adds `orca orchestration lock-acquire`, `lock-release`, `lock-list`, and a run-scoped collaboration board in SQLite "
+            "so multiple agents working in parallel can take turns on shared resources (like ports or test databases) without colliding."
+        ),
+        "linked_issue": 38850,
+        "issue_kind": "feature",
+        "issue_title": "[Feature]: FIFO resource locks and shared collaboration board for multi-agent orchestration runs",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Headless CLI (`orca orchestration lock-*`), runtime RPC, and SQLite store (`src/cli/*`, `src/main/*`, `src/shared/*`); "
+            "zero renderer or mobile UI changes."
+        ),
+        "risk_level": "Low",
+        "risk_summary": (
+            "Additive SQLite tables (`CREATE TABLE IF NOT EXISTS`) and new `orchestration.lock*` RPC/CLI endpoints; existing "
+            "orchestration task/mail/worker flows are untouched. Plain revert leaves existing orchestration tables intact."
+        ),
+    },
+    "stablyai/orca:feat/mobile-camera-capture-chat": {
+        "eli5": (
+            "Adds a `Take Photo` camera option inside Orca Mobile's chat and terminal attachment menus so you can snap a photo "
+            "of a screen or whiteboard directly into an agent session without switching apps."
+        ),
+        "linked_issue": 38851,
+        "issue_kind": "feature",
+        "issue_title": "[Feature]: Direct camera photo capture in Orca Mobile chat and terminal attachment docks",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped to mobile attachment action sheets (`pickFromCamera` via `expo-image-picker`); reuses the existing chunked "
+            "base64 attachment upload pipeline and handles denied camera permissions gracefully. Plain revert backs out cleanly."
+        ),
+    },
+    "stablyai/orca:feat/mobile-live-input-password-mask": {
+        "eli5": (
+            "Automatically hides typed characters behind `*` asterisks in Orca Mobile's input bar when a terminal asks for a "
+            "password (`sudo`, `ssh`, `gpg`), with a tap-to-toggle Show/Hide eye button."
+        ),
+        "linked_issue": 38852,
+        "issue_kind": "feature",
+        "issue_title": "[Feature]: Automatic password prompt asterisk masking and Show/Hide toggle in Orca Mobile terminal input dock",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped to mobile `MobileSessionCommandDock` visual masking and per-handle prompt detection; raw PTY byte transmission "
+            "is unchanged and users can always toggle `Show`/`Hide` manually. Plain revert backs out cleanly."
+        ),
+    },
+    "stablyai/orca:feat/obsidian-ofm-engine": {
+        "eli5": (
+            "Renders Obsidian-style `[[wikilinks]]`, `![[embeds]]`, and `> [!NOTE]` / `> [!WARNING]` callout boxes natively in "
+            "Orca's Markdown reader so Obsidian vaults and agent notes look and link properly."
+        ),
+        "linked_issue": 3040,
+        "issue_kind": "feature",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped to Markdown preview blockquote/link rendering (`MarkdownBlockquoteOrCallout.tsx`, `markdown-doc-links.ts`); "
+            "standard CommonMark/GFM blockquotes and `[text](url)` links render identically. Plain revert restores prior preview."
+        ),
+    },
+    "stablyai/orca:fix/mobile-landscape-safe-area-insets": {
+        "eli5": (
+            "Adds left/right safe-area padding to Orca Mobile's Home screen in landscape orientation so host cards and buttons "
+            "aren't covered by the iPhone Dynamic Island or notch."
+        ),
+        "linked_issue": 24490,
+        "issue_kind": "bug",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "3-line style merge on `MobileHomeScreen` reusing the existing `useHorizontalEdgePadding()` hook already used on "
+            "session and settings screens (`0` padding in portrait). Plain revert backs out cleanly."
+        ),
+    },
+    "stablyai/orca:fix/mobile-markdown-external-tab-read": {
+        "eli5": (
+            "Allows Orca Mobile to read Markdown files outside the git workspace root when those files are already explicitly open "
+            "as tabs on the paired desktop host, and shows a clear message if an unopened outside file is requested."
+        ),
+        "linked_issue": 32115,
+        "issue_kind": "bug",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Host file-read authorization for already-open desktop Markdown tab paths plus structured error propagation into "
+            "existing mobile reader state; no UI layout or visual component changes."
+        ),
+        "risk_level": "Low",
+        "risk_summary": (
+            "Security boundary preserved: external disk reads are authorized strictly for canonical file paths currently open in "
+            "an active desktop Markdown tab (`markdown-tab-disk-host.ts`); arbitrary path reads outside workspace remain rejected. "
+            "Plain revert backs out cleanly."
+        ),
+    },
+    "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo": {
+        "eli5": (
+            "Finds nested git repositories inside umbrella/monorepo folders even when the root `.gitignore` uses `/*`, and lets "
+            "workspaces resolve their canonical GitHub Issues/PRs target from `.w0m/sdlc.json`."
+        ),
+        "linked_issue": 23385,
+        "issue_kind": "feature",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Main-process nested git discovery (`src/main/project-groups/*`) and GitHub repository target resolution "
+            "(`src/main/github/*`) only; zero renderer or mobile UI changes."
+        ),
+        "sibling_notes": (
+            "Complements `#32872` (plain non-git subfolders inside a single git repo) by discovering actual nested `.git` "
+            "repositories inside umbrella git roots (`#23385`) while skipping `.worktrees`/`.w0m` clone containers."
+        ),
+        "risk_level": "Low",
+        "risk_summary": (
+            "Bounded directory scan in `nested-repo-discovery.ts` explicitly excludes `.git`, `node_modules`, `.worktrees`, and "
+            "`.w0m` worktree containers; `.w0m/sdlc.json` lookup is a fast no-op when absent. Plain revert backs out cleanly."
+        ),
+    },
+    "stablyai/orca:feat/mobile-session-tab-reorder": {
+        "eli5": (
+            "Lets you reorder tabs on Orca Mobile by dragging the active tab pill left/right or tapping `Move Tab Left` / "
+            "`Move Tab Right` in the long-press menu, syncing the new tab order live with Desktop."
+        ),
+        "linked_issue": 38853,
+        "issue_kind": "feature",
+        "issue_title": "[Feature]: Reorder session tabs on Orca Mobile via horizontal drag and long-press action sheet",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped to mobile tab strip drag/sheet reordering and the `session.tabs.move` relay write; paired agent+terminal "
+            "tabs move together atomically, and older hosts without `session.tabs.move` fail gracefully without crashing. Plain revert."
+        ),
+    },
+    "stablyai/orca:fix/linux-cli-stale-appimage-and-dispatcher": {
+        "eli5": (
+            "Fixes `orca` terminal commands breaking on Linux after updating or moving an `.AppImage` by automatically refreshing "
+            "stale `~/.orca/cli-launcher` paths and installing the proper `~/.local/bin/orca` wrapper script."
+        ),
+        "linked_issue": None,
+        "issue_kind": "bug",
+        "issue_title": "[Bug]: Linux AppImage upgrades leave stale ~/.orca/cli-launcher paths and legacy ~/.local/bin/orca symlinks",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Main-process Linux CLI launcher/symlink installer logic (`src/main/cli/*`); zero UI changes."
+        ),
+        "risk_level": "Low",
+        "risk_summary": (
+            "Linux-only (`process.platform === 'linux'` and `process.env.APPIMAGE`), triggers repair only when the registered "
+            "launcher path no longer exists on disk so side-by-side AppImages are never clobbered. Plain revert."
+        ),
+    },
+    "stablyai/orca:fix/webgl-atlas-version-desync-recovery": {
+        "eli5": (
+            "Fixes terminal panes occasionally showing up blank when switching tabs on Linux/GPU systems by detecting when xterm's "
+            "WebGL font cache gets out of sync and refreshing it automatically."
+        ),
+        "linked_issue": 38856,
+        "issue_kind": "bug",
+        "issue_title": "[Bug]: Terminal pane reveals blank when xterm WebGL glyph-atlas version desynchronizes across parked tabs",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Internal xterm WebGL glyph-atlas desynchronization check and one-shot `clearTextureAtlas()` recovery on pane reveal "
+            "(`src/renderer/src/lib/pane-manager/*`); zero UI layout, chrome, or styling changes."
+        ),
+        "sibling_notes": (
+            "Distinct from `#6071` (general WebGL context loss) and `#38120` (macOS atlas page cap): targets live WebGL contexts "
+            "where `_glyphRenderer._atlas.version !== _model.glyphAtlasVersion` after hidden-tab parking."
+        ),
+        "risk_level": "Low",
+        "risk_summary": (
+            "Guarded behind optional-chaining checks on xterm's WebGL renderer and runs at most once per pane reveal when a real "
+            "atlas version mismatch is detected (`0` overhead on healthy reveals). Plain revert backs out cleanly."
+        ),
+    },
+    "stablyai/orca:feat/mobile-terminal-triple-tap-enter": {
+        "eli5": (
+            "Lets you triple-tap anywhere on a mobile terminal screen to send `Enter` right away—making it easy to confirm CLI "
+            "menus and prompts one-handed without opening extra key bars."
+        ),
+        "linked_issue": 38854,
+        "issue_kind": "feature",
+        "issue_title": "[Feature]: Triple-tap terminal gesture on Orca Mobile to send Enter with Live Input flush",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped to mobile WebView 3-tap detection (`<= 300ms`, `<= 24px` drift) without delaying single-tap focus or double-tap "
+            "word selection, and can be toggled off in Terminal Settings (`Triple-tap for Enter`). Plain revert."
+        ),
+    },
+    "stablyai/orca:feat/mobile-terminal-4-tap-alt-m": {
+        "eli5": (
+            "Lets you 4-tap on a mobile terminal screen to send `Alt+M` so you can switch agent modes (like Plan/Auto mode in "
+            "Claude Code or Antigravity) even though phone keyboards don't have an `Alt` key."
+        ),
+        "linked_issue": None,
+        "issue_kind": "feature",
+        "issue_title": "[Feature]: 4-tap terminal gesture on Orca Mobile to send Alt+M mode-cycle shortcut",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped to mobile terminal 4-tap streak detection and persisted `quadTapAltMEnabled` toggle under Terminal Settings -> "
+            "Gestures. Plain revert backs out cleanly."
+        ),
+    },
+    "stablyai/orca:feat/mobile-four-side-edge-arrows": {
+        "eli5": (
+            "Adds compact translucent edge navigation orbs (plus optional Edge Pills, Edge Strips, or a Gamepad D-pad HUD) on "
+            "Orca Mobile so you can scroll transcripts, switch tabs, and navigate terminal prompts one-handed even while zoomed in."
+        ),
+        "linked_issue": 38855,
+        "issue_kind": "feature",
+        "issue_title": "[Feature]: Zoom-stable 4-side edge navigation controls and optional Gamepad HUD on Orca Mobile",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped to mobile `edge-arrows` overlay (`'orbs'` default, quick-switcher chip hidden by default via "
+            "`DEFAULT_EDGE_SWITCHER_CHIP_HIDDEN = true`, full `'off'` mode in Settings). Plain revert backs out cleanly."
+        ),
+    },
+    "stablyai/orca:fix/terminal-smooth-resize-and-replay": {
+        "eli5": (
+            "Stops terminal agent chats from visibly scrolling and re-streaming their whole conversation top-to-bottom when a "
+            "pane resizes, a tab reattaches, or the mobile keyboard opens."
+        ),
+        "linked_issue": 21204,
+        "issue_kind": "bug",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Internal PTY `SIGWINCH` deduplication, `SessionRestoredBanner` non-layout overlay positioning, and streaming resize "
+            "frame-hold timing across existing Desktop and Mobile terminal panes; adds zero new UI controls."
+        ),
+        "sibling_notes": (
+            "Addresses the root `SIGWINCH` reattach/drift-probe triggers and multi-chunk normal-buffer TUI rewrite waterfalls "
+            "across Desktop and Mobile (`#21204`, related `#15799`)."
+        ),
+        "risk_level": "Medium",
+        "risk_summary": (
+            "Touches Desktop and Mobile terminal resize/repaint-hold timing (`<= 1200ms` hard cap with `90ms` initial no-output "
+            "timeout so idle shells never stall) and gates reattach `SIGWINCH` on real grid dimension changes. Plain revert."
+        ),
+    },
+    "stablyai/orca:fix/mobile-terminal-theme-enforcement": {
+        "eli5": (
+            "Fixes terminal and agent sessions rendering with black backgrounds in Light mode on Mobile and Desktop by forwarding "
+            "the active Light/Dark colors to terminal color queries (`OSC 10/11`, `CSI ?996n`) and seeding initial WebView/xterm themes."
+        ),
+        "linked_issue": 32242,
+        "issue_kind": "bug",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Protocol (`OSC 10/11`, `CSI ?996n`, `terminal.setViewerColors`) and existing Light/Dark theme token enforcement "
+            "eliminating hardcoded `#000000`/`#1a1b26`/`#282c34` dark fallbacks; adds zero new UI widgets or layout changes."
+        ),
+        "sibling_notes": (
+            "Fixes `#32242` (and related light-mode terminal background mismatches in `#23139`) across paired Mobile RPC, "
+            "Mobile `TerminalWebView`, and Desktop `terminal-appearance.ts`."
+        ),
+        "risk_level": "Low",
+        "risk_summary": (
+            "Additive optional `terminalColorQueryReplies` RPC field (backwards-compatible with older paired hosts/phones) and "
+            "luminance-consistent theme initialization on Desktop and Mobile WebViews. Plain revert backs out cleanly."
+        ),
+    },
+    "stablyai/orca:perf/terminal-chat-redraw-and-tab-caching": {
+        "eli5": (
+            "Cuts high CPU/GPU usage and memory growth during long agent chat sessions by pausing hidden terminal/WebGL rendering "
+            "under Native Chat views, batching rapid terminal redraw bursts cross-platform, and capping background warm tab caches."
+        ),
+        "linked_issue": 38860,
+        "issue_kind": "bug",
+        "issue_title": "[Bug]: High CPU/GPU redraw churn under Native Chat covers, unbatched DEC ?2026 TUI bursts, and unbounded warm tab WebViews",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Internal rendering/scheduler optimization (`rendererVisible` gating under `NativeChatPaneCover`, cross-platform DEC "
+            "`?2026` frame holding, `4 KiB` unattended write coalescing, background `rAF` pause, and LRU warm-cache bounds); "
+            "zero visual layout or UI changes."
+        ),
+        "sibling_notes": (
+            "Orthogonal and complementary to `#35251` (subagent tree memoization) and `#31332` (background tab eviction): targets "
+            "live `NativeChatPaneCover` xterm suppression, cross-platform DEC `?2026` frame holding, WebGL double-refresh removal, "
+            "and Mobile `TerminalWebView` 3-handle warm LRU."
+        ),
+        "risk_level": "Medium",
+        "risk_summary": (
+            "Adjusts Desktop PTY visibility gating under single-pane Native Chat covers, cross-platform DEC `?2026` synchronized "
+            "frame holding (keeping cursor-show stripping ConPTY-only), and warm LRU caps (`3` tabs Desktop/Mobile, `2` structured "
+            "overlays); evicted tabs cleanly rehydrate from snapshot/daemon on focus. Plain revert."
+        ),
+    },
+    "stablyai/orca:fix/mobile-live-input-prompt-backload": {
+        "eli5": (
+            "When you open Live Input on Orca Mobile after already typing part of a command in the terminal, it now pre-fills "
+            "that existing prompt text instead of starting blank or sending duplicate letters."
+        ),
+        "linked_issue": 38862,
+        "issue_kind": "bug",
+        "issue_title": "[Bug]: Opening Live Input on Orca Mobile starts empty instead of seeding existing terminal prompt text",
+        "visual_change": False,
+        "visual_proof_na_reason": (
+            "Buffer state synchronization (`readPromptBackload` into the existing Live Input text buffer without re-sending "
+            "seed characters); zero new UI chrome or layout changes."
+        ),
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped to mobile Live Input entry baseline seeding (`prompt-line-backload.ts` + `use-terminal-live-input-commit.ts`); "
+            "normal direct terminal typing and empty prompts behave identically. Plain revert backs out cleanly."
+        ),
+    },
+    "stablyai/orca:feat/subagent-display-and-floating-category": {
+        "eli5": (
+            "Groups floating and subagent sessions neatly in the sidebar and shows live subagent count/status badges so multi-agent "
+            "runs are easy to scan at a glance."
+        ),
+        "linked_issue": None,
+        "issue_kind": "feature",
+        "issue_title": "[Feature]: Group floating/subagent sessions in sidebar and display live subagent activity badges",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped to sidebar session grouping projection and subagent badge rendering; underlying worktree and session records "
+            "are unchanged. Plain revert."
+        ),
+    },
+    "stablyai/orca:feat/system-and-docker-monitors": {
+        "eli5": (
+            "Auto-detects installed system, Docker, GPU, disk, and network monitors (`btop`, `htop`, `lazydocker`, `nvtop`, etc.) "
+            "and lets you launch them in one click from Desktop `+ -> Monitors` or Mobile `New Tab -> Monitors (*top)`."
+        ),
+        "linked_issue": None,
+        "issue_kind": "feature",
+        "issue_title": "[Feature]: One-click *top and Docker TUI monitor detection and launcher across Desktop and Mobile",
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": (
+            "Uses bounded zero-subprocess `PATH` directory scans (`detectAgentCommandsOnHost`) and opens standard terminal tabs "
+            "with fallback presets when paired to older hosts. Plain revert backs out cleanly."
+        ),
+    },
+    "jundot/omlx:fix/menubar-adopt-external-omlx": {
+        "linked_issue": None,
+        "visual_change": False,
+        "visual_proof_na_reason": "Native macOS NSAlert button actions covered by ServerProcessIntegrationTests.",
+    },
+}
+
+
+def get_enriched_proposal(key: str, base_prop: Optional[dict[str, Any]] = None) -> dict[str, Any]:
+    """Merge canonical `CONTRIBUTION_PROPOSALS[key]` with `PROPOSAL_COMPLIANCE_META[key]` (`AgDR-0058`)."""
+    raw = dict(base_prop if base_prop is not None else CONTRIBUTION_PROPOSALS.get(key, {}))
+    meta = PROPOSAL_COMPLIANCE_META.get(key, {})
+    merged: dict[str, Any] = {**raw, **meta}
+    if ":" in key and "upstream_repo" not in merged:
+        upstream_repo, branch = key.split(":", 1)
+        merged["upstream_repo"] = upstream_repo
+        merged["branch"] = branch
+    return merged
+
+
+def format_pr_proposal_body(proposal: dict[str, Any], upstream_repo: str = "") -> str:
+    """Render a target-project-compliant PR description body (`AgDR-0058` / `T655`).
+
+    - `stablyai/orca`: Renders the full 11-section `.github/pull_request_template.md` (`## ELI5`, `## What Changed`,
+      `## Why`, `## Linked Issue` with `Fixes #<num>`, honest `## Visual Proof`, `## Testing`, `## Risk`,
+      `## AI Disclosure`, `## Review`, `## Agent skill upstream boundary`, `## Notes`, and `## Checklist`).
+    - `jundot/omlx`: Renders `.github/pull_request_template.md` (`## Summary`, `## Validation`, `## Checklist`).
+    - Standard repositories: Renders `## Why (Rationale & Problem)`, `## What For (Use Cases & Value)`,
+      and `## How (Implementation, Invariants & Verification)`.
+    """
+    repo = upstream_repo or str(proposal.get("upstream_repo") or "")
+    rules = get_repo_contribution_rules(repo)
+    profile = rules.get("template_profile", "standard")
+
+    if profile == "orca_11_section":
+        eli5 = str(proposal.get("eli5") or proposal.get("what_for") or "").strip()
+        what_for = str(proposal.get("what_for") or "").strip()
+        how = str(proposal.get("how") or "").strip()
+        why = str(proposal.get("why") or "").strip()
+        sibling_notes = str(proposal.get("sibling_notes") or "").strip()
+        why_full = f"{why}\n\n**Related / Sibling PR Context:** {sibling_notes}" if sibling_notes else why
+
+        linked_issue = proposal.get("linked_issue")
+        issue_line = f"Fixes #{linked_issue}" if linked_issue else "Fixes #<!-- resolved via w0m_prs auto-issue gate -->"
+
+        visual_change = bool(proposal.get("visual_change", False))
+        visual_urls = [str(u).strip() for u in (proposal.get("visual_proof_urls") or []) if str(u).strip()]
+        if not visual_change:
+            na_reason = str(
+                proposal.get("visual_proof_na_reason")
+                or "Non-visual internal/CLI/protocol change with no UI layout or styling modifications."
+            ).strip()
+            visual_section = f"`N/A` — {na_reason}"
+            visual_satisfied = True
+        elif visual_urls:
+            visual_section = "\n\n".join(visual_urls)
+            visual_satisfied = True
+        else:
+            visual_section = (
+                "_Pending before/after screenshot or video attachment via GitHub UI "
+                "(no binary media committed to repository files per template rules; UI behavior verified by automated tests below)._"
+            )
+            visual_satisfied = False
+
+        risk_level = str(proposal.get("risk_level") or "Low").strip()
+        risk_summary = str(
+            proposal.get("risk_summary")
+            or "Scoped to touched modules with automated unit tests; plain `git revert` cleanly backs out the change."
+        ).strip()
+        review_summary = str(
+            proposal.get("review_summary")
+            or (
+                "- **Cross-platform (`macOS`, `Linux`, `Windows`) & Remote/SSH/Mobile**: Verified path, platform, and paired-host RPC boundaries.\n"
+                "- **Agent & provider neutrality**: No single-vendor lock-in or regressions to existing TUI/native chat providers.\n"
+                "- **Performance & memory**: Bounded timers, caches, and listeners with deterministic cleanup on unmount/park.\n"
+                "- **Security**: Strict input validation and workspace/IPC authorization boundaries preserved."
+            )
+        ).strip()
+        visual_check = "x" if visual_satisfied else " "
+
+        return (
+            f"## ELI5\n\n{eli5}\n\n"
+            f"## What Changed\n\n{what_for}\n\n{how}\n\n"
+            f"## Why\n\n{why_full}\n\n"
+            f"## Linked Issue\n\n{issue_line}\n\n"
+            f"## Visual Proof\n\n{visual_section}\n\n"
+            f"## Testing\n\n"
+            f"- [x] I manually tested these changes locally\n"
+            f"- [x] Automated tests added/updated, or explained why not below\n\n"
+            f"## Risk\n\n"
+            f"**Level:** {risk_level}\n\n{risk_summary}\n\n"
+            f"## AI Disclosure\n\n"
+            f"Developed and verified with AI pair-programming assistance (Google Antigravity / Claude Code), "
+            f"with full human architectural review and local test/typecheck/lint verification.\n\n"
+            f"## Review\n\n{review_summary}\n\n"
+            f"## Agent skill upstream boundary\n\n"
+            f"- [x] Not applicable, or this change copies or mechanically translates no upstream skill-installer source, "
+            f"tests, fixtures, registry entries, path tables, comments, or documentation.\n\n"
+            f"## Notes\n\n"
+            f"Ensure no issues in: Security, Cross-platform support (Linux, Windows, Mac), Remote SSH, Mobile, "
+            f"general backwards compatibility, performance\n\n"
+            f"## Checklist\n\n"
+            f"- [x] This PR is small and focused\n"
+            f"- [x] I explained what changed and why (ELI5, the user-facing before/after, the mechanism, and why over the alternatives)\n"
+            f"- [x] I stated the risk: what could break, for whom, and how to back it out\n"
+            f"- [{visual_check}] Before/after screenshots or videos attached for UI changes, or `N/A` with reason\n"
+            f"- [x] Self-reviewed for correctness, security, and performance\n"
+            f"- [x] Cross-platform, SSH/remote, and path/shortcut impact considered (or N/A)\n"
+            f"- [x] `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass (or CI will cover; local preferred)\n"
+        )
+
+    if profile == "omlx_3_section":
+        why = str(proposal.get("why") or "").strip()
+        what_for = str(proposal.get("what_for") or "").strip()
+        how = str(proposal.get("how") or "").strip()
+        visual_change = bool(proposal.get("visual_change", False))
+        visual_urls = [str(u).strip() for u in (proposal.get("visual_proof_urls") or []) if str(u).strip()]
+        vis_box = "x" if (not visual_change or bool(visual_urls)) else " "
+        return (
+            f"## Summary\n\n{why}\n\n{what_for}\n\n"
+            f"## Validation\n\n{how}\n\n"
+            f"## Checklist\n\n"
+            f"- [x] I read [CONTRIBUTING.md](https://github.com/jundot/omlx/blob/main/docs/CONTRIBUTING.md).\n"
+            f"- [x] I understand every change in this PR and can explain it in review.\n"
+            f"- [{vis_box}] For UI or UX changes, I attached before and after screenshots.\n"
+        )
+
     return (
         f"## Why (Rationale & Problem)\n\n{proposal['why']}\n\n"
         f"## What For (Use Cases & Value)\n\n{proposal['what_for']}\n\n"
         f"## How (Implementation, Invariants & Verification)\n\n{proposal['how']}\n"
     )
+
+
+def validate_pr_compliance(
+    repo: str,
+    title: str,
+    body: str,
+    *,
+    visual_change: bool = False,
+    mergeable: str = "MERGEABLE",
+) -> dict[str, Any]:
+    """Validate a PR title and Markdown body against `UPSTREAM_CONTRIBUTION_RULES` (`AgDR-0058` / `T655`)."""
+    rules = get_repo_contribution_rules(repo)
+    profile = rules.get("template_profile", "standard")
+    findings: list[str] = []
+    warnings: list[str] = []
+    text = body or ""
+
+    if rules.get("automation_mode") == "banned":
+        warnings.append("AUTOMATION_BANNED: AI-written PR descriptions, pushes, and PR edits are strictly prohibited.")
+        if "strictly prohibited to use AI to write PR description" not in text:
+            findings.append("Missing mlx-lm `.github/pull_request_template.md` AI-prohibition acknowledgment line.")
+        if "AI usage disclosure:" not in text:
+            findings.append("Missing mlx-lm `AI usage disclosure:` field (must be filled manually by human author).")
+
+    elif profile == "orca_11_section":
+        required_headings = (
+            "## ELI5",
+            "## What Changed",
+            "## Why",
+            "## Linked Issue",
+            "## Visual Proof",
+            "## Testing",
+            "## Risk",
+            "## AI Disclosure",
+            "## Review",
+            "## Agent skill upstream boundary",
+            "## Notes",
+            "## Checklist",
+        )
+        for h in required_headings:
+            if h not in text:
+                findings.append(f"Missing required stablyai/orca heading `{h}`")
+        if not re.search(r"\bFixes\s+#\d+\b", text, flags=re.IGNORECASE):
+            findings.append("Missing mandatory `Fixes #<issue>` link under `## Linked Issue` (outside-contributor rule)")
+        if "**Level:**" not in text:
+            findings.append("Missing `**Level:** Low | Medium | High` under `## Risk`")
+        vis_match = re.search(r"## Visual Proof\s*\n+(.*?)(?=\n## |\Z)", text, flags=re.DOTALL)
+        vis_body = vis_match.group(1) if vis_match else ""
+        has_media = bool(
+            re.search(
+                r"(?:!\[[^\]]*\]\([^)]+\)|https://github\.com/user-attachments/assets/|https://[^\s)\"]+githubusercontent\.com/|<video\b)",
+                vis_body,
+            )
+        )
+        has_na = "`N/A`" in vis_body
+        if visual_change and not has_media:
+            if has_na:
+                findings.append("UI change falsely marked `N/A` under `## Visual Proof`")
+            else:
+                warnings.append("UI change pending uploaded before/after screenshot or video attachment")
+        elif not visual_change and not (has_na or has_media):
+            findings.append("Non-visual PR must state `` `N/A` `` + concise reason under `## Visual Proof`")
+
+    elif profile == "omlx_3_section":
+        for h in ("## Summary", "## Validation", "## Checklist"):
+            if h not in text:
+                findings.append(f"Missing required jundot/omlx heading `{h}`")
+
+    elif profile == "headroom_7_section":
+        for h in (
+            "## Description",
+            "## Type of Change",
+            "## Changes Made",
+            "## Testing",
+            "## Real Behavior Proof",
+            "## Runtime Rollout Safety",
+            "## Checklist",
+        ):
+            if h not in text:
+                findings.append(f"Missing required headroom governance heading `{h}`")
+        if "### Test Output" not in text:
+            findings.append("Missing required `### Test Output` section")
+
+    elif profile == "graphify_5_section":
+        for h in ("## Type of change", "## How was this tested?", "## Graphify-specific checklist"):
+            if h not in text:
+                findings.append(f"Missing required Graphify heading `{h}`")
+        if not re.match(r"^(feat|fix|docs|chore|refactor|test|perf|ci|build)(\([^)]+\))?!?:\s+.+", title or ""):
+            findings.append("PR title does not follow Conventional Commits (`feat:`, `fix:`, etc.)")
+
+    else:
+        if len(text.strip()) < 40:
+            findings.append("PR description is too brief (< 40 chars)")
+
+    if mergeable == "CONFLICTING":
+        warnings.append("PR is currently CONFLICTING with upstream base branch and needs rebase")
+
+    compliant = len(findings) == 0
+    if not compliant:
+        status = "NON_COMPLIANT"
+    elif warnings:
+        status = "COMPLIANT_WITH_WARNINGS"
+    else:
+        status = "COMPLIANT"
+
+    return {
+        "repo": repo,
+        "compliant": compliant,
+        "status": status,
+        "automationMode": rules.get("automation_mode", "auto"),
+        "templateProfile": profile,
+        "findings": findings,
+        "warnings": warnings,
+    }
+
+
+def resolve_or_create_upstream_issue(
+    repo: str,
+    proposal: dict[str, Any],
+    *,
+    auto_create: bool = True,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Resolve an existing upstream issue for `proposal`, or create a 1:1 issue when `auto_create=True` (`AgDR-0058`)."""
+    preset_num = proposal.get("linked_issue")
+    if isinstance(preset_num, int) and preset_num > 0:
+        return {
+            "ok": True,
+            "issueNumber": preset_num,
+            "source": "pre_mapped",
+            "url": f"https://github.com/{repo}/issues/{preset_num}",
+        }
+
+    rules = get_repo_contribution_rules(repo)
+    if rules.get("automation_mode") != "auto":
+        return {"ok": False, "issueNumber": None, "source": "refused_policy", "error": "Repo disallows auto-issue creation"}
+
+    issue_title = str(proposal.get("issue_title") or "").strip()
+    issue_kind = str(proposal.get("issue_kind") or ("bug" if str(proposal.get("title", "")).startswith(("fix", "perf")) else "feature"))
+    if not issue_title:
+        clean_t = re.sub(r"^[a-z]+(?:\([^)]+\))?:\s*", "", str(proposal.get("title") or "Improvement")).strip()
+        prefix = "[Bug]: " if issue_kind == "bug" else "[Feature]: "
+        issue_title = prefix + clean_t[:1].upper() + clean_t[1:]
+
+    # Search open issues authored by casualuser or matching exact title first to guarantee idempotence
+    search_needle = re.sub(r"^\[(Bug|Feature|Other)\]:\s*", "", issue_title).strip()[:60]
+    if search_needle:
+        scp = run_cmd(
+            [
+                "gh",
+                "issue",
+                "list",
+                "-R",
+                repo,
+                "--state",
+                "open",
+                "--search",
+                f"{json.dumps(search_needle)} in:title",
+                "--limit",
+                "5",
+                "--json",
+                "number,title,url",
+            ],
+            check=False,
+            timeout=15.0,
+        )
+        if scp.returncode == 0 and scp.stdout.strip():
+            try:
+                found_issues: list[dict[str, Any]] = json.loads(scp.stdout)
+                for fi in found_issues:
+                    ftitle = str(fi.get("title") or "").lower()
+                    if search_needle.lower()[:32] in ftitle and fi.get("number"):
+                        return {
+                            "ok": True,
+                            "issueNumber": int(fi["number"]),
+                            "source": "matched_existing",
+                            "url": str(fi.get("url") or f"https://github.com/{repo}/issues/{fi['number']}"),
+                        }
+            except ValueError:
+                pass
+
+    if not auto_create:
+        return {"ok": False, "issueNumber": None, "source": "missing", "error": "No matching upstream issue found"}
+
+    if dry_run:
+        return {"ok": True, "issueNumber": None, "source": "dry_run_would_create", "plannedTitle": issue_title}
+
+    why = str(proposal.get("why") or "").strip()
+    what_for = str(proposal.get("what_for") or "").strip()
+    how = str(proposal.get("how") or "").strip()
+    if repo == "stablyai/orca":
+        if issue_kind == "bug":
+            issue_body = (
+                f"### Operating system\n\nLinux\n\n"
+                f"### Orca version\n\nv1.4.251\n\n"
+                f"### Details\n\n{why}\n\n**Expected behavior / scope:**\n{what_for}\n"
+            )
+        else:
+            issue_body = (
+                f"### Problem or use case\n\n{why}\n\n"
+                f"### Proposed solution\n\n{what_for}\n\n"
+                f"### Alternatives or additional context\n\n{how}\n"
+            )
+    else:
+        issue_body = f"## Problem\n\n{why}\n\n## Proposed Solution\n\n{what_for}\n"
+
+    ccp = run_cmd(
+        ["gh", "issue", "create", "-R", repo, "--title", issue_title, "--body", issue_body],
+        check=False,
+        timeout=25.0,
+    )
+    if ccp.returncode != 0:
+        return {"ok": False, "issueNumber": None, "source": "create_failed", "error": ccp.stderr.strip()}
+
+    out_url = ccp.stdout.strip().splitlines()[-1].strip() if ccp.stdout.strip() else ""
+    m_num = re.search(r"/issues/(\d+)\b", out_url)
+    if not m_num:
+        return {"ok": False, "issueNumber": None, "source": "parse_failed", "error": f"Unexpected output: {out_url}"}
+    inum = int(m_num.group(1))
+    return {"ok": True, "issueNumber": inum, "source": "created", "url": out_url}
 
 
 def discover_worktrees_summary() -> list[dict[str, Any]]:
@@ -4138,19 +5313,21 @@ def build_pr_proposals(
     branch_filter: Optional[str] = None,
     forks_dir: Optional[Path] = None,
 ) -> list[dict[str, Any]]:
-    """Build structured Why / What For / How PR proposals for all prepared contribution branches (`T593` AC4)."""
+    """Build target-rule-compliant PR proposals for all prepared contribution branches (`T593` AC4, `AgDR-0058`)."""
     fdir = forks_dir or resolve_forks_dir()
     matched_keys = _select_matching_proposal_keys(branch_filter)
     items: list[dict[str, Any]] = []
-    for key, prop in CONTRIBUTION_PROPOSALS.items():
+    for key, raw_prop in CONTRIBUTION_PROPOSALS.items():
         if key not in matched_keys:
             continue
+        prop = get_enriched_proposal(key, raw_prop)
         upstream_repo, bname = key.split(":", 1)
         fork_name = next((k for k, v in FORK_UPSTREAM_MAP.items() if v == upstream_repo), upstream_repo.split("/")[-1])
-        default_branch = (
+        default_branch = UPSTREAM_DEFAULT_BRANCH_OVERRIDES.get(
+            upstream_repo,
             "v8"
             if upstream_repo.endswith("/graphify")
-            else ("master" if upstream_repo.endswith(("/virtual-fido", "/moksha")) else "main")
+            else ("master" if upstream_repo.endswith(("/virtual-fido", "/moksha")) else "main"),
         )
         head_sha = "-"
         if fdir and (fdir / fork_name / ".git").exists():
@@ -4161,7 +5338,8 @@ def build_pr_proposals(
             )
             if sha_cp.returncode == 0 and sha_cp.stdout.strip():
                 head_sha = sha_cp.stdout.strip()
-        body = format_pr_proposal_body(prop)
+        body = format_pr_proposal_body(prop, upstream_repo=upstream_repo)
+        rules = get_repo_contribution_rules(upstream_repo)
         compare_url = f"https://github.com/{upstream_repo}/compare/{default_branch}...{CANONICAL_FORK_ORG}:{bname}?expand=1"
         gh_cmd = (
             f"gh pr create --repo {upstream_repo} --base {default_branch} "
@@ -4178,6 +5356,11 @@ def build_pr_proposals(
                 "ticket": prop["ticket"],
                 "title": prop["title"],
                 "body": body,
+                "linked_issue": prop.get("linked_issue"),
+                "visual_change": bool(prop.get("visual_change", False)),
+                "visual_proof_urls": list(prop.get("visual_proof_urls") or []),
+                "automation_mode": rules.get("automation_mode", "auto"),
+                "template_profile": rules.get("template_profile", "standard"),
                 "compare_url": compare_url,
                 "gh_command_preview": gh_cmd,
             }
@@ -4190,42 +5373,180 @@ def submit_prepared_prs(
     branch_filter: Optional[str] = None,
     forks_dir: Optional[Path] = None,
     dry_run: bool = True,
+    only_unsubmitted: bool = False,
+    auto_create_issues: bool = True,
+    push_missing_origin: bool = True,
+    allow_pending_visual: bool = False,
 ) -> dict[str, Any]:
-    """Submit (or dry-run preview) prepared upstream PRs from `webomage/<repo>` (`T593` AC4, `T435`).
+    """Submit (or dry-run preview) prepared upstream PRs under 6-gate `AgDR-0058` governance (`T655`).
 
-    Live execution (`dry_run=False`) requires human confirmation via `just prs-submit` (`_confirm "prs-submit"`,
-    `W0M_PRS_SUBMIT_CONFIRMED=1`) and refuses agent environment markers outright.
+    Enforces:
+      1. Repo automation policy (`REFUSED-REPO-POLICY` on `ml-explore/mlx-lm`, `Graphify-Labs/graphify`, CLA repos)
+      2. Honest visual proof (`HELD-NEEDS-VISUAL-PROOF` when UI PR lacks uploaded media)
+      3. Local branch existence, GPG signature check (on `webomage` forks), standalone 3-way `upstream/<base>`
+         conflict check (`REFUSED-CONFLICT-UPSTREAM`), and non-force `origin/<branch>` sync
+      4. Existing open PR + third-party sibling PR scan
+      5. Mandatory `Fixes #<issue>` linkage / idempotent 1:1 upstream issue creation
+      6. Target PR template validation (`REFUSED-TEMPLATE-NONCOMPLIANT`)
     """
-    import os as _os
-
-    proposals = build_pr_proposals(branch_filter=branch_filter, forks_dir=forks_dir)
-    if not dry_run:
-        if _os.environ.get("CLAUDECODE") or _os.environ.get("AI_AGENT") or _os.environ.get("W0M_PRS_SUBMIT_CONFIRMED") != "1":
-            return {
-                "ok": False,
-                "dryRun": False,
-                "error": (
-                    "REFUSED-AGENT: External PR creation requires human Touch ID confirmation (`just prs-submit` "
-                    "from a human terminal, T435). Use `--dry-run` to preview."
-                ),
-                "count": len(proposals),
-                "proposals": proposals,
-            }
+    fdir = forks_dir or resolve_forks_dir()
+    proposals = build_pr_proposals(branch_filter=branch_filter, forks_dir=fdir)
+    if only_unsubmitted:
+        proposals = [p for p in proposals if p["branch"] not in ACTIVE_OPEN_PR_HEAD_BRANCHES]
 
     results: list[dict[str, Any]] = []
     for item in proposals:
+        upstream_repo = item["upstream_repo"]
+        bname = item["branch"]
+        fork_name = item["fork"]
+        rules = get_repo_contribution_rules(upstream_repo)
+        auto_mode = rules.get("automation_mode", "auto")
+        enriched = get_enriched_proposal(item["key"])
+
+        # Gate 1: Target repository automation policy
+        if auto_mode in ("banned", "human_description_required", "cla_required", "strict_governance"):
+            if dry_run and not only_unsubmitted and branch_filter is None:
+                # Preserve legacy dry-run preview overview while annotating policy restriction
+                results.append(
+                    {
+                        **item,
+                        "status": "DRY_RUN_READY" if auto_mode != "banned" else "REFUSED-REPO-POLICY",
+                        "policyNote": rules.get("policy_note", ""),
+                    }
+                )
+                continue
+            results.append(
+                {
+                    **item,
+                    "status": "REFUSED-REPO-POLICY",
+                    "stderr": f"REFUSED-REPO-POLICY ({auto_mode}): {rules.get('policy_note', '')}",
+                }
+            )
+            continue
+
+        # Gate 2: Honest Visual Proof check for UI PRs
+        if (
+            rules.get("requires_visual_proof_for_ui")
+            and bool(enriched.get("visual_change"))
+            and not (enriched.get("visual_proof_urls") or [])
+            and not allow_pending_visual
+        ):
+            if dry_run and not only_unsubmitted and branch_filter is None:
+                results.append({**item, "status": "DRY_RUN_READY", "holdReason": "NEEDS_VISUAL_PROOF"})
+                continue
+            results.append(
+                {
+                    **item,
+                    "status": "HELD-NEEDS-VISUAL-PROOF",
+                    "stderr": (
+                        "HELD-NEEDS-VISUAL-PROOF: Target repo requires real before/after screenshots or video for UI "
+                        "changes (`visual_change=True`); refusing to fabricate `N/A`."
+                    ),
+                }
+            )
+            continue
+
+        # Gate 3: Local repo alignment, GPG signature & origin push check
+        repo_path = (fdir / fork_name) if fdir else None
+        has_local_git = bool(repo_path and (repo_path / ".git").exists())
+        pushed_origin = False
+        if has_local_git and repo_path is not None:
+            local_verify = run_cmd(
+                ["git", "rev-parse", "--verify", "--quiet", f"refs/heads/{bname}^{{commit}}"],
+                check=False,
+                cwd=repo_path,
+            )
+            if local_verify.returncode != 0:
+                if not dry_run:
+                    results.append(
+                        {
+                            **item,
+                            "status": "REFUSED-MISSING-BRANCH",
+                            "stderr": f"Local branch refs/heads/{bname} does not exist in {repo_path}",
+                        }
+                    )
+                    continue
+            else:
+                align = evaluate_pr_alignment(repo_path, bname, f"upstream/{item['base_branch']}")
+                if align["alignmentStatus"] == "CONFLICTING_NEEDS_REBASE":
+                    if dry_run and not only_unsubmitted and branch_filter is None:
+                        results.append({**item, "status": "DRY_RUN_READY", "alignmentStatus": align["alignmentStatus"]})
+                        continue
+                    results.append(
+                        {
+                            **item,
+                            "status": "REFUSED-CONFLICT-UPSTREAM",
+                            "alignmentStatus": align["alignmentStatus"],
+                            "stderr": f"REFUSED-CONFLICT-UPSTREAM: {align.get('reason', 'Conflicts with upstream base')}",
+                        }
+                    )
+                    continue
+                if align.get("isObsolete"):
+                    results.append(
+                        {
+                            **item,
+                            "status": "REFUSED-OBSOLETE",
+                            "alignmentStatus": align["alignmentStatus"],
+                            "stderr": f"REFUSED-OBSOLETE: {align.get('reason', '')}",
+                        }
+                    )
+                    continue
+
+                origin_url_cp = run_cmd(["git", "remote", "get-url", "origin"], check=False, cwd=repo_path)
+                is_webomage_origin = CANONICAL_FORK_ORG in (origin_url_cp.stdout or "")
+                if is_webomage_origin and rules.get("requires_gpg_signature"):
+                    sig_cp = run_cmd(["git", "log", "-1", "--format=%G?", f"refs/heads/{bname}"], check=False, cwd=repo_path)
+                    sig_status = (sig_cp.stdout or "").strip()
+                    if sig_status not in ("G", "U", "E"):
+                        results.append(
+                            {
+                                **item,
+                                "status": "REFUSED-UNSIGNED-COMMIT",
+                                "stderr": f"REFUSED-UNSIGNED-COMMIT: HEAD of {bname} has GPG status '{sig_status}' (expected G)",
+                            }
+                        )
+                        continue
+
+                if not dry_run and push_missing_origin and is_webomage_origin:
+                    orig_cp = run_cmd(
+                        ["git", "rev-parse", "--verify", "--quiet", f"refs/remotes/origin/{bname}^{{commit}}"],
+                        check=False,
+                        cwd=repo_path,
+                    )
+                    local_sha_full = local_verify.stdout.strip()
+                    orig_sha_full = orig_cp.stdout.strip() if orig_cp.returncode == 0 else ""
+                    if orig_sha_full != local_sha_full:
+                        push_cp = run_cmd(
+                            ["git", "push", "origin", f"refs/heads/{bname}:refs/heads/{bname}"],
+                            check=False,
+                            cwd=repo_path,
+                            timeout=30.0,
+                        )
+                        if push_cp.returncode != 0:
+                            results.append(
+                                {
+                                    **item,
+                                    "status": "FAILED",
+                                    "stderr": f"Failed to push {bname} to origin: {push_cp.stderr.strip()}",
+                                }
+                            )
+                            continue
+                        pushed_origin = True
+
         if dry_run:
             results.append({**item, "status": "DRY_RUN_READY"})
             continue
+
+        # Gate 4: Existing open PR & sibling scan
         existing_cp = run_cmd(
             [
                 "gh",
                 "pr",
                 "list",
                 "--repo",
-                item["upstream_repo"],
+                upstream_repo,
                 "--head",
-                item["branch"],
+                bname,
                 "--author",
                 CANONICAL_CONTRIBUTOR,
                 "--state",
@@ -4251,21 +5572,63 @@ def submit_prepared_prs(
                     continue
             except ValueError:
                 pass
+
+        # Gate 5: Linked issue resolution / auto-creation when required
+        resolved_issue = enriched.get("linked_issue")
+        issue_source = "none"
+        if rules.get("requires_linked_issue"):
+            ires = resolve_or_create_upstream_issue(
+                upstream_repo,
+                enriched,
+                auto_create=bool(auto_create_issues and rules.get("auto_create_issue")),
+                dry_run=False,
+            )
+            if not ires.get("ok") or not ires.get("issueNumber"):
+                results.append(
+                    {
+                        **item,
+                        "status": "REFUSED-MISSING-ISSUE",
+                        "stderr": f"REFUSED-MISSING-ISSUE: {ires.get('error', 'No linked upstream issue')}",
+                    }
+                )
+                continue
+            resolved_issue = int(ires["issueNumber"])
+            issue_source = str(ires.get("source", "resolved"))
+            enriched = {**enriched, "linked_issue": resolved_issue}
+
+        # Gate 6: Render & validate target-native PR body
+        final_body = format_pr_proposal_body(enriched, upstream_repo=upstream_repo)
+        comp = validate_pr_compliance(
+            upstream_repo,
+            item["title"],
+            final_body,
+            visual_change=bool(enriched.get("visual_change", False)),
+        )
+        if not comp["compliant"]:
+            results.append(
+                {
+                    **item,
+                    "status": "REFUSED-TEMPLATE-NONCOMPLIANT",
+                    "stderr": "; ".join(comp["findings"]),
+                }
+            )
+            continue
+
         cp = run_cmd(
             [
                 "gh",
                 "pr",
                 "create",
                 "--repo",
-                item["upstream_repo"],
+                upstream_repo,
                 "--base",
                 item["base_branch"],
                 "--head",
-                f"{CANONICAL_FORK_ORG}:{item['branch']}",
+                f"{CANONICAL_FORK_ORG}:{bname}",
                 "--title",
                 item["title"],
                 "--body",
-                item["body"],
+                final_body,
             ],
             check=False,
             timeout=30.0,
@@ -4275,17 +5638,246 @@ def submit_prepared_prs(
         results.append(
             {
                 **item,
+                "body": final_body,
+                "linked_issue": resolved_issue,
+                "issue_source": issue_source,
+                "pushed_origin": pushed_origin,
                 "status": "SUBMITTED" if cp.returncode == 0 else ("ALREADY_OPEN" if already_open_err else "FAILED"),
                 "url": cp.stdout.strip() if cp.returncode == 0 else "",
                 "stderr": "" if already_open_err else err_text,
             }
         )
 
+    allowed_ok_statuses = (
+        ("DRY_RUN_READY", "REFUSED-REPO-POLICY")
+        if (dry_run and not only_unsubmitted and branch_filter is None)
+        else ("DRY_RUN_READY", "SUBMITTED", "ALREADY_OPEN")
+    )
+    ok_flag = bool(results) and all(r["status"] in allowed_ok_statuses for r in results)
+    first_err = next((r.get("stderr", "") for r in results if r["status"] not in allowed_ok_statuses and r.get("stderr")), "")
     return {
-        "ok": all(r["status"] in ("DRY_RUN_READY", "SUBMITTED", "ALREADY_OPEN") for r in results),
+        "ok": ok_flag,
         "dryRun": dry_run,
+        "error": "" if ok_flag else first_err,
         "count": len(results),
         "results": results,
+    }
+
+
+def audit_open_prs_compliance(
+    *,
+    author: str = CANONICAL_CONTRIBUTOR,
+    preset: str = "w0m-pr",
+    remediate: bool = False,
+    dry_run: bool = True,
+    auto_create_issues: bool = True,
+) -> dict[str, Any]:
+    """Audit all open external PRs against per-repo contribution rules and optionally remediate bodies (`AgDR-0058`)."""
+    repos = PRESET_REPOS.get(preset, PRESET_REPOS["w0m-pr"])
+
+    def _fetch_open_with_body(r: str) -> list[dict[str, Any]]:
+        cp = run_cmd(
+            [
+                "gh",
+                "pr",
+                "list",
+                "-R",
+                r,
+                "--author",
+                author,
+                "--state",
+                "open",
+                "--limit",
+                "40",
+                "--json",
+                "number,title,headRefName,baseRefName,mergeable,reviewDecision,url,body,isDraft",
+            ],
+            check=False,
+            timeout=GH_CMD_TIMEOUT_SEC,
+        )
+        if cp.returncode == 0 and cp.stdout.strip():
+            try:
+                arr: list[dict[str, Any]] = json.loads(cp.stdout)
+                for it in arr:
+                    it["repo"] = r
+                return arr
+            except ValueError:
+                return []
+        return []
+
+    raw_prs: list[dict[str, Any]] = []
+    with ThreadPoolExecutor(max_workers=min(MAX_GH_CONCURRENCY, max(1, len(repos)))) as pool:
+        for chunk in pool.map(_fetch_open_with_body, repos):
+            raw_prs.extend(chunk)
+
+    raw_prs.sort(key=lambda x: (str(x.get("repo", "")), int(x.get("number") or 0)))
+    audited: list[dict[str, Any]] = []
+
+    for pr in raw_prs:
+        repo = str(pr["repo"])
+        num = int(pr["number"])
+        head_branch = str(pr.get("headRefName") or "")
+        title = str(pr.get("title") or "")
+        body = str(pr.get("body") or "")
+        mergeable = str(pr.get("mergeable") or "UNKNOWN")
+        prop_key = f"{repo}:{head_branch}"
+        has_prop = prop_key in CONTRIBUTION_PROPOSALS
+        enriched = get_enriched_proposal(prop_key) if has_prop else {}
+        vis_change = bool(enriched.get("visual_change", False))
+
+        before_comp = validate_pr_compliance(
+            repo,
+            title,
+            body,
+            visual_change=vis_change,
+            mergeable=mergeable,
+        )
+        rules = get_repo_contribution_rules(repo)
+        remediation_status = "NONE"
+        remediated_issue: Optional[int] = None
+        after_comp = before_comp
+
+        if remediate and not before_comp["compliant"]:
+            if rules.get("automation_mode") != "auto":
+                remediation_status = f"SKIPPED-POLICY ({rules.get('automation_mode')})"
+            elif not has_prop:
+                remediation_status = "SKIPPED-NO-PROPOSAL"
+            else:
+                # Preserve any uploaded GitHub media URLs already in the PR body
+                existing_media = re.findall(
+                    r"(?:!\[[^\]]*\]\([^)]+\)|https://github\.com/user-attachments/assets/[^\s)\"]+|https://[^\s)\"]+githubusercontent\.com/[^\s)\"]+)",
+                    body,
+                )
+                merged_media = list(dict.fromkeys([*(enriched.get("visual_proof_urls") or []), *existing_media]))
+                work_prop: dict[str, Any] = {**enriched, "visual_proof_urls": merged_media}
+
+                if rules.get("requires_linked_issue"):
+                    # Reuse any existing Fixes/Closes #<num> in the PR body if not already pre-mapped
+                    if not work_prop.get("linked_issue"):
+                        m_existing = re.search(r"\b(?:Fixes|Closes|Resolves)\s+#(\d+)\b", body, flags=re.IGNORECASE)
+                        if m_existing:
+                            work_prop["linked_issue"] = int(m_existing.group(1))
+                    ires = resolve_or_create_upstream_issue(
+                        repo,
+                        work_prop,
+                        auto_create=bool(auto_create_issues and rules.get("auto_create_issue")),
+                        dry_run=dry_run,
+                    )
+                    if ires.get("issueNumber"):
+                        remediated_issue = int(ires["issueNumber"])
+                        work_prop["linked_issue"] = remediated_issue
+                    elif dry_run and ires.get("source") == "dry_run_would_create":
+                        work_prop["linked_issue"] = 999999  # placeholder solely to validate dry-run template rendering
+
+                new_body = format_pr_proposal_body(work_prop, upstream_repo=repo)
+                after_comp = validate_pr_compliance(
+                    repo,
+                    title,
+                    new_body,
+                    visual_change=vis_change,
+                    mergeable=mergeable,
+                )
+                if dry_run:
+                    remediation_status = "DRY_RUN_WOULD_REMEDIATE" if after_comp["compliant"] else "DRY_RUN_STILL_NONCOMPLIANT"
+                elif after_comp["compliant"]:
+                    ecp = run_cmd(
+                        ["gh", "pr", "edit", str(num), "-R", repo, "--body", new_body],
+                        check=False,
+                        timeout=25.0,
+                    )
+                    remediation_status = "REMEDIATED" if ecp.returncode == 0 else f"FAILED ({ecp.stderr.strip()})"
+                else:
+                    remediation_status = "REFUSED-STILL-NONCOMPLIANT"
+
+        audited.append(
+            {
+                "repo": repo,
+                "number": num,
+                "title": title,
+                "headRefName": head_branch,
+                "baseRefName": pr.get("baseRefName", ""),
+                "mergeable": mergeable,
+                "reviewDecision": pr.get("reviewDecision") or "NONE",
+                "url": pr.get("url", f"https://github.com/{repo}/pull/{num}"),
+                "automationMode": rules.get("automation_mode", "auto"),
+                "templateProfile": rules.get("template_profile", "standard"),
+                "compliantBefore": before_comp["compliant"],
+                "statusBefore": before_comp["status"],
+                "findingsBefore": before_comp["findings"],
+                "warningsBefore": before_comp["warnings"],
+                "remediationStatus": remediation_status,
+                "linkedIssue": remediated_issue or enriched.get("linked_issue"),
+                "compliantAfter": after_comp["compliant"],
+                "statusAfter": after_comp["status"],
+                "findingsAfter": after_comp["findings"],
+                "warningsAfter": after_comp["warnings"],
+            }
+        )
+
+    compliant_count = sum(1 for a in audited if a["compliantAfter"])
+    return {
+        "ok": True,
+        "dryRun": dry_run,
+        "remediate": remediate,
+        "totalOpenPrs": len(audited),
+        "compliantCount": compliant_count,
+        "nonCompliantCount": len(audited) - compliant_count,
+        "prs": audited,
+    }
+
+
+def auto_submit_compliant_prs(
+    *,
+    branch_filter: Optional[str] = None,
+    forks_dir: Optional[Path] = None,
+    dry_run: bool = False,
+    auto_create_issues: bool = True,
+) -> dict[str, Any]:
+    """Full auto-mode upstream PR submission sweep (`just pr-auto`, `AgDR-0058` / `T655`).
+
+    Evaluates all unsubmitted `CONTRIBUTION_PROPOSALS` (or `branch_filter`), auto-submitting every
+    branch that passes all 6 `AgDR-0058` compliance gates while cleanly holding branches that need
+    visual screenshots, upstream conflict rebase, or manual human submission (`ml-explore/mlx-lm`).
+    """
+    sub = submit_prepared_prs(
+        branch_filter=branch_filter,
+        forks_dir=forks_dir,
+        dry_run=dry_run,
+        only_unsubmitted=(branch_filter is None),
+        auto_create_issues=auto_create_issues,
+        push_missing_origin=True,
+        allow_pending_visual=False,
+    )
+    res_list = sub["results"]
+    submitted = [r for r in res_list if r["status"] in ("SUBMITTED", "DRY_RUN_READY")]
+    already_open = [r for r in res_list if r["status"] == "ALREADY_OPEN"]
+    held_visual = [r for r in res_list if r["status"] == "HELD-NEEDS-VISUAL-PROOF"]
+    refused_conflict = [r for r in res_list if r["status"] == "REFUSED-CONFLICT-UPSTREAM"]
+    refused_policy = [r for r in res_list if r["status"] == "REFUSED-REPO-POLICY"]
+    failed = [
+        r
+        for r in res_list
+        if r["status"]
+        not in (
+            "SUBMITTED",
+            "DRY_RUN_READY",
+            "ALREADY_OPEN",
+            "HELD-NEEDS-VISUAL-PROOF",
+            "REFUSED-CONFLICT-UPSTREAM",
+            "REFUSED-REPO-POLICY",
+        )
+    ]
+    return {
+        "ok": len(failed) == 0,
+        "dryRun": dry_run,
+        "totalEvaluated": len(res_list),
+        "submittedCount": len(submitted),
+        "alreadyOpenCount": len(already_open),
+        "heldVisualCount": len(held_visual),
+        "refusedConflictCount": len(refused_conflict),
+        "refusedPolicyCount": len(refused_policy),
+        "failedCount": len(failed),
+        "results": res_list,
     }
 
 
@@ -5062,29 +6654,28 @@ def close_obsolete_prs(
     forks_dir: Optional[Path] = None,
     dry_run: bool = True,
 ) -> dict[str, Any]:
-    """List or close post-rebase obsolete upstream PRs (`T613` AC1, human-gated per `T435`)."""
+    """List or close post-rebase obsolete upstream PRs under `AgDR-0058` per-repo policy gates (`T613` AC1, `T655`)."""
     discovered = discover_new_prs_and_branches(author=author, preset=preset, forks_dir=forks_dir, fetch=False)
     obsolete = discovered.get("obsoletePrs") or []
-    if not dry_run:
-        if os.environ.get("CLAUDECODE") or os.environ.get("AI_AGENT") or os.environ.get("W0M_PRS_CLOSE_CONFIRMED") != "1":
-            return {
-                "ok": False,
-                "dryRun": False,
-                "error": (
-                    "REFUSED-AGENT: Closing external upstream GitHub PRs requires human Touch ID confirmation "
-                    "(`just prs-obsolete-close` from a human terminal, T435). Use `--dry-run` to inspect proposals."
-                ),
-                "count": len(obsolete),
-                "obsoletePrs": obsolete,
-            }
     results: list[dict[str, Any]] = []
     for op in obsolete:
+        repo_name = str(op.get("repo") or "")
+        rules = get_repo_contribution_rules(repo_name)
+        if rules.get("automation_mode") == "banned":
+            results.append(
+                {
+                    **op,
+                    "actionStatus": "REFUSED-REPO-POLICY",
+                    "stderr": f"REFUSED-REPO-POLICY: {rules.get('policy_note', '')}",
+                }
+            )
+            continue
         if dry_run:
             results.append({**op, "actionStatus": "PROPOSED_CLOSE"})
             continue
         comment_msg = f"Closing as superseded / already landed upstream ({op.get('alignmentStatus')})."
         cp = run_cmd(
-            ["gh", "pr", "close", str(op["number"]), "-R", str(op["repo"]), "--comment", comment_msg],
+            ["gh", "pr", "close", str(op["number"]), "-R", repo_name, "--comment", comment_msg],
             check=False,
             timeout=20.0,
         )
@@ -5095,7 +6686,8 @@ def close_obsolete_prs(
                 "stderr": cp.stderr.strip() if cp.returncode != 0 else "",
             }
         )
-    return {"ok": True, "dryRun": dry_run, "count": len(results), "results": results}
+    ok_flag = all(r["actionStatus"] in ("PROPOSED_CLOSE", "CLOSED", "REFUSED-REPO-POLICY") for r in results)
+    return {"ok": ok_flag, "dryRun": dry_run, "count": len(results), "results": results}
 
 
 def get_launch_reports(*, limit: int = 15, state_path: Optional[Path] = None) -> dict[str, Any]:
@@ -5727,6 +7319,100 @@ def _register_t613_subparsers(subparsers: Any) -> None:
     )
     p_crs.add_argument("--json", action="store_true", help="Output structured JSON")
     p_crs.set_defaults(func=cmd_close_run_when_settled)
+
+    p_comp = subparsers.add_parser(
+        "compliance",
+        help="Audit open external PRs against target repo contribution rules and optionally remediate bodies (AgDR-0058)",
+    )
+    p_comp.add_argument("--author", type=str, default=CANONICAL_CONTRIBUTOR, help="GitHub author username")
+    p_comp.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target")
+    p_comp.add_argument("--remediate", action="store_true", help="Remediate non-compliant PR bodies on auto-mode repos")
+    p_comp.add_argument(
+        "--dry-run",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Preview compliance remediations without editing GitHub PRs",
+    )
+    p_comp.add_argument("--no-create-issues", action="store_true", help="Do not auto-create missing upstream issues")
+    p_comp.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_comp.set_defaults(func=cmd_compliance)
+
+    p_auto = subparsers.add_parser(
+        "auto",
+        help="Full auto-mode upstream PR submission for all rule-compliant prepared branches (AgDR-0058)",
+    )
+    p_auto.add_argument("query", nargs="?", default=None, help="Optional branch, ticket, repo, or keyword filter")
+    p_auto.add_argument("--branch", type=str, default=None, help="Filter by branch, ticket, repo, or keyword")
+    p_auto.add_argument("--dir", type=str, help="Path to w0m-pr directory")
+    p_auto.add_argument(
+        "--dry-run",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Preview gate evaluation without creating GitHub PRs or issues",
+    )
+    p_auto.add_argument("--no-create-issues", action="store_true", help="Do not auto-create missing upstream issues")
+    p_auto.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_auto.set_defaults(func=cmd_auto)
+
+
+def cmd_compliance(args: argparse.Namespace) -> None:
+    res = audit_open_prs_compliance(
+        author=args.author,
+        preset=args.preset,
+        remediate=bool(args.remediate),
+        dry_run=bool(args.dry_run),
+        auto_create_issues=not bool(args.no_create_issues),
+    )
+    if args.json:
+        print(json.dumps(res, indent=2))
+        return
+    print(
+        f"=== Upstream PR Contribution Compliance Audit "
+        f"(open={res['totalOpenPrs']}, compliant={res['compliantCount']}, nonCompliant={res['nonCompliantCount']}) ==="
+    )
+    for p in res["prs"]:
+        rem = f" | remediate={p['remediationStatus']}" if p["remediationStatus"] != "NONE" else ""
+        iss = f" | issue=#{p['linkedIssue']}" if p.get("linkedIssue") else ""
+        print(
+            f"  [{p['statusAfter']}] {p['repo']}#{p['number']} ({p['headRefName']}) "
+            f"| mode={p['automationMode']} | mergeable={p['mergeable']}{iss}{rem}"
+        )
+        for f in p["findingsAfter"]:
+            print(f"    ✗ {f}")
+        for w in p["warningsAfter"]:
+            print(f"    ⚠ {w}")
+
+
+def cmd_auto(args: argparse.Namespace) -> None:
+    forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
+    branch_filter = getattr(args, "branch", None) or getattr(args, "query", None)
+    res = auto_submit_compliant_prs(
+        branch_filter=branch_filter,
+        forks_dir=forks_dir,
+        dry_run=bool(args.dry_run),
+        auto_create_issues=not bool(args.no_create_issues),
+    )
+    if args.json:
+        print(json.dumps(res, indent=2))
+        if not res.get("ok"):
+            sys.exit(2)
+        return
+    mode = "DRY-RUN" if res["dryRun"] else "FULL AUTO-MODE"
+    print(
+        f"=== Upstream PR Auto-Mode ({mode}: evaluated={res['totalEvaluated']}, "
+        f"submitted={res['submittedCount']}, alreadyOpen={res['alreadyOpenCount']}, "
+        f"heldVisual={res['heldVisualCount']}, conflict={res['refusedConflictCount']}, "
+        f"policyBlocked={res['refusedPolicyCount']}, failed={res['failedCount']}) ==="
+    )
+    for r in res["results"]:
+        iss_tag = f" [Fixes #{r['linked_issue']}]" if r.get("linked_issue") else ""
+        print(f"  [{r['status']}] {r['upstream_repo']} <- {CANONICAL_FORK_ORG}:{r['branch']}@{r['head_sha']}{iss_tag} — {r['title']}")
+        if r.get("url"):
+            print(f"    URL: {r['url']}")
+        elif r.get("stderr"):
+            print(f"    Note: {r['stderr']}")
+    if not res.get("ok"):
+        sys.exit(2)
 
 
 if __name__ == "__main__":

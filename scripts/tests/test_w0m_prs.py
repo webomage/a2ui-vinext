@@ -499,28 +499,44 @@ def main() -> int:
             and live_sync["orchestrationTaskId"] == "task_t610",
         )
 
-    # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593, T608, T621)
-    proposals_list = w0m_prs.build_pr_proposals()
+    # 8f. Contribution Proposals & AgDR-0058 Gate-Enforced Auto-Mode Governance (T593, T608, T621, T655)
+    proposals_list = w0m_prs.build_pr_proposals(forks_dir=Path("/nonexistent-forks"))
     check(
-        "build_pr_proposals returns 31 contribution proposals including T608, T618, T621, T635, T638, and T653 PRs",
-        len(proposals_list) == 31
+        "build_pr_proposals returns 35 contribution proposals including T608, T618, T621, T635, T638, T653, and T655 PRs",
+        len(proposals_list) == 35
         and any(p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:fix/mobile-terminal-theme-enforcement" for p in proposals_list)
-        and any(p["key"] == "stablyai/orca:perf/terminal-chat-redraw-and-tab-caching" for p in proposals_list),
+        and any(p["key"] == "stablyai/orca:perf/terminal-chat-redraw-and-tab-caching" for p in proposals_list)
+        and any(p["key"] == "jundot/omlx:fix/menubar-adopt-external-omlx" for p in proposals_list),
     )
     check(
-        "build_pr_proposals formats structured Why / What For / How markdown body",
+        "build_pr_proposals renders target-native PR templates (orca 11-section, omlx 3-section, and standard Why/What For/How)",
         all(
-            "## Why (Rationale & Problem)" in p["body"]
-            and "## What For (Use Cases & Value)" in p["body"]
-            and "## How (Implementation, Invariants & Verification)" in p["body"]
+            (
+                "## ELI5" in p["body"]
+                and "## What Changed" in p["body"]
+                and "## Linked Issue" in p["body"]
+                and "## Visual Proof" in p["body"]
+                and "## AI Disclosure" in p["body"]
+                and "## Checklist" in p["body"]
+            )
+            if p["template_profile"] == "orca_11_section"
+            else (
+                ("## Summary" in p["body"] and "## Validation" in p["body"] and "## Checklist" in p["body"])
+                if p["template_profile"] == "omlx_3_section"
+                else (
+                    "## Why (Rationale & Problem)" in p["body"]
+                    and "## What For (Use Cases & Value)" in p["body"]
+                    and "## How (Implementation, Invariants & Verification)" in p["body"]
+                )
+            )
             for p in proposals_list
         ),
     )
-    triple_tap_props = w0m_prs.build_pr_proposals(branch_filter="triple-tap")
-    t621_props = w0m_prs.build_pr_proposals(branch_filter="t621")
+    triple_tap_props = w0m_prs.build_pr_proposals(branch_filter="triple-tap", forks_dir=Path("/nonexistent-forks"))
+    t621_props = w0m_prs.build_pr_proposals(branch_filter="t621", forks_dir=Path("/nonexistent-forks"))
     check(
         "build_pr_proposals resolves case-insensitive keyword ('triple-tap') and ticket ('t621') filters cleanly",
         len(triple_tap_props) == 1
@@ -528,19 +544,58 @@ def main() -> int:
         and len(t621_props) == 1
         and t621_props[0]["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter",
     )
-    submit_dry = w0m_prs.submit_prepared_prs(dry_run=True)
+    submit_dry = w0m_prs.submit_prepared_prs(dry_run=True, forks_dir=Path("/nonexistent-forks"))
     check(
-        "submit_prepared_prs dry-run marks matched branch DRY_RUN_READY",
+        "submit_prepared_prs dry-run marks compliant branch DRY_RUN_READY and denylists ml-explore/mlx-lm",
         submit_dry["ok"] is True
         and submit_dry["dryRun"] is True
-        and any(r["key"] == "mizorewww/laya-mlx:fix/native-serve-tests-and-torchless-calibration" and r["status"] == "DRY_RUN_READY" for r in submit_dry["results"]),
-    )
-    with patch.dict("os.environ", {"CLAUDECODE": "1"}, clear=False):
-        submit_agent_refused = w0m_prs.submit_prepared_prs(dry_run=False)
-        check(
-            "submit_prepared_prs live mode refuses agent sessions (T435 gate)",
-            submit_agent_refused["ok"] is False and "REFUSED-AGENT" in str(submit_agent_refused.get("error", "")),
+        and any(
+            r["key"] == "mizorewww/laya-mlx:fix/native-serve-tests-and-torchless-calibration"
+            and r["status"] == "DRY_RUN_READY"
+            for r in submit_dry["results"]
         )
+        and any(
+            r["key"] == "ml-explore/mlx-lm:perf/gemma4-kv-shared-prefill-and-moe-sanitize"
+            and r["status"] == "REFUSED-REPO-POLICY"
+            for r in submit_dry["results"]
+        ),
+    )
+    submit_mlx_lm = w0m_prs.submit_prepared_prs(
+        branch_filter="ml-explore/mlx-lm",
+        forks_dir=Path("/nonexistent-forks"),
+        dry_run=False,
+    )
+    check(
+        "submit_prepared_prs hard-refuses ml-explore/mlx-lm automation (AgDR-0058 REFUSED-REPO-POLICY)",
+        submit_mlx_lm["ok"] is False
+        and all(r["status"] == "REFUSED-REPO-POLICY" for r in submit_mlx_lm["results"]),
+    )
+    submit_ui_held = w0m_prs.submit_prepared_prs(
+        branch_filter="stablyai/orca:feat/system-and-docker-monitors",
+        forks_dir=Path("/nonexistent-forks"),
+        dry_run=False,
+    )
+    check(
+        "submit_prepared_prs holds UI PRs without uploaded screenshots (HELD-NEEDS-VISUAL-PROOF) instead of faking N/A",
+        submit_ui_held["ok"] is False
+        and len(submit_ui_held["results"]) == 1
+        and submit_ui_held["results"][0]["status"] == "HELD-NEEDS-VISUAL-PROOF",
+    )
+    orca_theme_prop = next(
+        p for p in proposals_list if p["key"] == "stablyai/orca:fix/mobile-terminal-theme-enforcement"
+    )
+    orca_theme_comp = w0m_prs.validate_pr_compliance(
+        "stablyai/orca",
+        orca_theme_prop["title"],
+        orca_theme_prop["body"],
+        visual_change=False,
+    )
+    check(
+        "validate_pr_compliance verifies stablyai/orca 11-section body with Fixes #32242 and honest N/A reason",
+        orca_theme_comp["compliant"] is True
+        and "Fixes #32242" in orca_theme_prop["body"]
+        and "`N/A`" in orca_theme_prop["body"],
+    )
 
     # 8g. Post-rebase PR obsolescence, fork alignment, collapsed launch reports & settled run close (T613)
     with tempfile.TemporaryDirectory() as tmp_git_root:

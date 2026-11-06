@@ -82,7 +82,7 @@
     "w0m-prs": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.10.28-1793220550"
+      "observed_version": "2026.11.06-1793946619"
     },
     "w0m-sdlc-archive": {
       "provider": "w0m-native",

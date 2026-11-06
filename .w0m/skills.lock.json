@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-11-05T05:04:44.488Z",
+  "generatedAt": "2026-11-06T07:04:30.148Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -169,7 +169,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-prs",
-      "integrity": "sha256-02e0a15437a2854e6e014172a791751d1b500b29afc4d66ffcd7a694c245d7c8"
+      "integrity": "sha256-822fa25e1d86785b9006f0d098de06aa3ec81a37fdb70224cf3aa10957706de2"
     },
     "w0m-ticket-audit": {
       "provider": "w0m-native",

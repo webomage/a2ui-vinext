@@ -42,18 +42,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t653-orca-perf-theme-overlay` | 0 | **n/a — NO UPSTREAM** | `869f6e699` |
-| `w0m-api` | `agent/t653-orca-perf-theme-overlay` | 0 | **n/a — NO UPSTREAM** | `5b8db2f` |
-| `w0m-cf` | `agent/t653-orca-perf-theme-overlay` | 0 | **n/a — NO UPSTREAM** | `ec5189e` |
-| `w0m-skills` | `agent/t653-orca-perf-theme-overlay` | 0 | **n/a — NO UPSTREAM** | `318355d` |
-| `w0m-ext` | `agent/t653-orca-perf-theme-overlay` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
-| `w0m-sec` | `agent/t653-orca-perf-theme-overlay` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/t653-orca-perf-theme-overlay` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t655-upstream-pr-auto-compliance` | 0 | **n/a — NO UPSTREAM** | `2abda8ac8` |
+| `w0m-api` | `agent/t655-upstream-pr-auto-compliance` | 0 | **n/a — NO UPSTREAM** | `5b8db2f` |
+| `w0m-cf` | `agent/t655-upstream-pr-auto-compliance` | 0 | **n/a — NO UPSTREAM** | `ec5189e` |
+| `w0m-skills` | `agent/t655-upstream-pr-auto-compliance` | 0 | **n/a — NO UPSTREAM** | `c35f81b` |
+| `w0m-ext` | `agent/t655-upstream-pr-auto-compliance` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
+| `w0m-sec` | `agent/t655-upstream-pr-auto-compliance` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/t655-upstream-pr-auto-compliance` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 654 TASKS.md rows · 302/654 specced (1/5 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 5 open · 655 TASKS.md rows · 302/655 specced (1/5 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t653-orca-perf-theme-overlay","dirty":0,"has_upstream":true,"head":"5b8db2f","unpushed":null},"w0m-cf":{"branch":"agent/t653-orca-perf-theme-overlay","dirty":0,"has_upstream":true,"head":"ec5189e","unpushed":null},"w0m-ext":{"branch":"agent/t653-orca-perf-theme-overlay","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t653-orca-perf-theme-overlay","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t653-orca-perf-theme-overlay","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t653-orca-perf-theme-overlay","dirty":0,"has_upstream":true,"head":"318355d","unpushed":null},"w0m-web":{"branch":"agent/t653-orca-perf-theme-overlay","dirty":0,"has_upstream":true,"head":"869f6e699","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":654,"specced":302,"specced_open":1,"total":654,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/t655-upstream-pr-auto-compliance","dirty":0,"has_upstream":true,"head":"5b8db2f","unpushed":null},"w0m-cf":{"branch":"agent/t655-upstream-pr-auto-compliance","dirty":0,"has_upstream":true,"head":"ec5189e","unpushed":null},"w0m-ext":{"branch":"agent/t655-upstream-pr-auto-compliance","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t655-upstream-pr-auto-compliance","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t655-upstream-pr-auto-compliance","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t655-upstream-pr-auto-compliance","dirty":0,"has_upstream":true,"head":"c35f81b","unpushed":null},"w0m-web":{"branch":"agent/t655-upstream-pr-auto-compliance","dirty":0,"has_upstream":true,"head":"2abda8ac8","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":655,"specced":302,"specced_open":1,"total":655,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -112,6 +112,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
+
+#### Completed today (1):
+
+- **T655** — Full auto-mode upstream PR compliance engine (AgDR-0058) and estate-wide external PR contribution-rules audit & remediation (Live Remediation & Full Auto-Mode Submission: Remediated 15 open PRs (14 stablyai/orca PRs + jundot/omlx#3743), healed stablyai/orca#37034 (471b47030c -> MERGEABLE), left ml-explore/mlx-lm#2026 untouched (AUTOMATION_BANNED), and auto-submitted 12 compliant PRs (JeffHoogland/moksha#310–#312, BodhiDev/bodhi-profile-iso#2, BodhiDev/bodhi7packages#10, BodhiDev/bodhi8packages#8, bulwarkid/virtual-fido#56, stablyai/orca#38857–#38859, #38861, #38863) while honestly holding 3 UI PRs (HELD-NEEDS-VISUAL-PROOF) and 1 conflicting PR (REFUSED-CONFLICT-UPSTREAM). Published .agents/reports/-external-prs-contribution-compliance-audit.md (mirrored to w0m-web/docs/reports/).)
 
 ## 3. Other open threads (in TASKS.md)
 

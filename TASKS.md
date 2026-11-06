@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T655](.tasks/T655.md) · [#655](https://github.com/casualuser/webomage.com/issues/655) | **P1** | **Full auto-mode upstream PR compliance engine (AgDR-0058) and estate-wide external PR contribution-rules audit & remediation** | web, skills, tooling | — | ✅ **done** |
 | [T654](.tasks/T654.md) · [#654](https://github.com/casualuser/webomage.com/issues/654) | **P1** | **Orca Desktop & Mobile: throttle terminal/chat redraws & SIGWINCH bursts, enforce light/dark agent session themes, build 22-branch v1.4.251-w0m.2 overlay + CLI repair, and guard Obsidian vaults** | web, tooling | — | ✅ **done** |
 | [T653](.tasks/T653.md) | **P1** | **Consolidate webomage.com dynamic redirects within Cloudflare Free Tier 10-rule cap and add offline ruleset quota gate** | api, tooling | openspec/specs/me-personal-portal/spec.md | ✅ **done** |
 | [T652](.tasks/T652.md) | **P1** | **Fix preflight --fast failures and wire bounded automation-health staleness ceilings across estate hooks and session-complete** | web, api, sec, tooling | — | ✅ **done** |

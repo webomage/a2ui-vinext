@@ -325,11 +325,17 @@ prs-submit-dry *args:
 pr-dry *args:
     @python3 scripts/w0m_prs.py submit --dry-run {{ args }}
 
-prs-submit *args: (_confirm "prs-submit")
-    @env W0M_PRS_SUBMIT_CONFIRMED=1 python3 scripts/w0m_prs.py submit --no-dry-run {{ args }}
+prs-submit *args:
+    @python3 scripts/w0m_prs.py submit --no-dry-run {{ args }}
 
-pr-open *args: (_confirm "prs-submit")
-    @env W0M_PRS_SUBMIT_CONFIRMED=1 python3 scripts/w0m_prs.py submit --no-dry-run {{ args }}
+pr-open *args:
+    @python3 scripts/w0m_prs.py submit --no-dry-run {{ args }}
+
+pr-auto *args:
+    @python3 scripts/w0m_prs.py auto {{ args }}
+
+pr-compliance *args:
+    @python3 scripts/w0m_prs.py compliance {{ args }}
 
 prs-reconcile *args:
     @python3 scripts/w0m_prs.py reconcile {{ args }}
@@ -337,8 +343,8 @@ prs-reconcile *args:
 prs-obsolete *args:
     @python3 scripts/w0m_prs.py obsolete {{ args }}
 
-prs-obsolete-close *args: (_confirm "prs-obsolete-close")
-    @env W0M_PRS_CLOSE_CONFIRMED=1 python3 scripts/w0m_prs.py obsolete --close {{ args }}
+prs-obsolete-close *args:
+    @python3 scripts/w0m_prs.py obsolete --close {{ args }}
 
 prs-launch-reports *args:
     @python3 scripts/w0m_prs.py launch-reports {{ args }}
