@@ -2101,12 +2101,18 @@ tracks-check *args:
 content-tools-test:
     @python3 scripts/tests/test_content_tools.py
 
-# ── Per-Engagement Cloudflare R2 Obsidian Vault Sync (T580) ───────────────────
+# ── Per-Engagement Cloudflare R2 Obsidian Vault Sync (T580 / T653) ────────────
 vault-push-r2 *args:
     @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 scripts/vault_push_r2.py {{ args }}
 
 vault-push-r2-test:
     @python3 scripts/tests/test_vault_push_r2.py
+
+vault-guard *args:
+    @python3 scripts/obsidian_vault_guard.py {{ args }}
+
+vault-guard-test:
+    @python3 scripts/tests/test_obsidian_vault_guard.py
 
 # ── Multi-Host Orca Instance & Agent Session Orchestration (T596 / T599) ──────
 orca-sessions *args:
@@ -2141,6 +2147,9 @@ orca-release:
 
 orca-apply *args:
     @python3 scripts/orca_overlay_update.py --apply --wait {{ args }}
+
+orca-repair-cli:
+    @python3 scripts/orca_overlay_update.py --repair-cli
 
 orca-overlay-test:
     @python3 scripts/tests/test_orca_overlay_update.py

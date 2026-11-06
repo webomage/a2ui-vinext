@@ -24,6 +24,244 @@ from typing import Any
 UPSTREAM_REPO = "stablyai/orca"
 WORKFLOW_FILE = "w0m-overlay-release.yml"
 SHA512_RE = re.compile(r"^\s*sha512:\s*([A-Za-z0-9+/=]+)\s*$", re.MULTILINE)
+CACHE_KEY_RE = re.compile(r"^[0-9a-f]{24}$")
+DISPATCHER_MARKER = "# orca-serve-bare-orca-dispatcher"
+LAUNCHER_MARKER = "# orca-appimage-stable-launcher"
+CACHE_NAMESPACE_VERSION = "generation-lease-v1"
+APPIMAGE_SOURCE_RECORD_NAME = "source-appimage"
+LEGACY_FUSE_MOUNT_TOKEN = "/tmp/.mount_orca-"
+
+
+def _quote_posix_double_quoted_apostrophe(value: str) -> str:
+    return "'" + value.replace("'", "'\"'\"'") + "'"
+
+
+def _cache_digest_24(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()[:24]
+
+
+def _resolve_appimage_cache_root(home_dir: Path) -> Path:
+    xdg_cache = os.environ.get("XDG_CACHE_HOME", "")
+    cache_base = Path(xdg_cache) if xdg_cache and os.path.isabs(xdg_cache) else home_dir / ".cache"
+    return (cache_base / "orca" / "appimage").resolve()
+
+
+def _resolve_user_config_orca_dir(home_dir: Path) -> Path:
+    xdg_config = os.environ.get("XDG_CONFIG_HOME", "")
+    config_base = Path(xdg_config) if xdg_config and os.path.isabs(xdg_config) else home_dir / ".config"
+    return (config_base / "orca").resolve()
+
+
+def _is_extractable_appimage(appimage_path: Path) -> bool:
+    if not appimage_path.is_file():
+        return False
+    try:
+        with appimage_path.open("rb") as handle:
+            head = handle.read(4096)
+    except OSError:
+        return False
+    return head.startswith(b"\x7fELF") or b"--appimage-extract" in head
+
+
+def _build_stable_launcher_script(launcher_dir: Path) -> str:
+    quoted_dir = _quote_posix_double_quoted_apostrophe(str(launcher_dir))
+    return (
+        "#!/usr/bin/env bash\n"
+        f"{LAUNCHER_MARKER}\n"
+        "shopt -s execfail\n"
+        f"launcher_dir={quoted_dir}\n"
+        "deadline=$((SECONDS + 5))\n"
+        "while (( SECONDS <= deadline )); do\n"
+        '  launcher="$launcher_dir/installed"\n'
+        '  if [[ -f "$launcher" && -x "$launcher" ]]; then\n'
+        '    exec "$launcher" "$@"\n'
+        "  fi\n"
+        "  sleep 0.1\n"
+        "done\n"
+        "printf 'Orca CLI is not ready; reopen Orca or register the CLI again.\\n' >&2\n"
+        "exit 1\n"
+    )
+
+
+def _build_bare_orca_dispatcher_script(stable_launcher_path: Path) -> str:
+    quoted_launcher = _quote_posix_double_quoted_apostrophe(str(stable_launcher_path))
+    quoted_marker = _quote_posix_double_quoted_apostrophe(DISPATCHER_MARKER)
+    return (
+        "#!/usr/bin/env bash\n"
+        f"{DISPATCHER_MARKER}\n"
+        f"launcher={quoted_launcher}\n"
+        "gone() {\n"
+        "  printf 'orca: Orca is no longer installed at %s. Remove %s to stop this message.\\n'"
+        ' "$launcher" "${BASH_SOURCE[0]}" >&2\n'
+        "  exit 127\n"
+        "}\n"
+        'if [ -n "${ORCA_CLI_BIN_DIR-}${ORCA_PANE_KEY-}${ORCA_USER_DATA_PATH-}" ]; then\n'
+        '  [ -x "$launcher" ] && exec "$launcher" "$@"\n'
+        "  gone\n"
+        "fi\n"
+        'IFS=: read -r -a path_dirs <<< "${PATH-}"\n'
+        'for dir in "${path_dirs[@]}"; do\n'
+        '  case "$dir" in /*) ;; *) continue ;; esac\n'
+        '  candidate="$dir/orca"\n'
+        '  if [ -f "$candidate" ] && [ -x "$candidate" ] && ! [ "$candidate" -ef "${BASH_SOURCE[0]}" ]; then\n'
+        '    marker=""\n'
+        '    { IFS= read -r _ && IFS= read -r marker; } < "$candidate" 2>/dev/null\n'
+        f'    if [ "$marker" != {quoted_marker} ]; then\n'
+        '      exec "$candidate" "$@"\n'
+        "    fi\n"
+        "  fi\n"
+        "done\n"
+        '[ -x "$launcher" ] && exec "$launcher" "$@"\n'
+        "gone\n"
+    )
+
+
+def _build_bare_orca_cli_shim_script(stable_launcher_path: Path) -> str:
+    quoted_launcher = _quote_posix_double_quoted_apostrophe(str(stable_launcher_path))
+    return f"#!/usr/bin/env bash\nexec {quoted_launcher} \"$@\"\n"
+
+
+def _atomic_write_executable(target_path: Path, content: str) -> None:
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = target_path.with_name(f".{target_path.name}.{os.getpid()}.tmp")
+    try:
+        tmp_path.write_text(content, encoding="utf-8")
+        tmp_path.chmod(0o755)
+        os.replace(tmp_path, target_path)
+    finally:
+        if tmp_path.exists():
+            tmp_path.unlink()
+
+
+def _atomic_symlink(target: str, link_path: Path) -> None:
+    link_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_link = link_path.with_name(f".{link_path.name}.{os.getpid()}.lnk")
+    try:
+        if tmp_link.exists() or tmp_link.is_symlink():
+            tmp_link.unlink()
+        os.symlink(target, tmp_link)
+        os.replace(tmp_link, link_path)
+    finally:
+        if tmp_link.exists() or tmp_link.is_symlink():
+            tmp_link.unlink()
+
+
+def _can_replace_bare_orca_dispatcher(dispatcher_path: Path) -> bool:
+    if dispatcher_path.is_symlink():
+        try:
+            link_target = os.readlink(dispatcher_path)
+        except OSError:
+            return False
+        return "orca" in link_target
+    if not dispatcher_path.exists():
+        return True
+    if not dispatcher_path.is_file():
+        return False
+    try:
+        text = dispatcher_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    lines = text.splitlines()
+    if len(lines) > 1 and lines[1] == DISPATCHER_MARKER:
+        return True
+    if LEGACY_FUSE_MOUNT_TOKEN in text:
+        return True
+    return False
+
+
+def repair_local_orca_cli(appimage_path: Path, *, home_dir: Path | None = None) -> bool:
+    """Extract the AppImage CLI runtime and repair ~/.local/bin/orca + linux-orca-cli-shim."""
+    if os.environ.get("ORCA_SKIP_CLI_REPAIR") == "1" or not _is_extractable_appimage(appimage_path):
+        return False
+
+    resolved_home = (home_dir or Path.home()).resolve()
+    resolved_appimage = appimage_path.resolve()
+    cache_root = _resolve_appimage_cache_root(resolved_home)
+    namespace_key = _cache_digest_24(f"{CACHE_NAMESPACE_VERSION}\0{resolved_appimage}")
+    st = resolved_appimage.stat()
+    mtime_ms = st.st_mtime_ns // 1_000_000
+    generation_key = _cache_digest_24(f"{st.st_dev}\0{st.st_ino}\0{st.st_size}\0{mtime_ms}")
+
+    namespace_dir = cache_root / namespace_key
+    gen_root = namespace_dir / generation_key
+    payload_launcher = gen_root / "resources" / "bin" / "orca-ide"
+
+    if not (payload_launcher.is_file() and os.access(payload_launcher, os.X_OK)):
+        namespace_dir.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=namespace_dir, prefix=".extract-") as staging_str:
+            staging_dir = Path(staging_str)
+            nice_bin = shutil.which("nice")
+            cmd = (
+                [nice_bin, "-n", "19", str(resolved_appimage), "--appimage-extract"]
+                if nice_bin
+                else [str(resolved_appimage), "--appimage-extract"]
+            )
+            res = subprocess.run(
+                cmd,
+                cwd=str(staging_dir),
+                capture_output=True,
+                text=True,
+                timeout=180,
+                check=False,
+            )
+            extracted_root = staging_dir / "squashfs-root"
+            extracted_launcher = extracted_root / "resources" / "bin" / "orca-ide"
+            if res.returncode != 0 or not extracted_launcher.is_file():
+                err = (res.stderr or res.stdout).strip()
+                print(
+                    f"Warning: failed to extract CLI runtime from {resolved_appimage}: {err}",
+                    file=sys.stderr,
+                )
+                return False
+            if gen_root.exists():
+                shutil.rmtree(gen_root, ignore_errors=True)
+            os.replace(extracted_root, gen_root)
+
+    source_record = namespace_dir / APPIMAGE_SOURCE_RECORD_NAME
+    source_tmp = namespace_dir / f".{APPIMAGE_SOURCE_RECORD_NAME}.{os.getpid()}.tmp"
+    try:
+        source_tmp.write_text(str(resolved_appimage), encoding="utf-8")
+        source_tmp.chmod(0o600)
+        os.replace(source_tmp, source_record)
+    finally:
+        if source_tmp.exists():
+            source_tmp.unlink()
+
+    launcher_dir = cache_root / "launcher"
+    stable_launcher = launcher_dir / "orca-ide"
+    if not stable_launcher.exists() or (
+        stable_launcher.is_file()
+        and LAUNCHER_MARKER in stable_launcher.read_text(encoding="utf-8", errors="replace")
+    ):
+        _atomic_write_executable(stable_launcher, _build_stable_launcher_script(launcher_dir))
+    _atomic_symlink(str(payload_launcher), launcher_dir / "installed")
+
+    for child in namespace_dir.iterdir():
+        if (
+            child.name != generation_key
+            and CACHE_KEY_RE.match(child.name)
+            and child.is_dir()
+            and not child.is_symlink()
+        ):
+            shutil.rmtree(child, ignore_errors=True)
+
+    local_bin = resolved_home / ".local" / "bin"
+    orca_ide_bin = local_bin / "orca-ide"
+    if not orca_ide_bin.exists() or orca_ide_bin.is_symlink():
+        _atomic_symlink(str(stable_launcher), orca_ide_bin)
+
+    dispatcher_path = local_bin / "orca"
+    if _can_replace_bare_orca_dispatcher(dispatcher_path):
+        if dispatcher_path.is_symlink():
+            dispatcher_path.unlink()
+        _atomic_write_executable(dispatcher_path, _build_bare_orca_dispatcher_script(stable_launcher))
+
+    shim_dir = _resolve_user_config_orca_dir(resolved_home) / "linux-orca-cli-shim"
+    shim_bin = shim_dir / "orca"
+    if shim_dir.is_dir() or shim_bin.is_file():
+        _atomic_write_executable(shim_bin, _build_bare_orca_cli_shim_script(stable_launcher))
+
+    return True
 
 
 def _default_appimage_path() -> Path:
@@ -150,10 +388,13 @@ def restore_stock(appimage_path: Path, backup_path: Path) -> int:
     try:
         shutil.copy2(backup_path, tmp_path)
         tmp_path.chmod(0o755)
+        now_sec = int(time.time())
+        os.utime(tmp_path, (now_sec, now_sec))
         os.replace(tmp_path, appimage_path)
     finally:
         if tmp_path.exists():
             tmp_path.unlink()
+    repair_local_orca_cli(appimage_path)
     print(f"Restored stock AppImage from {backup_path} -> {appimage_path}")
     print("Restart Orca to resume stock stablyai/orca auto-updates.")
     return 0
@@ -245,8 +486,11 @@ def apply_overlay(
         if not force_download and appimage_path.is_file():
             current_b64 = _compute_sha512_b64(appimage_path)
             if current_b64 == expected_b64:
+                repaired = repair_local_orca_cli(appimage_path)
                 print(f"Already up to date: {appimage_path} matches {overlay_repo}@{tag}")
                 print(f"  SHA-512 verified OK ({current_b64[:24]}...)")
+                if repaired:
+                    print(f"  Local CLI verified ({_local_cli_version()})")
                 print("Restart Orca once if still running an older session.")
                 return 0
 
@@ -270,13 +514,18 @@ def apply_overlay(
         print(f"  SHA-512 verified OK ({actual_b64[:24]}...)")
 
         staged_appimage.chmod(0o755)
+        now_sec = int(time.time())
+        os.utime(staged_appimage, (now_sec, now_sec))
         if appimage_path.is_file() and not backup_path.is_file():
             shutil.copy2(appimage_path, backup_path)
             print(f"Saved stock AppImage backup -> {backup_path}")
 
         os.replace(staged_appimage, appimage_path)
 
+    repaired = repair_local_orca_cli(appimage_path)
     print(f"Installed {overlay_repo}@{tag} -> {appimage_path}")
+    if repaired:
+        print(f"Repaired local CLI -> {_local_cli_version()}")
     print("Restart Orca once to activate the overlay build and automatic webomage/orca updates.")
     return 0
 
@@ -294,6 +543,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--apply", action="store_true", help="Download, SHA-512 verify, and install AppImage (default)")
     parser.add_argument("--wait", action="store_true", help="Wait for active CI build before applying")
     parser.add_argument("--force", action="store_true", help="Re-download even if local AppImage SHA-512 matches")
+    parser.add_argument("--repair-cli", action="store_true", help="Extract AppImage CLI and repair ~/.local/bin/orca")
     parser.add_argument("--restore-stock", action="store_true", help="Restore stock AppImage from .stock.bak")
     return parser
 
@@ -306,6 +556,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.status:
         return show_status(appimage_path, backup_path, overlay_repo)
+    if args.repair_cli:
+        if not repair_local_orca_cli(appimage_path):
+            print(f"Error: failed to repair Orca CLI from {appimage_path}", file=sys.stderr)
+            return 1
+        print(f"Repaired local Orca CLI ({_local_cli_version()}) from {appimage_path}")
+        return 0
     if args.restore_stock:
         return restore_stock(appimage_path, backup_path)
     if args.trigger and not args.apply and not args.wait:

@@ -1046,7 +1046,12 @@ def fast_forward_canonical_checkout(
     canonical_root: Path,
     repo_rel_paths: Sequence[str],
 ) -> dict[str, str]:
-    """Fast-forward `beta` in `canonical_root` for landed repos when non-overlapping."""
+    """Fast-forward `beta` in `canonical_root` for landed repos, preserving live Obsidian vault edits (T653)."""
+    scripts_dir = Path(__file__).resolve().parent
+    if str(scripts_dir) not in sys.path:
+        sys.path.insert(0, str(scripts_dir))
+    from obsidian_vault_guard import fast_forward_preserving_vault  # noqa: PLC0415
+
     outcomes: dict[str, str] = {}
     ordered = [r for r in repo_rel_paths if r != "."] + (["."] if "." in repo_rel_paths else [])
     for rel_path in ordered:
@@ -1062,10 +1067,17 @@ def fast_forward_canonical_checkout(
         if fetch_res.returncode != 0:
             outcomes[rel_path] = "fetch_failed"
             continue
-        ff_res = _git(repo_dir, "merge", "--ff-only", BASE_REF)
-        if ff_res.returncode == 0:
+        ff_res = fast_forward_preserving_vault(repo_dir, BASE_REF)
+        if ff_res.ok:
             new_sha = _git(repo_dir, "rev-parse", "--short", "HEAD").stdout.strip()
             outcomes[rel_path] = f"fast_forwarded:{new_sha}"
+            if ff_res.preserved_files or ff_res.merged_files or ff_res.healed_json:
+                print(
+                    f"[session-complete] {rel_path}: fast-forwarded to {new_sha} while preserving Obsidian vault "
+                    f"(healed={len(ff_res.healed_json)}, preserved={len(ff_res.preserved_files)}, merged={len(ff_res.merged_files)})",
+                    file=sys.stderr,
+                    flush=True,
+                )
         else:
             outcomes[rel_path] = "skipped_non_ff_or_dirty_overlap"
     return outcomes

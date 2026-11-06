@@ -285,12 +285,18 @@ def check_repos() -> dict:
     notes: list[str] = []          # reported, but never a conformance failure (client mode)
     dirty_total = 0
     for repo in found:
-        porcelain_lines = [ln for ln in _git(repo, "status", "--porcelain").splitlines() if ln]
-        benign_obsidian = [ln for ln in porcelain_lines if _is_benign_obsidian_churn(repo, ln)]
-        dirty = len(porcelain_lines) - len(benign_obsidian)
+        sys.path.insert(0, str(ESTATE / "scripts"))
+        from obsidian_vault_guard import inspect_repo_worktree  # noqa: PLC0415
+
+        cls = inspect_repo_worktree(repo, include_untracked=True)
+        dirty = len(cls.blocking_dirty)
         dirty_total += dirty
-        if benign_obsidian:
-            notes.append(f"{repo.name}: {len(benign_obsidian)} obsidian whitespace-only churn (vault open)")
+        if cls.noop_obsidian_json:
+            notes.append(f"{repo.name}: {len(cls.noop_obsidian_json)} obsidian whitespace-only churn (vault open)")
+        if cls.live_vault_edits:
+            notes.append(
+                f"{repo.name}: {len(cls.live_vault_edits)} live obsidian vault edit(s) isolated from deploy"
+            )
         branch = _git(repo, "branch", "--show-current")
         ahead = _git(repo, "rev-list", "--count", "@{u}..HEAD")
         # 🔑 Working-tree state is a different question from declaration conformance, and only in

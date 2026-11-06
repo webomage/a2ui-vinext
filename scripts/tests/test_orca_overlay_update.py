@@ -120,9 +120,14 @@ exit 1
     def _run_script(self, *args: str) -> subprocess.CompletedProcess[str]:
         env = os.environ.copy()
         env["HOME"] = str(self.root)
+        env.pop("XDG_CACHE_HOME", None)
+        env.pop("XDG_CONFIG_HOME", None)
+        env.pop("ORCA_CLI_BIN_DIR", None)
+        env.pop("ORCA_PANE_KEY", None)
+        env.pop("ORCA_USER_DATA_PATH", None)
         env["ORCA_APPIMAGE_PATH"] = str(self.appimage_path)
         env["ORCA_OVERLAY_REPO"] = "webomage/orca"
-        env["PATH"] = f"{self.bin_dir}:{env.get('PATH', '')}"
+        env["PATH"] = f"{self.bin_dir}:/usr/local/bin:/usr/bin:/bin"
         return subprocess.run(
             [sys.executable, str(SCRIPT_PATH), *args],
             env=env,
@@ -190,6 +195,92 @@ exit 1
         status = self._run_script("--status")
         self.assertEqual(status.returncode, 0, msg=status.stderr)
         self.assertIn("v1.4.249-w0m.1", status.stdout)
+
+    def _fake_appimage_bytes(self, version: str) -> bytes:
+        script = f"""#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${{1:-}}" == "--appimage-extract" ]]; then
+  mkdir -p squashfs-root/resources/bin
+  cat > squashfs-root/resources/bin/orca-ide <<'EOF'
+#!/usr/bin/env bash
+if [[ "${{1:-}}" == "--version" ]]; then
+  echo "{version}"
+  exit 0
+fi
+echo "orca-ide:{version}:$*"
+EOF
+  chmod 755 squashfs-root/resources/bin/orca-ide
+  exit 0
+fi
+echo "appimage:{version}"
+"""
+        return script.encode("utf-8")
+
+    def test_apply_extracts_cli_heals_legacy_fuse_wrapper_and_shim_and_prunes_old_generations(self) -> None:
+        local_bin = self.root / ".local" / "bin"
+        local_bin.mkdir(parents=True)
+        legacy_orca = local_bin / "orca"
+        legacy_orca.write_text(
+            "#!/usr/bin/env bash\n"
+            "MOUNT=$(ls -1dt /tmp/.mount_orca-* 2>/dev/null | head -n 1 || true)\n"
+            'echo "orca runtime mount not found under /tmp/.mount_orca-*" >&2\n'
+            "exit 1\n",
+            encoding="utf-8",
+        )
+        legacy_orca.chmod(0o755)
+
+        shim_dir = self.root / ".config" / "orca" / "linux-orca-cli-shim"
+        shim_dir.mkdir(parents=True)
+        shim_orca = shim_dir / "orca"
+        shim_orca.write_text(
+            "#!/usr/bin/env bash\nruntime_root='/tmp/.mount_orca-stale'\nexit 1\n",
+            encoding="utf-8",
+        )
+        shim_orca.chmod(0o755)
+
+        self._stage_release("v1.4.251-w0m.1", self._fake_appimage_bytes("1.4.251-w0m.1"))
+        first = self._run_script("--apply")
+        self.assertEqual(first.returncode, 0, msg=f"stderr={first.stderr}\nstdout={first.stdout}")
+
+        clean_env = {"HOME": str(self.root), "PATH": "/usr/local/bin:/usr/bin:/bin"}
+        cli_v1 = subprocess.run([str(legacy_orca), "--version"], env=clean_env, capture_output=True, text=True, check=False)
+        self.assertEqual(cli_v1.returncode, 0, msg=cli_v1.stderr)
+        self.assertEqual(cli_v1.stdout.strip(), "1.4.251-w0m.1")
+        self.assertIn("# orca-serve-bare-orca-dispatcher", legacy_orca.read_text(encoding="utf-8"))
+
+        shim_v1 = subprocess.run([str(shim_orca), "--version"], env=clean_env, capture_output=True, text=True, check=False)
+        self.assertEqual(shim_v1.returncode, 0, msg=shim_v1.stderr)
+        self.assertEqual(shim_v1.stdout.strip(), "1.4.251-w0m.1")
+
+        self._stage_release("v1.4.251-w0m.2", self._fake_appimage_bytes("1.4.251-w0m.2"))
+        second = self._run_script("--apply")
+        self.assertEqual(second.returncode, 0, msg=second.stderr)
+
+        cli_v2 = subprocess.run([str(legacy_orca), "--version"], env=clean_env, capture_output=True, text=True, check=False)
+        self.assertEqual(cli_v2.returncode, 0, msg=cli_v2.stderr)
+        self.assertEqual(cli_v2.stdout.strip(), "1.4.251-w0m.2")
+
+        cache_root = self.root / ".cache" / "orca" / "appimage"
+        namespaces = [p for p in cache_root.iterdir() if p.is_dir() and p.name != "launcher"]
+        self.assertEqual(len(namespaces), 1)
+        generations = [p for p in namespaces[0].iterdir() if p.is_dir()]
+        self.assertEqual(len(generations), 1)
+
+    def test_repair_cli_preserves_foreign_orca_binary(self) -> None:
+        local_bin = self.root / ".local" / "bin"
+        local_bin.mkdir(parents=True)
+        foreign_orca = local_bin / "orca"
+        foreign_content = "#!/usr/bin/env bash\necho gnome-orca-screen-reader\n"
+        foreign_orca.write_text(foreign_content, encoding="utf-8")
+        foreign_orca.chmod(0o755)
+
+        self.appimage_path.write_bytes(self._fake_appimage_bytes("1.4.251-w0m.2"))
+        self.appimage_path.chmod(0o755)
+        proc = self._run_script("--repair-cli")
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertEqual(foreign_orca.read_text(encoding="utf-8"), foreign_content)
+        orca_ide_bin = local_bin / "orca-ide"
+        self.assertTrue(orca_ide_bin.is_symlink())
 
 
 if __name__ == "__main__":

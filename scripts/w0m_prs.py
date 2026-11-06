@@ -2664,6 +2664,8 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
     "fix/mobile-markdown-external-tab-read",                # stablyai/orca#37035
     "feat/nested-subfolder-git-and-sdlc-repo",              # stablyai/orca#37510
     "feat/mobile-session-tab-reorder",                      # stablyai/orca#37511
+    "feat/mobile-terminal-triple-tap-enter",                # stablyai/orca#37995
+    "feat/mobile-four-side-edge-arrows",                    # stablyai/orca#38612
     "feat/mlx-lm-gemma4-arch",                              # oxiglade/mlx-rs#442
     "perf/gemma4-kv-shared-prefill-and-moe-sanitize",       # ml-explore/mlx-lm#2026
 }
@@ -2672,8 +2674,6 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
 INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
     "feat/audit-host-services",
     "feat/w0m-overlay-updater-feed",  # T619: webomage/orca self-healing overlay release feed runtime branch
-    "fix/mobile-live-input-prompt-backload",  # T621: webomage/orca overlay branch
-    "feat/subagent-display-and-floating-category",  # T621: webomage/orca overlay branch
     "fix/gemma4-turboquant-sdpa256-bounds",
     "w0m/v1.7.0-astro",
     "PR_restructured",
@@ -3280,29 +3280,109 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
         ),
     },
     "stablyai/orca:fix/terminal-smooth-resize-and-replay": {
-        "ticket": "T635",
-        "title": "fix(terminal,mobile): hold painted surface across SIGWINCH resize and ?2026 repaint bursts",
+        "ticket": "T635 / T653",
+        "title": "fix(terminal,mobile): suppress redundant SIGWINCH redraws and dynamically hold streaming resize bursts",
         "why": (
             "Interactive CLI coding agents (`claude`, `codex`, `agy`, `opencode`) render rich transcripts in the normal scrollback buffer "
-            "rather than the alternate screen (`?1049h`). When a Desktop split pane, sidebar, or Mobile viewport/keyboard resizes (`SIGWINCH`), "
-            "these TUIs clear and re-stream their entire conversation transcript across multiple PTY chunks—producing a jarring top-to-bottom "
-            "long-scrolling waterfall on both Desktop xterm and Mobile WebView."
+            "rather than the alternate screen (`?1049h`). When a Desktop split pane, sidebar, `SessionRestoredBanner`, or Mobile viewport/keyboard "
+            "resizes (`SIGWINCH`), these TUIs clear and re-stream their entire conversation transcript across dozens of PTY chunks—producing "
+            "jarring top-to-bottom long-scrolling waterfalls, while redundant no-op `SIGWINCH` signals on reattach, recurring `1000ms` grid-drift "
+            "probes, and `SessionRestoredBanner` title-space toggles triggered repeated full-transcript redraws without any real geometry change."
         ),
         "what_for": (
-            "Freezes the last painted terminal frame across foreground `SIGWINCH` resize/reflow repaint bursts and coalesces multi-chunk "
-            "synchronized output (`\\x1b[?2026h...\\x1b[?2026l`) on Mobile so layout and window-size redraws reveal settled output in one "
-            "clean swap without scrolling waterfalls or input latency."
+            "Eliminates redundant no-op `SIGWINCH` and layout-refit triggers across Desktop and Mobile, and dynamically holds the last painted "
+            "terminal frame across multi-chunk `SIGWINCH` / `?2026` rewrite bursts (up to `1200ms` while rewrite chunks actively stream) so "
+            "resizes and tab reveals swap cleanly without visible top-to-bottom scrolling waterfalls."
         ),
         "how": (
-            "- **Desktop (`src/renderer/src/components/terminal-pane/pty-connection/pty-resize-repaint-hold.ts`)**: Captures the painted "
-            "`.xterm-screen` canvas via `beginTerminalReplayPresentation` on foreground `SIGWINCH`, holds across queued/parsed repaint chunks "
-            "(`90ms` initial wait, `48ms` post-parse settle, `380ms` max cap), restores bottom scroll anchor when previously pinned, and yields "
-            "immediately on user keystrokes.\n"
-            "- **Mobile (`mobile/src/terminal/terminal-write-coalescer.ts` & `mobile/src/terminal/document/resize-repaint-hold.ts`)**: Adds "
-            "`beginResizeBurst()` (`220ms` burst / `56ms` quiet settle) and DECSET `?2026` frame-boundary holding (`160ms` safety cap) to the "
-            "bridge coalescer, paired with a WebView canvas bitmap hold across `resize`/`reflow` redraws.\n"
-            "- **Verification**: Desktop (`pty-resize-repaint-hold.test.ts`) and Mobile (`terminal-write-coalescer.test.ts`, "
-            "`document-parse-time-effects.test.ts`, `native-document-bundle.test.ts`) Vitest suites, `tsc --noEmit`, and `oxlint` clean."
+            "- **Desktop (`pty-resize-repaint-hold.ts`, `pty-input-forward.ts`, `foreground-grid-drift-probe.ts`, `session-restored-banner-pane-state.ts`, `remote-program-redraw.ts`, `RetainedPaneHost.tsx`)**: "
+            "Captures `.xterm-screen` on foreground `SIGWINCH` and dynamically extends the hold up to `1200ms` while active rewrite chunks keep arriving (`< 60ms` inter-chunk gap, `90ms` initial no-output timeout); "
+            "gates `createReattachGridPush` `transport.resize` + `SIGWINCH` on actual dimension change; skips recurring `1000ms` `proposeDimensions()` polling once settled; floats `SessionRestoredBanner` as a non-layout overlay; "
+            "arms `resizeRepaintHold` across `remote-program-redraw` `rows +/- 1` nudges; and deduplicates `RetainedPaneHost` fit events by measured `width`/`height`.\n"
+            "- **Mobile (`terminal-write-coalescer.ts`, `resize-repaint-hold.ts`, `terminal-viewport-refit.ts`, `use-terminal-webview-handle.ts`)**: "
+            "Dynamically extends `beginResizeBurst()` and WebView canvas hold across active streaming rewrite chunks (up to `1200ms` cap), settles transient height-only refits (`280ms`), skips forced `unsubscribe`+`subscribe` when `updateViewport` succeeds with `applied: false`, and avoids mid-`?2026` `flushNow()` in `readPromptBackload`.\n"
+            "- **Verification**: Desktop and Mobile Vitest suites, `oxlint --deny-warnings`, and `tsc --noEmit` passing cleanly."
+        ),
+    },
+    "stablyai/orca:fix/mobile-terminal-theme-enforcement": {
+        "ticket": "T641 / T653",
+        "title": "fix(terminal,mobile): enforce light/dark appearance across agent sessions, native chat, and WebViews",
+        "why": (
+            "Agent TUI sessions (`claude`, `codex`, `opencode`, `agy`) and terminal/chat surfaces rendered black or dark-on-dark in Light mode across Mobile and Desktop due to multiple interacting gaps:\n"
+            "1. Mobile never forwarded its active Light/Dark foreground/background colors on `session.tabs.createTerminal`, `agent.launch`, `agent.launchReplay`, or `terminal.setViewerColors`, so hosts answered TUI `OSC 10/11` and `CSI ?996n` queries with dark `#282c34`—causing TUIs to bake dark RGB ANSI backgrounds into cell attributes.\n"
+            "2. Mobile `TerminalWebView` (native + web) baked `#1a1b26` into `document.body` and provisional xterm scope and left `.xterm-viewport` at `#000`.\n"
+            "3. Desktop `native-chat-appearance-style.ts` defaulted `terminalUseSeparateLightTheme` to `false` with a `#000000` fallback, `terminal-appearance.ts` published UI `appearance.mode` (`'light'`) alongside dark terminal backgrounds when `terminalUseSeparateLightTheme === false` (mismatching `?996n`/mode `2031` vs `OSC 11`), and `terminalOptions` omitted initial `theme` on xterm creation."
+        ),
+        "what_for": (
+            "Ensures interactive CLI agents, Native Chat transcripts, Desktop `TerminalPane`, and Mobile `TerminalWebView` (iOS, Android, and Web) "
+            "consistently honor Light and Dark appearance from frame zero—both visually and in host-answered PTY color queries (`OSC 10/11`, `CSI ?996n`, DEC mode `2031`)."
+        ),
+        "how": (
+            "- **Host & Mobile RPC (`session-tabs-schemas-params.ts`, `agent-launch-params.ts`, `runtime-rpc-mobile-method-routing.ts`, `mobile-terminal-create.ts`, `agent-launch-surfaces.ts`)**: "
+            "Routes `terminal.setViewerColors` for mobile clients and forwards `terminalColorQueryReplies` from Mobile's active `colorScheme` across terminal/agent launches into `admitPairedCreateColors`.\n"
+            "- **Mobile WebView (`TerminalWebView.tsx`, `TerminalWebView.web.tsx`, `terminal-webview-html.ts`, `document-style.ts`, `document-scope.ts`)**: "
+            "Seeds initial Light/Dark background and foreground into `documentElement`, `body`, host container, and provisional xterm scope, and makes `.xterm`/`.xterm-viewport` transparent.\n"
+            "- **Desktop (`native-chat-appearance-style.ts`, `terminal-appearance.ts`, `terminal-pane-manager-options.ts`, `use-document-appearance.ts`, `terminal.css`)**: "
+            "Aligns `terminalUseSeparateLightTheme ?? true` and light fallback colors, derives `effectiveMode` from terminal background luminance, supplies initial `theme` to `terminalOptions`, and applies pre-hydration document theme.\n"
+            "- **Verification**: `48/48` Desktop and `31/31` Mobile Vitest tests plus `oxlint --deny-warnings` clean."
+        ),
+    },
+    "stablyai/orca:perf/terminal-chat-redraw-and-tab-caching": {
+        "ticket": "T653",
+        "title": "perf(terminal,chat): coalesce streaming redraws and bound warm tab caches",
+        "why": (
+            "Active agent chat and terminal sessions caused sustained high CPU/GPU redraw churn and unbounded warm-surface memory growth across Desktop and Mobile:\n"
+            "1. Single-pane tabs in Native Chat view (`NativeChatPaneCover`) kept `rendererVisible === true` on the covered `TerminalPane`, leaving main-to-renderer PTY streaming at foreground priority, WebGL active, and xterm parsing invisible TUI spinner output underneath the chat cover.\n"
+            "2. DEC `?2026` synchronized-output holding (`shouldProtectNativeWindowsSynchronizedOutput`) was gated strictly to Windows ConPTY, `FOREGROUND_IMMEDIATE_BUDGET_CHARS` (`128 KiB` / `500ms`) bypassed batching on sustained unattended TUI redraw bursts, and `shouldForceForegroundRenderRefresh` forced redundant DOM `refreshVisibleRows` + `scheduleViewportSettleRefresh` repaints over WebGL.\n"
+            "3. Hidden `StructuredAgentSessionPaneOverlayLayer` tabs and Mobile `TerminalPaneView` `WebView` instances remained mounted without bound across tab switches, and `useNativeChatPacedText` kept `requestAnimationFrame` reveal loops and fade timers running while backgrounded."
+        ),
+        "what_for": (
+            "Eliminates invisible background xterm/WebGL rendering under Native Chat covers, holds split DEC `?2026` synchronized frames cross-platform while coalescing sustained unattended streaming bursts, skips redundant DOM double-refreshes on WebGL panes, pauses hidden text-reveal `rAF` loops, and bounds warm tab caches across Desktop and Mobile."
+        ),
+        "how": (
+            "- **Desktop (`use-terminal-pane-global-effects.ts`, `pane-host-capability-flags.ts`, `write-pty-output-to-xterm.ts`, `foreground-output-budgets.ts`, `foreground-output-refresh.ts`, `terminal-hidden-view-parking.ts`)**: "
+            "Treats single-pane Native Chat covers as hidden for PTY visibility/WebGL, enables DEC `?2026` frame holding cross-platform while keeping cursor-show stripping and `1000ms` cursor-restore coalescing ConPTY-only, caps unattended immediate foreground writes to `4 KiB` / `500ms` (`scheduleDrain(0)` coalescing beyond that), skips redundant DOM rewrite refresh when WebGL is active on non-ConPTY hosts, and tightens hot-retain limits (`3` tabs / `2` worktrees).\n"
+            "- **Native Chat & Overlay (`use-native-chat-paced-text.ts`, `use-mobile-native-chat-paced-text.ts`, `StructuredAgentSessionPaneOverlayLayer.tsx`)**: "
+            "Pauses 60fps `rAF` + fade timers while backgrounded (`document.hidden` / `AppState !== 'active'`) and cold-parks inactive structured chat overlay slots beyond LRU `2`.\n"
+            "- **Mobile (`MobileSessionActiveContent.tsx`, `TerminalPaneView.tsx`, `use-warm-terminal-handles.ts`, `use-mobile-session-terminal-webview.ts`)**: "
+            "Memoizes `TerminalPaneView`, bounds mounted hidden `TerminalWebView` instances to a `3`-handle warm LRU, and cleans up `webReadyHandlesRef` / `initializedHandlesRef` when evicted WebViews unmount.\n"
+            "- **Verification**: `155/155` Desktop and `23/23` Mobile Vitest tests plus `oxlint --deny-warnings` passing cleanly."
+        ),
+    },
+    "stablyai/orca:fix/mobile-live-input-prompt-backload": {
+        "ticket": "T621 / T653",
+        "title": "fix(mobile): backload existing prompt text when opening Live Input and prevent duplicate seed strokes",
+        "why": (
+            "When switching a mobile terminal into Live Input mode after partially typing a command or prompt in the shell/TUI, the Live Input "
+            "composer started empty—causing edits or backspace gestures to desynchronize from the terminal's actual prompt line or re-send "
+            "already-present characters."
+        ),
+        "what_for": (
+            "Reads the current prompt line tail from the active xterm buffer (`readPromptBackload`) when entering Live Input mode so existing "
+            "prompt text is pre-seeded without re-transmitting those characters to the PTY."
+        ),
+        "how": (
+            "- **`mobile/src/terminal/document/prompt-backload.ts` & `use-terminal-webview-handle.ts`**: Extracts active cursor-line prompt text "
+            "after stripping shell/TUI prompt prefixes and exposes `readPromptBackload()` on `TerminalWebViewHandle`.\n"
+            "- **`mobile/src/session/use-mobile-session-live-input.ts`**: Seeds the Live Input buffer baseline without emitting duplicate strokes.\n"
+            "- **Verification**: Unit tests in `prompt-backload.test.ts` and `use-mobile-session-live-input.test.ts`."
+        ),
+    },
+    "stablyai/orca:feat/subagent-display-and-floating-category": {
+        "ticket": "T621 / T653",
+        "title": "feat(sidebar,chat): group floating/subagent sessions and surface live subagent activity badges",
+        "why": (
+            "Dispatched subagent and floating ad-hoc sessions mixed flatly with primary feature worktrees or lacked compact live subagent "
+            "activity indicators in sidebar cards and Native Chat headers, making multi-agent orchestration harder to scan at a glance."
+        ),
+        "what_for": (
+            "Groups floating/ad-hoc sessions cleanly in the workspace sidebar and surfaces live subagent status/count badges across worktree "
+            "cards and structured/terminal agent headers."
+        ),
+        "how": (
+            "- **Sidebar & Subagent Projection (`src/renderer/src/components/sidebar/*`, `src/shared/agent-session/*`)**: Categorizes floating "
+            "and child subagent sessions with live status counts and collapsible grouping.\n"
+            "- **Verification**: Renderer and shared unit tests passing with `oxlint --deny-warnings` clean."
         ),
     },
     "stablyai/orca:feat/system-and-docker-monitors": {
@@ -3735,7 +3815,7 @@ def _inspect_fork_and_branches(repo_path: Path, fetch: bool) -> tuple[dict[str, 
             behind_u, ahead_u = int(cparts[0]), int(cparts[1])
         except ValueError:
             continue
-        if ahead_u <= 0 or behind_u > 0:
+        if ahead_u <= 0:
             continue
         align = evaluate_pr_alignment(repo_path, ref_short, upstream_ref)
         if align.get("isObsolete"):

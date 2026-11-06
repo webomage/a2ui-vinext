@@ -33,9 +33,15 @@ import shutil
 import subprocess
 import sys
 from collections.abc import Callable, Iterator, Mapping, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
+
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from obsidian_vault_guard import inspect_repo_worktree  # noqa: E402
 
 SCHEMA_VERSION = 1
 INLINE_CRED_RE = r"(postgres|postgresql|mysql|mongodb|redis|amqp)://[A-Za-z0-9._%+-]+:[A-Za-z0-9._%+~!-]{6,}@"
@@ -50,6 +56,7 @@ class TreeSetState:
     dirty_repos: list[str]
     policy_digest: str
     tree_set_digest: str
+    vault_dirty_files: dict[str, list[str]] = field(default_factory=dict)
 
     @property
     def is_clean(self) -> bool:
@@ -143,6 +150,7 @@ def inspect_tree_set(estate_root: Path) -> TreeSetState:
     repo_paths = discover_estate_repos(root)
     repos: dict[str, str] = {}
     dirty: list[str] = []
+    vault_dirty: dict[str, list[str]] = {}
     for rel in repo_paths:
         rdir = root if rel == "." else (root / rel)
         rc_sha, sha = _git_capture(rdir, "rev-parse", "HEAD")
@@ -151,9 +159,11 @@ def inspect_tree_set(estate_root: Path) -> TreeSetState:
             repos[rel] = "unresolved"
             continue
         repos[rel] = sha
-        rc_st, st = _git_capture(rdir, "status", "--porcelain", "--untracked-files=no")
-        if rc_st != 0 or bool(st):
+        cls = inspect_repo_worktree(rdir, include_untracked=False)
+        if not cls.is_runtime_clean:
             dirty.append(rel)
+        if cls.live_vault_edits:
+            vault_dirty[rel] = cls.live_vault_edits
     policy_digest = compute_policy_digest(root)
     canonical_payload = json.dumps(
         {
@@ -171,6 +181,7 @@ def inspect_tree_set(estate_root: Path) -> TreeSetState:
         dirty_repos=dirty,
         policy_digest=policy_digest,
         tree_set_digest=digest,
+        vault_dirty_files=vault_dirty,
     )
 
 

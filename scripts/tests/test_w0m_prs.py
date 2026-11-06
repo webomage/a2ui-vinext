@@ -502,11 +502,13 @@ def main() -> int:
     # 8f. Contribution Proposals & Owner-Confirmed Submission Gate (T593, T608, T621)
     proposals_list = w0m_prs.build_pr_proposals()
     check(
-        "build_pr_proposals returns 27 contribution proposals including T608, T618, T621, T635, and T638 PRs",
-        len(proposals_list) == 27
+        "build_pr_proposals returns 31 contribution proposals including T608, T618, T621, T635, T638, and T653 PRs",
+        len(proposals_list) == 31
         and any(p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list)
-        and any(p["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter" for p in proposals_list),
+        and any(p["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter" for p in proposals_list)
+        and any(p["key"] == "stablyai/orca:fix/mobile-terminal-theme-enforcement" for p in proposals_list)
+        and any(p["key"] == "stablyai/orca:perf/terminal-chat-redraw-and-tab-caching" for p in proposals_list),
     )
     check(
         "build_pr_proposals formats structured Why / What For / How markdown body",
