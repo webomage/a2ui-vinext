@@ -2959,7 +2959,6 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
     "feat/mobile-camera-capture-chat",                      # stablyai/orca#37031
     "feat/mobile-live-input-password-mask",                 # stablyai/orca#37032
     "feat/obsidian-ofm-engine",                             # stablyai/orca#37033
-    "fix/mobile-landscape-safe-area-insets",                # stablyai/orca#37034
     "fix/mobile-markdown-external-tab-read",                # stablyai/orca#37035
     "feat/nested-subfolder-git-and-sdlc-repo",              # stablyai/orca#37510
     "feat/mobile-session-tab-reorder",                      # stablyai/orca#37511
@@ -2987,6 +2986,7 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
 INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
     "feat/audit-host-services",
     "feat/w0m-overlay-updater-feed",  # T619: webomage/orca self-healing overlay release feed runtime branch
+    "fix/mobile-landscape-safe-area-insets",  # T662: superseded upstream by stablyai/orca#28749 SideSafeArea (PR #37034 closed)
     "fix/gemma4-turboquant-sdpa256-bounds",
     "w0m/v1.7.0-astro",
     "PR_restructured",
@@ -3163,23 +3163,6 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
             "- **`src/renderer/src/components/editor/markdown-doc-link-slug.ts` & `markdown-doc-links.ts`**: Resolves wikilink slugs and heading "
             "fragments against workspace Markdown entries.\n"
             "- **Verification**: Unit tests in `MarkdownBlockquoteOrCallout.test.tsx` and `markdown-doc-links.test.ts`."
-        ),
-    },
-    "stablyai/orca:fix/mobile-landscape-safe-area-insets": {
-        "ticket": "T433",
-        "title": "fix(mobile): apply horizontal edge padding to MobileHomeScreen in landscape",
-        "why": (
-            "On iPhones with Dynamic Island / sensor housing in landscape orientation, `MobileHomeScreen` only applied `edges={['top']}` "
-            "on its root `SafeAreaView` without horizontal safe-area padding, causing host cards and top-bar controls to clip under the "
-            "left/right hardware cutouts."
-        ),
-        "what_for": (
-            "Applies `useHorizontalEdgePadding()` to `MobileHomeScreen`'s root `SafeAreaView` so the Home host list respects left/right "
-            "safe-area insets in landscape orientation just like session and settings screens."
-        ),
-        "how": (
-            "- **`mobile/src/home/MobileHomeScreen.tsx`**: Imports `useHorizontalEdgePadding` from `../layout/screen-edge-padding` and "
-            "merges `horizontalPadding` into `<SafeAreaView style={[styles.container, horizontalPadding]} edges={['top']}>`."
         ),
     },
     "stablyai/orca:fix/mobile-markdown-external-tab-read": {
@@ -3970,20 +3953,6 @@ PROPOSAL_COMPLIANCE_META: dict[str, dict[str, Any]] = {
         "risk_summary": (
             "Scoped to Markdown preview blockquote/link rendering (`MarkdownBlockquoteOrCallout.tsx`, `markdown-doc-links.ts`); "
             "standard CommonMark/GFM blockquotes and `[text](url)` links render identically. Plain revert restores prior preview."
-        ),
-    },
-    "stablyai/orca:fix/mobile-landscape-safe-area-insets": {
-        "eli5": (
-            "Adds left/right safe-area padding to Orca Mobile's Home screen in landscape orientation so host cards and buttons "
-            "aren't covered by the iPhone Dynamic Island or notch."
-        ),
-        "linked_issue": 24490,
-        "issue_kind": "bug",
-        "visual_change": True,
-        "risk_level": "Low",
-        "risk_summary": (
-            "3-line style merge on `MobileHomeScreen` reusing the existing `useHorizontalEdgePadding()` hook already used on "
-            "session and settings screens (`0` padding in portrait). Plain revert backs out cleanly."
         ),
     },
     "stablyai/orca:fix/mobile-markdown-external-tab-read": {
@@ -5407,7 +5376,12 @@ def submit_prepared_prs(
     fdir = forks_dir or resolve_forks_dir()
     proposals = build_pr_proposals(branch_filter=branch_filter, forks_dir=fdir)
     if only_unsubmitted:
-        proposals = [p for p in proposals if p["branch"] not in ACTIVE_OPEN_PR_HEAD_BRANCHES]
+        proposals = [
+            p
+            for p in proposals
+            if p["branch"] not in ACTIVE_OPEN_PR_HEAD_BRANCHES
+            and p["branch"] not in INTERNAL_OR_SUPERSEDED_BRANCHES
+        ]
 
     results: list[dict[str, Any]] = []
     for item in proposals:

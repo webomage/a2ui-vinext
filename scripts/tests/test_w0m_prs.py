@@ -502,8 +502,8 @@ def main() -> int:
     # 8f. Contribution Proposals & AgDR-0058 Gate-Enforced Auto-Mode Governance (T593, T608, T621, T655)
     proposals_list = w0m_prs.build_pr_proposals(forks_dir=Path("/nonexistent-forks"))
     check(
-        "build_pr_proposals returns 35 contribution proposals including T608, T618, T621, T635, T638, T653, and T655 PRs",
-        len(proposals_list) == 35
+        "build_pr_proposals returns 34 active contribution proposals including T608, T618, T621, T635, T638, T653, and T655 PRs",
+        len(proposals_list) == 34
         and any(p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter" for p in proposals_list)
@@ -1112,8 +1112,11 @@ def main() -> int:
         and "Top Half (`E_MAXIMIZE_TOP`) is proposed as the default" in moksha_snap_prop["body"],
     )
     check(
-        "INTERNAL_OR_SUPERSEDED_BRANCHES excludes T619 feat/w0m-overlay-updater-feed internal branch",
-        "feat/w0m-overlay-updater-feed" in w0m_prs.INTERNAL_OR_SUPERSEDED_BRANCHES,
+        "INTERNAL_OR_SUPERSEDED_BRANCHES excludes T619 feat/w0m-overlay-updater-feed and T662 retired fix/mobile-landscape-safe-area-insets",
+        "feat/w0m-overlay-updater-feed" in w0m_prs.INTERNAL_OR_SUPERSEDED_BRANCHES
+        and "fix/mobile-landscape-safe-area-insets" in w0m_prs.INTERNAL_OR_SUPERSEDED_BRANCHES
+        and "fix/mobile-landscape-safe-area-insets" not in w0m_prs.ACTIVE_OPEN_PR_HEAD_BRANCHES
+        and "stablyai/orca:fix/mobile-landscape-safe-area-insets" not in w0m_prs.CONTRIBUTION_PROPOSALS,
     )
     t633_proposals = [
         p for p in w0m_prs.build_pr_proposals(forks_dir=Path("/nonexistent-forks")) if "T635" in p["ticket"]
