@@ -19,7 +19,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 💤 **paused** |
-| [T656](.tasks/T656.md) | **P1** | **Unify AuthWidget across web and sidebar, consolidate ContextSwitcher + SidebarHatSwitcher into one sidebar control, expose full Me tools on cp, and fix web CTA link contrast** | web | openspec/specs/identity-surface/spec.md | 🟡 **in-progress** |
 | [T290](project/tickets/T290.md) | **P1** | 🆕 **Stage-4 Money had no ticket of its own, and `simulate_payment` is a live billing hole** — found 2026-08-26 on reaching the last unmet stage. Stage-4's exit is *invoices reconcile against Stripe, and simulate_payment is out of the production path*, but it named [[T9]] — **AI token accounting from epic §11**. Same defect stage-2 carried until 2026-08-18: the stage reads as progress whenever the wrong ticket moves. 🔴 `client-api:223` marks an invoice paid AND credits a treasury, and **an authenticated client passes its ownership check on their OWN invoice** — no caller anywhere in source, and `stripe-webhook` already does both writes. ✅ **CLOSED on production 2026-08-26** (release `2026.08.26-1787760232`): the deployed function now answers `400 Unknown action`, identical to the control — it answered `404 Invoice not found` before. A grep could never have told those two apart. ⚠️ Impact is small by LUCK — one invoice, already paid, no Stripe activity yet. 🔀 **Epic moved 2026-09-12**: §33 split into Alfa/Beta, this ticket is now Beta's (§34). | api | ROADMAP §34 | 💤 **paused** |
 
 ## QUEUED & BACKLOG
@@ -34,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T656](.tasks/T656.md) | **P1** | **Unify AuthWidget across web and sidebar, consolidate ContextSwitcher + SidebarHatSwitcher into one sidebar control, expose full Me tools on cp, and fix web CTA link contrast** | web | openspec/specs/identity-surface/spec.md | ✅ **done** |
 | [T655](.tasks/T655.md) · [#655](https://github.com/casualuser/webomage.com/issues/655) | **P1** | **Full auto-mode upstream PR compliance engine (AgDR-0058) and estate-wide external PR contribution-rules audit & remediation** | web, skills, tooling | — | ✅ **done** |
 | [T654](.tasks/T654.md) · [#654](https://github.com/casualuser/webomage.com/issues/654) | **P1** | **Orca Desktop & Mobile: throttle terminal/chat redraws & SIGWINCH bursts, enforce light/dark agent session themes, build 22-branch v1.4.251-w0m.2 overlay + CLI repair, and guard Obsidian vaults** | web, tooling | — | ✅ **done** |
 | [T653](.tasks/T653.md) | **P1** | **Consolidate webomage.com dynamic redirects within Cloudflare Free Tier 10-rule cap and add offline ruleset quota gate** | api, tooling | openspec/specs/me-personal-portal/spec.md | ✅ **done** |
