@@ -2,6 +2,24 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.06-1793942553
+_First deployed: 2026-11-06 05:36:17.597431+00_
+
+### Fixes
+- **infra**: add offline Cloudflare Free-Tier redirect quota gate and self-init supabase-settings-plan (T653) ([T653](file:///.tasks/T653.md))
+- **sdlc**: restore clean preflight --fast, incremental graph union refresh, and bounded automation-health gate (T652) ([T652](file:///.tasks/T652.md))
+- **T651**: harden GitHub ticket mirror, wire session-complete close sync, and backfill gh_issue ([T651](file:///.tasks/T651.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `9a3fbd8` | 2026-11-06 05:36:17.597431+00 |
+| demo | `9a3fbd8` | 2026-11-06 05:35:30.618391+00 |
+| me | `9a3fbd8` | 2026-11-06 05:34:21.476582+00 |
+| cp | `9a3fbd8` | 2026-11-06 05:32:15.38872+00 |
+| web | `9a3fbd8` | 2026-11-06 05:29:43.104815+00 |
+| release | `9a3fbd8` | 2026-11-06 05:27:31.151989+00 |
+| api | `9a3fbd8` | 2026-11-06 05:27:25.64133+00 |
+
 ## 2026.11.05-1793917778
 _First deployed: 2026-11-05 22:42:56.48643+00_
 
