@@ -92,6 +92,14 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      - id: catalog-fresh
+        name: Backstage IDP catalog (catalog-info.yaml + catalog-entities.json) is current (T657)
+        entry: python3 w0m-web/project/scripts/catalog_sync.py --check
+        language: system
+        files: ^(\.w0m/sdlc\.json|\.w0m/skills\.json|project/policies/stacks-policy\.json|catalog-info\.yaml)$
+        pass_filenames: false
+        stages: [pre-commit]
+
       - id: changelog-check
         name: Public disclosure guardrail check on CHANGELOG.md
         entry: python3 scripts/changelog_check.py --path CHANGELOG.md

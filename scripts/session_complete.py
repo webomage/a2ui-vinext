@@ -590,13 +590,19 @@ def sync_worktree_onto_origin_beta(worktree_root: Path) -> list[str]:
                 base_l_prefix = base_l.stdout.rstrip("\n")
                 if cur_l.startswith(base_l_prefix):
                     lesson_tail = cur_l[len(base_l_prefix) :]
-            for gen_rel in ("STATE.md", "TASKS.md", "docs/DECISIONS.md", "LESSONS.md"):
+            for gen_rel in ("STATE.md", "TASKS.md", "docs/DECISIONS.md", "LESSONS.md", "catalog-info.yaml"):
                 if (repo_dir / gen_rel).exists():
                     _git(repo_dir, "checkout", "HEAD", "--", gen_rel)
         elif rel_path == "w0m-web":
-            dash = repo_dir / "docs" / "STATUS-DASHBOARD.html"
-            if dash.exists():
-                _git(repo_dir, "checkout", "HEAD", "--", "docs/STATUS-DASHBOARD.html")
+            for gen_web_rel in (
+                "docs/STATUS-DASHBOARD.html",
+                "docs/SKILLS-CATALOG.md",
+                "project/catalog-entities.json",
+                "project/tickets.json",
+                "project/tickets-sync-index.json",
+            ):
+                if (repo_dir / gen_web_rel).exists():
+                    _git(repo_dir, "checkout", "HEAD", "--", gen_web_rel)
 
         dirty = _git(repo_dir, "status", "--porcelain").stdout.strip()
         if dirty:
@@ -830,6 +836,8 @@ def harvest_and_refresh_surfaces(
             ("tickets_frontmatter_sync", ("scripts/tickets_frontmatter_sync.py",)),
             ("tasks_render", ("scripts/tasks_render.py",)),
             ("decisions_index", ("scripts/decisions_index.py",)),
+            ("catalog_sync", ("w0m-web/project/scripts/catalog_sync.py", "--write")),
+            ("skills_catalog_gen", ("w0m-web/project/scripts/skills_catalog_gen.py", "--write")),
             ("state_doctor", ("scripts/state_doctor.py", "--write")),
         )
         for label, rel_cmd in generators:

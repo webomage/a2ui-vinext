@@ -384,6 +384,9 @@ class SessionCompleteTests(unittest.TestCase):
         wrapup = sdlc.get("session_wrapup") or {}
         self.assertEqual(wrapup.get("command"), "just session-complete")
         self.assertEqual(wrapup.get("script"), "scripts/session_complete.py")
+        gates = set(wrapup.get("verification_gates") or [])
+        self.assertIn("just catalog-check", gates)
+        self.assertIn("just skills-catalog-check", gates)
 
         suites = json.loads((ROOT / "w0m-web" / "project" / "test-suites.json").read_text(encoding="utf-8"))
         recipes = {s.get("recipe") for s in suites.get("suites", [])}
@@ -500,6 +503,51 @@ class SessionCompleteTests(unittest.TestCase):
                 with self.assertRaises(sc.SessionCompleteError) as cm_graph:
                     sc.refresh_canonical_graph_union(canon)
             self.assertEqual(cm_graph.exception.step, "graph_union_refresh_failed")
+
+    def test_harvest_and_refresh_surfaces_runs_catalog_and_skills_catalog_generators(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_str:
+            wt = Path(tmp_str) / "w0m"
+            (wt / "scripts").mkdir(parents=True)
+            (wt / "w0m-web" / "project" / "scripts").mkdir(parents=True)
+            for rel in (
+                "scripts/tickets_frontmatter_sync.py",
+                "scripts/tasks_render.py",
+                "scripts/decisions_index.py",
+                "scripts/state_doctor.py",
+                "w0m-web/project/scripts/catalog_sync.py",
+                "w0m-web/project/scripts/skills_catalog_gen.py",
+            ):
+                (wt / rel).write_text("# stub\n", encoding="utf-8")
+
+            recorded_cmds: list[list[str]] = []
+
+            def fake_run(
+                cmd: list[str],
+                *,
+                cwd: Path,
+                check: bool = False,
+                timeout: float | None = None,
+            ) -> subprocess.CompletedProcess[str]:
+                recorded_cmds.append(list(cmd))
+                return subprocess.CompletedProcess(cmd, 0, "", "")
+
+            with mock.patch.object(sc, "_run", side_effect=fake_run):
+                res = sc.harvest_and_refresh_surfaces(wt, dry_run=False)
+
+            self.assertIn("catalog_sync", res["refreshed"])
+            self.assertIn("skills_catalog_gen", res["refreshed"])
+            self.assertTrue(
+                any(
+                    str(wt / "w0m-web/project/scripts/catalog_sync.py") in cmd and "--write" in cmd
+                    for cmd in recorded_cmds
+                )
+            )
+            self.assertTrue(
+                any(
+                    str(wt / "w0m-web/project/scripts/skills_catalog_gen.py") in cmd and "--write" in cmd
+                    for cmd in recorded_cmds
+                )
+            )
 
 
 if __name__ == "__main__":

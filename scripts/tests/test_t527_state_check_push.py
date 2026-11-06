@@ -209,9 +209,14 @@ class TestT527StateCheckPush(unittest.TestCase):
         self.assertIn("@wom", step_block)
         self.assertIn("^(STATE\\.md|TASKS\\.md|\\.tasks/|ROADMAP\\.md)", step_block)
 
-        # Ticket mirror trigger also queries `git -C .. diff` on `.tasks/`
-        self.assertIn("git -C .. diff --name-only origin/beta HEAD", pre_push_text)
-        self.assertIn("^(\\.tasks/T[0-9].*\\.md|TASKS\\.md)$", pre_push_text)
+        # T652 / T651: fallback branch inspects `git -C .. diff --name-only "origin/beta" HEAD` and
+        # ticket mirroring runs foreground in `just session-complete` (never detached `nohup`)
+        self.assertIn('git -C .. diff --name-only "origin/beta" HEAD', step_block)
+        self.assertIn("just session-complete", pre_push_text)
+        exec_lines = "\n".join(
+            ln for ln in pre_push_text.splitlines() if not ln.lstrip().startswith("#")
+        )
+        self.assertNotIn("nohup", exec_lines)
 
     # ── AC3 ───────────────────────────────────────────────────────────────────────
 
@@ -299,6 +304,68 @@ class TestT527StateCheckPush(unittest.TestCase):
 
         staged = run_git(repo, "diff", "--cached", "--name-only").stdout.splitlines()
         self.assertIn("TASKS.md", staged)
+
+    # ── T657 AC4 ──────────────────────────────────────────────────────────────────
+
+    def test_t657_root_push_runs_catalog_check_on_catalog_inputs_and_blocks_drift(self) -> None:
+        """T657 AC4: touching .w0m/skills.json, .w0m/sdlc.json, stacks-policy.json, or catalog-info.yaml gates push on catalog-check."""
+        origin, repo = self._init_root_repo_with_origin()
+        before_origin_sha = run_git(origin, "rev-parse", "beta").stdout.strip()
+
+        (repo / ".w0m").mkdir(parents=True, exist_ok=True)
+        (repo / ".w0m" / "skills.json").write_text('{"skills": {}}\n', encoding="utf-8")
+        run_git(repo, "add", ".w0m/skills.json")
+        run_git(repo, "commit", "-q", "-m", "chore(skills): bump observed_version")
+
+        # 1. Red probe: catalog-check failure blocks @wom push
+        push_fail = run_git(
+            repo,
+            "push",
+            "origin",
+            "beta",
+            extra_env={"W0M_CATALOG_CHECK_CMD": "echo 'Catalog YAML drift detected' >&2; exit 1"},
+        )
+        self.assertNotEqual(push_fail.returncode, 0)
+        self.assertIn("catalog-check failed", push_fail.stdout + push_fail.stderr)
+        self.assertEqual(run_git(origin, "rev-parse", "beta").stdout.strip(), before_origin_sha)
+
+        # 2. Clean catalog-check allows @wom push
+        push_ok = run_git(
+            repo,
+            "push",
+            "origin",
+            "beta",
+            extra_env={"W0M_CATALOG_CHECK_CMD": "true"},
+        )
+        self.assertEqual(push_ok.returncode, 0, push_ok.stdout + push_ok.stderr)
+        after_sha = run_git(origin, "rev-parse", "beta").stdout.strip()
+        self.assertNotEqual(after_sha, before_origin_sha)
+
+        # 3. Unrelated commit skips catalog-check even if W0M_CATALOG_CHECK_CMD would fail
+        (repo / "README.md").write_text("# w0m docs only\n", encoding="utf-8")
+        run_git(repo, "add", "README.md")
+        run_git(repo, "commit", "-q", "-m", "docs: readme tweak")
+        push_skip = run_git(
+            repo,
+            "push",
+            "origin",
+            "beta",
+            extra_env={"W0M_CATALOG_CHECK_CMD": "exit 1"},
+        )
+        self.assertEqual(push_skip.returncode, 0, push_skip.stdout + push_skip.stderr)
+
+        # 4. Red probe for hooks_check on CATALOG_SCOPE_RE referencing non-existent path
+        fx_cat = self.tmp / "fx_cat"
+        (fx_cat / "scripts").mkdir(parents=True, exist_ok=True)
+        (fx_cat / "scripts" / "root_pre_push.py").write_text(
+            'CATALOG_SCOPE_RE = re.compile(r"^(nonexistent/catalog-policy\\.json)$")\n',
+            encoding="utf-8",
+        )
+        findings_cat = hc.check_hook_scope_paths(fx_cat)
+        self.assertTrue(
+            any("nonexistent/catalog-policy.json" in f for f in findings_cat),
+            f"Expected hooks_check finding on stale CATALOG_SCOPE_RE, got: {findings_cat}",
+        )
 
 
 if __name__ == "__main__":

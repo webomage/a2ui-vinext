@@ -27,6 +27,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import ticket_row_check  # noqa: E402
 
 TRACKING_SCOPE_RE = re.compile(r"^(STATE\.md|TASKS\.md|\.tasks/|ROADMAP\.md)")
+CATALOG_SCOPE_RE = re.compile(
+    r"^(\.w0m/sdlc\.json|\.w0m/skills\.json|project/policies/stacks-policy\.json|catalog-info\.yaml)$"
+)
 ZERO_SHA_RE = re.compile(r"^0+$")
 
 
@@ -150,6 +153,35 @@ def run_state_check(root: Path) -> tuple[int, str]:
     return res.returncode, (res.stdout + res.stderr).strip()
 
 
+def run_catalog_check(root: Path) -> tuple[int, str]:
+    """Run Backstage catalog drift check against the root repo (T657 AC4)."""
+    clean_env = _clean_git_env()
+    custom_cmd = os.environ.get("W0M_CATALOG_CHECK_CMD")
+    if custom_cmd:
+        res = subprocess.run(
+            custom_cmd,
+            shell=True,
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            env=clean_env,
+        )
+        return res.returncode, (res.stdout + res.stderr).strip()
+
+    catalog_script = root / "w0m-web" / "project" / "scripts" / "catalog_sync.py"
+    if not catalog_script.is_file():
+        return 0, ""
+
+    res = subprocess.run(
+        [sys.executable, str(catalog_script), "--check"],
+        cwd=str(root),
+        capture_output=True,
+        text=True,
+        env=clean_env,
+    )
+    return res.returncode, (res.stdout + res.stderr).strip()
+
+
 def main(argv: list[str] | None = None) -> int:
     if os.environ.get("W0M_ROOT_PREPUSH_SKIP") == "1":
         return 0
@@ -177,38 +209,55 @@ def main(argv: list[str] | None = None) -> int:
 
     pushed_files = collect_pushed_files(root, explicit_range=args.push_range)
     touched_tracking = [f for f in pushed_files if TRACKING_SCOPE_RE.search(f)]
+    touched_catalog = [f for f in pushed_files if CATALOG_SCOPE_RE.search(f)]
 
-    if not touched_tracking:
+    if not touched_tracking and not touched_catalog:
         print("  → [@wom] tracking surfaces untouched in push range; state-check skipped.")
         return 0
 
-    print(
-        f"⏳ [@wom] Pre-push: tracking surfaces touched ({', '.join(touched_tracking[:5])}) "
-        "— running ticket-row-check + state-check..."
-    )
-
-    # 1. Verify every .tasks/T*.md ticket has a row in TASKS.md (T527 AC1 red probe)
-    ok_rows, missing_rows, _ = ticket_row_check.check_ticket_rows(
-        root, auto_render=False, stage=False
-    )
-    if not ok_rows:
+    if touched_tracking:
         print(
-            f"❌ [@wom] Pre-push blocked: newly invisible ticket(s) in .tasks/ with no row in TASKS.md: "
-            f"{', '.join(missing_rows)} (run 'just tasks-render' and commit TASKS.md).",
-            file=sys.stderr,
+            f"⏳ [@wom] Pre-push: tracking surfaces touched ({', '.join(touched_tracking[:5])}) "
+            "— running ticket-row-check + state-check..."
         )
-        return 1
 
-    # 2. Run state-check (scripts/state_doctor.py --check)
-    rc, out = run_state_check(root)
-    if out:
-        print(out, file=sys.stderr if rc != 0 else sys.stdout)
-    if rc != 0:
-        print(
-            "❌ [@wom] Pre-push blocked: state-check failed (run 'just state-save' and commit STATE.md).",
-            file=sys.stderr,
+        # 1. Verify every .tasks/T*.md ticket has a row in TASKS.md (T527 AC1 red probe)
+        ok_rows, missing_rows, _ = ticket_row_check.check_ticket_rows(
+            root, auto_render=False, stage=False
         )
-        return 1
+        if not ok_rows:
+            print(
+                f"❌ [@wom] Pre-push blocked: newly invisible ticket(s) in .tasks/ with no row in TASKS.md: "
+                f"{', '.join(missing_rows)} (run 'just tasks-render' and commit TASKS.md).",
+                file=sys.stderr,
+            )
+            return 1
+
+        # 2. Run state-check (scripts/state_doctor.py --check)
+        rc, out = run_state_check(root)
+        if out:
+            print(out, file=sys.stderr if rc != 0 else sys.stdout)
+        if rc != 0:
+            print(
+                "❌ [@wom] Pre-push blocked: state-check failed (run 'just state-save' and commit STATE.md).",
+                file=sys.stderr,
+            )
+            return 1
+
+    if touched_catalog:
+        print(
+            f"⏳ [@wom] Pre-push: catalog surfaces touched ({', '.join(touched_catalog[:5])}) "
+            "— running catalog-check..."
+        )
+        rc_cat, out_cat = run_catalog_check(root)
+        if out_cat:
+            print(out_cat, file=sys.stderr if rc_cat != 0 else sys.stdout)
+        if rc_cat != 0:
+            print(
+                "❌ [@wom] Pre-push blocked: catalog-check failed (run 'just catalog-sync' and commit catalog-info.yaml + w0m-web/project/catalog-entities.json).",
+                file=sys.stderr,
+            )
+            return 1
 
     print("✅ [@wom] Pre-push checks passed.")
     return 0

@@ -12,6 +12,7 @@ import sys
 import tempfile
 import unittest
 from contextlib import redirect_stdout
+from unittest import mock
 
 SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 if str(SCRIPTS_DIR) not in sys.path:
@@ -238,6 +239,79 @@ class TestW0mCli(unittest.TestCase):
         self.assertTrue(spawn_res["dryRun"])
         self.assertEqual(spawn_res["worktreePath"], "/Users/proto/.w0m/work/agy-orca/w0m")
         self.assertEqual(spawn_res["title"], "Track C · T597 · Orca Tab DnD [agy-orca]")
+
+    def test_catalog_and_skill_sync_respect_worktree_project_and_fast_python(self) -> None:
+        wt_root = self.tmp / "work" / "demo-set" / "w0m"
+        (wt_root / ".w0m").mkdir(parents=True, exist_ok=True)
+        (wt_root / "scripts").mkdir(parents=True, exist_ok=True)
+        (wt_root / "project" / "policies").mkdir(parents=True, exist_ok=True)
+        (wt_root / "w0m-skills").mkdir(parents=True, exist_ok=True)
+        wt_web_scripts = wt_root / "w0m-web" / "project" / "scripts"
+        wt_web_scripts.mkdir(parents=True, exist_ok=True)
+
+        shutil.copy2(w0m_cli.ESTATE_ROOT / "scripts" / "schema_check.py", wt_root / "scripts" / "schema_check.py")
+        shutil.copy2(w0m_cli.ESTATE_ROOT / ".w0m" / "sdlc.schema.json", wt_root / ".w0m" / "sdlc.schema.json")
+        shutil.copy2(
+            w0m_cli.ESTATE_ROOT / "project" / "policies" / "stacks-policy.schema.json",
+            wt_root / "project" / "policies" / "stacks-policy.schema.json",
+        )
+        if (w0m_cli.ESTATE_ROOT / "w0m-skills" / "skills.schema.json").is_file():
+            shutil.copy2(
+                w0m_cli.ESTATE_ROOT / "w0m-skills" / "skills.schema.json",
+                wt_root / "w0m-skills" / "skills.schema.json",
+            )
+
+        src_web_project = w0m_cli.ESTATE_ROOT / "w0m-web" / "project"
+        for mod_name in ("catalog_sync.py", "catalog_models.py", "policy_loaders.py"):
+            shutil.copy2(src_web_project / "scripts" / mod_name, wt_web_scripts / mod_name)
+        shutil.copytree(
+            src_web_project / "schemas",
+            wt_root / "w0m-web" / "project" / "schemas",
+            dirs_exist_ok=True,
+        )
+
+        # Seed isolated registers with a distinct System name so worktree vs live root is unambiguous
+        sdlc_raw = json.loads((w0m_cli.ESTATE_ROOT / ".w0m" / "sdlc.json").read_text(encoding="utf-8"))
+        sdlc_raw["project"] = "w0m-wt"
+        (wt_root / ".w0m" / "sdlc.json").write_text(json.dumps(sdlc_raw, indent=2) + "\n", encoding="utf-8")
+        shutil.copy2(w0m_cli.ESTATE_ROOT / ".w0m" / "skills.json", wt_root / ".w0m" / "skills.json")
+        shutil.copy2(
+            w0m_cli.ESTATE_ROOT / "project" / "policies" / "stacks-policy.json",
+            wt_root / "project" / "policies" / "stacks-policy.json",
+        )
+
+        # 1. Nested directory walks up to the enclosing worktree estate root (AgDR-0032)
+        self.assertEqual(w0m_cli._resolve_estate_root(wt_root / "w0m-web"), wt_root.resolve())
+
+        # 2. Missing catalog files in wt_root fail check (must NOT inspect live ESTATE_ROOT)
+        rc_missing = w0m_cli.main(["--project", str(wt_root), "catalog", "check"])
+        self.assertEqual(rc_missing, 1)
+
+        # 3. `w0m --project <wt> catalog sync` writes inside wt_root and uses sys.executable fast path (no uv)
+        real_run = subprocess.run
+        recorded_cmds: list[list[str]] = []
+
+        def spy_run(cmd: list[str], *args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+            recorded_cmds.append([str(c) for c in cmd])
+            return real_run(cmd, *args, **kwargs)  # type: ignore[arg-type]
+
+        with mock.patch.object(w0m_cli.subprocess, "run", side_effect=spy_run):
+            rc_sync = w0m_cli.main(["--project", str(wt_root), "catalog", "sync"])
+        self.assertEqual(rc_sync, 0)
+        self.assertTrue((wt_root / "catalog-info.yaml").is_file())
+        self.assertTrue((wt_root / "w0m-web" / "project" / "catalog-entities.json").is_file())
+        self.assertTrue(recorded_cmds, "Expected catalog_sync subprocess invocation")
+        self.assertEqual(recorded_cmds[0][0], sys.executable)
+        self.assertEqual(Path(recorded_cmds[0][1]).resolve(), (wt_web_scripts / "catalog_sync.py").resolve())
+
+        # 4. Subsequent check and list read from wt_root (`w0m-wt`), not live ESTATE_ROOT
+        self.assertEqual(w0m_cli.main(["--project", str(wt_root), "catalog", "check"]), 0)
+        list_buf = io.StringIO()
+        with redirect_stdout(list_buf):
+            rc_list = w0m_cli.main(["--project", str(wt_root), "catalog", "list", "--kind", "System", "--json"])
+        self.assertEqual(rc_list, 0)
+        listed = json.loads(list_buf.getvalue())
+        self.assertEqual(listed["entities"][0]["metadata"]["name"], "w0m-wt")
 
 
 if __name__ == "__main__":

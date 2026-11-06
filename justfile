@@ -1400,6 +1400,7 @@ decisions-test:
 skills-sync mode="":
     @[ -x w0m-skills/node_modules/.bin/tsx ] || pnpm --dir w0m-skills install --frozen-lockfile --prefer-offline
     @cd w0m-skills && pnpm exec tsx skills.ts {{ if mode == "check" { "--check" } else { mode } }}
+    @if [ "{{mode}}" != "check" ] && [ "{{mode}}" != "--check" ]; then python3 "{{justfile_directory()}}/w0m-web/project/scripts/catalog_sync.py" --write && python3 "{{justfile_directory()}}/w0m-web/project/scripts/skills_catalog_gen.py" --write; fi
 
 skills-test *args:
     @cd w0m-skills && pnpm run skill-test {{ args }}

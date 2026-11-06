@@ -1284,7 +1284,7 @@ metadata:
   title: 'Skill: w0m-prs'
   description: Governed agent skill `w0m-prs` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.10.28-1793220550
+    w0m.dev/skill-observed-version: 2026.11.06-1793946619
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json

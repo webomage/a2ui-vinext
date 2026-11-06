@@ -26,6 +26,7 @@ Provides a single, globally installable `w0m` entrypoint (`~/.local/bin/w0m`) un
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -52,15 +53,44 @@ CATALOG_SYNC_SCRIPT = ESTATE_ROOT / "w0m-web" / "project" / "scripts" / "catalog
 CATALOG_JSON_FILE = ESTATE_ROOT / "w0m-web" / "project" / "catalog-entities.json"
 
 
-def _run_catalog_sync(mode: str = "--check") -> int:
-    if not CATALOG_SYNC_SCRIPT.is_file():
+def _resolve_estate_root(start: Path | None = None) -> Path:
+    """Resolve the enclosing `@wom` estate root (or `agent-tree` root) for `start` (`AgDR-0032`)."""
+    probe = (start or Path.cwd()).resolve()
+    for cand in (probe, *probe.parents):
+        if (cand / ".w0m" / "sdlc.json").is_file() and (
+            (cand / "w0m-web" / "project" / "scripts" / "catalog_sync.py").is_file()
+            or (cand / "project" / "policies" / "stacks-policy.json").is_file()
+        ):
+            return cand
+    return ESTATE_ROOT
+
+
+def _can_import_catalog_deps() -> bool:
+    return bool(importlib.util.find_spec("yaml") and importlib.util.find_spec("jsonschema"))
+
+
+def _run_catalog_sync(mode: str = "--check", *, estate_root: Path | None = None) -> int:
+    target_root = _resolve_estate_root(estate_root)
+    script = target_root / "w0m-web" / "project" / "scripts" / "catalog_sync.py"
+    if not script.is_file():
         return 0
-    uv_bin = shutil.which("uv")
-    if uv_bin:
-        cmd = [uv_bin, "run", "--with", "pyyaml", "--with", "jsonschema", "python", str(CATALOG_SYNC_SCRIPT), mode]
+    if _can_import_catalog_deps():
+        cmd = [sys.executable, str(script), mode]
     else:
-        cmd = [sys.executable, str(CATALOG_SYNC_SCRIPT), mode]
-    return subprocess.run(cmd, cwd=str(ESTATE_ROOT)).returncode
+        uv_bin = shutil.which("uv")
+        if uv_bin:
+            cmd = [uv_bin, "run", "--with", "pyyaml", "--with", "jsonschema", "python", str(script), mode]
+        else:
+            cmd = [sys.executable, str(script), mode]
+    return subprocess.run(cmd, cwd=str(target_root)).returncode
+
+
+def _run_skills_catalog_sync(mode: str = "--write", *, estate_root: Path | None = None) -> int:
+    target_root = _resolve_estate_root(estate_root)
+    script = target_root / "w0m-web" / "project" / "scripts" / "skills_catalog_gen.py"
+    if not script.is_file():
+        return 0
+    return subprocess.run([sys.executable, str(script), mode], cwd=str(target_root)).returncode
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -233,15 +263,21 @@ def skill_search_data(query: str, *, skills_repo: Path = SKILLS_REPO) -> list[di
     return matches
 
 
-def _run_tsx_or_fallback(ts_file: Path, ts_args: list[str], cwd: Path) -> int:
-    tsx_bin = shutil.which("tsx") or str(SKILLS_REPO / "node_modules" / ".bin" / "tsx")
+def _run_tsx_or_fallback(
+    ts_file: Path,
+    ts_args: list[str],
+    cwd: Path,
+    *,
+    skills_repo: Path = SKILLS_REPO,
+) -> int:
+    tsx_bin = shutil.which("tsx") or str(skills_repo / "node_modules" / ".bin" / "tsx")
     if Path(tsx_bin).is_file() or shutil.which("tsx"):
         res = subprocess.run([tsx_bin, str(ts_file), *ts_args], cwd=str(cwd))
         return res.returncode
     pnpm_bin = shutil.which("pnpm")
-    if pnpm_bin and (SKILLS_REPO / "package.json").is_file():
+    if pnpm_bin and (skills_repo / "package.json").is_file():
         res = subprocess.run(
-            [pnpm_bin, "--dir", str(SKILLS_REPO), "exec", "tsx", str(ts_file), *ts_args],
+            [pnpm_bin, "--dir", str(skills_repo), "exec", "tsx", str(ts_file), *ts_args],
             cwd=str(cwd),
         )
         return res.returncode
@@ -260,10 +296,17 @@ def handle_skill(argv: list[str]) -> int:
     args = ap.parse_args(argv)
 
     proj = Path(args.project).resolve() if args.project else Path.cwd().resolve()
+    target_estate = _resolve_estate_root(proj)
+    target_skills_repo = (
+        target_estate / "w0m-skills"
+        if (target_estate / "w0m-skills" / "package.json").is_file()
+        else SKILLS_REPO
+    )
+    is_estate_consumer = proj in (target_estate.resolve(), (target_estate / "w0m-web").resolve())
     sub = args.subcmd.lower()
 
     if sub == "list":
-        data = skill_list_data(proj, include_registry=args.registry)
+        data = skill_list_data(proj, include_registry=args.registry, skills_repo=target_skills_repo)
         if args.json:
             print(json.dumps(data, indent=2))
             return 0
@@ -282,7 +325,7 @@ def handle_skill(argv: list[str]) -> int:
 
     if sub == "search":
         q = " ".join(r for r in args.rest if not r.startswith("-")).strip()
-        matches = skill_search_data(q)
+        matches = skill_search_data(q, skills_repo=target_skills_repo)
         if args.json:
             print(json.dumps({"query": q, "count": len(matches), "matches": matches}, indent=2))
             return 0
@@ -296,32 +339,47 @@ def handle_skill(argv: list[str]) -> int:
         is_check = bool(args.check or "--check" in args.rest)
         if is_check:
             sync_args.append("--check")
-        rc = _run_tsx_or_fallback(SKILLS_REPO / "skills.ts", sync_args, ESTATE_ROOT)
-        if rc == 0 and not is_check and proj.resolve() == ESTATE_ROOT.resolve():
-            _run_catalog_sync("--write")
+        rc = _run_tsx_or_fallback(
+            target_skills_repo / "skills.ts",
+            sync_args,
+            target_estate,
+            skills_repo=target_skills_repo,
+        )
+        if rc == 0 and not is_check and is_estate_consumer:
+            _run_catalog_sync("--write", estate_root=target_estate)
+            _run_skills_catalog_sync("--write", estate_root=target_estate)
         return rc
 
     if sub == "audit":
-        return _run_tsx_or_fallback(SKILLS_REPO / "skill_audit.ts", args.rest, SKILLS_REPO)
+        return _run_tsx_or_fallback(
+            target_skills_repo / "skill_audit.ts",
+            args.rest,
+            target_skills_repo,
+            skills_repo=target_skills_repo,
+        )
 
     if sub == "check":
-        if PORTABLE_CLI.is_file() and not shutil.which("tsx") and not (SKILLS_REPO / "node_modules" / ".bin" / "tsx").is_file():
-            res = subprocess.run([sys.executable, str(PORTABLE_CLI), "--project", str(proj), "skill-check"])
+        portable_cli = target_skills_repo / "tools" / "w0m_portable_cli.py"
+        if portable_cli.is_file() and not shutil.which("tsx") and not (target_skills_repo / "node_modules" / ".bin" / "tsx").is_file():
+            res = subprocess.run([sys.executable, str(portable_cli), "--project", str(proj), "skill-check"])
             return res.returncode
         return _run_tsx_or_fallback(
-            SKILLS_REPO / "w0m_skill.ts",
+            target_skills_repo / "w0m_skill.ts",
             ["check", "--project", str(proj), *args.rest],
             proj,
+            skills_repo=target_skills_repo,
         )
 
     if sub in ("add", "remove", "update", "relock"):
         rc = _run_tsx_or_fallback(
-            SKILLS_REPO / "w0m_skill.ts",
+            target_skills_repo / "w0m_skill.ts",
             [sub, *args.rest, "--project", str(proj)],
             proj,
+            skills_repo=target_skills_repo,
         )
-        if rc == 0 and proj.resolve() == ESTATE_ROOT.resolve():
-            _run_catalog_sync("--write")
+        if rc == 0 and is_estate_consumer:
+            _run_catalog_sync("--write", estate_root=target_estate)
+            _run_skills_catalog_sync("--write", estate_root=target_estate)
         return rc
 
     print(f"[ERR] Unknown `w0m skill` subcommand '{sub}'.", file=sys.stderr)
@@ -581,20 +639,23 @@ def install_w0m_shim(bin_dir: Path | None = None, *, target_script: Path = HERE)
     return shim
 
 
-def handle_catalog(argv: list[str]) -> int:
+def handle_catalog(argv: list[str], *, project_dir: Path | None = None) -> int:
     ap = argparse.ArgumentParser(prog="w0m catalog", description="Inspect and synchronize Backstage IDP catalog entities (AgDR-0026)")
     ap.add_argument("subcmd", nargs="?", default="list", help="list | check | sync")
+    ap.add_argument("--project", default=None, help="Target estate or agent-tree directory (default: cwd)")
     ap.add_argument("--kind", default=None, help="Filter by Backstage entity kind (System, Component, API, AiResource, Group, User)")
     ap.add_argument("--json", action="store_true", help="Emit JSON output")
     args = ap.parse_args(argv)
 
+    target_root = _resolve_estate_root(Path(args.project) if args.project else project_dir)
     sub = args.subcmd.lower()
     if sub == "check":
-        return _run_catalog_sync("--check")
+        return _run_catalog_sync("--check", estate_root=target_root)
     if sub in ("sync", "write"):
-        return _run_catalog_sync("--write")
+        return _run_catalog_sync("--write", estate_root=target_root)
     if sub == "list":
-        data = _load_json(CATALOG_JSON_FILE)
+        catalog_json = target_root / "w0m-web" / "project" / "catalog-entities.json"
+        data = _load_json(catalog_json)
         raw_entities = data.get("entities")
         entities: list[Any] = raw_entities if isinstance(raw_entities, list) else []
         if args.kind:
@@ -1338,7 +1399,7 @@ def main(argv: list[str] | None = None) -> int:
         return handle_project(rest)
 
     if group == "catalog":
-        return handle_catalog(rest)
+        return handle_catalog(rest, project_dir=Path(proj_dir))
 
     if group in ("track", "tracks"):
         return handle_track(rest)

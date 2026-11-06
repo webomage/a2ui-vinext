@@ -313,17 +313,17 @@ def check_hook_scope_paths(root: Path, corpus: dict[str, str] | None = None) -> 
                             )
         elif full_path.name == "root_pre_push.py":
             target_lbl = _repo_label(root, hook_repo)
-            for i, line in enumerate(text.splitlines(), 1):
-                if line.lstrip().startswith("#"):
-                    continue
-                m_re = re.search(r"""TRACKING_SCOPE_RE\s*=\s*re\.compile\(\s*r?['"](\^[^'"]+)['"]""", line)
-                if m_re:
-                    for pref in _extract_anchored_prefixes(m_re.group(1)):
-                        if not _path_exists_in_repo(hook_repo, pref, allow_cross_repo_symlink=False):
-                            scope_findings.append(
-                                f"{rel_path}:{i}: hook scope regex references `{pref}` in `{target_lbl}`, "
-                                f"which does not exist in that repo (T527 AC3)"
-                            )
+            for m_re in re.finditer(
+                r"""(?:TRACKING_SCOPE_RE|CATALOG_SCOPE_RE)\s*=\s*re\.compile\(\s*r?['"](\^[^'"]+)['"]""",
+                text,
+            ):
+                line_no = text.count("\n", 0, m_re.start()) + 1
+                for pref in _extract_anchored_prefixes(m_re.group(1)):
+                    if not _path_exists_in_repo(hook_repo, pref, allow_cross_repo_symlink=False):
+                        scope_findings.append(
+                            f"{rel_path}:{line_no}: hook scope regex references `{pref}` in `{target_lbl}`, "
+                            f"which does not exist in that repo (T527 AC3)"
+                        )
 
     return scope_findings
 

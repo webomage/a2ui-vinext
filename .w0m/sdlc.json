@@ -369,6 +369,8 @@
       "just debt-check --enforce",
       "just reports-ticket-check",
       "just mmd-validate",
+      "just catalog-check",
+      "just skills-catalog-check",
       "just automation-health",
       "just state-check"
     ]
