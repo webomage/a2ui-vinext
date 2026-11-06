@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T663](.tasks/T663.md) · [#663](https://github.com/casualuser/webomage.com/issues/663) | **P1** | **Streamline public Audit and Blueprint Order flows to URL-only -> Register and move verification, setup, and results into guided Client Portal** | web | openspec/changes/archive/2026-11-06-streamline-audit-blueprint-order-ui-2026-11-06 | ✅ **done** |
 | [T662](.tasks/T662.md) · [#662](https://github.com/casualuser/webomage.com/issues/662) | **P1** | **Remeasure Orca mobile UI tweaks against new upstream keys bar and tabbed Home, and retire obsolete safe-area PR** | web, tooling | — | ✅ **done** |
 | [T661](.tasks/T661.md) · [#661](https://github.com/casualuser/webomage.com/issues/661) | **P1** | **Deploy side-by-side ~/Apps/orca-linux-w0m.AppImage and harden parallel ticket allocation & session-complete wrap-up against collisions** | tooling | — | ✅ **done** |
 | [T660](.tasks/T660.md) · [#660](https://github.com/casualuser/webomage.com/issues/660) | **P1** | **Rebase conflicting upstream Orca PR branches onto upstream/main and audit actuality of all maintained UI enhancements** | web, tooling | — | ✅ **done** |
