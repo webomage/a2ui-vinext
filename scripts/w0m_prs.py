@@ -2970,6 +2970,10 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
     "fix/mobile-terminal-theme-enforcement",                # stablyai/orca#38859
     "perf/terminal-chat-redraw-and-tab-caching",            # stablyai/orca#38861
     "fix/mobile-live-input-prompt-backload",                # stablyai/orca#38863
+    "feat/system-and-docker-monitors",                      # stablyai/orca#38987
+    "fix/linux-cli-stale-appimage-and-dispatcher",          # stablyai/orca#38991
+    "feat/mobile-terminal-4-tap-alt-m",                     # stablyai/orca#38993
+    "feat/subagent-display-and-floating-category",          # stablyai/orca#38995
     "feat/eight-zone-window-snapping",                      # JeffHoogland/moksha#310
     "fix/desktop-editor-icon-path-and-size",                # JeffHoogland/moksha#311
     "feat/appimage-diricon-and-rdns-wmclass",               # JeffHoogland/moksha#312
