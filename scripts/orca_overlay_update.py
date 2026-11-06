@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Bootstrap, status, manual trigger, and rollback CLI for the webomage/orca overlay AppImage feed.
 
-Once ~/Apps/orca-linux.AppImage is cut over onto a webomage/orca overlay release,
-Orca's native in-app electron-updater pulls subsequent overlay builds automatically.
+Deploys ~/Apps/orca-linux-w0m.AppImage side-by-side with ~/Apps/orca-linux-main.AppImage so
+Orca's native in-app electron-updater updates orca-linux-w0m.AppImage automatically without
+overwriting upstream main.
 """
 
 from __future__ import annotations
@@ -268,7 +269,86 @@ def _default_appimage_path() -> Path:
     env_path = os.environ.get("ORCA_APPIMAGE_PATH")
     if env_path:
         return Path(env_path).expanduser()
-    return Path.home() / "Apps" / "orca-linux.AppImage"
+    return Path.home() / "Apps" / "orca-linux-w0m.AppImage"
+
+
+def _main_appimage_path(appimage_path: Path) -> Path:
+    return appimage_path.resolve().parent / "orca-linux-main.AppImage"
+
+
+def _render_desktop_entry(*, display_name: str, comment: str, exec_path: Path, icon_value: str) -> str:
+    return (
+        "[Desktop Entry]\n"
+        "Version=1.0\n"
+        "Type=Application\n"
+        f"Name={display_name}\n"
+        f"Name[en_US]={display_name}\n"
+        f"Comment={comment}\n"
+        f"Comment[en_US]={comment}\n"
+        f"Exec={exec_path} %U\n"
+        f"Icon={icon_value}\n"
+        f"Icon[en_US]={icon_value}\n"
+        "Terminal=false\n"
+        "StartupNotify=false\n"
+        "StartupWMClass=orca\n"
+        "NoDisplay=false\n"
+        "Hidden=false\n"
+        "Categories=Development;IDE;Utility;\n"
+    )
+
+
+def _atomic_write_text(target_path: Path, content: str) -> None:
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = target_path.with_name(f".{target_path.name}.{os.getpid()}.tmp")
+    try:
+        tmp_path.write_text(content, encoding="utf-8")
+        tmp_path.chmod(0o664)
+        os.replace(tmp_path, target_path)
+    finally:
+        if tmp_path.exists():
+            tmp_path.unlink()
+
+
+def sync_desktop_entries(appimage_path: Path, *, home_dir: Path | None = None) -> list[Path]:
+    """Keep ~/.local/share/applications/orca.desktop (w0m) and orca-main.desktop synced."""
+    if os.environ.get("ORCA_SKIP_DESKTOP_SYNC") == "1" or not sys.platform.startswith("linux"):
+        return []
+    resolved_home = (home_dir or Path.home()).resolve()
+    xdg_data = os.environ.get("XDG_DATA_HOME", "")
+    data_base = Path(xdg_data) if xdg_data and os.path.isabs(xdg_data) else resolved_home / ".local" / "share"
+    apps_menu_dir = data_base / "applications"
+    icon_candidate = data_base / "icons" / "hicolor" / "512x512" / "apps" / "orca-ide.png"
+    icon_val = str(icon_candidate) if icon_candidate.is_file() else "orca-ide"
+
+    resolved_w0m = appimage_path.resolve()
+    written: list[Path] = []
+    if resolved_w0m.name == "orca-linux-w0m.AppImage" and resolved_w0m.is_file():
+        w0m_desktop = apps_menu_dir / "orca.desktop"
+        _atomic_write_text(
+            w0m_desktop,
+            _render_desktop_entry(
+                display_name="Orca (w0m)",
+                comment="Next-gen IDE for parallel agentic development (w0m overlay)",
+                exec_path=resolved_w0m,
+                icon_value=icon_val,
+            ),
+        )
+        written.append(w0m_desktop)
+
+    main_path = _main_appimage_path(appimage_path)
+    if main_path != resolved_w0m and main_path.is_file():
+        main_desktop = apps_menu_dir / "orca-main.desktop"
+        _atomic_write_text(
+            main_desktop,
+            _render_desktop_entry(
+                display_name="Orca (Main)",
+                comment="Next-gen IDE for parallel agentic development (upstream main)",
+                exec_path=main_path,
+                icon_value=icon_val,
+            ),
+        )
+        written.append(main_desktop)
+    return written
 
 
 def _overlay_repo() -> str:
@@ -321,8 +401,11 @@ def _gh_json(endpoint: str) -> dict[str, Any] | None:
 
 
 def show_status(appimage_path: Path, backup_path: Path, overlay_repo: str) -> int:
+    main_path = _main_appimage_path(appimage_path)
     print("=== Local Orca Installation ===")
-    print(f"  AppImage path : {appimage_path} ({_human_size(appimage_path)})")
+    print(f"  w0m AppImage  : {appimage_path} ({_human_size(appimage_path)})")
+    if main_path != appimage_path.resolve():
+        print(f"  Main AppImage : {main_path} ({_human_size(main_path)})")
     print(f"  Running CLI   : {_local_cli_version()}")
     print(f"  Stock backup  : {backup_path} ({'present' if backup_path.is_file() else 'none'})")
     print()
@@ -487,6 +570,7 @@ def apply_overlay(
             current_b64 = _compute_sha512_b64(appimage_path)
             if current_b64 == expected_b64:
                 repaired = repair_local_orca_cli(appimage_path)
+                sync_desktop_entries(appimage_path)
                 print(f"Already up to date: {appimage_path} matches {overlay_repo}@{tag}")
                 print(f"  SHA-512 verified OK ({current_b64[:24]}...)")
                 if repaired:
@@ -523,6 +607,7 @@ def apply_overlay(
         os.replace(staged_appimage, appimage_path)
 
     repaired = repair_local_orca_cli(appimage_path)
+    sync_desktop_entries(appimage_path)
     print(f"Installed {overlay_repo}@{tag} -> {appimage_path}")
     if repaired:
         print(f"Repaired local CLI -> {_local_cli_version()}")

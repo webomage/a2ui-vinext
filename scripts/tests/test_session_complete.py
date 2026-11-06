@@ -549,6 +549,204 @@ class SessionCompleteTests(unittest.TestCase):
                 )
             )
 
+    def test_ticket_new_allocates_unique_ids_across_linked_git_worktrees_concurrently(self) -> None:
+        from concurrent.futures import ThreadPoolExecutor
+        import ticket_new as tn
+
+        with tempfile.TemporaryDirectory() as tmp_str:
+            tmp = Path(tmp_str)
+            origin = tmp / "origin.git"
+            _git_init_repo(origin, bare=True)
+
+            canon = tmp / "canon" / "w0m"
+            _git_init_repo(canon)
+            subprocess.run(["git", "remote", "add", "origin", str(origin)], cwd=str(canon), check=True)
+            (canon / ".tasks").mkdir(parents=True)
+            (canon / ".tasks" / "T1.md").write_text("---\nid: T1\nstatus: done\n---\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(canon), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "chore(T1): seed"], cwd=str(canon), check=True)
+            subprocess.run(["git", "push", "-q", "origin", "HEAD:beta"], cwd=str(canon), check=True)
+
+            worktrees: list[Path] = []
+            for name in ("set-a", "set-b", "set-c"):
+                wt = tmp / "work" / name / "w0m"
+                wt.parent.mkdir(parents=True)
+                subprocess.run(
+                    ["git", "worktree", "add", "-q", "-b", f"agent/{name}", str(wt), "origin/beta"],
+                    cwd=str(canon),
+                    check=True,
+                )
+                worktrees.append(wt)
+
+            def alloc(idx_wt: tuple[int, Path]) -> str:
+                idx, wt = idx_wt
+                tid, _ = tn.allocate_ticket(
+                    f"Parallel worktree ticket {idx}",
+                    repo_dir=wt,
+                    render_tasks=False,
+                )
+                return tid
+
+            with ThreadPoolExecutor(max_workers=3) as pool:
+                allocated = set(pool.map(alloc, list(enumerate(worktrees, start=1))))
+
+            self.assertEqual(allocated, {"T2", "T3", "T4"})
+
+            isolated = tmp / "isolated"
+            _git_init_repo(isolated)
+            iso_tid, _ = tn.allocate_ticket("Isolated standalone repo", repo_dir=isolated, render_tasks=False)
+            self.assertEqual(iso_tid, "T1")
+
+    def test_maybe_renumber_compacts_collisions_and_gaps_scrubs_gh_issue_and_supports_dry_run(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_str:
+            tmp = Path(tmp_str)
+            origin = tmp / "origin.git"
+            _git_init_repo(origin, bare=True)
+
+            seed = tmp / "seed"
+            _git_init_repo(seed)
+            subprocess.run(["git", "remote", "add", "origin", str(origin)], cwd=str(seed), check=True)
+            (seed / ".w0m").mkdir()
+            (seed / ".tasks").mkdir()
+            (seed / ".w0m" / "sdlc.json").write_text('{"profile": "w0m"}\n', encoding="utf-8")
+            (seed / ".tasks" / "T10.md").write_text("---\nid: T10\nstatus: done\n---\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(seed), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "chore(T10): seed"], cwd=str(seed), check=True)
+            subprocess.run(["git", "push", "-q", "origin", "HEAD:beta"], cwd=str(seed), check=True)
+
+            # 1. Collision + gh_issue scrub + --dry-run
+            wt_b = tmp / "work" / "set-b" / "w0m"
+            wt_b.parent.mkdir(parents=True)
+            subprocess.run(["git", "fetch", "-q", "origin"], cwd=str(seed), check=True)
+            subprocess.run(
+                ["git", "worktree", "add", "-q", "-b", "agent/set-b", str(wt_b), "origin/beta"],
+                cwd=str(seed),
+                check=True,
+            )
+            t11_body = SAMPLE_TICKET_OPEN.replace("T42", "T11").replace("gh_issue:\n", "gh_issue: 11\n")
+            (wt_b / ".tasks" / "T11.md").write_text(t11_body, encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(wt_b), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "feat(T11): set-b local"], cwd=str(wt_b), check=True)
+
+            # Advance origin/beta to T11
+            (seed / ".tasks" / "T11.md").write_text("---\nid: T11\nstatus: done\n---\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(seed), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "feat(T11): landed first"], cwd=str(seed), check=True)
+            subprocess.run(["git", "push", "-q", "origin", "HEAD:beta"], cwd=str(seed), check=True)
+
+            with mock.patch.dict(os.environ, {"W0M_WORK_ROOT": str(tmp / "work")}, clear=False):
+                rc_dry, summary_dry = sc.run_session_complete(
+                    ["T11", "--set", "set-b", "--complete-acs", "--no-lessons", "--dry-run"]
+                )
+            self.assertEqual(rc_dry, 0)
+            self.assertEqual(summary_dry["renumberedTickets"], {"T11": "T12"})
+            self.assertEqual(summary_dry["targetTickets"], ["T12"])
+            self.assertTrue((wt_b / ".tasks" / "T11.md").is_file())
+
+            mapped_b, renames_b = sc.maybe_renumber_colliding_tickets(wt_b, ["T11"], dry_run=False)
+            self.assertEqual(renames_b, {"T11": "T12"})
+            self.assertEqual(mapped_b, ["T12"])
+            t12_text = (wt_b / ".tasks" / "T12.md").read_text(encoding="utf-8")
+            self.assertIn("gh_issue:\n", t12_text)
+            self.assertNotIn("gh_issue: 11", t12_text)
+
+            # 2. Early-finisher gap compaction: origin/beta is at T11, set-c holds unpushed T12,
+            #    set-d finishes early with T13 -> compacts T13 -> T12 so landing leaves zero gap.
+            wt_d = tmp / "work" / "set-d" / "w0m"
+            wt_d.parent.mkdir(parents=True)
+            subprocess.run(["git", "fetch", "-q", "origin"], cwd=str(seed), check=True)
+            subprocess.run(
+                ["git", "worktree", "add", "-q", "-b", "agent/set-d", str(wt_d), "origin/beta"],
+                cwd=str(seed),
+                check=True,
+            )
+            t13_body = SAMPLE_TICKET_OPEN.replace("T42", "T13").replace("gh_issue:\n", "gh_issue: 13\n")
+            (wt_d / ".tasks" / "T13.md").write_text(t13_body, encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(wt_d), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "feat(T13): early finisher"], cwd=str(wt_d), check=True)
+
+            mapped_d, renames_d = sc.maybe_renumber_colliding_tickets(wt_d, ["T13"], dry_run=False)
+            self.assertEqual(renames_d, {"T13": "T12"})
+            self.assertEqual(mapped_d, ["T12"])
+            self.assertFalse((wt_d / ".tasks" / "T13.md").exists())
+            t12_d_text = (wt_d / ".tasks" / "T12.md").read_text(encoding="utf-8")
+            self.assertIn("id: T12\n", t12_d_text)
+            self.assertIn("gh_issue:\n", t12_d_text)
+            self.assertNotIn("gh_issue: 13", t12_d_text)
+
+    def test_session_complete_lock_serializes_callers_and_releases_on_process_exit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_str:
+            lock_dir = Path(tmp_str)
+            ready_file = lock_dir / "ready"
+            holder_code = (
+                "import sys, time\n"
+                f"sys.path.insert(0, {str(SCRIPTS_DIR)!r})\n"
+                "from pathlib import Path\n"
+                "import session_complete as sc\n"
+                f"with sc.session_complete_lock(Path({str(lock_dir)!r}), holder='set-a', timeout_seconds=5.0):\n"
+                f"    Path({str(ready_file)!r}).write_text('ok', encoding='utf-8')\n"
+                "    time.sleep(30.0)\n"
+            )
+            proc = subprocess.Popen([sys.executable, "-c", holder_code])
+            try:
+                deadline = sc.time.monotonic() + 5.0
+                while not ready_file.is_file() and sc.time.monotonic() < deadline:
+                    sc.time.sleep(0.02)
+                self.assertTrue(ready_file.is_file())
+
+                with self.assertRaises(sc.SessionCompleteError) as cm:
+                    with sc.session_complete_lock(
+                        lock_dir,
+                        holder="set-b",
+                        timeout_seconds=0.15,
+                        poll_interval=0.05,
+                    ):
+                        pass
+                self.assertEqual(cm.exception.step, "session_complete_lock_timeout")
+            finally:
+                proc.kill()
+                proc.wait(timeout=5.0)
+
+            # Kernel automatically releases flock on SIGKILL -> next caller acquires immediately
+            with sc.session_complete_lock(lock_dir, holder="set-b", timeout_seconds=1.0, poll_interval=0.05):
+                meta = json.loads((lock_dir / "w0m-session-complete.lock").read_text(encoding="utf-8"))
+                self.assertEqual(meta["holder"], "set-b")
+
+    def test_precertify_web_prepush_runs_local_hook_only_when_ahead_and_uncertified(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_str:
+            tmp = Path(tmp_str)
+            origin_web = tmp / "w0m-web.git"
+            _git_init_repo(origin_web, bare=True)
+
+            wt = tmp / "w0m"
+            web = wt / "w0m-web"
+            _git_init_repo(web)
+            subprocess.run(["git", "remote", "add", "origin", str(origin_web)], cwd=str(web), check=True)
+            (web / ".husky").mkdir(parents=True)
+            hook_marker = tmp / "hook_ran"
+            (web / ".husky" / "pre-push").write_text(
+                f"#!/bin/sh\nprintf 'ran' > {str(hook_marker)!r}\nexit 0\n",
+                encoding="utf-8",
+            )
+            (web / "README.md").write_text("base\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(web), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "chore: base"], cwd=str(web), check=True)
+            subprocess.run(["git", "push", "-q", "origin", "HEAD:beta"], cwd=str(web), check=True)
+
+            # 1. Ahead == 0 -> skipped
+            res_clean = sc.precertify_web_prepush(wt)
+            self.assertEqual(res_clean["status"], "not_ahead")
+            self.assertFalse(hook_marker.exists())
+
+            # 2. Ahead > 0 -> executes .husky/pre-push locally before SSH push
+            (web / "README.md").write_text("ahead\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(web), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "feat: ahead"], cwd=str(web), check=True)
+
+            res_ran = sc.precertify_web_prepush(wt)
+            self.assertEqual(res_ran["status"], "certified_locally")
+            self.assertTrue(hook_marker.is_file())
+
 
 if __name__ == "__main__":
     unittest.main()

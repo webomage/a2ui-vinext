@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T661](.tasks/T661.md) · [#661](https://github.com/casualuser/webomage.com/issues/661) | **P1** | **Deploy side-by-side ~/Apps/orca-linux-w0m.AppImage and harden parallel ticket allocation & session-complete wrap-up against collisions** | tooling | — | ✅ **done** |
 | [T660](.tasks/T660.md) · [#660](https://github.com/casualuser/webomage.com/issues/660) | **P1** | **Rebase conflicting upstream Orca PR branches onto upstream/main and audit actuality of all maintained UI enhancements** | web, tooling | — | ✅ **done** |
 | [T659](.tasks/T659.md) · [#659](https://github.com/casualuser/webomage.com/issues/659) | **P1** | **Close Backstage and skills catalog drift loops across skills-sync, w0m CLI worktrees, root git hooks, and session-complete** | web, tooling | — | ✅ **done** |
 | [T658](.tasks/T658.md) · [#null](https://github.com/casualuser/webomage.com/issues/null) | **P1** | **Tinybird ClickHouse Free-Tier Unification: canonicalize 8 datasources + 6 pipes in Forward SSOT, fix EU host & marketJobs drift, wire non-blocking worker telemetry, and gate schema sync** | web, api, cf | w0m-web/openspec/specs/observability-logging/spec.md | ✅ **done** |

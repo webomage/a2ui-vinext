@@ -282,6 +282,64 @@ echo "appimage:{version}"
         orca_ide_bin = local_bin / "orca-ide"
         self.assertTrue(orca_ide_bin.is_symlink())
 
+    def test_default_path_deploys_orca_linux_w0m_alongside_main_and_syncs_desktop_launchers(self) -> None:
+        self.appimage_path.unlink()
+        main_appimage = self.apps_dir / "orca-linux-main.AppImage"
+        w0m_appimage = self.apps_dir / "orca-linux-w0m.AppImage"
+        main_appimage.write_bytes(self.stock_bytes)
+        main_appimage.chmod(0o755)
+
+        apps_menu_dir = self.root / ".local" / "share" / "applications"
+        apps_menu_dir.mkdir(parents=True)
+        stale_desktop = apps_menu_dir / "orca.desktop"
+        stale_desktop.write_text(
+            "[Desktop Entry]\nName=Orca\nExec=/home/user/Apps/orca-linux.AppImage %U\n",
+            encoding="utf-8",
+        )
+
+        env = os.environ.copy()
+        env["HOME"] = str(self.root)
+        env.pop("ORCA_APPIMAGE_PATH", None)
+        env.pop("XDG_CACHE_HOME", None)
+        env.pop("XDG_CONFIG_HOME", None)
+        env.pop("XDG_DATA_HOME", None)
+        env["ORCA_OVERLAY_REPO"] = "webomage/orca"
+        env["PATH"] = f"{self.bin_dir}:/usr/local/bin:/usr/bin:/bin"
+
+        proc = subprocess.run(
+            [sys.executable, str(SCRIPT_PATH), "--apply"],
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(proc.returncode, 0, msg=f"stderr={proc.stderr}\nstdout={proc.stdout}")
+        self.assertTrue(w0m_appimage.is_file())
+        self.assertEqual(w0m_appimage.read_bytes(), self.overlay_v1_bytes)
+        self.assertEqual(main_appimage.read_bytes(), self.stock_bytes)
+        self.assertFalse((self.apps_dir / "orca-linux.AppImage").exists())
+
+        w0m_desktop = (apps_menu_dir / "orca.desktop").read_text(encoding="utf-8")
+        self.assertIn(f"Exec={w0m_appimage.resolve()} %U", w0m_desktop)
+        self.assertIn("Name=Orca (w0m)", w0m_desktop)
+
+        main_desktop_path = apps_menu_dir / "orca-main.desktop"
+        self.assertTrue(main_desktop_path.is_file())
+        main_desktop = main_desktop_path.read_text(encoding="utf-8")
+        self.assertIn(f"Exec={main_appimage.resolve()} %U", main_desktop)
+        self.assertIn("Name=Orca (Main)", main_desktop)
+
+        status = subprocess.run(
+            [sys.executable, str(SCRIPT_PATH), "--status"],
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(status.returncode, 0, msg=status.stderr)
+        self.assertIn("orca-linux-w0m.AppImage", status.stdout)
+        self.assertIn("orca-linux-main.AppImage", status.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

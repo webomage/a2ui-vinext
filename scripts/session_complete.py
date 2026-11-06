@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import datetime as dt
+import fcntl
 import json
 import os
 import re
@@ -37,7 +38,7 @@ import shutil
 import subprocess
 import sys
 import time
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -396,12 +397,37 @@ def _ids_at_git_ref(repo: Path, ref: str) -> set[int]:
     return ids
 
 
+def _rewrite_ticket_id_map(text: str, renames: dict[str, str]) -> str:
+    if not renames:
+        return text
+    lookup: dict[str, str] = {}
+    for old_tid, new_tid in renames.items():
+        lookup[old_tid] = new_tid
+        lookup[old_tid.lower()] = new_tid.lower()
+    pattern = re.compile(
+        r"\b(" + "|".join(re.escape(k) for k in sorted(lookup, key=len, reverse=True)) + r")\b"
+    )
+    return pattern.sub(lambda m: lookup[m.group(1)], text)
+
+
 def _rewrite_ticket_id_tokens(text: str, old_tid: str, new_tid: str) -> str:
-    old_lower = old_tid.lower()
-    new_lower = new_tid.lower()
-    updated = re.sub(rf"\b{re.escape(old_tid)}\b", new_tid, text)
-    updated = re.sub(rf"\b{re.escape(old_lower)}\b", new_lower, updated)
-    return updated
+    return _rewrite_ticket_id_map(text, {old_tid: new_tid})
+
+
+def _scrub_gh_issue_frontmatter(text: str) -> str:
+    parsed = _parse_frontmatter(text)
+    if not parsed:
+        return text
+    fm_lines, body_lines = parsed
+    gh_pat = re.compile(r"^gh_issue\s*:.*$")
+    new_fm: list[str] = []
+    for raw_line in fm_lines:
+        ending = "\r\n" if raw_line.endswith("\r\n") else ("\n" if raw_line.endswith("\n") else "")
+        if gh_pat.match(raw_line.rstrip("\r\n")):
+            new_fm.append(f"gh_issue:{ending}")
+        else:
+            new_fm.append(raw_line)
+    return "---\n" + "".join(new_fm) + "---\n" + "".join(body_lines)
 
 
 def maybe_renumber_colliding_tickets(
@@ -411,7 +437,7 @@ def maybe_renumber_colliding_tickets(
     dry_run: bool = False,
     fetch_remote: bool = True,
 ) -> tuple[list[str], dict[str, str]]:
-    """Detect and renumber newly added branch tickets that collide with `origin/beta` (contiguous next ID)."""
+    """Compact newly added branch tickets onto contiguous `[max(origin/beta)+1, ...]` (collisions + gaps)."""
     if fetch_remote:
         _git(worktree_root, "fetch", "-q", "origin")
 
@@ -432,15 +458,18 @@ def maybe_renumber_colliding_tickets(
         if (m := TICKET_FILE_RE.match(p.name))
     }
     added_ids = sorted(local_ids - base_ids)
-    clash = [n for n in added_ids if n in origin_ids]
-    if not clash:
+    if not added_ids:
         return list(target_tickets), {}
 
-    next_num = max(origin_ids) + 1
-    renames: dict[str, str] = {}
-    for old_num in clash:
-        renames[f"T{old_num}"] = f"T{next_num}"
-        next_num += 1
+    start_num = max(origin_ids) + 1
+    expected_ids = list(range(start_num, start_num + len(added_ids)))
+    renames: dict[str, str] = {
+        f"T{old_num}": f"T{new_num}"
+        for old_num, new_num in zip(added_ids, expected_ids, strict=True)
+        if old_num != new_num
+    }
+    if not renames:
+        return list(target_tickets), {}
 
     mapped_targets = [renames.get(t, t) for t in target_tickets]
     if dry_run:
@@ -458,63 +487,166 @@ def maybe_renumber_colliding_tickets(
         if web_mb and web_head and web_head != web_mb:
             _git(w0m_web_dir, "reset", "--soft", web_mb, check=True)
 
+    # Two-phase `.tasks/` rename so chained renames (`T11->T12, T12->T13`) never collide mid-flight,
+    # and strip any pre-renumber `gh_issue:` frontmatter so GitHub Issue `#old` is never overwritten.
+    staged_tmps: list[tuple[Path, Path]] = []
     for old_tid, new_tid in renames.items():
         old_tpath = tickets_dir / f"{old_tid}.md"
         new_tpath = tickets_dir / f"{new_tid}.md"
-        if new_tpath.exists():
-            raise SessionCompleteError("renumber_conflict", f"Target path already exists: {new_tpath}")
         if old_tpath.is_file():
             raw = old_tpath.read_text(encoding="utf-8")
-            new_tpath.write_text(_rewrite_ticket_id_tokens(raw, old_tid, new_tid), encoding="utf-8")
+            rewritten = _scrub_gh_issue_frontmatter(_rewrite_ticket_id_map(raw, renames))
+            tmp_tpath = tickets_dir / f".renumber-tmp-{old_tid}.md"
+            tmp_tpath.write_text(rewritten, encoding="utf-8")
             old_tpath.unlink()
             _git(worktree_root, "rm", "--cached", "-q", "--ignore-unmatch", f".tasks/{old_tid}.md")
+            staged_tmps.append((tmp_tpath, new_tpath))
 
-        for rel_dir in (".agents/reports", "w0m-web/docs/reports"):
-            rdir = worktree_root / rel_dir
-            if not rdir.is_dir():
+    for tmp_tpath, new_tpath in staged_tmps:
+        if new_tpath.exists():
+            raise SessionCompleteError("renumber_conflict", f"Target path already exists: {new_tpath}")
+        tmp_tpath.replace(new_tpath)
+
+    for rel_dir in (".agents/reports", "w0m-web/docs/reports"):
+        rdir = worktree_root / rel_dir
+        if not rdir.is_dir():
+            continue
+        report_tmps: list[tuple[Path, Path]] = []
+        for rfile in sorted(rdir.iterdir()):
+            if not rfile.is_file():
                 continue
-            for rfile in sorted(rdir.iterdir()):
-                if not rfile.is_file():
-                    continue
-                if re.search(rf"\b{re.escape(old_tid.lower())}\b", rfile.name, re.IGNORECASE):
-                    new_name = _rewrite_ticket_id_tokens(rfile.name, old_tid, new_tid)
-                    dest = rdir / new_name
-                    content = rfile.read_text(encoding="utf-8", errors="replace")
-                    dest.write_text(_rewrite_ticket_id_tokens(content, old_tid, new_tid), encoding="utf-8")
-                    if dest != rfile:
-                        rfile.unlink()
-                        if rel_dir == ".agents/reports":
-                            _git(worktree_root, "rm", "--cached", "-q", "--ignore-unmatch", f"{rel_dir}/{rfile.name}")
-                        elif rel_dir == "w0m-web/docs/reports" and (worktree_root / "w0m-web" / ".git").exists():
-                            _git(
-                                worktree_root / "w0m-web",
-                                "rm",
-                                "--cached",
-                                "-q",
-                                "--ignore-unmatch",
-                                f"docs/reports/{rfile.name}",
-                            )
+            matched = any(
+                re.search(rf"\b{re.escape(old_tid.lower())}\b", rfile.name, re.IGNORECASE)
+                for old_tid in renames
+            )
+            if not matched:
+                continue
+            new_name = _rewrite_ticket_id_map(rfile.name, renames)
+            dest = rdir / new_name
+            content = rfile.read_text(encoding="utf-8", errors="replace")
+            rewritten_report = _rewrite_ticket_id_map(content, renames)
+            if dest == rfile:
+                rfile.write_text(rewritten_report, encoding="utf-8")
+            else:
+                tmp_r = rdir / f".renumber-tmp-{rfile.name}"
+                tmp_r.write_text(rewritten_report, encoding="utf-8")
+                rfile.unlink()
+                if rel_dir == ".agents/reports":
+                    _git(worktree_root, "rm", "--cached", "-q", "--ignore-unmatch", f"{rel_dir}/{rfile.name}")
+                elif rel_dir == "w0m-web/docs/reports" and (worktree_root / "w0m-web" / ".git").exists():
+                    _git(
+                        worktree_root / "w0m-web",
+                        "rm",
+                        "--cached",
+                        "-q",
+                        "--ignore-unmatch",
+                        f"docs/reports/{rfile.name}",
+                    )
+                report_tmps.append((tmp_r, dest))
+        for tmp_r, dest in report_tmps:
+            tmp_r.replace(dest)
 
-        lessons_path = worktree_root / "LESSONS.md"
-        if lessons_path.is_file():
-            diff_l = _git(worktree_root, "diff", merge_base, "--", "LESSONS.md")
-            if old_tid in diff_l.stdout:
-                base_lessons_proc = _git(worktree_root, "show", f"{merge_base}:LESSONS.md")
-                curr_lessons = lessons_path.read_text(encoding="utf-8")
-                base_prefix = base_lessons_proc.stdout.rstrip("\n")
-                if base_lessons_proc.returncode == 0 and curr_lessons.startswith(base_prefix):
-                    suffix = curr_lessons[len(base_prefix) :]
-                    lessons_path.write_text(
-                        base_prefix + _rewrite_ticket_id_tokens(suffix, old_tid, new_tid),
-                        encoding="utf-8",
-                    )
-                else:
-                    lessons_path.write_text(
-                        _rewrite_ticket_id_tokens(curr_lessons, old_tid, new_tid),
-                        encoding="utf-8",
-                    )
+    lessons_path = worktree_root / "LESSONS.md"
+    if lessons_path.is_file():
+        diff_l = _git(worktree_root, "diff", merge_base, "--", "LESSONS.md")
+        if any(old_tid in diff_l.stdout for old_tid in renames):
+            base_lessons_proc = _git(worktree_root, "show", f"{merge_base}:LESSONS.md")
+            curr_lessons = lessons_path.read_text(encoding="utf-8")
+            base_prefix = base_lessons_proc.stdout.rstrip("\n")
+            if base_lessons_proc.returncode == 0 and curr_lessons.startswith(base_prefix):
+                suffix = curr_lessons[len(base_prefix) :]
+                lessons_path.write_text(
+                    base_prefix + _rewrite_ticket_id_map(suffix, renames),
+                    encoding="utf-8",
+                )
+            else:
+                lessons_path.write_text(
+                    _rewrite_ticket_id_map(curr_lessons, renames),
+                    encoding="utf-8",
+                )
 
     return mapped_targets, renames
+
+
+def _resolve_session_lock_dir(worktree_root: Path, work_root: str | None = None) -> Path | None:
+    proc = _git(worktree_root, "rev-parse", "--path-format=absolute", "--git-common-dir")
+    if proc.returncode == 0 and proc.stdout.strip():
+        common_git = Path(proc.stdout.strip()).resolve()
+        if common_git.is_dir():
+            return common_git
+    if work_root:
+        wr = Path(work_root)
+        if wr.is_dir():
+            return wr
+    return None
+
+
+@contextlib.contextmanager
+def session_complete_lock(
+    lock_dir: Path | None,
+    *,
+    holder: str = "unknown",
+    timeout_seconds: float = 2400.0,
+    poll_interval: float = 1.0,
+) -> Iterator[Path | None]:
+    """Serialize live `session-complete` runs across worktrees via kernel `fcntl.flock` (T660)."""
+    if lock_dir is None or not lock_dir.is_dir():
+        yield None
+        return
+    lock_path = lock_dir / "w0m-session-complete.lock"
+    fh = lock_path.open("a+", encoding="utf-8")
+    acquired = False
+    start = time.monotonic()
+    last_log = -30.0
+    try:
+        while True:
+            try:
+                fcntl.flock(fh.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                acquired = True
+                break
+            except BlockingIOError:
+                holder_desc = "another session"
+                try:
+                    fh.seek(0)
+                    raw = fh.read().strip()
+                    if raw:
+                        meta: Any = json.loads(raw)
+                        if isinstance(meta, dict):
+                            h_name = str(meta.get("holder") or "unknown")
+                            h_pid = meta.get("pid")
+                            holder_desc = f"{h_name} (pid {h_pid})" if h_pid else h_name
+                except (OSError, json.JSONDecodeError):
+                    pass
+                elapsed = time.monotonic() - start
+                if elapsed >= timeout_seconds:
+                    raise SessionCompleteError(
+                        "session_complete_lock_timeout",
+                        f"Timed out after {elapsed:.1f}s waiting for w0m-session-complete.lock held by {holder_desc}",
+                    ) from None
+                if elapsed - last_log >= 30.0:
+                    print(
+                        f"[session-complete] Waiting for active session-complete lock ({holder_desc}, {int(elapsed)}s) ...",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    last_log = elapsed
+                time.sleep(min(poll_interval, max(0.01, timeout_seconds - elapsed)))
+
+        payload = {
+            "pid": os.getpid(),
+            "holder": holder,
+            "acquired_at": dt.datetime.now(dt.UTC).isoformat(),
+        }
+        fh.seek(0)
+        fh.truncate()
+        fh.write(json.dumps(payload) + "\n")
+        fh.flush()
+        yield lock_path
+    finally:
+        if acquired:
+            with contextlib.suppress(OSError):
+                fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+        fh.close()
 
 
 def wait_for_land_lock(work_root: Path | None, *, timeout_seconds: float = 1200.0) -> None:
@@ -646,11 +778,12 @@ def normalize_ticket_file(
     lesson_note: str | None = None,
     today: str | None = None,
     dry_run: bool = False,
+    ticket_id_override: str | None = None,
 ) -> TicketNormalizationResult:
     if not ticket_path.is_file():
         raise SessionCompleteError("missing_ticket", f"Ticket file does not exist: {ticket_path}")
 
-    tid = ticket_path.stem
+    tid = ticket_id_override or ticket_path.stem
     raw = ticket_path.read_text(encoding="utf-8")
     parsed = _parse_frontmatter(raw)
     if not parsed:
@@ -862,6 +995,51 @@ def load_sdlc_config(worktree_root: Path) -> dict[str, Any]:
     return data
 
 
+def _verify_target_ticket_schema(
+    worktree_root: Path,
+    target_tickets: Sequence[str],
+) -> dict[str, Any] | None:
+    schema_script = worktree_root / "scripts" / "ticket_schema_check.py"
+    if not schema_script.is_file():
+        return None
+    label = "scripts/ticket_schema_check.py --json (SCHEMA + target tickets)"
+    proc = _run([sys.executable, str(schema_script), "--json"], cwd=worktree_root)
+    if proc.returncode != 0:
+        tail = ((proc.stderr or "") + "\n" + (proc.stdout or "")).strip()[-2000:]
+        raise SessionCompleteError(
+            "verification_gate_failed",
+            f"Gate failed ({label}, exit {proc.returncode}):\n{tail}",
+        )
+    try:
+        payload: dict[str, Any] = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError as exc:
+        raise SessionCompleteError(
+            "verification_gate_failed",
+            f"Invalid JSON from ticket_schema_check.py: {exc}",
+        ) from exc
+    target_set = {t.upper() for t in target_tickets}
+    bad_lines: list[str] = []
+    for row in payload.get("rows") or []:
+        row_tid = str(row.get("ticket", "")).upper()
+        errs = row.get("errors") or []
+        if not errs:
+            continue
+        if not target_set or row_tid in target_set:
+            bad_lines.extend(f"  {row.get('ticket')}: {err}" for err in errs)
+        elif row_tid == "SCHEMA":
+            for err in errs:
+                cited = {m.upper() for m in re.findall(r"\bT\d+\b", str(err), re.IGNORECASE)}
+                if not cited or (cited & target_set):
+                    bad_lines.append(f"  SCHEMA: {err}")
+    if bad_lines:
+        formatted = "\n".join(bad_lines)
+        raise SessionCompleteError(
+            "verification_gate_failed",
+            f"Gate failed ({label}):\n{formatted}",
+        )
+    return {"gate": label, "returncode": 0}
+
+
 def run_verification_gates(
     worktree_root: Path,
     sdlc_config: dict[str, Any],
@@ -900,45 +1078,12 @@ def run_verification_gates(
                 f"Gate failed ({label}, exit {proc.returncode}):\n{tail}",
             )
 
-    schema_script = worktree_root / "scripts" / "ticket_schema_check.py"
-    if schema_script.is_file():
+    if (worktree_root / "scripts" / "ticket_schema_check.py").is_file():
         label = "scripts/ticket_schema_check.py --json (SCHEMA + target tickets)"
         print(f"[session-complete] [{total}/{total}] {label} ...", file=sys.stderr, flush=True)
-        proc = _run([sys.executable, str(schema_script), "--json"], cwd=worktree_root)
-        if proc.returncode != 0:
-            tail = ((proc.stderr or "") + "\n" + (proc.stdout or "")).strip()[-2000:]
-            raise SessionCompleteError(
-                "verification_gate_failed",
-                f"Gate failed ({label}, exit {proc.returncode}):\n{tail}",
-            )
-        try:
-            payload: dict[str, Any] = json.loads(proc.stdout or "{}")
-        except json.JSONDecodeError as exc:
-            raise SessionCompleteError(
-                "verification_gate_failed",
-                f"Invalid JSON from ticket_schema_check.py: {exc}",
-            ) from exc
-        target_set = {t.upper() for t in target_tickets}
-        bad_lines: list[str] = []
-        for row in payload.get("rows") or []:
-            row_tid = str(row.get("ticket", "")).upper()
-            errs = row.get("errors") or []
-            if not errs:
-                continue
-            if not target_set or row_tid in target_set:
-                bad_lines.extend(f"  {row.get('ticket')}: {err}" for err in errs)
-            elif row_tid == "SCHEMA":
-                for err in errs:
-                    cited = {m.upper() for m in re.findall(r"\bT\d+\b", str(err), re.IGNORECASE)}
-                    if not cited or (cited & target_set):
-                        bad_lines.append(f"  SCHEMA: {err}")
-        results.append({"gate": label, "returncode": 1 if bad_lines else 0})
-        if bad_lines:
-            formatted = "\n".join(bad_lines)
-            raise SessionCompleteError(
-                "verification_gate_failed",
-                f"Gate failed ({label}):\n{formatted}",
-            )
+        schema_res = _verify_target_ticket_schema(worktree_root, target_tickets)
+        if schema_res is not None:
+            results.append(schema_res)
     return results
 
 
@@ -1171,6 +1316,60 @@ def refresh_canonical_graph_union(canon_root: Path) -> dict[str, Any]:
     return {"refreshed": True, "output": proc.stdout.strip()[-1200:]}
 
 
+def precertify_web_prepush(worktree_root: Path) -> dict[str, Any]:
+    """Run `w0m-web/.husky/pre-push` locally before `agent_tree.py land` opens an SSH socket (T660)."""
+    web_dir = worktree_root / "w0m-web"
+    if not (web_dir / ".git").exists():
+        return {"status": "missing_web_repo"}
+
+    counts = _git(web_dir, "rev-list", "--left-right", "--count", f"{BASE_REF}...HEAD")
+    if counts.returncode != 0:
+        return {"status": "no_base_ref"}
+    parts = counts.stdout.split()
+    if len(parts) != 2 or int(parts[1]) <= 0:
+        return {"status": "not_ahead"}
+
+    web_head = _git(web_dir, "rev-parse", "HEAD").stdout.strip()
+    prepush_py = worktree_root / "scripts" / "prepush_runner.py"
+    if prepush_py.is_file() and web_head:
+        cert = _run(
+            [sys.executable, str(prepush_py), "check-certified", "--commit", web_head],
+            cwd=web_dir,
+        )
+        if cert.returncode == 0:
+            return {"status": "already_certified", "commit": web_head}
+
+    hook_path = web_dir / ".husky" / "pre-push"
+    if not hook_path.is_file():
+        return {"status": "no_prepush_hook"}
+
+    ensure_prepush_deps(worktree_root)
+    remote_proc = _git(web_dir, "remote", "get-url", "origin")
+    remote_url = remote_proc.stdout.strip() if remote_proc.returncode == 0 else "origin"
+    print(
+        f"[session-complete] Pre-certifying w0m-web@{web_head[:8]} pre-push gates locally before SSH push ...",
+        file=sys.stderr,
+        flush=True,
+    )
+    env = {**os.environ, "LC_ALL": "C", "GIT_TERMINAL_PROMPT": "0", "GIT_EDITOR": "true"}
+    proc = subprocess.run(
+        ["sh", str(hook_path), "origin", remote_url],
+        cwd=str(web_dir),
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        text=True,
+        env=env,
+        check=False,
+    )
+    if proc.returncode != 0:
+        tail = ((proc.stderr or "") + "\n" + (proc.stdout or "")).strip()[-2500:]
+        raise SessionCompleteError(
+            "web_prepush_failed",
+            f"w0m-web local pre-push certification failed (exit {proc.returncode}):\n{tail}",
+        )
+    return {"status": "certified_locally", "commit": web_head}
+
+
 def land_and_cleanup_tree(
     ctx: SessionContext,
     *,
@@ -1182,6 +1381,8 @@ def land_and_cleanup_tree(
 
     if ctx.in_agent_tree and ctx.set_name:
         ensure_prepush_deps(wt_root)
+        if certify_after_land:
+            precertify_web_prepush(wt_root)
         agent_tree_py = wt_root / "w0m-web" / "project" / "scripts" / "agent_tree.py"
         if not agent_tree_py.is_file():
             raise SessionCompleteError("missing_agent_tree_script", f"Missing {agent_tree_py}")
@@ -1497,162 +1698,176 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
     wt_root = Path(ctx.worktree_root)
     sdlc_config = load_sdlc_config(wt_root)
 
-    explicit = [*args.tickets, *(args.extra_tickets or [])]
-    targets = discover_target_tickets(
-        wt_root,
-        explicit_tickets=explicit,
-        agent_id=ctx.agent_id,
-        allow_empty=bool(args.allow_no_ticket),
+    lock_dir = (
+        _resolve_session_lock_dir(wt_root, ctx.work_root)
+        if (not args.dry_run and not args.skip_land)
+        else None
     )
+    holder_label = ctx.set_name or ctx.agent_id or "canonical"
 
-    renumbered: dict[str, str] = {}
-    if ctx.in_agent_tree and not args.dry_run and not args.skip_land:
-        wait_for_land_lock(Path(ctx.work_root) if ctx.work_root else None)
-    if ctx.in_agent_tree and not args.no_auto_renumber and targets:
-        targets, renumbered = maybe_renumber_colliding_tickets(
+    with session_complete_lock(lock_dir, holder=holder_label):
+        explicit = [*args.tickets, *(args.extra_tickets or [])]
+        targets = discover_target_tickets(
             wt_root,
+            explicit_tickets=explicit,
+            agent_id=ctx.agent_id,
+            allow_empty=bool(args.allow_no_ticket),
+        )
+
+        renumbered: dict[str, str] = {}
+        if ctx.in_agent_tree and not args.dry_run and not args.skip_land:
+            wait_for_land_lock(Path(ctx.work_root) if ctx.work_root else None)
+        if ctx.in_agent_tree and not args.no_auto_renumber and targets:
+            targets, renumbered = maybe_renumber_colliding_tickets(
+                wt_root,
+                targets,
+                dry_run=bool(args.dry_run),
+            )
+        if ctx.in_agent_tree and not args.dry_run and not args.skip_land:
+            sync_worktree_onto_origin_beta(wt_root)
+
+        reverse_renames = {new_t: old_t for old_t, new_t in renumbered.items()} if args.dry_run else {}
+        ticket_results: list[dict[str, Any]] = []
+        for tid in targets:
+            disk_tid = reverse_renames.get(tid, tid)
+            res = normalize_ticket_file(
+                wt_root / ".tasks" / f"{disk_tid}.md",
+                complete_acs=bool(args.complete_acs),
+                no_lessons=bool(args.no_lessons),
+                lesson_note=args.lesson_note,
+                dry_run=bool(args.dry_run),
+                ticket_id_override=tid,
+            )
+            ticket_results.append(asdict(res))
+
+        mirrored_reports = mirror_reports(
+            wt_root,
+            sdlc_config,
             targets,
             dry_run=bool(args.dry_run),
         )
-    if ctx.in_agent_tree and not args.dry_run and not args.skip_land:
-        sync_worktree_onto_origin_beta(wt_root)
 
-    ticket_results: list[dict[str, Any]] = []
-    for tid in targets:
-        res = normalize_ticket_file(
-            wt_root / ".tasks" / f"{tid}.md",
-            complete_acs=bool(args.complete_acs),
-            no_lessons=bool(args.no_lessons),
-            lesson_note=args.lesson_note,
+        if not args.dry_run and not args.skip_gates and targets:
+            _verify_target_ticket_schema(wt_root, targets)
+
+        gh_sync_info = sync_tickets_to_github(
+            wt_root,
+            targets,
+            skip=bool(args.skip_gh_sync or args.skip_land),
             dry_run=bool(args.dry_run),
         )
-        ticket_results.append(asdict(res))
 
-    mirrored_reports = mirror_reports(
-        wt_root,
-        sdlc_config,
-        targets,
-        dry_run=bool(args.dry_run),
-    )
-
-    gh_sync_info = sync_tickets_to_github(
-        wt_root,
-        targets,
-        skip=bool(args.skip_gh_sync or args.skip_land),
-        dry_run=bool(args.dry_run),
-    )
-
-    surfaces_info = harvest_and_refresh_surfaces(
-        wt_root,
-        set_name=ctx.set_name,
-        dry_run=bool(args.dry_run),
-    )
-
-    if args.dry_run:
-        summary = {
-            "ok": True,
-            "dryRun": True,
-            "context": asdict(ctx),
-            "targetTickets": targets,
-            "renumberedTickets": renumbered,
-            "normalizedTickets": ticket_results,
-            "mirroredReports": mirrored_reports,
-            "githubSync": gh_sync_info,
-            "surfaces": surfaces_info,
-            "configuredGates": list((sdlc_config.get("session_wrapup") or {}).get("verification_gates") or []),
-        }
-        return 0, summary
-
-    gate_results: list[dict[str, Any]] = []
-    if not args.skip_gates:
-        gate_results = run_verification_gates(wt_root, sdlc_config, targets)
-
-    primary_tid = targets[0] if targets else "T0"
-    committed = commit_dirty_repos(
-        wt_root,
-        primary_ticket=primary_tid,
-        commit_message=args.commit_message,
-    )
-
-    if not args.skip_gates and targets:
-        gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
-
-    deploy_cert_info: dict[str, Any] | None = None
-    if not args.skip_gates:
-        deploy_cert_info = certify_estate_tree(
+        surfaces_info = harvest_and_refresh_surfaces(
             wt_root,
-            canonical_root=Path(ctx.canonical_root),
-            source="session-complete-pre-land",
+            set_name=ctx.set_name,
+            dry_run=bool(args.dry_run),
         )
 
-    land_info: dict[str, Any] = {"mode": "skipped"}
-    finalize_info: dict[str, Any] = {"mode": "skipped"}
-    if not args.skip_land:
-        if ctx.in_agent_tree:
-            wait_for_land_lock(Path(ctx.work_root) if ctx.work_root else None)
-            extra_renumbered: dict[str, str] = {}
-            if not args.no_auto_renumber and targets:
-                targets, extra_renumbered = maybe_renumber_colliding_tickets(
-                    wt_root,
-                    targets,
-                    dry_run=False,
-                )
-                renumbered.update(extra_renumbered)
-            synced_late = sync_worktree_onto_origin_beta(wt_root)
-            if extra_renumbered or synced_late:
-                ticket_results = [
-                    asdict(
-                        normalize_ticket_file(
-                            wt_root / ".tasks" / f"{tid}.md",
-                            complete_acs=bool(args.complete_acs),
-                            no_lessons=bool(args.no_lessons),
-                            lesson_note=args.lesson_note,
-                            dry_run=False,
-                        )
-                    )
-                    for tid in targets
-                ]
-                mirrored_reports = mirror_reports(wt_root, sdlc_config, targets, dry_run=False)
-                gh_sync_info = sync_tickets_to_github(
-                    wt_root,
-                    targets,
-                    skip=bool(args.skip_gh_sync),
-                    dry_run=False,
-                )
-                surfaces_info = harvest_and_refresh_surfaces(wt_root, set_name=ctx.set_name, dry_run=False)
-                primary_tid = targets[0] if targets else "T0"
-                committed = commit_dirty_repos(
-                    wt_root,
-                    primary_ticket=primary_tid,
-                    commit_message=args.commit_message,
-                )
-                if not args.skip_gates and targets:
-                    gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
-                if not args.skip_gates:
-                    deploy_cert_info = certify_estate_tree(
-                        wt_root,
-                        canonical_root=Path(ctx.canonical_root),
-                        source="session-complete-late-sync",
-                    )
+        if args.dry_run:
+            summary = {
+                "ok": True,
+                "dryRun": True,
+                "context": asdict(ctx),
+                "targetTickets": targets,
+                "renumberedTickets": renumbered,
+                "normalizedTickets": ticket_results,
+                "mirroredReports": mirrored_reports,
+                "githubSync": gh_sync_info,
+                "surfaces": surfaces_info,
+                "configuredGates": list((sdlc_config.get("session_wrapup") or {}).get("verification_gates") or []),
+            }
+            return 0, summary
 
-        land_info = land_and_cleanup_tree(
-            ctx,
-            remove_tree=not bool(args.keep_tree),
-            certify_after_land=not bool(args.skip_gates),
+        gate_results: list[dict[str, Any]] = []
+        if not args.skip_gates:
+            gate_results = run_verification_gates(wt_root, sdlc_config, targets)
+
+        primary_tid = targets[0] if targets else "T0"
+        committed = commit_dirty_repos(
+            wt_root,
+            primary_ticket=primary_tid,
+            commit_message=args.commit_message,
         )
-        if land_info.get("mode") == "canonical_direct_push" and not args.skip_gates:
-            canon_p = Path(ctx.canonical_root)
+
+        if not args.skip_gates and targets:
+            gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
+
+        deploy_cert_info: dict[str, Any] | None = None
+        if not args.skip_gates:
             deploy_cert_info = certify_estate_tree(
-                canon_p,
-                canonical_root=canon_p,
-                source="session-complete-direct-push",
+                wt_root,
+                canonical_root=Path(ctx.canonical_root),
+                source="session-complete-pre-land",
             )
-        finalize_info = archive_and_finalize_session(
-            ctx,
-            close_completed_others=bool(args.close_completed_others),
-            close_self_when_settled=bool(args.close_self_when_settled),
-            skip_final_state_check=bool(args.skip_gates),
-        )
+
+        land_info: dict[str, Any] = {"mode": "skipped"}
+        finalize_info: dict[str, Any] = {"mode": "skipped"}
+        if not args.skip_land:
+            if ctx.in_agent_tree:
+                wait_for_land_lock(Path(ctx.work_root) if ctx.work_root else None)
+                extra_renumbered: dict[str, str] = {}
+                if not args.no_auto_renumber and targets:
+                    targets, extra_renumbered = maybe_renumber_colliding_tickets(
+                        wt_root,
+                        targets,
+                        dry_run=False,
+                    )
+                    renumbered.update(extra_renumbered)
+                synced_late = sync_worktree_onto_origin_beta(wt_root)
+                if extra_renumbered or synced_late:
+                    ticket_results = [
+                        asdict(
+                            normalize_ticket_file(
+                                wt_root / ".tasks" / f"{tid}.md",
+                                complete_acs=bool(args.complete_acs),
+                                no_lessons=bool(args.no_lessons),
+                                lesson_note=args.lesson_note,
+                                dry_run=False,
+                            )
+                        )
+                        for tid in targets
+                    ]
+                    mirrored_reports = mirror_reports(wt_root, sdlc_config, targets, dry_run=False)
+                    gh_sync_info = sync_tickets_to_github(
+                        wt_root,
+                        targets,
+                        skip=bool(args.skip_gh_sync),
+                        dry_run=False,
+                    )
+                    surfaces_info = harvest_and_refresh_surfaces(wt_root, set_name=ctx.set_name, dry_run=False)
+                    primary_tid = targets[0] if targets else "T0"
+                    committed = commit_dirty_repos(
+                        wt_root,
+                        primary_ticket=primary_tid,
+                        commit_message=args.commit_message,
+                    )
+                    if not args.skip_gates and targets:
+                        gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
+                    if not args.skip_gates:
+                        deploy_cert_info = certify_estate_tree(
+                            wt_root,
+                            canonical_root=Path(ctx.canonical_root),
+                            source="session-complete-late-sync",
+                        )
+
+            land_info = land_and_cleanup_tree(
+                ctx,
+                remove_tree=not bool(args.keep_tree),
+                certify_after_land=not bool(args.skip_gates),
+            )
+            if land_info.get("mode") == "canonical_direct_push" and not args.skip_gates:
+                canon_p = Path(ctx.canonical_root)
+                deploy_cert_info = certify_estate_tree(
+                    canon_p,
+                    canonical_root=canon_p,
+                    source="session-complete-direct-push",
+                )
+            finalize_info = archive_and_finalize_session(
+                ctx,
+                close_completed_others=bool(args.close_completed_others),
+                close_self_when_settled=bool(args.close_self_when_settled),
+                skip_final_state_check=bool(args.skip_gates),
+            )
 
     summary = {
         "ok": True,

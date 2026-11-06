@@ -18,13 +18,16 @@ How `ticket_new.py` works:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
+import fcntl
 import os
 import re
 import subprocess
 import sys
+import threading
+from collections.abc import Iterator, Sequence
 from pathlib import Path
-from typing import Sequence
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SCRIPT_DIR.parent
@@ -34,6 +37,57 @@ if str(SCRIPT_DIR) not in sys.path:
 import tasks_render  # noqa: E402
 
 TICKET_FILE_RE = re.compile(r"^T(\d+)\.md$")
+_INPROC_SEQ_LOCK = threading.Lock()
+
+
+def _git_common_dir(repo_dir: Path) -> Path | None:
+    proc = subprocess.run(
+        ["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+        cwd=str(repo_dir),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0 or not proc.stdout.strip():
+        return None
+    cand = Path(proc.stdout.strip()).resolve()
+    return cand if cand.is_dir() else None
+
+
+def _linked_worktree_ticket_ids(repo_dir: Path) -> set[int]:
+    proc = subprocess.run(
+        ["git", "worktree", "list", "--porcelain"],
+        cwd=str(repo_dir),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        return set()
+    ids: set[int] = set()
+    for line in proc.stdout.splitlines():
+        if line.startswith("worktree "):
+            wt_path = Path(line[len("worktree ") :].strip())
+            ids |= _local_ticket_ids(wt_path / ".tasks")
+    return ids
+
+
+@contextlib.contextmanager
+def _ticket_seq_lock(repo_dir: Path) -> Iterator[None]:
+    common_dir = _git_common_dir(repo_dir)
+    with _INPROC_SEQ_LOCK:
+        if common_dir is None:
+            yield
+            return
+        lock_path = common_dir / "w0m-ticket-seq.lock"
+        fh = lock_path.open("a+", encoding="utf-8")
+        try:
+            fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+            yield
+        finally:
+            with contextlib.suppress(OSError):
+                fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+            fh.close()
 
 
 def _remote_ticket_ids(repo_dir: Path, remote_ref: str = "origin/beta") -> set[int]:
@@ -145,38 +199,43 @@ def allocate_ticket(
     t_md = Path(tasks_md_path).resolve() if tasks_md_path is not None else (repo_dir / "TASKS.md")
     t_dir.mkdir(parents=True, exist_ok=True)
 
-    known_ids = _remote_ticket_ids(repo_dir) | _local_ticket_ids(t_dir)
-    next_num = (max(known_ids) + 1) if known_ids else 1
+    with _ticket_seq_lock(repo_dir):
+        known_ids = (
+            _remote_ticket_ids(repo_dir)
+            | _local_ticket_ids(t_dir)
+            | _linked_worktree_ticket_ids(repo_dir)
+        )
+        next_num = (max(known_ids) + 1) if known_ids else 1
 
-    while True:
-        ticket_id = f"T{next_num}"
-        ticket_path = t_dir / f"{ticket_id}.md"
-        try:
-            fd = os.open(
-                str(ticket_path),
-                os.O_CREAT | os.O_EXCL | os.O_WRONLY,
-                0o644,
-            )
-        except FileExistsError:
-            next_num += 1
-            continue
+        while True:
+            ticket_id = f"T{next_num}"
+            ticket_path = t_dir / f"{ticket_id}.md"
+            try:
+                fd = os.open(
+                    str(ticket_path),
+                    os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                    0o644,
+                )
+            except FileExistsError:
+                next_num += 1
+                continue
 
-        try:
-            content = _render_ticket_body(
-                ticket_id,
-                title.strip(),
-                area=area,
-                priority=priority,
-                epic=epic,
-                status=status,
-                why=why,
-                ac=ac,
-                created=created,
-            )
-            os.write(fd, content.encode("utf-8"))
-        finally:
-            os.close(fd)
-        break
+            try:
+                content = _render_ticket_body(
+                    ticket_id,
+                    title.strip(),
+                    area=area,
+                    priority=priority,
+                    epic=epic,
+                    status=status,
+                    why=why,
+                    ac=ac,
+                    created=created,
+                )
+                os.write(fd, content.encode("utf-8"))
+            finally:
+                os.close(fd)
+            break
 
     if render_tasks:
         tasks_render.render_tasks_md(

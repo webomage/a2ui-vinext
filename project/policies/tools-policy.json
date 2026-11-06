@@ -475,11 +475,11 @@
     },
     "orca": {
       "min": "1.4.248",
-      "known_good": "1.4.249",
+      "known_good": "1.4.251",
       "required": false,
       "source": "overlay-appimage",
       "custom_fork": "webomage/orca@beta",
-      "linux_source": "overlay-appimage (~/Apps/orca-linux.AppImage + just orca-apply)",
+      "linux_source": "overlay-appimage (~/Apps/orca-linux-w0m.AppImage + just orca-apply)",
       "macos_source": "overlay-dmg (/Applications/Orca.app, webomage/orca)",
       "auto": "none",
       "smoke": "orca --version",
