@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""automation_health.py (T652) — Bounded staleness ceilings & zero-swallowed-hook guard.
+"""automation_health.py (T652, T653) — Bounded staleness ceilings, hook guard & Free-Tier quota gate.
 
-Prevents background syncs, knowledge-graph union merges, and deploy static-snapshot producers
-from silently turning off behind `[INFO]`, `|| true`, or unmonitored `.git/*.log` daemons (`AgDR-0025`).
+Prevents background syncs, knowledge-graph union merges, deploy static-snapshot producers, and
+Cloudflare Free-Tier zone Single Redirect caps (`AgDR-0055`) from silently drifting or failing only
+during live `cf-apply` (`AgDR-0025`).
 
-Four fast offline checks (<0.5s, zero network I/O):
+Five fast offline checks (<0.5s, zero network I/O):
   1. `no-detached-git-log-hooks`: No `.husky/*` or `*pre_push*` hook launches `nohup` or redirects
      daemon errors into an unmonitored `.git/*.log` file.
   2. `no-swallowed-deploy-producers`: `justfile` never appends `|| true` to `snapshot-*.mjs` in
@@ -15,6 +16,9 @@ Four fast offline checks (<0.5s, zero network I/O):
   4. `bounded-graph-union-lag`: When `graphify` is installed (or `--union-manifest` is supplied),
      `~/.graphify/w0m-union-manifest.json` exists and every declared estate repo's commit distance
      from `merged_at` (and `graph.json -> built_at_commit`) to `HEAD` stays `<= max_graph_union_commit_lag`.
+  5. `cf-free-tier-redirect-quota`: Every `cloudflare_ruleset` in `w0m-api/cloudflare/*.tf` targeting
+     `phase = "http_request_dynamic_redirect"` declares `<= max_cf_single_redirect_rules_per_zone`
+     (`10` on Cloudflare Free Tier, error `50001`) and uses zero Business-only regex operators.
 
 Exit codes: 0 all checks passed · 1 one or more findings · 2 configuration error.
 """
@@ -61,6 +65,7 @@ def load_policy(estate_root: Path) -> dict[str, Any]:
         return {
             "max_pending_ticket_mirror": 25,
             "max_graph_union_commit_lag": 25,
+            "max_cf_single_redirect_rules_per_zone": 10,
             "forbid_detached_git_log_hooks": True,
             "forbid_swallowed_deploy_snapshots": True,
         }
@@ -313,6 +318,181 @@ def check_graph_union_ceiling(
     return True, f"graph union lag within ceiling across {checked} repo(s) (max lag +{worst_lag} <= {max_lag})"
 
 
+CF_RULESET_HEADER_RE = re.compile(r'\bresource\s+"cloudflare_ruleset"\s+"([^"]+)"\s*\{')
+CF_MASKED_HEADER_RE = re.compile(r'\bresource\s+"_+?"\s+"_+?"\s*\{')
+CF_RULES_BLOCK_RE = re.compile(r"\brules\s*\{")
+CF_DYNAMIC_REDIRECT_PHASE_RE = re.compile(r'\bphase\s*=\s*"http_request_dynamic_redirect"')
+CF_BUSINESS_REGEX_OP_RE = re.compile(r"\bregex_replace\s*\(|\bhttp\.[a-z0-9_.]+\s+matches\b")
+
+
+def _mask_hcl(text: str) -> tuple[str, str]:
+    """Return `(structural_mask, no_comments)` with exact 1:1 character index alignment to `text`.
+
+    - `structural_mask` replaces comments with spaces and string interiors with `_` so `{` / `}` depth
+      and block headers never false-match inside HCL comments or escaped Wirefilter strings.
+    - `no_comments` replaces only comments with spaces while preserving string literals intact.
+    """
+    n = len(text)
+    mask_out = [" "] * n
+    clean_out = [" "] * n
+    i = 0
+    state = "code"
+    while i < n:
+        ch = text[i]
+        nxt = text[i + 1] if i + 1 < n else ""
+        if state == "code":
+            if ch == "#" or (ch == "/" and nxt == "/"):
+                step = 2 if ch == "/" else 1
+                state = "line_comment"
+                i += step
+                continue
+            if ch == "/" and nxt == "*":
+                state = "block_comment"
+                i += 2
+                continue
+            if ch == '"':
+                mask_out[i] = '"'
+                clean_out[i] = '"'
+                state = "string"
+                i += 1
+                continue
+            mask_out[i] = ch
+            clean_out[i] = ch
+            i += 1
+        elif state == "line_comment":
+            if ch == "\n":
+                mask_out[i] = "\n"
+                clean_out[i] = "\n"
+                state = "code"
+            i += 1
+        elif state == "block_comment":
+            if ch == "*" and nxt == "/":
+                state = "code"
+                i += 2
+                continue
+            if ch == "\n":
+                mask_out[i] = "\n"
+                clean_out[i] = "\n"
+            i += 1
+        else:  # string
+            if ch == "\\" and i + 1 < n:
+                mask_out[i] = "_"
+                mask_out[i + 1] = "_"
+                clean_out[i] = ch
+                clean_out[i + 1] = nxt
+                i += 2
+                continue
+            if ch == '"':
+                mask_out[i] = '"'
+                clean_out[i] = '"'
+                state = "code"
+                i += 1
+                continue
+            mask_out[i] = "\n" if ch == "\n" else "_"
+            clean_out[i] = ch
+            i += 1
+    return "".join(mask_out), "".join(clean_out)
+
+
+def _find_matching_brace(mask: str, open_idx: int) -> int:
+    depth = 0
+    for idx in range(open_idx, len(mask)):
+        c = mask[idx]
+        if c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+            if depth == 0:
+                return idx
+    return -1
+
+
+def _count_direct_rules_blocks(body_mask: str) -> int:
+    count = 0
+    depth = 0
+    idx = 0
+    n = len(body_mask)
+    while idx < n:
+        if depth == 0:
+            m = CF_RULES_BLOCK_RE.match(body_mask, idx)
+            if m:
+                count += 1
+                brace_pos = m.end() - 1
+                close_pos = _find_matching_brace(body_mask, brace_pos)
+                if close_pos == -1:
+                    break
+                idx = close_pos + 1
+                continue
+        c = body_mask[idx]
+        if c == "{":
+            depth += 1
+        elif c == "}":
+            depth = max(0, depth - 1)
+        idx += 1
+    return count
+
+
+def check_cloudflare_free_tier_redirect_quota(
+    estate_root: Path,
+    max_rules: int = 10,
+) -> tuple[bool, str]:
+    """Enforce Cloudflare Free-Tier cap (`<= 10` rules, zero Business regex) on `http_request_dynamic_redirect`."""
+    cf_dir = estate_root / "w0m-api" / "cloudflare"
+    if not cf_dir.is_dir():
+        return False, "missing w0m-api/cloudflare directory — refusing vacuous pass"
+    tf_files = sorted(cf_dir.glob("*.tf"))
+    if not tf_files:
+        return False, "0 Terraform (*.tf) files in w0m-api/cloudflare — refusing vacuous pass"
+
+    rulesets_seen: list[str] = []
+    findings: list[str] = []
+    for tf_path in tf_files:
+        raw = tf_path.read_text(encoding="utf-8", errors="replace")
+        mask, no_comments = _mask_hcl(raw)
+        rel = tf_path.relative_to(estate_root)
+        for m in CF_MASKED_HEADER_RE.finditer(mask):
+            header_raw = no_comments[m.start() : m.end()]
+            hm = CF_RULESET_HEADER_RE.search(header_raw)
+            if not hm:
+                continue
+            rname = hm.group(1)
+            open_idx = m.end() - 1
+            close_idx = _find_matching_brace(mask, open_idx)
+            if close_idx == -1:
+                findings.append(f"{rel}:cloudflare_ruleset.{rname}: unbalanced `{{` in HCL block")
+                continue
+            body_mask = mask[open_idx + 1 : close_idx]
+            body_clean = no_comments[open_idx + 1 : close_idx]
+            if not CF_DYNAMIC_REDIRECT_PHASE_RE.search(body_clean):
+                continue
+            rule_count = _count_direct_rules_blocks(body_mask)
+            rulesets_seen.append(f"{rname}={rule_count}/{max_rules}")
+            if rule_count > max_rules:
+                findings.append(
+                    f"{rel}:cloudflare_ruleset.{rname} declares {rule_count} rules > Free-Tier cap {max_rules} "
+                    "(error 50001)"
+                )
+            regex_hit = CF_BUSINESS_REGEX_OP_RE.search(body_clean)
+            if regex_hit:
+                findings.append(
+                    f"{rel}:cloudflare_ruleset.{rname} uses Business/Enterprise-only regex operator "
+                    f"`{regex_hit.group(0).strip()}` on a Free-Tier zone"
+                )
+
+    if not rulesets_seen and not findings:
+        return (
+            False,
+            "0 `http_request_dynamic_redirect` rulesets parsed in w0m-api/cloudflare/*.tf — refusing vacuous pass",
+        )
+    if findings:
+        return False, "; ".join(findings)
+    return (
+        True,
+        f"Cloudflare Free-Tier Single Redirect quota respected across {len(rulesets_seen)} zone ruleset(s) "
+        f"({', '.join(rulesets_seen)})",
+    )
+
+
 def run_checks(
     estate_root: Path,
     *,
@@ -322,6 +502,7 @@ def run_checks(
     policy = load_policy(estate_root)
     max_pending = int(policy.get("max_pending_ticket_mirror", 25))
     max_graph_lag = int(policy.get("max_graph_union_commit_lag", 25))
+    max_cf_rules = int(policy.get("max_cf_single_redirect_rules_per_zone", 10))
 
     results: list[dict[str, Any]] = []
 
@@ -359,6 +540,9 @@ def run_checks(
         require_graphify=require_graphify,
     )
     results.append({"name": "bounded-graph-union-lag", "ok": gr_ok, "detail": gr_detail})
+
+    cf_ok, cf_detail = check_cloudflare_free_tier_redirect_quota(estate_root, max_cf_rules)
+    results.append({"name": "cf-free-tier-redirect-quota", "ok": cf_ok, "detail": cf_detail})
 
     all_ok = all(bool(r["ok"]) for r in results)
     return all_ok, results

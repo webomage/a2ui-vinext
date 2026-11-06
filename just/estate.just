@@ -2993,6 +2993,8 @@ supabase-settings-import:
 supabase-settings-plan:
     @cd w0m-api/supabase-settings && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c '\
       AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
+        terraform init -input=false >/dev/null && \
+      AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
         terraform plan -lock=false'
 
 # Refresh state against reality WITHOUT changing anything (T324 AC4 drift check)

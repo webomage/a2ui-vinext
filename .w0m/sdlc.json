@@ -374,12 +374,13 @@
     ]
   },
   "automation_health": {
-    "_comment": "T652 — Bounded staleness ceilings & zero-swallowed-hook guard (`AgDR-0025`). Prevents background syncs, graph union merges, or deploy snapshot producers from silently turning off behind `[INFO]` or `|| true`.",
+    "_comment": "T652 / T653 — Bounded staleness ceilings, zero-swallowed-hook guard (`AgDR-0025`), and Cloudflare Free-Tier Single Redirect ruleset cap (`AgDR-0055`). Prevents background syncs, graph union merges, deploy snapshot producers, or Free-Tier ruleset quotas from failing silently or only at `cf-apply` time.",
     "command": "just automation-health",
     "test": "just automation-health-test",
     "script": "scripts/automation_health.py",
     "max_pending_ticket_mirror": 25,
     "max_graph_union_commit_lag": 25,
+    "max_cf_single_redirect_rules_per_zone": 10,
     "forbid_detached_git_log_hooks": true,
     "forbid_swallowed_deploy_snapshots": true
   },

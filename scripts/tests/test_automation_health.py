@@ -59,11 +59,41 @@ class TestAutomationHealth(unittest.TestCase):
             "automation_health": {
                 "max_pending_ticket_mirror": max_pending,
                 "max_graph_union_commit_lag": max_graph_lag,
+                "max_cf_single_redirect_rules_per_zone": 10,
                 "forbid_detached_git_log_hooks": True,
                 "forbid_swallowed_deploy_snapshots": True,
             }
         }
         (estate / ".w0m" / "sdlc.json").write_text(json.dumps(sdlc), encoding="utf-8")
+
+        # Clean Cloudflare Free-Tier Single Redirect ruleset fixture (<= 10 rules, braces inside string + comment)
+        cf_dir = estate / "w0m-api" / "cloudflare"
+        cf_dir.mkdir(parents=True, exist_ok=True)
+        (cf_dir / "redirects.tf").write_text(
+            "# rules { commented out block must not count }\n"
+            'resource "cloudflare_ruleset" "http_request_dynamic_redirect" {\n'
+            '  zone_id = data.cloudflare_zone.this.id\n'
+            '  name    = "default"\n'
+            '  kind    = "zone"\n'
+            '  phase   = "http_request_dynamic_redirect"\n\n'
+            "  rules {\n"
+            '    action      = "redirect"\n'
+            '    description = "301 www and beta"\n'
+            "    enabled     = true\n"
+            '    expression  = "(http.host in {\\"www.webomage.com\\" \\"beta.webomage.com\\"})"\n'
+            "    action_parameters {\n"
+            "      from_value {\n"
+            "        status_code           = 301\n"
+            "        preserve_query_string = true\n"
+            "        target_url {\n"
+            '          expression = "concat(\\"https://webomage.com\\", http.request.uri.path)"\n'
+            "        }\n"
+            "      }\n"
+            "    }\n"
+            "  }\n"
+            "}\n",
+            encoding="utf-8",
+        )
 
         # Clean justfile
         (estate / "justfile").write_text(
@@ -134,7 +164,7 @@ class TestAutomationHealth(unittest.TestCase):
             estate, mpath = self._build_fixture_estate(Path(td))
             ok, results = ah.run_checks(estate, manifest_path=mpath, require_graphify=True)
             self.assertTrue(ok, results)
-            self.assertEqual(len(results), 4)
+            self.assertEqual(len(results), 5)
 
     def test_red_detached_nohup_hook_fails(self) -> None:
         with tempfile.TemporaryDirectory() as td:
@@ -240,6 +270,58 @@ class TestAutomationHealth(unittest.TestCase):
             self.assertNotIn("GIT_COMMON_DIR", cleaned)
             self.assertEqual(cleaned.get("GIT_SSH_COMMAND"), "ssh -o BatchMode=yes")
             self.assertEqual(cleaned.get("PYTHONHASHSEED"), "0")
+
+    def test_red_cf_free_tier_redirect_quota_exceeded_or_business_regex_or_vacuous_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            estate, mpath = self._build_fixture_estate(Path(td))
+            cf_tf = estate / "w0m-api" / "cloudflare" / "redirects.tf"
+
+            # 1. 11 rules (> 10 Free-Tier cap) MUST fail closed with exact count
+            eleven_rules = "\n".join(
+                f'  rules {{\n    action = "redirect"\n    expression = "(http.host eq \\"h{i}.webomage.com\\")"\n  }}'
+                for i in range(11)
+            )
+            cf_tf.write_text(
+                'resource "cloudflare_ruleset" "http_request_dynamic_redirect" {\n'
+                '  phase = "http_request_dynamic_redirect"\n'
+                f"{eleven_rules}\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            ok, results = ah.run_checks(estate, manifest_path=mpath, require_graphify=True)
+            self.assertFalse(ok)
+            by_name = {r["name"]: r for r in results}
+            self.assertFalse(by_name["cf-free-tier-redirect-quota"]["ok"])
+            self.assertIn("11 rules > Free-Tier cap 10", by_name["cf-free-tier-redirect-quota"]["detail"])
+
+            # 2. Business-only `regex_replace` / `matches` inside <= 10 rules MUST fail closed
+            cf_tf.write_text(
+                'resource "cloudflare_ruleset" "http_request_dynamic_redirect" {\n'
+                '  phase = "http_request_dynamic_redirect"\n'
+                "  rules {\n"
+                '    action = "redirect"\n'
+                '    expression = "(http.request.uri.path matches \\"^/interview/\\")"\n'
+                "    action_parameters {\n"
+                "      from_value {\n"
+                "        target_url {\n"
+                '          expression = "regex_replace(http.request.uri.path, \\"^/interview/\\", \\"/me/interviews/\\")"\n'
+                "        }\n"
+                "      }\n"
+                "    }\n"
+                "  }\n"
+                "}\n",
+                encoding="utf-8",
+            )
+            ok2, results2 = ah.run_checks(estate, manifest_path=mpath, require_graphify=True)
+            self.assertFalse(ok2)
+            by_name2 = {r["name"]: r for r in results2}
+            self.assertFalse(by_name2["cf-free-tier-redirect-quota"]["ok"])
+            self.assertIn("Business/Enterprise-only regex operator", by_name2["cf-free-tier-redirect-quota"]["detail"])
+
+            # 3. Vacuous pass refusal when 0 dynamic-redirect rulesets are parsed
+            cf_tf.write_text("# empty file\n", encoding="utf-8")
+            ok3, _ = ah.check_cloudflare_free_tier_redirect_quota(estate, 10)
+            self.assertFalse(ok3)
 
 
 if __name__ == "__main__":
