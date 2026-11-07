@@ -19,7 +19,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 💤 **paused** |
-| [T668](.tasks/T668.md) | **P1** | **Eliminate remaining Gauge/Infisical deploy tool chatter at the source and surface filtered audit lines in deploy_logged** | web | null | 🟡 **in-progress** |
 | [T290](project/tickets/T290.md) | **P1** | 🆕 **Stage-4 Money had no ticket of its own, and `simulate_payment` is a live billing hole** — found 2026-08-26 on reaching the last unmet stage. Stage-4's exit is *invoices reconcile against Stripe, and simulate_payment is out of the production path*, but it named [[T9]] — **AI token accounting from epic §11**. Same defect stage-2 carried until 2026-08-18: the stage reads as progress whenever the wrong ticket moves. 🔴 `client-api:223` marks an invoice paid AND credits a treasury, and **an authenticated client passes its ownership check on their OWN invoice** — no caller anywhere in source, and `stripe-webhook` already does both writes. ✅ **CLOSED on production 2026-08-26** (release `2026.08.26-1787760232`): the deployed function now answers `400 Unknown action`, identical to the control — it answered `404 Invoice not found` before. A grep could never have told those two apart. ⚠️ Impact is small by LUCK — one invoice, already paid, no Stripe activity yet. 🔀 **Epic moved 2026-09-12**: §33 split into Alfa/Beta, this ticket is now Beta's (§34). | api | ROADMAP §34 | 💤 **paused** |
 
 ## QUEUED & BACKLOG
@@ -35,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T668](.tasks/T668.md) | **P1** | **Eliminate remaining Gauge/Infisical deploy tool chatter at the source and surface filtered audit lines in deploy_logged** | web | null | ✅ **done** |
 | [T667](.tasks/T667.md) · [#667](https://github.com/casualuser/webomage.com/issues/667) | **P1** | **Purge internal ticket and AgDR numbers from user-facing UI copy and enforce a no-ticket-spam UI gate** | tooling, web, skills | — | ✅ **done** |
 | [T666](.tasks/T666.md) · [#666](https://github.com/casualuser/webomage.com/issues/666) | **P1** | **Eliminate deploy-all browser-bundle node:* warnings, crawler-smoke 403, transcript noise, and Nov 20 Workers AI deprecated models** | tooling, web, api | — | ✅ **done** |
 | [T665](.tasks/T665.md) · [#665](https://github.com/casualuser/webomage.com/issues/665) | **P1** | **Bootstrap and onboard PandaTransfer (pandatransfer.io) into w0m clients with pre-magic-link tenancy and engagement vault** | api, web, tooling | openspec/specs/client-engagement/spec.md | ✅ **done** |

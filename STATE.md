@@ -44,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/deploy-and-ui-hygiene` | 0 | **n/a — NO UPSTREAM** | `93028c64b` |
-| `w0m-api` | `agent/deploy-and-ui-hygiene` | 0 | **n/a — NO UPSTREAM** | `d0d0fa6` |
-| `w0m-cf` | `agent/deploy-and-ui-hygiene` | 0 | **n/a — NO UPSTREAM** | `02e08fe` |
-| `w0m-skills` | `agent/deploy-and-ui-hygiene` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
-| `w0m-ext` | `agent/deploy-and-ui-hygiene` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
-| `w0m-sec` | `agent/deploy-and-ui-hygiene` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/deploy-and-ui-hygiene` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/deploy-audit-clean` | 0 | **n/a — NO UPSTREAM** | `fee3d23bb` |
+| `w0m-api` | `agent/deploy-audit-clean` | 0 | **n/a — NO UPSTREAM** | `d0d0fa6` |
+| `w0m-cf` | `agent/deploy-audit-clean` | 0 | **n/a — NO UPSTREAM** | `02e08fe` |
+| `w0m-skills` | `agent/deploy-audit-clean` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
+| `w0m-ext` | `agent/deploy-audit-clean` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
+| `w0m-sec` | `agent/deploy-audit-clean` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/deploy-audit-clean` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 667 TASKS.md rows · 306/667 specced (1/6 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 668 TASKS.md rows · 306/668 specced (1/6 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T664","T17"],"repos":{"w0m-api":{"branch":"agent/deploy-and-ui-hygiene","dirty":0,"has_upstream":true,"head":"d0d0fa6","unpushed":null},"w0m-cf":{"branch":"agent/deploy-and-ui-hygiene","dirty":0,"has_upstream":true,"head":"02e08fe","unpushed":null},"w0m-ext":{"branch":"agent/deploy-and-ui-hygiene","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/deploy-and-ui-hygiene","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/deploy-and-ui-hygiene","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/deploy-and-ui-hygiene","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/deploy-and-ui-hygiene","dirty":0,"has_upstream":true,"head":"93028c64b","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":667,"specced":306,"specced_open":1,"total":667,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T664","T17"],"repos":{"w0m-api":{"branch":"agent/deploy-audit-clean","dirty":0,"has_upstream":true,"head":"d0d0fa6","unpushed":null},"w0m-cf":{"branch":"agent/deploy-audit-clean","dirty":0,"has_upstream":true,"head":"02e08fe","unpushed":null},"w0m-ext":{"branch":"agent/deploy-audit-clean","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/deploy-audit-clean","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/deploy-audit-clean","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/deploy-audit-clean","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/deploy-audit-clean","dirty":0,"has_upstream":true,"head":"fee3d23bb","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":668,"specced":306,"specced_open":1,"total":668,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,10 +115,11 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (2):
+#### Completed today (3):
 
 - **T666** — Eliminate deploy-all browser-bundle node:* warnings, crawler-smoke 403, transcript noise, and Nov 20 Workers AI deprecated models (Completed and verified — apps/cp and apps/me production builds emitted 0 [WARN] lines (down from 6), live crawler-smoke passed HTTP 200 ({"enqueued":2}), npm --version inside w0m-web printed 0 warnings, test_deploy_logged.py + test_live_verify_helper.py + test_ai_models_check.py (all 24 retiring Workers AI models) passed, and 161/161 w0m-web + 9/9 (73/73) w0m-api Vitest files passed. Lesson disposition: recorded transferable browser-barrel node: isolation, Cloudflare 1010 User-Agent, and pnpm-workspace.yaml config rules in LESSONS.md.)
 - **T667** — Purge internal ticket and AgDR numbers from user-facing UI copy and enforce a no-ticket-spam UI gate (Completed and verified — RED scan caught 76 leaked T##/AgDR-####/AC# tokens across 25 files, purged all 76 down to 0 across 494 scanned UI/catalog files (just ui-ticket-leak-check), wired ui-ticket-leak-check into w0m-web/.pre-commit-config.yaml and w0m-web/project/test-suites.json (prepush: true), codified the rule in AGENTS.md, w0m-web/docs/ANTI-PATTERNS.md, and webomage-design (2026.11.07-1794074813), and passed 161/161 w0m-web Vitest suites + ds-conformance + ds-adherence + hooks-check. Lesson disposition: recorded UI ticket/AgDR copy-hygiene gate rule in LESSONS.md.)
+- **T668** — Eliminate remaining Gauge/Infisical deploy tool chatter at the source and surface filtered audit lines in deploy_logged (Completed and verified AC1–AC3: configured GAUGE_TS_PACKAGE_RUNNER = pnpm + NODE_NO_WARNINGS = 1 in w0m-web/env/default/ts.properties and check_updates = false in w0m-web/env/default/default.properties (gauge config check_updates false), exported INFISICAL_DISABLE_UPDATE_CHECK in justfile, deduplicated Playwright console listeners in w0m-web/tests/steps/ai.steps.ts and filtered benign Chromium GPU driver hints in w0m-web/tests/support/hooks.ts, persisted tool_chatter + other_trouble arrays in deploy_logged.py (deploy-audit-latest.json), and verified just smoke-live finishes with 0 build_warnings, 0 advisory_failures, 0 browser_errors, 0 tool_chatter, and 0 other_trouble ([PASS] crawler-smoke: HTTP 200). Lesson disposition: recorded in LESSONS.md.)
 
 ## 3. Other open threads (in TASKS.md)
 
