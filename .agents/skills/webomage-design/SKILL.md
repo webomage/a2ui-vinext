@@ -2,7 +2,7 @@
 name: webomage-design
 description: "Use this skill to generate, audit, and refine well-branded interfaces, responsive layouts, and UI components for Webomage (@webomage/ui + w0m-web/design-system). Enforces dark-first glassmorphic tokens, per-app [data-app] brand theming, 25 canonical @webomage/ui primitives, and the AgDR-0054 Mobile-First Multi-Orientation Responsive Contract (Mobile Portrait/Landscape, Tablet Vertical 768x1024, Tablet Horizontal 1024x768, and Desktop Well-Wrapped 1200px-1440px+)."
 metadata:
-  version: "2026.11.04-1793849799"
+  version: "2026.11.07-1794074813"
 ---
 
 # Webomage Design System (`webomage-design`)
@@ -39,3 +39,9 @@ Always import from `@webomage/ui` rather than writing raw `<button>`, `<input>`,
 - **Overlay & Data**: `Dialog`, `Select`, `Table`
 - **Brand & Domain**: `BlueprintCard`, `ComplexityBadge`, `GlassCard`, `SegmentBadge`, `StatusDot`, `TechIcon`, `BugReportWidget`, `QuickViewModal`
 - **Layout**: `AppShell`, `Breadcrumb`, `ContextSwitcher`, `EmptyState`, `PageHeader`, `SideNav`, `Tabs`
+
+## 4. UI Copy Hygiene — Zero Internal Ticket or AgDR Spam (`T667`)
+
+- **Never expose internal engineering tracker IDs in user-facing UI**: Do not put `T##` ticket numbers, `AgDR-####` / `ADR-####` decision numbers, or `AC#` acceptance-criteria tags into headings, card titles, badges, buttons, form labels, placeholders, tooltips, table headers, status pills, empty states, validation messages, or UI-rendered catalog descriptions.
+- **Write clear product/domain copy instead**: Describe what the capability does for the user (e.g., `"Personal Access Tokens"`, `"Dedicated Client Instance"`, `"Zero-Trust Origin Verification"`) rather than citing the ticket or decision that introduced it (`"(T53)"`, `"(AgDR-0028)"`, `"(AC4)"`).
+- **Keep SDLC provenance in code comments & commits**: Place `T##` and `AgDR-####` references in HTML/JS comments (`<!-- T663 -->`, `// AgDR-0054`), `.tasks/T##.md`, specs, and commit messages — enforced mechanically by `just ui-ticket-leak-check`.

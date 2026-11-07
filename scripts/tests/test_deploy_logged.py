@@ -150,21 +150,32 @@ check("categorizes browser errors", len(audit_res["browser_errors"]) == 1, repr(
 check("categorizes tool chatter", len(audit_res["tool_chatter"]) == 1, repr(audit_res["tool_chatter"]))
 check("categorizes other trouble", len(audit_res["other_trouble"]) == 1, repr(audit_res["other_trouble"]))
 
-# ── T523 AC4: harmless Gauge 0-failed summaries and WebGL driver warnings are excluded, real trouble still counts ──
+# ── T523 AC4 + T666 AC3: harmless Gauge summaries, WebGL/WebGPU driver warnings, and asset upload paths are excluded ──
 harmless_and_real_log = (
     "Specifications:   2 executed  2 passed  0 failed  0 skipped\n"
     "Scenarios:        7 executed  7 passed  0 failed  0 skipped\n"
     "[Browser WARNING]: [.WebGL-0x1240065b500] GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\n"
+    " ✔[Browser WARNING]: No available adapters.\n"
+    "Uploading asset (upwork-poller): supabase/functions/_shared/upwork-failure.ts\n"
+    "npm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\n"
+    "(Use `node --trace-deprecation ...` to show where the warning was created)\n"
     "Specifications:   2 executed  1 passed  1 failed  0 skipped\n"
     "Failed step: I should see the dashboard\n"
     "DeprecationWarning: custom application deprecation notice\n"
 )
 t523_res = dl.audit_transcript(harmless_and_real_log)
 check(
-    "T523 AC4: excludes Gauge 0-failed summary lines and WebGL GL_CLOSE_PATH_NV warnings from other_trouble",
+    "T523 AC4 + T666 AC3: excludes Gauge 0-failed, WebGL/WebGPU adapter hints, asset upload filenames, and npm env chatter from other_trouble",
     len(t523_res["other_trouble"]) == 3
-    and all("0 failed" not in ln and "GL_CLOSE_PATH_NV" not in ln for ln in t523_res["other_trouble"]),
-    repr(t523_res["other_trouble"]),
+    and len(t523_res["tool_chatter"]) == 2
+    and all(
+        "0 failed" not in ln
+        and "GL_CLOSE_PATH_NV" not in ln
+        and "No available adapters" not in ln
+        and "upwork-failure.ts" not in ln
+        for ln in t523_res["other_trouble"]
+    ),
+    repr(t523_res),
 )
 check(
     "T523 AC4: still counts non-zero failed Gauge summary, failed step, and deprecation lines",

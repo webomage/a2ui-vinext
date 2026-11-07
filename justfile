@@ -731,11 +731,10 @@ deploy-workers: (_confirm "deploy-workers")
     @cd w0m-cf && infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- python3 "{{ justfile_directory() }}/scripts/wrangler_deploy.py" -- pnpm exec wrangler deploy --var DEPLOY_VERSION:{{ deploy_version }} --var DEPLOY_AT:{{ deploy_at }} --var DEPLOY_COMMIT:{{ deploy_commit }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py w0m-cf "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
-# Deploy all functions in parallel using Supabase CLI
+# Deploy all functions in parallel using Supabase CLI (bulk deploy, then verify each function updated and retry stale ones via scripts/deploy_functions.py).
 deploy-functions: (_confirm "deploy-functions")
     @echo "Deploying all functions to project {{ project_ref }} in parallel (Version: {{ deploy_version }})..."
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'supabase secrets set DEPLOY_VERSION="{{ deploy_version }}" DEPLOY_AT="{{ deploy_at }}" DEPLOY_COMMIT="{{ deploy_commit }}" --project-ref {{ project_ref }} > /dev/null 2>&1'
-    # Bulk deploy, then VERIFY each function updated and retry only the stale ones (scripts/deploy_functions.py).
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/deploy_functions.py --project-ref {{ project_ref }}
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py api "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 
@@ -801,7 +800,7 @@ check-warp:
 
 check-auth:
     @echo "Verifying Supabase project access for {{ project_ref }}..."
-    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'supabase projects list | grep -q "{{ project_ref }}" || (echo "❌ Error: Project {{ project_ref }} not found." && exit 1)'
+    @infisical run --projectId={{ infisical_project_id }} --env=beta -- sh -c 'supabase functions list --project-ref {{ project_ref }} -o json > /dev/null || (echo "❌ Error: Project {{ project_ref }} not accessible." && exit 1)'
     @echo "✅ Authorized for project {{ project_ref }}"
 
 check-supabase:
@@ -875,7 +874,7 @@ goldens:
       if [ "$i" -eq 45 ]; then echo "❌ server never stabilised"; exit 1; fi
       sleep 2
     done
-    E2E_BASE_URL=http://localhost:4321 gauge run specs/web/goldens.spec:40
+    env -u npm_config_verify_deps_before_run -u npm_config_enable_pre_post_scripts E2E_BASE_URL=http://localhost:4321 gauge run specs/web/goldens.spec:40
 
 # T227 (AC2, AC3, AC5, AC6) — On-demand built-artifact server & golden gate (`wrangler dev --local` with
 # sanitized `wrangler.local-gate.json` and ephemeral `--persist-to`, never `--remote` against live bindings).
@@ -899,7 +898,7 @@ goldens-check-test:
 
 smoke-live url="https://webomage.com":
     @echo "🔎 Live smoke against {{ url }} (non-blocking — reports, does not gate)..."
-    -@cd w0m-web && E2E_BASE_URL={{ url }} gauge run specs/web/live-smoke.spec
+    -@cd w0m-web && env -u npm_config_verify_deps_before_run -u npm_config_enable_pre_post_scripts E2E_BASE_URL={{ url }} gauge run specs/web/live-smoke.spec
     -@python3 scripts/live_verify_helper.py crawler-smoke
 
 _assert-clean-tree:
@@ -2182,6 +2181,14 @@ social-search platform query *args:
 
 social-trace-test:
     @python3 scripts/tests/test_social_trace.py
+
+# ── User-Facing UI Ticket / AgDR / AC Copy Leak Gate (T667) ────────────────────
+ui-ticket-leak-check *args:
+    @python3 w0m-web/project/scripts/ui_ticket_leak_check.py {{ args }}
+
+ui-ticket-leak-check-test:
+    @python3 w0m-web/project/scripts/tests/test_ui_ticket_leak_check.py
+
 
 
 

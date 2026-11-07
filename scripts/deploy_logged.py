@@ -167,8 +167,9 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
         re.IGNORECASE,
     )
     rx_tool_chatter = re.compile(
-        r"(?:npm warn Unknown project config|"
+        r"(?:npm warn Unknown (?:project|env) config|"
         r"\[DEP\d+\] DeprecationWarning|"
+        r"^\(Use `node --trace-deprecation|"
         r"Updates are available\. Run `gauge update)",
         re.IGNORECASE,
     )
@@ -178,12 +179,16 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
         r"advisory suite\(s\) failing)",
         re.IGNORECASE,
     )
-    # T523 AC4 — Exclude harmless summary/driver lines that match `TROUBLE` only by word shape:
+    # T523 AC4 + T666 AC3 — Exclude harmless summary/driver/asset lines that match `TROUBLE` only by word shape:
     # 1. Gauge summary lines with 0 failures (`Specifications: 2 executed 2 passed 0 failed`)
     # 2. Chromium WebGL GPU driver performance hints (`[Browser WARNING]: ... GL Driver Message ... GL_CLOSE_PATH_NV`)
+    # 3. Headless Chromium WebGPU adapter probe (`[Browser WARNING]: No available adapters.`)
+    # 4. Supabase CLI asset upload paths whose filename contains `-failure.ts` (`Uploading asset (...): supabase/functions/...`)
     rx_harmless_trouble = re.compile(
         r"(?:^(?:Specifications|Scenarios):\s+\d+\s+executed\s+\d+\s+passed\s+0\s+failed\b|"
-        r"\[Browser WARNING\]:.*GL Driver Message.*(?:GL_CLOSE_PATH_NV|ReadPixels|Performance))",
+        r"\[Browser WARNING\]:.*GL Driver Message.*(?:GL_CLOSE_PATH_NV|ReadPixels|Performance)|"
+        r"\[Browser (?:WARNING|Console)\]:\s*No available adapters\.|"
+        r"^Uploading asset \([^)]+\):\s+supabase/functions/)",
         re.IGNORECASE,
     )
 

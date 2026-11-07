@@ -34,6 +34,8 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T667](.tasks/T667.md) · [#667](https://github.com/casualuser/webomage.com/issues/667) | **P1** | **Purge internal ticket and AgDR numbers from user-facing UI copy and enforce a no-ticket-spam UI gate** | tooling, web, skills | — | ✅ **done** |
+| [T666](.tasks/T666.md) · [#666](https://github.com/casualuser/webomage.com/issues/666) | **P1** | **Eliminate deploy-all browser-bundle node:* warnings, crawler-smoke 403, transcript noise, and Nov 20 Workers AI deprecated models** | tooling, web, api | — | ✅ **done** |
 | [T665](.tasks/T665.md) · [#665](https://github.com/casualuser/webomage.com/issues/665) | **P1** | **Bootstrap and onboard PandaTransfer (pandatransfer.io) into w0m clients with pre-magic-link tenancy and engagement vault** | api, web, tooling | openspec/specs/client-engagement/spec.md | ✅ **done** |
 | [T663](.tasks/T663.md) · [#663](https://github.com/casualuser/webomage.com/issues/663) | **P1** | **Streamline public Audit and Blueprint Order flows to URL-only -> Register and move verification, setup, and results into guided Client Portal** | web | openspec/changes/archive/2026-11-06-streamline-audit-blueprint-order-ui-2026-11-06 | ✅ **done** |
 | [T662](.tasks/T662.md) · [#662](https://github.com/casualuser/webomage.com/issues/662) | **P1** | **Remeasure Orca mobile UI tweaks against new upstream keys bar and tabbed Home, and retire obsolete safe-area PR** | web, tooling | — | ✅ **done** |

@@ -102,6 +102,39 @@ def main() -> int:
     )
     check("RED PROBE: crawler-smoke fails on non-200 status", not bad_smoke)
 
+    # 7. T666 AC2: urllib Request carries explicit User-Agent so Cloudflare BIC never rejects with 403/1010
+    from unittest import mock
+
+    captured_headers: dict[str, str] = {}
+
+    class _FakeResp:
+        def __enter__(self) -> "_FakeResp":
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            return None
+
+        def getcode(self) -> int:
+            return 200
+
+        def read(self) -> bytes:
+            return b'{"queued":2}'
+
+    def _fake_urlopen(req: object, timeout: int = 15) -> _FakeResp:
+        hdrs = getattr(req, "headers", {}) or {}
+        for k, v in hdrs.items():
+            captured_headers[k.lower()] = str(v)
+        return _FakeResp()
+
+    with mock.patch("urllib.request.urlopen", side_effect=_fake_urlopen):
+        ua_ok, _ = lvh.run_crawler_smoke(worker_url="https://crawler.example.workers.dev")
+    ua_val = captured_headers.get("user-agent", "")
+    check(
+        "T666 AC2: crawler-smoke sends explicit non-Python-urllib User-Agent header",
+        ua_ok and bool(ua_val) and "python-urllib" not in ua_val.lower(),
+        f"user-agent={ua_val!r}",
+    )
+
     return 1 if failures else 0
 
 

@@ -315,7 +315,10 @@ def run_crawler_smoke(
         req = urllib.request.Request(
             target,
             data=data,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "w0m-live-smoke/1.0",
+            },
             method="POST",
         )
         try:
