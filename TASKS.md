@@ -25,6 +25,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T664](.tasks/T664.md) · [#664](https://github.com/casualuser/webomage.com/issues/664) | **P1** | 🆕 **Per-client tech mailboxes on w0m.xyz (Cloudflare Email Routing) and dedicated client Infisical org bootstrap workflow** | api, cf, web, tooling | — | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | P3 | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 💤 **paused** |
@@ -33,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T665](.tasks/T665.md) · [#665](https://github.com/casualuser/webomage.com/issues/665) | **P1** | **Bootstrap and onboard PandaTransfer (pandatransfer.io) into w0m clients with pre-magic-link tenancy and engagement vault** | api, web, tooling | openspec/specs/client-engagement/spec.md | ✅ **done** |
 | [T663](.tasks/T663.md) · [#663](https://github.com/casualuser/webomage.com/issues/663) | **P1** | **Streamline public Audit and Blueprint Order flows to URL-only -> Register and move verification, setup, and results into guided Client Portal** | web | openspec/changes/archive/2026-11-06-streamline-audit-blueprint-order-ui-2026-11-06 | ✅ **done** |
 | [T662](.tasks/T662.md) · [#662](https://github.com/casualuser/webomage.com/issues/662) | **P1** | **Remeasure Orca mobile UI tweaks against new upstream keys bar and tabbed Home, and retire obsolete safe-area PR** | web, tooling | — | ✅ **done** |
 | [T661](.tasks/T661.md) · [#661](https://github.com/casualuser/webomage.com/issues/661) | **P1** | **Deploy side-by-side ~/Apps/orca-linux-w0m.AppImage and harden parallel ticket allocation & session-complete wrap-up against collisions** | tooling | — | ✅ **done** |

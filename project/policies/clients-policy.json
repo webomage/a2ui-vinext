@@ -833,6 +833,137 @@
         "gh_config_dir": "~/.config/gh-w0m"
       },
       "note": "T348 / T642 — MantraBox audio & mindfulness mobile app suite (mantrabox, mantrabox.flutter, mantrabox.slint) onboarded under Aleksei Tcelishchev (`aleksei-tcelishchev`, `aleksei@webomage.com`) as Client with active delivery engagement `eg-mantrabox` vs contractor `webomage` and Indie delivery hats (`pm`, `tech-lead`, `dev`)."
+    },
+    {
+      "id": "pandatransfer",
+      "role": "managed",
+      "root": "../../!proj/pandatransfer",
+      "enabled": true,
+      "org_slug": "pandatransfer",
+      "project_slug": "pandatransfer",
+      "knowledge_hub": {
+        "vault_slug": "pandatransfer",
+        "engagement_public_id": "eg-pandatransfer",
+        "r2_bucket": "wom-engagement-vaults",
+        "r2_prefix": "engagements/eg-pandatransfer",
+        "corpus_root": "w0m-web/projects/pandatransfer/vault",
+        "allowed_prefixes": [
+          "index.md",
+          "guides/",
+          "mocs/",
+          "notes/",
+          "sources/",
+          "claims/",
+          "assets/"
+        ],
+        "guide_prefixes": [
+          "guides/"
+        ],
+        "tech_prefixes": [
+          "tech/"
+        ],
+        "denied_prefixes": [
+          "inbox/",
+          ".obsidian/",
+          "internal/",
+          ".w0m/",
+          "openspec/"
+        ]
+      },
+      "runtime": {
+        "substrate": "host"
+      },
+      "vcs": {
+        "provider": "github",
+        "repo": "webomage/pandatransfer",
+        "default_branch": "main"
+      },
+      "services": {
+        "deploys": {
+          "enabled": false,
+          "reason": "iEXExchanger 11.7 PRO runtime on VPS 91.108.190.210 is operated via iexctl systemd services outside the w0m Cloudflare Workers deploy pipeline."
+        },
+        "database": {
+          "enabled": false,
+          "reason": "Exchange Postgres 18 and Redis run inside the dedicated iEXExchanger runtime on 91.108.190.210 rather than w0m Supabase migrations."
+        }
+      },
+      "external_services": [
+        {
+          "service_key": "supabase",
+          "title": "Supabase (Portal Tenancy, Pre-Magic-Link Lead, Engagement & Vault Metadata)",
+          "category": "database",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "Supabase Free (Shared pqbbjgeapylcengbuvee)",
+          "monthly_base_usd": 0,
+          "unit_label": "Tenant-keyed rows (pandatransfer, eg-pandatransfer, pandatransferusa@gmail.com unconverted lead)",
+          "resources": [
+            "org:c6650001-6650-4000-8000-000000000001",
+            "project:c6650021-6650-4000-8000-000000000001"
+          ]
+        },
+        {
+          "service_key": "cloudflare",
+          "title": "Cloudflare R2 Engagement Vault & Pending pandatransfer.io Admin Delegation",
+          "category": "storage",
+          "reachability": "w0m_managed",
+          "attribution_class": "attributable",
+          "current_plan": "Cloudflare Free Tier R2 ($0 egress) + pending pandatransfer.io Cloudflare Admin delegation to casualuser@gmail.com",
+          "monthly_base_usd": 0,
+          "unit_label": "Isolated R2 engagement vault prefix engagements/eg-pandatransfer + planned R2 off-site Restic backups (T664)",
+          "resources": [
+            "r2:wom-engagement-vaults:engagements/eg-pandatransfer",
+            "domain:pandatransfer.io"
+          ]
+        },
+        {
+          "service_key": "infisical",
+          "title": "Infisical Secrets Manager (118 Production & DR Secrets — Interim Webomage Workspace -> pandatransfer@w0m.xyz Org)",
+          "category": "secrets",
+          "reachability": "external",
+          "external_reason": "118 production secrets (`/`, `/backend`, `/frontend`) vaulted in Webomage Infisical workspace b2313889-594b-45de-9885-f241b8686f4d while delegated to casualuser@gmail.com; scheduled to cut over to dedicated Infisical account/org on pandatransfer@w0m.xyz (T664).",
+          "attribution_class": "shared-tier",
+          "current_plan": "Infisical Free (Workspace b2313889-594b-45de-9885-f241b8686f4d -> dedicated pandatransfer@w0m.xyz org in T664)",
+          "monthly_base_usd": 0,
+          "unit_label": "118 vaulted runtime & Restic backup secrets across /, /backend, and /frontend",
+          "resources": [
+            "infisical:b2313889-594b-45de-9885-f241b8686f4d"
+          ]
+        },
+        {
+          "service_key": "github",
+          "title": "GitHub Repository (webomage/pandatransfer)",
+          "category": "vcs",
+          "reachability": "w0m_managed",
+          "attribution_class": "shared-tier",
+          "current_plan": "GitHub Free (webomage org)",
+          "monthly_base_usd": 0,
+          "unit_label": "Private internal infrastructure & governance repository on branch main",
+          "resources": [
+            "repo:webomage/pandatransfer"
+          ]
+        }
+      ],
+      "role_assignments": {
+        "aleksei": {
+          "identity_key": "aleksei-personal",
+          "hats": [
+            "pm",
+            "tl",
+            "dev"
+          ],
+          "note": "Aleksei operates PandaTransfer delivery under contractor webomage (`eg-pandatransfer`); third-party vendor delegation currently uses casualuser@gmail.com pending pandatransfer@w0m.xyz Email Routing & dedicated Infisical org cutover (T664). Client portal invite to pandatransferusa@gmail.com held until ready."
+        }
+      },
+      "identity": {
+        "git_user_name": "Aleksei Tcelishchev",
+        "git_user_email": "casualuser@gmail.com",
+        "ssh_key": "~/.ssh/id_ed25519_aleksei",
+        "gh_account": "casualuser",
+        "gh_config_dir": "~/.config/gh-w0m"
+      },
+      "note": "T665 — PandaTransfer (`pandatransfer.io` / `app.pandatransfer.io`, iEXExchanger 11.7 PRO on VPS `91.108.190.210`, license support through `2027-03-02`) onboarded with client org `pandatransfer` (`pandatransferusa@gmail.com`, pre-magic-link unconverted lead with 0 active client hats until ready), engagement `eg-pandatransfer` vs contractor `webomage`, private repo `webomage/pandatransfer`, and interim `casualuser@gmail.com` delegation tracked for `pandatransfer@w0m.xyz` cutover in T664."
     }
   ],
   "state_surface_candidates": [
@@ -1064,6 +1195,10 @@
         "session_wrapup": {
           "status": "out",
           "reason": "Governs the w0m estate's ticket/session closeout checklist (T613/T616: T-id archive, LESSONS.md harvest, agent-tree-land, and STATE.md regeneration); ticketing and estate landing do not apply to this tier."
+        },
+        "automation_health": {
+          "status": "out",
+          "reason": "Governs the w0m estate's background automation staleness ceilings (T652: hooks, timers, and session-complete probes); estate background automations do not apply to this tier."
         }
       },
       "non_contract_surfaces": {
@@ -1239,6 +1374,10 @@
         "session_wrapup": {
           "status": "out",
           "reason": "Governs the w0m estate's ticket/session closeout checklist (T613/T616: T-id archive, LESSONS.md harvest, agent-tree-land, and STATE.md regeneration); ticketing and estate landing do not apply to this tier."
+        },
+        "automation_health": {
+          "status": "out",
+          "reason": "Governs the w0m estate's background automation staleness ceilings (T652: hooks, timers, and session-complete probes); estate background automations do not apply to this tier."
         }
       },
       "non_contract_surfaces": {

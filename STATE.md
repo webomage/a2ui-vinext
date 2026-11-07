@@ -15,7 +15,8 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 1 | [T664](/home/aleksei/Projects/!self/w0m/.tasks/T664.md) | [#664](https://github.com/webomage/wom7board/issues/664) | P1 | queued | infra | 60 | Per-client tech mailboxes on w0m.xyz (Cloudflare Email Routing) and dedicated client Inf |
+| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -23,15 +24,16 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 5 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **5** are
+> ⚠️ **0 of 6 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **6** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 1 | [T664](/home/aleksei/Projects/!self/w0m/.tasks/T664.md) | [#664](https://github.com/webomage/wom7board/issues/664) | P1 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Per-client tech mailboxes on w0m.xyz (Cloudflare Email Routi |
+| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -42,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/audit-blueprints-ui` | 0 | **n/a — NO UPSTREAM** | `8a57b4ee3` |
-| `w0m-api` | `agent/audit-blueprints-ui` | 0 | **n/a — NO UPSTREAM** | `ab70158` |
-| `w0m-cf` | `agent/audit-blueprints-ui` | 0 | **n/a — NO UPSTREAM** | `02e08fe` |
-| `w0m-skills` | `agent/audit-blueprints-ui` | 0 | **n/a — NO UPSTREAM** | `c35f81b` |
-| `w0m-ext` | `agent/audit-blueprints-ui` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
-| `w0m-sec` | `agent/audit-blueprints-ui` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/audit-blueprints-ui` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/pandatransfer-onboard` | 0 | **n/a — NO UPSTREAM** | `3246bfc26` |
+| `w0m-api` | `agent/pandatransfer-onboard` | 0 | **n/a — NO UPSTREAM** | `ab05a82` |
+| `w0m-cf` | `agent/pandatransfer-onboard` | 0 | **n/a — NO UPSTREAM** | `02e08fe` |
+| `w0m-skills` | `agent/pandatransfer-onboard` | 0 | **n/a — NO UPSTREAM** | `c35f81b` |
+| `w0m-ext` | `agent/pandatransfer-onboard` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
+| `w0m-sec` | `agent/pandatransfer-onboard` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/pandatransfer-onboard` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 663 TASKS.md rows · 305/663 specced (1/5 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 665 TASKS.md rows · 306/665 specced (1/6 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/audit-blueprints-ui","dirty":0,"has_upstream":true,"head":"ab70158","unpushed":null},"w0m-cf":{"branch":"agent/audit-blueprints-ui","dirty":0,"has_upstream":true,"head":"02e08fe","unpushed":null},"w0m-ext":{"branch":"agent/audit-blueprints-ui","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/audit-blueprints-ui","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/audit-blueprints-ui","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/audit-blueprints-ui","dirty":0,"has_upstream":true,"head":"c35f81b","unpushed":null},"w0m-web":{"branch":"agent/audit-blueprints-ui","dirty":0,"has_upstream":true,"head":"8a57b4ee3","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":663,"specced":305,"specced_open":1,"total":663,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T664","T17"],"repos":{"w0m-api":{"branch":"agent/pandatransfer-onboard","dirty":0,"has_upstream":true,"head":"ab05a82","unpushed":null},"w0m-cf":{"branch":"agent/pandatransfer-onboard","dirty":0,"has_upstream":true,"head":"02e08fe","unpushed":null},"w0m-ext":{"branch":"agent/pandatransfer-onboard","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/pandatransfer-onboard","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/pandatransfer-onboard","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/pandatransfer-onboard","dirty":0,"has_upstream":true,"head":"c35f81b","unpushed":null},"w0m-web":{"branch":"agent/pandatransfer-onboard","dirty":0,"has_upstream":true,"head":"3246bfc26","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":665,"specced":306,"specced_open":1,"total":665,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,7 +115,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (9):
+#### Completed today (10):
 
 - **T655** — Full auto-mode upstream PR compliance engine (AgDR-0058) and estate-wide external PR contribution-rules audit & remediation (Live Remediation & Full Auto-Mode Submission: Remediated 15 open PRs (14 stablyai/orca PRs + jundot/omlx#3743), healed stablyai/orca#37034 (471b47030c -> MERGEABLE), left ml-explore/mlx-lm#2026 untouched (AUTOMATION_BANNED), and auto-submitted 12 compliant PRs (JeffHoogland/moksha#310–#312, BodhiDev/bodhi-profile-iso#2, BodhiDev/bodhi7packages#10, BodhiDev/bodhi8packages#8, bulwarkid/virtual-fido#56, stablyai/orca#38857–#38859, #38861, #38863) while honestly holding 3 UI PRs (HELD-NEEDS-VISUAL-PROOF) and 1 conflicting PR (REFUSED-CONFLICT-UPSTREAM). Published .agents/reports/-external-prs-contribution-compliance-audit.md (mirrored to w0m-web/docs/reports/).)
 - **T656** — Unify AuthWidget across web and sidebar, consolidate ContextSwitcher + SidebarHatSwitcher into one sidebar control, expose full Me tools on cp, and fix web CTA link contrast ((agy:identity-sidebar-sync): Completed AC1–AC5 implementation, OpenSpec reconciliation (openspec/specs/identity-surface/spec.md, openspec/specs/web/header_ui.md, packages/ui/src/lib/components/header/UI-SPEC.md), and homepage golden baseline updates (screenshots/goldens/en--home_.png))
@@ -124,6 +126,7 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T661** — Deploy side-by-side ~/Apps/orca-linux-w0m.AppImage and harden parallel ticket allocation & session-complete wrap-up against collisions ((agy:orca-w0m-appimage): Completed AC4–AC5 (scripts/ticket_new.py cross-worktree <git-common-dir>/w0m-ticket-seq.lock + git worktree list --porcelain, scripts/session_complete.py <git-common-dir>/w0m-session-complete.lock + two-phase contiguous ID compaction + gh_issue: scrub + --dry-run renumber path resolution + precertify_web_prepush, 16/16 test_session_complete.py + 8/8 test_orca_overlay_update.py + t531-layers-test green). Lesson captured in LESSONS.md: SERIALIZE ticket_new AND session-complete VIA <git-common-dir> flock, COMPACT RENUMBERED IDS BIDIRECTIONALLY WITH gh_issue: SCRUB, AND PRE-CERTIFY w0m-web LOCALLY BEFORE SSH PUSH (T661).)
 - **T662** — Remeasure Orca mobile UI tweaks against new upstream keys bar and tabbed Home, and retire obsolete safe-area PR ((agy:t662-orca-mobile-ui-remeasure): Closed superseded stablyai/orca#37034 (fix/mobile-landscape-safe-area-insets) and retired it in scripts/w0m_prs.py (95/95 test_w0m_prs.py passing); remeasured, tested, tsrs-checked, GPG-signed, and pushed #37032 (e2caebb8bda), #38612 (610718570e2), #37995 (d6fbd0f80e4), and #38993 (0e30568f519) plus rebased #37031 (744ed070077), #38858 (4ee49315a60), #38859 (3c9b9861558), and #38861 (70ea9e76710); verified 23/23 active webomage/orca branches exit 0 under git merge-tree --write-tree upstream/main@be3b87f3ac6 and 38/38 open external PRs report live MERGEABLE; updated .agents/reports/2026-11-06-ui-enhancements-actuality-and-rebase-audit.md + w0m-web/docs/reports/2026-11-06-ui-enhancements-actuality-and-rebase-audit.md; Lesson disposition: recorded PAIR git merge-tree WITH TYPECHECK, PIXEL/TIMER REMEASUREMENT, AND WEBVIEW BUNDLE REBUILDS AFTER UPSTREAM UI WAVES in LESSONS.md.)
 - **T663** — Streamline public Audit and Blueprint Order flows to URL-only -> Register and move verification, setup, and results into guided Client Portal ((agy:audit-blueprints-ui — implemented, verified, & archived))
+- **T665** — Bootstrap and onboard PandaTransfer (pandatransfer.io) into w0m clients with pre-magic-link tenancy and engagement vault ((agy:pandatransfer-onboard): Completed AC1–AC4)
 
 ## 3. Other open threads (in TASKS.md)
 
