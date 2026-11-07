@@ -205,6 +205,17 @@ check("and left the real consent file exactly as it was", _real_after == _real_b
 
 audit_latest = test_log_dir / "deploy-audit-latest.json"
 check("creates deploy-audit-latest.json", audit_latest.exists(), f"missing {audit_latest}")
+if audit_latest.exists():
+    import json as _json
+    audit_doc = _json.loads(audit_latest.read_text(encoding="utf-8"))
+    check(
+        "T668 AC3: deploy-audit-latest.json persists tool_chatter and other_trouble arrays alongside counts",
+        isinstance(audit_doc.get("tool_chatter"), list)
+        and isinstance(audit_doc.get("other_trouble"), list)
+        and "tool_chatter_count" in audit_doc
+        and "other_trouble_count" in audit_doc,
+        repr(audit_doc),
+    )
 
 print("\n" + ("✅ all deploy-logged probes passed" if not fails
               else f"❌ {fails} probe(s) failed"))

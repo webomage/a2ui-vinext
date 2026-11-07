@@ -399,7 +399,9 @@ def main() -> int:
         "browser_errors_count": len(audit["browser_errors"]),
         "browser_errors": audit["browser_errors"][:50],
         "tool_chatter_count": len(audit["tool_chatter"]),
+        "tool_chatter": audit["tool_chatter"][:50],
         "other_trouble_count": len(audit["other_trouble"]),
+        "other_trouble": audit["other_trouble"][:50],
     }
     deltas = compute_audit_deltas(audit_record, prev_audit)
     audit_record.update(deltas)
@@ -447,7 +449,11 @@ def main() -> int:
             print(f"     … {len(audit['other_trouble']) - 15} more")
 
     if audit["tool_chatter"]:
-        print(f"  ℹ  {len(audit['tool_chatter'])} tool deprecation/chatter line(s) filtered")
+        print(f"  ℹ  {len(audit['tool_chatter'])} tool deprecation/chatter line(s) filtered:")
+        for c in audit["tool_chatter"][:15]:
+            print(f"     │ {c[:140]}")
+        if len(audit["tool_chatter"]) > 15:
+            print(f"     … {len(audit['tool_chatter']) - 15} more")
 
     print(f"  ℹ  audit record: {audit_file.name}")
     rising = deltas.get("rising_metrics")

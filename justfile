@@ -36,6 +36,8 @@ import 'just/estate.just'
 # directly (`deploy-function`, `deploy-functions`) need the same export w0m-api/justfile carries;
 # without it the first `just deploy-function` failed (T431).
 export W0M_DB_MIGRATIONS := env_var_or_default('W0M_DB_MIGRATIONS', 'true')
+# T668 AC1: Suppress Infisical CLI self-update banners in deploy transcripts and subshells.
+export INFISICAL_DISABLE_UPDATE_CHECK := env_var_or_default('INFISICAL_DISABLE_UPDATE_CHECK', 'true')
 
 default:
     @echo "================================================================================"
