@@ -2,6 +2,23 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.07-1794034239
+_First deployed: 2026-11-07 07:09:19.173671+00_
+
+### Features
+- **T664,T665**: onboard pandatransfer client, vault, and w0m.xyz tech mailbox ticket ([T664](file:///.tasks/T664.md), [T665](file:///.tasks/T665.md))
+- **T658**: add Tinybird surface drift gate, confirm-gated apply, and close T658 ([T658](file:///.tasks/T658.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `8bd523d` | 2026-11-07 07:09:19.173671+00 |
+| demo | `8bd523d` | 2026-11-07 07:08:38.887594+00 |
+| me | `8bd523d` | 2026-11-07 07:07:54.308718+00 |
+| cp | `8bd523d` | 2026-11-07 07:06:25.017974+00 |
+| web | `8bd523d` | 2026-11-07 07:04:28.536961+00 |
+| release | `8bd523d` | 2026-11-07 07:02:02.916588+00 |
+| api | `8bd523d` | 2026-11-07 07:01:56.085996+00 |
+
 ## 2026.11.06-1793942553
 _First deployed: 2026-11-06 05:36:17.597431+00_
 
