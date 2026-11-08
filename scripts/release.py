@@ -462,6 +462,38 @@ def provision_worktree_fixtures(root: Path, estate: Path | None = None, *, link_
             if not df.exists():
                 shutil.copy2(f, df)
 
+    # 7. Member-repo codegraph DBs & graphify-out artifacts (gitignored in all member repos)
+    #    Provisioning these gives isolated agent-tree worktrees immediate access to `just ask`,
+    #    `just graph-*`, and `just codemap-check` without rebuilding from scratch.
+    graph_member_repos = (
+        "w0m-web",
+        "w0m-api",
+        "w0m-cf",
+        "w0m-skills",
+        "w0m-ext",
+        "w0m-sec",
+        "w0m-mlx/w0m-mlx",
+    )
+    for repo_rel in graph_member_repos:
+        src_repo = estate / repo_rel
+        dst_repo = root / repo_rel
+        if not dst_repo.is_dir():
+            continue
+        cg_src = src_repo / ".codegraph" / "graph.db"
+        cg_dst = dst_repo / ".codegraph" / "graph.db"
+        if cg_src.is_file() and not cg_dst.exists():
+            cg_dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(cg_src, cg_dst)
+        gf_src_dir = src_repo / "graphify-out"
+        gf_dst_dir = dst_repo / "graphify-out"
+        if gf_src_dir.is_dir():
+            for gf_name in ("graph.json", "GRAPH_REPORT.md"):
+                gf_src = gf_src_dir / gf_name
+                gf_dst = gf_dst_dir / gf_name
+                if gf_src.is_file() and not gf_dst.exists():
+                    gf_dst_dir.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(gf_src, gf_dst)
+
 
 def worktree(v: str, install: bool = True) -> Path:
     check_version(v)

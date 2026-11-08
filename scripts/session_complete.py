@@ -1180,6 +1180,57 @@ def mirror_reports(
     return mirrored
 
 
+def _refresh_synced_ticket_index_hashes(worktree_root: Path) -> bool:
+    """Recompute `tickets-sync-index.json` hashes for already-synced tickets (`gh_issue` present) after frontmatter/TASKS.md render."""
+    web_root = worktree_root / "w0m-web" if (worktree_root / "w0m-web").is_dir() else worktree_root
+    idx_path = web_root / "project" / "tickets-sync-index.json"
+    tickets_dir = worktree_root / ".tasks"
+    if not idx_path.is_file() or not tickets_dir.is_dir():
+        return False
+    scripts_dir = str(worktree_root / "scripts")
+    web_scripts_dir = str(web_root / "project" / "scripts")
+    if scripts_dir not in sys.path:
+        sys.path.insert(0, scripts_dir)
+    if web_scripts_dir not in sys.path and Path(web_scripts_dir).is_dir():
+        sys.path.insert(0, web_scripts_dir)
+    try:
+        import sync_github as sg  # noqa: PLC0415
+    except Exception:
+        return False
+
+    orig_dry = sg.DRY
+    orig_tickets_dir = sg.TICKETS_DIR
+    orig_index = sg.INDEX
+    orig_manifest = sg.MANIFEST
+    try:
+        sg.DRY = False
+        sg.TICKETS_DIR = tickets_dir
+        sg.INDEX = idx_path
+        sg.MANIFEST = web_root / "project" / "tickets.json"
+        recorded = sg.load_index()
+        tickets = sg.load_tickets()
+        changed = False
+        for t in tickets:
+            tid = str(t.get("id") or "")
+            if not tid:
+                continue
+            if t.get("gh_issue") is not None and tid in recorded:
+                desired_hash = sg.projection_hash(sg.projection_of(t, sg.summary_of(tid)))
+                if recorded.get(tid) != desired_hash:
+                    recorded[tid] = desired_hash
+                    changed = True
+        if changed:
+            sg.save_index(recorded)
+        return changed
+    except Exception:
+        return False
+    finally:
+        sg.DRY = orig_dry
+        sg.TICKETS_DIR = orig_tickets_dir
+        sg.INDEX = orig_index
+        sg.MANIFEST = orig_manifest
+
+
 def harvest_and_refresh_surfaces(
     worktree_root: Path,
     *,
@@ -1197,19 +1248,26 @@ def harvest_and_refresh_surfaces(
 
     refreshed: list[str] = []
     if not dry_run:
-        generators: tuple[tuple[str, tuple[str, ...]], ...] = (
+        generators: list[tuple[str, tuple[str, ...]]] = [
             ("tickets_frontmatter_sync", ("scripts/tickets_frontmatter_sync.py",)),
             ("tasks_render", ("scripts/tasks_render.py",)),
             ("decisions_index", ("scripts/decisions_index.py",)),
             ("catalog_sync", ("w0m-web/project/scripts/catalog_sync.py", "--write")),
             ("skills_catalog_gen", ("w0m-web/project/scripts/skills_catalog_gen.py", "--write")),
-            ("state_doctor", ("scripts/state_doctor.py", "--write")),
-        )
+            ("cp_feature_index", ("w0m-web/project/scripts/cp_feature_index.py",)),
+        ]
+        if (worktree_root / "w0m-web" / ".codegraph" / "graph.db").is_file():
+            generators.append(("codemap_gen", ("w0m-web/project/scripts/codemap_gen.py", "--write")))
+        generators.append(("state_doctor", ("scripts/state_doctor.py", "--write")))
+
         for label, rel_cmd in generators:
             script_path = worktree_root / rel_cmd[0]
             if script_path.is_file():
                 _run([sys.executable, str(script_path), *rel_cmd[1:]], cwd=worktree_root, check=True)
                 refreshed.append(label)
+
+        if _refresh_synced_ticket_index_hashes(worktree_root):
+            refreshed.append("tickets_sync_index_hashes")
 
     return {"harvestSummary": harvest_output, "refreshed": refreshed}
 
@@ -1538,12 +1596,29 @@ def certify_estate_tree(
 
 
 def refresh_canonical_graph_union(canon_root: Path) -> dict[str, Any]:
-    """Refresh `~/.graphify/global-graph.json` against `canon_root` after landing (`T652`)."""
+    """Refresh canonical `codegraph` DBs, `~/.graphify/global-graph.json`, and `~/.w0m/knowledge-index/corpus.sqlite` (`T652`)."""
     graph_script = canon_root / "scripts" / "graph_global.py"
     if not graph_script.is_file():
         return {"refreshed": False, "reason": "missing_graph_global_script"}
     if shutil.which("graphify") is None:
         return {"refreshed": False, "reason": "graphify_absent"}
+
+    codegraph_synced: list[str] = []
+    if shutil.which("codegraph") is not None:
+        for repo_rel in ("w0m-web", "w0m-api", "w0m-cf", "w0m-skills", "w0m-ext", "w0m-sec"):
+            repo_dir = canon_root / repo_rel
+            if (repo_dir / ".codegraph").is_dir():
+                cg_proc = _run(["codegraph", "sync"], cwd=repo_dir, check=False)
+                if cg_proc.returncode == 0:
+                    codegraph_synced.append(repo_rel)
+
+    kb_indexed = False
+    kb_script = canon_root / "scripts" / "w0m_kb_vector.py"
+    kb_db = Path.home() / ".w0m" / "knowledge-index" / "corpus.sqlite"
+    if kb_script.is_file() and kb_db.is_file():
+        print("[session-complete] Refreshing hybrid KB vector + BM25 index ...", file=sys.stderr, flush=True)
+        kb_proc = _run([sys.executable, str(kb_script), "index", "--root", str(canon_root)], cwd=canon_root, check=False)
+        kb_indexed = kb_proc.returncode == 0
 
     cmd = [
         sys.executable,
@@ -1551,6 +1626,8 @@ def refresh_canonical_graph_union(canon_root: Path) -> dict[str, Any]:
         "--root",
         str(canon_root),
         "--auto-rebuild-stale",
+        "--stale-limit",
+        "0",
     ]
     print("[session-complete] Refreshing canonical knowledge-graph union ...", file=sys.stderr, flush=True)
     proc = _run(cmd, cwd=canon_root, check=False)
@@ -1560,7 +1637,12 @@ def refresh_canonical_graph_union(canon_root: Path) -> dict[str, Any]:
             "graph_union_refresh_failed",
             f"Canonical graph union refresh failed (exit {proc.returncode}):\n{tail}",
         )
-    return {"refreshed": True, "output": proc.stdout.strip()[-1200:]}
+    return {
+        "refreshed": True,
+        "codegraphSynced": codegraph_synced,
+        "kbVectorIndexed": kb_indexed,
+        "output": proc.stdout.strip()[-1200:],
+    }
 
 
 def precertify_web_prepush(worktree_root: Path) -> dict[str, Any]:
@@ -2043,6 +2125,12 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                 skip=bool(args.skip_gh_sync or args.skip_land),
                 dry_run=False,
             )
+            if gh_sync_info.get("mode") in ("full_sync", "issues_only_missing_project_scope"):
+                surfaces_info = harvest_and_refresh_surfaces(
+                    wt_root,
+                    set_name=ctx.set_name,
+                    dry_run=False,
+                )
 
             primary_tid = targets[0] if targets else "T0"
             committed = commit_dirty_repos(

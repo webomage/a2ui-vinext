@@ -220,6 +220,7 @@ def allocate_ticket(
             created=created,
         )
         ticket_path.write_text(content, encoding="utf-8")
+        _auto_build_context_tree(repo_dir, ticket_id)
         return ticket_id, ticket_path
 
     with _ticket_seq_lock(repo_dir):
@@ -267,7 +268,24 @@ def allocate_ticket(
             base_tasks_md=t_md,
         )
 
+    _auto_build_context_tree(repo_dir, ticket_id)
     return ticket_id, ticket_path
+
+
+def _auto_build_context_tree(repo_dir: Path, ticket_id: str) -> None:
+    """Best-effort Harness² ContextTree materialization (.w0m/context/<ticket_id>/) on ticket creation."""
+    ct_script = repo_dir / "w0m-web" / "project" / "scripts" / "context_tree.py"
+    if not ct_script.is_file():
+        return
+    with contextlib.suppress(Exception):
+        subprocess.run(
+            [sys.executable, str(ct_script), ticket_id],
+            cwd=str(repo_dir),
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
 
 
 def _detect_worktree_draft_slug(repo_dir: Path) -> str | None:

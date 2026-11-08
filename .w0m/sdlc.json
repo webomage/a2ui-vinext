@@ -152,7 +152,10 @@
     "indexed": [
       "w0m-web",
       "w0m-api",
-      "w0m-cf"
+      "w0m-cf",
+      "w0m-skills",
+      "w0m-ext",
+      "w0m-sec"
     ]
   },
   "secrets": {
@@ -374,6 +377,9 @@
       "just mmd-validate",
       "just catalog-check",
       "just skills-catalog-check",
+      "just codemap-check",
+      "just cp-feature-index-check",
+      "just decisions-check",
       "just automation-health",
       "just state-check"
     ]
@@ -385,6 +391,7 @@
     "script": "scripts/automation_health.py",
     "max_pending_ticket_mirror": 25,
     "max_graph_union_commit_lag": 25,
+    "max_kb_vector_ticket_lag": 25,
     "max_cf_single_redirect_rules_per_zone": 10,
     "forbid_detached_git_log_hooks": true,
     "forbid_swallowed_deploy_snapshots": true

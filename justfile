@@ -480,7 +480,7 @@ ask question repo="":
             echo "❌ refusing to answer from a graph that may be stale — see the error above"; exit 1; }
     fi
     if command -v codegraph >/dev/null 2>&1; then
-        for r in root w0m-web w0m-api w0m-cf; do
+        for r in root w0m-web w0m-api w0m-cf w0m-skills w0m-ext w0m-sec; do
             [ -n "$only" ] && [ "$r" != "$only" ] && continue
             if [ "$r" = "root" ]; then d="."; else d="$r"; fi
             [ -d "$d/.codegraph" ] || continue
@@ -491,6 +491,10 @@ ask question repo="":
     if [ -z "$only" ] || [ "$only" = "root" ]; then
         echo "───────── root symbols (estate_search --repo root) ─────────"
         python3 scripts/estate_search.py "$q" --repo root --cap 20 || true
+    fi
+    if [ -z "$only" ] && [ -f "$HOME/.w0m/knowledge-index/corpus.sqlite" ]; then
+        echo "───────── hybrid KB vector + BM25 (tickets / specs / decisions / lessons) ─────────"
+        python3 scripts/w0m_kb_vector.py search "$q" --top-k 5 2>/dev/null || true
     fi
     if [ "$only" = "root" ]; then
         if [ -f "scripts/graphify-out/graph.json" ]; then
@@ -1318,13 +1322,19 @@ _post-deploy-knowledge:
     if [ -n "${W0M_RELEASE_WORKTREE:-}" ]; then
         CANONICAL_ROOT="$(cd "$(git rev-parse --path-format=absolute --git-common-dir)/.." && pwd)"
         if [ -d "$CANONICAL_ROOT/w0m-web" ] && command -v graphify >/dev/null 2>&1; then
-            python3 "$CANONICAL_ROOT/scripts/graph_global.py" --root "$CANONICAL_ROOT" --auto-rebuild-stale
+            python3 "$CANONICAL_ROOT/scripts/graph_global.py" --root "$CANONICAL_ROOT" --auto-rebuild-stale --stale-limit 0
+        fi
+        if [ -f "$CANONICAL_ROOT/scripts/w0m_kb_vector.py" ]; then
+            python3 "$CANONICAL_ROOT/scripts/w0m_kb_vector.py" index --root "$CANONICAL_ROOT"
         fi
         exit 0
     fi
     just knowledge-light
     if command -v graphify >/dev/null 2>&1; then
-        python3 scripts/graph_global.py --auto-rebuild-stale
+        python3 scripts/graph_global.py --auto-rebuild-stale --stale-limit 0
+    fi
+    if [ -f "scripts/w0m_kb_vector.py" ]; then
+        python3 scripts/w0m_kb_vector.py index
     fi
 
 # Every bare `just <recipe>` in a recipe body must name a recipe that justfile defines — the

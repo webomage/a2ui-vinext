@@ -30,6 +30,7 @@ import json
 import os
 import re
 import shutil
+import sqlite3
 import subprocess
 import sys
 from pathlib import Path
@@ -318,6 +319,49 @@ def check_graph_union_ceiling(
     return True, f"graph union lag within ceiling across {checked} repo(s) (max lag +{worst_lag} <= {max_lag})"
 
 
+def check_kb_vector_ceiling(
+    estate_root: Path,
+    max_lag: int,
+    *,
+    db_path: Path | None = None,
+) -> tuple[bool, str]:
+    target_db = db_path
+    if target_db is None:
+        local_db = estate_root / ".w0m" / "knowledge-index" / "corpus.sqlite"
+        if local_db.is_file():
+            target_db = local_db
+        elif estate_root.resolve() == ESTATE_ROOT.resolve():
+            target_db = Path.home() / ".w0m" / "knowledge-index" / "corpus.sqlite"
+    if target_db is None or not target_db.is_file():
+        return True, "local KB vector DB not initialized for this checkout — skipped cleanly"
+
+    tasks_dir = estate_root / ".tasks"
+    if not tasks_dir.is_dir():
+        return False, "missing .tasks/ directory — refusing vacuous pass"
+    total_tickets = sum(1 for p in tasks_dir.iterdir() if re.match(r"^T\d+\.md$", p.name))
+    if total_tickets == 0:
+        return False, "0 tickets in .tasks/ — refusing vacuous pass"
+
+    try:
+        conn = sqlite3.connect(f"file:{target_db}?mode=ro", uri=True)
+        try:
+            row = conn.execute("SELECT COUNT(*) FROM documents WHERE category = 'ticket'").fetchone()
+            indexed_tickets = int(row[0]) if row else 0
+        finally:
+            conn.close()
+    except sqlite3.Error as exc:
+        return False, f"unreadable KB vector DB {target_db}: {exc}"
+
+    lag = max(0, total_tickets - indexed_tickets)
+    if lag > max_lag:
+        return (
+            False,
+            f"KB vector index ticket lag {lag} ({indexed_tickets}/{total_tickets} indexed) exceeds ceiling {max_lag} "
+            "(run `python3 scripts/w0m_kb_vector.py index`)",
+        )
+    return True, f"KB vector index lag within ceiling ({indexed_tickets}/{total_tickets} tickets indexed, lag {lag} <= {max_lag})"
+
+
 CF_RULESET_HEADER_RE = re.compile(r'\bresource\s+"cloudflare_ruleset"\s+"([^"]+)"\s*\{')
 CF_MASKED_HEADER_RE = re.compile(r'\bresource\s+"_+?"\s+"_+?"\s*\{')
 CF_RULES_BLOCK_RE = re.compile(r"\brules\s*\{")
@@ -498,10 +542,12 @@ def run_checks(
     *,
     manifest_path: Path | None = None,
     require_graphify: bool | None = None,
+    kb_db_path: Path | None = None,
 ) -> tuple[bool, list[dict[str, Any]]]:
     policy = load_policy(estate_root)
     max_pending = int(policy.get("max_pending_ticket_mirror", 25))
     max_graph_lag = int(policy.get("max_graph_union_commit_lag", 25))
+    max_kb_lag = int(policy.get("max_kb_vector_ticket_lag", max_pending))
     max_cf_rules = int(policy.get("max_cf_single_redirect_rules_per_zone", 10))
 
     results: list[dict[str, Any]] = []
@@ -540,6 +586,9 @@ def run_checks(
         require_graphify=require_graphify,
     )
     results.append({"name": "bounded-graph-union-lag", "ok": gr_ok, "detail": gr_detail})
+
+    kb_ok, kb_detail = check_kb_vector_ceiling(estate_root, max_kb_lag, db_path=kb_db_path)
+    results.append({"name": "bounded-kb-vector-lag", "ok": kb_ok, "detail": kb_detail})
 
     cf_ok, cf_detail = check_cloudflare_free_tier_redirect_quota(estate_root, max_cf_rules)
     results.append({"name": "cf-free-tier-redirect-quota", "ok": cf_ok, "detail": cf_detail})

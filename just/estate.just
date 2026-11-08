@@ -2547,7 +2547,15 @@ cf-test:
 # codegraph-sync: incremental re-index of the code knowledge graph (~seconds). Fast enough for
 # the pre-push hook; also part of the full knowledge loop.
 codegraph-sync:
-    @cd w0m-web && codegraph sync
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if command -v codegraph >/dev/null 2>&1; then
+        for d in w0m-web w0m-api w0m-cf w0m-skills w0m-ext w0m-sec; do
+            if [ -d "$d/.codegraph" ]; then
+                (cd "$d" && codegraph sync)
+            fi
+        done
+    fi
 
 # Full knowledge loop (manual): includes `graph ".."` — whole-monorepo graphify (minutes, 100% CPU).
 knowledge: (graph ".") lexicon-lint spec-drift codegraph-sync status-dashboard

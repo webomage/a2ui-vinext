@@ -164,7 +164,7 @@ class TestAutomationHealth(unittest.TestCase):
             estate, mpath = self._build_fixture_estate(Path(td))
             ok, results = ah.run_checks(estate, manifest_path=mpath, require_graphify=True)
             self.assertTrue(ok, results)
-            self.assertEqual(len(results), 5)
+            self.assertEqual(len(results), 6)
 
     def test_red_detached_nohup_hook_fails(self) -> None:
         with tempfile.TemporaryDirectory() as td:

@@ -2684,10 +2684,25 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
     "security-audit-skill": "cloudflare/security-audit-skill",
     "agent-client-protocol": "agentclientprotocol/agent-client-protocol",
     "linuxontab": "kilian-ai/linuxontab",
+    "just": "casey/just",
 }
 
 # Per-repository upstream contribution rules registry (`AgDR-0058` / `T655`)
 UPSTREAM_CONTRIBUTION_RULES: dict[str, dict[str, Any]] = {
+    "casey/just": {
+        "automation_mode": "banned",
+        "template_profile": "standard",
+        "requires_linked_issue": True,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": 0,
+        "max_loc": None,
+        "policy_note": (
+            "HARD BAN (casey/just#3227): Pull requests are disabled repository-wide by @casey "
+            "(external and agent-coded PRs are blocked at the GitHub repository level)."
+        ),
+    },
     "ml-explore/mlx-lm": {
         "automation_mode": "banned",
         "template_profile": "mlx_lm_manual",
