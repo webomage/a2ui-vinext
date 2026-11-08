@@ -125,6 +125,7 @@ Closed debt rows are deleted from the active tables above and recorded in this a
 | D47 | 2026-10-23 | [[T259]] | All per-app and function deploy recipes (`deploy-web`, `deploy-cp`, `deploy-join`, `deploy-job`, `deploy-demo`, `deploy-workers`, `deploy-functions`, `deploy-api`) wired to `scripts/log_deploy.py` and audited by `just deploy-drift` |
 | D65 | 2026-10-23 | [[T384]] | `fix_ts.py` and `fix_static_imports.py` deleted, ambient `cloudflare:workers` types added across all 5 apps, `w0m-api`/`w0m-ext` `@ts-ignore` eliminated, and downward-only `just suppression-ratchet` installed |
 | D68 | 2026-10-23 | [[T387]] | Server-side GitHub Actions CI workflows (`.github/workflows/ci.yml` + `w0m-web/.github/workflows/ci.yml`) and `just ci-workflow-check` structural gate landed |
+| D69 | 2026-11-08 | [[T682]] / [[T278]] | All 126 `.svelte` typecheck backlog errors (`cp: 114, me: 8, web: 4, demo: 0`) paid down to `0` across all 153 `.svelte` components (`svelte-typecheck-baseline.json` locked at `0/0/0/0` with `--report-debt`) |
 
 ---
 
