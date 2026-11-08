@@ -2225,6 +2225,20 @@ progress-bar-test:
 linuxontab-serve port="8770" *args:
     @python3 scripts/linuxontab_serve.py "{{ port }}" {{ args }}
 
+# ── Same-Host ACP Discovery, Crew SEO/GEO/Security & Enterprise Obs (T681) ────
+acp-discover *args:
+    @python3 scripts/acp_host_discovery.py discover {{ args }}
+
+acp-msg method="session/new" project="w0m" *args:
+    @python3 scripts/acp_host_discovery.py acp --method {{ method }} --project {{ project }} {{ args }}
+
+seo-geo-scan url="https://webomage.com" *args:
+    @python3 scripts/acp_host_discovery.py seo-geo "{{ url }}" {{ args }}
+
+acp-host-test:
+    @pytest -q scripts/tests/test_acp_host_discovery.py
+
+
 
 
 

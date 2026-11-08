@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T682](.tasks/T682.md) | **P0** | **k7kb Knowledge Base, SEO/GEO/Security scanner, Enterprise Observability, Same-Host ACP session management & TabLinux CP/Orca integration** | tooling, web | — | ✅ **done** |
 | [T681](.tasks/T681.md) | **P1** | **Fix T675 role_templates.min_unit_id migration bug, enforce static + transactional pending-migration dry-run gates, and auto-resequence parallel worktree migrations on land** | api, web, tooling | — | ✅ **done** |
 | [T680](.tasks/T680.md) | **P1** | **Review and enhance w0m infrastructure documentation across root docs/ARCHITECTURE.md, K7-FAMILY.md, AI-CONTRACT.md, SECRETS-SYNC.md, and w0m-api/docs/ARCHITECTURE.md** | tooling, web, api | — | ✅ **done** |
 | [T679](.tasks/T679.md) · [#679](https://github.com/casualuser/webomage.com/issues/679) | **P0** | **Onboard LinuxOnTab (kilian-ai/linuxontab) and scaffold k7hub unified @k7 Super-TUI & plugin module runtime for Orca and standalone execution** | tooling | — | ✅ **done** |
