@@ -48,18 +48,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `ba75ed645` |
-| `w0m-api` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `89f68fd` |
-| `w0m-cf` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `d9b9aa4` |
-| `w0m-skills` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
-| `w0m-ext` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
-| `w0m-sec` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t669-orca-kb-roadmap` | 0 | **n/a — NO UPSTREAM** | `e17ccb65d` |
+| `w0m-api` | `agent/t669-orca-kb-roadmap` | 0 | **n/a — NO UPSTREAM** | `76d445b` |
+| `w0m-cf` | `agent/t669-orca-kb-roadmap` | 0 | **n/a — NO UPSTREAM** | `d9b9aa4` |
+| `w0m-skills` | `agent/t669-orca-kb-roadmap` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
+| `w0m-ext` | `agent/t669-orca-kb-roadmap` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
+| `w0m-sec` | `agent/t669-orca-kb-roadmap` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/t669-orca-kb-roadmap` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 671 TASKS.md rows · 308/671 specced (2/8 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 8 open · 673 TASKS.md rows · 309/673 specced (2/8 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T673","T17"],"repos":{"w0m-api":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"89f68fd","unpushed":null},"w0m-cf":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"d9b9aa4","unpushed":null},"w0m-ext":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"ba75ed645","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":671,"specced":308,"specced_open":2,"total":671,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T673","T17"],"repos":{"w0m-api":{"branch":"agent/t669-orca-kb-roadmap","dirty":0,"has_upstream":true,"head":"76d445b","unpushed":null},"w0m-cf":{"branch":"agent/t669-orca-kb-roadmap","dirty":0,"has_upstream":true,"head":"d9b9aa4","unpushed":null},"w0m-ext":{"branch":"agent/t669-orca-kb-roadmap","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t669-orca-kb-roadmap","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t669-orca-kb-roadmap","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t669-orca-kb-roadmap","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/t669-orca-kb-roadmap","dirty":0,"has_upstream":true,"head":"e17ccb65d","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":673,"specced":309,"specced_open":2,"total":673,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -119,9 +119,11 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (1):
+#### Completed today (3):
 
 - **T672** — Persist order form & filter state across page refreshes, add Job Board recency filters (day/week/month), and surface submitted bug reports ((agy:order-form-state-persist): Implemented AC1–AC8 across @webomage/lib, apps/web, apps/me, apps/cp, @webomage/ui, and w0m-api (w0m-api c8b389e, w0m-web a9b4134ab + f809d3476). Verified live Supabase public.bug_reports row 8090dd5b-59ab-47d8-9c75-192bf0fab5f3 ("we have to have better filters here" on https://me.webomage.com/, project_id IS NULL) and b0a52d8c-eab5-4766-abd0-d28d0f1507f6 ("/me/profile/resume" on https://cp.webomage.com/me/profile/resume), wired scope=mine and includePlatform=true so both surface in BugReportWidget and BugTriageBoard, added day/week/month/quarter/all job recency filters, enforced active hat/role project-scope visibility (resolveScopedProjectId) for PM (pm / product-manager) and downwards across all CP pages (projects, services, milestones, vault, money/contracts, money/proposals, people/directory, people/team, sales/clients, sales/leads), fixed the ClientServicesManager.svelte table cell overlap (whitespace-normal break-words align-top py-3), and filed backlog ticket [[T673]] for the 33 forked casualuser/ & webomage/ tools. Lesson disposition: no new transferable failure mode beyond existing LESSONS.md rules (T347 bug routing, T600 hat visibility, T663 order flow).)
+- **T674** — Audit Orca v1.4.253 upstream PR portfolio, rescue Mac backup research, and build local hybrid BM25+vector knowledge index for roadmap synthesis (Covered by T302, T339, T461, T613, and AgDR-0055)
+- **T675** — Project Role Templates (1-Head Indie vs 2-Head Default), Role/Hat Naming Matrix & Corporate vs RPG Theme (Covered by T302, T339, T461, T613, and AgDR-0055)
 
 ## 3. Other open threads (in TASKS.md)
 
