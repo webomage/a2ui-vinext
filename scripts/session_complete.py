@@ -657,6 +657,146 @@ def _rollback_renumbered_tickets(worktree_root: Path, renames: dict[str, str]) -
                 rfile.unlink()
 
 
+MIGRATION_FILE_RE = re.compile(r"^(\d{8,14})_(.+)\.sql$")
+
+
+def _step_migration_version(ver: str) -> str:
+    try:
+        from datetime import datetime, timedelta, timezone
+
+        dt = datetime.strptime(ver, "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc)
+        return (dt + timedelta(seconds=1)).strftime("%Y%m%d%H%M%S")
+    except ValueError:
+        return f"{int(ver) + 1:014d}"
+
+
+def _next_migration_version(existing_versions: set[str], candidate: str) -> str:
+    existing_14 = [v for v in existing_versions if len(v) == 14 and v.isdigit()]
+    if existing_14:
+        highest = max(existing_14)
+        if len(candidate) != 14 or not candidate.isdigit() or candidate <= highest:
+            candidate = _step_migration_version(highest)
+    while candidate in existing_versions:
+        candidate = _step_migration_version(candidate)
+    return candidate
+
+
+def _migrations_at_git_ref(api_repo: Path, ref: str) -> dict[str, set[str]]:
+    proc = _git(api_repo, "ls-tree", "-r", "--name-only", ref, "supabase/migrations/")
+    if proc.returncode != 0:
+        return {}
+    by_ver: dict[str, set[str]] = {}
+    for raw in proc.stdout.splitlines():
+        name = Path(raw.strip()).name
+        m = MIGRATION_FILE_RE.match(name)
+        if m:
+            by_ver.setdefault(m.group(1), set()).add(name)
+    return by_ver
+
+
+def maybe_resequence_colliding_migrations(
+    worktree_root: Path,
+    *,
+    dry_run: bool = False,
+    fetch_remote: bool = True,
+) -> dict[str, str]:
+    """Re-sequence branch-added SQL migrations in `w0m-api/supabase/migrations/` if their 14-digit
+    version collides with or precedes a migration landed on `origin/beta` by a concurrent worktree.
+    """
+    api_repo = worktree_root / "w0m-api"
+    mig_dir = api_repo / "supabase" / "migrations"
+    if not (api_repo / ".git").exists() or not mig_dir.is_dir():
+        return {}
+    if fetch_remote:
+        _git(api_repo, "fetch", "-q", "origin")
+
+    origin_migs = _migrations_at_git_ref(api_repo, BASE_REF)
+    if not origin_migs:
+        return {}
+    mb_proc = _git(api_repo, "merge-base", "HEAD", BASE_REF)
+    if mb_proc.returncode != 0 or not mb_proc.stdout.strip():
+        return {}
+    merge_base = mb_proc.stdout.strip()
+    base_migs = _migrations_at_git_ref(api_repo, merge_base)
+    base_filenames = {fn for fns in base_migs.values() for fn in fns}
+
+    added_files: list[tuple[str, str, str]] = []
+    for path in sorted(mig_dir.glob("*.sql")):
+        if path.name in base_filenames:
+            continue
+        m = MIGRATION_FILE_RE.match(path.name)
+        if m:
+            added_files.append((m.group(1), m.group(2), path.name))
+
+    if not added_files:
+        return {}
+
+    origin_14 = [v for v in origin_migs if len(v) == 14 and v.isdigit()]
+    max_origin_14 = max(origin_14) if origin_14 else ""
+    used_versions: set[str] = set(origin_migs.keys()) | set(base_migs.keys())
+
+    mig_renames: dict[str, str] = {}
+    for old_ver, slug, old_name in added_files:
+        collides = old_ver in used_versions
+        out_of_order = bool(len(old_ver) == 14 and old_ver.isdigit() and max_origin_14 and old_ver <= max_origin_14)
+        if not collides and not out_of_order:
+            used_versions.add(old_ver)
+            continue
+        new_ver = _next_migration_version(used_versions, old_ver)
+        used_versions.add(new_ver)
+        new_name = f"{new_ver}_{slug}.sql"
+        if new_name != old_name:
+            mig_renames[old_name] = new_name
+
+    if not mig_renames or dry_run:
+        return mig_renames
+
+    repo_head = _git(api_repo, "rev-parse", "HEAD").stdout.strip()
+    if repo_head and repo_head != merge_base:
+        _git(api_repo, "reset", "--soft", merge_base, check=True)
+
+    staged_tmps: list[tuple[Path, Path]] = []
+    for old_name, new_name in mig_renames.items():
+        old_p = mig_dir / old_name
+        new_p = mig_dir / new_name
+        if old_p.is_file():
+            tmp_p = mig_dir / f".reseq-tmp-{old_name}"
+            tmp_p.write_text(old_p.read_text(encoding="utf-8"), encoding="utf-8")
+            old_p.unlink()
+            _git(api_repo, "rm", "--cached", "-q", "--ignore-unmatch", f"supabase/migrations/{old_name}")
+            staged_tmps.append((tmp_p, new_p))
+
+    for tmp_p, new_p in staged_tmps:
+        tmp_p.replace(new_p)
+
+    for search_dir in (worktree_root / ".tasks", worktree_root / ".agents" / "reports", worktree_root / "w0m-web" / "docs" / "reports"):
+        if not search_dir.is_dir():
+            continue
+        for doc_file in sorted(search_dir.glob("*.md")):
+            raw = doc_file.read_text(encoding="utf-8", errors="replace")
+            updated = raw
+            for old_name, new_name in mig_renames.items():
+                updated = updated.replace(old_name, new_name)
+            if updated != raw:
+                doc_file.write_text(updated, encoding="utf-8")
+
+    return mig_renames
+
+
+def _rollback_resequenced_migrations(worktree_root: Path, mig_renames: dict[str, str]) -> None:
+    if not mig_renames:
+        return
+    api_repo = worktree_root / "w0m-api"
+    mig_dir = api_repo / "supabase" / "migrations"
+    for old_name, new_name in mig_renames.items():
+        new_p = mig_dir / new_name
+        old_p = mig_dir / old_name
+        if new_p.is_file() and not old_p.exists():
+            old_p.write_text(new_p.read_text(encoding="utf-8"), encoding="utf-8")
+            new_p.unlink()
+            _git(api_repo, "rm", "--cached", "-q", "--ignore-unmatch", f"supabase/migrations/{new_name}")
+
+
 def _resolve_session_lock_dir(worktree_root: Path, work_root: str | None = None) -> Path | None:
     proc = _git(worktree_root, "rev-parse", "--path-format=absolute", "--git-common-dir")
     if proc.returncode == 0 and proc.stdout.strip():
@@ -1822,6 +1962,8 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
         )
 
         renumbered: dict[str, str] = {}
+        resequenced_migrations: dict[str, str] = {}
+        committed: dict[str, str] = {}
         has_draft_targets = any(t.startswith("DRAFT-") for t in targets)
         if ctx.in_agent_tree and not args.dry_run and not args.skip_land:
             wait_for_land_lock(Path(ctx.work_root) if ctx.work_root else None)
@@ -1829,6 +1971,11 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
             targets, renumbered = maybe_renumber_colliding_tickets(
                 wt_root,
                 targets,
+                dry_run=bool(args.dry_run),
+            )
+        if ctx.in_agent_tree and not args.no_auto_renumber:
+            resequenced_migrations = maybe_resequence_colliding_migrations(
+                wt_root,
                 dry_run=bool(args.dry_run),
             )
         if ctx.in_agent_tree and not args.dry_run and not args.skip_land:
@@ -1921,6 +2068,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                 if ctx.in_agent_tree:
                     wait_for_land_lock(Path(ctx.work_root) if ctx.work_root else None)
                     extra_renumbered: dict[str, str] = {}
+                    extra_reseq_migs: dict[str, str] = {}
                     if not args.no_auto_renumber and targets:
                         targets, extra_renumbered = maybe_renumber_colliding_tickets(
                             wt_root,
@@ -1928,8 +2076,14 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                             dry_run=False,
                         )
                         renumbered.update(extra_renumbered)
+                    if not args.no_auto_renumber:
+                        extra_reseq_migs = maybe_resequence_colliding_migrations(
+                            wt_root,
+                            dry_run=False,
+                        )
+                        resequenced_migrations.update(extra_reseq_migs)
                     synced_late = sync_worktree_onto_origin_beta(wt_root)
-                    if extra_renumbered or synced_late:
+                    if extra_renumbered or extra_reseq_migs or synced_late:
                         ticket_results = [
                             asdict(
                                 normalize_ticket_file(
@@ -1984,8 +2138,11 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                     skip_final_state_check=bool(args.skip_gates),
                 )
         except SessionCompleteError:
-            if not args.dry_run and renumbered and wt_root.is_dir():
-                _rollback_renumbered_tickets(wt_root, renumbered)
+            if not args.dry_run and not committed and wt_root.is_dir():
+                if renumbered:
+                    _rollback_renumbered_tickets(wt_root, renumbered)
+                if resequenced_migrations:
+                    _rollback_resequenced_migrations(wt_root, resequenced_migrations)
             raise
 
     summary = {

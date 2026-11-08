@@ -816,6 +816,50 @@ class SessionCompleteTests(unittest.TestCase):
             self.assertIn("# T12 Audit", promoted_report.read_text(encoding="utf-8"))
             self.assertIn("Earned in T12: defer ID until offload.", (wt / "LESSONS.md").read_text(encoding="utf-8"))
 
+    def test_maybe_resequence_colliding_and_out_of_order_migrations(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_str:
+            tmp = Path(tmp_str)
+            api_origin = tmp / "w0m-api-origin.git"
+            _git_init_repo(api_origin, bare=True)
+
+            api_seed = tmp / "w0m-api-seed"
+            _git_init_repo(api_seed)
+            subprocess.run(["git", "remote", "add", "origin", str(api_origin)], cwd=str(api_seed), check=True)
+            mig_seed = api_seed / "supabase" / "migrations"
+            mig_seed.mkdir(parents=True)
+            (mig_seed / "20261108050000_base.sql").write_text("select 1;\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(api_seed), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "chore(T1): base mig"], cwd=str(api_seed), check=True)
+            subprocess.run(["git", "push", "-q", "origin", "HEAD:beta"], cwd=str(api_seed), check=True)
+
+            wt = tmp / "work" / "mig-feature" / "w0m"
+            (wt / ".tasks").mkdir(parents=True)
+            api_wt = wt / "w0m-api"
+            subprocess.run(["git", "fetch", "-q", "origin"], cwd=str(api_seed), check=True)
+            subprocess.run(
+                ["git", "worktree", "add", "-q", "-b", "agent/mig-feature", str(api_wt), "origin/beta"],
+                cwd=str(api_seed),
+                check=True,
+            )
+
+            # Another agent lands 20261108080000_other.sql on origin/beta while our worktree created 20261108060000_ours.sql
+            (mig_seed / "20261108080000_other.sql").write_text("select 2;\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(api_seed), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "feat(T2): other mig"], cwd=str(api_seed), check=True)
+            subprocess.run(["git", "push", "-q", "origin", "HEAD:beta"], cwd=str(api_seed), check=True)
+
+            (api_wt / "supabase" / "migrations" / "20261108060000_ours.sql").write_text("select 3;\n", encoding="utf-8")
+            (wt / ".tasks" / "T3.md").write_text(
+                "---\nid: T3\n---\n\nSee `20261108060000_ours.sql`.\n",
+                encoding="utf-8",
+            )
+
+            renames = sc.maybe_resequence_colliding_migrations(wt, dry_run=False)
+            self.assertEqual(renames, {"20261108060000_ours.sql": "20261108080001_ours.sql"})
+            self.assertFalse((api_wt / "supabase" / "migrations" / "20261108060000_ours.sql").exists())
+            self.assertTrue((api_wt / "supabase" / "migrations" / "20261108080001_ours.sql").is_file())
+            self.assertIn("20261108080001_ours.sql", (wt / ".tasks" / "T3.md").read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()

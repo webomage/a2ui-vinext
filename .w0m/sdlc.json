@@ -363,9 +363,12 @@
     "verification_gates": [
       "just reality-verify",
       "just spec-drift",
+      "just spec-policy-check",
+      "just py-typecheck",
       "just dod-check",
       "python3 w0m-web/project/scripts/lessons_check.py",
       "python3 w0m-web/project/scripts/supabase_surface_drift_check.py",
+      "just db-drift-check",
       "just debt-check --enforce",
       "just reports-ticket-check",
       "just mmd-validate",

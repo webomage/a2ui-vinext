@@ -991,6 +991,7 @@ _deploy-chain: _deploy-preflight (_confirm "deploy") _deploy-gates _deploy-ship
 # Pre-push runs the same set (w0m-web/.husky/pre-push), so a red ratchet is normally found where the change is made, not at deploy time.
 _deploy-preflight:
     @python3 scripts/deploy_cert.py preflight
+    @just db-drift-check
     @just state-check
 
 # Note: `goldens` is excluded from `_deploy-gates` because booting the local Astro dev server + Playwright browser matrix inside a deploy run halts memory-constrained hosts. Run `just goldens` standalone when needed.

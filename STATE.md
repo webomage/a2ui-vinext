@@ -48,18 +48,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t680-infra-docs-refresh` | 0 | **n/a — NO UPSTREAM** | `28508d158` |
-| `w0m-api` | `agent/t680-infra-docs-refresh` | 0 | **n/a — NO UPSTREAM** | `167c8c2` |
-| `w0m-cf` | `agent/t680-infra-docs-refresh` | 0 | **n/a — NO UPSTREAM** | `67a82e5` |
-| `w0m-skills` | `agent/t680-infra-docs-refresh` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
-| `w0m-ext` | `agent/t680-infra-docs-refresh` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
-| `w0m-sec` | `agent/t680-infra-docs-refresh` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/t680-infra-docs-refresh` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/migration-conflict-guard` | 0 | **n/a — NO UPSTREAM** | `9b62d590c` |
+| `w0m-api` | `agent/migration-conflict-guard` | 0 | **n/a — NO UPSTREAM** | `a208b76` |
+| `w0m-cf` | `agent/migration-conflict-guard` | 0 | **n/a — NO UPSTREAM** | `67a82e5` |
+| `w0m-skills` | `agent/migration-conflict-guard` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
+| `w0m-ext` | `agent/migration-conflict-guard` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
+| `w0m-sec` | `agent/migration-conflict-guard` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/migration-conflict-guard` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 680 TASKS.md rows · 313/680 specced (2/8 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 8 open · 681 TASKS.md rows · 314/681 specced (2/8 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T673","T17"],"repos":{"w0m-api":{"branch":"agent/t680-infra-docs-refresh","dirty":0,"has_upstream":true,"head":"167c8c2","unpushed":null},"w0m-cf":{"branch":"agent/t680-infra-docs-refresh","dirty":0,"has_upstream":true,"head":"67a82e5","unpushed":null},"w0m-ext":{"branch":"agent/t680-infra-docs-refresh","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t680-infra-docs-refresh","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t680-infra-docs-refresh","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t680-infra-docs-refresh","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/t680-infra-docs-refresh","dirty":0,"has_upstream":true,"head":"28508d158","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":680,"specced":313,"specced_open":2,"total":680,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T673","T17"],"repos":{"w0m-api":{"branch":"agent/migration-conflict-guard","dirty":0,"has_upstream":true,"head":"a208b76","unpushed":null},"w0m-cf":{"branch":"agent/migration-conflict-guard","dirty":0,"has_upstream":true,"head":"67a82e5","unpushed":null},"w0m-ext":{"branch":"agent/migration-conflict-guard","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/migration-conflict-guard","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/migration-conflict-guard","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/migration-conflict-guard","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/migration-conflict-guard","dirty":0,"has_upstream":true,"head":"9b62d590c","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":681,"specced":314,"specced_open":2,"total":681,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -119,7 +119,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (8):
+#### Completed today (9):
 
 - **T669** — Pre-renumber worktree ticket record for T672 (order form & filter state persistence, Job Board recency filters, and submitted bug reports) (Reconciled .tasks/T669.md with GitHub Issue #669 (1:1 parity with [[T672]] delivery). Lessons: Recorded in LESSONS.md (defer sequential T## allocation until serialized worktree offload).)
 - **T670** — Pre-renumber worktree ticket record for T671 (role-driven <slug>@w0m.xyz tech mailing list pattern) (Reconciled .tasks/T670.md with GitHub Issue #670 and aligned [[T671]] to gh_issue: 671. Lessons: Recorded in LESSONS.md (defer sequential T## allocation until serialized worktree offload).)
@@ -129,6 +129,7 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T676** — Rename Guild & Cohorts to Guild, activate CP /o/[org]/people/quests page, fix expired JWT in CP islands, and add Admin Corporate/RPG naming & Live User Sessions dashboards ((agy:guild-quests-tech-jwt): Renamed GAMIFIED_NAV_LABELS.Team from "Guild & Cohorts" to "Guild", activated /o/[org]/people/quests (quests.astro mounting RaidBoard, AgentQuestTracksBoard, and QuestBoard with active-hat project scoping), and hardened createAdminClient.ts + CP .astro pages (Astro.locals.accessToken) so expired sb-access-token cookies never trigger Error: JWT expired in PostgREST. Lesson disposition: covered by existing LESSONS.md rules (T472 token sync, T571 CP nav).)
 - **T677** — Make Orca a first-class ACP client on agentclientprotocol.com, wire per-project Mistral Free-Tier accounts with private Obsidian data scope, scaffold k7env & k7pwd Rust TUIs, and ship multi-step CLI progress bars (Covered by T302, T307, T36, AgDR-0025, and AgDR-0055)
 - **T678** — Deferred worktree ticket numbering (DRAFT-<slug> -> T<N>), GitHub Issue #669-#677 1:1 sync, Orca-style project repo/ticket/milestone connections, and Overview completion dashboard (Completed AC1–AC4 in isolated worktree agent/gh-ticket-sync-deferred-id and verified 17/17 test_session_complete.py + 148/148 apps/cp Vitest tests + 43/43 test_client_page_tenancy.py tests. Lessons: Recorded in LESSONS.md (DEFER WORKTREE SEQUENTIAL TICKET ID ALLOCATION (DRAFT-<slug> -> T<N>) UNTIL SERIALIZED OFFLOAD...).)
+- **T681** — Fix T675 role_templates.min_unit_id migration bug, enforce static + transactional pending-migration dry-run gates, and auto-resequence parallel worktree migrations on land (Completed AC1–AC5 in isolated worktree agent/migration-conflict-guard, verified live just db-drift-check transactional ROLLBACK dry-run (2 pending migrations verified with 0 persisted schema_change_log mutations), and passed test_supabase_surface_drift_check.py (3/3), test_migration_versions_unique.py (21/21), test_session_complete.py (18/18), and test_deploy_chain_order.py (7/7). Lessons: Recorded in LESSONS.md (VALIDATE SQL MIGRATION INSERT COLUMNS CHRONOLOGICALLY, DRY-RUN PENDING MIGRATIONS INSIDE A ROLLED-BACK TRANSACTION...).)
 
 ## 3. Other open threads (in TASKS.md)
 
