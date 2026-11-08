@@ -15,9 +15,9 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T671](/home/aleksei/Projects/!self/w0m/.tasks/T671.md) | [#670](https://github.com/webomage/wom7board/issues/670) | P0 | queued | product | 115 | Role-driven <slug>@w0m.xyz tech mailing list pattern (devops hat default, c 📄 live spec |
+| 1 | [T671](/home/aleksei/Projects/!self/w0m/.tasks/T671.md) | [#671](https://github.com/webomage/wom7board/issues/671) | P0 | queued | product | 115 | Role-driven <slug>@w0m.xyz tech mailing list pattern (devops hat default, c 📄 live spec |
 | 2 | [T664](/home/aleksei/Projects/!self/w0m/.tasks/T664.md) | [#664](https://github.com/webomage/wom7board/issues/664) | P1 | queued | infra | 60 | Per-client tech mailboxes on w0m.xyz (Cloudflare Email Routing) and dedicated client Inf |
-| 3 | [T673](/home/aleksei/Projects/!self/w0m/.tasks/T673.md) | ⚠️ not mirrored | P2 | queued | ai | 25 | Backlog & phased integration roadmap for newly forked casualuser and webomage AI, memory |
+| 3 | [T673](/home/aleksei/Projects/!self/w0m/.tasks/T673.md) | [#673](https://github.com/webomage/wom7board/issues/673) | P2 | queued | ai | 25 | Backlog & phased integration roadmap for newly forked casualuser and webomage AI, memory |
 | 4 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
@@ -34,10 +34,10 @@
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T671](/home/aleksei/Projects/!self/w0m/.tasks/T671.md) | [#670](https://github.com/webomage/wom7board/issues/670) | P0 | queued | product | 0/4 | `░░░░░░░░░░` 0% | — | Role-driven <slug>@w0m.xyz tech mailing list pattern (devops |
+| 1 | [T671](/home/aleksei/Projects/!self/w0m/.tasks/T671.md) | [#671](https://github.com/webomage/wom7board/issues/671) | P0 | queued | product | 0/4 | `░░░░░░░░░░` 0% | — | Role-driven <slug>@w0m.xyz tech mailing list pattern (devops |
 | 2 | [T664](/home/aleksei/Projects/!self/w0m/.tasks/T664.md) | [#664](https://github.com/webomage/wom7board/issues/664) | P1 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Per-client tech mailboxes on w0m.xyz (Cloudflare Email Routi |
 | 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
-| 4 | [T673](/home/aleksei/Projects/!self/w0m/.tasks/T673.md) | ⚠️ not mirrored | P2 | queued | ai | 0/6 | `░░░░░░░░░░` 0% | — | Backlog & phased integration roadmap for newly forked casual |
+| 4 | [T673](/home/aleksei/Projects/!self/w0m/.tasks/T673.md) | [#673](https://github.com/webomage/wom7board/issues/673) | P2 | queued | ai | 0/6 | `░░░░░░░░░░` 0% | — | Backlog & phased integration roadmap for newly forked casual |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -48,18 +48,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t676-k7env-mistral-progress` | 0 | **n/a — NO UPSTREAM** | `097178866` |
-| `w0m-api` | `agent/t676-k7env-mistral-progress` | 0 | **n/a — NO UPSTREAM** | `4939cd0` |
-| `w0m-cf` | `agent/t676-k7env-mistral-progress` | 0 | **n/a — NO UPSTREAM** | `67a82e5` |
-| `w0m-skills` | `agent/t676-k7env-mistral-progress` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
-| `w0m-ext` | `agent/t676-k7env-mistral-progress` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
-| `w0m-sec` | `agent/t676-k7env-mistral-progress` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/t676-k7env-mistral-progress` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/gh-ticket-sync-deferred-id` | 0 | **n/a — NO UPSTREAM** | `f2ee333ce` |
+| `w0m-api` | `agent/gh-ticket-sync-deferred-id` | 0 | **n/a — NO UPSTREAM** | `59eefe4` |
+| `w0m-cf` | `agent/gh-ticket-sync-deferred-id` | 0 | **n/a — NO UPSTREAM** | `67a82e5` |
+| `w0m-skills` | `agent/gh-ticket-sync-deferred-id` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
+| `w0m-ext` | `agent/gh-ticket-sync-deferred-id` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
+| `w0m-sec` | `agent/gh-ticket-sync-deferred-id` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/gh-ticket-sync-deferred-id` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 675 TASKS.md rows · 310/675 specced (2/8 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 8 open · 678 TASKS.md rows · 313/678 specced (2/8 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T673","T17"],"repos":{"w0m-api":{"branch":"agent/t676-k7env-mistral-progress","dirty":0,"has_upstream":true,"head":"4939cd0","unpushed":null},"w0m-cf":{"branch":"agent/t676-k7env-mistral-progress","dirty":0,"has_upstream":true,"head":"67a82e5","unpushed":null},"w0m-ext":{"branch":"agent/t676-k7env-mistral-progress","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t676-k7env-mistral-progress","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/t676-k7env-mistral-progress","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t676-k7env-mistral-progress","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/t676-k7env-mistral-progress","dirty":0,"has_upstream":true,"head":"097178866","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":675,"specced":310,"specced_open":2,"total":675,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T673","T17"],"repos":{"w0m-api":{"branch":"agent/gh-ticket-sync-deferred-id","dirty":0,"has_upstream":true,"head":"59eefe4","unpushed":null},"w0m-cf":{"branch":"agent/gh-ticket-sync-deferred-id","dirty":0,"has_upstream":true,"head":"67a82e5","unpushed":null},"w0m-ext":{"branch":"agent/gh-ticket-sync-deferred-id","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/gh-ticket-sync-deferred-id","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/gh-ticket-sync-deferred-id","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/gh-ticket-sync-deferred-id","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/gh-ticket-sync-deferred-id","dirty":0,"has_upstream":true,"head":"f2ee333ce","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":678,"specced":313,"specced_open":2,"total":678,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -119,13 +119,16 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (5):
+#### Completed today (8):
 
+- **T669** — Pre-renumber worktree ticket record for T672 (order form & filter state persistence, Job Board recency filters, and submitted bug reports) (Reconciled .tasks/T669.md with GitHub Issue #669 (1:1 parity with [[T672]] delivery). Lessons: Recorded in LESSONS.md (defer sequential T## allocation until serialized worktree offload).)
+- **T670** — Pre-renumber worktree ticket record for T671 (role-driven <slug>@w0m.xyz tech mailing list pattern) (Reconciled .tasks/T670.md with GitHub Issue #670 and aligned [[T671]] to gh_issue: 671. Lessons: Recorded in LESSONS.md (defer sequential T## allocation until serialized worktree offload).)
 - **T672** — Persist order form & filter state across page refreshes, add Job Board recency filters (day/week/month), and surface submitted bug reports ((agy:order-form-state-persist): Implemented AC1–AC8 across @webomage/lib, apps/web, apps/me, apps/cp, @webomage/ui, and w0m-api (w0m-api c8b389e, w0m-web a9b4134ab + f809d3476). Verified live Supabase public.bug_reports row 8090dd5b-59ab-47d8-9c75-192bf0fab5f3 ("we have to have better filters here" on https://me.webomage.com/, project_id IS NULL) and b0a52d8c-eab5-4766-abd0-d28d0f1507f6 ("/me/profile/resume" on https://cp.webomage.com/me/profile/resume), wired scope=mine and includePlatform=true so both surface in BugReportWidget and BugTriageBoard, added day/week/month/quarter/all job recency filters, enforced active hat/role project-scope visibility (resolveScopedProjectId) for PM (pm / product-manager) and downwards across all CP pages (projects, services, milestones, vault, money/contracts, money/proposals, people/directory, people/team, sales/clients, sales/leads), fixed the ClientServicesManager.svelte table cell overlap (whitespace-normal break-words align-top py-3), and filed backlog ticket [[T673]] for the 33 forked casualuser/ & webomage/ tools. Lesson disposition: no new transferable failure mode beyond existing LESSONS.md rules (T347 bug routing, T600 hat visibility, T663 order flow).)
 - **T674** — Audit Orca v1.4.253 upstream PR portfolio, rescue Mac backup research, and build local hybrid BM25+vector knowledge index for roadmap synthesis (Covered by T302, T339, T461, T613, and AgDR-0055)
 - **T675** — Project Role Templates (1-Head Indie vs 2-Head Default), Role/Hat Naming Matrix & Corporate vs RPG Theme (Covered by T302, T339, T461, T613, and AgDR-0055)
 - **T676** — Rename Guild & Cohorts to Guild, activate CP /o/[org]/people/quests page, fix expired JWT in CP islands, and add Admin Corporate/RPG naming & Live User Sessions dashboards ((agy:guild-quests-tech-jwt): Renamed GAMIFIED_NAV_LABELS.Team from "Guild & Cohorts" to "Guild", activated /o/[org]/people/quests (quests.astro mounting RaidBoard, AgentQuestTracksBoard, and QuestBoard with active-hat project scoping), and hardened createAdminClient.ts + CP .astro pages (Astro.locals.accessToken) so expired sb-access-token cookies never trigger Error: JWT expired in PostgREST. Lesson disposition: covered by existing LESSONS.md rules (T472 token sync, T571 CP nav).)
 - **T677** — Make Orca a first-class ACP client on agentclientprotocol.com, wire per-project Mistral Free-Tier accounts with private Obsidian data scope, scaffold k7env & k7pwd Rust TUIs, and ship multi-step CLI progress bars (Covered by T302, T307, T36, AgDR-0025, and AgDR-0055)
+- **T678** — Deferred worktree ticket numbering (DRAFT-<slug> -> T<N>), GitHub Issue #669-#677 1:1 sync, Orca-style project repo/ticket/milestone connections, and Overview completion dashboard (Completed AC1–AC4 in isolated worktree agent/gh-ticket-sync-deferred-id and verified 17/17 test_session_complete.py + 148/148 apps/cp Vitest tests + 43/43 test_client_page_tenancy.py tests. Lessons: Recorded in LESSONS.md (DEFER WORKTREE SEQUENTIAL TICKET ID ALLOCATION (DRAFT-<slug> -> T<N>) UNTIL SERIALIZED OFFLOAD...).)
 
 ## 3. Other open threads (in TASKS.md)
 

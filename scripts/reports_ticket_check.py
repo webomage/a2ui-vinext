@@ -22,11 +22,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HEADER_LINES = 12
 TICKET_RE = re.compile(r"\b[Tt](\d{1,4})\b")
+DRAFT_RE = re.compile(r"\b[Dd][Rr][Aa][Ff][Tt]-([A-Za-z0-9_-]+)\b")
 
 
 def cited(path: Path) -> set[str]:
     head = "\n".join(path.read_text(encoding="utf-8", errors="replace").split("\n")[:HEADER_LINES])
-    return {f"T{n}" for n in TICKET_RE.findall(path.name) + TICKET_RE.findall(head)}
+    t_ids = {f"T{n}" for n in TICKET_RE.findall(path.name) + TICKET_RE.findall(head)}
+    d_ids = {f"DRAFT-{s.lower()}" for s in DRAFT_RE.findall(path.name) + DRAFT_RE.findall(head)}
+    return t_ids | d_ids
 
 
 def main() -> int:
@@ -34,7 +37,9 @@ def main() -> int:
     ap.add_argument("--root", type=Path, default=ROOT, help="estate root (holds .agents/ and .tasks/)")
     args = ap.parse_args()
     reports = sorted(p for p in (args.root / ".agents" / "reports").glob("*") if p.is_file())
-    tickets = {p.stem for p in (args.root / ".tasks").glob("T*.md")}
+    tickets = {p.stem for p in (args.root / ".tasks").glob("T*.md")} | {
+        f"DRAFT-{p.stem[6:].lower()}" for p in (args.root / ".tasks").glob("DRAFT-*.md")
+    }
     if not reports or not tickets:
         print(f"❌ reports-ticket-check: {len(reports)} report(s), {len(tickets)} ticket(s) found — "
               "cannot measure, so not passing")

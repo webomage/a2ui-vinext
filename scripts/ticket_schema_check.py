@@ -160,7 +160,7 @@ def _roadmap_sections() -> set[str]:
 
 
 ROADMAP_SECTIONS = _roadmap_sections()
-ALL_TICKET_IDS = {f.stem for f in TICKETS.glob("T*.md")}
+ALL_TICKET_IDS = {f.stem for f in TICKETS.glob("T*.md")} | {f.stem for f in TICKETS.glob("DRAFT-*.md")}
 REPO_CLOSED = bool(_VOCAB["repo"].get("closed"))
 
 
@@ -566,7 +566,14 @@ def main() -> int:
               file=sys.stderr)
         return 1
 
-    files = sorted(TICKETS.glob("T*.md"), key=lambda p: int(re.sub(r"\D", "", p.stem) or 0))
+    files = sorted(
+        [*TICKETS.glob("T*.md"), *TICKETS.glob("DRAFT-*.md")],
+        key=lambda p: (
+            (0, int(re.sub(r"\D", "", p.stem) or 0), p.stem)
+            if p.stem.startswith("T")
+            else (1, 0, p.stem)
+        ),
+    )
     if not files:
         # An empty corpus is a failure, not a pass — the estate's standing rule.
         print("❌ no ticket files found — refusing to report green over an empty set",

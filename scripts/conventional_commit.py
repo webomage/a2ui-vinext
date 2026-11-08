@@ -70,7 +70,7 @@ CC_RE: re.Pattern[str] = re.compile(
     + r")(?:\((?P<scope>[^)]+)\))?(?P<breaking>!)?:\s+(?P<desc>.+)$"
 )
 
-TICKET_RE: re.Pattern[str] = re.compile(r"\bT[0-9]+\b")
+TICKET_RE: re.Pattern[str] = re.compile(r"\b(?:T[0-9]+|DRAFT-[A-Za-z0-9_-]+)\b")
 
 SUBSTANTIVE_CODE_EXTS: frozenset[str] = frozenset(
     {

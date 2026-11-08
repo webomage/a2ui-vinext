@@ -186,8 +186,9 @@ def allocate_ticket(
     ac: Sequence[str] | None = None,
     created: str | None = None,
     render_tasks: bool = True,
+    draft_slug: str | None = None,
 ) -> tuple[str, Path]:
-    """Atomically allocate and write `.tasks/T<N>.md` and optionally refresh `TASKS.md`.
+    """Atomically allocate and write `.tasks/T<N>.md` (or `.tasks/DRAFT-<slug>.md` when `draft_slug` is set).
 
     Returns `(ticket_id, ticket_path)`.
     """
@@ -198,6 +199,28 @@ def allocate_ticket(
     t_dir = Path(tickets_dir).resolve() if tickets_dir is not None else (repo_dir / ".tasks")
     t_md = Path(tasks_md_path).resolve() if tasks_md_path is not None else (repo_dir / "TASKS.md")
     t_dir.mkdir(parents=True, exist_ok=True)
+
+    if draft_slug:
+        clean_slug = re.sub(r"[^A-Za-z0-9_-]+", "-", draft_slug.strip()).strip("-")
+        if clean_slug.upper().startswith("DRAFT-"):
+            clean_slug = clean_slug[6:]
+        if not clean_slug:
+            raise ValueError("draft_slug must contain alphanumeric characters")
+        ticket_id = f"DRAFT-{clean_slug}"
+        ticket_path = t_dir / f"{ticket_id}.md"
+        content = _render_ticket_body(
+            ticket_id,
+            title.strip(),
+            area=area,
+            priority=priority,
+            epic=epic,
+            status=status,
+            why=why,
+            ac=ac,
+            created=created,
+        )
+        ticket_path.write_text(content, encoding="utf-8")
+        return ticket_id, ticket_path
 
     with _ticket_seq_lock(repo_dir):
         known_ids = (
@@ -247,9 +270,24 @@ def allocate_ticket(
     return ticket_id, ticket_path
 
 
+def _detect_worktree_draft_slug(repo_dir: Path) -> str | None:
+    proc = subprocess.run(
+        ["git", "symbolic-ref", "--short", "HEAD"],
+        cwd=str(repo_dir),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode == 0:
+        branch = proc.stdout.strip()
+        if branch.startswith("agent/") and len(branch) > len("agent/"):
+            return branch[len("agent/") :]
+    return None
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Atomically allocate the next T-id and create .tasks/T<N>.md + update TASKS.md."
+        description="Atomically allocate the next T-id (or create DRAFT-<slug> in a worktree) and create .tasks/ ticket."
     )
     parser.add_argument("title", help="Ticket title")
     parser.add_argument("--area", default="sdlc", help="Ticket area (default: sdlc)")
@@ -260,18 +298,41 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--ac", action="append", default=None, help="Acceptance criterion (repeatable)")
     parser.add_argument("--repo", default=str(ROOT_DIR), help="Root repository path")
     parser.add_argument("--no-render", action="store_true", help="Skip regenerating TASKS.md")
+    parser.add_argument(
+        "--draft",
+        nargs="?",
+        const="auto",
+        default=None,
+        help="Create a deferred worktree draft ticket (.tasks/DRAFT-<slug>.md) assigned a T<N> on session-complete offload",
+    )
+    parser.add_argument(
+        "--immediate",
+        action="store_true",
+        help="Force immediate T<N> allocation even when inside an agent/<slug> worktree",
+    )
     args = parser.parse_args(argv)
+
+    repo_path = Path(args.repo).resolve()
+    draft_slug: str | None = None
+    if not args.immediate:
+        if args.draft == "auto":
+            draft_slug = _detect_worktree_draft_slug(repo_path) or "worktree"
+        elif args.draft:
+            draft_slug = args.draft
+        else:
+            draft_slug = _detect_worktree_draft_slug(repo_path)
 
     ticket_id, ticket_path = allocate_ticket(
         args.title,
-        repo_dir=Path(args.repo),
+        repo_dir=repo_path,
         area=args.area,
         priority=args.priority,
         epic=args.epic,
         status=args.status,
         why=args.why,
         ac=args.ac,
-        render_tasks=not args.no_render,
+        render_tasks=not args.no_render and not draft_slug,
+        draft_slug=draft_slug,
     )
     print(f"{ticket_id}\t{ticket_path}")
     return 0

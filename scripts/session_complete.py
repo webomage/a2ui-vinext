@@ -54,8 +54,10 @@ BASE_REF = "origin/beta"
 TARGET_BRANCH = "beta"
 
 TICKET_ARG_RE = re.compile(r"^[Tt](\d{1,5})$")
+DRAFT_ARG_RE = re.compile(r"^[Dd][Rr][Aa][Ff][Tt]-([A-Za-z0-9_-]+)$")
 TICKET_FILE_RE = re.compile(r"^T(\d{1,5})\.md$")
-REPORT_CITE_RE = re.compile(r"\b[Tt](\d{1,5})\b")
+DRAFT_FILE_RE = re.compile(r"^DRAFT-([A-Za-z0-9_-]+)\.md$")
+REPORT_CITE_RE = re.compile(r"\b(?:[Tt](\d{1,5})|[Dd][Rr][Aa][Ff][Tt]-([A-Za-z0-9_-]+))\b")
 CONV_ANCESTRY_RE = re.compile(
     r"--(?:conversation|resume)(?:=|\s+)([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",
     re.IGNORECASE,
@@ -322,10 +324,17 @@ def _frontmatter_set(fm_lines: list[str], key: str, value: str, *, after_key: st
 
 
 def normalize_ticket_id(raw: str) -> str:
-    m = TICKET_ARG_RE.fullmatch(raw.strip())
-    if not m:
-        raise SessionCompleteError("invalid_ticket", f"Invalid ticket ID '{raw}' (expected T<number>)")
-    return f"T{int(m.group(1))}"
+    s = raw.strip()
+    m = TICKET_ARG_RE.fullmatch(s)
+    if m:
+        return f"T{int(m.group(1))}"
+    md = DRAFT_ARG_RE.fullmatch(s)
+    if md:
+        return f"DRAFT-{md.group(1)}"
+    raise SessionCompleteError(
+        "invalid_ticket",
+        f"Invalid ticket ID '{raw}' (expected T<number> or DRAFT-<slug>)",
+    )
 
 
 def discover_target_tickets(
@@ -346,6 +355,7 @@ def discover_target_tickets(
         return ordered
 
     found_nums: set[int] = set()
+    found_drafts: set[str] = set()
 
     st = _git(worktree_root, "status", "--porcelain", "--", ".tasks/")
     if st.returncode == 0:
@@ -353,24 +363,31 @@ def discover_target_tickets(
             if len(line) < 4:
                 continue
             cand_path = line[3:].strip().split(" -> ")[-1].strip()
-            m = TICKET_FILE_RE.match(Path(cand_path).name)
+            name = Path(cand_path).name
+            m = TICKET_FILE_RE.match(name)
             if m and (worktree_root / cand_path).is_file():
                 found_nums.add(int(m.group(1)))
+            elif (md := DRAFT_FILE_RE.match(name)) and (worktree_root / cand_path).is_file():
+                found_drafts.add(f"DRAFT-{md.group(1)}")
 
     diff = _git(worktree_root, "diff", "--name-only", f"{BASE_REF}...HEAD", "--", ".tasks/")
     if diff.returncode == 0:
         for line in diff.stdout.splitlines():
             cand_path = line.strip()
-            m = TICKET_FILE_RE.match(Path(cand_path).name)
+            name = Path(cand_path).name
+            m = TICKET_FILE_RE.match(name)
             if m and (worktree_root / cand_path).is_file():
                 found_nums.add(int(m.group(1)))
+            elif (md := DRAFT_FILE_RE.match(name)) and (worktree_root / cand_path).is_file():
+                found_drafts.add(f"DRAFT-{md.group(1)}")
 
     if agent_id:
         tickets_dir = worktree_root / ".tasks"
         if tickets_dir.is_dir():
-            for tpath in tickets_dir.glob("T*.md"):
+            for tpath in [*tickets_dir.glob("T*.md"), *tickets_dir.glob("DRAFT-*.md")]:
                 m = TICKET_FILE_RE.match(tpath.name)
-                if not m:
+                md = DRAFT_FILE_RE.match(tpath.name)
+                if not m and not md:
                     continue
                 parsed = _parse_frontmatter(tpath.read_text(encoding="utf-8", errors="replace"))
                 if not parsed:
@@ -379,15 +396,18 @@ def discover_target_tickets(
                 owner = _frontmatter_get(fm_lines, "agent_id")
                 t_status = _frontmatter_get(fm_lines, "status")
                 if owner == agent_id and t_status != "done":
-                    found_nums.add(int(m.group(1)))
+                    if m:
+                        found_nums.add(int(m.group(1)))
+                    elif md:
+                        found_drafts.add(f"DRAFT-{md.group(1)}")
 
-    if not found_nums and not allow_empty:
+    if not found_nums and not found_drafts and not allow_empty:
         raise SessionCompleteError(
             "no_target_tickets",
             "No modified or agent-claimed tickets detected in .tasks/; pass ticket ID(s) explicitly "
-            "(e.g. `just session-complete T640`).",
+            "(e.g. `just session-complete T640` or `just session-complete DRAFT-<slug>`).",
         )
-    return [f"T{n}" for n in sorted(found_nums)]
+    return [f"T{n}" for n in sorted(found_nums)] + sorted(found_drafts)
 
 
 def _ids_at_git_ref(repo: Path, ref: str) -> set[int]:
@@ -405,14 +425,21 @@ def _ids_at_git_ref(repo: Path, ref: str) -> set[int]:
 def _rewrite_ticket_id_map(text: str, renames: dict[str, str]) -> str:
     if not renames:
         return text
-    lookup: dict[str, str] = {}
-    for old_tid, new_tid in renames.items():
-        lookup[old_tid] = new_tid
-        lookup[old_tid.lower()] = new_tid.lower()
+    lower_lookup: dict[str, tuple[str, str]] = {
+        old_tid.lower(): (new_tid, new_tid.lower())
+        for old_tid, new_tid in renames.items()
+    }
     pattern = re.compile(
-        r"\b(" + "|".join(re.escape(k) for k in sorted(lookup, key=len, reverse=True)) + r")\b"
+        r"\b(" + "|".join(re.escape(k) for k in sorted(lower_lookup, key=len, reverse=True)) + r")\b",
+        re.IGNORECASE,
     )
-    return pattern.sub(lambda m: lookup[m.group(1)], text)
+
+    def _repl(m: re.Match[str]) -> str:
+        matched = m.group(1)
+        upper_new, lower_new = lower_lookup[matched.lower()]
+        return lower_new if matched.islower() else upper_new
+
+    return pattern.sub(_repl, text)
 
 
 def _rewrite_ticket_id_tokens(text: str, old_tid: str, new_tid: str) -> str:
@@ -442,7 +469,7 @@ def maybe_renumber_colliding_tickets(
     dry_run: bool = False,
     fetch_remote: bool = True,
 ) -> tuple[list[str], dict[str, str]]:
-    """Compact newly added branch tickets onto contiguous `[max(origin/beta)+1, ...]` (collisions + gaps)."""
+    """Promote `DRAFT-<slug>` tickets and compact branch-added `T##` onto `[max(origin/beta)+1, ...]`."""
     if fetch_remote:
         _git(worktree_root, "fetch", "-q", "origin")
 
@@ -462,21 +489,32 @@ def maybe_renumber_colliding_tickets(
         for p in tickets_dir.glob("T*.md")
         if (m := TICKET_FILE_RE.match(p.name))
     }
-    added_ids = sorted(local_ids - base_ids)
-    if not added_ids:
+    max_origin = max(origin_ids)
+    added_ids = sorted(
+        n for n in (local_ids - base_ids) if (n in origin_ids or n > max_origin)
+    )
+    draft_ids = sorted(
+        f"DRAFT-{m.group(1)}"
+        for p in tickets_dir.glob("DRAFT-*.md")
+        if (m := DRAFT_FILE_RE.match(p.name))
+    )
+    if not added_ids and not draft_ids:
         return list(target_tickets), {}
 
-    start_num = max(origin_ids) + 1
-    expected_ids = list(range(start_num, start_num + len(added_ids)))
-    renames: dict[str, str] = {
-        f"T{old_num}": f"T{new_num}"
-        for old_num, new_num in zip(added_ids, expected_ids, strict=True)
-        if old_num != new_num
-    }
+    start_num = max_origin + 1
+    total_new = len(added_ids) + len(draft_ids)
+    expected_ids = list(range(start_num, start_num + total_new))
+    renames: dict[str, str] = {}
+    for old_num, new_num in zip(added_ids, expected_ids[: len(added_ids)], strict=True):
+        if old_num != new_num:
+            renames[f"T{old_num}"] = f"T{new_num}"
+    for draft_tid, new_num in zip(draft_ids, expected_ids[len(added_ids) :], strict=True):
+        renames[draft_tid] = f"T{new_num}"
     if not renames:
         return list(target_tickets), {}
 
-    mapped_targets = [renames.get(t, t) for t in target_tickets]
+    ci_renames = {k.lower(): v for k, v in renames.items()}
+    mapped_targets = [ci_renames.get(t.lower(), t) for t in target_tickets]
     if dry_run:
         return mapped_targets, renames
 
@@ -484,13 +522,14 @@ def maybe_renumber_colliding_tickets(
     if head_sha and head_sha != merge_base:
         _git(worktree_root, "reset", "--soft", merge_base, check=True)
 
-    w0m_web_dir = worktree_root / "w0m-web"
-    if (w0m_web_dir / ".git").exists():
-        _git(w0m_web_dir, "fetch", "-q", "origin")
-        web_mb = _git(w0m_web_dir, "merge-base", "HEAD", BASE_REF).stdout.strip()
-        web_head = _git(w0m_web_dir, "rev-parse", "HEAD").stdout.strip()
-        if web_mb and web_head and web_head != web_mb:
-            _git(w0m_web_dir, "reset", "--soft", web_mb, check=True)
+    for rel_path, repo_dir in _discover_estate_repos(worktree_root):
+        if rel_path == "." or not (repo_dir / ".git").exists():
+            continue
+        _git(repo_dir, "fetch", "-q", "origin")
+        repo_mb = _git(repo_dir, "merge-base", "HEAD", BASE_REF).stdout.strip()
+        repo_head = _git(repo_dir, "rev-parse", "HEAD").stdout.strip()
+        if repo_mb and repo_head and repo_head != repo_mb:
+            _git(repo_dir, "reset", "--soft", repo_mb, check=True)
 
     # Two-phase `.tasks/` rename so chained renames (`T11->T12, T12->T13`) never collide mid-flight,
     # and strip any pre-renumber `gh_issue:` frontmatter so GitHub Issue `#old` is never overwritten.
@@ -520,8 +559,10 @@ def maybe_renumber_colliding_tickets(
         for rfile in sorted(rdir.iterdir()):
             if not rfile.is_file():
                 continue
+            cited_lower = {c.lower() for c in cited_tickets_in_report(rfile)}
             matched = any(
                 re.search(rf"\b{re.escape(old_tid.lower())}\b", rfile.name, re.IGNORECASE)
+                or old_tid.lower() in cited_lower
                 for old_tid in renames
             )
             if not matched:
@@ -554,7 +595,8 @@ def maybe_renumber_colliding_tickets(
     lessons_path = worktree_root / "LESSONS.md"
     if lessons_path.is_file():
         diff_l = _git(worktree_root, "diff", merge_base, "--", "LESSONS.md")
-        if any(old_tid in diff_l.stdout for old_tid in renames):
+        diff_lower = diff_l.stdout.lower()
+        if any(old_tid.lower() in diff_lower for old_tid in renames):
             base_lessons_proc = _git(worktree_root, "show", f"{merge_base}:LESSONS.md")
             curr_lessons = lessons_path.read_text(encoding="utf-8")
             base_prefix = base_lessons_proc.stdout.rstrip("\n")
@@ -571,6 +613,48 @@ def maybe_renumber_colliding_tickets(
                 )
 
     return mapped_targets, renames
+
+
+def _rollback_renumbered_tickets(worktree_root: Path, renames: dict[str, str]) -> None:
+    """Revert in-flight `DRAFT-<slug> -> T<N>` (or `T<old> -> T<new>`) renames if a pre-land gate fails."""
+    if not renames:
+        return
+    inv_renames = {new_tid: old_tid for old_tid, new_tid in renames.items()}
+    tickets_dir = worktree_root / ".tasks"
+    for new_tid, old_tid in inv_renames.items():
+        new_tpath = tickets_dir / f"{new_tid}.md"
+        old_tpath = tickets_dir / f"{old_tid}.md"
+        if new_tpath.is_file() and not old_tpath.exists():
+            raw = new_tpath.read_text(encoding="utf-8")
+            rewritten = _scrub_gh_issue_frontmatter(_rewrite_ticket_id_map(raw, inv_renames))
+            old_tpath.write_text(rewritten, encoding="utf-8")
+            new_tpath.unlink()
+            _git(worktree_root, "rm", "--cached", "-q", "--ignore-unmatch", f".tasks/{new_tid}.md")
+
+    for rel_dir in (".agents/reports", "w0m-web/docs/reports"):
+        rdir = worktree_root / rel_dir
+        if not rdir.is_dir():
+            continue
+        for rfile in sorted(rdir.iterdir()):
+            if not rfile.is_file():
+                continue
+            cited_lower = {c.lower() for c in cited_tickets_in_report(rfile)}
+            matched = any(
+                re.search(rf"\b{re.escape(new_tid.lower())}\b", rfile.name, re.IGNORECASE)
+                or new_tid.lower() in cited_lower
+                for new_tid in inv_renames
+            )
+            if not matched:
+                continue
+            old_name = _rewrite_ticket_id_map(rfile.name, inv_renames)
+            dest = rdir / old_name
+            content = rfile.read_text(encoding="utf-8", errors="replace")
+            rewritten_report = _rewrite_ticket_id_map(content, inv_renames)
+            if dest == rfile:
+                rfile.write_text(rewritten_report, encoding="utf-8")
+            else:
+                dest.write_text(rewritten_report, encoding="utf-8")
+                rfile.unlink()
 
 
 def _resolve_session_lock_dir(worktree_root: Path, work_root: str | None = None) -> Path | None:
@@ -894,10 +978,13 @@ def cited_tickets_in_report(report_path: Path) -> set[str]:
     head = "\n".join(
         report_path.read_text(encoding="utf-8", errors="replace").splitlines()[:REPORT_HEADER_LINES]
     )
-    return {
-        f"T{int(n)}"
-        for n in REPORT_CITE_RE.findall(report_path.name) + REPORT_CITE_RE.findall(head)
-    }
+    cited: set[str] = set()
+    for num, draft_slug in REPORT_CITE_RE.findall(report_path.name) + REPORT_CITE_RE.findall(head):
+        if num:
+            cited.add(f"T{int(num)}")
+        elif draft_slug:
+            cited.add(f"DRAFT-{draft_slug}")
+    return cited
 
 
 def mirror_reports(
@@ -1735,9 +1822,10 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
         )
 
         renumbered: dict[str, str] = {}
+        has_draft_targets = any(t.startswith("DRAFT-") for t in targets)
         if ctx.in_agent_tree and not args.dry_run and not args.skip_land:
             wait_for_land_lock(Path(ctx.work_root) if ctx.work_root else None)
-        if ctx.in_agent_tree and not args.no_auto_renumber and targets:
+        if (ctx.in_agent_tree or has_draft_targets) and (not args.no_auto_renumber or has_draft_targets) and targets:
             targets, renumbered = maybe_renumber_colliding_tickets(
                 wt_root,
                 targets,
@@ -1746,148 +1834,159 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
         if ctx.in_agent_tree and not args.dry_run and not args.skip_land:
             sync_worktree_onto_origin_beta(wt_root)
 
-        reverse_renames = {new_t: old_t for old_t, new_t in renumbered.items()} if args.dry_run else {}
-        ticket_results: list[dict[str, Any]] = []
-        for tid in targets:
-            disk_tid = reverse_renames.get(tid, tid)
-            res = normalize_ticket_file(
-                wt_root / ".tasks" / f"{disk_tid}.md",
-                complete_acs=bool(args.complete_acs),
-                no_lessons=bool(args.no_lessons),
-                lesson_note=args.lesson_note,
-                dry_run=bool(args.dry_run),
-                ticket_id_override=tid,
-            )
-            ticket_results.append(asdict(res))
-
-        mirrored_reports = mirror_reports(
-            wt_root,
-            sdlc_config,
-            targets,
-            dry_run=bool(args.dry_run),
-        )
-
-        if not args.dry_run and not args.skip_gates and targets:
-            _verify_target_ticket_schema(wt_root, targets)
-
-        gh_sync_info = sync_tickets_to_github(
-            wt_root,
-            targets,
-            skip=bool(args.skip_gh_sync or args.skip_land),
-            dry_run=bool(args.dry_run),
-        )
-
-        surfaces_info = harvest_and_refresh_surfaces(
-            wt_root,
-            set_name=ctx.set_name,
-            dry_run=bool(args.dry_run),
-        )
-
-        if args.dry_run:
-            summary = {
-                "ok": True,
-                "dryRun": True,
-                "context": asdict(ctx),
-                "targetTickets": targets,
-                "renumberedTickets": renumbered,
-                "normalizedTickets": ticket_results,
-                "mirroredReports": mirrored_reports,
-                "githubSync": gh_sync_info,
-                "surfaces": surfaces_info,
-                "configuredGates": list((sdlc_config.get("session_wrapup") or {}).get("verification_gates") or []),
-            }
-            return 0, summary
-
-        gate_results: list[dict[str, Any]] = []
-        if not args.skip_gates:
-            gate_results = run_verification_gates(wt_root, sdlc_config, targets)
-
-        primary_tid = targets[0] if targets else "T0"
-        committed = commit_dirty_repos(
-            wt_root,
-            primary_ticket=primary_tid,
-            commit_message=args.commit_message,
-        )
-
-        if not args.skip_gates and targets:
-            gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
-
-        deploy_cert_info: dict[str, Any] | None = None
-        if not args.skip_gates:
-            deploy_cert_info = certify_estate_tree(
-                wt_root,
-                canonical_root=Path(ctx.canonical_root),
-                source="session-complete-pre-land",
-            )
-
-        land_info: dict[str, Any] = {"mode": "skipped"}
-        finalize_info: dict[str, Any] = {"mode": "skipped"}
-        if not args.skip_land:
-            if ctx.in_agent_tree:
-                wait_for_land_lock(Path(ctx.work_root) if ctx.work_root else None)
-                extra_renumbered: dict[str, str] = {}
-                if not args.no_auto_renumber and targets:
-                    targets, extra_renumbered = maybe_renumber_colliding_tickets(
-                        wt_root,
-                        targets,
-                        dry_run=False,
-                    )
-                    renumbered.update(extra_renumbered)
-                synced_late = sync_worktree_onto_origin_beta(wt_root)
-                if extra_renumbered or synced_late:
-                    ticket_results = [
-                        asdict(
-                            normalize_ticket_file(
-                                wt_root / ".tasks" / f"{tid}.md",
-                                complete_acs=bool(args.complete_acs),
-                                no_lessons=bool(args.no_lessons),
-                                lesson_note=args.lesson_note,
-                                dry_run=False,
-                            )
-                        )
-                        for tid in targets
-                    ]
-                    mirrored_reports = mirror_reports(wt_root, sdlc_config, targets, dry_run=False)
-                    gh_sync_info = sync_tickets_to_github(
-                        wt_root,
-                        targets,
-                        skip=bool(args.skip_gh_sync),
-                        dry_run=False,
-                    )
-                    surfaces_info = harvest_and_refresh_surfaces(wt_root, set_name=ctx.set_name, dry_run=False)
-                    primary_tid = targets[0] if targets else "T0"
-                    committed = commit_dirty_repos(
-                        wt_root,
-                        primary_ticket=primary_tid,
-                        commit_message=args.commit_message,
-                    )
-                    if not args.skip_gates and targets:
-                        gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
-                    if not args.skip_gates:
-                        deploy_cert_info = certify_estate_tree(
-                            wt_root,
-                            canonical_root=Path(ctx.canonical_root),
-                            source="session-complete-late-sync",
-                        )
-
-            land_info = land_and_cleanup_tree(
-                ctx,
-                remove_tree=not bool(args.keep_tree),
-                certify_after_land=not bool(args.skip_gates),
-            )
-            if land_info.get("mode") == "canonical_direct_push" and not args.skip_gates:
-                canon_p = Path(ctx.canonical_root)
-                deploy_cert_info = certify_estate_tree(
-                    canon_p,
-                    canonical_root=canon_p,
-                    source="session-complete-direct-push",
+        try:
+            reverse_renames = {new_t.lower(): old_t for old_t, new_t in renumbered.items()} if args.dry_run else {}
+            ticket_results: list[dict[str, Any]] = []
+            for tid in targets:
+                disk_tid = reverse_renames.get(tid.lower(), tid)
+                res = normalize_ticket_file(
+                    wt_root / ".tasks" / f"{disk_tid}.md",
+                    complete_acs=bool(args.complete_acs),
+                    no_lessons=bool(args.no_lessons),
+                    lesson_note=args.lesson_note,
+                    dry_run=bool(args.dry_run),
+                    ticket_id_override=tid,
                 )
-            finalize_info = archive_and_finalize_session(
-                ctx,
-                close_completed_others=bool(args.close_completed_others),
-                close_self_when_settled=bool(args.close_self_when_settled),
-                skip_final_state_check=bool(args.skip_gates),
+                ticket_results.append(asdict(res))
+
+            mirrored_reports = mirror_reports(
+                wt_root,
+                sdlc_config,
+                targets,
+                dry_run=bool(args.dry_run),
             )
+
+            if not args.dry_run and not args.skip_gates and targets:
+                _verify_target_ticket_schema(wt_root, targets)
+
+            surfaces_info = harvest_and_refresh_surfaces(
+                wt_root,
+                set_name=ctx.set_name,
+                dry_run=bool(args.dry_run),
+            )
+
+            if args.dry_run:
+                gh_sync_info = sync_tickets_to_github(
+                    wt_root,
+                    targets,
+                    skip=bool(args.skip_gh_sync or args.skip_land),
+                    dry_run=True,
+                )
+                summary = {
+                    "ok": True,
+                    "dryRun": True,
+                    "context": asdict(ctx),
+                    "targetTickets": targets,
+                    "renumberedTickets": renumbered,
+                    "normalizedTickets": ticket_results,
+                    "mirroredReports": mirrored_reports,
+                    "githubSync": gh_sync_info,
+                    "surfaces": surfaces_info,
+                    "configuredGates": list((sdlc_config.get("session_wrapup") or {}).get("verification_gates") or []),
+                }
+                return 0, summary
+
+            gate_results: list[dict[str, Any]] = []
+            if not args.skip_gates:
+                gate_results = run_verification_gates(wt_root, sdlc_config, targets)
+
+            gh_sync_info = sync_tickets_to_github(
+                wt_root,
+                targets,
+                skip=bool(args.skip_gh_sync or args.skip_land),
+                dry_run=False,
+            )
+
+            primary_tid = targets[0] if targets else "T0"
+            committed = commit_dirty_repos(
+                wt_root,
+                primary_ticket=primary_tid,
+                commit_message=args.commit_message,
+            )
+
+            if not args.skip_gates and targets:
+                gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
+
+            deploy_cert_info: dict[str, Any] | None = None
+            if not args.skip_gates:
+                deploy_cert_info = certify_estate_tree(
+                    wt_root,
+                    canonical_root=Path(ctx.canonical_root),
+                    source="session-complete-pre-land",
+                )
+
+            land_info: dict[str, Any] = {"mode": "skipped"}
+            finalize_info: dict[str, Any] = {"mode": "skipped"}
+            if not args.skip_land:
+                if ctx.in_agent_tree:
+                    wait_for_land_lock(Path(ctx.work_root) if ctx.work_root else None)
+                    extra_renumbered: dict[str, str] = {}
+                    if not args.no_auto_renumber and targets:
+                        targets, extra_renumbered = maybe_renumber_colliding_tickets(
+                            wt_root,
+                            targets,
+                            dry_run=False,
+                        )
+                        renumbered.update(extra_renumbered)
+                    synced_late = sync_worktree_onto_origin_beta(wt_root)
+                    if extra_renumbered or synced_late:
+                        ticket_results = [
+                            asdict(
+                                normalize_ticket_file(
+                                    wt_root / ".tasks" / f"{tid}.md",
+                                    complete_acs=bool(args.complete_acs),
+                                    no_lessons=bool(args.no_lessons),
+                                    lesson_note=args.lesson_note,
+                                    dry_run=False,
+                                )
+                            )
+                            for tid in targets
+                        ]
+                        mirrored_reports = mirror_reports(wt_root, sdlc_config, targets, dry_run=False)
+                        gh_sync_info = sync_tickets_to_github(
+                            wt_root,
+                            targets,
+                            skip=bool(args.skip_gh_sync),
+                            dry_run=False,
+                        )
+                        surfaces_info = harvest_and_refresh_surfaces(wt_root, set_name=ctx.set_name, dry_run=False)
+                        primary_tid = targets[0] if targets else "T0"
+                        committed = commit_dirty_repos(
+                            wt_root,
+                            primary_ticket=primary_tid,
+                            commit_message=args.commit_message,
+                        )
+                        if not args.skip_gates and targets:
+                            gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
+                        if not args.skip_gates:
+                            deploy_cert_info = certify_estate_tree(
+                                wt_root,
+                                canonical_root=Path(ctx.canonical_root),
+                                source="session-complete-late-sync",
+                            )
+
+                land_info = land_and_cleanup_tree(
+                    ctx,
+                    remove_tree=not bool(args.keep_tree),
+                    certify_after_land=not bool(args.skip_gates),
+                )
+                if land_info.get("mode") == "canonical_direct_push" and not args.skip_gates:
+                    canon_p = Path(ctx.canonical_root)
+                    deploy_cert_info = certify_estate_tree(
+                        canon_p,
+                        canonical_root=canon_p,
+                        source="session-complete-direct-push",
+                    )
+                finalize_info = archive_and_finalize_session(
+                    ctx,
+                    close_completed_others=bool(args.close_completed_others),
+                    close_self_when_settled=bool(args.close_self_when_settled),
+                    skip_final_state_check=bool(args.skip_gates),
+                )
+        except SessionCompleteError:
+            if not args.dry_run and renumbered and wt_root.is_dir():
+                _rollback_renumbered_tickets(wt_root, renumbered)
+            raise
 
     summary = {
         "ok": True,

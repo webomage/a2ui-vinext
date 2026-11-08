@@ -747,6 +747,75 @@ class SessionCompleteTests(unittest.TestCase):
             self.assertEqual(res_ran["status"], "certified_locally")
             self.assertTrue(hook_marker.is_file())
 
+    def test_deferred_draft_ticket_allocation_and_promotion_on_offload(self) -> None:
+        import ticket_new as tn
+
+        with tempfile.TemporaryDirectory() as tmp_str:
+            tmp = Path(tmp_str)
+            origin = tmp / "origin.git"
+            _git_init_repo(origin, bare=True)
+
+            seed = tmp / "seed"
+            _git_init_repo(seed)
+            subprocess.run(["git", "remote", "add", "origin", str(origin)], cwd=str(seed), check=True)
+            (seed / ".w0m").mkdir()
+            (seed / ".tasks").mkdir()
+            (seed / ".agents" / "reports").mkdir(parents=True)
+            (seed / ".w0m" / "sdlc.json").write_text('{"profile": "w0m"}\n', encoding="utf-8")
+            (seed / "LESSONS.md").write_text("# Lessons\n\n- Base T11 rule.\n", encoding="utf-8")
+            (seed / ".tasks" / "T11.md").write_text("---\nid: T11\nstatus: done\n---\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(seed), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "chore(T11): seed"], cwd=str(seed), check=True)
+            subprocess.run(["git", "push", "-q", "origin", "HEAD:beta"], cwd=str(seed), check=True)
+
+            wt = tmp / "work" / "my-feature" / "w0m"
+            wt.parent.mkdir(parents=True)
+            subprocess.run(["git", "fetch", "-q", "origin"], cwd=str(seed), check=True)
+            subprocess.run(
+                ["git", "worktree", "add", "-q", "-b", "agent/my-feature", str(wt), "origin/beta"],
+                cwd=str(seed),
+                check=True,
+            )
+
+            # 1. Allocate draft ticket without burning a sequential T## ID
+            draft_tid, draft_path = tn.allocate_ticket(
+                "Deferred ticket ID allocation",
+                repo_dir=wt,
+                render_tasks=False,
+                draft_slug="my-feature",
+            )
+            self.assertEqual(draft_tid, "DRAFT-my-feature")
+            self.assertEqual(draft_path.name, "DRAFT-my-feature.md")
+
+            draft_body = SAMPLE_TICKET_OPEN.replace("T42", "DRAFT-my-feature")
+            draft_path.write_text(draft_body, encoding="utf-8")
+            (wt / ".agents" / "reports").mkdir(parents=True, exist_ok=True)
+            (wt / ".agents" / "reports" / "2026-11-08-draft-my-feature-audit.md").write_text(
+                "# DRAFT-my-feature Audit\n\nVerified draft-my-feature.\n",
+                encoding="utf-8",
+            )
+            (wt / "LESSONS.md").write_text(
+                "# Lessons\n\n- Base T11 rule.\n- Earned in DRAFT-my-feature: defer ID until offload.\n",
+                encoding="utf-8",
+            )
+
+            # 2. Discover target tickets finds DRAFT-my-feature
+            discovered = sc.discover_target_tickets(wt)
+            self.assertEqual(discovered, ["DRAFT-my-feature"])
+
+            # 3. Promote DRAFT-my-feature -> T12 on offload
+            mapped, renames = sc.maybe_renumber_colliding_tickets(wt, discovered, dry_run=False)
+            self.assertEqual(renames, {"DRAFT-my-feature": "T12"})
+            self.assertEqual(mapped, ["T12"])
+            self.assertFalse(draft_path.exists())
+            promoted_path = wt / ".tasks" / "T12.md"
+            self.assertTrue(promoted_path.is_file())
+            self.assertIn("id: T12\n", promoted_path.read_text(encoding="utf-8"))
+            promoted_report = wt / ".agents" / "reports" / "2026-11-08-t12-audit.md"
+            self.assertTrue(promoted_report.is_file())
+            self.assertIn("# T12 Audit", promoted_report.read_text(encoding="utf-8"))
+            self.assertIn("Earned in T12: defer ID until offload.", (wt / "LESSONS.md").read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()
