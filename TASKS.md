@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T684](.tasks/T684.md) | **P0** | **Admin & PM CP toolkit mounting (toolkit.crew_seo_geo_tablinux) + Orca 1.4.214 WASM package for LinuxOnTab (linuxontab.com/packages/)** | tooling, web, ext | — | ✅ **done** |
 | [T683](.tasks/T683.md) | **P1** | **Auto-Provision, Read, Update, and Guard All AI-DLC & SDLC Data Layers Across Worktrees and Session Wrap-Up** | tooling, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T682](.tasks/T682.md) | **P0** | **k7kb Knowledge Base, SEO/GEO/Security scanner, Enterprise Observability, Same-Host ACP session management & TabLinux CP/Orca integration** | tooling, web | — | ✅ **done** |
 | [T681](.tasks/T681.md) | **P1** | **Fix T675 role_templates.min_unit_id migration bug, enforce static + transactional pending-migration dry-run gates, and auto-resequence parallel worktree migrations on land** | api, web, tooling | — | ✅ **done** |
