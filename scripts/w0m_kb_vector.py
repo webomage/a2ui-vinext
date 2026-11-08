@@ -372,7 +372,7 @@ def cluster_documents(
     labels = np.zeros(n_docs, dtype=np.int32)
     for _ in range(15):
         sims = doc_vecs @ centroids.T
-        new_labels = np.argmax(sims, axis=1)
+        new_labels = np.argmax(sims, axis=1).astype(np.int32)
         if np.array_equal(new_labels, labels):
             break
         labels = new_labels
