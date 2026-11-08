@@ -2220,6 +2220,11 @@ mistral-scope-test:
 progress-bar-test:
     @python3 scripts/tests/test_progress_bar.py
 
+# ── LinuxOnTab (`w0m-pr/linuxontab`) Local COOP/COEP Dev Server (T678) ─────────
+linuxontab-serve port="8770" *args:
+    @python3 scripts/linuxontab_serve.py "{{ port }}" {{ args }}
+
+
 
 
 

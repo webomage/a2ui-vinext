@@ -571,6 +571,7 @@
         "substrate": "host"
       },
       "repos": {
+        "k7hub": "k7hub/k7hub",
         "k7c": "k7c/k7c",
         "k7d": "k7d/k7d",
         "k7env": "k7env/k7env",

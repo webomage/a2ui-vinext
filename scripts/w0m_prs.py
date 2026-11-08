@@ -66,6 +66,7 @@ PRESET_REPOS = {
         "elayadesign/ai-design-skills",
         "cloudflare/security-audit-skill",
         "agentclientprotocol/agent-client-protocol",
+        "kilian-ai/linuxontab",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -89,6 +90,7 @@ PRESET_REPOS = {
         "elayadesign/ai-design-skills",
         "cloudflare/security-audit-skill",
         "agentclientprotocol/agent-client-protocol",
+        "kilian-ai/linuxontab",
     ],
 }
 
@@ -2681,6 +2683,7 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
     "ai-design-skills": "elayadesign/ai-design-skills",
     "security-audit-skill": "cloudflare/security-audit-skill",
     "agent-client-protocol": "agentclientprotocol/agent-client-protocol",
+    "linuxontab": "kilian-ai/linuxontab",
 }
 
 # Per-repository upstream contribution rules registry (`AgDR-0058` / `T655`)
@@ -2937,6 +2940,17 @@ UPSTREAM_CONTRIBUTION_RULES: dict[str, dict[str, Any]] = {
             "Apache-2.0, no CLA required (CONTRIBUTING.md); requires Conventional Commits, Prettier formatting, "
             "and typos spellcheck (`npm run spellcheck`)."
         ),
+    },
+    "kilian-ai/linuxontab": {
+        "automation_mode": "manual",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": "Standalone v86 + xterm Linux terminal in a browser tab; forked to webomage/linuxontab for @k7 + Orca module tabs.",
     },
 }
 

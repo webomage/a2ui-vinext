@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T679](.tasks/T679.md) · [#679](https://github.com/casualuser/webomage.com/issues/679) | **P0** | **Onboard LinuxOnTab (kilian-ai/linuxontab) and scaffold k7hub unified @k7 Super-TUI & plugin module runtime for Orca and standalone execution** | tooling | — | ✅ **done** |
 | [T678](.tasks/T678.md) · [#678](https://github.com/casualuser/webomage.com/issues/678) | **P1** | **Deferred worktree ticket numbering (DRAFT-<slug> -> T<N>), GitHub Issue #669-#677 1:1 sync, Orca-style project repo/ticket/milestone connections, and Overview completion dashboard** | web, cp, api, tooling | openspec/specs/client-engagement/spec.md | ✅ **done** |
 | [T677](.tasks/T677.md) · [#675](https://github.com/casualuser/webomage.com/issues/675) | **P0** | **Make Orca a first-class ACP client on agentclientprotocol.com, wire per-project Mistral Free-Tier accounts with private Obsidian data scope, scaffold k7env & k7pwd Rust TUIs, and ship multi-step CLI progress bars** | tooling, api, cf | — | ✅ **done** |
 | [T676](.tasks/T676.md) · [#674](https://github.com/casualuser/webomage.com/issues/674) | **P1** | **Rename Guild & Cohorts to Guild, activate CP /o/[org]/people/quests page, fix expired JWT in CP islands, and add Admin Corporate/RPG naming & Live User Sessions dashboards** | web, cp, ui | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
