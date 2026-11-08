@@ -27,6 +27,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T664](.tasks/T664.md) · [#664](https://github.com/casualuser/webomage.com/issues/664) | **P1** | 🆕 **Per-client tech mailboxes on w0m.xyz (Cloudflare Email Routing) and dedicated client Infisical org bootstrap workflow** | api, cf, web, tooling | — | ⚪ **queued** |
+| [T673](.tasks/T673.md) | **P2** | 🆕 **Backlog & phased integration roadmap for newly forked casualuser and webomage AI, memory, ontology, document, security, and harness tools** | web, api, cf, mlx, skills, tooling | — | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | P3 | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 💤 **paused** |
@@ -35,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T672](.tasks/T672.md) · [#671](https://github.com/casualuser/webomage.com/issues/671) | **P1** | **Persist order form & filter state across page refreshes, add Job Board recency filters (day/week/month), and surface submitted bug reports** | web, cp, lib, api | openspec/specs/public-surface-audit/spec.md | ✅ **done** |
 | [T668](.tasks/T668.md) | **P1** | **Eliminate remaining Gauge/Infisical deploy tool chatter at the source and surface filtered audit lines in deploy_logged** | web | null | ✅ **done** |
 | [T667](.tasks/T667.md) · [#667](https://github.com/casualuser/webomage.com/issues/667) | **P1** | **Purge internal ticket and AgDR numbers from user-facing UI copy and enforce a no-ticket-spam UI gate** | tooling, web, skills | — | ✅ **done** |
 | [T666](.tasks/T666.md) · [#666](https://github.com/casualuser/webomage.com/issues/666) | **P1** | **Eliminate deploy-all browser-bundle node:* warnings, crawler-smoke 403, transcript noise, and Nov 20 Workers AI deprecated models** | tooling, web, api | — | ✅ **done** |

@@ -17,7 +17,8 @@
 |---|---|---|---|---|---|---|---|
 | 1 | [T671](/home/aleksei/Projects/!self/w0m/.tasks/T671.md) | [#670](https://github.com/webomage/wom7board/issues/670) | P0 | queued | product | 115 | Role-driven <slug>@w0m.xyz tech mailing list pattern (devops hat default, c 📄 live spec |
 | 2 | [T664](/home/aleksei/Projects/!self/w0m/.tasks/T664.md) | [#664](https://github.com/webomage/wom7board/issues/664) | P1 | queued | infra | 60 | Per-client tech mailboxes on w0m.xyz (Cloudflare Email Routing) and dedicated client Inf |
-| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 3 | [T673](/home/aleksei/Projects/!self/w0m/.tasks/T673.md) | ⚠️ not mirrored | P2 | queued | ai | 25 | Backlog & phased integration roadmap for newly forked casualuser and webomage AI, memory |
+| 4 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -25,8 +26,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 7 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **7** are
+> ⚠️ **0 of 8 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **8** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -36,6 +37,7 @@
 | 1 | [T671](/home/aleksei/Projects/!self/w0m/.tasks/T671.md) | [#670](https://github.com/webomage/wom7board/issues/670) | P0 | queued | product | 0/4 | `░░░░░░░░░░` 0% | — | Role-driven <slug>@w0m.xyz tech mailing list pattern (devops |
 | 2 | [T664](/home/aleksei/Projects/!self/w0m/.tasks/T664.md) | [#664](https://github.com/webomage/wom7board/issues/664) | P1 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Per-client tech mailboxes on w0m.xyz (Cloudflare Email Routi |
 | 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 4 | [T673](/home/aleksei/Projects/!self/w0m/.tasks/T673.md) | ⚠️ not mirrored | P2 | queued | ai | 0/6 | `░░░░░░░░░░` 0% | — | Backlog & phased integration roadmap for newly forked casual |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -46,18 +48,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `beta` | **1** | 1 | `966465050` |
-| `w0m-api` | `beta` | 0 | 0 | `d0d0fa6` |
-| `w0m-cf` | `beta` | 0 | 0 | `d9b9aa4` |
-| `w0m-skills` | `beta` | 0 | 0 | `ffbb624` |
-| `w0m-ext` | `beta` | 0 | 0 | `ff993fc` |
-| `w0m-sec` | `beta` | 0 | 0 | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `beta` | 0 | 0 | `c7801f6` |
+| `w0m-web` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `ba75ed645` |
+| `w0m-api` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `89f68fd` |
+| `w0m-cf` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `d9b9aa4` |
+| `w0m-skills` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
+| `w0m-ext` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `ff993fc` |
+| `w0m-sec` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/order-form-state-persist` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 7 open · 669 TASKS.md rows · 307/669 specced (2/7 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 8 open · 671 TASKS.md rows · 308/671 specced (2/8 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T17"],"repos":{"w0m-api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d0d0fa6","unpushed":0},"w0m-cf":{"branch":"beta","dirty":0,"has_upstream":true,"head":"d9b9aa4","unpushed":0},"w0m-ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":0},"w0m-mlx/w0m-mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":0},"w0m-sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":0},"w0m-skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":0},"w0m-web":{"branch":"beta","dirty":1,"has_upstream":true,"head":"966465050","unpushed":1}},"tickets":{"open":7,"rowless_open":[],"rows":669,"specced":307,"specced_open":2,"total":669,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T673","T17"],"repos":{"w0m-api":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"89f68fd","unpushed":null},"w0m-cf":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"d9b9aa4","unpushed":null},"w0m-ext":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"ff993fc","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/order-form-state-persist","dirty":0,"has_upstream":true,"head":"ba75ed645","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":671,"specced":308,"specced_open":2,"total":671,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -116,6 +118,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
+
+#### Completed today (1):
+
+- **T672** — Persist order form & filter state across page refreshes, add Job Board recency filters (day/week/month), and surface submitted bug reports ((agy:order-form-state-persist): Implemented AC1–AC8 across @webomage/lib, apps/web, apps/me, apps/cp, @webomage/ui, and w0m-api (w0m-api c8b389e, w0m-web a9b4134ab + f809d3476). Verified live Supabase public.bug_reports row 8090dd5b-59ab-47d8-9c75-192bf0fab5f3 ("we have to have better filters here" on https://me.webomage.com/, project_id IS NULL) and b0a52d8c-eab5-4766-abd0-d28d0f1507f6 ("/me/profile/resume" on https://cp.webomage.com/me/profile/resume), wired scope=mine and includePlatform=true so both surface in BugReportWidget and BugTriageBoard, added day/week/month/quarter/all job recency filters, enforced active hat/role project-scope visibility (resolveScopedProjectId) for PM (pm / product-manager) and downwards across all CP pages (projects, services, milestones, vault, money/contracts, money/proposals, people/directory, people/team, sales/clients, sales/leads), fixed the ClientServicesManager.svelte table cell overlap (whitespace-normal break-words align-top py-3), and filed backlog ticket [[T673]] for the 33 forked casualuser/ & webomage/ tools. Lesson disposition: no new transferable failure mode beyond existing LESSONS.md rules (T347 bug routing, T600 hat visibility, T663 order flow).)
 
 ## 3. Other open threads (in TASKS.md)
 
