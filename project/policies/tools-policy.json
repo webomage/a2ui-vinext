@@ -376,9 +376,12 @@
       "known_good": "1.59.0",
       "required": true,
       "source": "brew",
-      "auto": "minor",
+      "auto": "none",
       "smoke": "just --summary",
-      "note": "task runner — every recipe"
+      "custom_fork": "webomage/just@beta",
+      "linux_source": "cargo-overlay (~/.local/bin/just + just just-apply)",
+      "macos_source": "cargo-overlay (~/.local/bin/just + just just-apply)",
+      "note": "task runner — every recipe. Installed from `github.com/webomage/just@beta` (`w0m-pr/just`) anchored on latest upstream release `1.59.0` with 4 w0m overlay enhancements (`fix/fmt-preserve-recipe-header-comment` #3773, `feat/multiline-doc-comments` #2684, `feat/list-fallback-recipes` #1500, `feat/wildcard-imports` #1885), plus packaged for TabLinux (`w0m-pr/linuxontab/packages/just-1.59.0-w0m.1.tar.gz`) via `just just-sync`, `just just-apply`, and `just just-wasm`."
     },
     "lazydocker": {
       "min": "0.23.0",

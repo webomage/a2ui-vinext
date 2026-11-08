@@ -2198,6 +2198,24 @@ orca-repair-cli:
 orca-overlay-test:
     @python3 scripts/tests/test_orca_overlay_update.py
 
+just-status:
+    @python3 scripts/just_overlay_sync.py --status
+
+just-sync *args:
+    @python3 scripts/just_overlay_sync.py --sync {{ args }}
+
+just-apply *args:
+    @python3 scripts/just_overlay_sync.py --apply {{ args }}
+
+just-wasm *args:
+    @python3 scripts/just_overlay_sync.py --build-wasm {{ args }}
+
+overlays-status *args:
+    @python3 scripts/just_overlay_sync.py --all-overlays {{ args }}
+
+just-overlay-test:
+    @pytest -q scripts/tests/test_just_overlay_sync.py
+
 moksha-apply:
     sudo dpkg -i "$HOME/.local/share/moksha-backport/moksha_0.4.2-4+w0m1_amd64.deb" && "$HOME/.local/bin/moksha-apply-native-snap"
 
