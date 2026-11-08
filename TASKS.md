@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T676](.tasks/T676.md) · [#674](https://github.com/casualuser/webomage.com/issues/674) | **P1** | **Rename Guild & Cohorts to Guild, activate CP /o/[org]/people/quests page, fix expired JWT in CP islands, and add Admin Corporate/RPG naming & Live User Sessions dashboards** | web, cp, ui | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T675](.tasks/T675.md) | **P1** | **Project Role Templates (1-Head Indie vs 2-Head Default), Role/Hat Naming Matrix & Corporate vs RPG Theme** | web, api | openspec/specs/client-engagement/spec.md | ✅ **done** |
 | [T674](.tasks/T674.md) | **P1** | **Audit Orca v1.4.253 upstream PR portfolio, rescue Mac backup research, and build local hybrid BM25+vector knowledge index for roadmap synthesis** | tooling, web | — | ✅ **done** |
 | [T672](.tasks/T672.md) · [#671](https://github.com/casualuser/webomage.com/issues/671) | **P1** | **Persist order form & filter state across page refreshes, add Job Board recency filters (day/week/month), and surface submitted bug reports** | web, cp, lib, api | openspec/specs/public-surface-audit/spec.md | ✅ **done** |
