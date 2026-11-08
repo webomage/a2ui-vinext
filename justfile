@@ -2207,6 +2207,19 @@ ui-ticket-leak-check *args:
 ui-ticket-leak-check-test:
     @python3 w0m-web/project/scripts/tests/test_ui_ticket_leak_check.py
 
+# ── Per-Project Mistral Free-Tier Account & Obsidian Private Data Scope (T677) ──
+mistral-scope-status *args:
+    @python3 scripts/mistral_project_scope.py status {{ args }}
+
+mistral-scope-profile project *args:
+    @python3 scripts/mistral_project_scope.py obsidian-profile {{ project }} {{ args }}
+
+mistral-scope-test:
+    @python3 scripts/tests/test_mistral_project_scope.py
+
+progress-bar-test:
+    @python3 scripts/tests/test_progress_bar.py
+
 
 
 

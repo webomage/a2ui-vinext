@@ -43,6 +43,11 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+from progress_bar import format_progress_bar
+
 DEFAULT_WORK_ROOT = Path.home() / ".w0m" / "work"
 AGENT_ROOT_SUBDIR = "w0m"
 BASE_REF = "origin/beta"
@@ -1067,8 +1072,16 @@ def run_verification_gates(
 
     results: list[dict[str, Any]] = []
     total = len(commands) + (1 if (worktree_root / "scripts" / "ticket_schema_check.py").is_file() else 0)
+    t0_gates = time.monotonic()
     for idx, (label, argv) in enumerate(commands, 1):
-        print(f"[session-complete] [{idx}/{total}] {label} ...", file=sys.stderr, flush=True)
+        bar_line = format_progress_bar(
+            idx,
+            total,
+            f"{label} ...",
+            elapsed_sec=time.monotonic() - t0_gates,
+            prefix="[session-complete]",
+        )
+        print(bar_line, file=sys.stderr, flush=True)
         proc = _run(argv, cwd=worktree_root)
         results.append({"gate": label, "returncode": proc.returncode})
         if proc.returncode != 0:
@@ -1080,7 +1093,14 @@ def run_verification_gates(
 
     if (worktree_root / "scripts" / "ticket_schema_check.py").is_file():
         label = "scripts/ticket_schema_check.py --json (SCHEMA + target tickets)"
-        print(f"[session-complete] [{total}/{total}] {label} ...", file=sys.stderr, flush=True)
+        bar_line = format_progress_bar(
+            total,
+            total,
+            f"{label} ...",
+            elapsed_sec=time.monotonic() - t0_gates,
+            prefix="[session-complete]",
+        )
+        print(bar_line, file=sys.stderr, flush=True)
         schema_res = _verify_target_ticket_schema(worktree_root, target_tickets)
         if schema_res is not None:
             results.append(schema_res)

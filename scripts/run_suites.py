@@ -33,7 +33,13 @@ import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
+
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+from progress_bar import format_progress_bar
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "w0m-web"
@@ -606,10 +612,14 @@ def main() -> int:
 
     print(f"▶ suites — {label} · {len(picked)} declared\n", flush=True)
     results, total = [], 0
+    t0_suites = time.monotonic()
+    total_picked = len(picked)
+    step_stride = 1 if os.environ.get("W0M_SUITES_PROGRESS") == "1" else max(1, total_picked // 10)
 
     def _emit(r: dict) -> None:
         nonlocal total
         results.append(r)
+        done_count = len(results)
         if isinstance(r["checks"], int):
             total += r["checks"]
         mark = {
@@ -630,6 +640,15 @@ def main() -> int:
         )
         if r["status"] in ("FAIL", "MISSING", "UNMEASURABLE"):
             print(f"       ↳ {r.get('tail') or 'recipe not found'}", flush=True)
+        if total_picked >= 5 and (done_count % step_stride == 0 or done_count == total_picked):
+            bar_line = format_progress_bar(
+                done_count,
+                total_picked,
+                r["name"],
+                elapsed_sec=time.monotonic() - t0_suites,
+                prefix="[suites]",
+            )
+            print(bar_line, file=sys.stderr, flush=True)
 
     heavy = {"py-test", "test-js", "skill-test", "py-typecheck", "hygiene-check", "mmd-validate", "deno-test", "deno-check"}
     workers = max(1, args.jobs)

@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T677](.tasks/T677.md) · [#675](https://github.com/casualuser/webomage.com/issues/675) | **P0** | **Make Orca a first-class ACP client on agentclientprotocol.com, wire per-project Mistral Free-Tier accounts with private Obsidian data scope, scaffold k7env & k7pwd Rust TUIs, and ship multi-step CLI progress bars** | tooling, api, cf | — | ✅ **done** |
 | [T676](.tasks/T676.md) · [#674](https://github.com/casualuser/webomage.com/issues/674) | **P1** | **Rename Guild & Cohorts to Guild, activate CP /o/[org]/people/quests page, fix expired JWT in CP islands, and add Admin Corporate/RPG naming & Live User Sessions dashboards** | web, cp, ui | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T675](.tasks/T675.md) | **P1** | **Project Role Templates (1-Head Indie vs 2-Head Default), Role/Hat Naming Matrix & Corporate vs RPG Theme** | web, api | openspec/specs/client-engagement/spec.md | ✅ **done** |
 | [T674](.tasks/T674.md) | **P1** | **Audit Orca v1.4.253 upstream PR portfolio, rescue Mac backup research, and build local hybrid BM25+vector knowledge index for roadmap synthesis** | tooling, web | — | ✅ **done** |

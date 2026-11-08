@@ -573,6 +573,8 @@
       "repos": {
         "k7c": "k7c/k7c",
         "k7d": "k7d/k7d",
+        "k7env": "k7env/k7env",
+        "k7pwd": "k7pwd/k7pwd",
         "k7s": "k7s/k7s",
         "k7llm": "k7llm/k7llm",
         "k7sol": "k7sol/k7sol",

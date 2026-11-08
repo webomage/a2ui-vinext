@@ -40,6 +40,11 @@ from typing import Any
 
 import numpy as np
 
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+from progress_bar import StepProgress
+
 ESTATE_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INDEX_DIR = Path.home() / ".w0m" / "knowledge-index"
 DEFAULT_DB_PATH = DEFAULT_INDEX_DIR / "corpus.sqlite"
@@ -656,11 +661,15 @@ def build_hybrid_index(
     db_path: Path = DEFAULT_DB_PATH,
     embed_dim: int = EMBED_DIM,
     n_clusters: int = 12,
+    show_progress: bool = False,
 ) -> dict[str, Any]:
     """Build the SQLite FTS5 BM25 + 128-dim dense SVD vector index and semantic clusters."""
     t0 = time.monotonic()
+    prog = StepProgress(5, prefix="[kb-index]", enabled=show_progress)
+    prog.emit(1, "collecting canonical @wom documents")
     docs = collect_estate_documents(root=root)
 
+    prog.emit(2, f"chunking {len(docs)} documents with contextual headings")
     all_chunks: list[dict[str, Any]] = []
     for doc_id, doc in enumerate(docs):
         doc_chunks = chunk_markdown(
@@ -676,6 +685,7 @@ def build_hybrid_index(
             ch["title"] = doc["title"]
             all_chunks.append(ch)
 
+    prog.emit(3, f"computing {embed_dim}-dim randomized SVD embeddings for {len(all_chunks)} chunks")
     chunk_texts = [f"{c['title']} {c['heading']}\n{c['content']}" for c in all_chunks]
     chunk_vecs, vocab, idf, projection = compute_lsa_embeddings(chunk_texts, dim=embed_dim)
     actual_dim = int(chunk_vecs.shape[1]) if chunk_vecs.ndim == 2 else embed_dim
@@ -692,6 +702,7 @@ def build_hybrid_index(
             if norm > 0.0:
                 doc_vecs[d_idx] = mean_v / norm
 
+    prog.emit(4, f"clustering {len(docs)} documents into {n_clusters} semantic roadmap themes")
     clusters = cluster_documents(
         doc_vecs=doc_vecs,
         doc_titles=[d["title"] for d in docs],
@@ -701,6 +712,8 @@ def build_hybrid_index(
         projection=projection,
         n_clusters=n_clusters,
     )
+
+    prog.emit(5, f"writing SQLite FTS5 + dense vector index to {db_path.name}")
 
     db_path.parent.mkdir(parents=True, exist_ok=True)
     if db_path.exists():
@@ -1087,7 +1100,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.cmd == "index":
-        res = build_hybrid_index(root=args.root, db_path=args.db, n_clusters=args.clusters)
+        res = build_hybrid_index(
+            root=args.root,
+            db_path=args.db,
+            n_clusters=args.clusters,
+            show_progress=not bool(args.json),
+        )
         if args.json:
             print(json.dumps(res, indent=2))
         else:

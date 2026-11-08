@@ -65,6 +65,7 @@ PRESET_REPOS = {
         "BodhiDev/bodhi8packages",
         "elayadesign/ai-design-skills",
         "cloudflare/security-audit-skill",
+        "agentclientprotocol/agent-client-protocol",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -87,6 +88,7 @@ PRESET_REPOS = {
         "BodhiDev/bodhi8packages",
         "elayadesign/ai-design-skills",
         "cloudflare/security-audit-skill",
+        "agentclientprotocol/agent-client-protocol",
     ],
 }
 
@@ -2678,6 +2680,7 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
     "bodhi8packages": "BodhiDev/bodhi8packages",
     "ai-design-skills": "elayadesign/ai-design-skills",
     "security-audit-skill": "cloudflare/security-audit-skill",
+    "agent-client-protocol": "agentclientprotocol/agent-client-protocol",
 }
 
 # Per-repository upstream contribution rules registry (`AgDR-0058` / `T655`)
@@ -2921,6 +2924,20 @@ UPSTREAM_CONTRIBUTION_RULES: dict[str, dict[str, Any]] = {
         "max_loc": None,
         "policy_note": "Cloudflare open-source repository (check CLA/template before opening PRs).",
     },
+    "agentclientprotocol/agent-client-protocol": {
+        "automation_mode": "auto",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": (
+            "Apache-2.0, no CLA required (CONTRIBUTING.md); requires Conventional Commits, Prettier formatting, "
+            "and typos spellcheck (`npm run spellcheck`)."
+        ),
+    },
 }
 
 
@@ -3015,6 +3032,24 @@ INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
 
 # Canonical Why / What For / How PR Proposals for Prepared Contribution Branches (T593 AC4 / T569 AC4 / T597)
 CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
+    "agentclientprotocol/agent-client-protocol:docs/add-orca-client": {
+        "ticket": "T676",
+        "title": "docs(clients): add Orca to Desktop, CLI, and Mobile clients",
+        "why": (
+            "Orca (`https://onorca.dev`, `https://github.com/stablyai/orca`) implements a native Agent Client Protocol (ACP) "
+            "client across its desktop workbench (`src/main/acp/`), `orca` CLI/daemon (`orcad`), and Orca Mobile companion "
+            "for running OpenCode, Antigravity, Grok, OMP, Claude Code, Codex, and Gemini CLI sessions across isolated Git "
+            "worktrees, but was not yet listed on `https://agentclientprotocol.com/get-started/clients`."
+        ),
+        "what_for": (
+            "Lists Orca under `## Desktop and Web`, `## CLI and TUI`, and `## Mobile clients` on `docs/get-started/clients.mdx` "
+            "so ACP users and agent authors can discover Orca's desktop, CLI, and mobile ACP client surfaces."
+        ),
+        "how": (
+            "- **`docs/get-started/clients.mdx`**: Adds alphabetical entries for `Orca` (`## Desktop and Web`), `Orca CLI` "
+            "(`## CLI and TUI`), and `Orca Mobile` (`## Mobile clients`) following the repository's Mintlify MDX formatting."
+        ),
+    },
     "mizorewww/laya-mlx:fix/native-serve-tests-and-torchless-calibration": {
         "ticket": "T569",
         "title": "fix: add native serve contract tests and torchless calibration fallback",
