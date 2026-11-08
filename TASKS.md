@@ -36,6 +36,8 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T675](.tasks/T675.md) | **P1** | **Project Role Templates (1-Head Indie vs 2-Head Default), Role/Hat Naming Matrix & Corporate vs RPG Theme** | web, api | openspec/specs/client-engagement/spec.md | ✅ **done** |
+| [T674](.tasks/T674.md) | **P1** | **Audit Orca v1.4.253 upstream PR portfolio, rescue Mac backup research, and build local hybrid BM25+vector knowledge index for roadmap synthesis** | tooling, web | — | ✅ **done** |
 | [T672](.tasks/T672.md) · [#671](https://github.com/casualuser/webomage.com/issues/671) | **P1** | **Persist order form & filter state across page refreshes, add Job Board recency filters (day/week/month), and surface submitted bug reports** | web, cp, lib, api | openspec/specs/public-surface-audit/spec.md | ✅ **done** |
 | [T668](.tasks/T668.md) | **P1** | **Eliminate remaining Gauge/Infisical deploy tool chatter at the source and surface filtered audit lines in deploy_logged** | web | null | ✅ **done** |
 | [T667](.tasks/T667.md) · [#667](https://github.com/casualuser/webomage.com/issues/667) | **P1** | **Purge internal ticket and AgDR numbers from user-facing UI copy and enforce a no-ticket-spam UI gate** | tooling, web, skills | — | ✅ **done** |

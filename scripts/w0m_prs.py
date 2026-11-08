@@ -2953,7 +2953,6 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
     "macos_release",                                        # bulwarkid/virtual-fido#48
     "feat/linux-desktop-hotkey-helper",                     # bulwarkid/virtual-fido#56
     "fix/native-serve-tests-and-torchless-calibration",     # mizorewww/laya-mlx#27
-    "feat/omlx-proxy-routing",                              # headroomlabs-ai/headroom#4597
     "feat/cross-worktree-tab-move",                         # stablyai/orca#37029
     "feat/agent-collaboration-board",                       # stablyai/orca#37030
     "feat/mobile-camera-capture-chat",                      # stablyai/orca#37031
@@ -2967,7 +2966,6 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
     "fix/webgl-atlas-version-desync-recovery",              # stablyai/orca#38857
     "fix/terminal-smooth-resize-and-replay",                # stablyai/orca#38858
     "fix/mobile-terminal-theme-enforcement",                # stablyai/orca#38859
-    "perf/terminal-chat-redraw-and-tab-caching",            # stablyai/orca#38861
     "fix/mobile-live-input-prompt-backload",                # stablyai/orca#38863
     "feat/system-and-docker-monitors",                      # stablyai/orca#38987
     "fix/linux-cli-stale-appimage-and-dispatcher",          # stablyai/orca#38991
@@ -2987,6 +2985,8 @@ INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
     "feat/audit-host-services",
     "feat/w0m-overlay-updater-feed",  # T619: webomage/orca self-healing overlay release feed runtime branch
     "fix/mobile-landscape-safe-area-insets",  # T662: superseded upstream by stablyai/orca#28749 SideSafeArea (PR #37034 closed)
+    "feat/omlx-proxy-routing",  # T669: merged upstream in headroomlabs-ai/headroom#4597 (2026-11-08)
+    "perf/terminal-chat-redraw-and-tab-caching",  # T669: closed upstream in stablyai/orca#38861 (#39462 covers DOM refresh gate; overlay/split candidate)
     "fix/gemma4-turboquant-sdpa256-bounds",
     "w0m/v1.7.0-astro",
     "PR_restructured",

@@ -1397,6 +1397,22 @@ decisions-check:
 decisions-test:
     @python3 scripts/tests/test_decisions_index.py
 
+# ── Hybrid Knowledge Vector & BM25 Index (T669 / T109 / AgDR-0055) ──────────
+kb-rescue *args:
+    @python3 scripts/w0m_kb_vector.py rescue-mac {{ args }}
+
+kb-index *args:
+    @python3 scripts/w0m_kb_vector.py index {{ args }}
+
+kb-search *args:
+    @python3 scripts/w0m_kb_vector.py search {{ args }}
+
+kb-clusters *args:
+    @python3 scripts/w0m_kb_vector.py clusters {{ args }}
+
+kb-vector-test:
+    @python3 scripts/tests/test_w0m_kb_vector.py && python3 scripts/tests/test_w0m_prs_orca_audit.py
+
 # ── Skills Platform (Level 1 & Level 2) ──────────────────────────────────────
 skills-sync mode="":
     @[ -x w0m-skills/node_modules/.bin/tsx ] || pnpm --dir w0m-skills install --frozen-lockfile --prefer-offline
