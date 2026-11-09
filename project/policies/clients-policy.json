@@ -909,30 +909,33 @@
         },
         {
           "service_key": "cloudflare",
-          "title": "Cloudflare R2 Engagement Vault & Pending pandatransfer.io Admin Delegation",
+          "title": "Cloudflare R2 Engagement Vault, w0m.xyz Email Routing (pandatransfer@w0m.xyz) & pandatransfer.io Delegation",
           "category": "storage",
           "reachability": "w0m_managed",
           "attribution_class": "attributable",
-          "current_plan": "Cloudflare Free Tier R2 ($0 egress) + pending pandatransfer.io Cloudflare Admin delegation to casualuser@gmail.com",
+          "current_plan": "Cloudflare Free Tier R2 ($0 egress) + w0m.xyz Email Routing (pandatransfer@w0m.xyz -> worker:wom7func) + pandatransfer.io Admin delegation",
           "monthly_base_usd": 0,
-          "unit_label": "Isolated R2 engagement vault prefix engagements/eg-pandatransfer + planned R2 off-site Restic backups (T664)",
+          "unit_label": "Isolated R2 engagement vault prefix engagements/eg-pandatransfer + pandatransfer@w0m.xyz role-driven tech mailing list + R2 off-site Restic backups (T664/T671)",
           "resources": [
             "r2:wom-engagement-vaults:engagements/eg-pandatransfer",
+            "email:pandatransfer@w0m.xyz->worker:wom7func",
+            "email:ops@pandatransfer.io->pandatransfer@w0m.xyz",
             "domain:pandatransfer.io"
           ]
         },
         {
           "service_key": "infisical",
-          "title": "Infisical Secrets Manager (118 Production & DR Secrets — Interim Webomage Workspace -> pandatransfer@w0m.xyz Org)",
+          "title": "Infisical Secrets Manager (118 Production & DR Secrets — pandatransfer@w0m.xyz Tech Identity & Vaulted TOTP)",
           "category": "secrets",
           "reachability": "external",
-          "external_reason": "118 production secrets (`/`, `/backend`, `/frontend`) vaulted in Webomage Infisical workspace b2313889-594b-45de-9885-f241b8686f4d while delegated to casualuser@gmail.com; scheduled to cut over to dedicated Infisical account/org on pandatransfer@w0m.xyz (T664).",
+          "external_reason": "118 production secrets (`/`, `/backend`, `/frontend`, plus vaulted Authenticator `*_TOTP_SEED`) managed under `pandatransfer@w0m.xyz` tech identity (`infisical profile: pandatransfer@w0m.xyz--pandatransfer`, workspace b2313889-594b-45de-9885-f241b8686f4d, T664).",
           "attribution_class": "shared-tier",
-          "current_plan": "Infisical Free (Workspace b2313889-594b-45de-9885-f241b8686f4d -> dedicated pandatransfer@w0m.xyz org in T664)",
+          "current_plan": "Infisical Free (Workspace b2313889-594b-45de-9885-f241b8686f4d / pandatransfer@w0m.xyz tech identity)",
           "monthly_base_usd": 0,
-          "unit_label": "118 vaulted runtime & Restic backup secrets across /, /backend, and /frontend",
+          "unit_label": "118 vaulted runtime, TOTP seed, and Restic backup secrets across /, /backend, and /frontend",
           "resources": [
-            "infisical:b2313889-594b-45de-9885-f241b8686f4d"
+            "infisical:b2313889-594b-45de-9885-f241b8686f4d",
+            "profile:pandatransfer@w0m.xyz--pandatransfer"
           ]
         },
         {
@@ -955,9 +958,10 @@
           "hats": [
             "pm",
             "tl",
-            "dev"
+            "dev",
+            "devops"
           ],
-          "note": "Aleksei operates PandaTransfer delivery under contractor webomage (`eg-pandatransfer`); third-party vendor delegation currently uses casualuser@gmail.com pending pandatransfer@w0m.xyz Email Routing & dedicated Infisical org cutover (T664). Client portal invite to pandatransferusa@gmail.com held until ready."
+          "note": "Aleksei operates PandaTransfer delivery under contractor webomage (`eg-pandatransfer`); `pandatransfer@w0m.xyz` routes via `worker:wom7func` to active `devops`/`pm` hat (`casualuser@gmail.com`) and granted client recipient (`pandatransferusa@gmail.com`) (T664/T671)."
         }
       },
       "identity": {
@@ -967,7 +971,7 @@
         "gh_account": "casualuser",
         "gh_config_dir": "~/.config/gh-w0m"
       },
-      "note": "T665 — PandaTransfer (`pandatransfer.io` / `app.pandatransfer.io`, iEXExchanger 11.7 PRO on VPS `91.108.190.210`, license support through `2027-03-02`) onboarded with client org `pandatransfer` (`pandatransferusa@gmail.com`, pre-magic-link unconverted lead with 0 active client hats until ready), engagement `eg-pandatransfer` vs contractor `webomage`, private repo `webomage/pandatransfer`, and interim `casualuser@gmail.com` delegation tracked for `pandatransfer@w0m.xyz` cutover in T664."
+      "note": "T665 / T664 / T671 — PandaTransfer (`pandatransfer.io` / `app.pandatransfer.io`, iEXExchanger 11.7 PRO on VPS `91.108.190.210`, license support through `2027-03-02`) onboarded with client org `pandatransfer` (`pandatransferusa@gmail.com`), engagement `eg-pandatransfer` vs contractor `webomage`, private repo `webomage/pandatransfer`, `pandatransfer@w0m.xyz` Cloudflare Email Routing (`worker:wom7func`), and vaulted TOTP / Infisical profile governance."
     }
   ],
   "state_surface_candidates": [
