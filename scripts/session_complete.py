@@ -817,12 +817,13 @@ def session_complete_lock(
     holder: str = "unknown",
     timeout_seconds: float = 2400.0,
     poll_interval: float = 1.0,
+    lock_filename: str = "w0m-session-complete.lock",
 ) -> Iterator[Path | None]:
     """Serialize live `session-complete` runs across worktrees via kernel `fcntl.flock` (T660)."""
     if lock_dir is None or not lock_dir.is_dir():
         yield None
         return
-    lock_path = lock_dir / "w0m-session-complete.lock"
+    lock_path = lock_dir / lock_filename
     fh = lock_path.open("a+", encoding="utf-8")
     acquired = False
     start = time.monotonic()
@@ -956,6 +957,8 @@ def sync_worktree_onto_origin_beta(worktree_root: Path) -> list[str]:
                     _git(repo_dir, "checkout", "HEAD", "--", gen_rel)
         elif rel_path == "w0m-web":
             for gen_web_rel in (
+                "docs/CODEMAP.md",
+                "docs/CP-FEATURE-INDEX.md",
                 "docs/STATUS-DASHBOARD.html",
                 "docs/SKILLS-CATALOG.md",
                 "project/catalog-entities.json",
@@ -1097,6 +1100,15 @@ def normalize_ticket_file(
     _frontmatter_set(fm_copy, "queue", "done")
     if not prev_closed_as:
         _frontmatter_set(fm_copy, "closed_as", "completed", after_key="status")
+    cur_type = _frontmatter_get(fm_copy, "type").lower()
+    if cur_type == "fix":
+        _frontmatter_set(fm_copy, "type", "bug")
+    elif cur_type in ("chore", "refactor", "perf", "test", "docs", "ci", "build"):
+        _frontmatter_set(fm_copy, "type", "task")
+    elif not cur_type:
+        _frontmatter_set(fm_copy, "type", "task", after_key="spec")
+    if not any(re.match(r"^gh_issue\s*:", ln.rstrip("\r\n")) for ln in fm_copy):
+        _frontmatter_set(fm_copy, "gh_issue", "", after_key="agent_id")
 
     rendered = "---\n" + "".join(fm_copy) + "---\n" + body_text
     changed = rendered != raw
@@ -1236,10 +1248,11 @@ def harvest_and_refresh_surfaces(
     *,
     set_name: str | None = None,
     dry_run: bool = False,
+    tickets_only: bool = False,
 ) -> dict[str, Any]:
     harvest_script = worktree_root / "scripts" / "lessons_query.py"
     harvest_output = ""
-    if harvest_script.is_file():
+    if not tickets_only and harvest_script.is_file():
         cmd = [sys.executable, str(harvest_script), "--harvest-friction"]
         if set_name:
             cmd.extend(["--tree-name", set_name])
@@ -1251,13 +1264,18 @@ def harvest_and_refresh_surfaces(
         generators: list[tuple[str, tuple[str, ...]]] = [
             ("tickets_frontmatter_sync", ("scripts/tickets_frontmatter_sync.py",)),
             ("tasks_render", ("scripts/tasks_render.py",)),
-            ("decisions_index", ("scripts/decisions_index.py",)),
-            ("catalog_sync", ("w0m-web/project/scripts/catalog_sync.py", "--write")),
-            ("skills_catalog_gen", ("w0m-web/project/scripts/skills_catalog_gen.py", "--write")),
-            ("cp_feature_index", ("w0m-web/project/scripts/cp_feature_index.py",)),
         ]
-        if (worktree_root / "w0m-web" / ".codegraph" / "graph.db").is_file():
-            generators.append(("codemap_gen", ("w0m-web/project/scripts/codemap_gen.py", "--write")))
+        if not tickets_only:
+            generators.extend(
+                [
+                    ("decisions_index", ("scripts/decisions_index.py",)),
+                    ("catalog_sync", ("w0m-web/project/scripts/catalog_sync.py", "--write")),
+                    ("skills_catalog_gen", ("w0m-web/project/scripts/skills_catalog_gen.py", "--write")),
+                    ("cp_feature_index", ("w0m-web/project/scripts/cp_feature_index.py",)),
+                ]
+            )
+            if (worktree_root / "w0m-web" / ".codegraph" / "graph.db").is_file():
+                generators.append(("codemap_gen", ("w0m-web/project/scripts/codemap_gen.py", "--write")))
         generators.append(("state_doctor", ("scripts/state_doctor.py", "--write")))
 
         for label, rel_cmd in generators:
@@ -1595,54 +1613,74 @@ def certify_estate_tree(
     return {"ok": True}
 
 
-def refresh_canonical_graph_union(canon_root: Path) -> dict[str, Any]:
+def _estate_head_shas(estate_root: Path) -> dict[str, str]:
+    shas: dict[str, str] = {}
+    for rel_path, repo_dir in _discover_estate_repos(estate_root):
+        if (repo_dir / ".git").exists():
+            res = _git(repo_dir, "rev-parse", "HEAD")
+            if res.returncode == 0 and res.stdout.strip():
+                shas[rel_path] = res.stdout.strip()
+    return shas
+
+
+def refresh_canonical_graph_union(
+    canon_root: Path,
+    *,
+    lock_dir: Path | None = None,
+    holder: str = "canonical",
+) -> dict[str, Any]:
     """Refresh canonical `codegraph` DBs, `~/.graphify/global-graph.json`, and `~/.w0m/knowledge-index/corpus.sqlite` (`T652`)."""
-    graph_script = canon_root / "scripts" / "graph_global.py"
-    if not graph_script.is_file():
-        return {"refreshed": False, "reason": "missing_graph_global_script"}
-    if shutil.which("graphify") is None:
-        return {"refreshed": False, "reason": "graphify_absent"}
+    with session_complete_lock(
+        lock_dir,
+        holder=holder,
+        lock_filename="w0m-graph-rebuild.lock",
+    ):
+        graph_script = canon_root / "scripts" / "graph_global.py"
+        if not graph_script.is_file():
+            return {"refreshed": False, "reason": "missing_graph_global_script"}
+        if shutil.which("graphify") is None:
+            return {"refreshed": False, "reason": "graphify_absent"}
 
-    codegraph_synced: list[str] = []
-    if shutil.which("codegraph") is not None:
-        for repo_rel in ("w0m-web", "w0m-api", "w0m-cf", "w0m-skills", "w0m-ext", "w0m-sec"):
-            repo_dir = canon_root / repo_rel
-            if (repo_dir / ".codegraph").is_dir():
-                cg_proc = _run(["codegraph", "sync"], cwd=repo_dir, check=False)
-                if cg_proc.returncode == 0:
-                    codegraph_synced.append(repo_rel)
+        codegraph_synced: list[str] = []
+        if shutil.which("codegraph") is not None:
+            for repo_rel in ("w0m-web", "w0m-api", "w0m-cf", "w0m-skills", "w0m-ext", "w0m-sec"):
+                repo_dir = canon_root / repo_rel
+                if (repo_dir / ".codegraph").is_dir():
+                    cg_proc = _run(["codegraph", "sync"], cwd=repo_dir, check=False)
+                    if cg_proc.returncode == 0:
+                        codegraph_synced.append(repo_rel)
 
-    kb_indexed = False
-    kb_script = canon_root / "scripts" / "w0m_kb_vector.py"
-    kb_db = Path.home() / ".w0m" / "knowledge-index" / "corpus.sqlite"
-    if kb_script.is_file() and kb_db.is_file():
-        print("[session-complete] Refreshing hybrid KB vector + BM25 index ...", file=sys.stderr, flush=True)
-        kb_proc = _run([sys.executable, str(kb_script), "index", "--root", str(canon_root)], cwd=canon_root, check=False)
-        kb_indexed = kb_proc.returncode == 0
+        kb_indexed = False
+        kb_script = canon_root / "scripts" / "w0m_kb_vector.py"
+        kb_db = Path.home() / ".w0m" / "knowledge-index" / "corpus.sqlite"
+        if kb_script.is_file() and kb_db.is_file():
+            print("[session-complete] Refreshing hybrid KB vector + BM25 index ...", file=sys.stderr, flush=True)
+            kb_proc = _run([sys.executable, str(kb_script), "index", "--root", str(canon_root)], cwd=canon_root, check=False)
+            kb_indexed = kb_proc.returncode == 0
 
-    cmd = [
-        sys.executable,
-        str(graph_script),
-        "--root",
-        str(canon_root),
-        "--auto-rebuild-stale",
-        "--stale-limit",
-        "0",
-    ]
-    print("[session-complete] Refreshing canonical knowledge-graph union ...", file=sys.stderr, flush=True)
-    proc = _run(cmd, cwd=canon_root, check=False)
-    if proc.returncode != 0:
-        tail = ((proc.stderr or "") + "\n" + (proc.stdout or "")).strip()[-2000:]
-        raise SessionCompleteError(
-            "graph_union_refresh_failed",
-            f"Canonical graph union refresh failed (exit {proc.returncode}):\n{tail}",
-        )
-    return {
-        "refreshed": True,
-        "codegraphSynced": codegraph_synced,
-        "kbVectorIndexed": kb_indexed,
-        "output": proc.stdout.strip()[-1200:],
-    }
+        cmd = [
+            sys.executable,
+            str(graph_script),
+            "--root",
+            str(canon_root),
+            "--auto-rebuild-stale",
+            "--stale-limit",
+            "0",
+        ]
+        print("[session-complete] Refreshing canonical knowledge-graph union ...", file=sys.stderr, flush=True)
+        proc = _run(cmd, cwd=canon_root, check=False)
+        if proc.returncode != 0:
+            tail = ((proc.stderr or "") + "\n" + (proc.stdout or "")).strip()[-2000:]
+            raise SessionCompleteError(
+                "graph_union_refresh_failed",
+                f"Canonical graph union refresh failed (exit {proc.returncode}):\n{tail}",
+            )
+        return {
+            "refreshed": True,
+            "codegraphSynced": codegraph_synced,
+            "kbVectorIndexed": kb_indexed,
+            "output": proc.stdout.strip()[-1200:],
+        }
 
 
 def precertify_web_prepush(worktree_root: Path) -> dict[str, Any]:
@@ -1704,6 +1742,8 @@ def land_and_cleanup_tree(
     *,
     remove_tree: bool = True,
     certify_after_land: bool = True,
+    pre_land_certified: bool = False,
+    defer_graph_refresh: bool = False,
 ) -> dict[str, Any]:
     wt_root = Path(ctx.worktree_root)
     canon_root = Path(ctx.canonical_root)
@@ -1712,6 +1752,7 @@ def land_and_cleanup_tree(
         ensure_prepush_deps(wt_root)
         if certify_after_land:
             precertify_web_prepush(wt_root)
+        pre_land_shas = _estate_head_shas(wt_root)
         agent_tree_py = wt_root / "w0m-web" / "project" / "scripts" / "agent_tree.py"
         if not agent_tree_py.is_file():
             raise SessionCompleteError("missing_agent_tree_script", f"Missing {agent_tree_py}")
@@ -1756,14 +1797,21 @@ def land_and_cleanup_tree(
 
         post_land_cert: dict[str, Any] | None = None
         if certify_after_land:
-            # If `land` did not rebase, this is an instant <0.1s cache HIT; if a concurrent push caused
-            # `land` to rebase onto a new `origin/beta` tip, this certifies the exact landed SHA set
-            # while `wt_root` is still clean and intact right before tree removal.
-            post_land_cert = certify_estate_tree(
-                wt_root,
-                canonical_root=canon_root,
-                source="session-complete-post-land",
-            )
+            post_land_shas = _estate_head_shas(wt_root)
+            if pre_land_certified and pre_land_shas and pre_land_shas == post_land_shas:
+                post_land_cert = {
+                    "ok": True,
+                    "cached": True,
+                    "reusedPreLandCert": True,
+                }
+            else:
+                # If a concurrent push caused `land` to rebase onto a new `origin/beta` tip,
+                # certify the exact landed SHA set while `wt_root` is still clean and intact.
+                post_land_cert = certify_estate_tree(
+                    wt_root,
+                    canonical_root=canon_root,
+                    source="session-complete-post-land",
+                )
 
         # CRITICAL: Switch working directory out of `~/.w0m/work/<set>/w0m` to `canonical_root`
         # BEFORE removing the agent tree so subsequent subprocesses never fail with dead `getcwd`.
@@ -1771,7 +1819,11 @@ def land_and_cleanup_tree(
 
         ff_targets = [rel_path for rel_path, _ in _discover_estate_repos(canon_root)]
         ff_outcomes = fast_forward_canonical_checkout(canon_root, ff_targets)
-        graph_refresh = refresh_canonical_graph_union(canon_root)
+        graph_refresh = (
+            {"refreshed": False, "deferred": True}
+            if defer_graph_refresh
+            else refresh_canonical_graph_union(canon_root)
+        )
 
         removed = False
         if remove_tree:
@@ -1805,7 +1857,12 @@ def land_and_cleanup_tree(
             _git(repo_dir, "rebase", BASE_REF, check=True)
         _git(repo_dir, "push", "origin", f"HEAD:{TARGET_BRANCH}", check=True)
         pushed[rel_path] = _git(repo_dir, "rev-parse", "HEAD").stdout.strip()
-    graph_refresh_direct = refresh_canonical_graph_union(canon_root) if pushed else {"refreshed": False, "reason": "nothing_pushed"}
+    if not pushed:
+        graph_refresh_direct: dict[str, Any] = {"refreshed": False, "reason": "nothing_pushed"}
+    elif defer_graph_refresh:
+        graph_refresh_direct = {"refreshed": False, "deferred": True}
+    else:
+        graph_refresh_direct = refresh_canonical_graph_union(canon_root)
     return {
         "mode": "canonical_direct_push",
         "pushed": pushed,
@@ -2126,13 +2183,23 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                 dry_run=False,
             )
             if gh_sync_info.get("mode") in ("full_sync", "issues_only_missing_project_scope"):
-                surfaces_info = harvest_and_refresh_surfaces(
+                prev_harvest = surfaces_info.get("harvestSummary", "")
+                prev_refreshed = list(surfaces_info.get("refreshed") or [])
+                ticket_surfaces = harvest_and_refresh_surfaces(
                     wt_root,
                     set_name=ctx.set_name,
                     dry_run=False,
+                    tickets_only=True,
                 )
+                for r_item in ticket_surfaces.get("refreshed") or []:
+                    if r_item not in prev_refreshed:
+                        prev_refreshed.append(r_item)
+                surfaces_info = {
+                    "harvestSummary": prev_harvest,
+                    "refreshed": prev_refreshed,
+                }
 
-            primary_tid = targets[0] if targets else "T0"
+            primary_tid = ", ".join(targets) if targets else "T0"
             committed = commit_dirty_repos(
                 wt_root,
                 primary_ticket=primary_tid,
@@ -2211,6 +2278,8 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                     ctx,
                     remove_tree=not bool(args.keep_tree),
                     certify_after_land=not bool(args.skip_gates),
+                    pre_land_certified=bool(deploy_cert_info),
+                    defer_graph_refresh=True,
                 )
                 if land_info.get("mode") == "canonical_direct_push" and not args.skip_gates:
                     canon_p = Path(ctx.canonical_root)
@@ -2232,6 +2301,13 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                 if resequenced_migrations:
                     _rollback_resequenced_migrations(wt_root, resequenced_migrations)
             raise
+
+    if not args.skip_land and isinstance(land_info.get("graphUnionRefresh"), dict) and land_info["graphUnionRefresh"].get("deferred"):
+        land_info["graphUnionRefresh"] = refresh_canonical_graph_union(
+            Path(ctx.canonical_root),
+            lock_dir=lock_dir,
+            holder=holder_label,
+        )
 
     summary = {
         "ok": True,

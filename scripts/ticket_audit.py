@@ -72,7 +72,7 @@ PATH_RE = re.compile(
     r"(?<![\w/.~@])((?:\.{1,2}/)?[\w.-]+(?:/[\w.-]+)+"
     r"\.(?:tsx|ts|json|jsonc|mjs|cjs|js|astro|svelte|py|sql|mmd|md|yaml|yml|sh|toml))(?![\w])"
 )
-IGNORE_PATHS = re.compile(r"^(https?:|node_modules/|package\.json$)")
+IGNORE_PATHS = re.compile(r"^(https?:|node_modules/|w0m-pr/|package\.json$)")
 
 # Anchored estate path regex for corpus-wide `--completed` and `--specs` verification
 ANCHORED_BACKTICK_RE = re.compile(r"`([^`\n]+)`")

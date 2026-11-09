@@ -860,6 +860,127 @@ class SessionCompleteTests(unittest.TestCase):
             self.assertTrue((api_wt / "supabase" / "migrations" / "20261108080001_ours.sql").is_file())
             self.assertIn("20261108080001_ours.sql", (wt / ".tasks" / "T3.md").read_text(encoding="utf-8"))
 
+    def test_harvest_and_refresh_surfaces_tickets_only_skips_non_ticket_generators(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_str:
+            wt = Path(tmp_str) / "w0m"
+            (wt / "scripts").mkdir(parents=True)
+            (wt / "w0m-web" / "project" / "scripts").mkdir(parents=True)
+            for rel in (
+                "scripts/lessons_query.py",
+                "scripts/tickets_frontmatter_sync.py",
+                "scripts/tasks_render.py",
+                "scripts/decisions_index.py",
+                "scripts/state_doctor.py",
+                "w0m-web/project/scripts/catalog_sync.py",
+                "w0m-web/project/scripts/skills_catalog_gen.py",
+                "w0m-web/project/scripts/cp_feature_index.py",
+            ):
+                (wt / rel).write_text("# stub\n", encoding="utf-8")
+
+            recorded_cmds: list[list[str]] = []
+
+            def fake_run(
+                cmd: list[str],
+                *,
+                cwd: Path,
+                check: bool = False,
+                timeout: float | None = None,
+            ) -> subprocess.CompletedProcess[str]:
+                recorded_cmds.append(list(cmd))
+                return subprocess.CompletedProcess(cmd, 0, "", "")
+
+            with mock.patch.object(sc, "_run", side_effect=fake_run):
+                res = sc.harvest_and_refresh_surfaces(wt, dry_run=False, tickets_only=True)
+
+            self.assertEqual(res["refreshed"], ["tickets_frontmatter_sync", "tasks_render", "state_doctor"])
+            self.assertFalse(any("catalog_sync.py" in " ".join(c) for c in recorded_cmds))
+            self.assertFalse(any("cp_feature_index.py" in " ".join(c) for c in recorded_cmds))
+
+    def test_agent_tree_can_regenerate_web_derived_files(self) -> None:
+        web_scripts = ROOT / "w0m-web" / "project" / "scripts"
+        if str(web_scripts) not in sys.path:
+            sys.path.insert(0, str(web_scripts))
+        import agent_tree as at  # noqa: PLC0415
+
+        with tempfile.TemporaryDirectory() as tmp_str:
+            web_dir = Path(tmp_str) / "w0m-web"
+            (web_dir / "project" / "scripts").mkdir(parents=True)
+            (web_dir / "project" / "scripts" / "codemap_gen.py").write_text("# stub\n", encoding="utf-8")
+            (web_dir / "project" / "scripts" / "cp_feature_index.py").write_text("# stub\n", encoding="utf-8")
+
+            self.assertTrue(
+                at._can_regenerate_web_files(web_dir, ["docs/CODEMAP.md", "docs/CP-FEATURE-INDEX.md"])
+            )
+            self.assertFalse(
+                at._can_regenerate_web_files(web_dir, ["docs/CODEMAP.md", "apps/cp/src/index.ts"])
+            )
+
+    def test_land_and_cleanup_tree_defers_graph_refresh_and_reuses_pre_land_cert(self) -> None:
+        ctx = sc.SessionContext(
+            cwd="/tmp/work/fast/w0m",
+            worktree_root="/tmp/work/fast/w0m",
+            canonical_root="/tmp/canon/w0m",
+            work_root="/tmp/work",
+            in_agent_tree=True,
+            set_name="fast",
+            agent_id="agy:fast",
+            conversation_id=None,
+            agent_pid=None,
+            terminal_handle=None,
+            tab_id=None,
+            pane_key=None,
+        )
+        with tempfile.TemporaryDirectory() as tmp_str:
+            tmp = Path(tmp_str)
+            wt = tmp / "work" / "fast" / "w0m"
+            canon = tmp / "canon" / "w0m"
+            (wt / "w0m-web" / "project" / "scripts").mkdir(parents=True)
+            (canon / "w0m-web" / "project" / "scripts").mkdir(parents=True)
+            (wt / "w0m-web" / "project" / "scripts" / "agent_tree.py").write_text("# stub\n", encoding="utf-8")
+            (canon / "w0m-web" / "project" / "scripts" / "agent_tree.py").write_text("# stub\n", encoding="utf-8")
+            ctx = sc.SessionContext(
+                cwd=str(wt),
+                worktree_root=str(wt),
+                canonical_root=str(canon),
+                work_root=str(tmp / "work"),
+                in_agent_tree=True,
+                set_name="fast",
+                agent_id="agy:fast",
+                conversation_id=None,
+                agent_pid=None,
+                terminal_handle=None,
+                tab_id=None,
+                pane_key=None,
+            )
+            orig_cwd = Path.cwd()
+            try:
+                with (
+                    mock.patch.object(sc, "ensure_prepush_deps"),
+                    mock.patch.object(sc, "precertify_web_prepush", return_value={"status": "already_certified"}),
+                    mock.patch.object(sc, "_estate_head_shas", return_value={".": "abc123", "w0m-web": "def456"}),
+                    mock.patch.object(
+                        sc,
+                        "_run",
+                        return_value=subprocess.CompletedProcess(["land"], 0, "landed ok\n", ""),
+                    ),
+                    mock.patch.object(sc, "fast_forward_canonical_checkout", return_value={".": "fast_forwarded"}),
+                    mock.patch.object(sc, "certify_estate_tree") as mock_cert,
+                    mock.patch.object(sc, "refresh_canonical_graph_union") as mock_graph,
+                ):
+                    info = sc.land_and_cleanup_tree(
+                        ctx,
+                        remove_tree=False,
+                        certify_after_land=True,
+                        pre_land_certified=True,
+                        defer_graph_refresh=True,
+                    )
+                mock_cert.assert_not_called()
+                mock_graph.assert_not_called()
+                self.assertEqual(info["graphUnionRefresh"], {"refreshed": False, "deferred": True})
+                self.assertTrue(info["postLandCert"]["reusedPreLandCert"])
+            finally:
+                os.chdir(str(orig_cwd))
+
 
 if __name__ == "__main__":
     unittest.main()

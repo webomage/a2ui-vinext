@@ -33,6 +33,8 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T688](.tasks/T688.md) | **P1** | **Accelerate session-complete and agent-tree landing (auto-resolve w0m-web derived docs, decouple graph rebuild lock, and fast-path certification)** | web, tooling | null | ✅ **done** |
+| [T687](.tasks/T687.md) | **P1** | **Orca Mobile Live Input: replace non-functional leading keyboard icon with show/hide password mask button** | tooling | null | ✅ **done** |
 | [T686](.tasks/T686.md) | **P1** | **Cloudflare Computer (@cloudflare/computer) hybrid isolate-first DO SQLite workspace & 3-backend runtime integration** | cf, web, tooling | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T685](.tasks/T685.md) | **P1** | **Maintain webomage/just (w0m-pr/just) overlay fork with critical bug/feature patch stack, local binary installation, TabLinux WASM package, and unified upstream release sync** | tooling, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T684](.tasks/T684.md) | **P0** | **Admin & PM CP toolkit mounting (toolkit.crew_seo_geo_tablinux) + Orca 1.4.214 WASM package for LinuxOnTab (linuxontab.com/packages/)** | tooling, web, ext | — | ✅ **done** |
