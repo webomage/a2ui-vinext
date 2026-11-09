@@ -2249,9 +2249,15 @@ mistral-scope-test:
 progress-bar-test:
     @python3 scripts/tests/test_progress_bar.py
 
-# ── LinuxOnTab (`w0m-pr/linuxontab`) Local COOP/COEP Dev Server (T678) ─────────
+# ── LinuxOnTab (`w0m-pr/linuxontab`) TypeScript Build, Test & Server (T678) ─────
 linuxontab-serve port="8770" *args:
     @python3 scripts/linuxontab_serve.py "{{ port }}" {{ args }}
+
+linuxontab-build *args:
+    @node w0m-pr/linuxontab/cloudflare-build.ts {{ args }}
+
+linuxontab-test:
+    @node --test w0m-pr/linuxontab/cloudflare.test.ts
 
 # ── Same-Host ACP Discovery, Crew SEO/GEO/Security & Enterprise Obs (T681) ────
 acp-discover *args:
@@ -2265,6 +2271,29 @@ seo-geo-scan url="https://webomage.com" *args:
 
 acp-host-test:
     @pytest -q scripts/tests/test_acp_host_discovery.py
+
+# ── Forked AI Tools Catalog, SkillSpector, Ontology Graph & AI-DLC (T673) ─────
+fork-catalog-status:
+    @python3 scripts/fork_catalog_sync.py status
+
+skills-security-check:
+    @python3 scripts/skill_spector_check.py
+
+skills-optimize:
+    @python3 scripts/skill_spector_check.py --optimize-report
+
+ontology-ask question="Which Supabase SQL migration and RBAC hat capability govern service audit_log tables?":
+    @python3 scripts/fork_catalog_sync.py ontology-ask "{{ question }}"
+
+agent-beacon-status ticket="T673" stage="verify":
+    @python3 scripts/fork_catalog_sync.py beacon --ticket "{{ ticket }}" --stage "{{ stage }}"
+
+aidlc-gate-plan type="feat" files="4":
+    @python3 scripts/fork_catalog_sync.py gate-plan --type "{{ type }}" --files "{{ files }}"
+
+fork-catalog-test:
+    @python3 scripts/tests/test_fork_catalog_sync.py
+
 
 
 

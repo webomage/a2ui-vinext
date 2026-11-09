@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Serve `w0m-pr/linuxontab` locally with COOP/COEP headers for `v86` SharedArrayBuffer (`T678`)."""
+"""Serve `w0m-pr/linuxontab` locally with COOP/COEP headers for `v86` SharedArrayBuffer (`T678`).
+
+Delegates to the canonical TypeScript server (`w0m-pr/linuxontab/cloudflare-serve.ts`) when `node`
+is available, with a hardened Python fallback.
+"""
 
 from __future__ import annotations
 
@@ -7,6 +11,7 @@ import argparse
 import http.server
 import os
 from pathlib import Path
+import shutil
 import socketserver
 import sys
 
@@ -30,6 +35,13 @@ class CoopCoepHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self) -> None:
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
         self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
+        self.send_header("Cross-Origin-Resource-Policy", "cross-origin")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
+        self.send_header(
+            "Content-Security-Policy",
+            "frame-ancestors 'self' http://127.0.0.1:* http://localhost:* https://*.webomage.com",
+        )
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
@@ -44,9 +56,29 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     lot_dir = resolve_linuxontab_dir()
+    ts_server = lot_dir / "cloudflare-serve.ts"
+    node_bin = shutil.which("node")
+    if node_bin and ts_server.is_file():
+        cmd = [
+            node_bin,
+            str(ts_server),
+            str(args.port),
+            "--root",
+            str(lot_dir),
+            "--module",
+            args.module,
+            "--project",
+            args.project,
+            "--env",
+            args.env,
+        ]
+        if args.dry_run:
+            cmd.append("--dry-run")
+        os.execv(node_bin, cmd)
+
     url = (
         f"http://127.0.0.1:{args.port}/shell/"
-        f"?autoboot=1&iso=alpine.iso&k7={args.module}&project={args.project}&env={args.env}"
+        f"?autoboot=1&iso=alpine.iso&net=off&k7={args.module}&project={args.project}&env={args.env}"
     )
     print(f"LinuxOnTab Root : {lot_dir}")
     print(f"Active URL      : {url}")
