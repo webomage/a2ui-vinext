@@ -19,9 +19,9 @@ import skill_spector_check  # noqa: E402
 class TestT673ForkedAiTools(unittest.TestCase):
     def test_ac1_fork_governance_catalog_has_all_33_webomage_repos(self) -> None:
         report = fork_catalog_sync.verify_fork_governance()
-        self.assertEqual(report["total_repos"], 33)
+        self.assertEqual(report["total_repos"], 34)
         self.assertTrue(report["valid"], msg=f"Violations: {report['violations']}")
-        self.assertEqual(report["tracks"], {"A": 3, "B": 6, "C": 3, "D": 5, "E": 11, "F": 5})
+        self.assertEqual(report["tracks"], {"A": 3, "B": 6, "C": 3, "D": 5, "E": 12, "F": 5})
 
         bad = [
             {
@@ -117,6 +117,16 @@ class TestT673ForkedAiTools(unittest.TestCase):
         self.assertEqual(guarded["profile"], "full-sdlc-guarded")
         self.assertIn("migration-conflict-check", guarded["extra_gates"])
         self.assertIn("skills-security-check", guarded["extra_gates"])
+
+    def test_cloudflare_computer_backend_planner(self) -> None:
+        iso = fork_catalog_sync.plan_cloudflare_computer_backend("just fork-catalog-status | jq '.valid'")
+        self.assertEqual(iso["selected_backend"], "worker-shell")
+        self.assertFalse(iso["requires_container"])
+        self.assertIn("just-wasm", iso["worker_shell_groups"])
+
+        cnt = fork_catalog_sync.plan_cloudflare_computer_backend("semgrep --config auto /workspace/repo")
+        self.assertEqual(cnt["selected_backend"], "container")
+        self.assertTrue(cnt["requires_container"])
 
 
 if __name__ == "__main__":

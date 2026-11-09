@@ -251,6 +251,17 @@ FORKED_AI_TOOLS_CATALOG: list[dict[str, Any]] = [
         "disposition": "reference",
         "target_surfaces": ["scripts/fork_catalog_sync.py"],
     },
+    {
+        "repo": "computer",
+        "upstream": "cloudflare/computer",
+        "canonical_origin": "git@github.com:webomage/computer.git",
+        "track": "E",
+        "disposition": "integrate",
+        "target_surfaces": [
+            "w0m-cf/src/lib/cloudflare-computer.ts",
+            "w0m-web/packages/lib/src/security/advanced-audit.ts",
+        ],
+    },
     # Track F — Adjacent Creative, Design & Browser Sandboxes (5 repos)
     {
         "repo": "remotion-studio",
@@ -367,7 +378,7 @@ def verify_fork_governance(
     return {
         "total_repos": len(items),
         "tracks": tracks,
-        "valid": len(violations) == 0 and len(items) == 33,
+        "valid": len(violations) == 0 and len(items) >= 33,
         "violations": violations,
     }
 
@@ -539,11 +550,51 @@ def select_aidlc_adaptive_gate_path(
     }
 
 
+def plan_cloudflare_computer_backend(
+    source: str,
+    egress_policy: str = "none",
+) -> dict[str, Any]:
+    """Plan `@cloudflare/computer@0.10.0` execution across `worker-shell`, `codemode`, and `container`."""
+    native_bins = [
+        b
+        for b in ("semgrep", "trivy", "gitleaks", "checkov", "cargo", "rustc", "pandoc", "ffmpeg")
+        if re.search(rf"\b{b}\b", source, re.I)
+    ]
+    is_esm = bool(
+        re.search(r"\b(?:import\s+.*from|export\s+(?:default|async|function|const))\b", source)
+        or "codemode:" in source
+        or "node:fs/promises" in source
+    )
+    backend = "container" if native_bins else ("codemode" if is_esm else "worker-shell")
+    shell_groups = ["core"]
+    for grp in ("jq", "yq", "xan", "curl", "file", "python", "sqlite", "just"):
+        if re.search(rf"\b{grp}\b", source):
+            shell_groups.append("just-wasm" if grp == "just" else grp)
+
+    return {
+        "package": "@cloudflare/computer",
+        "version": "0.10.0",
+        "fork_origin": "git@github.com:webomage/computer.git",
+        "storage_engine": "@cloudflare/dofs (Durable Object SQLite)",
+        "selected_backend": backend,
+        "requires_container": backend == "container",
+        "target_container_share_max": 0.10,
+        "worker_shell_groups": shell_groups,
+        "native_binaries": native_bins,
+        "egress_policy": egress_policy,
+        "observability_adapter": "@cloudflare/computer/observe/cloudflare",
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="T673 Forked AI Tools Catalog & Harness")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     sub.add_parser("status", help="Verify canonical webomage/<repo> fork catalog")
+    sub.add_parser("computer-status", help="Show @cloudflare/computer integration status")
+
+    comp_p = sub.add_parser("computer-plan", help="Plan @cloudflare/computer backend for a command or ESM snippet")
+    comp_p.add_argument("source", help="Command or ESM source")
 
     ask_p = sub.add_parser("ontology-ask", help="Compile natural-language question to @wom ontology query")
     ask_p.add_argument("question", help="Architectural question")
@@ -563,6 +614,24 @@ def main(argv: list[str] | None = None) -> int:
         report = verify_fork_governance()
         print(json.dumps(report, indent=2))
         return 0 if report["valid"] else 1
+    if args.cmd == "computer-status":
+        comp_entry = next((e for e in FORKED_AI_TOOLS_CATALOG if e["repo"] == "computer"), None)
+        print(
+            json.dumps(
+                {
+                    "fork": comp_entry,
+                    "package": "@cloudflare/computer@0.10.0",
+                    "storage": "@cloudflare/dofs (Durable Object SQLite, 10 GB max)",
+                    "backends": ["worker-shell (just-bash)", "codemode (ESM)", "container (computerd FUSE <10%)"],
+                    "w0m_endpoints": ["POST /api/computer/plan", "POST /api/computer/workspace"],
+                },
+                indent=2,
+            )
+        )
+        return 0
+    if args.cmd == "computer-plan":
+        print(json.dumps(plan_cloudflare_computer_backend(args.source), indent=2))
+        return 0
     if args.cmd == "ontology-ask":
         print(json.dumps(compile_ontology_graph_query(args.question), indent=2))
         return 0

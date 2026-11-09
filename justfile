@@ -2291,6 +2291,12 @@ agent-beacon-status ticket="T673" stage="verify":
 aidlc-gate-plan type="feat" files="4":
     @python3 scripts/fork_catalog_sync.py gate-plan --type "{{ type }}" --files "{{ files }}"
 
+computer-status:
+    @python3 scripts/fork_catalog_sync.py computer-status
+
+computer-plan source="just fork-catalog-status | jq '.valid'":
+    @python3 scripts/fork_catalog_sync.py computer-plan "{{ source }}"
+
 fork-catalog-test:
     @python3 scripts/tests/test_fork_catalog_sync.py
 

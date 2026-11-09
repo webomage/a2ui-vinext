@@ -35,6 +35,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T686](.tasks/T686.md) | **P1** | **Cloudflare Computer (@cloudflare/computer) hybrid isolate-first DO SQLite workspace & 3-backend runtime integration** | cf, web, tooling | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T685](.tasks/T685.md) | **P1** | **Maintain webomage/just (w0m-pr/just) overlay fork with critical bug/feature patch stack, local binary installation, TabLinux WASM package, and unified upstream release sync** | tooling, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T684](.tasks/T684.md) | **P0** | **Admin & PM CP toolkit mounting (toolkit.crew_seo_geo_tablinux) + Orca 1.4.214 WASM package for LinuxOnTab (linuxontab.com/packages/)** | tooling, web, ext | — | ✅ **done** |
 | [T683](.tasks/T683.md) | **P1** | **Auto-Provision, Read, Update, and Guard All AI-DLC & SDLC Data Layers Across Worktrees and Session Wrap-Up** | tooling, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |

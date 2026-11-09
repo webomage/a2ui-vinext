@@ -46,18 +46,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `beta` | **1** | 0 | `050cf41f5` |
-| `w0m-api` | `beta` | 0 | 0 | `a208b76` |
-| `w0m-cf` | `beta` | 0 | 0 | `67a82e5` |
-| `w0m-skills` | `beta` | 0 | 0 | `ffbb624` |
-| `w0m-ext` | `beta` | 0 | 0 | `4450d69` |
-| `w0m-sec` | `beta` | 0 | 0 | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `beta` | 0 | 0 | `72fc983` |
+| `w0m-web` | `agent/cloudflare-computer` | 0 | **n/a — NO UPSTREAM** | `06ab49578` |
+| `w0m-api` | `agent/cloudflare-computer` | 0 | **n/a — NO UPSTREAM** | `a208b76` |
+| `w0m-cf` | `agent/cloudflare-computer` | 0 | **n/a — NO UPSTREAM** | `2d44cfa` |
+| `w0m-skills` | `agent/cloudflare-computer` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
+| `w0m-ext` | `agent/cloudflare-computer` | 0 | **n/a — NO UPSTREAM** | `4450d69` |
+| `w0m-sec` | `agent/cloudflare-computer` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/cloudflare-computer` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 7 open · 685 TASKS.md rows · 317/685 specced (2/7 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 7 open · 686 TASKS.md rows · 318/686 specced (2/7 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T17"],"repos":{"w0m-api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"a208b76","unpushed":0},"w0m-cf":{"branch":"beta","dirty":0,"has_upstream":true,"head":"67a82e5","unpushed":0},"w0m-ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"4450d69","unpushed":0},"w0m-mlx/w0m-mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":0},"w0m-sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":0},"w0m-skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":0},"w0m-web":{"branch":"beta","dirty":1,"has_upstream":true,"head":"050cf41f5","unpushed":0}},"tickets":{"open":7,"rowless_open":[],"rows":685,"specced":317,"specced_open":2,"total":685,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T17"],"repos":{"w0m-api":{"branch":"agent/cloudflare-computer","dirty":0,"has_upstream":true,"head":"a208b76","unpushed":null},"w0m-cf":{"branch":"agent/cloudflare-computer","dirty":0,"has_upstream":true,"head":"2d44cfa","unpushed":null},"w0m-ext":{"branch":"agent/cloudflare-computer","dirty":0,"has_upstream":true,"head":"4450d69","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/cloudflare-computer","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/cloudflare-computer","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/cloudflare-computer","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/cloudflare-computer","dirty":0,"has_upstream":true,"head":"06ab49578","unpushed":null}},"tickets":{"open":7,"rowless_open":[],"rows":686,"specced":318,"specced_open":2,"total":686,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -117,7 +117,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (11):
+#### Completed today (12):
 
 - **T618** — Backport Bodhi/Moksha 8-zone window snapping + desktop icon fixes and prepare 9 upstream PR branches across Moksha, Bodhi, Orca, and Virtual-FIDO ((agy:t618-moksha-snap-size): Updated w0m-pr/moksha/src/bin/e_border.c (dd45f9a75 on beta, pushed to webomage/moksha) and 0004-feat-border-preserve-directional-snap-size-on-mouse-.patch so mouse drag-out from all 8 directional snap zones ((bd->maximized & E_MAXIMIZE_DIRECTION) > E_MAXIMIZE_BOTH) preserves the snapped window size and cursor grab offset while keyboard/menu unmaximize restores pre-snap dimensions; rebuilt and installed ~/.local/share/moksha-backport/moksha_0.4.2-4+w0m1_amd64.deb (e4d66b3e3304bb0bcd6fbd448b0c86b6). Report: .agents/reports/2026-11-08-tablinux-cloudflare-ts-and-security-audit.md.)
 - **T669** — Pre-renumber worktree ticket record for T672 (order form & filter state persistence, Job Board recency filters, and submitted bug reports) (Reconciled .tasks/T669.md with GitHub Issue #669 (1:1 parity with [[T672]] delivery). Lessons: Recorded in LESSONS.md (defer sequential T## allocation until serialized worktree offload).)
@@ -130,6 +130,7 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T677** — Make Orca a first-class ACP client on agentclientprotocol.com, wire per-project Mistral Free-Tier accounts with private Obsidian data scope, scaffold k7env & k7pwd Rust TUIs, and ship multi-step CLI progress bars (Covered by T302, T307, T36, AgDR-0025, and AgDR-0055)
 - **T678** — Deferred worktree ticket numbering (DRAFT-<slug> -> T<N>), GitHub Issue #669-#677 1:1 sync, Orca-style project repo/ticket/milestone connections, and Overview completion dashboard (Completed AC1–AC4 in isolated worktree agent/gh-ticket-sync-deferred-id and verified 17/17 test_session_complete.py + 148/148 apps/cp Vitest tests + 43/43 test_client_page_tenancy.py tests. Lessons: Recorded in LESSONS.md (DEFER WORKTREE SEQUENTIAL TICKET ID ALLOCATION (DRAFT-<slug> -> T<N>) UNTIL SERIALIZED OFFLOAD...).)
 - **T681** — Fix T675 role_templates.min_unit_id migration bug, enforce static + transactional pending-migration dry-run gates, and auto-resequence parallel worktree migrations on land (Completed AC1–AC5 in isolated worktree agent/migration-conflict-guard, verified live just db-drift-check transactional ROLLBACK dry-run (2 pending migrations verified with 0 persisted schema_change_log mutations), and passed test_supabase_surface_drift_check.py (3/3), test_migration_versions_unique.py (21/21), test_session_complete.py (18/18), and test_deploy_chain_order.py (7/7). Lessons: Recorded in LESSONS.md (VALIDATE SQL MIGRATION INSERT COLUMNS CHRONOLOGICALLY, DRY-RUN PENDING MIGRATIONS INSIDE A ROLLED-BACK TRANSACTION...).)
+- **T686** — Cloudflare Computer (@cloudflare/computer) hybrid isolate-first DO SQLite workspace & 3-backend runtime integration ((agy:cloudflare-computer): Forked cloudflare/computer (@cloudflare/computer@0.10.0) to github.com/webomage/computer, implemented 3-backend isolate-first execution planner (worker-shell / codemode / container) and DO SQLite @cloudflare/dofs workspace manifest builder across w0m-cf/src/lib/cloudflare-computer.ts, w0m-cf/src/index.ts, w0m-web/packages/lib/src/security/advanced-audit.ts, and scripts/fork_catalog_sync.py.)
 
 ## 3. Other open threads (in TASKS.md)
 
