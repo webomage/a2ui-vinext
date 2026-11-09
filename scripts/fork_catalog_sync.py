@@ -262,7 +262,7 @@ FORKED_AI_TOOLS_CATALOG: list[dict[str, Any]] = [
             "w0m-web/packages/lib/src/security/advanced-audit.ts",
         ],
     },
-    # Track F — Adjacent Creative, Design & Browser Sandboxes (5 repos)
+    # Track F — Adjacent Creative, Design & Browser Sandboxes + UI/UX Audit Skills (9 repos)
     {
         "repo": "remotion-studio",
         "upstream": "remotion-dev/remotion-studio",
@@ -302,6 +302,50 @@ FORKED_AI_TOOLS_CATALOG: list[dict[str, Any]] = [
         "track": "F",
         "disposition": "reference",
         "target_surfaces": ["scripts/fork_catalog_sync.py"],
+    },
+    {
+        "repo": "ui-ux-pro-max-skill",
+        "upstream": "nextlevelbuilder/ui-ux-pro-max-skill",
+        "canonical_origin": "git@github.com:webomage/ui-ux-pro-max-skill.git",
+        "track": "F",
+        "disposition": "integrate",
+        "target_surfaces": [
+            "w0m-skills/skills/webomage-design/SKILL.md",
+            "w0m-web/packages/lib/src/security/advanced-audit.ts",
+        ],
+    },
+    {
+        "repo": "agent-skills",
+        "upstream": "vercel-labs/agent-skills",
+        "canonical_origin": "git@github.com:webomage/agent-skills.git",
+        "track": "F",
+        "disposition": "integrate",
+        "target_surfaces": [
+            "w0m-skills/skills/webomage-design/SKILL.md",
+            "w0m-web/packages/lib/src/security/advanced-audit.ts",
+        ],
+    },
+    {
+        "repo": "redesign-skill",
+        "upstream": "elayadesign/redesign-skill",
+        "canonical_origin": "git@github.com:webomage/redesign-skill.git",
+        "track": "F",
+        "disposition": "integrate",
+        "target_surfaces": [
+            "w0m-skills/skills/webomage-design/SKILL.md",
+            "w0m-web/packages/lib/src/security/advanced-audit.ts",
+        ],
+    },
+    {
+        "repo": "ui-ux-suite",
+        "upstream": "Aboudjem/ui-ux-suite",
+        "canonical_origin": "git@github.com:webomage/ui-ux-suite.git",
+        "track": "F",
+        "disposition": "integrate",
+        "target_surfaces": [
+            "w0m-skills/skills/webomage-design/SKILL.md",
+            "w0m-web/packages/lib/src/security/advanced-audit.ts",
+        ],
     },
 ]
 
@@ -583,6 +627,212 @@ def plan_cloudflare_computer_backend(
         "native_binaries": native_bins,
         "egress_policy": egress_policy,
         "observability_adapter": "@cloudflare/computer/observe/cloudflare",
+    }
+
+
+TOP_10_UI_UX_AUDIT_SKILLS_EVALUATION: list[dict[str, Any]] = [
+    {
+        "rank": 1,
+        "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+        "stars": 147345,
+        "fork_origin": "git@github.com:webomage/ui-ux-pro-max-skill.git",
+        "selected": True,
+        "role": "67 UI styles, 96 palettes, 57 font pairings, 99 UX guidelines & industry reasoning rules",
+    },
+    {
+        "rank": 2,
+        "repo": "vercel-labs/agent-skills",
+        "stars": 33776,
+        "fork_origin": "git@github.com:webomage/agent-skills.git",
+        "selected": True,
+        "role": "100+ Web Interface Guidelines (accessibility, focus states, forms, typography, CWV)",
+    },
+    {
+        "rank": 3,
+        "repo": "elayadesign/redesign-skill",
+        "stars": 531,
+        "fork_origin": "git@github.com:webomage/redesign-skill.git",
+        "selected": True,
+        "role": "Taste-driven redesign workflow, 6-state component matrix, anti-slop rules & card grid rhythm",
+    },
+    {
+        "rank": 4,
+        "repo": "Aboudjem/ui-ux-suite",
+        "stars": 120,
+        "fork_origin": "git@github.com:webomage/ui-ux-suite.git",
+        "selected": True,
+        "role": "12-dimension UI/UX design audit scorecard, WCAG 2.2 AA & APCA perceptual contrast linter",
+    },
+    {
+        "rank": 5,
+        "repo": "dequelabs/axe-core",
+        "stars": 16800,
+        "fork_origin": None,
+        "selected": True,
+        "role": "WCAG 2.2 AA/AAA rule taxonomy integrated via @axe-core/playwright in w0m-web",
+    },
+    {
+        "rank": 6,
+        "repo": "GoogleChrome/lighthouse",
+        "stars": 28600,
+        "fork_origin": None,
+        "selected": True,
+        "role": "Core Web Vitals (LCP/INP/CLS) & mobile/desktop audit engine in Tier 1 Free Audit",
+    },
+    {
+        "rank": 7,
+        "repo": "stylelint/stylelint",
+        "stars": 11100,
+        "fork_origin": None,
+        "selected": False,
+        "role": "CSS rule ideas adopted into zero-execution AST token linter",
+    },
+    {
+        "rank": 8,
+        "repo": "reg-viz/reg-suit",
+        "stars": 2300,
+        "fork_origin": None,
+        "selected": False,
+        "role": "Superseded by w0m-pixel-clone 3-breakpoint visual diff loop (<=2% mismatch)",
+    },
+    {
+        "rank": 9,
+        "repo": "lost-pixel/lost-pixel",
+        "stars": 1950,
+        "fork_origin": None,
+        "selected": False,
+        "role": "Requires container browser execution; superseded by read-only AST + w0m-pixel-clone",
+    },
+    {
+        "rank": 10,
+        "repo": "pa11y/pa11y",
+        "stars": 8600,
+        "fork_origin": None,
+        "selected": False,
+        "role": "Puppeteer CLI superseded by Playwright + zero-execution AST WCAG 2.2 checks",
+    },
+]
+
+
+def run_readonly_repo_and_skill_audit(
+    files: list[dict[str, str]],
+    *,
+    github_repo_shared: bool = True,
+) -> dict[str, Any]:
+    """Run a 100% read-only, zero-execution static AST/source audit of a shared GitHub repo & its skills."""
+    if not github_repo_shared:
+        return {
+            "status": "locked_requires_github_repo",
+            "execution_mode": "zero_exec_readonly_ast",
+            "sandbox_executed": False,
+            "github_repo_shared": False,
+            "overall_ui_score": 0,
+            "skill_security_status": "locked",
+            "skill_findings": [],
+            "ui_findings": [],
+        }
+
+    skill_findings: list[dict[str, Any]] = []
+    ui_findings: list[dict[str, Any]] = []
+
+    for f in files:
+        path = str(f.get("path", ""))
+        content = str(f.get("content", ""))
+        lower_path = path.lower()
+
+        # 1. Read-Only Zero-Execution Skill & Repo Security Checks (never execute code!)
+        if re.search(r"ignore\s+(?:all\s+)?(?:previous|prior)\s+instructions", content, re.I):
+            skill_findings.append(
+                {
+                    "id": "RO-SKILL-001",
+                    "severity": "critical",
+                    "file": path,
+                    "title": "Prompt-Injection / Instruction Override Pattern in Skill or Repo",
+                    "remediation": "Remove instruction-override directives from SKILL.md or repository prompt files.",
+                }
+            )
+        if re.search(r"[\u202a-\u202e\u2066-\u2069]", content):
+            skill_findings.append(
+                {
+                    "id": "RO-SKILL-002",
+                    "severity": "critical",
+                    "file": path,
+                    "title": "Trojan-Source Bidirectional Unicode Control Character",
+                    "remediation": "Strip bidirectional Unicode control characters (U+202A..U+202E, U+2066..U+2069).",
+                }
+            )
+        if lower_path.endswith("package.json") and re.search(
+            r'"(?:preinstall|install|postinstall)"\s*:\s*"[^"]*(?:curl|wget|bash|sh\s+-c|nc\s|node\s+-e)',
+            content,
+            re.I,
+        ):
+            skill_findings.append(
+                {
+                    "id": "RO-SKILL-003",
+                    "severity": "high",
+                    "file": path,
+                    "title": "Dangerous package.json Lifecycle Hook Detected Read-Only",
+                    "remediation": "Remove remote/shell execution from preinstall/install/postinstall scripts.",
+                }
+            )
+        if re.search(r"(?:curl|wget)\s+[^\n|]+\|\s*(?:ba)?sh\b", content, re.I):
+            skill_findings.append(
+                {
+                    "id": "RO-SKILL-004",
+                    "severity": "high",
+                    "file": path,
+                    "title": "Remote Pipe-to-Shell Execution Pattern",
+                    "remediation": "Replace curl|sh patterns with pinned checksum-verified declarative dependencies.",
+                }
+            )
+
+        # 2. Read-Only 12-Dimension UI/UX Craftsmanship Checks on UI files
+        if lower_path.endswith((".svelte", ".astro", ".tsx", ".jsx", ".vue", ".css")):
+            if re.search(r"#[0-9a-fA-F]{6}\b", content) and "var(--" not in content:
+                ui_findings.append(
+                    {
+                        "id": "RO-UI-D1",
+                        "dimension": "D1_token_purity",
+                        "severity": "medium",
+                        "file": path,
+                        "title": "Hardcoded #hex Color Bypassing Design System Tokens",
+                        "remediation": "Replace raw #hex values with semantic CSS variables (`var(--color-*)`).",
+                    }
+                )
+            if "grid" in content and "Card" in content and "auto-rows-fr" not in content:
+                ui_findings.append(
+                    {
+                        "id": "RO-UI-D4",
+                        "dimension": "D4_card_grid_rhythm",
+                        "severity": "medium",
+                        "file": path,
+                        "title": "Uneven Card Grid Heights & Unaligned Bottom CTAs",
+                        "remediation": "Add `auto-rows-fr items-stretch` to the grid and `h-full flex flex-col justify-between` + `mt-auto` on card footers.",
+                    }
+                )
+            if re.search(r'href\s*=\s*["\']#["\']', content):
+                ui_findings.append(
+                    {
+                        "id": "RO-UI-D11",
+                        "dimension": "D11_zero_dead_controls",
+                        "severity": "high",
+                        "file": path,
+                        "title": "Dead Anchor (`href=\"#\"`) Without Conversion Target",
+                        "remediation": "Wire every CTA/link to a concrete step auto-scroll target or Free Audit registration handoff.",
+                    }
+                )
+
+    penalty = len(skill_findings) * 15 + len(ui_findings) * 8
+    overall_score = max(0, 100 - penalty)
+    return {
+        "status": "completed",
+        "execution_mode": "zero_exec_readonly_ast",
+        "sandbox_executed": False,
+        "github_repo_shared": True,
+        "overall_ui_score": overall_score,
+        "skill_security_status": "fail" if skill_findings else "pass",
+        "skill_findings": skill_findings,
+        "ui_findings": ui_findings,
     }
 
 

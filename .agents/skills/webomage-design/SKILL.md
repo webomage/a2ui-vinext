@@ -2,7 +2,7 @@
 name: webomage-design
 description: "Use this skill to generate, audit, and refine well-branded interfaces, responsive layouts, and UI components for Webomage (@webomage/ui + w0m-web/design-system). Enforces dark-first glassmorphic tokens, per-app [data-app] brand theming, 25 canonical @webomage/ui primitives, and the AgDR-0054 Mobile-First Multi-Orientation Responsive Contract (Mobile Portrait/Landscape, Tablet Vertical 768x1024, Tablet Horizontal 1024x768, and Desktop Well-Wrapped 1200px-1440px+)."
 metadata:
-  version: "2026.11.07-1794074813"
+  version: "2026.11.09-1794266135"
 ---
 
 # Webomage Design System (`webomage-design`)
@@ -45,3 +45,25 @@ Always import from `@webomage/ui` rather than writing raw `<button>`, `<input>`,
 - **Never expose internal engineering tracker IDs in user-facing UI**: Do not put `T##` ticket numbers, `AgDR-####` / `ADR-####` decision numbers, or `AC#` acceptance-criteria tags into headings, card titles, badges, buttons, form labels, placeholders, tooltips, table headers, status pills, empty states, validation messages, or UI-rendered catalog descriptions.
 - **Write clear product/domain copy instead**: Describe what the capability does for the user (e.g., `"Personal Access Tokens"`, `"Dedicated Client Instance"`, `"Zero-Trust Origin Verification"`) rather than citing the ticket or decision that introduced it (`"(T53)"`, `"(AgDR-0028)"`, `"(AC4)"`).
 - **Keep SDLC provenance in code comments & commits**: Place `T##` and `AgDR-####` references in HTML/JS comments (`<!-- T663 -->`, `// AgDR-0054`), `.tasks/T##.md`, specs, and commit messages — enforced mechanically by `just ui-ticket-leak-check`.
+
+## 5. 12-Dimension UI Craftsmanship & Zero-Execution Read-Only Skill/Repo Audit Rubric
+
+Synthesized from the estate's 4 forked UI/UX audit skills (`webomage/ui-ux-pro-max-skill`, `webomage/agent-skills`, `webomage/redesign-skill`, and `webomage/ui-ux-suite`):
+
+1. **D1 — Token Purity & Theme Discipline (`10 pts`)**: Zero hardcoded `#hex` colors (`#38bdf8`, `#020617`, etc.) inside application components; 100% consumption of `var(--...)` CSS custom properties and `rgba(var(--rgb-*), alpha)` triplets.
+2. **D2 — Perceptual Contrast & Dark-Mode Depth (`10 pts`)**: WCAG 2.2 AA (`>= 4.5:1` body, `>= 3:1` UI controls) + APCA `Lc >= 60` on dark glass surfaces; bordered elevation (`1px solid rgba(255, 255, 255, 0.10)`) instead of muddy drop shadows.
+3. **D3 — Typography Hierarchy & Numeric Discipline (`8 pts`)**: Maximum 4 distinct font sizes per card/section, `60ch–72ch` prose measure, and `font-variant-numeric: tabular-nums` (`tabular-nums`) on all counters, prices, scores, and latency metrics.
+4. **D4 — Equal-Height Card Grid Rhythm & Bottom-Pinned CTAs (`10 pts`)**: Every multi-column card grid MUST apply `auto-rows-fr items-stretch` on the grid container, `h-full flex flex-col justify-between` on each card, and `mt-auto pt-4` on the footer/CTA link row so bottom links align along a single horizontal baseline across mobile, tablet, and desktop.
+5. **D5 — 4-Posture Responsive Contract (`10 pts`)**: Zero horizontal overflow and balanced layout across Mobile (`375×812` & `812×375`), Tablet Vertical (`768×1024`), Tablet Horizontal (`1024×768`), and Desktop Well-Wrapped (`1200px–1440px+`).
+6. **D6 — 6-State Component Completeness (`8 pts`)**: Every interactive/async view explicitly implements `default`, `hover`, `focus-visible`, `loading` (skeleton/spinner without layout jump), `empty` (actionable `EmptyState`), and `error` (clear recovery banner + retry CTA).
+7. **D7 — Primitive Reuse (`@webomage/ui`) (`8 pts`)**: Use canonical `@webomage/ui` primitives (`Button`, `Input`, `Select`, `Badge`, `Card`, `Dialog`, `Tabs`) instead of ad-hoc raw HTML controls.
+8. **D8 — Accessibility & Keyboard Ergonomics (`10 pts`)**: `aria-label` on icon-only controls, explicit `<label>` associations, `:focus-visible` rings, semantic landmarks, and `>= 44×44px` (`min-h-11`) touch targets.
+9. **D9 — Motion & Micro-Interaction Discipline (`6 pts`)**: `150ms–220ms` cubic-bezier transitions on `transform`/`opacity` only, with mandatory `@media (prefers-reduced-motion: reduce)` (`motion-reduce:`) support.
+10. **D10 — Conversion Flow & Step Auto-Scroll (`8 pts`)**: Selecting any option/tier in multi-step forms smoothly scrolls (`scrollIntoView({ behavior: 'smooth', block: 'center' })`) to the next step, routes paid tiers through account registration + Free Baseline Audit before Stripe Checkout, and routes AI Agent Helper conversations to Free Audit registration.
+11. **D11 — Zero Dead Controls & Copy Hygiene (`6 pts`)**: Zero `href="#"` anchors, zero no-op handlers, and zero leaked internal ticket/AgDR/AC identifiers (`just ui-ticket-leak-check`).
+12. **D12 — Anti-Slop Visual Craftsmanship (`6 pts`)**: One unmistakable primary CTA per viewport, consistent `20px` outer / `12px` inner card border-radius nesting, and domain-specific microcopy (zero generic filler).
+
+### Read-Only Zero-Execution Skill & Repository Audit Mode (`executionMode: "zero_exec_readonly_ast"`)
+When auditing a shared client GitHub repository or external `SKILL.md` / `.claude/` / `.agents/` skill bundle:
+- **Never execute untrusted code, `npm install`, `postinstall` hooks, or container sandboxes.**
+- Perform 100% read-only static AST/source inspection over the repository tree (`runReadOnlyRepoAndSkillUiAudit` in `@webomage/lib` and `run_readonly_repo_and_skill_audit` in `scripts/fork_catalog_sync.py`) checking both **Skill/Repo Security** (prompt injection, Trojan-Source bidirectional Unicode, malicious `package.json` lifecycle scripts, `curl | sh` pipes) and the **12 UI/UX Craftsmanship Dimensions**.
