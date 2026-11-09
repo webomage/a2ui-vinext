@@ -17,8 +17,7 @@
 |---|---|---|---|---|---|---|---|
 | 1 | [T671](/home/aleksei/Projects/!self/w0m/.tasks/T671.md) | [#671](https://github.com/webomage/wom7board/issues/671) | P0 | queued | product | 115 | Role-driven <slug>@w0m.xyz tech mailing list pattern (devops hat default, c 📄 live spec |
 | 2 | [T664](/home/aleksei/Projects/!self/w0m/.tasks/T664.md) | [#664](https://github.com/webomage/wom7board/issues/664) | P1 | queued | infra | 60 | Per-client tech mailboxes on w0m.xyz (Cloudflare Email Routing) and dedicated client Inf |
-| 3 | [T673](/home/aleksei/Projects/!self/w0m/.tasks/T673.md) | [#673](https://github.com/webomage/wom7board/issues/673) | P2 | queued | ai | 25 | Backlog & phased integration roadmap for newly forked casualuser and webomage AI, memory |
-| 4 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -26,8 +25,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 8 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **8** are
+> ⚠️ **0 of 7 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **7** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -37,7 +36,6 @@
 | 1 | [T671](/home/aleksei/Projects/!self/w0m/.tasks/T671.md) | [#671](https://github.com/webomage/wom7board/issues/671) | P0 | queued | product | 0/4 | `░░░░░░░░░░` 0% | — | Role-driven <slug>@w0m.xyz tech mailing list pattern (devops |
 | 2 | [T664](/home/aleksei/Projects/!self/w0m/.tasks/T664.md) | [#664](https://github.com/webomage/wom7board/issues/664) | P1 | queued | infra | 0/4 | `░░░░░░░░░░` 0% | — | Per-client tech mailboxes on w0m.xyz (Cloudflare Email Routi |
 | 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
-| 4 | [T673](/home/aleksei/Projects/!self/w0m/.tasks/T673.md) | [#673](https://github.com/webomage/wom7board/issues/673) | P2 | queued | ai | 0/6 | `░░░░░░░░░░` 0% | — | Backlog & phased integration roadmap for newly forked casual |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -48,18 +46,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/just-overlay-fork` | 0 | **n/a — NO UPSTREAM** | `83950b4b5` |
-| `w0m-api` | `agent/just-overlay-fork` | 0 | **n/a — NO UPSTREAM** | `a208b76` |
-| `w0m-cf` | `agent/just-overlay-fork` | 0 | **n/a — NO UPSTREAM** | `67a82e5` |
-| `w0m-skills` | `agent/just-overlay-fork` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
-| `w0m-ext` | `agent/just-overlay-fork` | 0 | **n/a — NO UPSTREAM** | `4450d69` |
-| `w0m-sec` | `agent/just-overlay-fork` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/just-overlay-fork` | 0 | **n/a — NO UPSTREAM** | `c7801f6` |
+| `w0m-web` | `agent/t673-forked-ai-tools` | 0 | **n/a — NO UPSTREAM** | `79b025f3b` |
+| `w0m-api` | `agent/t673-forked-ai-tools` | 0 | **n/a — NO UPSTREAM** | `a208b76` |
+| `w0m-cf` | `agent/t673-forked-ai-tools` | 0 | **n/a — NO UPSTREAM** | `67a82e5` |
+| `w0m-skills` | `agent/t673-forked-ai-tools` | 0 | **n/a — NO UPSTREAM** | `ffbb624` |
+| `w0m-ext` | `agent/t673-forked-ai-tools` | 0 | **n/a — NO UPSTREAM** | `4450d69` |
+| `w0m-sec` | `agent/t673-forked-ai-tools` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/t673-forked-ai-tools` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 685 TASKS.md rows · 316/685 specced (2/8 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 7 open · 685 TASKS.md rows · 317/685 specced (2/7 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T673","T17"],"repos":{"w0m-api":{"branch":"agent/just-overlay-fork","dirty":0,"has_upstream":true,"head":"a208b76","unpushed":null},"w0m-cf":{"branch":"agent/just-overlay-fork","dirty":0,"has_upstream":true,"head":"67a82e5","unpushed":null},"w0m-ext":{"branch":"agent/just-overlay-fork","dirty":0,"has_upstream":true,"head":"4450d69","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/just-overlay-fork","dirty":0,"has_upstream":true,"head":"c7801f6","unpushed":null},"w0m-sec":{"branch":"agent/just-overlay-fork","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/just-overlay-fork","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/just-overlay-fork","dirty":0,"has_upstream":true,"head":"83950b4b5","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":685,"specced":316,"specced_open":2,"total":685,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T671","T664","T17"],"repos":{"w0m-api":{"branch":"agent/t673-forked-ai-tools","dirty":0,"has_upstream":true,"head":"a208b76","unpushed":null},"w0m-cf":{"branch":"agent/t673-forked-ai-tools","dirty":0,"has_upstream":true,"head":"67a82e5","unpushed":null},"w0m-ext":{"branch":"agent/t673-forked-ai-tools","dirty":0,"has_upstream":true,"head":"4450d69","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t673-forked-ai-tools","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t673-forked-ai-tools","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t673-forked-ai-tools","dirty":0,"has_upstream":true,"head":"ffbb624","unpushed":null},"w0m-web":{"branch":"agent/t673-forked-ai-tools","dirty":0,"has_upstream":true,"head":"79b025f3b","unpushed":null}},"tickets":{"open":7,"rowless_open":[],"rows":685,"specced":317,"specced_open":2,"total":685,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -119,11 +117,12 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (9):
+#### Completed today (10):
 
 - **T669** — Pre-renumber worktree ticket record for T672 (order form & filter state persistence, Job Board recency filters, and submitted bug reports) (Reconciled .tasks/T669.md with GitHub Issue #669 (1:1 parity with [[T672]] delivery). Lessons: Recorded in LESSONS.md (defer sequential T## allocation until serialized worktree offload).)
 - **T670** — Pre-renumber worktree ticket record for T671 (role-driven <slug>@w0m.xyz tech mailing list pattern) (Reconciled .tasks/T670.md with GitHub Issue #670 and aligned [[T671]] to gh_issue: 671. Lessons: Recorded in LESSONS.md (defer sequential T## allocation until serialized worktree offload).)
 - **T672** — Persist order form & filter state across page refreshes, add Job Board recency filters (day/week/month), and surface submitted bug reports ((agy:order-form-state-persist): Implemented AC1–AC8 across @webomage/lib, apps/web, apps/me, apps/cp, @webomage/ui, and w0m-api (w0m-api c8b389e, w0m-web a9b4134ab + f809d3476). Verified live Supabase public.bug_reports row 8090dd5b-59ab-47d8-9c75-192bf0fab5f3 ("we have to have better filters here" on https://me.webomage.com/, project_id IS NULL) and b0a52d8c-eab5-4766-abd0-d28d0f1507f6 ("/me/profile/resume" on https://cp.webomage.com/me/profile/resume), wired scope=mine and includePlatform=true so both surface in BugReportWidget and BugTriageBoard, added day/week/month/quarter/all job recency filters, enforced active hat/role project-scope visibility (resolveScopedProjectId) for PM (pm / product-manager) and downwards across all CP pages (projects, services, milestones, vault, money/contracts, money/proposals, people/directory, people/team, sales/clients, sales/leads), fixed the ClientServicesManager.svelte table cell overlap (whitespace-normal break-words align-top py-3), and filed backlog ticket [[T673]] for the 33 forked casualuser/ & webomage/ tools. Lesson disposition: no new transferable failure mode beyond existing LESSONS.md rules (T347 bug routing, T600 hat visibility, T663 order flow).)
+- **T673** — Backlog & phased integration roadmap for newly forked casualuser and webomage AI, memory, ontology, document, security, and harness tools ((agy:order-form-state-persist): Grounded via gh repo list casualuser --fork and gh repo list webomage --fork (33 total repositories across Tracks A–F). Implemented scripts/fork_catalog_sync.py, scripts/skill_spector_check.py, w0m-mlx/w0m-mlx/src/jev_decide.py, w0m-web/packages/lib/src/security/advanced-audit.ts, and w0m-web/apps/cp/src/components/client/SecurityAuditReportViewer.svelte. Verified with scripts/tests/test_fork_catalog_sync.py (6/6 passed), w0m-mlx/w0m-mlx/tests/test_jev_decide.py (3/3 passed), and w0m-web/packages/lib/src/security/advanced-audit.test.ts (7/7 passed).)
 - **T674** — Audit Orca v1.4.253 upstream PR portfolio, rescue Mac backup research, and build local hybrid BM25+vector knowledge index for roadmap synthesis (Covered by T302, T339, T461, T613, and AgDR-0055)
 - **T675** — Project Role Templates (1-Head Indie vs 2-Head Default), Role/Hat Naming Matrix & Corporate vs RPG Theme (Covered by T302, T339, T461, T613, and AgDR-0055)
 - **T676** — Rename Guild & Cohorts to Guild, activate CP /o/[org]/people/quests page, fix expired JWT in CP islands, and add Admin Corporate/RPG naming & Live User Sessions dashboards ((agy:guild-quests-tech-jwt): Renamed GAMIFIED_NAV_LABELS.Team from "Guild & Cohorts" to "Guild", activated /o/[org]/people/quests (quests.astro mounting RaidBoard, AgentQuestTracksBoard, and QuestBoard with active-hat project scoping), and hardened createAdminClient.ts + CP .astro pages (Astro.locals.accessToken) so expired sb-access-token cookies never trigger Error: JWT expired in PostgREST. Lesson disposition: covered by existing LESSONS.md rules (T472 token sync, T571 CP nav).)
