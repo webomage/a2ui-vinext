@@ -33,6 +33,12 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T695](.tasks/T695.md) | **P1** | **Fix /me/todos infinite Svelte 5 $effect loop on 'Loading collections...', parallelize GET /api/todos + SSR preload, and restore 7 open admin_todos items** | web, api | openspec/specs/user-todos-and-shared-wishlists/spec.md | ✅ **done** |
+| [T694](.tasks/T694.md) | **P1** | **Browser Distributed WebGPU/WASM Compute Mesh & w0m-ext Controller** | web, cf, ext | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
+| [T693](.tasks/T693.md) | **P1** | **TabLinux Easy Clipboard / Paste & Terminal UX (w0m-pr/linuxontab / next.linuxontab.com)** | web, tooling | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
+| [T692](.tasks/T692.md) | **P2** | **Phase 2 of T673 Forked AI & Document Tools: MinerU in Resume Studio & Vault, jev-ultrafast + openlit in w0m-ext & w0m-cf** | web, cf, ext | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
+| [T691](.tasks/T691.md) | **P2** | **Equal-height cards and bottom-aligned CTA links across Solutions, Services, Projects, Blueprints, and Audit Pricing grids (mobile/tablet/desktop)** | web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
+| [T690](.tasks/T690.md) | **P1** | **Fix 'Invalid captcha' on /audit & /blueprints/order, add actionable recovery banner, step auto-scroll, paid-tier registration+checkout flow, and AI Agent Helper -> Free Audit handoff** | web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T689](.tasks/T689.md) | **P1** | **Domain ownership verification: CF/AWS/DO/GoDaddy guidance, automation, AI agent tabs, webomage.com record & db-drift-check timeout/redaction fix** | web | null | ✅ **done** |
 | [T688](.tasks/T688.md) | **P1** | **Accelerate session-complete and agent-tree landing (auto-resolve w0m-web derived docs, decouple graph rebuild lock, and fast-path certification)** | web, tooling | null | ✅ **done** |
 | [T687](.tasks/T687.md) | **P1** | **Orca Mobile Live Input: replace non-functional leading keyboard icon with show/hide password mask button** | tooling | null | ✅ **done** |
