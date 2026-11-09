@@ -53,11 +53,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--project", default="w0m", help="Active project tenant")
     parser.add_argument("--env", default="beta", help="Active Infisical environment")
     parser.add_argument("--dry-run", action="store_true", help="Print resolved URL and exit")
+    parser.add_argument("--build", action="store_true", help="Run cloudflare-build.ts in LinuxOnTab root")
+    parser.add_argument("--test", action="store_true", help="Run cloudflare.test.ts in LinuxOnTab root")
     args = parser.parse_args(argv)
 
     lot_dir = resolve_linuxontab_dir()
-    ts_server = lot_dir / "cloudflare-serve.ts"
     node_bin = shutil.which("node")
+    if args.build and node_bin:
+        os.execv(node_bin, [node_bin, str(lot_dir / "cloudflare-build.ts")])
+    if args.test and node_bin:
+        os.execv(node_bin, [node_bin, "--test", str(lot_dir / "cloudflare.test.ts")])
+    ts_server = lot_dir / "cloudflare-serve.ts"
     if node_bin and ts_server.is_file():
         cmd = [
             node_bin,

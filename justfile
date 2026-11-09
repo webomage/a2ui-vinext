@@ -2254,10 +2254,10 @@ linuxontab-serve port="8770" *args:
     @python3 scripts/linuxontab_serve.py "{{ port }}" {{ args }}
 
 linuxontab-build *args:
-    @node w0m-pr/linuxontab/cloudflare-build.ts {{ args }}
+    @python3 scripts/linuxontab_serve.py --build {{ args }}
 
 linuxontab-test:
-    @node --test w0m-pr/linuxontab/cloudflare.test.ts
+    @python3 scripts/linuxontab_serve.py --test
 
 # ── Same-Host ACP Discovery, Crew SEO/GEO/Security & Enterprise Obs (T681) ────
 acp-discover *args:
