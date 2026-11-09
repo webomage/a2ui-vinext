@@ -65,8 +65,8 @@ by = {p["project"]: p for p in live.get("projects", [])}
 check("exits 0 by default — advisory", code == 0)
 check("every declared project is audited", set(by) == REGISTRY_PROJECTS)
 
-# 🔴 The probe that matters. Undeclared projects (k7/mob) declare no retention; neither may be silently passed.
-check("an UNDECLARED project is a finding, not a skip", by["k7"]["verdict"] == "undeclared")
+# 🔴 The probe that matters. Flattened k7 umbrella now declares bounds and is measured within them.
+check("k7 declares state_surface bounds and is measured within them", by["k7"]["verdict"] == "within")
 # 🔴 The OVER probe is a FIXTURE, not an assertion about a live client. It used to read
 # `by["artemio"]["verdict"] == "over"` — true when it was written on 2026-08-09, and RED by
 # 2026-08-14 because Artemio was rotated down to 50,850 B under its 81,920 B bound. That is the
@@ -85,7 +85,7 @@ check("--enforce blocks while any project is undeclared or over", run("--enforce
 # Bounds must come from each project's OWN declaration, not a constant in the tool.
 check("each project's limit is read from its own sdlc.json",
       by["w0m"]["max_bytes"] == 81920 and by["1945"]["max_bytes"] == 81920
-      and by["bridgeroad"]["max_bytes"] == 65536 and by["k7"]["max_bytes"] is None)
+      and by["bridgeroad"]["max_bytes"] == 65536 and by["k7"]["max_bytes"] == 65536)
 
 # ── red probes: the corpus assertions ──────────────────────────────────────────
 import shutil

@@ -571,16 +571,16 @@
         "substrate": "host"
       },
       "repos": {
-        "k7hub": "k7hub/k7hub",
-        "k7c": "k7c/k7c",
-        "k7d": "k7d/k7d",
-        "k7env": "k7env/k7env",
-        "k7kb": "k7kb/k7kb",
-        "k7pwd": "k7pwd/k7pwd",
-        "k7s": "k7s/k7s",
-        "k7llm": "k7llm/k7llm",
-        "k7sol": "k7sol/k7sol",
-        "k7spec": "k7spec/k7spec",
+        "k7hub": "k7hub",
+        "k7c": "k7c",
+        "k7d": "k7d",
+        "k7env": "k7env",
+        "k7kb": "k7kb",
+        "k7pwd": "k7pwd",
+        "k7s": "k7s",
+        "k7llm": "k7llm",
+        "k7sol": "k7sol",
+        "k7spec": "k7spec",
         "k7tg": "k7tg"
       },
       "canonical_repo": "k7d",
@@ -592,7 +592,7 @@
         "gh_config_dir": "~/.config/gh-w0m"
       },
       "enabled": true,
-      "note": "T307 \u2014 the @k7 developer tooling & Rust TUI family. Managed workspace of 7 repositories with k7d as the Tart VM & daemon control panel."
+      "note": "T307 \u2014 the @k7 developer tooling & Rust TUI family. Managed umbrella workspace of 11 direct-child repositories with k7d as the Tart VM & daemon control panel."
     },
     {
       "id": "solar",

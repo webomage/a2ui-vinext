@@ -648,11 +648,11 @@ def shutil_which(binary: str) -> str | None:
         if cand.is_file() and os.access(cand, os.X_OK):
             return str(cand)
     # Check @k7 target debug binaries
-    k7_cand = Path("/home/aleksei/Projects/!self/k7") / binary / binary / "target/debug" / binary
+    k7_cand = Path("/home/aleksei/Projects/!self/k7") / binary / "target/debug" / binary
     if k7_cand.is_file():
         return str(k7_cand)
     if binary == "k7":
-        hub_cand = Path("/home/aleksei/Projects/!self/k7/k7hub/k7hub/target/debug/k7")
+        hub_cand = Path("/home/aleksei/Projects/!self/k7/k7hub/target/debug/k7")
         if hub_cand.is_file():
             return str(hub_cand)
     return None

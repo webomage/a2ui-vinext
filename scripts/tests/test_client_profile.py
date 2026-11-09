@@ -142,9 +142,10 @@ check("every declared client is validated against the profile",
 by_client = {c["id"]: c for c in live["clients"]}
 check("artemio CONFORMS — every required key declared",
       by_client["artemio"]["conforms"] and by_client["artemio"]["missing_required"] == [])
-check("1945 CONFORMS and uncloned portfolio (k7) missing keys are named",
+check("1945 and k7 CONFORM and uncloned portfolio (solar) missing keys are named",
       by_client["1945"]["conforms"] and by_client["1945"]["missing_required"] == []
-      and not by_client["k7"]["conforms"] and len(by_client["k7"]["missing_required"]) == 9)
+      and by_client["k7"]["conforms"] and by_client["k7"]["missing_required"] == []
+      and not by_client["solar"]["conforms"] and len(by_client["solar"]["missing_required"]) == 9)
 
 # ── red probes: each defect manufactured and required to fail ──────────────────
 def set_recipe(reg, key, recipe):
