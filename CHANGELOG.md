@@ -2,6 +2,32 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.09-1794275674
+_First deployed: 2026-11-10 02:13:30.248239+00_
+
+### Features
+- **security**: complete T689 domain verification providers, agent tabs, and db-drift-check fix ([T689](file:///.tasks/T689.md))
+- **T673**: add fork catalog governance, SkillSpector scanner, ontology graph compiler, and AI-DLC harness ([T673](file:///.tasks/T673.md))
+- **tools**: record D69 zero svelte type debt and DistroSea integration (T682) ([T682](file:///.tasks/T682.md))
+- **infra**: T682 onboard k7kb, SEO/GEO/Security scanner, Enterprise Obs & Same-Host ACP manager ([T682](file:///.tasks/T682.md))
+- **kb**: T674 T675 Orca v1.4.253 PR audit, Mac research rescue, local hybrid vector index, and role template tickets ([T674](file:///.tasks/T674.md), [T675](file:///.tasks/T675.md))
+
+### Fixes
+- **T673**: route linuxontab-build and linuxontab-test via tracked scripts/linuxontab_serve.py ([T673](file:///.tasks/T673.md))
+- **kb**: T674 cast new_labels to np.int32 for mypy strict check ([T674](file:///.tasks/T674.md))
+- **T668**: persist and surface tool_chatter/other_trouble in deploy_logged and silence Infisical update chatter ([T668](file:///.tasks/T668.md))
+- **T666, T667**: fix crawler-smoke User-Agent 403, clean deploy transcript audit, and close T666/T667 ([T666](file:///.tasks/T666.md), [T667](file:///.tasks/T667.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `fe9b861` | 2026-11-10 02:13:30.248239+00 |
+| demo | `fe9b861` | 2026-11-10 02:12:07.687411+00 |
+| me | `fe9b861` | 2026-11-10 02:10:52.28641+00 |
+| cp | `fe9b861` | 2026-11-10 02:08:10.590095+00 |
+| web | `fe9b861` | 2026-11-10 02:04:17.252568+00 |
+| release | `fe9b861` | 2026-11-10 01:59:54.717964+00 |
+| api | `fe9b861` | 2026-11-10 01:59:46.431972+00 |
+
 ## 2026.11.07-1794074188
 _First deployed: 2026-11-07 18:34:31.020708+00_
 
