@@ -2,6 +2,22 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.10-1794329001
+_First deployed: 2026-11-10 17:46:46.129619+00_
+
+### Features
+- **product**: T703 embed advanced services & packages configurator into onboarding wizard with checkout trigger ([T703](file:///.tasks/T703.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `b200f3a` | 2026-11-10 17:46:46.129619+00 |
+| demo | `b200f3a` | 2026-11-10 17:45:43.645665+00 |
+| me | `b200f3a` | 2026-11-10 17:44:52.6657+00 |
+| cp | `b200f3a` | 2026-11-10 17:43:11.237013+00 |
+| web | `b200f3a` | 2026-11-10 17:40:49.187786+00 |
+| release | `b200f3a` | 2026-11-10 17:38:10.032713+00 |
+| api | `b200f3a` | 2026-11-10 17:38:04.122622+00 |
+
 ## 2026.11.09-1794282738
 _First deployed: 2026-11-10 04:05:08.017486+00_
 
