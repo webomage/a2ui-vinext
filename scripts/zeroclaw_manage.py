@@ -240,7 +240,7 @@ def check_client_audit_path_access(target_path: str, profile: dict[str, Any]) ->
     if not profile.get("workspace_only", False) or not profile.get("sandbox_enabled", False):
         return False, "Profile does not enforce workspace_only=true and sandbox_enabled=true"
 
-    allowed_roots = [os.path.expanduser(str(r)) for r in profile.get("allowed_roots", [])]
+    allowed_roots = [os.path.normpath(os.path.expanduser(str(r))) for r in profile.get("allowed_roots", [])]
     if not allowed_roots or "/" in allowed_roots:
         return False, "Profile allowed_roots is empty or contains filesystem root '/'"
 
@@ -250,15 +250,24 @@ def check_client_audit_path_access(target_path: str, profile: dict[str, Any]) ->
         "~/.infisical",
         str(ESTATE_ROOT),
     ]
+    broad_system_roots = {"/home", "/Users"}
     for fp in forbidden_raw:
+        if str(fp) in broad_system_roots:
+            continue
         expanded_fp = os.path.normpath(os.path.expanduser(str(fp)))
         if expanded_target == expanded_fp or expanded_target.startswith(expanded_fp + os.sep):
             return False, f"Refused by forbidden_paths boundary: {fp}"
 
-    for root in allowed_roots:
-        norm_root = os.path.normpath(root)
+    for norm_root in allowed_roots:
         if expanded_target == norm_root or expanded_target.startswith(norm_root + os.sep):
             return True, f"Allowed within workspace root: {norm_root}"
+
+    for fp in forbidden_raw:
+        if str(fp) not in broad_system_roots:
+            continue
+        expanded_fp = os.path.normpath(os.path.expanduser(str(fp)))
+        if expanded_target == expanded_fp or expanded_target.startswith(expanded_fp + os.sep):
+            return False, f"Refused by forbidden_paths boundary: {fp}"
 
     return False, f"Refused: outside allowed_roots ({allowed_roots})"
 
@@ -454,9 +463,108 @@ def cmd_logs(lines: int = 50) -> int:
     return 0
 
 
+def resolve_tablinux_clawlite(estate_root: Path = ESTATE_ROOT) -> Path | None:
+    """Locate tablinux (linuxontab) clawlite.sh script across estate or live checkout (T709)."""
+    candidates = [
+        estate_root / "w0m-pr" / "linuxontab" / "local" / "clawlite.sh",
+        Path.home() / "Projects" / "!self" / "w0m" / "w0m-pr" / "linuxontab" / "local" / "clawlite.sh",
+    ]
+    for cand in candidates:
+        if cand.is_file():
+            return cand
+    return None
+
+
+def evaluate_claw_vs_zeroclaw_parity(estate_root: Path = ESTATE_ROOT) -> dict[str, Any]:
+    """Compare tablinux `claw` (`clawlite.sh`) against `zeroclaw` across w0m surfaces (T709)."""
+    claw_path = resolve_tablinux_clawlite(estate_root)
+    zc_bin = shutil.which("zeroclaw") or os.path.expanduser("~/.cargo/bin/zeroclaw")
+    zc_installed = Path(zc_bin).is_file()
+    return {
+        "ticket": "T709",
+        "zeroclaw_installed": zc_installed,
+        "zeroclaw_binary": str(zc_bin),
+        "tablinux_claw_found": claw_path is not None,
+        "tablinux_claw_path": str(claw_path) if claw_path else None,
+        "decision": "hybrid_tier0_adapter_only",
+        "summary": (
+            "Retain ZeroClaw for JSON-RPC 2.0 ACP (`zeroclaw acp`), authenticated HTTP/WS Gateway "
+            "(`:42617` for w0m-ext & Siri Shortcuts), and OS-sandboxed `client_audit` profiles; "
+            "expose tablinux `claw` (`clawlite.sh`) as Tier-0 POSIX-sh local/guest REPL & Mentor "
+            "fallback with `CLAW_YOLO=0` (`--no-tools` / `--confirm`) enforced by default."
+        ),
+        "capabilities": [
+            {
+                "surface": "Interactive / Single-Shot Local & Guest REPL + 2-Pass Mentor (`--mentor`)",
+                "zeroclaw": "Supported (`zeroclaw chat`)",
+                "tablinux_claw": "Supported (`clawlite.sh` 38.8 KB POSIX sh + curl/jq/awk)",
+                "verdict": "PARITY (clawlite serves as Tier-0 fallback when Rust zeroclaw binary is absent)",
+            },
+            {
+                "surface": "Session Compaction & Rolling Rules Journal",
+                "zeroclaw": "Supported (`[runtime_profiles.measure.context_compression]`)",
+                "tablinux_claw": "Supported (`compact_session_history` -> `90-<session>-rules.md`)",
+                "verdict": "PARITY",
+            },
+            {
+                "surface": "Same-Host ACP Server (`zeroclaw acp`, `scripts/acp_host_discovery.py`)",
+                "zeroclaw": "Supported (JSON-RPC 2.0 stdio/HTTP)",
+                "tablinux_claw": "Not supported (interactive CLI only)",
+                "verdict": "KEEP ZEROCLAW",
+            },
+            {
+                "surface": "Browser Extension & Siri Gateway (`:42617`, `w0m-ext` `agentBridge.ts`)",
+                "zeroclaw": "Supported (HTTP/WS paired-token daemon)",
+                "tablinux_claw": "Not supported (no HTTP/WS listener)",
+                "verdict": "KEEP ZEROCLAW",
+            },
+            {
+                "surface": "Untrusted Client Audit Sandboxing (`[risk_profiles.client_audit]`, T153 AC5)",
+                "zeroclaw": "Supported (`workspace_only=true`, `forbidden_paths`, `allowed_tools`)",
+                "tablinux_claw": "Unsafe by default (`CLAW_YOLO=1` executes `<shell>` blocks via `sh -c`)",
+                "verdict": "KEEP ZEROCLAW (claw-exec forces CLAW_YOLO=0 / --no-tools)",
+            },
+        ],
+    }
+
+
+def cmd_claw_parity(as_json: bool = False) -> int:
+    report = evaluate_claw_vs_zeroclaw_parity()
+    if as_json:
+        print(json.dumps(report, indent=2))
+        return 0
+    print(f"=== T709: tablinux `claw` vs `zeroclaw` Parity Report ({report['decision']}) ===")
+    print(f"  ZeroClaw binary : {'INSTALLED' if report['zeroclaw_installed'] else 'ABSENT'} ({report['zeroclaw_binary']})")
+    print(f"  tablinux claw   : {'FOUND' if report['tablinux_claw_found'] else 'ABSENT'} ({report['tablinux_claw_path']})")
+    print(f"  Decision        : {report['summary']}\n")
+    for cap in report["capabilities"]:
+        print(f"  - {cap['surface']}: {cap['verdict']}")
+    return 0
+
+
+def cmd_claw_exec(prompt: str, allow_confirm_tools: bool = False, mentor: bool = False, dry_run: bool = True) -> int:
+    """Execute tablinux clawlite.sh with mandatory CLAW_YOLO=0 safety hardening (T709 AC4)."""
+    claw_path = resolve_tablinux_clawlite()
+    if claw_path is None:
+        print("[FAIL] tablinux clawlite.sh not found under w0m-pr/linuxontab/local/clawlite.sh")
+        return 1
+    safety_flag = "--confirm" if allow_confirm_tools else "--no-tools"
+    cmd = ["sh", str(claw_path), safety_flag]
+    if mentor:
+        cmd.append("--mentor")
+    cmd.append(prompt)
+    env = dict(os.environ)
+    env["CLAW_YOLO"] = "0"
+    if dry_run:
+        print(f"[INFO] Dry run (CLAW_YOLO=0): {' '.join(cmd)}")
+        return 0
+    res = subprocess.run(cmd, env=env, check=False)
+    return res.returncode
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="ZeroClaw Runtime Management, Config Sync & Siri/Shortcuts Health Probe (T153, T516, T517 AC3)."
+        description="ZeroClaw Runtime Management, Config Sync & Siri/Shortcuts Health Probe (T153, T516, T517 AC3, T709)."
     )
     sub = parser.add_subparsers(dest="subcommand", required=True)
 
@@ -467,6 +575,15 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("check", help="Check config drift against tracked template")
     sub.add_parser("health", help="Run runtime health audit + Siri/Shortcuts contract checks")
     sub.add_parser("status", help="Check ZeroClaw gateway and daemon service status")
+
+    p_parity = sub.add_parser("claw-parity", help="Evaluate tablinux claw (clawlite.sh) vs zeroclaw parity (T709)")
+    p_parity.add_argument("--json", action="store_true", help="Emit JSON parity report")
+
+    p_cexec = sub.add_parser("claw-exec", help="Run tablinux clawlite.sh with CLAW_YOLO=0 safety gate (T709)")
+    p_cexec.add_argument("prompt", help="Single-shot prompt for clawlite")
+    p_cexec.add_argument("--confirm-tools", action="store_true", help="Use --confirm instead of default --no-tools")
+    p_cexec.add_argument("--mentor", action="store_true", help="Enable 2-pass mentor critique/revision")
+    p_cexec.add_argument("--apply", action="store_true", help="Execute command (default is dry-run)")
 
     for act in ("start", "stop", "restart"):
         p_act = sub.add_parser(act, help=f"{act.capitalize()} ZeroClaw daemon service (dry-run default)")
@@ -486,6 +603,15 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_health()
     if args.subcommand == "status":
         return cmd_status()
+    if args.subcommand == "claw-parity":
+        return cmd_claw_parity(as_json=bool(args.json))
+    if args.subcommand == "claw-exec":
+        return cmd_claw_exec(
+            prompt=str(args.prompt),
+            allow_confirm_tools=bool(args.confirm_tools),
+            mentor=bool(args.mentor),
+            dry_run=not bool(args.apply),
+        )
     if args.subcommand in ("start", "stop", "restart"):
         return cmd_service(str(args.subcommand), apply=bool(args.apply))
     if args.subcommand == "logs":

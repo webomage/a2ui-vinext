@@ -2306,6 +2306,26 @@ computer-plan source="just fork-catalog-status | jq '.valid'":
 fork-catalog-test:
     @python3 scripts/tests/test_fork_catalog_sync.py
 
+# ── Cross-Dialect Client Spec Bridge & Package Legitimacy Gate (T714) ──────────
+package-legitimacy-check *args:
+    @python3 scripts/package_legitimacy_check.py {{ args }}
+
+client-spec-check *args:
+    @python3 scripts/client_spec_bridge.py {{ args }}
+
+client-spec-bridge-test:
+    @pytest -q scripts/tests/test_client_spec_bridge.py
+
+# ── Orca Embedded Browser w0m-ext MV3 Extension Provisioning (T710) ────────────
+orca-ext-install *args:
+    @python3 scripts/orca_ext_install.py --apply {{ args }}
+
+orca-ext-status *args:
+    @python3 scripts/orca_ext_install.py --status {{ args }}
+
+orca-ext-test:
+    @pytest -q scripts/tests/test_orca_ext_install.py
+
 
 
 

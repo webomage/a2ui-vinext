@@ -26,10 +26,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T715](.tasks/T715.md) · [#714](https://github.com/casualuser/webomage.com/issues/714) | **P1** | **Client Portal (apps/cp) Onboarding Wizard & Project Settings: Selectable SDD Spec Dialect (GitHub Spec Kit, OpenGSD, OpenSpec, Webomage SDLC)** | cp, web | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
-| [T714](.tasks/T714.md) · [#713](https://github.com/casualuser/webomage.com/issues/713) | **P1** | **Cross-Dialect Client Spec Bridge & Package Legitimacy Gate (scripts/client_spec_bridge.py + just client-check) for Spec Kit (.specify/), OpenGSD (.planning/) & OpenSpec** | tooling, web, skills | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
 | [T713](.tasks/T713.md) · [#712](https://github.com/casualuser/webomage.com/issues/712) | **P1** | **Client Project Multi-Dialect Spec Bootstrap & Registry (clients-policy.json, GENERIC-SDLC-SET.md, just client-spec-init for Spec Kit, OpenGSD & OpenSpec)** | tooling, skills, web | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
-| [T710](.tasks/T710.md) | **P1** | **Orca Embedded Browser: Load and Persist w0m-ext MV3 Extension in Electron Browser Session** | tooling, ext | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
-| [T709](.tasks/T709.md) | **P1** | **Evaluate tablinux (linuxontab) claw Package to Replace zeroclaw Functions Across w0m** | tooling, cf, api, web | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
 | [T708](.tasks/T708.md) | **P1** | **k7 WASM Git Navigation Browser in TUI with GitHub, GitLab & New LLM Git Flavours Support** | tooling, web | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
 | [T707](.tasks/T707.md) | **P1** | **Audit and Adopt casualuser/job-hunter-skill into w0m-skills & Estate Skill Manifests** | skills, web, recruit | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
 | [T706](.tasks/T706.md) | **P1** | **Orca Desktop: Fix Back Button Not Navigating Embedded Browser Tabs, File Upstream Issue & Open PR** | tooling | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
@@ -41,8 +38,11 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T714](.tasks/T714.md) · [#713](https://github.com/casualuser/webomage.com/issues/713) | **P1** | **Cross-Dialect Client Spec Bridge & Package Legitimacy Gate (scripts/client_spec_bridge.py + just client-check) for Spec Kit (.specify/), OpenGSD (.planning/) & OpenSpec** | tooling, web, skills | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T712](.tasks/T712.md) · [#711](https://github.com/casualuser/webomage.com/issues/711) | **P1** | **4-Way SDD Architecture Audit (open-gsd/gsd-core vs github/spec-kit vs OpenSpec vs w0m Specs) & Multi-Dialect Client Project Strategy** | tooling, web, skills | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T711](.tasks/T711.md) | **P1** | **AI Agent, MCP & Skill Security Audit Service (OWASP AST10, Google SAIF, Anthropic MCP, Trail of Bits) & First-Party Public/Client Agent Certification** | cp, web | openspec/specs/agent-security-and-mcp-audit/spec.md | ✅ **done** |
+| [T710](.tasks/T710.md) | **P1** | **Orca Embedded Browser: Load and Persist w0m-ext MV3 Extension in Electron Browser Session** | tooling, ext | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
+| [T709](.tasks/T709.md) | **P1** | **Evaluate tablinux (linuxontab) claw Package to Replace zeroclaw Functions Across w0m** | tooling, cf, api, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T705](.tasks/T705.md) | **P0** | **Adopt Google Elephant-Goldfish Model (EGM), 3-Tier Project Dev Modes (ultra/balance/wise) & Fast Session-Complete, and Remove @k7 UI Mentions + Seed Webomage Live Audit Results** | tooling, web, cp, skills | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T704](.tasks/T704.md) | **P1** | **Harden Client Portal Audit Result Preservation, Multi-Target Report Maps, & Service-Role RLS Persistence Across All Diagnostic Surfaces** | cp, web | null | ✅ **done** |
 | [T703](.tasks/T703.md) | **P1** | **Embed Advanced Services & Packages Configurator into Post-Registration & Post-Checkout Client Portal Onboarding Wizard with Checkout Trigger** | cp, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |

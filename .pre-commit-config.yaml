@@ -108,6 +108,14 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      - id: package-legitimacy-check
+        name: Package & Dependency Legitimacy Gate across all 7 estate repos (T714 AC3)
+        entry: python3 scripts/package_legitimacy_check.py
+        language: system
+        files: ^(package\.json|scripts/package_legitimacy_check\.py)$
+        pass_filenames: false
+        stages: [pre-commit]
+
       # T509 AC14 — pre-push gate on pushes from the estate root (@wom)
       - id: root-pre-push
         name: Estate root pre-push gate (ticket-row-check + state-check + stale-path-check + justfile-calls-check, T527 / T509 AC14)

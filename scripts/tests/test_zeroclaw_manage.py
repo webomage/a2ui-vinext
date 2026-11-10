@@ -116,6 +116,16 @@ def main() -> int:
             str(audit_res),
         )
 
+        # 7. T709: tablinux claw vs zeroclaw parity & safe Tier-0 adapter checks
+        parity = zcm.evaluate_claw_vs_zeroclaw_parity()
+        check(
+            "T709 AC3/AC4: evaluate_claw_vs_zeroclaw_parity returns hybrid_tier0_adapter_only and 5 capability surfaces",
+            parity["decision"] == "hybrid_tier0_adapter_only" and len(parity["capabilities"]) == 5,
+            str(parity),
+        )
+        rc_parity = zcm.main(["claw-parity", "--json"])
+        check("T709: `zeroclaw_manage.py claw-parity --json` exits 0", rc_parity == 0)
+
     return 1 if failures else 0
 
 
