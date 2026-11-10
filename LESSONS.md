@@ -2212,14 +2212,8 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⇒ **Run all smart-contract (`runReadOnlySmartContractAudit`, `runCoinTokenomicsIntelligence`) and AI agent/MCP/skill (`runAgentSecurityAudit`) inspections in `zero_exec_readonly_ast` mode, persist per-target reports (`crypto_reports_by_target`, `agent_reports_by_target`) through `persistOrgDiagnosticUpdate`, and enforce `auditAllFirstPartyAllowedAgents().allPassed === true` in CI unit tests (`crypto-and-agent-security-audit.test.ts`) so no public or client-allowed agent can ship without passing OWASP `AST01–AST10`, Google SAIF/EGM, Anthropic MCP, and Trail of Bits `mcp-context-protector` controls.**
 ⭐ **The tell:** Registering a new public or client-facing AI agent without an entry in `FIRST_PARTY_ALLOWED_AGENTS` passing `auditAllFirstPartyAllowedAgents()`, or allowing an MCP tool description / `SKILL.md` to ship with unpinned `@latest` package refs, missing `AST04` human confirmation gates, or raw ANSI/Unicode control characters.
 
+### LAYER WEBOMAGE TESTING SEAMS OVER CLIENT-CHOSEN SPEC DIALECTS (`.specify/`, `.planning/`, `openspec/`) RATHER THAN FORCING `.w0m/` INTO CLIENT REPOS
+**2026-11-10 (T712).** Comparing `open-gsd/gsd-core` (`.planning/`), `github/spec-kit` (`.specify/`), `Fission-AI/OpenSpec` (`openspec/`), and Webomage's `SPEC-AUTHORING-STANDARD.md` showed that external/client projects often require either constitutional PR contracts (`.specify/`) or self-contained phase/wave state (`.planning/`) while prohibiting `.w0m/sdlc.json` internal tracking surfaces inside third-party repositories (T265/T294).
 
-
-
-
-
-
-
-
-
-
-
+⇒ **Support `github-speckit` (`.specify/`), `open-gsd` (`.planning/`), and `openspec` (`openspec/`) as first-class `spec_dialect` options for client projects (`T713`–`T715`), layering Webomage's mandatory `Testing seams` (observable, attachment point, failure-shape check) and portable `w0m-skills` via dialect-native template overrides and normalizing progress via `client_spec_bridge.py` instead of copying `.w0m/` into client repositories.**
+⭐ **The tell:** Installing `.w0m/sdlc.json` or `w0m-sdlc-*` skills into a third-party client repository, or losing visibility into a client repo's progress because it uses GitHub Spec Kit (`.specify/`) or OpenGSD (`.planning/`) instead of `.tasks/T##.md`.
