@@ -30,7 +30,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T708](.tasks/T708.md) | **P1** | **k7 WASM Git Navigation Browser in TUI with GitHub, GitLab & New LLM Git Flavours Support** | tooling, web | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
 | [T707](.tasks/T707.md) | **P1** | **Audit and Adopt casualuser/job-hunter-skill into w0m-skills & Estate Skill Manifests** | skills, web, recruit | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
 | [T706](.tasks/T706.md) | **P1** | **Orca Desktop: Fix Back Button Not Navigating Embedded Browser Tabs, File Upstream Issue & Open PR** | tooling | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
-| [T699](.tasks/T699.md) | **P2** | 🆕 **Crypto smart-contract security auditing (Solidity/EVM, Rust/Solana, Move) & coin/tokenomics intelligence service** | web, api | openspec/specs/sdlc_toolchain/spec.md | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | P3 | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 💤 **paused** |
@@ -39,12 +38,14 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T711](.tasks/T711.md) | **P1** | **AI Agent, MCP & Skill Security Audit Service (OWASP AST10, Google SAIF, Anthropic MCP, Trail of Bits) & First-Party Public/Client Agent Certification** | cp, web | openspec/specs/agent-security-and-mcp-audit/spec.md | ✅ **done** |
 | [T705](.tasks/T705.md) | **P0** | **Adopt Google Elephant-Goldfish Model (EGM), 3-Tier Project Dev Modes (ultra/balance/wise) & Fast Session-Complete, and Remove @k7 UI Mentions + Seed Webomage Live Audit Results** | tooling, web, cp, skills | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T704](.tasks/T704.md) | **P1** | **Harden Client Portal Audit Result Preservation, Multi-Target Report Maps, & Service-Role RLS Persistence Across All Diagnostic Surfaces** | cp, web | null | ✅ **done** |
 | [T703](.tasks/T703.md) | **P1** | **Embed Advanced Services & Packages Configurator into Post-Registration & Post-Checkout Client Portal Onboarding Wizard with Checkout Trigger** | cp, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T702](.tasks/T702.md) | **P1** | **[CF-AUD-001] Harden _dmarc.webomage.com DMARC Policy to p=quarantine (pct=100, adkim=s, aspf=s) in Cloudflare DNS & Terraform** | api, web, lib | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T701](.tasks/T701.md) | **P1** | **Publication-grade multi-page printable Audit Report PDF dossier and PKCE auth callback ceremony hardening** | cp, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T700](.tasks/T700.md) | **P1** | **Universal Calendars & Schedule Integration in Me Next to Todo (Google, Outlook/M365, Apple iCloud, CalDAV, Proton, Calendly, Cal.com, Notion, Bidirectional Todo Sync & Live .ics Feeds)** | web, cp, lib | openspec/specs/user-todos-and-shared-wishlists/spec.md | ✅ **done** |
+| [T699](.tasks/T699.md) | **P2** | 🆕 **Crypto smart-contract security auditing (Solidity/EVM, Rust/Solana, Move) & coin/tokenomics intelligence service** | web, api | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T698](.tasks/T698.md) | **P1** | **Public service & DevOps action ordering configurator (package + by-request) with infra target selectors on /solutions and /services, plus parallel agent ticket-collision guards** | web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T697](.tasks/T697.md) | **P0** | **Live Edge Lighthouse CWV Engine, Full First-Party Website & Repo Security/Compliance Audits, Saved Diagnostic Sessions, and Dedicated Mistral CP Fix Helper** | web, api, cp, lib | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T696](.tasks/T696.md) | **P1** | **Fork top UI/UX skills, upgrade webomage-design, and ship zero-execution read-only skill & 12-dimension UI/UX repo audit service** | web, skills, tooling | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |

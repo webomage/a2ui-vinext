@@ -1306,9 +1306,22 @@ def harvest_and_refresh_surfaces(
                 generators.append(("codemap_gen", ("w0m-web/project/scripts/codemap_gen.py", "--write")))
         generators.append(("state_doctor", ("scripts/state_doctor.py", "--write")))
 
-        for label, rel_cmd in generators:
+        t0_gen = time.monotonic()
+        total_gens = len(generators)
+        for idx_g, (label, rel_cmd) in enumerate(generators, 1):
             script_path = worktree_root / rel_cmd[0]
             if script_path.is_file():
+                print(
+                    format_progress_bar(
+                        idx_g,
+                        total_gens,
+                        f"refresh surface: {label} ...",
+                        elapsed_sec=time.monotonic() - t0_gen,
+                        prefix="[session-complete:surfaces]",
+                    ),
+                    file=sys.stderr,
+                    flush=True,
+                )
                 _run([sys.executable, str(script_path), *rel_cmd[1:]], cwd=worktree_root, check=True)
                 refreshed.append(label)
 
@@ -2165,7 +2178,26 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
     )
     holder_label = ctx.set_name or ctx.agent_id or "canonical"
 
+    t0_session = time.monotonic()
+    total_phases = 8
+
+    def _emit_phase(phase_idx: int, phase_label: str) -> None:
+        if args.json:
+            return
+        print(
+            format_progress_bar(
+                phase_idx,
+                total_phases,
+                f"[Phase {phase_idx}/{total_phases} · mode={active_dev_mode}] {phase_label}",
+                elapsed_sec=time.monotonic() - t0_session,
+                prefix="[session-complete:phase]",
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
+
     with session_complete_lock(lock_dir, holder=holder_label):
+        _emit_phase(1, "Discovering & normalizing target tickets + syncing origin/beta ...")
         explicit = [*args.tickets, *(args.extra_tickets or [])]
         targets = discover_target_tickets(
             wt_root,
@@ -2219,6 +2251,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
             if not args.dry_run and not args.skip_gates and targets:
                 _verify_target_ticket_schema(wt_root, targets)
 
+            _emit_phase(2, "Harvesting lessons & refreshing estate tracking surfaces ...")
             surfaces_info = harvest_and_refresh_surfaces(
                 wt_root,
                 set_name=ctx.set_name,
@@ -2246,6 +2279,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                 }
                 return 0, summary
 
+            _emit_phase(3, "Running session wrap-up verification gates ...")
             gate_results: list[dict[str, Any]] = []
             if not args.skip_gates:
                 gate_results = run_verification_gates(
@@ -2255,6 +2289,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                     dev_mode=active_dev_mode,
                 )
 
+            _emit_phase(4, "Synchronizing closed tickets to GitHub Issues & Project #6 ...")
             gh_sync_info = sync_tickets_to_github(
                 wt_root,
                 targets,
@@ -2278,6 +2313,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                     "refreshed": prev_refreshed,
                 }
 
+            _emit_phase(5, "Committing dirty estate repositories & post-commit ticket audits ...")
             primary_tid = ", ".join(targets) if targets else "T0"
             committed = commit_dirty_repos(
                 wt_root,
@@ -2288,6 +2324,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
             if not args.skip_gates and targets:
                 gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
 
+            _emit_phase(6, "Certifying estate tree for deploy ...")
             run_full_deploy_cert = (active_dev_mode == "wise") and (not bool(args.skip_gates))
             deploy_cert_info: dict[str, Any] | None = None
             if run_full_deploy_cert:
@@ -2305,6 +2342,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
             land_info: dict[str, Any] = {"mode": "skipped"}
             finalize_info: dict[str, Any] = {"mode": "skipped"}
             if not args.skip_land:
+                _emit_phase(7, "Landing agent tree onto origin/beta & fast-forwarding canonical root ...")
                 if ctx.in_agent_tree:
                     wait_for_land_lock(Path(ctx.work_root) if ctx.work_root else None)
                     extra_renumbered: dict[str, str] = {}
@@ -2374,6 +2412,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                         canonical_root=canon_p,
                         source="session-complete-direct-push",
                     )
+                _emit_phase(8, "Archiving session & verifying final canonical state ...")
                 finalize_info = archive_and_finalize_session(
                     ctx,
                     close_completed_others=bool(args.close_completed_others),
