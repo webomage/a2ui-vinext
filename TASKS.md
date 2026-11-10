@@ -33,6 +33,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T697](.tasks/T697.md) | **P0** | **Live Edge Lighthouse CWV Engine, Full First-Party Website & Repo Security/Compliance Audits, Saved Diagnostic Sessions, and Dedicated Mistral CP Fix Helper** | web, api, cp, lib | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T696](.tasks/T696.md) | **P1** | **Fork top UI/UX skills, upgrade webomage-design, and ship zero-execution read-only skill & 12-dimension UI/UX repo audit service** | web, skills, tooling | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T695](.tasks/T695.md) | **P1** | **Fix /me/todos infinite Svelte 5 $effect loop on 'Loading collections...', parallelize GET /api/todos + SSR preload, and restore 7 open admin_todos items** | web, api | openspec/specs/user-todos-and-shared-wishlists/spec.md | ✅ **done** |
 | [T694](.tasks/T694.md) | **P1** | **Browser Distributed WebGPU/WASM Compute Mesh & w0m-ext Controller** | web, cf, ext | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
