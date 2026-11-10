@@ -15,14 +15,14 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T706](/home/aleksei/Projects/!self/w0m/.tasks/T706.md) | [#705](https://github.com/webomage/wom7board/issues/705) | P1 | open | tools | 75 | Orca Desktop: Fix Back Button Not Navigating Embedded Browser Tabs, File Up 📄 live spec |
-| 2 | [T707](/home/aleksei/Projects/!self/w0m/.tasks/T707.md) | [#706](https://github.com/webomage/wom7board/issues/706) | P1 | open | skills | 75 | Audit and Adopt casualuser/job-hunter-skill into w0m-skills & Estate Skill  📄 live spec |
-| 3 | [T708](/home/aleksei/Projects/!self/w0m/.tasks/T708.md) | [#707](https://github.com/webomage/wom7board/issues/707) | P1 | open | tools | 75 | k7 WASM Git Navigation Browser in TUI with GitHub, GitLab & New LLM Git Fla 📄 live spec |
-| 4 | [T709](/home/aleksei/Projects/!self/w0m/.tasks/T709.md) | [#708](https://github.com/webomage/wom7board/issues/708) | P1 | open | infra | 75 | Evaluate tablinux (linuxontab) claw Package to Replace zeroclaw Functions A 📄 live spec |
-| 5 | [T710](/home/aleksei/Projects/!self/w0m/.tasks/T710.md) | [#709](https://github.com/webomage/wom7board/issues/709) | P1 | open | tools | 75 | Orca Embedded Browser: Load and Persist w0m-ext MV3 Extension in Electron B 📄 live spec |
-| 6 | [T713](/home/aleksei/Projects/!self/w0m/.tasks/T713.md) | [#712](https://github.com/webomage/wom7board/issues/712) | P1 | open | sdlc | 75 | Client Project Multi-Dialect Spec Bootstrap & Registry (clients-policy.json 📄 live spec |
-| 7 | [T714](/home/aleksei/Projects/!self/w0m/.tasks/T714.md) | [#713](https://github.com/webomage/wom7board/issues/713) | P1 | open | sdlc | 75 | Cross-Dialect Client Spec Bridge & Package Legitimacy Gate (scripts/client_ 📄 live spec |
-| 8 | [T715](/home/aleksei/Projects/!self/w0m/.tasks/T715.md) | [#714](https://github.com/webomage/wom7board/issues/714) | P1 | open | cp | 75 | Client Portal (apps/cp) Onboarding Wizard & Project Settings: Selectable SD 📄 live spec |
+| 1 | [T706](/home/aleksei/Projects/!self/w0m/.tasks/T706.md) | [#706](https://github.com/webomage/wom7board/issues/706) | P1 | open | tools | 75 | Orca Desktop & Mobile Mode: Fix 'Take back all' Resizing Only Agent Session 📄 live spec |
+| 2 | [T707](/home/aleksei/Projects/!self/w0m/.tasks/T707.md) | [#707](https://github.com/webomage/wom7board/issues/707) | P1 | open | skills | 75 | Audit and Adopt casualuser/job-hunter-skill into w0m-skills & Estate Skill  📄 live spec |
+| 3 | [T708](/home/aleksei/Projects/!self/w0m/.tasks/T708.md) | [#708](https://github.com/webomage/wom7board/issues/708) | P1 | open | tools | 75 | k7 WASM Git Navigation Browser in TUI with GitHub, GitLab & New LLM Git Fla 📄 live spec |
+| 4 | [T709](/home/aleksei/Projects/!self/w0m/.tasks/T709.md) | [#709](https://github.com/webomage/wom7board/issues/709) | P1 | open | infra | 75 | Evaluate tablinux (linuxontab) claw Package to Replace zeroclaw Functions A 📄 live spec |
+| 5 | [T710](/home/aleksei/Projects/!self/w0m/.tasks/T710.md) | [#710](https://github.com/webomage/wom7board/issues/710) | P1 | open | tools | 75 | Orca Embedded Browser: Load and Persist w0m-ext MV3 Extension in Electron B 📄 live spec |
+| 6 | [T713](/home/aleksei/Projects/!self/w0m/.tasks/T713.md) | [#713](https://github.com/webomage/wom7board/issues/713) | P1 | open | sdlc | 75 | Client Project Multi-Dialect Spec Bootstrap & Registry (clients-policy.json 📄 live spec |
+| 7 | [T714](/home/aleksei/Projects/!self/w0m/.tasks/T714.md) | [#714](https://github.com/webomage/wom7board/issues/714) | P1 | open | sdlc | 75 | Cross-Dialect Client Spec Bridge & Package Legitimacy Gate (scripts/client_ 📄 live spec |
+| 8 | [T715](/home/aleksei/Projects/!self/w0m/.tasks/T715.md) | [#715](https://github.com/webomage/wom7board/issues/715) | P1 | open | cp | 75 | Client Portal (apps/cp) Onboarding Wizard & Project Settings: Selectable SD 📄 live spec |
 | 9 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
@@ -39,14 +39,14 @@
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T706](/home/aleksei/Projects/!self/w0m/.tasks/T706.md) | [#705](https://github.com/webomage/wom7board/issues/705) | P1 | open | tools | 0/4 | `░░░░░░░░░░` 0% | — | Orca Desktop: Fix Back Button Not Navigating Embedded Browse |
-| 2 | [T707](/home/aleksei/Projects/!self/w0m/.tasks/T707.md) | [#706](https://github.com/webomage/wom7board/issues/706) | P1 | open | skills | 0/4 | `░░░░░░░░░░` 0% | — | Audit and Adopt casualuser/job-hunter-skill into w0m-skills  |
-| 3 | [T708](/home/aleksei/Projects/!self/w0m/.tasks/T708.md) | [#707](https://github.com/webomage/wom7board/issues/707) | P1 | open | tools | 0/4 | `░░░░░░░░░░` 0% | — | k7 WASM Git Navigation Browser in TUI with GitHub, GitLab &  |
-| 4 | [T709](/home/aleksei/Projects/!self/w0m/.tasks/T709.md) | [#708](https://github.com/webomage/wom7board/issues/708) | P1 | open | infra | 0/4 | `░░░░░░░░░░` 0% | — | Evaluate tablinux (linuxontab) claw Package to Replace zeroc |
-| 5 | [T710](/home/aleksei/Projects/!self/w0m/.tasks/T710.md) | [#709](https://github.com/webomage/wom7board/issues/709) | P1 | open | tools | 0/4 | `░░░░░░░░░░` 0% | — | Orca Embedded Browser: Load and Persist w0m-ext MV3 Extensio |
-| 6 | [T713](/home/aleksei/Projects/!self/w0m/.tasks/T713.md) | [#712](https://github.com/webomage/wom7board/issues/712) | P1 | open | sdlc | 0/4 | `░░░░░░░░░░` 0% | — | Client Project Multi-Dialect Spec Bootstrap & Registry (clie |
-| 7 | [T714](/home/aleksei/Projects/!self/w0m/.tasks/T714.md) | [#713](https://github.com/webomage/wom7board/issues/713) | P1 | open | sdlc | 0/4 | `░░░░░░░░░░` 0% | — | Cross-Dialect Client Spec Bridge & Package Legitimacy Gate ( |
-| 8 | [T715](/home/aleksei/Projects/!self/w0m/.tasks/T715.md) | [#714](https://github.com/webomage/wom7board/issues/714) | P1 | open | cp | 0/4 | `░░░░░░░░░░` 0% | — | Client Portal (apps/cp) Onboarding Wizard & Project Settings |
+| 1 | [T706](/home/aleksei/Projects/!self/w0m/.tasks/T706.md) | [#706](https://github.com/webomage/wom7board/issues/706) | P1 | open | tools | 0/4 | `░░░░░░░░░░` 0% | — | Orca Desktop & Mobile Mode: Fix 'Take back all' Resizing Onl |
+| 2 | [T707](/home/aleksei/Projects/!self/w0m/.tasks/T707.md) | [#707](https://github.com/webomage/wom7board/issues/707) | P1 | open | skills | 0/4 | `░░░░░░░░░░` 0% | — | Audit and Adopt casualuser/job-hunter-skill into w0m-skills  |
+| 3 | [T708](/home/aleksei/Projects/!self/w0m/.tasks/T708.md) | [#708](https://github.com/webomage/wom7board/issues/708) | P1 | open | tools | 0/4 | `░░░░░░░░░░` 0% | — | k7 WASM Git Navigation Browser in TUI with GitHub, GitLab &  |
+| 4 | [T709](/home/aleksei/Projects/!self/w0m/.tasks/T709.md) | [#709](https://github.com/webomage/wom7board/issues/709) | P1 | open | infra | 0/4 | `░░░░░░░░░░` 0% | — | Evaluate tablinux (linuxontab) claw Package to Replace zeroc |
+| 5 | [T710](/home/aleksei/Projects/!self/w0m/.tasks/T710.md) | [#710](https://github.com/webomage/wom7board/issues/710) | P1 | open | tools | 0/4 | `░░░░░░░░░░` 0% | — | Orca Embedded Browser: Load and Persist w0m-ext MV3 Extensio |
+| 6 | [T713](/home/aleksei/Projects/!self/w0m/.tasks/T713.md) | [#713](https://github.com/webomage/wom7board/issues/713) | P1 | open | sdlc | 0/4 | `░░░░░░░░░░` 0% | — | Client Project Multi-Dialect Spec Bootstrap & Registry (clie |
+| 7 | [T714](/home/aleksei/Projects/!self/w0m/.tasks/T714.md) | [#714](https://github.com/webomage/wom7board/issues/714) | P1 | open | sdlc | 0/4 | `░░░░░░░░░░` 0% | — | Cross-Dialect Client Spec Bridge & Package Legitimacy Gate ( |
+| 8 | [T715](/home/aleksei/Projects/!self/w0m/.tasks/T715.md) | [#715](https://github.com/webomage/wom7board/issues/715) | P1 | open | cp | 0/4 | `░░░░░░░░░░` 0% | — | Client Portal (apps/cp) Onboarding Wizard & Project Settings |
 | 9 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
 
 ### MECHANICAL STATE — generated, never hand-edited
@@ -58,18 +58,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `beta` | 0 | 0 | `63e4d73bf` |
-| `w0m-api` | `beta` | 0 | 0 | `cc8cedc` |
-| `w0m-cf` | `beta` | 0 | 0 | `b2dcf61` |
-| `w0m-skills` | `beta` | 0 | 0 | `630ea80` |
-| `w0m-ext` | `beta` | 0 | 0 | `5d94570` |
-| `w0m-sec` | `beta` | 0 | 0 | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `beta` | 0 | 0 | `72fc983` |
+| `w0m-web` | `agent/align-t700-t715` | 0 | **n/a — NO UPSTREAM** | `f9e88ea41` |
+| `w0m-api` | `agent/align-t700-t715` | 0 | **n/a — NO UPSTREAM** | `cc8cedc` |
+| `w0m-cf` | `agent/align-t700-t715` | 0 | **n/a — NO UPSTREAM** | `b2dcf61` |
+| `w0m-skills` | `agent/align-t700-t715` | 0 | **n/a — NO UPSTREAM** | `630ea80` |
+| `w0m-ext` | `agent/align-t700-t715` | 0 | **n/a — NO UPSTREAM** | `5d94570` |
+| `w0m-sec` | `agent/align-t700-t715` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/align-t700-t715` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
 **Tickets:** 13 open · 715 TASKS.md rows · 348/715 specced (9/13 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T706","T707","T708","T709","T710","T713","T714","T715","T17"],"repos":{"w0m-api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"cc8cedc","unpushed":0},"w0m-cf":{"branch":"beta","dirty":0,"has_upstream":true,"head":"b2dcf61","unpushed":0},"w0m-ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"5d94570","unpushed":0},"w0m-mlx/w0m-mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":0},"w0m-sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":0},"w0m-skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"630ea80","unpushed":0},"w0m-web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"63e4d73bf","unpushed":0}},"tickets":{"open":13,"rowless_open":[],"rows":715,"specced":348,"specced_open":9,"total":715,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T706","T707","T708","T709","T710","T713","T714","T715","T17"],"repos":{"w0m-api":{"branch":"agent/align-t700-t715","dirty":0,"has_upstream":true,"head":"cc8cedc","unpushed":null},"w0m-cf":{"branch":"agent/align-t700-t715","dirty":0,"has_upstream":true,"head":"b2dcf61","unpushed":null},"w0m-ext":{"branch":"agent/align-t700-t715","dirty":0,"has_upstream":true,"head":"5d94570","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/align-t700-t715","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/align-t700-t715","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/align-t700-t715","dirty":0,"has_upstream":true,"head":"630ea80","unpushed":null},"w0m-web":{"branch":"agent/align-t700-t715","dirty":0,"has_upstream":true,"head":"f9e88ea41","unpushed":null}},"tickets":{"open":13,"rowless_open":[],"rows":715,"specced":348,"specced_open":9,"total":715,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
