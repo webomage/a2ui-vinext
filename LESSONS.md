@@ -2188,6 +2188,13 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⇒ **Enforce `p=quarantine` or `p=reject` with strict alignment (`adkim=s; aspf=s; pct=100`) on `cloudflare_record.webomage_dmarc_txt` in `w0m-api/cloudflare/records.tf`, assert `("p=quarantine" in content or "p=reject" in content)` in `w0m-web/project/scripts/mail_auth_check.py`, and keep the live Cloudflare `_dmarc.webomage.com` TXT record synchronized and verified via `dig +short TXT _dmarc.webomage.com @1.1.1.1`.**
 ⭐ **The tell:** `mail_auth_check.py` passing while `cf_security_skill` (`CF-AUD-001`) flags `_dmarc.webomage.com` for running in monitoring-only `p=none` mode.
 
+### PRESERVE `Astro.url.search` ON CP HOME ROUTER REDIRECTS SO OAUTH AND STRIPE CHECKOUT TRIGGERS REACH `/o/[org]` ONBOARDING WIZARDS
+**2026-11-10 (T703).** Embedding the Advanced Services, Packages & Infrastructure Selector Configurator into the post-registration and post-checkout Client Portal Onboarding Wizard (`ClientDashboard.svelte` on `/o/[org]`) uncovered two silent state-handoff drops: (1) `buildFastOAuthRegisterUrl` and Stripe Checkout `success_url` target the CP root router `https://cp.webomage.com/?onboarding=wizard&checkout=triggered&order=service&service=...` because the client's organization slug `/o/<org>` is only resolved after authentication via `resolveHome()`, and `apps/cp/src/pages/index.astro` previously executed `return Astro.redirect(result.to)` without forwarding `Astro.url.search`, stripping every onboarding and checkout query parameter on redirect; and (2) in `POST /api/client/security-audit` (`action === "order_works"`), non-website service orders (`infra`, `cross_cloud_migration`, `blueprint`, `repo`) returned `deliverable` and `k7Report` in the HTTP response without writing them to `orgs.service_usage.deliveries`, causing wizard-submitted infrastructure scopes to disappear on refresh.
+
+⇒ **Always append `Astro.url.search` when `apps/cp/src/pages/index.astro` redirects to `result.to` (`/o/<org>`), use `buildOnboardingWizardPortalUrl` + `parseOnboardingWizardQuery` (`packages/lib/src/security/order-form-state.ts`) across public configurators and `ClientDashboard.svelte` so both Stripe Checkout and OAuth/email registration trigger the in-portal Onboarding Wizard (`cp-onboarding-service-wizard`), and persist non-website `order_works` deliverables + `service_scope` into `orgs.service_usage.deliveries`.**
+⭐ **The tell:** OAuth `next=/?order=service&service=multi-cloud-migration...` or post-checkout redirects landing on `/o/<org>` with an empty query string, or non-website service orders created inside the Client Portal disappearing after `F5`.
+
+
 
 
 
