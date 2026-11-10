@@ -981,6 +981,56 @@ class SessionCompleteTests(unittest.TestCase):
             finally:
                 os.chdir(str(orig_cwd))
 
+    def test_draft_disambiguation_and_post_commit_rollback_on_gate_failure(self) -> None:
+        import ticket_new as tn
+
+        with tempfile.TemporaryDirectory() as tmp_str:
+            tmp = Path(tmp_str)
+            origin = tmp / "origin.git"
+            _git_init_repo(origin, bare=True)
+
+            seed = tmp / "seed"
+            _git_init_repo(seed)
+            subprocess.run(["git", "remote", "add", "origin", str(origin)], cwd=str(seed), check=True)
+            (seed / ".tasks").mkdir()
+            (seed / ".tasks" / "T10.md").write_text("---\nid: T10\nstatus: done\n---\n", encoding="utf-8")
+            (seed / "LESSONS.md").write_text("# Lessons\n\n- Base rule.\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(seed), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "chore(T10): seed"], cwd=str(seed), check=True)
+            subprocess.run(["git", "push", "-q", "origin", "HEAD:beta"], cwd=str(seed), check=True)
+
+            wt = tmp / "work" / "parallel-set" / "w0m"
+            wt.parent.mkdir(parents=True)
+            subprocess.run(["git", "fetch", "-q", "origin"], cwd=str(seed), check=True)
+            subprocess.run(
+                ["git", "worktree", "add", "-q", "-b", "agent/parallel-set", str(wt), "origin/beta"],
+                cwd=str(seed),
+                check=True,
+            )
+
+            # 1. Two draft allocations with the same worktree slug disambiguate cleanly
+            d1, p1 = tn.allocate_ticket("First worktree task", repo_dir=wt, render_tasks=False, draft_slug="parallel-set")
+            d2, p2 = tn.allocate_ticket("Second worktree task", repo_dir=wt, render_tasks=False, draft_slug="parallel-set")
+            self.assertEqual(d1, "DRAFT-parallel-set")
+            self.assertNotEqual(d1, d2)
+            self.assertTrue(p1.is_file())
+            self.assertTrue(p2.is_file())
+            p2.unlink()
+
+            # 2. If a gate fails after commit_dirty_repos, soft reset + rollback restores DRAFT-parallel-set.md
+            mapped, renames = sc.maybe_renumber_colliding_tickets(wt, [d1], dry_run=False)
+            self.assertEqual(renames, {"DRAFT-parallel-set": "T11"})
+            self.assertEqual(mapped, ["T11"])
+            (wt / "LESSONS.md").write_text("# Lessons\n\n- Base rule.\n- Earned in T11: test rollback.\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=str(wt), check=True)
+            subprocess.run(["git", "commit", "-q", "-m", "feat(T11): committed before cert failure"], cwd=str(wt), check=True)
+
+            sc._soft_reset_worktree_to_merge_base(wt)
+            sc._rollback_renumbered_tickets(wt, renames)
+            self.assertFalse((wt / ".tasks" / "T11.md").exists())
+            self.assertTrue((wt / ".tasks" / "DRAFT-parallel-set.md").is_file())
+            self.assertIn("Earned in DRAFT-parallel-set:", (wt / "LESSONS.md").read_text(encoding="utf-8"))
+
 
 if __name__ == "__main__":
     unittest.main()

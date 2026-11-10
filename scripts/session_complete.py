@@ -656,6 +656,29 @@ def _rollback_renumbered_tickets(worktree_root: Path, renames: dict[str, str]) -
                 dest.write_text(rewritten_report, encoding="utf-8")
                 rfile.unlink()
 
+    lessons_path = worktree_root / "LESSONS.md"
+    if lessons_path.is_file():
+        curr_lessons = lessons_path.read_text(encoding="utf-8")
+        rewritten_lessons = _rewrite_ticket_id_map(curr_lessons, inv_renames)
+        if rewritten_lessons != curr_lessons:
+            lessons_path.write_text(rewritten_lessons, encoding="utf-8")
+
+
+def _soft_reset_worktree_to_merge_base(worktree_root: Path) -> None:
+    """Soft-reset `HEAD` back to `merge-base(HEAD, origin/beta)` across umbrella and member repos
+    so a post-commit gate failure (`deploy_cert_failed`) can cleanly roll back `DRAFT-<slug> -> T<N>`.
+    """
+    for _, repo_dir in _discover_estate_repos(worktree_root):
+        if not (repo_dir / ".git").exists():
+            continue
+        mb_proc = _git(repo_dir, "merge-base", "HEAD", BASE_REF)
+        head_proc = _git(repo_dir, "rev-parse", "HEAD")
+        if mb_proc.returncode == 0 and head_proc.returncode == 0:
+            mb = mb_proc.stdout.strip()
+            head = head_proc.stdout.strip()
+            if mb and head and mb != head:
+                _git(repo_dir, "reset", "--soft", mb)
+
 
 MIGRATION_FILE_RE = re.compile(r"^(\d{8,14})_(.+)\.sql$")
 
@@ -952,6 +975,11 @@ def sync_worktree_onto_origin_beta(worktree_root: Path) -> list[str]:
                 base_l_prefix = base_l.stdout.rstrip("\n")
                 if cur_l.startswith(base_l_prefix):
                     lesson_tail = cur_l[len(base_l_prefix) :]
+                elif cur_l != base_l.stdout:
+                    base_line_set = set(base_l.stdout.splitlines())
+                    added_lines = [ln for ln in cur_l.splitlines() if ln.strip() and ln not in base_line_set]
+                    if added_lines:
+                        lesson_tail = "\n" + "\n".join(added_lines) + "\n"
             for gen_rel in ("STATE.md", "TASKS.md", "docs/DECISIONS.md", "LESSONS.md", "catalog-info.yaml"):
                 if (repo_dir / gen_rel).exists():
                     _git(repo_dir, "checkout", "HEAD", "--", gen_rel)
@@ -2295,7 +2323,9 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                     skip_final_state_check=bool(args.skip_gates),
                 )
         except SessionCompleteError:
-            if not args.dry_run and not committed and wt_root.is_dir():
+            if not args.dry_run and wt_root.is_dir():
+                if committed and (renumbered or resequenced_migrations):
+                    _soft_reset_worktree_to_merge_base(wt_root)
                 if renumbered:
                     _rollback_renumbered_tickets(wt_root, renumbered)
                 if resequenced_migrations:

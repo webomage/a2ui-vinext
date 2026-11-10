@@ -15,7 +15,8 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 1 | [T699](/home/aleksei/Projects/!self/w0m/.tasks/T699.md) | ⚠️ not mirrored | P2 | queued | security | 40 | Crypto smart-contract security auditing (Solidity/EVM, Rust/Solana, Move) & 📄 live spec |
+| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -23,8 +24,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 5 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **5** are
+> ⚠️ **0 of 6 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **6** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -32,6 +33,7 @@
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 2 | [T699](/home/aleksei/Projects/!self/w0m/.tasks/T699.md) | ⚠️ not mirrored | P2 | queued | security | 0/5 | `░░░░░░░░░░` 0% | — | Crypto smart-contract security auditing (Solidity/EVM, Rust/ |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -42,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/audit-mistral-sessions` | 0 | **n/a — NO UPSTREAM** | `a3892c789` |
-| `w0m-api` | `agent/audit-mistral-sessions` | 0 | **n/a — NO UPSTREAM** | `30f292e` |
-| `w0m-cf` | `agent/audit-mistral-sessions` | 0 | **n/a — NO UPSTREAM** | `b2dcf61` |
-| `w0m-skills` | `agent/audit-mistral-sessions` | 0 | **n/a — NO UPSTREAM** | `d800099` |
-| `w0m-ext` | `agent/audit-mistral-sessions` | 0 | **n/a — NO UPSTREAM** | `5d94570` |
-| `w0m-sec` | `agent/audit-mistral-sessions` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/audit-mistral-sessions` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/public-service-order-forms` | 0 | **n/a — NO UPSTREAM** | `46a22e4c5` |
+| `w0m-api` | `agent/public-service-order-forms` | 0 | **n/a — NO UPSTREAM** | `30f292e` |
+| `w0m-cf` | `agent/public-service-order-forms` | 0 | **n/a — NO UPSTREAM** | `b2dcf61` |
+| `w0m-skills` | `agent/public-service-order-forms` | 0 | **n/a — NO UPSTREAM** | `d800099` |
+| `w0m-ext` | `agent/public-service-order-forms` | 0 | **n/a — NO UPSTREAM** | `5d94570` |
+| `w0m-sec` | `agent/public-service-order-forms` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/public-service-order-forms` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 5 open · 697 TASKS.md rows · 330/697 specced (1/5 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 699 TASKS.md rows · 332/699 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T17"],"repos":{"w0m-api":{"branch":"agent/audit-mistral-sessions","dirty":0,"has_upstream":true,"head":"30f292e","unpushed":null},"w0m-cf":{"branch":"agent/audit-mistral-sessions","dirty":0,"has_upstream":true,"head":"b2dcf61","unpushed":null},"w0m-ext":{"branch":"agent/audit-mistral-sessions","dirty":0,"has_upstream":true,"head":"5d94570","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/audit-mistral-sessions","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/audit-mistral-sessions","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/audit-mistral-sessions","dirty":0,"has_upstream":true,"head":"d800099","unpushed":null},"w0m-web":{"branch":"agent/audit-mistral-sessions","dirty":0,"has_upstream":true,"head":"a3892c789","unpushed":null}},"tickets":{"open":5,"rowless_open":[],"rows":697,"specced":330,"specced_open":1,"total":697,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T699","T17"],"repos":{"w0m-api":{"branch":"agent/public-service-order-forms","dirty":0,"has_upstream":true,"head":"30f292e","unpushed":null},"w0m-cf":{"branch":"agent/public-service-order-forms","dirty":0,"has_upstream":true,"head":"b2dcf61","unpushed":null},"w0m-ext":{"branch":"agent/public-service-order-forms","dirty":0,"has_upstream":true,"head":"5d94570","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/public-service-order-forms","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/public-service-order-forms","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/public-service-order-forms","dirty":0,"has_upstream":true,"head":"d800099","unpushed":null},"w0m-web":{"branch":"agent/public-service-order-forms","dirty":0,"has_upstream":true,"head":"46a22e4c5","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":699,"specced":332,"specced_open":2,"total":699,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,7 +115,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (9):
+#### Completed today (10):
 
 - **T689** — Domain ownership verification: CF/AWS/DO/GoDaddy guidance, automation, AI agent tabs, webomage.com record & db-drift-check timeout/redaction fix ((agy:domain-verify-providers): Implemented AC1–AC5 across w0m-web/project/scripts/db_drift_check.py, w0m-web/packages/lib/src/security/domain-ownership.ts, w0m-web/apps/cp/src/pages/api/client/security-audit.ts, w0m-web/apps/cp/src/components/client/SecurityAuditReportViewer.svelte, w0m-web/apps/web/public/.well-known/w0m-verify.txt, and w0m-api/cloudflare/records.tf. Created live _w0m-verify.webomage.com TXT record on Cloudflare and marked webomage.com verified in public.domain_ownership_verifications. Recorded earned rule in LESSONS.md (REDACT argv CONNECTION STRINGS BEFORE FORMATTING SubprocessError AND BOUND psql DRY-RUNS WITH PGCONNECT_TIMEOUT, lock_timeout, AND RETRIES).)
 - **T690** — Fix 'Invalid captcha' on /audit & /blueprints/order, add actionable recovery banner, step auto-scroll, paid-tier registration+checkout flow, and AI Agent Helper -> Free Audit handoff ((agy:tablinux-mesh-phase2): Fixed Turnstile token double-consumption in security-audit.ts, added recovery banners and auto-scroll in SecurityAuditWidget.svelte, BlueprintOrderFlow.svelte, AuditPricing.svelte, and ComplianceAuditCatalogExplorer.svelte, and wired AI Agent Helper handoff in ChatWidget.astro + ChatApp.svelte. Verified with 20/20 Vitest tests.)
@@ -124,6 +126,7 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T695** — Fix /me/todos infinite Svelte 5 $effect loop on 'Loading collections...', parallelize GET /api/todos + SSR preload, and restore 7 open admin_todos items ((agy:tablinux-mesh-phase2): Diagnosed live Supabase (19/19 admin_todos rows present in public.todo_items under Inbox list 0b17c9fc-3528-40e0-a7d2-fd963ee7f17a), extracted pre-E2E open/completed state from R2 backup backup_20261001_081509.sql, fixed TodoWorkspace.svelte infinite $effect loop, parallelized handleTodosApi, wired SSR preload into todos.astro, and authored migration 20261109210000_restore_admin_todos_open_state.sql.)
 - **T696** — Fork top UI/UX skills, upgrade webomage-design, and ship zero-execution read-only skill & 12-dimension UI/UX repo audit service ((agy:ui-ux-audit-service): Forked webomage/ui-ux-pro-max-skill, webomage/agent-skills, webomage/redesign-skill, and webomage/ui-ux-suite; upgraded webomage-design skill and synced via just skills-sync; shipped zero-execution read-only skill & 12-dimension UI/UX repo audit service in advanced-audit.ts, fork_catalog_sync.py, and SecurityAuditReportViewer.svelte. Follow-on crypto smart-contract & coin/token intelligence audit service split into backlog ticket.)
 - **T697** — Live Edge Lighthouse CWV Engine, Full First-Party Website & Repo Security/Compliance Audits, Saved Diagnostic Sessions, and Dedicated Mistral CP Fix Helper ((agy:audit-mistral-sessions): Implemented AC1–AC4 across w0m-web/packages/lib/src/security/lighthouse-audit.ts, w0m-web/packages/lib/src/security/domain-ownership.ts, w0m-web/packages/lib/src/security/advanced-audit.ts, w0m-web/packages/lib/src/security/mistral-remediation-helper.ts, w0m-web/apps/cp/src/pages/api/client/lighthouse-audit.ts, w0m-web/apps/cp/src/pages/api/client/security-audit.ts, w0m-web/apps/cp/src/pages/o/[org]/projects/security-audit.astro, and w0m-web/apps/cp/src/components/client/SecurityAuditReportViewer.svelte. Verified all unit/regression tests and quality gates (0 svelte-check errors, 0 surface drift findings, 0 UI ticket leaks). Recorded lesson in @wom/LESSONS.md (PAIR GOOGLE PSI V5 WITH LIVE EDGE HTML/CWV INSPECTION ON ANONYMOUS QUOTA EXHAUSTION).)
+- **T698** — Public service & DevOps action ordering configurator (package + by-request) with infra target selectors on /solutions and /services, plus parallel agent ticket-collision guards ((agy:public-service-order-forms): Implemented PUBLIC_SERVICE_ACTION_CATALOG + ServiceActionOrderConfigurator.svelte, wired /solutions and /services cards, and hardened ticket_new.py + session_complete.py against parallel worktree ticket collisions.)
 
 ## 3. Other open threads (in TASKS.md)
 

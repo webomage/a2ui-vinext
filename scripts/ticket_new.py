@@ -206,8 +206,20 @@ def allocate_ticket(
             clean_slug = clean_slug[6:]
         if not clean_slug:
             raise ValueError("draft_slug must contain alphanumeric characters")
-        ticket_id = f"DRAFT-{clean_slug}"
+        candidate_slug = clean_slug
+        ticket_id = f"DRAFT-{candidate_slug}"
         ticket_path = t_dir / f"{ticket_id}.md"
+        if ticket_path.exists():
+            title_slug = re.sub(r"[^a-z0-9]+", "-", title.strip().lower()).strip("-")[:24].strip("-")
+            if title_slug and not candidate_slug.endswith(title_slug):
+                candidate_slug = f"{clean_slug}-{title_slug}"
+                ticket_id = f"DRAFT-{candidate_slug}"
+                ticket_path = t_dir / f"{ticket_id}.md"
+            seq = 2
+            while ticket_path.exists():
+                ticket_id = f"DRAFT-{candidate_slug}-{seq}"
+                ticket_path = t_dir / f"{ticket_id}.md"
+                seq += 1
         content = _render_ticket_body(
             ticket_id,
             title.strip(),

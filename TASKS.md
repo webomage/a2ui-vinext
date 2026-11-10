@@ -25,6 +25,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T699](.tasks/T699.md) | **P2** | 🆕 **Crypto smart-contract security auditing (Solidity/EVM, Rust/Solana, Move) & coin/tokenomics intelligence service** | web, api | openspec/specs/sdlc_toolchain/spec.md | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | P3 | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 💤 **paused** |
@@ -33,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T698](.tasks/T698.md) | **P1** | **Public service & DevOps action ordering configurator (package + by-request) with infra target selectors on /solutions and /services, plus parallel agent ticket-collision guards** | web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T697](.tasks/T697.md) | **P0** | **Live Edge Lighthouse CWV Engine, Full First-Party Website & Repo Security/Compliance Audits, Saved Diagnostic Sessions, and Dedicated Mistral CP Fix Helper** | web, api, cp, lib | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T696](.tasks/T696.md) | **P1** | **Fork top UI/UX skills, upgrade webomage-design, and ship zero-execution read-only skill & 12-dimension UI/UX repo audit service** | web, skills, tooling | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T695](.tasks/T695.md) | **P1** | **Fix /me/todos infinite Svelte 5 $effect loop on 'Loading collections...', parallelize GET /api/todos + SSR preload, and restore 7 open admin_todos items** | web, api | openspec/specs/user-todos-and-shared-wishlists/spec.md | ✅ **done** |
