@@ -862,6 +862,195 @@ relations:
 apiVersion: w0m.dev/v1alpha1
 kind: AiResource
 metadata:
+  name: skill-egm-bootstrap
+  namespace: default
+  title: 'Skill: egm-bootstrap'
+  description: Governed agent skill `egm-bootstrap` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
+  name: skill-egm-brainstorm
+  namespace: default
+  title: 'Skill: egm-brainstorm'
+  description: Governed agent skill `egm-brainstorm` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
+  name: skill-egm-draft
+  namespace: default
+  title: 'Skill: egm-draft'
+  description: Governed agent skill `egm-draft` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
+  name: skill-egm-drift-report
+  namespace: default
+  title: 'Skill: egm-drift-report'
+  description: Governed agent skill `egm-drift-report` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
+  name: skill-egm-resolve
+  namespace: default
+  title: 'Skill: egm-resolve'
+  description: Governed agent skill `egm-resolve` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
+  name: skill-egm-review
+  namespace: default
+  title: 'Skill: egm-review'
+  description: Governed agent skill `egm-review` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
+  name: skill-egm-review-loop
+  namespace: default
+  title: 'Skill: egm-review-loop'
+  description: Governed agent skill `egm-review-loop` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
   name: skill-eli5
   namespace: default
   title: 'Skill: eli5'
@@ -1732,7 +1921,7 @@ metadata:
   title: 'Skill: webomage-design'
   description: Governed agent skill `webomage-design` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.11.09-1794266135
+    w0m.dev/skill-observed-version: 2026.11.10-1794316346
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json

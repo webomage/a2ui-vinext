@@ -94,5 +94,9 @@ project/.tools-weekly-status.json
 # ── Firecrawl CLI output cache ────────────────────────────────────────────────
 .firecrawl/
 
+# ── Local development mode state (T704: ultra | balance | wise) ───────────────
+.w0m/dev-mode.json
+
+
 
 

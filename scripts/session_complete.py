@@ -1376,10 +1376,39 @@ def _verify_target_ticket_schema(
     return {"gate": label, "returncode": 0}
 
 
+def _filter_gates_for_mode(
+    gates: list[Any],
+    dev_mode: str,
+) -> list[str]:
+    """Filter `.w0m/sdlc.json -> session_wrapup.verification_gates` by `ultra` | `balance` | `wise` (T704 AC4/AC5)."""
+    raw_list = [str(g).strip() for g in gates if str(g).strip()]
+    if dev_mode == "wise":
+        return raw_list
+    if dev_mode == "ultra":
+        ultra_tokens = (
+            "lessons_check.py",
+            "supabase_surface_drift_check.py",
+            "ds-conformance",
+            "ui-ticket-leak-check",
+            "reports-ticket-check",
+            "state-check",
+        )
+        return [g for g in raw_list if any(tok in g for tok in ultra_tokens)]
+    # `balance` mode (default): defer estate-wide 90s py-typecheck and 129-file mmd-validate to `just deploy` / `wise`
+    deferred_in_balance = (
+        "just py-typecheck",
+        "just mmd-validate",
+        "just skills-sync --check",
+        "just standards-check",
+    )
+    return [g for g in raw_list if g not in deferred_in_balance]
+
+
 def run_verification_gates(
     worktree_root: Path,
     sdlc_config: dict[str, Any],
     target_tickets: Sequence[str] = (),
+    dev_mode: str = "balance",
 ) -> list[dict[str, Any]]:
     wrapup = sdlc_config.get("session_wrapup")
     if not isinstance(wrapup, dict):
@@ -1391,11 +1420,9 @@ def run_verification_gates(
             ".w0m/sdlc.json -> session_wrapup.verification_gates must be a non-empty list",
         )
 
+    selected_gates = _filter_gates_for_mode(gates, dev_mode)
     commands: list[tuple[str, list[str]]] = []
-    for raw_gate in gates:
-        gate_str = str(raw_gate).strip()
-        if not gate_str:
-            continue
+    for gate_str in selected_gates:
         argv = shlex.split(gate_str)
         if argv and argv[0] == "python3":
             argv[0] = sys.executable
@@ -1770,6 +1797,7 @@ def land_and_cleanup_tree(
     *,
     remove_tree: bool = True,
     certify_after_land: bool = True,
+    precertify_web: bool = True,
     pre_land_certified: bool = False,
     defer_graph_refresh: bool = False,
 ) -> dict[str, Any]:
@@ -1778,7 +1806,7 @@ def land_and_cleanup_tree(
 
     if ctx.in_agent_tree and ctx.set_name:
         ensure_prepush_deps(wt_root)
-        if certify_after_land:
+        if precertify_web or certify_after_land:
             precertify_web_prepush(wt_root)
         pre_land_shas = _estate_head_shas(wt_root)
         agent_tree_py = wt_root / "w0m-web" / "project" / "scripts" / "agent_tree.py"
@@ -2028,6 +2056,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Spawn a detached settled-output closer so this terminal tab closes AFTER the final response finishes",
     )
+    ap.add_argument(
+        "--mode",
+        choices=("ultra", "balance", "wise"),
+        default=None,
+        help="Development mode override (ultra | balance | wise; defaults to active project mode)",
+    )
     ap.add_argument("--allow-no-ticket", action="store_true", help="Allow wrap-up when zero tickets are targeted")
     ap.add_argument("--json", action="store_true", help="Emit machine-readable JSON summary")
     return ap
@@ -2105,12 +2139,24 @@ def sync_tickets_to_github(
 def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[str, Any]]:
     args = build_parser().parse_args(list(argv) if argv is not None else None)
 
+    scripts_dir = Path(__file__).resolve().parent
+    if str(scripts_dir) not in sys.path:
+        sys.path.insert(0, str(scripts_dir))
+    from dev_mode import resolve_active_mode  # noqa: PLC0415
+
+    active_dev_mode, dev_mode_source = resolve_active_mode(getattr(args, "mode", None))
+
     ctx = detect_session_context(
         set_override=args.set_name,
         conversation_override=args.conversation,
     )
     wt_root = Path(ctx.worktree_root)
     sdlc_config = load_sdlc_config(wt_root)
+    print(
+        f"[session-complete] Active project mode: {active_dev_mode.upper()} (source: {dev_mode_source})",
+        file=sys.stderr,
+        flush=True,
+    )
 
     lock_dir = (
         _resolve_session_lock_dir(wt_root, ctx.work_root)
@@ -2202,7 +2248,12 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
 
             gate_results: list[dict[str, Any]] = []
             if not args.skip_gates:
-                gate_results = run_verification_gates(wt_root, sdlc_config, targets)
+                gate_results = run_verification_gates(
+                    wt_root,
+                    sdlc_config,
+                    targets,
+                    dev_mode=active_dev_mode,
+                )
 
             gh_sync_info = sync_tickets_to_github(
                 wt_root,
@@ -2237,13 +2288,19 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
             if not args.skip_gates and targets:
                 gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
 
+            run_full_deploy_cert = (active_dev_mode == "wise") and (not bool(args.skip_gates))
             deploy_cert_info: dict[str, Any] | None = None
-            if not args.skip_gates:
+            if run_full_deploy_cert:
                 deploy_cert_info = certify_estate_tree(
                     wt_root,
                     canonical_root=Path(ctx.canonical_root),
                     source="session-complete-pre-land",
                 )
+            else:
+                deploy_cert_info = {
+                    "status": "deferred_to_deploy",
+                    "mode": active_dev_mode,
+                }
 
             land_info: dict[str, Any] = {"mode": "skipped"}
             finalize_info: dict[str, Any] = {"mode": "skipped"}
@@ -2295,7 +2352,7 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                         )
                         if not args.skip_gates and targets:
                             gate_results.extend(run_post_commit_ticket_audits(wt_root, targets))
-                        if not args.skip_gates:
+                        if run_full_deploy_cert:
                             deploy_cert_info = certify_estate_tree(
                                 wt_root,
                                 canonical_root=Path(ctx.canonical_root),
@@ -2305,11 +2362,12 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
                 land_info = land_and_cleanup_tree(
                     ctx,
                     remove_tree=not bool(args.keep_tree),
-                    certify_after_land=not bool(args.skip_gates),
-                    pre_land_certified=bool(deploy_cert_info),
+                    certify_after_land=run_full_deploy_cert,
+                    precertify_web=not bool(args.skip_gates),
+                    pre_land_certified=run_full_deploy_cert and bool(deploy_cert_info),
                     defer_graph_refresh=True,
                 )
-                if land_info.get("mode") == "canonical_direct_push" and not args.skip_gates:
+                if land_info.get("mode") == "canonical_direct_push" and run_full_deploy_cert:
                     canon_p = Path(ctx.canonical_root)
                     deploy_cert_info = certify_estate_tree(
                         canon_p,
@@ -2333,15 +2391,24 @@ def run_session_complete(argv: Sequence[str] | None = None) -> tuple[int, dict[s
             raise
 
     if not args.skip_land and isinstance(land_info.get("graphUnionRefresh"), dict) and land_info["graphUnionRefresh"].get("deferred"):
-        land_info["graphUnionRefresh"] = refresh_canonical_graph_union(
-            Path(ctx.canonical_root),
-            lock_dir=lock_dir,
-            holder=holder_label,
-        )
+        if active_dev_mode == "wise":
+            land_info["graphUnionRefresh"] = refresh_canonical_graph_union(
+                Path(ctx.canonical_root),
+                lock_dir=lock_dir,
+                holder=holder_label,
+            )
+        else:
+            land_info["graphUnionRefresh"] = {
+                "status": "deferred_to_deploy",
+                "mode": active_dev_mode,
+                "reason": "Full kb_vector + graph_global rebuild is deferred to `just deploy` or `--mode wise` (T704 AC5).",
+            }
 
     summary = {
         "ok": True,
         "dryRun": False,
+        "devMode": active_dev_mode,
+        "devModeSource": dev_mode_source,
         "context": asdict(ctx),
         "targetTickets": targets,
         "renumberedTickets": renumbered,

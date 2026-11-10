@@ -2195,8 +2195,25 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⭐ **The tell:** OAuth `next=/?order=service&service=multi-cloud-migration...` or post-checkout redirects landing on `/o/<org>` with an empty query string, or non-website service orders created inside the Client Portal disappearing after `F5`.
 
 ### MIRROR CLIENT PORTAL `orgs.service_usage` AUDIT STATE TO CLOUDFLARE `AUDIT_CACHE_KV` AND PER-TARGET MAPS TO SURVIVE CLIENT-HAT RLS `0-ROW` UPDATES
-**2026-11-10 (T704).** Validating how Client Portal (`/o/[org]/projects/security-audit`) preserves security, Lighthouse, repository, and compliance audit results uncovered three subtle failure modes: (1) `public.orgs` has a single `UPDATE` RLS policy (`"Admins update orgs"` requiring `public.wom_acting_is('admin')`), so whenever a client member or an admin wearing a Client Hat (`Hat: Solar Mobile`) ran an audit, calling `supabase.from("orgs").update({ service_usage })` via the user-scoped SSR client updated `0` rows without throwing an error, causing page reloads to lose the newly generated report; (2) `POST /api/client/lighthouse-audit` returned early on `AUDIT_CACHE_KV` URL hits (`w0m:lhr:v1:<url>`) before persisting `latest_lighthouse_report` or `diagnostic_sessions` for the caller's `orgId`; and (3) storing only a single `latest_*_report` slot overwrote prior target results whenever an org switched between multiple verified domains (`webomage.com` -> `cp.webomage.com`) or repositories.
+**2026-11-10 (T705).** Validating how Client Portal (`/o/[org]/projects/security-audit`) preserves security, Lighthouse, repository, and compliance audit results uncovered three subtle failure modes: (1) `public.orgs` has a single `UPDATE` RLS policy (`"Admins update orgs"` requiring `public.wom_acting_is('admin')`), so whenever a client member or an admin wearing a Client Hat (`Hat: Solar Mobile`) ran an audit, calling `supabase.from("orgs").update({ service_usage })` via the user-scoped SSR client updated `0` rows without throwing an error, causing page reloads to lose the newly generated report; (2) `POST /api/client/lighthouse-audit` returned early on `AUDIT_CACHE_KV` URL hits (`w0m:lhr:v1:<url>`) before persisting `latest_lighthouse_report` or `diagnostic_sessions` for the caller's `orgId`; and (3) storing only a single `latest_*_report` slot overwrote prior target results whenever an org switched between multiple verified domains (`webomage.com` -> `cp.webomage.com`) or repositories.
 
 ⇒ **Persist Client Portal audit state through a unified 3-layer helper (`apps/cp/src/lib/client-audit-persistence.ts`: `persistOrgDiagnosticUpdate` + `loadMergedOrgAuditUsage`) that writes per-target maps (`security_reports_by_target`, `lighthouse_reports_by_target`, `level2_reports_by_repo`) and enriched `diagnostic_sessions` to both Cloudflare `AUDIT_CACHE_KV` (`w0m:org-audit-state:v1:<orgId>`) + isolate memory AND `public.orgs.service_usage`, never short-circuiting org persistence on Lighthouse URL cache hits, and mirroring per-org report maps in `SecurityAuditReportViewer.svelte`.**
 ⭐ **The tell:** Audit reports or saved diagnostic sessions disappearing after refreshing `/o/[org]/projects/security-audit` while wearing a Client Hat, cached Lighthouse runs not appearing in Saved Diagnostic Sessions, or auditing a second domain overwriting the first domain's report.
+
+### DEFER FULL-ESTATE GRAPH/VECTOR UNION REBUILDS AND 10-REPO DEPLOY CERTIFICATION OUT OF `ultra`/`balance` WORKTREE LANDING INTO `wise` MODE & `just deploy`
+**2026-11-10 (T705).** Profiling why `just session-complete` and `agent-tree-land` took ~15–31 minutes (`task-4539`) revealed two redundant estate-wide bottlenecks executing inside every worktree land: (1) `refresh_canonical_graph_union()` rebuilt `w0m_kb_vector.py index` (full vector + BM25 corpus) and `graph_global.py --auto-rebuild-stale --stale-limit 0` (`graphify` across all repos, `8–18 minutes`) synchronously on every worktree land even though `codegraph sync` already updates per commit; and (2) `session-complete` ran `certify_estate_tree` (`deploy_cert.py`, executing `check-guardrails` + 28 suites across all 10 repos for `just deploy` cache hits) in addition to `precertify_web_prepush` (`w0m-web/.husky/pre-push`), `just py-typecheck` (`1m27s`), and 129-report `just mmd-validate` (`24s`).
+
+⇒ **Control verification depth via the 3-tier project development mode (`scripts/dev_mode.py`, `just mode [status|ultra|balance|wise]`): in `ultra` and `balance` modes, run single-pass `precertify_web_prepush` and changed-surface/core drift gates while deferring 10-repo `deploy_cert.py` certification and synchronous `refresh_canonical_graph_union()` to `wise` mode (paired with Google's Elephant-Goldfish Model `egm-*` fresh-context review loop) and `just _deploy-preflight`.**
+⭐ **The tell:** A routine worktree land (`just session-complete T##`) blocking for 15–30 minutes in `w0m_kb_vector.py index`, `graph_global.py`, or duplicate `svelte_typecheck_ratchet.py` / `deploy_cert.py` passes before returning control to the operator.
+
+
+
+
+
+
+
+
+
+
+
 

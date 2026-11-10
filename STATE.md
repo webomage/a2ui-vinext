@@ -15,8 +15,13 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T699](/home/aleksei/Projects/!self/w0m/.tasks/T699.md) | ⚠️ not mirrored | P2 | queued | security | 40 | Crypto smart-contract security auditing (Solidity/EVM, Rust/Solana, Move) & 📄 live spec |
-| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 1 | [T706](/home/aleksei/Projects/!self/w0m/.tasks/T706.md) | [#705](https://github.com/webomage/wom7board/issues/705) | P1 | open | tools | 75 | Orca Desktop: Fix Back Button Not Navigating Embedded Browser Tabs, File Up 📄 live spec |
+| 2 | [T707](/home/aleksei/Projects/!self/w0m/.tasks/T707.md) | [#706](https://github.com/webomage/wom7board/issues/706) | P1 | open | skills | 75 | Audit and Adopt casualuser/job-hunter-skill into w0m-skills & Estate Skill  📄 live spec |
+| 3 | [T708](/home/aleksei/Projects/!self/w0m/.tasks/T708.md) | [#707](https://github.com/webomage/wom7board/issues/707) | P1 | open | tools | 75 | k7 WASM Git Navigation Browser in TUI with GitHub, GitLab & New LLM Git Fla 📄 live spec |
+| 4 | [T709](/home/aleksei/Projects/!self/w0m/.tasks/T709.md) | [#708](https://github.com/webomage/wom7board/issues/708) | P1 | open | infra | 75 | Evaluate tablinux (linuxontab) claw Package to Replace zeroclaw Functions A 📄 live spec |
+| 5 | [T710](/home/aleksei/Projects/!self/w0m/.tasks/T710.md) | [#709](https://github.com/webomage/wom7board/issues/709) | P1 | open | tools | 75 | Orca Embedded Browser: Load and Persist w0m-ext MV3 Extension in Electron B 📄 live spec |
+| 6 | [T699](/home/aleksei/Projects/!self/w0m/.tasks/T699.md) | ⚠️ not mirrored | P2 | queued | security | 40 | Crypto smart-contract security auditing (Solidity/EVM, Rust/Solana, Move) & 📄 live spec |
+| 7 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -24,16 +29,21 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 6 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **6** are
+> ⚠️ **0 of 11 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **11** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
-| 2 | [T699](/home/aleksei/Projects/!self/w0m/.tasks/T699.md) | ⚠️ not mirrored | P2 | queued | security | 0/5 | `░░░░░░░░░░` 0% | — | Crypto smart-contract security auditing (Solidity/EVM, Rust/ |
+| 1 | [T706](/home/aleksei/Projects/!self/w0m/.tasks/T706.md) | [#705](https://github.com/webomage/wom7board/issues/705) | P1 | open | tools | 0/4 | `░░░░░░░░░░` 0% | — | Orca Desktop: Fix Back Button Not Navigating Embedded Browse |
+| 2 | [T707](/home/aleksei/Projects/!self/w0m/.tasks/T707.md) | [#706](https://github.com/webomage/wom7board/issues/706) | P1 | open | skills | 0/4 | `░░░░░░░░░░` 0% | — | Audit and Adopt casualuser/job-hunter-skill into w0m-skills  |
+| 3 | [T708](/home/aleksei/Projects/!self/w0m/.tasks/T708.md) | [#707](https://github.com/webomage/wom7board/issues/707) | P1 | open | tools | 0/4 | `░░░░░░░░░░` 0% | — | k7 WASM Git Navigation Browser in TUI with GitHub, GitLab &  |
+| 4 | [T709](/home/aleksei/Projects/!self/w0m/.tasks/T709.md) | [#708](https://github.com/webomage/wom7board/issues/708) | P1 | open | infra | 0/4 | `░░░░░░░░░░` 0% | — | Evaluate tablinux (linuxontab) claw Package to Replace zeroc |
+| 5 | [T710](/home/aleksei/Projects/!self/w0m/.tasks/T710.md) | [#709](https://github.com/webomage/wom7board/issues/709) | P1 | open | tools | 0/4 | `░░░░░░░░░░` 0% | — | Orca Embedded Browser: Load and Persist w0m-ext MV3 Extensio |
+| 6 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 7 | [T699](/home/aleksei/Projects/!self/w0m/.tasks/T699.md) | ⚠️ not mirrored | P2 | queued | security | 0/5 | `░░░░░░░░░░` 0% | — | Crypto smart-contract security auditing (Solidity/EVM, Rust/ |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -44,18 +54,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `41295f561` |
-| `w0m-api` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `990e2f5` |
-| `w0m-cf` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `b2dcf61` |
-| `w0m-skills` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `d800099` |
-| `w0m-ext` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `5d94570` |
-| `w0m-sec` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/remove-k7-mentions` | 0 | **n/a — NO UPSTREAM** | `c976ac93d` |
+| `w0m-api` | `agent/remove-k7-mentions` | 0 | **n/a — NO UPSTREAM** | `cc8cedc` |
+| `w0m-cf` | `agent/remove-k7-mentions` | 0 | **n/a — NO UPSTREAM** | `b2dcf61` |
+| `w0m-skills` | `agent/remove-k7-mentions` | 0 | **n/a — NO UPSTREAM** | `e1132f0` |
+| `w0m-ext` | `agent/remove-k7-mentions` | 0 | **n/a — NO UPSTREAM** | `5d94570` |
+| `w0m-sec` | `agent/remove-k7-mentions` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/remove-k7-mentions` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 704 TASKS.md rows · 337/704 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 11 open · 710 TASKS.md rows · 343/710 specced (7/11 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T699","T17"],"repos":{"w0m-api":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"990e2f5","unpushed":null},"w0m-cf":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"b2dcf61","unpushed":null},"w0m-ext":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"5d94570","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"d800099","unpushed":null},"w0m-web":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"41295f561","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":704,"specced":337,"specced_open":2,"total":704,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T706","T707","T708","T709","T710","T699","T17"],"repos":{"w0m-api":{"branch":"agent/remove-k7-mentions","dirty":0,"has_upstream":true,"head":"cc8cedc","unpushed":null},"w0m-cf":{"branch":"agent/remove-k7-mentions","dirty":0,"has_upstream":true,"head":"b2dcf61","unpushed":null},"w0m-ext":{"branch":"agent/remove-k7-mentions","dirty":0,"has_upstream":true,"head":"5d94570","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/remove-k7-mentions","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/remove-k7-mentions","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/remove-k7-mentions","dirty":0,"has_upstream":true,"head":"e1132f0","unpushed":null},"w0m-web":{"branch":"agent/remove-k7-mentions","dirty":0,"has_upstream":true,"head":"c976ac93d","unpushed":null}},"tickets":{"open":11,"rowless_open":[],"rows":710,"specced":343,"specced_open":7,"total":710,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,10 +125,11 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (2):
+#### Completed today (3):
 
 - **T703** — Embed Advanced Services & Packages Configurator into Post-Registration & Post-Checkout Client Portal Onboarding Wizard with Checkout Trigger ((agy:onboarding-service-wizard): Embedded the 3-step Advanced Services, Packages & Infrastructure Selector Configurator into ClientDashboard.svelte (cp-onboarding-service-wizard), wired Stripe Checkout and OAuth/email registration as direct triggers via buildOnboardingWizardPortalUrl + parseOnboardingWizardQuery, fixed apps/cp/src/pages/index.astro to preserve Astro.url.search on /o/<org> redirects, and persisted non-website order_works deliverables + service_scope into orgs.service_usage.deliveries. Lesson disposition: recorded transferable engineering rule in LESSONS.md (PRESERVE Astro.url.search ON CP HOME ROUTER REDIRECTS SO OAUTH AND STRIPE CHECKOUT TRIGGERS REACH /o/[org] ONBOARDING WIZARDS).)
 - **T704** — Harden Client Portal Audit Result Preservation, Multi-Target Report Maps, & Service-Role RLS Persistence Across All Diagnostic Surfaces ((agy:audit-result-preservation): Implemented apps/cp/src/lib/client-audit-persistence.ts (persistOrgDiagnosticUpdate, loadMergedOrgAuditUsage, mergeOrgAuditServiceUsage), wired all audit actions in security-audit.ts and lighthouse-audit.ts (including KV cache hits, verify_domain, k7_infra_migration, order_works), wired SSR merge in security-audit.astro, and added per-target report map + per-org localStorage preservation in SecurityAuditReportViewer.svelte. Verified with lighthouse-audit.test.ts (8/8), test_t336_security_audit.py (7/7), supabase_surface_drift_check.py (0 findings), mmd-validate, and ui-ticket-leak-check.)
+- **T705** — Adopt Google Elephant-Goldfish Model (EGM), 3-Tier Project Dev Modes (ultra/balance/wise) & Fast Session-Complete, and Remove @k7 UI Mentions + Seed Webomage Live Audit Results ((agy:remove-k7-mentions): Removed all user-facing k7 / @k7 mentions across Audit UI, Client Portal, and Website (w0m-web), executed and seeded live Webomage L1/Lighthouse/L2/Skill/L3 audit results into orgs.service_usage (webomage and aleksei-tcelishchev), forked google/elephant-goldfish-model to webomage/elephant-goldfish-model and synced all 7 egm- skills across w0m-skills and .w0m/skills.json, implemented scripts/dev_mode.py (just mode [status|ultra|balance|wise]) + fast session_complete.py mode-aware gate/graph-union offload, and created/synced follow-up tickets [[T706]], [[T707]], [[T708]], [[T709]], and [[T710]]. Lesson disposition: recorded transferable engineering rule in LESSONS.md (DEFER FULL-ESTATE GRAPH/VECTOR UNION REBUILDS AND 10-REPO DEPLOY CERTIFICATION OUT OF ultra/balance WORKTREE LANDING INTO wise MODE & just deploy).)
 
 ## 3. Other open threads (in TASKS.md)
 

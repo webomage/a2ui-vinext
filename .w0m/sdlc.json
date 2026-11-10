@@ -1062,5 +1062,41 @@
         "rationale": "Estate CI/CD governance surface (remote GitHub Actions workflows retired in favor of local Dagger pipeline `wom7api/dagger/pipeline.ts` and `just test-prepush`)."
       }
     }
+  },
+  "elephant_goldfish_model": {
+    "_comment": "T704 AC3 — Google Elephant-Goldfish Model (https://github.com/google/elephant-goldfish-model, forked at webomage/elephant-goldfish-model). Pair a persistent-context Elephant Builder with a stateless zero-memory Goldfish Reviewer.",
+    "upstream": "google/elephant-goldfish-model",
+    "fork": "webomage/elephant-goldfish-model",
+    "skills": [
+      "egm-bootstrap",
+      "egm-brainstorm",
+      "egm-draft",
+      "egm-review",
+      "egm-review-loop",
+      "egm-resolve",
+      "egm-drift-report"
+    ]
+  },
+  "development_modes": {
+    "_comment": "T704 AC4/AC5 — 3-Tier Project Development Mode (ultra | balance | wise) managed via `just mode [status|ultra|balance|wise]` (`scripts/dev_mode.py`).",
+    "default_mode": "balance",
+    "controller": "scripts/dev_mode.py",
+    "modes": {
+      "ultra": {
+        "target_wrapup_seconds": "25-45s",
+        "run_graph_union_on_land": false,
+        "deduplicate_prepush_certification": true
+      },
+      "balance": {
+        "target_wrapup_seconds": "60-90s",
+        "run_graph_union_on_land": false,
+        "deduplicate_prepush_certification": true
+      },
+      "wise": {
+        "target_wrapup_seconds": "8-15m",
+        "run_graph_union_on_land": true,
+        "deduplicate_prepush_certification": true
+      }
+    }
   }
 }

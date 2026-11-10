@@ -7,6 +7,34 @@
       "source": "addyosmani/agent-skills",
       "version": "unknown"
     },
+    "egm-bootstrap": {
+      "provider": "w0m-native",
+      "version": "canonical"
+    },
+    "egm-brainstorm": {
+      "provider": "w0m-native",
+      "version": "canonical"
+    },
+    "egm-draft": {
+      "provider": "w0m-native",
+      "version": "canonical"
+    },
+    "egm-drift-report": {
+      "provider": "w0m-native",
+      "version": "canonical"
+    },
+    "egm-resolve": {
+      "provider": "w0m-native",
+      "version": "canonical"
+    },
+    "egm-review": {
+      "provider": "w0m-native",
+      "version": "canonical"
+    },
+    "egm-review-loop": {
+      "provider": "w0m-native",
+      "version": "canonical"
+    },
     "eli5": {
       "provider": "w0m-native",
       "version": "canonical",
@@ -162,7 +190,7 @@
     "webomage-design": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.11.09-1794266135"
+      "observed_version": "2026.11.10-1794316346"
     }
   },
   "auto_recommend": true

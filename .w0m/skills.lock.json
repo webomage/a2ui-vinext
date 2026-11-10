@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-11-09T23:15:37.682Z",
+  "generatedAt": "2026-11-10T13:41:39.939Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -233,7 +233,56 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/webomage-design",
-      "integrity": "sha256-391eb4f845eabdcd4257df44f5f5de5ec013611a53d18d6a95a07f60e415e11d"
+      "integrity": "sha256-9138350750e74b9b696ef0764eb295257968e884d8c54ac65e71582ac0b8796b"
+    },
+    "egm-bootstrap": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/egm-bootstrap",
+      "integrity": "sha256-d1bbfe3e5b39fb6f1d590c057a9494a96870ade5efcd28a544bab882bd35f1ca"
+    },
+    "egm-brainstorm": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/egm-brainstorm",
+      "integrity": "sha256-7664a2a066158c976aba54e1539732c73374ede58608f920159be1bb196d9816"
+    },
+    "egm-draft": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/egm-draft",
+      "integrity": "sha256-19d4a4e17916f38323655560792f739f73ac57a6f25f5748ddb600f4f8e822a2"
+    },
+    "egm-drift-report": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/egm-drift-report",
+      "integrity": "sha256-808d60cfc7414f2d252f1430ae3de945fa7b9bd329fb81198b908b962fb8be34"
+    },
+    "egm-resolve": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/egm-resolve",
+      "integrity": "sha256-0797d54f468c46df66c3b9f75653f20a4a0ac1ef9007c017c4860c2cdc227139"
+    },
+    "egm-review": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/egm-review",
+      "integrity": "sha256-5b04e782489b3bb4426ec1dbbf9a25443b92e91e612de323079d9f291feb5706"
+    },
+    "egm-review-loop": {
+      "provider": "w0m-native",
+      "resolved": "canonical",
+      "scope": "project",
+      "path": ".agents/skills/egm-review-loop",
+      "integrity": "sha256-a13cbfe12511de3b744f5dc192f33c75c7ca625830db0970eb5f97ef82e6bc5f"
     }
   }
 }

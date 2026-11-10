@@ -1090,6 +1090,12 @@ agent-tree-test:
 t531-layers-test:
     @python3 -m pytest w0m-web/project/scripts/tests/test_t531_layers.py -q -p no:cacheprovider
 
+# T704 — 3-tier project development mode (`ultra` | `balance` | `wise`) controller (`just mode [status|ultra|balance|wise]`).
+[no-cd]
+[positional-arguments]
+mode *args:
+    @python3 "{{justfile_directory()}}/scripts/dev_mode.py" "$@"
+
 # T640 — single-command in-session SDLC wrap-up (`session_wrapup`), gates, landing, live sync, and transcript archive.
 [no-cd]
 [positional-arguments]

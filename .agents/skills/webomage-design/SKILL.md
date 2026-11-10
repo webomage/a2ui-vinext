@@ -2,7 +2,7 @@
 name: webomage-design
 description: "Use this skill to generate, audit, and refine well-branded interfaces, responsive layouts, and UI components for Webomage (@webomage/ui + w0m-web/design-system). Enforces dark-first glassmorphic tokens, per-app [data-app] brand theming, 25 canonical @webomage/ui primitives, and the AgDR-0054 Mobile-First Multi-Orientation Responsive Contract (Mobile Portrait/Landscape, Tablet Vertical 768x1024, Tablet Horizontal 1024x768, and Desktop Well-Wrapped 1200px-1440px+)."
 metadata:
-  version: "2026.11.09-1794266135"
+  version: "2026.11.10-1794316346"
 ---
 
 # Webomage Design System (`webomage-design`)
@@ -66,4 +66,4 @@ Synthesized from the estate's 4 forked UI/UX audit skills (`webomage/ui-ux-pro-m
 ### Read-Only Zero-Execution Skill & Repository Audit Mode (`executionMode: "zero_exec_readonly_ast"`)
 When auditing a shared client GitHub repository or external `SKILL.md` / `.claude/` / `.agents/` skill bundle:
 - **Never execute untrusted code, `npm install`, `postinstall` hooks, or container sandboxes.**
-- Perform 100% read-only static AST/source inspection over the repository tree (`runReadOnlyRepoAndSkillUiAudit` in `@webomage/lib` and `run_readonly_repo_and_skill_audit` in `scripts/fork_catalog_sync.py`) checking both **Skill/Repo Security** (prompt injection, Trojan-Source bidirectional Unicode, malicious `package.json` lifecycle scripts, `curl | sh` pipes) and the **12 UI/UX Craftsmanship Dimensions**.
+- Perform 100% read-only static AST/source inspection over the repository tree (`runReadOnlyRepoAndSkillUiAudit` in `@webomage/lib` and `run_readonly_repo_and_skill_audit` in `scripts/fork_catalog_sync.py`) checking both **Skill/Repo Security** (prompt injection, Trojan-Source bidirectional Unicode, malicious `package.json` lifecycle scripts, and remote shell-pipe patterns) and the **12 UI/UX Craftsmanship Dimensions**.
