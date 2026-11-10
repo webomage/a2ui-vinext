@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T700](.tasks/T700.md) | **P1** | **Universal Calendars & Schedule Integration in Me Next to Todo (Google, Outlook/M365, Apple iCloud, CalDAV, Proton, Calendly, Cal.com, Notion, Bidirectional Todo Sync & Live .ics Feeds)** | web, cp, lib | openspec/specs/user-todos-and-shared-wishlists/spec.md | ✅ **done** |
 | [T698](.tasks/T698.md) | **P1** | **Public service & DevOps action ordering configurator (package + by-request) with infra target selectors on /solutions and /services, plus parallel agent ticket-collision guards** | web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T697](.tasks/T697.md) | **P0** | **Live Edge Lighthouse CWV Engine, Full First-Party Website & Repo Security/Compliance Audits, Saved Diagnostic Sessions, and Dedicated Mistral CP Fix Helper** | web, api, cp, lib | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T696](.tasks/T696.md) | **P1** | **Fork top UI/UX skills, upgrade webomage-design, and ship zero-execution read-only skill & 12-dimension UI/UX repo audit service** | web, skills, tooling | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
