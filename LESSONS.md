@@ -2182,6 +2182,13 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⇒ **Never call `supabase.auth.getUser()` inside auth middleware on `/api/auth/*` ceremony routes (`/api/auth/callback`, `/api/auth/oauth`, `/api/auth/signin`, `/api/auth/magic`, `/api/auth/signout`, `/api/auth/reset-request`); pass explicit `cookieOptions` (`domain`, `path: "/"`, `sameSite: "lax"`, `secure`) into `createServerClient` while guarding `getAll()` against empty duplicate cookies; recover cleanly in `handleCallback` if a session is already established; and always unclip `100vh` flex/scroll shells in `@media print` with a dedicated `[data-testid="cp-printable-audit-report-dossier"]` layout using `rgb(...)` tokens.**
 ⭐ **The tell:** `/api/auth/callback?code=...` redirecting to `/login?error=PKCE+code+verifier+not+found+in+storage` whenever the browser carries a stale `sb-<ref>-auth-token` cookie from an earlier session, or `Ctrl+P` / `window.print()` on a Client Portal page producing a 1-page PDF with dark-mode text and navigation chrome.
 
+### ENFORCE NON-NONE DMARC POLICIES (`p=quarantine` OR `p=reject`) IN BOTH TERRAFORM AND LIVE CLOUDFLARE DNS
+**2026-11-09 (T702).** Auditing `webomage.com` via `cf_security_skill` (`[CF-AUD-001] DMARC Policy in Monitoring-Only Mode (p=none)`) flagged that `_dmarc.webomage.com` in both `w0m-api/cloudflare/records.tf` (`cloudflare_record.webomage_dmarc_txt`) and live Cloudflare DNS (`id: e98fd164332f30685f3a3d1b36edd6d7`) was still set to `v=DMARC1; p=none; rua=mailto:dmarc@webomage.com; pct=100`, while `mail_auth_check.py` only asserted the presence of `v=DMARC1` and `rua=mailto:` without checking that the policy enforced `p=quarantine` or `p=reject`.
+
+⇒ **Enforce `p=quarantine` or `p=reject` with strict alignment (`adkim=s; aspf=s; pct=100`) on `cloudflare_record.webomage_dmarc_txt` in `w0m-api/cloudflare/records.tf`, assert `("p=quarantine" in content or "p=reject" in content)` in `w0m-web/project/scripts/mail_auth_check.py`, and keep the live Cloudflare `_dmarc.webomage.com` TXT record synchronized and verified via `dig +short TXT _dmarc.webomage.com @1.1.1.1`.**
+⭐ **The tell:** `mail_auth_check.py` passing while `cf_security_skill` (`CF-AUD-001`) flags `_dmarc.webomage.com` for running in monitoring-only `p=none` mode.
+
+
 
 
 
