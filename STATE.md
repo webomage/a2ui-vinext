@@ -44,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/onboarding-service-wizard` | 0 | **n/a — NO UPSTREAM** | `64a439be9` |
-| `w0m-api` | `agent/onboarding-service-wizard` | 0 | **n/a — NO UPSTREAM** | `990e2f5` |
-| `w0m-cf` | `agent/onboarding-service-wizard` | 0 | **n/a — NO UPSTREAM** | `b2dcf61` |
-| `w0m-skills` | `agent/onboarding-service-wizard` | 0 | **n/a — NO UPSTREAM** | `d800099` |
-| `w0m-ext` | `agent/onboarding-service-wizard` | 0 | **n/a — NO UPSTREAM** | `5d94570` |
-| `w0m-sec` | `agent/onboarding-service-wizard` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/onboarding-service-wizard` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `41295f561` |
+| `w0m-api` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `990e2f5` |
+| `w0m-cf` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `b2dcf61` |
+| `w0m-skills` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `d800099` |
+| `w0m-ext` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `5d94570` |
+| `w0m-sec` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/audit-result-preservation` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 703 TASKS.md rows · 336/703 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 704 TASKS.md rows · 337/704 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T699","T17"],"repos":{"w0m-api":{"branch":"agent/onboarding-service-wizard","dirty":0,"has_upstream":true,"head":"990e2f5","unpushed":null},"w0m-cf":{"branch":"agent/onboarding-service-wizard","dirty":0,"has_upstream":true,"head":"b2dcf61","unpushed":null},"w0m-ext":{"branch":"agent/onboarding-service-wizard","dirty":0,"has_upstream":true,"head":"5d94570","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/onboarding-service-wizard","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/onboarding-service-wizard","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/onboarding-service-wizard","dirty":0,"has_upstream":true,"head":"d800099","unpushed":null},"w0m-web":{"branch":"agent/onboarding-service-wizard","dirty":0,"has_upstream":true,"head":"64a439be9","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":703,"specced":336,"specced_open":2,"total":703,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T699","T17"],"repos":{"w0m-api":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"990e2f5","unpushed":null},"w0m-cf":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"b2dcf61","unpushed":null},"w0m-ext":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"5d94570","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"d800099","unpushed":null},"w0m-web":{"branch":"agent/audit-result-preservation","dirty":0,"has_upstream":true,"head":"41295f561","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":704,"specced":337,"specced_open":2,"total":704,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,9 +115,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (1):
+#### Completed today (2):
 
 - **T703** — Embed Advanced Services & Packages Configurator into Post-Registration & Post-Checkout Client Portal Onboarding Wizard with Checkout Trigger ((agy:onboarding-service-wizard): Embedded the 3-step Advanced Services, Packages & Infrastructure Selector Configurator into ClientDashboard.svelte (cp-onboarding-service-wizard), wired Stripe Checkout and OAuth/email registration as direct triggers via buildOnboardingWizardPortalUrl + parseOnboardingWizardQuery, fixed apps/cp/src/pages/index.astro to preserve Astro.url.search on /o/<org> redirects, and persisted non-website order_works deliverables + service_scope into orgs.service_usage.deliveries. Lesson disposition: recorded transferable engineering rule in LESSONS.md (PRESERVE Astro.url.search ON CP HOME ROUTER REDIRECTS SO OAUTH AND STRIPE CHECKOUT TRIGGERS REACH /o/[org] ONBOARDING WIZARDS).)
+- **T704** — Harden Client Portal Audit Result Preservation, Multi-Target Report Maps, & Service-Role RLS Persistence Across All Diagnostic Surfaces ((agy:audit-result-preservation): Implemented apps/cp/src/lib/client-audit-persistence.ts (persistOrgDiagnosticUpdate, loadMergedOrgAuditUsage, mergeOrgAuditServiceUsage), wired all audit actions in security-audit.ts and lighthouse-audit.ts (including KV cache hits, verify_domain, k7_infra_migration, order_works), wired SSR merge in security-audit.astro, and added per-target report map + per-org localStorage preservation in SecurityAuditReportViewer.svelte. Verified with lighthouse-audit.test.ts (8/8), test_t336_security_audit.py (7/7), supabase_surface_drift_check.py (0 findings), mmd-validate, and ui-ticket-leak-check.)
 
 ## 3. Other open threads (in TASKS.md)
 

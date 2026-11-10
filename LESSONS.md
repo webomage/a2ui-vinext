@@ -2194,13 +2194,9 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⇒ **Always append `Astro.url.search` when `apps/cp/src/pages/index.astro` redirects to `result.to` (`/o/<org>`), use `buildOnboardingWizardPortalUrl` + `parseOnboardingWizardQuery` (`packages/lib/src/security/order-form-state.ts`) across public configurators and `ClientDashboard.svelte` so both Stripe Checkout and OAuth/email registration trigger the in-portal Onboarding Wizard (`cp-onboarding-service-wizard`), and persist non-website `order_works` deliverables + `service_scope` into `orgs.service_usage.deliveries`.**
 ⭐ **The tell:** OAuth `next=/?order=service&service=multi-cloud-migration...` or post-checkout redirects landing on `/o/<org>` with an empty query string, or non-website service orders created inside the Client Portal disappearing after `F5`.
 
+### MIRROR CLIENT PORTAL `orgs.service_usage` AUDIT STATE TO CLOUDFLARE `AUDIT_CACHE_KV` AND PER-TARGET MAPS TO SURVIVE CLIENT-HAT RLS `0-ROW` UPDATES
+**2026-11-10 (T704).** Validating how Client Portal (`/o/[org]/projects/security-audit`) preserves security, Lighthouse, repository, and compliance audit results uncovered three subtle failure modes: (1) `public.orgs` has a single `UPDATE` RLS policy (`"Admins update orgs"` requiring `public.wom_acting_is('admin')`), so whenever a client member or an admin wearing a Client Hat (`Hat: Solar Mobile`) ran an audit, calling `supabase.from("orgs").update({ service_usage })` via the user-scoped SSR client updated `0` rows without throwing an error, causing page reloads to lose the newly generated report; (2) `POST /api/client/lighthouse-audit` returned early on `AUDIT_CACHE_KV` URL hits (`w0m:lhr:v1:<url>`) before persisting `latest_lighthouse_report` or `diagnostic_sessions` for the caller's `orgId`; and (3) storing only a single `latest_*_report` slot overwrote prior target results whenever an org switched between multiple verified domains (`webomage.com` -> `cp.webomage.com`) or repositories.
 
-
-
-
-
-
-
-
-
+⇒ **Persist Client Portal audit state through a unified 3-layer helper (`apps/cp/src/lib/client-audit-persistence.ts`: `persistOrgDiagnosticUpdate` + `loadMergedOrgAuditUsage`) that writes per-target maps (`security_reports_by_target`, `lighthouse_reports_by_target`, `level2_reports_by_repo`) and enriched `diagnostic_sessions` to both Cloudflare `AUDIT_CACHE_KV` (`w0m:org-audit-state:v1:<orgId>`) + isolate memory AND `public.orgs.service_usage`, never short-circuiting org persistence on Lighthouse URL cache hits, and mirroring per-org report maps in `SecurityAuditReportViewer.svelte`.**
+⭐ **The tell:** Audit reports or saved diagnostic sessions disappearing after refreshing `/o/[org]/projects/security-audit` while wearing a Client Hat, cached Lighthouse runs not appearing in Saved Diagnostic Sessions, or auditing a second domain overwriting the first domain's report.
 

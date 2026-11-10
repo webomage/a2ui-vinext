@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T704](.tasks/T704.md) | **P1** | **Harden Client Portal Audit Result Preservation, Multi-Target Report Maps, & Service-Role RLS Persistence Across All Diagnostic Surfaces** | cp, web | null | ✅ **done** |
 | [T703](.tasks/T703.md) | **P1** | **Embed Advanced Services & Packages Configurator into Post-Registration & Post-Checkout Client Portal Onboarding Wizard with Checkout Trigger** | cp, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T702](.tasks/T702.md) | **P1** | **[CF-AUD-001] Harden _dmarc.webomage.com DMARC Policy to p=quarantine (pct=100, adkim=s, aspf=s) in Cloudflare DNS & Terraform** | api, web, lib | openspec/specs/cp-guild-operations/spec.md | ✅ **done** |
 | [T701](.tasks/T701.md) | **P1** | **Publication-grade multi-page printable Audit Report PDF dossier and PKCE auth callback ceremony hardening** | cp, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
