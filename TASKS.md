@@ -38,6 +38,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T723](.tasks/T723.md) | **P1** | **Collapse Public /services and /solutions to 1-Click Fast Register + Direct Package Checkout and Keep Source/Target Infra Selector Strictly Post-Signup in /o/[org]** | web, cp | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T722](.tasks/T722.md) | **P0** | **Fix Astro v6 locals.runtime.env SSR Crashes (blueprints/order & CP), Classify Recovered Deploy Retries, and Ship Full-Scope Admin Member & Client Impersonation** | web, tooling | openspec/specs/auth/spec.md | ✅ **done** |
 | [T721](.tasks/T721.md) | **P0** | **Audit Recent casualuser Forks, Migrate Approved OSS Forks to webomage/, Install Real NVIDIA/SkillSpector v2.12.0 & Vendor Vetted Skills** | skills, web, tooling | openspec/specs/agent-security-and-mcp-audit/spec.md | ✅ **done** |
 | [T720](.tasks/T720.md) | **P0** | **Sync w0m-api/deno.lock and Enforce --frozen=true + Workspace Parity Across deno-check, deno-test & Pre-Commit to Prevent Release Worktree Mutation** | api, tooling | openspec/specs/deploy-elevation/spec.md | ✅ **done** |
