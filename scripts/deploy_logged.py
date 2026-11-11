@@ -35,7 +35,7 @@ import shlex
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 WORKSPACE = Path(__file__).resolve().parents[1]  # @wom (estate root)
 REPO = WORKSPACE / "w0m-web"                     # w0m-web/
@@ -150,6 +150,7 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
     advisory_failures: list[str] = []
     browser_errors: list[str] = []
     tool_chatter: list[str] = []
+    recovered_retries: list[str] = []
     other_trouble: list[str] = []
 
     rx_build_warn = re.compile(
@@ -192,6 +193,21 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
         re.IGNORECASE,
     )
 
+    # T722 AC2 — Transient Supabase Management API 500s during bulk Edge Function deploy are classified
+    # as `recovered_retries` ONLY when `scripts/deploy_functions.py` subsequently proves that every
+    # function updated cleanly (`✅ all N function(s) updated on live.`) with zero `STILL not updated`.
+    functions_all_updated = bool(
+        re.search(r"all\s+\d+\s+function\(s\)\s+updated\s+on\s+live\.", text, re.IGNORECASE)
+        and not re.search(r"function\(s\)\s+STILL\s+not\s+updated", text, re.IGNORECASE)
+    )
+    rx_transient_fn_retry = re.compile(
+        r"(?:^unexpected deploy status 5\d\d:\s*\{\"message\":\"Function deploy failed due to an internal error\"\}|"
+        r"^Try rerunning the command with --debug to troubleshoot the error\.|"
+        r"^↻\s+\d+\s+of\s+\d+\s+function\(s\)\s+not\s+updated:|"
+        r"^retry\s+\d+/\d+\s+in\s+\d+s,\s+\d+\s+at\s+a\s+time\b)",
+        re.IGNORECASE,
+    )
+
     for ln in lines:
         s = ln.strip()
         if not s:
@@ -206,6 +222,8 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
             tool_chatter.append(s)
         elif rx_harmless_trouble.search(s):
             continue
+        elif functions_all_updated and rx_transient_fn_retry.search(s):
+            recovered_retries.append(s)
         elif TROUBLE.search(s):
             other_trouble.append(s)
 
@@ -214,6 +232,7 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
         "advisory_failures": advisory_failures,
         "browser_errors": browser_errors,
         "tool_chatter": tool_chatter,
+        "recovered_retries": recovered_retries,
         "other_trouble": other_trouble,
     }
 
@@ -278,13 +297,61 @@ def compute_audit_deltas(
     }
 
 
+def evaluate_audit_record(record: dict[str, Any]) -> tuple[bool, list[str]]:
+    """T722 AC2: Inspect a persisted deploy audit JSON record and flag unrecovered errors/warnings."""
+    problems: list[str] = []
+    exit_code = int(record.get("exit_code") or 0)
+    bw = int(record.get("build_warnings_count") or 0)
+    br = int(record.get("browser_errors_count") or 0)
+    tr = int(record.get("other_trouble_count") or 0)
+
+    if exit_code != 0:
+        problems.append(f"exit_code={exit_code} (deploy command failed)")
+    if bw > 0:
+        problems.append(f"build_warnings_count={bw}")
+    if br > 0:
+        problems.append(f"browser_errors_count={br}")
+    if tr > 0:
+        problems.append(f"other_trouble_count={tr} (unrecovered error/warning lines)")
+    return (len(problems) == 0), problems
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Run a deploy recipe and keep the whole transcript")
     ap.add_argument("recipe", nargs="*", default=["deploy"],
                     help="just recipe(s) to run from w0m-api (default: deploy)")
     ap.add_argument("--keep-raw", action="store_true",
                     help="also keep the unprocessed pty capture next to the clean log")
+    ap.add_argument("--audit-check", action="store_true",
+                    help="inspect deploy-audit-latest.json (or --audit-file) and exit 1 on unrecovered trouble")
+    ap.add_argument("--audit-file", type=Path, default=None,
+                    help="explicit deploy audit JSON path for --audit-check")
     args = ap.parse_args()
+
+    if args.audit_check:
+        target_audit = args.audit_file or (LOGS / "deploy-audit-latest.json")
+        if not target_audit.is_file():
+            print(f"❌ deploy audit record not found: {target_audit}")
+            return 2
+        doc = cast(dict[str, Any], json.loads(target_audit.read_text(encoding="utf-8")))
+        ok, problems = evaluate_audit_record(doc)
+        rel = doc.get("release") or "none"
+        rec_retries = int(doc.get("recovered_retries_count") or 0)
+        print(
+            f"▶ deploy-audit [{rel}]: exit={doc.get('exit_code')} "
+            f"build_warnings={doc.get('build_warnings_count', 0)} "
+            f"browser_errors={doc.get('browser_errors_count', 0)} "
+            f"recovered_retries={rec_retries} "
+            f"other_trouble={doc.get('other_trouble_count', 0)}"
+        )
+        if not ok:
+            for p in problems:
+                print(f"  ❌ {p}")
+            for line in cast(list[str], doc.get("other_trouble") or [])[:10]:
+                print(f"     │ {line[:140]}")
+            return 1
+        print("  ✅ 0 unrecovered deploy warnings or errors")
+        return 0
     recipe = args.recipe or ["deploy"]
 
     LOGS.mkdir(exist_ok=True)
@@ -400,6 +467,8 @@ def main() -> int:
         "browser_errors": audit["browser_errors"][:50],
         "tool_chatter_count": len(audit["tool_chatter"]),
         "tool_chatter": audit["tool_chatter"][:50],
+        "recovered_retries_count": len(audit["recovered_retries"]),
+        "recovered_retries": audit["recovered_retries"][:50],
         "other_trouble_count": len(audit["other_trouble"]),
         "other_trouble": audit["other_trouble"][:50],
     }
@@ -440,6 +509,14 @@ def main() -> int:
         print(f"  [WARN] {br_count} browser console / network error(s):")
         for b in audit["browser_errors"][:10]:
             print(f"     │ {b[:140]}")
+
+    if audit["recovered_retries"]:
+        print(
+            f"  ✅ {len(audit['recovered_retries'])} transient Edge Function deploy line(s) "
+            "self-healed by retry (all functions verified updated on live):"
+        )
+        for r_ln in audit["recovered_retries"][:10]:
+            print(f"     │ {r_ln[:140]}")
 
     if audit["other_trouble"]:
         print(f"  ℹ  {len(audit['other_trouble'])} line(s) matching warning/error keywords:")

@@ -1361,6 +1361,9 @@ reports-ticket-check-test:
 deploy-logged *args:
     @python3 scripts/deploy_logged.py {{ args }}
 
+deploy-audit *args:
+    @python3 scripts/deploy_logged.py --audit-check {{ args }}
+
 deploy-logged-test:
     @python3 scripts/tests/test_deploy_logged.py
 

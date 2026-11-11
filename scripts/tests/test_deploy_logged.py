@@ -217,6 +217,63 @@ if audit_latest.exists():
         repr(audit_doc),
     )
 
+# ── T722 AC2: Transient Edge Function deploy 500s recovered by retry vs unrecovered failure ──
+recovered_fn_log = (
+    'unexpected deploy status 500: {"message":"Function deploy failed due to an internal error"}\n'
+    'unexpected deploy status 500: {"message":"Function deploy failed due to an internal error"}\n'
+    "Try rerunning the command with --debug to troubleshoot the error.\n"
+    "  ↻ 2 of 64 function(s) not updated: submit-service-request telegram-webhook\n"
+    "    retry 1/3 in 20s, 2 at a time\n"
+    "Deployed Functions on project pqbbjgeapylcengbuvee: submit-service-request, telegram-webhook\n"
+    "  ✅ all 64 function(s) updated on live.\n"
+)
+rec_audit = dl.audit_transcript(recovered_fn_log)
+check(
+    "T722 AC2: classifies self-healed Supabase Function 500 + retry lines into recovered_retries (0 other_trouble)",
+    len(rec_audit["recovered_retries"]) == 5 and len(rec_audit["other_trouble"]) == 0,
+    repr(rec_audit),
+)
+
+unrecovered_fn_log = (
+    'unexpected deploy status 500: {"message":"Function deploy failed due to an internal error"}\n'
+    "Try rerunning the command with --debug to troubleshoot the error.\n"
+    "  ↻ 2 of 64 function(s) not updated: submit-service-request telegram-webhook\n"
+    "    retry 3/3 in 120s, 2 at a time\n"
+    "  ❌ 2 function(s) STILL not updated after 3 retries — live is MIXED: submit-service-request telegram-webhook\n"
+)
+unrec_audit = dl.audit_transcript(unrecovered_fn_log)
+check(
+    "T722 AC2 (RED): keeps 500 + retry lines in other_trouble when functions remain STILL not updated",
+    len(unrec_audit["recovered_retries"]) == 0 and len(unrec_audit["other_trouble"]) >= 3,
+    repr(unrec_audit),
+)
+
+clean_audit_path = test_log_dir / "clean-audit.json"
+clean_audit_path.write_text(
+    '{"release":"2026.11.11-1794417310","exit_code":0,"build_warnings_count":0,"browser_errors_count":0,"recovered_retries_count":4,"other_trouble_count":0}\n',
+    encoding="utf-8",
+)
+proc_audit_ok = subprocess.run(
+    [sys.executable, str(ROOT / "scripts/deploy_logged.py"), "--audit-check", "--audit-file", str(clean_audit_path)],
+    capture_output=True,
+    text=True,
+    cwd=ROOT,
+)
+check("T722 AC2: --audit-check exits 0 on clean/recovered audit record", proc_audit_ok.returncode == 0, proc_audit_ok.stdout)
+
+dirty_audit_path = test_log_dir / "dirty-audit.json"
+dirty_audit_path.write_text(
+    '{"release":"2026.11.11-1794417310","exit_code":0,"build_warnings_count":0,"browser_errors_count":0,"recovered_retries_count":0,"other_trouble_count":2,"other_trouble":["Middleware Error: Astro.locals.runtime.env"]}\n',
+    encoding="utf-8",
+)
+proc_audit_bad = subprocess.run(
+    [sys.executable, str(ROOT / "scripts/deploy_logged.py"), "--audit-check", "--audit-file", str(dirty_audit_path)],
+    capture_output=True,
+    text=True,
+    cwd=ROOT,
+)
+check("T722 AC2 (RED): --audit-check exits 1 when unrecovered other_trouble > 0", proc_audit_bad.returncode == 1, proc_audit_bad.stdout)
+
 print("\n" + ("✅ all deploy-logged probes passed" if not fails
               else f"❌ {fails} probe(s) failed"))
 raise SystemExit(1 if fails else 0)
