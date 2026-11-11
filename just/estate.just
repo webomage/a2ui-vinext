@@ -2324,11 +2324,26 @@ skills-install-generic-test:
 skills-score *args:
     @cd w0m-skills && pnpm exec tsx scripts/generate_score.ts {{ args }}
 
-# deno-check: type-check every edge function (T23 AC-4). Clean as of 2026-07-17 (55/55 pass);
-# run this to keep it that way / before wiring deno-check into the deploy gate.
+# deno-lock-parity: verify `w0m-api/package.json` <-> `w0m-api/deno.lock` and
+# `w0m-api/supabase/functions/deno.json` <-> `deno.lock` agree without mutating disk (T720).
+deno-lock-parity:
+    @python3 w0m-api/scripts/deno_lock_parity_check.py
+
+# deno-lock-sync: reconcile `w0m-api/deno.lock` against `w0m-api/package.json` cleanly in an
+# isolated workspace without pruning Edge Function specifiers (T720 / T164).
+deno-lock-sync:
+    @python3 w0m-api/scripts/deno_lock_parity_check.py --sync
+
+deno-lock-parity-test:
+    @python3 -m pytest -q -p no:cacheprovider scripts/tests/test_deno_lock_parity.py
+
+# deno-check: type-check every edge function + verify frozen Deno lockfile parity (T23 AC-4 / T720).
+# Clean as of 2026-07-17 (55/55 pass); `--frozen=true` + `deno_lock_parity_check.py` prevent
+# `w0m-api/deno.lock` or `supabase/functions/deno.lock` from drifting or mutating release worktrees.
 deno-check:
     #!/usr/bin/env bash
     set -euo pipefail
+    python3 w0m-api/scripts/deno_lock_parity_check.py
     cd w0m-api/supabase/functions
     # `deno check` is SILENT on success, which made this suite unreadable to run_suites: a run that
     # checked 60 functions and one that checked none printed identically (nothing). Owner 2026-08-16:
@@ -2336,7 +2351,7 @@ deno-check:
     # the reader. Say what was checked, in the house ✅ style, so the count is a fact rather than an
     # inference.
     files=$(ls -d */index.ts 2>/dev/null | wc -l | tr -d " ")
-    deno check */index.ts
+    deno check --frozen=true */index.ts
     echo "✅ deno-check — ${files} edge function entrypoint(s) type-checked, 0 error(s)"
 
 # deno-test: unit tests for the edge stack (`supabase/functions/**/*.test.ts`). Introduced 2026-07-25
@@ -2351,7 +2366,7 @@ deno-test:
     # Same reason as deno-check: emit a countable summary rather than leaving the runner's own
     # format to be guessed at downstream.
     mapfile -t suites < <(find . -name '*.test.ts' -not -path './node_modules/*')
-    deno test --allow-env "${suites[@]}"
+    deno test --frozen=true --allow-env "${suites[@]}"
     echo "✅ deno-test — ${#suites[@]} edge-function test file(s) passed"
 
 # typecheck-worker: type-check the Cloudflare Worker in src/ (wrangler `main: src/index.ts`). T105 —

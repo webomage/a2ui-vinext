@@ -38,6 +38,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T720](.tasks/T720.md) | **P0** | **Sync w0m-api/deno.lock and Enforce --frozen=true + Workspace Parity Across deno-check, deno-test & Pre-Commit to Prevent Release Worktree Mutation** | api, tooling | openspec/specs/deploy-elevation/spec.md | ✅ **done** |
 | [T718](.tasks/T718.md) | **P1** | **Extend Cross-Dialect Client Spec Bridge for BMAD-METHOD (_bmad/), Conductor & cc-sdd (.kiro/specs/), Add Research Firewall to w0m-sdlc-research, and Publish GH Context/SDD Landscape Audit** | tooling, skills, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T717](.tasks/T717.md) | **P0** | **Complete Google Elephant-Goldfish Model (egm-*) Companion Vendoring (agents/, resources/, docs/) & Harden audit_vendoring.ts + version.ts Checks** | skills, web, api, cf, tooling | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T716](.tasks/T716.md) | **P1** | **Audit and Fix AgDR-0054 Mobile/Tablet Portrait & Landscape Orientation UX Across All w0m-web Apps (web, cp, me, demo) & @webomage/ui** | web | openspec/specs/cp-context-shell/spec.md | ✅ **done** |

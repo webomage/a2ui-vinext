@@ -1122,7 +1122,7 @@ def self_test() -> int:
     rel = app_fingerprints({".": git(ESTATE, "rev-parse", "HEAD"), **{r.path: git(r.abs(), "rev-parse", "HEAD")
                                                                         for r in estate_repos() if r.path != "."}})
     cases.append(("every app in release-apps.json fingerprints at HEAD (inputs exist)",
-                  {"api", "web", "cp", "join", "job", "demo", "db"} <= set(rel)))
+                  {"api", "web", "cp", "me", "demo", "db"} <= set(rel)))
     cases.append(("fingerprints are stable for the same commit", rel["cp"]["fingerprint"] == app_fingerprints(
         {".": git(ESTATE, "rev-parse", "HEAD"), **{r.path: git(r.abs(), "rev-parse", "HEAD")
                                                   for r in estate_repos() if r.path != "."}})["cp"]["fingerprint"]))

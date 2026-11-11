@@ -4,7 +4,7 @@
     "api": {
       "repo": "w0m-api",
       "deploy": "deploy-api",
-      "inputs": ["supabase/functions", "@umbrella:justfile"]
+      "inputs": ["supabase/functions", "package.json", "deno.lock", "@umbrella:justfile"]
     },
     "web": {
       "repo": "w0m-web",
