@@ -2285,6 +2285,15 @@ fork-catalog-status:
 skills-security-check:
     @python3 scripts/skill_spector_check.py
 
+skillspector-estate *args:
+    @python3 scripts/skill_spector_check.py --deep {{ args }}
+
+skillspector-scan target *args:
+    @python3 scripts/skill_spector_check.py --target "{{ target }}" {{ args }}
+
+floorplan action="status" root="." *args:
+    @node "w0m-pr/floorplan/skills/floorplan/scripts/{{ action }}.mjs" "{{ root }}" {{ args }}
+
 skills-optimize:
     @python3 scripts/skill_spector_check.py --optimize-report
 

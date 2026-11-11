@@ -72,6 +72,11 @@
       "provider": "w0m-native",
       "version": "canonical"
     },
+    "skill-inspector": {
+      "provider": "w0m-native",
+      "version": "canonical",
+      "observed_version": "2026.11.11-1794420629"
+    },
     "socrates": {
       "provider": "w0m-native",
       "version": "canonical",

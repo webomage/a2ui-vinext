@@ -37,7 +37,12 @@ FORKED_AI_TOOLS_CATALOG: list[dict[str, Any]] = [
         "canonical_origin": "git@github.com:webomage/SkillSpector.git",
         "track": "A",
         "disposition": "integrate",
-        "target_surfaces": ["scripts/skill_spector_check.py", "w0m-skills"],
+        "target_surfaces": [
+            "scripts/skill_spector_check.py",
+            ".skillspector-baseline.yaml",
+            "w0m-skills/skills/skill-inspector/SKILL.md",
+            "w0m-pr/SkillSpector",
+        ],
     },
     {
         "repo": "SkillOpt",
@@ -121,7 +126,23 @@ FORKED_AI_TOOLS_CATALOG: list[dict[str, Any]] = [
         "disposition": "port",
         "target_surfaces": ["w0m-web/packages/lib/src/security/advanced-audit.ts"],
     },
-    # Track D — Ontologies, Code Graphs & Multi-Repo Intelligence (5 repos)
+    {
+        "repo": "txtai",
+        "upstream": "neuml/txtai",
+        "canonical_origin": "git@github.com:webomage/txtai.git",
+        "track": "C",
+        "disposition": "reference",
+        "target_surfaces": ["scripts/w0m_kb_vector.py", "scripts/fork_catalog_sync.py"],
+    },
+    {
+        "repo": "local-deep-research",
+        "upstream": "LearningCircuit/local-deep-research",
+        "canonical_origin": "git@github.com:webomage/local-deep-research.git",
+        "track": "C",
+        "disposition": "reference",
+        "target_surfaces": ["w0m-skills/skills/autoresearch/SKILL.md", "scripts/fork_catalog_sync.py"],
+    },
+    # Track D — Ontologies, Code Graphs & Multi-Repo Intelligence (6 repos)
     {
         "repo": "auto-ontology",
         "upstream": "NVIDIA/auto-ontology",
@@ -162,7 +183,15 @@ FORKED_AI_TOOLS_CATALOG: list[dict[str, Any]] = [
         "disposition": "reference",
         "target_surfaces": ["scripts/fork_catalog_sync.py"],
     },
-    # Track E — Agent Orchestration, Observability & AI-DLC Workflows (11 repos)
+    {
+        "repo": "floorplan",
+        "upstream": "haydenschmitty/floorplan",
+        "canonical_origin": "git@github.com:webomage/floorplan.git",
+        "track": "D",
+        "disposition": "integrate",
+        "target_surfaces": ["w0m-pr/floorplan", "justfile", "scripts/fork_catalog_sync.py"],
+    },
+    # Track E — Agent Orchestration, Observability & AI-DLC Workflows (17 repos)
     {
         "repo": "openlit",
         "upstream": "openlit/openlit",
@@ -262,7 +291,47 @@ FORKED_AI_TOOLS_CATALOG: list[dict[str, Any]] = [
             "w0m-web/packages/lib/src/security/advanced-audit.ts",
         ],
     },
-    # Track F — Adjacent Creative, Design & Browser Sandboxes + UI/UX Audit Skills (9 repos)
+    {
+        "repo": "rivet",
+        "upstream": "rivet-dev/rivet",
+        "canonical_origin": "git@github.com:webomage/rivet.git",
+        "track": "E",
+        "disposition": "reference",
+        "target_surfaces": ["scripts/fork_catalog_sync.py"],
+    },
+    {
+        "repo": "gsd-core",
+        "upstream": "open-gsd/gsd-core",
+        "canonical_origin": "git@github.com:webomage/gsd-core.git",
+        "track": "E",
+        "disposition": "reference",
+        "target_surfaces": ["scripts/fork_catalog_sync.py"],
+    },
+    {
+        "repo": "elephant-goldfish-model",
+        "upstream": "google/elephant-goldfish-model",
+        "canonical_origin": "git@github.com:webomage/elephant-goldfish-model.git",
+        "track": "E",
+        "disposition": "integrate",
+        "target_surfaces": ["w0m-skills/skills/egm-review/SKILL.md", "w0m-skills/skills-registry.json"],
+    },
+    {
+        "repo": "learn-harness-engineering",
+        "upstream": "walkinglabs/learn-harness-engineering",
+        "canonical_origin": "git@github.com:webomage/learn-harness-engineering.git",
+        "track": "E",
+        "disposition": "reference",
+        "target_surfaces": ["scripts/fork_catalog_sync.py"],
+    },
+    {
+        "repo": "mistral-vibe",
+        "upstream": "mistralai/mistral-vibe",
+        "canonical_origin": "git@github.com:webomage/mistral-vibe.git",
+        "track": "E",
+        "disposition": "reference",
+        "target_surfaces": ["scripts/acp_host_discovery.py", "scripts/fork_catalog_sync.py"],
+    },
+    # Track F — Adjacent Creative, Design & Browser Sandboxes + UI/UX Audit Skills (11 repos)
     {
         "repo": "remotion-studio",
         "upstream": "remotion-dev/remotion-studio",
@@ -347,6 +416,47 @@ FORKED_AI_TOOLS_CATALOG: list[dict[str, Any]] = [
             "w0m-web/packages/lib/src/security/advanced-audit.ts",
         ],
     },
+    {
+        "repo": "linuxontab",
+        "upstream": "kilian-ai/linuxontab",
+        "canonical_origin": "git@github.com:webomage/linuxontab.git",
+        "track": "F",
+        "disposition": "integrate",
+        "target_surfaces": ["w0m-pr/linuxontab", "justfile"],
+    },
+    {
+        "repo": "social-media-agent",
+        "upstream": "langchain-ai/social-media-agent",
+        "canonical_origin": "git@github.com:webomage/social-media-agent.git",
+        "track": "F",
+        "disposition": "reference",
+        "target_surfaces": ["scripts/fork_catalog_sync.py"],
+    },
+]
+
+QUARANTINED_CASUALUSER_FORKS: list[dict[str, Any]] = [
+    {
+        "repo": "job-hunter-skill",
+        "upstream": "blackasp/job-hunter-skill",
+        "casualuser_fork": "casualuser/job-hunter-skill",
+        "license": "NOASSERTION",
+        "verdict": "REJECT",
+        "reason": (
+            "Unlicensed (NOASSERTION), SkillSpector E1/AE4 external hh.ru API + Cyrillic triggers, "
+            "hardcoded personal Russian-only persona overrides, and broad resume trigger hijacking (T721)."
+        ),
+    },
+    {
+        "repo": "short-video-factory",
+        "upstream": "YILS-LIN/short-video-factory",
+        "casualuser_fork": "casualuser/short-video-factory",
+        "license": "AGPL-3.0",
+        "verdict": "ISOLATED_COPYLEFT",
+        "reason": (
+            "Strong copyleft (AGPL-3.0); prohibited from vendoring or linking into first-party w0m-* "
+            "or webomage proprietary/permissive repositories (T721)."
+        ),
+    },
 ]
 
 WOM_ONTOLOGY_CLASSES: dict[str, dict[str, Any]] = {
@@ -422,6 +532,8 @@ def verify_fork_governance(
     return {
         "total_repos": len(items),
         "tracks": tracks,
+        "quarantined_casualuser_count": len(QUARANTINED_CASUALUSER_FORKS),
+        "quarantined_casualuser_forks": [q["repo"] for q in QUARANTINED_CASUALUSER_FORKS],
         "valid": len(violations) == 0 and len(items) >= 33,
         "violations": violations,
     }

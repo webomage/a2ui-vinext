@@ -1272,6 +1272,34 @@ relations:
 apiVersion: w0m.dev/v1alpha1
 kind: AiResource
 metadata:
+  name: skill-skill-inspector
+  namespace: default
+  title: 'Skill: skill-inspector'
+  description: Governed agent skill `skill-inspector` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-observed-version: 2026.11.11-1794420629
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
   name: skill-socrates
   namespace: default
   title: 'Skill: socrates'

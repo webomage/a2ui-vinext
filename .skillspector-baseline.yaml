@@ -1,0 +1,78 @@
+# w0m Estate NVIDIA/SkillSpector Baseline (T721)
+#
+# Audited against NVIDIA/SkillSpector v2.12.0 (`webomage/SkillSpector`).
+# Every rule below is tightly scoped by rule ID, file glob, and matched phrase
+# so both single-skill (`just skillspector-scan`) and estate-wide
+# (`just skillspector-estate`) scans suppress only verified benign prose/tests
+# and fail closed on any new CRITICAL or HIGH finding.
+
+version: 2
+scanner_version: "2.12.0"
+
+rules:
+  - id: "EA5"
+    path: "*SKILL.md"
+    message: "*codex exec --sandbox read-only*"
+    reason: "Reviewed (T721): `doubt-driven-development` documents optional read-only `codex exec --sandbox read-only` fresh-context adversarial review under operator invocation."
+
+  - id: "AS1"
+    path: "*references/orchestration-patterns.md"
+    message: "*~/.claude/settings.json*"
+    reason: "Reviewed (T721): prose setup note referencing `~/.claude/settings.json` for optional Claude Code Agent Teams configuration."
+
+  - id: "AS1"
+    path: "*docs/harnesses.md"
+    reason: "Reviewed (T717/T721): upstream Google Elephant-Goldfish Model harness setup guide listing `~/.claude/`, `~/.codex/`, and `~/.gemini/` config locations in documentation."
+
+  - id: "P2"
+    path: "*references/design_doc.md"
+    reason: "Reviewed (T717/T721): benign HTML template placeholder comments inside upstream Google EGM design-doc skeleton."
+
+  - id: "SC9"
+    path: "*node_modules*"
+    reason: "Reviewed (T521/T721): gitignored/provisioned `node_modules` directory for headless Mermaid AST parser (`mmd-validate`), outside authored skill instructions."
+
+  - id: "MP3"
+    path: "*AI-AND-LLM.md"
+    message: "*delete memory*"
+    reason: "Reviewed (T604/T721): Cloudflare `security-audit-skill` defensive checklist describing LLM memory-poisoning attack vectors to audit."
+
+  - id: "PE3"
+    path: "*ATTACK-CLASSES.md"
+    message: "*credentials.json*"
+    reason: "Reviewed (T604/T721): Cloudflare `security-audit-skill` defensive vulnerability taxonomy citing `credentials.json` as an audit target."
+
+  - id: "PE3"
+    path: "*DESKTOP-MOBILE-AND-LOCAL-IPC.md"
+    message: "*keychain*"
+    reason: "Reviewed (T604/T721): Cloudflare `security-audit-skill` defensive desktop/mobile IPC checklist citing OS keychain storage."
+
+  - id: "PE3"
+    path: "*validate-*.test.cjs"
+    message: "*/etc/passwd*"
+    reason: "Reviewed (T604/T721): Cloudflare `security-audit-skill` unit-test fixtures naming `/etc/passwd` as synthetic vulnerability sample data."
+
+  - id: "AR3"
+    path: "*SKILL.md"
+    message: "*bypass safety*"
+    reason: "Reviewed (T721): `w0m-sdlc-deploy` negative safety invariant ('Never bypass safety checks to force a deploy'), not an anti-refusal override."
+
+  - id: "P1"
+    path: "*SKILL.md"
+    message: "*bypass safety*"
+    reason: "Reviewed (T721): `w0m-sdlc-deploy` negative safety invariant ('Never bypass safety checks to force a deploy'), not a prompt-injection instruction."
+
+  - id: "PE3"
+    path: "*SKILL.md"
+    message: "*Access Tokens*"
+    reason: "Reviewed (T667/T721): `webomage-design` UI copywriting example ('Personal Access Tokens' product label vs leaked ticket ID), not credential file access."
+
+  - id: "AR3"
+    path: "*references/git-setup.md"
+    message: "*ignore policy*"
+    reason: "Reviewed (T371/T721): `wiki` git reference referring to `.gitignore` exclusion rules ('user-vault ignore policy'), not safety policy circumvention."
+
+  - id: "TM1"
+    path: "*references/rest-api.md"
+    message: "*curl -k*"
+    reason: "Reviewed (T371/T721): `wiki` REST adapter negative TLS verification rule ('Require normal TLS verification. Do not use curl -k'), not unsafe TLS disablement."
