@@ -2,6 +2,22 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.11-1794403906
+_First deployed: 2026-11-11 13:49:21.36644+00_
+
+### Features
+- **T718**: add bmad, conductor & cc-sdd client spec bridge dialects and close T717/T718 ([T718](file:///.tasks/T718.md), [T717](file:///.tasks/T717.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `9bf396e` | 2026-11-11 13:49:21.36644+00 |
+| demo | `9bf396e` | 2026-11-11 13:48:41.844471+00 |
+| me | `9bf396e` | 2026-11-11 13:47:57.963667+00 |
+| cp | `9bf396e` | 2026-11-11 13:46:27.747659+00 |
+| web | `9bf396e` | 2026-11-11 13:44:21.206784+00 |
+| release | `9bf396e` | 2026-11-11 13:42:05.613168+00 |
+| api | `9bf396e` | 2026-11-11 13:41:59.260091+00 |
+
 ## 2026.11.10-1794329001
 _First deployed: 2026-11-10 17:46:46.129619+00_
 
