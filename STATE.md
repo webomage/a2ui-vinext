@@ -52,18 +52,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t720-api-deno-lock` | 0 | **n/a — NO UPSTREAM** | `1cff955df` |
-| `w0m-api` | `agent/t720-api-deno-lock` | 0 | **n/a — NO UPSTREAM** | `f87706c` |
-| `w0m-cf` | `agent/t720-api-deno-lock` | 0 | **n/a — NO UPSTREAM** | `f8446d2` |
-| `w0m-skills` | `agent/t720-api-deno-lock` | 0 | **n/a — NO UPSTREAM** | `86077cf` |
-| `w0m-ext` | `agent/t720-api-deno-lock` | 0 | **n/a — NO UPSTREAM** | `20d0bd0` |
-| `w0m-sec` | `agent/t720-api-deno-lock` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/t720-api-deno-lock` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t721-skillspector-forks` | 0 | **n/a — NO UPSTREAM** | `d70b784fd` |
+| `w0m-api` | `agent/t721-skillspector-forks` | 0 | **n/a — NO UPSTREAM** | `f87706c` |
+| `w0m-cf` | `agent/t721-skillspector-forks` | 0 | **n/a — NO UPSTREAM** | `f8446d2` |
+| `w0m-skills` | `agent/t721-skillspector-forks` | 0 | **n/a — NO UPSTREAM** | `db655e7` |
+| `w0m-ext` | `agent/t721-skillspector-forks` | 0 | **n/a — NO UPSTREAM** | `20d0bd0` |
+| `w0m-sec` | `agent/t721-skillspector-forks` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/t721-skillspector-forks` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 10 open · 720 TASKS.md rows · 353/720 specced (6/10 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 10 open · 721 TASKS.md rows · 354/721 specced (6/10 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T707","T708","T713","T715","T719","T17"],"repos":{"w0m-api":{"branch":"agent/t720-api-deno-lock","dirty":0,"has_upstream":true,"head":"f87706c","unpushed":null},"w0m-cf":{"branch":"agent/t720-api-deno-lock","dirty":0,"has_upstream":true,"head":"f8446d2","unpushed":null},"w0m-ext":{"branch":"agent/t720-api-deno-lock","dirty":0,"has_upstream":true,"head":"20d0bd0","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t720-api-deno-lock","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t720-api-deno-lock","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t720-api-deno-lock","dirty":0,"has_upstream":true,"head":"86077cf","unpushed":null},"w0m-web":{"branch":"agent/t720-api-deno-lock","dirty":0,"has_upstream":true,"head":"1cff955df","unpushed":null}},"tickets":{"open":10,"rowless_open":[],"rows":720,"specced":353,"specced_open":6,"total":720,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T707","T708","T713","T715","T719","T17"],"repos":{"w0m-api":{"branch":"agent/t721-skillspector-forks","dirty":0,"has_upstream":true,"head":"f87706c","unpushed":null},"w0m-cf":{"branch":"agent/t721-skillspector-forks","dirty":0,"has_upstream":true,"head":"f8446d2","unpushed":null},"w0m-ext":{"branch":"agent/t721-skillspector-forks","dirty":0,"has_upstream":true,"head":"20d0bd0","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t721-skillspector-forks","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t721-skillspector-forks","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t721-skillspector-forks","dirty":0,"has_upstream":true,"head":"db655e7","unpushed":null},"w0m-web":{"branch":"agent/t721-skillspector-forks","dirty":0,"has_upstream":true,"head":"d70b784fd","unpushed":null}},"tickets":{"open":10,"rowless_open":[],"rows":721,"specced":354,"specced_open":6,"total":721,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -123,9 +123,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (1):
+#### Completed today (2):
 
 - **T720** — Sync w0m-api/deno.lock and Enforce --frozen=true + Workspace Parity Across deno-check, deno-test & Pre-Commit to Prevent Release Worktree Mutation ((agy:t720-api-deno-lock): Completed AC1–AC3 (status: done, closed_as: completed). Verified release/2026.11.11-1794403906 (releases/2026.11.11-1794403906.json published across all repos after clearing the 2-line w0m-api/deno.lock side-effect in the detached release worktree), implemented w0m-api/scripts/deno_lock_parity_check.py + scripts/tests/test_deno_lock_parity.py (proven RED with RED_EXIT=1 BYTE_IDENTICAL=yes, then GREEN 4/4), enforced --frozen=true across just/estate.just and w0m-api/.pre-commit-config.yaml, and captured lesson in LESSONS.md.)
+- **T721** — Audit Recent casualuser Forks, Migrate Approved OSS Forks to webomage/, Install Real NVIDIA/SkillSpector v2.12.0 & Vendor Vetted Skills ((agy:t721-skillspector-forks): Completed AC1–AC4. Mirrored 9 permissive casualuser forks to github.com/webomage/<repo>, quarantined job-hunter-skill (NOASSERTION + REJECT) and short-video-factory (AGPL-3.0), installed NVIDIA/SkillSpector v2.12.0 (skillspector[mcp]), wired scripts/skill_spector_check.py + .skillspector-baseline.yaml + just skillspector-estate + just floorplan, vendored skill-inspector (0/100 LOW SAFE) into w0m-skills (68 canonical skills), recorded lesson in LESSONS.md, and published repo-first audit report.)
 
 ## 3. Other open threads (in TASKS.md)
 
