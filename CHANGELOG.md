@@ -2,6 +2,18 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.11-1794417310
+_First deployed: 2026-11-11 18:54:30.83745+00_
+
+### Fixes
+- **T720**: enforce frozen deno-check/deno-test and package.json deno.lock parity ([T720](file:///.tasks/T720.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `7ec2fa7` | 2026-11-11 18:54:30.83745+00 |
+| release | `7ec2fa7` | 2026-11-11 18:53:53.2914+00 |
+| api | `7ec2fa7` | 2026-11-11 18:53:47.588437+00 |
+
 ## 2026.11.11-1794403906
 _First deployed: 2026-11-11 13:49:21.36644+00_
 
