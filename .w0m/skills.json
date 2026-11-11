@@ -135,7 +135,7 @@
     "w0m-sdlc-research": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.11.10-1794344935"
+      "observed_version": "2026.11.10-1794361245"
     },
     "w0m-sdlc-review": {
       "provider": "w0m-native",

@@ -11,7 +11,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: research
-  version: "2026.11.10-1794344935"
+  version: "2026.11.10-1794361245"
 ---
 
 # w0m-sdlc-research — the deep grounding gate
@@ -85,6 +85,9 @@ Run all that apply; record what each *actually* shows with a citation:
   against `project/policies/deps-policy.json` before drafting the spec.
 - **Triangulated SSOT & Multi-sided verification (`fact-checker`, `socrates` / `/grill-me`, `torvalds`).**
   Enforce adversarial rigor: cross-validate facts across the 5 surfaces (*Docs vs Specs vs Code vs Tests vs Live Infra*) using `fact-checker` to disprove stale assumptions. Apply Socratic questioning (`socrates` / `/grill-me`) to expose boundary conditions and missing edge cases. Apply ruthless pragmatism (`torvalds`) to eliminate bloat and unnecessary abstractions before any spec is drafted.
+- **Epistemic Research Firewall (T717, adapted from `BMAD-METHOD` `bmad-deep-recon` & EGM Goldfish isolation).**
+  1. **Never conclude from training weights alone:** Prior knowledge proposes hypotheses and queries; factual conclusions require verifiable evidence retrieved or measured in *this* run (file:line, commit SHA, live query, or dated primary upstream source).
+  2. **Project-context firewall:** Internal tickets, briefs, PRDs, and prior claims shape *what questions to ask*, never *what is true*. They are inadmissible as proof of codebase or external ecosystem state. When delegating external or Goldfish research subagents, pass an isolated brief without unverified ambient assertions, and cite publisher/repo + publication/retrieval date on every external claim.
 - **UI/UX surface & design system (MANDATORY for tickets with UI/UX changes).**
   Trigger condition: ticket `repos` includes `web` or `cp`, tags include `ui`/`ux`/`frontend`/`cp`/`design`, or the ticket touches `.astro`, `.svelte`, `.css`, `packages/ui`, or `apps/*`.
   **Enforce and launch UI skills:**

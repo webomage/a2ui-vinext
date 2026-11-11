@@ -123,3 +123,65 @@ def test_openspec_and_w0m_dialects(tmp_path: Path) -> None:
     assert env.dialect == "openspec"
     assert env.has_testing_seams is True
     assert env.verification_status == "verified"
+
+
+def test_bmad_dialect_bridge(tmp_path: Path) -> None:
+    epic_dir = tmp_path / "_bmad" / "epics" / "01-checkout"
+    epic_dir.mkdir(parents=True)
+    (tmp_path / "_bmad" / "project-context.md").write_text(
+        "# Storefront Context\nREQ-BMAD-01\n",
+        encoding="utf-8",
+    )
+    (epic_dir / "story-01.md").write_text(
+        "# Checkout Story\nFR-101: Cart checkout.\n\n## Testing seams\n- `data-testid=\"bmad-pay\"`\n- [x] AC1 Build handler\n- [x] AC2 Verify E2E\n",
+        encoding="utf-8",
+    )
+    assert detect_spec_dialect(tmp_path) == "bmad"
+    env = inspect_client_project_specs(tmp_path)
+    assert env.dialect == "bmad"
+    assert env.tasks_done == 2
+    assert env.tasks_total == 2
+    assert env.has_testing_seams is True
+    assert env.verification_status == "verified"
+    assert "FR-101" in env.requirements
+    assert "REQ-BMAD-01" in env.requirements
+
+
+def test_conductor_and_cc_sdd_dialects(tmp_path: Path) -> None:
+    # 1. Google Conductor (`conductor/tracks/<track>/`)
+    c_root = tmp_path / "conductor_proj"
+    track_dir = c_root / "conductor" / "tracks" / "webhook-delivery"
+    track_dir.mkdir(parents=True)
+    (c_root / "conductor" / "product.md").write_text("# Webhook Product\nREQ-COND-01\n", encoding="utf-8")
+    (track_dir / "spec.md").write_text(
+        "# Webhook Spec\n\n## Testing seams\n- Observable HTTP 202 receipt\n",
+        encoding="utf-8",
+    )
+    (track_dir / "plan.md").write_text(
+        "- [x] Task 1: Signature check\n- [ ] Task 2: Retry backoff\n",
+        encoding="utf-8",
+    )
+    assert detect_spec_dialect(c_root) == "conductor"
+    c_env = inspect_client_project_specs(c_root)
+    assert c_env.dialect == "conductor"
+    assert c_env.tasks_done == 1
+    assert c_env.tasks_total == 2
+    assert c_env.has_testing_seams is True
+    assert c_env.verification_status == "in_progress"
+
+    # 2. Kiro / cc-sdd (`.kiro/specs/<feature>/{requirements,design,tasks}.md`)
+    k_root = tmp_path / "kiro_proj"
+    k_spec = k_root / ".kiro" / "specs" / "audit-trail"
+    k_spec.mkdir(parents=True)
+    (k_spec / "requirements.md").write_text(
+        "# Audit Trail Requirements\nREQ-KIRO-01\n#### Scenario: Append-only write\n",
+        encoding="utf-8",
+    )
+    (k_spec / "tasks.md").write_text("- [x] 1.1 Create trigger\n- [x] 1.2 Add RLS test\n", encoding="utf-8")
+    assert detect_spec_dialect(k_root) == "cc-sdd"
+    k_env = inspect_client_project_specs(k_root)
+    assert k_env.dialect == "cc-sdd"
+    assert k_env.tasks_done == 2
+    assert k_env.tasks_total == 2
+    assert k_env.has_testing_seams is True
+    assert k_env.verification_status == "verified"

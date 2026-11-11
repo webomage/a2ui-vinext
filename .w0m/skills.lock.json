@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-11-10T21:08:57.421Z",
+  "generatedAt": "2026-11-11T01:40:55.781Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -99,7 +99,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/w0m-sdlc-research",
-      "integrity": "sha256-07e2f0c9baff58f9537b207d1ca454235bbf6ffef46d5e6c2687865f0fe957a2"
+      "integrity": "sha256-f6a6bf78049a1d2265432a3c1560ff36b97ac0c887cefc14f926bbdef317b414"
     },
     "w0m-sdlc-review": {
       "provider": "w0m-native",
@@ -240,49 +240,49 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/egm-bootstrap",
-      "integrity": "sha256-d1bbfe3e5b39fb6f1d590c057a9494a96870ade5efcd28a544bab882bd35f1ca"
+      "integrity": "sha256-fb61730157a6269390c21c923d3aeba6a6807088491eff4dc6977a7f75143a86"
     },
     "egm-brainstorm": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/egm-brainstorm",
-      "integrity": "sha256-7664a2a066158c976aba54e1539732c73374ede58608f920159be1bb196d9816"
+      "integrity": "sha256-cfab75205845391f52d56d2ffcbbbd201d17ae90e90cd552a06f17e4f69b1408"
     },
     "egm-draft": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/egm-draft",
-      "integrity": "sha256-19d4a4e17916f38323655560792f739f73ac57a6f25f5748ddb600f4f8e822a2"
+      "integrity": "sha256-c0eccd3aaf1b7445674d2eaf155bb322b4f539db63ec9b94dc43b4c9a96584e2"
     },
     "egm-drift-report": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/egm-drift-report",
-      "integrity": "sha256-808d60cfc7414f2d252f1430ae3de945fa7b9bd329fb81198b908b962fb8be34"
+      "integrity": "sha256-885fb8019f20655ac4a59efb260f333bf7ce9c5904c3cc95440386b86e315de7"
     },
     "egm-resolve": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/egm-resolve",
-      "integrity": "sha256-0797d54f468c46df66c3b9f75653f20a4a0ac1ef9007c017c4860c2cdc227139"
+      "integrity": "sha256-9fb3b44a82845ab70de603274d5919c49bfa3468a8b4e23de572e0538583e4a7"
     },
     "egm-review": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/egm-review",
-      "integrity": "sha256-5b04e782489b3bb4426ec1dbbf9a25443b92e91e612de323079d9f291feb5706"
+      "integrity": "sha256-e1baa3d4444240361057e816c23056a8fa4ef7a0120fd63f8a15111b2d685a7d"
     },
     "egm-review-loop": {
       "provider": "w0m-native",
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/egm-review-loop",
-      "integrity": "sha256-a13cbfe12511de3b744f5dc192f33c75c7ca625830db0970eb5f97ef82e6bc5f"
+      "integrity": "sha256-2f5709bc6c43acbfe228e6c8216df20fccffb8d023207087a03f42d0ef1e35c7"
     }
   }
 }

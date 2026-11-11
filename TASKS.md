@@ -29,6 +29,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T713](.tasks/T713.md) · [#712](https://github.com/casualuser/webomage.com/issues/712) | **P1** | **Client Project Multi-Dialect Spec Bootstrap & Registry (clients-policy.json, GENERIC-SDLC-SET.md, just client-spec-init for Spec Kit, OpenGSD & OpenSpec)** | tooling, skills, web | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
 | [T708](.tasks/T708.md) | **P1** | **k7 WASM Git Navigation Browser in TUI with GitHub, GitLab & New LLM Git Flavours Support** | tooling, web | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
 | [T707](.tasks/T707.md) | **P1** | **Audit and Adopt casualuser/job-hunter-skill into w0m-skills & Estate Skill Manifests** | skills, web, recruit | openspec/specs/sdlc_toolchain/spec.md | ⚪ **open** |
+| [T719](.tasks/T719.md) | **P2** | 🆕 **Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vibe-Skills, tilth, agtx) & Prototype AgDR Decision Evidence-Decay Check** | tooling, skills, web | openspec/specs/sdlc_toolchain/spec.md | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | P3 | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 💤 **paused** |
@@ -37,6 +38,8 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T718](.tasks/T718.md) | **P1** | **Extend Cross-Dialect Client Spec Bridge for BMAD-METHOD (_bmad/), Conductor & cc-sdd (.kiro/specs/), Add Research Firewall to w0m-sdlc-research, and Publish GH Context/SDD Landscape Audit** | tooling, skills, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
+| [T717](.tasks/T717.md) | **P0** | **Complete Google Elephant-Goldfish Model (egm-*) Companion Vendoring (agents/, resources/, docs/) & Harden audit_vendoring.ts + version.ts Checks** | skills, web, api, cf, tooling | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T716](.tasks/T716.md) | **P1** | **Audit and Fix AgDR-0054 Mobile/Tablet Portrait & Landscape Orientation UX Across All w0m-web Apps (web, cp, me, demo) & @webomage/ui** | web | openspec/specs/cp-context-shell/spec.md | ✅ **done** |
 | [T714](.tasks/T714.md) · [#713](https://github.com/casualuser/webomage.com/issues/713) | **P1** | **Cross-Dialect Client Spec Bridge & Package Legitimacy Gate (scripts/client_spec_bridge.py + just client-check) for Spec Kit (.specify/), OpenGSD (.planning/) & OpenSpec** | tooling, web, skills | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T712](.tasks/T712.md) · [#711](https://github.com/casualuser/webomage.com/issues/711) | **P1** | **4-Way SDD Architecture Audit (open-gsd/gsd-core vs github/spec-kit vs OpenSpec vs w0m Specs) & Multi-Dialect Client Project Strategy** | tooling, web, skills | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |

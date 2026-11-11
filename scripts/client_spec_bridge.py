@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Cross-Dialect Client Spec Bridge & Constitutional/Testing-Seams Validator (T714).
+"""Cross-Dialect Client Spec Bridge & Constitutional/Testing-Seams Validator (T714, T717).
 
 Normalizes specifications, implementation plans, tasks, testing-seams observability,
-and proposed package legitimacy across all 4 supported SDD dialects:
+and proposed package legitimacy across all 7 supported SDD dialects:
   1. `github-speckit` (`.specify/`)
   2. `open-gsd`       (`.planning/`)
   3. `openspec`       (`openspec/`)
   4. `w0m-openspec`   (`.w0m/sdlc.json` + `.tasks/` + `openspec/specs/`)
+  5. `bmad`           (`_bmad/` — BMAD-METHOD v6/v7 epics, stories & project context)
+  6. `conductor`      (`conductor/` — Google Conductor tracks, specs & plans)
+  7. `cc-sdd`         (`.kiro/specs/` — Kiro / cc-sdd requirements, design & tasks)
 """
 
 from __future__ import annotations
@@ -87,6 +90,12 @@ def detect_spec_dialect(project_root: Path) -> str:
         return "github-speckit"
     if (project_root / ".planning").is_dir():
         return "open-gsd"
+    if (project_root / "_bmad").is_dir():
+        return "bmad"
+    if (project_root / "conductor").is_dir():
+        return "conductor"
+    if (project_root / ".kiro" / "specs").is_dir():
+        return "cc-sdd"
     if (project_root / "openspec").is_dir() or (project_root / "w0m-web" / "openspec").is_dir():
         return "openspec"
     return "unknown"
@@ -329,6 +338,202 @@ def _parse_openspec(project_root: Path, dialect: str = "openspec") -> tuple[list
     return features, sorted(all_reqs), scanned_files
 
 
+def _parse_bmad(project_root: Path) -> tuple[list[NormalizedFeatureSpec], list[str], list[Path]]:
+    bmad_root = project_root / "_bmad"
+    features: list[NormalizedFeatureSpec] = []
+    all_reqs: set[str] = set()
+    scanned_files: list[Path] = []
+
+    root_combined = ""
+    for root_md in sorted(bmad_root.glob("*.md")):
+        scanned_files.append(root_md)
+        txt = root_md.read_text(encoding="utf-8", errors="ignore")
+        root_combined += "\n" + txt
+        all_reqs.update(REQ_ID_RE.findall(txt))
+
+    for sub_name in ("epics", "stories", "specs", "artifacts", "initiatives"):
+        sub_dir = bmad_root / sub_name
+        if not sub_dir.is_dir():
+            continue
+        child_dirs = sorted(p for p in sub_dir.iterdir() if p.is_dir())
+        if child_dirs:
+            for cdir in child_dirs:
+                combined = ""
+                for md in sorted(cdir.rglob("*.md")):
+                    scanned_files.append(md)
+                    combined += "\n" + md.read_text(encoding="utf-8", errors="ignore")
+                done, total = _count_checkboxes(combined)
+                reqs = sorted(set(REQ_ID_RE.findall(combined)))
+                all_reqs.update(reqs)
+                has_seams = bool(TESTING_SEAMS_RE.search(combined))
+                v_status = (
+                    "verified"
+                    if total > 0 and done == total and has_seams
+                    else ("in_progress" if done > 0 else "unverified")
+                )
+                features.append(
+                    NormalizedFeatureSpec(
+                        id=cdir.name,
+                        title=_extract_title(combined, cdir.name),
+                        dialect="bmad",
+                        path=str(cdir.relative_to(project_root)),
+                        tasks_done=done,
+                        tasks_total=total,
+                        requirements=reqs,
+                        has_testing_seams=has_seams,
+                        verification_status=v_status,
+                    )
+                )
+        else:
+            for md in sorted(sub_dir.glob("*.md")):
+                scanned_files.append(md)
+                txt = md.read_text(encoding="utf-8", errors="ignore")
+                done, total = _count_checkboxes(txt)
+                reqs = sorted(set(REQ_ID_RE.findall(txt)))
+                all_reqs.update(reqs)
+                has_seams = bool(TESTING_SEAMS_RE.search(txt))
+                v_status = (
+                    "verified"
+                    if total > 0 and done == total and has_seams
+                    else ("in_progress" if done > 0 else "unverified")
+                )
+                features.append(
+                    NormalizedFeatureSpec(
+                        id=md.stem,
+                        title=_extract_title(txt, md.stem),
+                        dialect="bmad",
+                        path=str(md.relative_to(project_root)),
+                        tasks_done=done,
+                        tasks_total=total,
+                        requirements=reqs,
+                        has_testing_seams=has_seams,
+                        verification_status=v_status,
+                    )
+                )
+
+    if not features and root_combined:
+        done, total = _count_checkboxes(root_combined)
+        has_seams = bool(TESTING_SEAMS_RE.search(root_combined))
+        features.append(
+            NormalizedFeatureSpec(
+                id="bmad-root",
+                title=_extract_title(root_combined, "BMAD Project"),
+                dialect="bmad",
+                path="_bmad",
+                tasks_done=done,
+                tasks_total=total,
+                requirements=sorted(all_reqs),
+                has_testing_seams=has_seams,
+                verification_status="verified" if (total > 0 and done == total and has_seams) else "in_progress",
+            )
+        )
+    return features, sorted(all_reqs), scanned_files
+
+
+def _parse_conductor(project_root: Path) -> tuple[list[NormalizedFeatureSpec], list[str], list[Path]]:
+    cond_root = project_root / "conductor"
+    features: list[NormalizedFeatureSpec] = []
+    all_reqs: set[str] = set()
+    scanned_files: list[Path] = []
+
+    root_combined = ""
+    for root_md in sorted(cond_root.glob("*.md")):
+        scanned_files.append(root_md)
+        txt = root_md.read_text(encoding="utf-8", errors="ignore")
+        root_combined += "\n" + txt
+        all_reqs.update(REQ_ID_RE.findall(txt))
+
+    tracks_dir = cond_root / "tracks"
+    if tracks_dir.is_dir():
+        for tdir in sorted(p for p in tracks_dir.iterdir() if p.is_dir()):
+            combined = ""
+            for md in sorted(tdir.rglob("*.md")):
+                scanned_files.append(md)
+                combined += "\n" + md.read_text(encoding="utf-8", errors="ignore")
+            done, total = _count_checkboxes(combined)
+            reqs = sorted(set(REQ_ID_RE.findall(combined)))
+            all_reqs.update(reqs)
+            has_seams = bool(TESTING_SEAMS_RE.search(combined))
+            v_status = (
+                "verified"
+                if total > 0 and done == total and has_seams
+                else ("in_progress" if done > 0 else "unverified")
+            )
+            features.append(
+                NormalizedFeatureSpec(
+                    id=tdir.name,
+                    title=_extract_title(combined, tdir.name),
+                    dialect="conductor",
+                    path=str(tdir.relative_to(project_root)),
+                    tasks_done=done,
+                    tasks_total=total,
+                    requirements=reqs,
+                    has_testing_seams=has_seams,
+                    verification_status=v_status,
+                )
+            )
+    elif root_combined:
+        done, total = _count_checkboxes(root_combined)
+        has_seams = bool(TESTING_SEAMS_RE.search(root_combined))
+        features.append(
+            NormalizedFeatureSpec(
+                id="conductor-root",
+                title=_extract_title(root_combined, "Conductor Project"),
+                dialect="conductor",
+                path="conductor",
+                tasks_done=done,
+                tasks_total=total,
+                requirements=sorted(all_reqs),
+                has_testing_seams=has_seams,
+                verification_status="verified" if (total > 0 and done == total and has_seams) else "in_progress",
+            )
+        )
+    return features, sorted(all_reqs), scanned_files
+
+
+def _parse_cc_sdd(project_root: Path) -> tuple[list[NormalizedFeatureSpec], list[str], list[Path]]:
+    specs_dir = project_root / ".kiro" / "specs"
+    features: list[NormalizedFeatureSpec] = []
+    all_reqs: set[str] = set()
+    scanned_files: list[Path] = []
+
+    steering_dir = project_root / ".kiro" / "steering"
+    if steering_dir.is_dir():
+        for smd in sorted(steering_dir.glob("*.md")):
+            scanned_files.append(smd)
+            all_reqs.update(REQ_ID_RE.findall(smd.read_text(encoding="utf-8", errors="ignore")))
+
+    if specs_dir.is_dir():
+        for sdir in sorted(p for p in specs_dir.iterdir() if p.is_dir()):
+            combined = ""
+            for md in sorted(sdir.rglob("*.md")):
+                scanned_files.append(md)
+                combined += "\n" + md.read_text(encoding="utf-8", errors="ignore")
+            done, total = _count_checkboxes(combined)
+            reqs = sorted(set(REQ_ID_RE.findall(combined)))
+            all_reqs.update(reqs)
+            has_seams = bool(TESTING_SEAMS_RE.search(combined))
+            v_status = (
+                "verified"
+                if total > 0 and done == total and has_seams
+                else ("in_progress" if done > 0 else "unverified")
+            )
+            features.append(
+                NormalizedFeatureSpec(
+                    id=sdir.name,
+                    title=_extract_title(combined, sdir.name),
+                    dialect="cc-sdd",
+                    path=str(sdir.relative_to(project_root)),
+                    tasks_done=done,
+                    tasks_total=total,
+                    requirements=reqs,
+                    has_testing_seams=has_seams,
+                    verification_status=v_status,
+                )
+            )
+    return features, sorted(all_reqs), scanned_files
+
+
 def inspect_client_project_specs(
     project_root: Path,
     dialect: str | None = None,
@@ -341,6 +546,12 @@ def inspect_client_project_specs(
         features, reqs, scanned_files = _parse_github_speckit(resolved_root)
     elif resolved_dialect == "open-gsd":
         features, reqs, scanned_files = _parse_open_gsd(resolved_root)
+    elif resolved_dialect == "bmad":
+        features, reqs, scanned_files = _parse_bmad(resolved_root)
+    elif resolved_dialect == "conductor":
+        features, reqs, scanned_files = _parse_conductor(resolved_root)
+    elif resolved_dialect == "cc-sdd":
+        features, reqs, scanned_files = _parse_cc_sdd(resolved_root)
     elif resolved_dialect in ("openspec", "w0m-openspec"):
         features, reqs, scanned_files = _parse_openspec(resolved_root, dialect=resolved_dialect)
     else:
@@ -352,7 +563,9 @@ def inspect_client_project_specs(
 
     gaps: list[str] = []
     if resolved_dialect == "unknown":
-        gaps.append("No recognized SDD directory (.specify/, .planning/, openspec/, or .w0m/sdlc.json) found")
+        gaps.append(
+            "No recognized SDD directory (.specify/, .planning/, _bmad/, conductor/, .kiro/specs/, openspec/, or .w0m/sdlc.json) found"
+        )
     elif not features:
         gaps.append(f"Dialect '{resolved_dialect}' detected, but 0 feature/phase specifications found")
 
@@ -381,8 +594,10 @@ def inspect_client_project_specs(
     for sp in slop_pkgs:
         gaps.append(f"[SLOP] Proposed package '{sp.name}' in {sp.manifest}: {sp.reason}")
 
-    if not features or gaps:
-        v_status = "in_progress" if features and not slop_pkgs else "unverified"
+    if not features or slop_pkgs:
+        v_status = "unverified"
+    elif gaps or any(f.verification_status != "verified" for f in features):
+        v_status = "in_progress"
     else:
         v_status = "verified"
 
@@ -413,7 +628,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("target", nargs="?", default=".", help="Path to client or estate project root")
     parser.add_argument(
         "--dialect",
-        choices=["github-speckit", "open-gsd", "openspec", "w0m-openspec"],
+        choices=["github-speckit", "open-gsd", "openspec", "w0m-openspec", "bmad", "conductor", "cc-sdd"],
         default=None,
         help="Explicit SDD dialect override",
     )
