@@ -3780,6 +3780,41 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
             "- **Verification**: `oxlint`, `tsc --noEmit`, Desktop & Mobile localization catalogs, and Desktop + Mobile Vitest suites clean."
         ),
     },
+    "stablyai/orca:fix/mobile-take-back-all-and-browser-resize": {
+        "ticket": "T706",
+        "title": "fix(terminal,browser): reclaim all split/browser surfaces and auto-resize browser on desktop take-back",
+        "why": (
+            "When returning from Orca Mobile to Orca Desktop on a workspace containing split terminal panes (for example, an Agent "
+            "session split beside an active Shell terminal) and/or a mobile-driven Browser tab, two desktop reclaim regressions occur:\n"
+            "1. Clicking **Take back all** only called `restoreTerminalFitsToDesktop` (skipping mobile-driven browser tabs and missing "
+            "`Take back all` on `BrowserMobileDriverOverlay`), and main-process `applyLayout(..., { kind: 'desktop' })` suppressed "
+            "`pty:resize` IPCs for `500ms` while local `FitAddon.fit()` settled `pane.terminal` at `rAF`/`100ms`—causing later `safeFit` "
+            "calls to early-return at matching local `cols/rows` without re-syncing split PTY sizes.\n"
+            "2. Mobile browser screencasts called `Emulation.setVisibleSize` (`390x844`) alongside `Emulation.setDeviceMetricsOverride`, "
+            "but `clearDeviceMetricsOverride` only cleared device metrics without restoring guest `Emulation.setVisibleSize` or disabling "
+            "touch emulation, and Electron's `<webview>` `ResizeObserver` never emitted `SynchronizeVisualProperties` when `isMobileDriven` "
+            "flipped `true -> false` because the desktop CSS container size had not changed—leaving the browser tab stuck at narrow mobile "
+            "width until a manual page refresh."
+        ),
+        "what_for": (
+            "Ensures **Take back all** from either a terminal or browser mobile-driver overlay reclaims every mobile-owned terminal split "
+            "and mobile-driven browser tab together, converges all split PTY grids to their desktop pane dimensions once main's resize "
+            "suppression window expires, and immediately resizes reclaimed browser tabs back to their desktop viewport without a reload."
+        ),
+        "how": (
+            "- **Cross-Surface Reclaim (`terminal-fit-restore.ts`, `use-mobile-terminal-fit-actions.ts`, `BrowserMobileDriverOverlay.tsx`, `browser-workspace-pane.tsx`)**: "
+            "Adds `reclaimAllMobileSurfacesToDesktop` to reclaim both mobile-owned PTYs and mobile-driven browser pages in bounded batches, "
+            "and exposes `Take back all` on `BrowserMobileDriverOverlay`.\n"
+            "- **Split Terminal PTY Convergence (`pane-manager-registry.ts`, `pane-pty-binding.ts`, `use-mobile-overlay-ticks.ts`, `terminal-desktop-reclaim.ts`, `terminal-display-mode.ts`)**: "
+            "Restores `lastRendererSizes` when releasing mobile driver locks and runs a post-suppression (`550ms`) `reassertAllTerminalPanePtySizes()` pass "
+            "via `ptySizeReassertion` so split panes whose `rAF` `pty:resize` was suppressed re-sync against `pty.getSize` without extra `SIGWINCH` churn.\n"
+            "- **Live Browser Auto-Resize Without Reload (`browser-screencast-device-metrics.ts`, `browser-screencasts.ts`, `browser-manager-viewport.ts`, `use-browser-page-remote-drive-restore.ts`)**: "
+            "Restores pre-emulation `Emulation.setVisibleSize`, clears mobile touch emulation, re-applies any active desktop `viewportPreset`, "
+            "and triggers a 1-frame `<webview>` embedder bounds resync when `isMobileDriven`/`isRemotelyViewed` ends so Chromium pushes `SynchronizeVisualProperties` immediately.\n"
+            "- **Verification**: Unit & integration tests across `terminal-fit-restore.test.ts`, `BrowserMobileDriverOverlay.test.tsx`, "
+            "`use-browser-page-remote-drive-restore.test.tsx`, `mobile-presence-lock.test.ts`, and `browser-screencast-stream.test.ts`, plus `oxlint` and ratchets clean."
+        ),
+    },
     "stablyai/orca:feat/zeroclaw-agent-connector": {
         "ticket": "T584",
         "title": "feat(agent): add ZeroClaw agent connector and AI Vault scanner",
@@ -4291,6 +4326,33 @@ PROPOSAL_COMPLIANCE_META: dict[str, dict[str, Any]] = {
             "with fallback presets when paired to older hosts. Plain revert backs out cleanly."
         ),
     },
+    "stablyai/orca:fix/mobile-take-back-all-and-browser-resize": {
+        "eli5": (
+            "Makes **Take back all** reclaim every split terminal and mobile-driven browser tab at once, repairs split terminal "
+            "PTY widths dropped during the 500ms post-reclaim resize-suppression window, and immediately snaps reclaimed browser "
+            "tabs back to desktop width without needing a manual page refresh."
+        ),
+        "linked_issue": 40859,
+        "issue_kind": "bug",
+        "issue_title": "[Bug]: Desktop 'Take back all' after mobile session leaves split shell unresized and browser tab stuck at mobile viewport until refresh",
+        "sibling_notes": (
+            "Checked related PRs `#15754` (dead-PTY driver map cleanup) and `#38121` (desktop display-mode pinning across passive "
+            "resubscribes); both are orthogonal to cross-surface `Take back all`, post-suppression split PTY reassertion, and "
+            "`Emulation.setVisibleSize` / `<webview>` live desktop bounds resync."
+        ),
+        "visual_change": True,
+        "visual_proof_urls": [
+            "![Before Take back all: BrowserMobileDriverOverlay & narrow mobile viewport (@2x dark)](https://raw.githubusercontent.com/webomage/orca/pr-assets/40859-mobile-take-back-all-resize/40859/before-mobile-take-back-all-dark-2x.png)",
+            "![After Take back all: Split terminals converged & browser auto-resized without refresh (@2x dark)](https://raw.githubusercontent.com/webomage/orca/pr-assets/40859-mobile-take-back-all-resize/40859/after-mobile-take-back-all-dark-2x.png)",
+        ],
+        "risk_level": "Low",
+        "risk_summary": (
+            "Scoped to explicit desktop reclaim and remote-drive exit transitions. Preserves the existing 500ms main-process "
+            "cascade suppression window (`isResizeSuppressed`) and only forwards a post-suppression PTY resize when `pty.getSize` "
+            "still differs from the settled local xterm grid. Browser bounds resync runs only on `remotelyDriven: true -> false` "
+            "without reloading guest state. Plain `git revert` backs out cleanly."
+        ),
+    },
     "jundot/omlx:fix/menubar-adopt-external-omlx": {
         "linked_issue": None,
         "visual_change": False,
@@ -4379,7 +4441,8 @@ def format_pr_proposal_body(proposal: dict[str, Any], upstream_repo: str = "") -
             f"## Visual Proof\n\n{visual_section}\n\n"
             f"## Testing\n\n"
             f"- [x] I manually tested these changes locally\n"
-            f"- [x] Automated tests added/updated, or explained why not below\n\n"
+            f"- [x] Automated tests added/updated, or explained why not below\n"
+            f"- [x] Every added test fails without this change and avoids the [test anti-patterns](https://github.com/stablyai/orca/blob/main/docs/agents-md-refs/test-antipatterns.md)\n\n"
             f"## Risk\n\n"
             f"**Level:** {risk_level}\n\n{risk_summary}\n\n"
             f"## AI Disclosure\n\n"
