@@ -2,6 +2,29 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.11-1794441915
+_First deployed: 2026-11-12 00:42:14.394886+00_
+
+### Features
+- **web,sdlc**: T723 collapse public /services and /solutions to 1-click fast register and direct checkout ([T723](file:///.tasks/T723.md))
+- **security**: integrate real NVIDIA/SkillSpector v2.12.0 and canonicalize casualuser forks (T721) ([T721](file:///.tasks/T721.md))
+
+### Fixes
+- **cp,tests**: T724 bound hats-embed-guard chain slicing across Promise.all and order hats by granted_at ([T724](file:///.tasks/T724.md))
+- **tooling,sdlc**: T722 complete impersonation & Astro 7 wrap-up ([T722](file:///.tasks/T722.md))
+- **tooling,sdlc**: T722 verify ticket audit paths and archive impersonation & Astro 7 audit ([T722](file:///.tasks/T722.md))
+- **tooling,sdlc**: T722 classify recovered deploy retries and archive impersonation & Astro 7 audit ([T722](file:///.tasks/T722.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `3c0955e` | 2026-11-12 00:42:14.394886+00 |
+| demo | `3c0955e` | 2026-11-12 00:41:17.571107+00 |
+| me | `3c0955e` | 2026-11-12 00:40:25.97347+00 |
+| cp | `3c0955e` | 2026-11-12 00:38:39.617182+00 |
+| web | `3c0955e` | 2026-11-12 00:36:06.498233+00 |
+| release | `3c0955e` | 2026-11-12 00:33:29.34785+00 |
+| api | `3c0955e` | 2026-11-12 00:33:23.286274+00 |
+
 ## 2026.11.11-1794417310
 _First deployed: 2026-11-11 18:54:30.83745+00_
 
