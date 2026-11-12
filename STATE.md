@@ -44,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `a9178b1de` |
-| `w0m-api` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `d5afb2c` |
-| `w0m-cf` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `20ee0bb` |
-| `w0m-skills` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `99d2200` |
-| `w0m-ext` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `a930b83` |
-| `w0m-sec` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t731-env-prune-backup` | 0 | **n/a — NO UPSTREAM** | `40b0b6338` |
+| `w0m-api` | `agent/t731-env-prune-backup` | 0 | **n/a — NO UPSTREAM** | `d5afb2c` |
+| `w0m-cf` | `agent/t731-env-prune-backup` | 0 | **n/a — NO UPSTREAM** | `c903f52` |
+| `w0m-skills` | `agent/t731-env-prune-backup` | 0 | **n/a — NO UPSTREAM** | `99d2200` |
+| `w0m-ext` | `agent/t731-env-prune-backup` | 0 | **n/a — NO UPSTREAM** | `5e5ae63` |
+| `w0m-sec` | `agent/t731-env-prune-backup` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/t731-env-prune-backup` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 730 TASKS.md rows · 358/730 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 731 TASKS.md rows · 359/731 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T719","T17"],"repos":{"w0m-api":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"d5afb2c","unpushed":null},"w0m-cf":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"20ee0bb","unpushed":null},"w0m-ext":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"a930b83","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"99d2200","unpushed":null},"w0m-web":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"a9178b1de","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":730,"specced":358,"specced_open":2,"total":730,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T719","T17"],"repos":{"w0m-api":{"branch":"agent/t731-env-prune-backup","dirty":0,"has_upstream":true,"head":"d5afb2c","unpushed":null},"w0m-cf":{"branch":"agent/t731-env-prune-backup","dirty":0,"has_upstream":true,"head":"c903f52","unpushed":null},"w0m-ext":{"branch":"agent/t731-env-prune-backup","dirty":0,"has_upstream":true,"head":"5e5ae63","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t731-env-prune-backup","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t731-env-prune-backup","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t731-env-prune-backup","dirty":0,"has_upstream":true,"head":"99d2200","unpushed":null},"w0m-web":{"branch":"agent/t731-env-prune-backup","dirty":0,"has_upstream":true,"head":"40b0b6338","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":731,"specced":359,"specced_open":2,"total":731,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,13 +115,14 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (5):
+#### Completed today (6):
 
 - **T707** — Audit and Adopt casualuser/job-hunter-skill into w0m-skills & Estate Skill Manifests ((agy:t730-t713-t715-t707-t708): Completed AC1–AC4. Audited casualuser/job-hunter-skill (REJECT preserved in QUARANTINED_CASUALUSER_FORKS), authored clean-room w0m-skills/skills/job-hunter/SKILL.md (0/100 LOW · SAFE), synced across estate manifests (69 canonical skills), and recorded YARA YR4 passive-data framing lesson in LESSONS.md.)
 - **T708** — k7 WASM Git Navigation Browser in TUI with GitHub, GitLab & New LLM Git Flavours Support ((agy:t730-t713-t715-t707-t708): Completed AC1–AC4. Shipped k7hub commit 8acca23 (7/7 Rust tests + k7hub.wasm wasm32-unknown-unknown build), wired k7-git-browser.ts + CrewToolkitAndTabLinuxConsole.svelte + K7-FAMILY.md, and recorded wasm32 u64 vs usize shard-size lesson in LESSONS.md.)
 - **T713** — Client Project Multi-Dialect Spec Bootstrap & Registry (clients-policy.json, GENERIC-SDLC-SET.md, just client-spec-init for Spec Kit, OpenGSD & OpenSpec) ((agy:t730-t713-t715-t707-t708): Completed AC1–AC4. Added spec_dialect schema + client_inventory.py auto-detection, shipped just client-spec-init (7/7 pytest green), updated w0m-skills/GENERIC-SDLC-SET.md, and recorded clients-policy.json tier synchronization lesson in LESSONS.md.)
 - **T715** — Client Portal (apps/cp) Onboarding Wizard & Project Settings: Selectable SDD Spec Dialect (GitHub Spec Kit, OpenGSD, OpenSpec, Webomage SDLC) ((agy:t730-t713-t715-t707-t708): Completed AC1–AC4. Shipped selectable SDD dialect catalog, onboarding wizard + project settings persistence, normalized spec/phase progress card, and Vitest regression coverage; lesson disposition covered by T713/T703 rules in LESSONS.md.)
 - **T730** — Add Infisical Dead-Env Prune Helper (just env-prune-dead), Skip Dead Keys in rotate_leaked_secrets.py, and Retire Disabled GEMINI_API_KEY Fallback ((agy:t730-t713-t715-t707-t708): Completed AC1–AC3. Delivered fail-closed just env-prune-dead (44 dead Infisical beta keys identified in dry-run, including GEMINI_API_KEY), updated rotate_leaked_secrets.py, retired GEMINI_API_KEY runtime reads with 0 deno.lock drift, and recorded transferable rule (META_SKIP_SUBSTRINGS + frozen deno.lock preservation) in LESSONS.md.)
+- **T731** — Fail-Closed AES-256-GCM Pre-Prune Secret Backup, Verification & Restore for just env-prune-dead ((agy:t731-env-prune-backup): Completed AC1–AC3. Shipped fail-closed AES-256-GCM pre-prune secret backup, round-trip verification, and restore in scripts/env_prune_dead.py (5/5 tests green) and patched @hono/node-server, @astrojs/svelte, and basic-ftp overrides across w0m-web, w0m-cf, and w0m-ext. Lesson disposition: covered by LESSONS.md infisical run --silent non-plaintext secret handling rules (T201, T729, T730).)
 
 ## 3. Other open threads (in TASKS.md)
 
