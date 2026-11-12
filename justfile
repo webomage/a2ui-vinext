@@ -1454,6 +1454,9 @@ skills-backport *args:
 skills-audit-tools *args:
     @cd w0m-skills && pnpm run skill --project "{{ invocation_directory() }}" audit-tools {{ args }}
 
+skill-check *args:
+    @python3 w0m-skills/tools/w0m_portable_cli.py --project "{{ invocation_directory() }}" skill-check {{ args }}
+
 skills-chips *args:
     @cd w0m-skills && pnpm run skill --project "{{ invocation_directory() }}" chips {{ args }}
 
@@ -2286,7 +2289,10 @@ fork-catalog-status:
     @python3 scripts/fork_catalog_sync.py status
 
 skills-security-check:
-    @python3 scripts/skill_spector_check.py
+    @python3 scripts/skill_spector_check.py --deep
+
+skillspector-test:
+    @python3 -m pytest scripts/tests/test_skill_spector_check.py -q -p no:cacheprovider
 
 skillspector-estate *args:
     @python3 scripts/skill_spector_check.py --deep {{ args }}
@@ -2337,6 +2343,16 @@ orca-ext-status *args:
 
 orca-ext-test:
     @pytest -q scripts/tests/test_orca_ext_install.py
+
+# ── Agent Sandbox & Env-Variable Code-Usage Audits (T726 / T729) ───────────────
+w0m-sec-test:
+    @python3 -m pytest w0m-sec/tests -q -p no:cacheprovider
+
+env-usage-audit *args:
+    @python3 scripts/env_usage_audit.py {{ args }}
+
+env-usage-audit-test:
+    @python3 -m pytest scripts/tests/test_env_usage_audit.py -q -p no:cacheprovider
 
 
 

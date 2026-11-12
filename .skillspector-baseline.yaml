@@ -28,10 +28,6 @@ rules:
     path: "*references/design_doc.md"
     reason: "Reviewed (T717/T721): benign HTML template placeholder comments inside upstream Google EGM design-doc skeleton."
 
-  - id: "SC9"
-    path: "*node_modules*"
-    reason: "Reviewed (T521/T721): gitignored/provisioned `node_modules` directory for headless Mermaid AST parser (`mmd-validate`), outside authored skill instructions."
-
   - id: "MP3"
     path: "*AI-AND-LLM.md"
     message: "*delete memory*"

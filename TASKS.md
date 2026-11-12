@@ -38,6 +38,11 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T729](.tasks/T729.md) | **P1** | **Audit Estate Infisical & Worker Environment Variable Code Usage, Prune Dead Env Residue, and Publish Repo-First Rotation/Deletion Ledger** | tooling, api, cf, web | — | ✅ **done** |
+| [T728](.tasks/T728.md) | **P2** | **Harden Client JSON Parsing via Shared readJsonSafe, Eliminate Missing img Dimensions (CLS), and Replace transition-all Hotspots** | web, cp, lib | — | ✅ **done** |
+| [T727](.tasks/T727.md) | **P1** | **Accelerate Edge TTFB, Anonymous Edge Caching, SSR Query Parallelism, and Below-the-Fold Island Hydration Across web, me, and cp** | web, cp, lib | — | ✅ **done** |
+| [T726](.tasks/T726.md) | **P1** | **Wire First-Place Code & Agent Security Gate Across All Estate Repos and Fix NVIDIA SkillSpector SC9 node_modules Exclusion** | tooling, skills, sec, web, ext | — | ✅ **done** |
+| [T725](.tasks/T725.md) | **P1** | **Restore Cross-App /api/board and /api/vault/r2 Route Parity in apps/me, Fix FeatureVotingBoard Error Split-State, and Add Standing me-api-parity Gate** | web, cp | — | ✅ **done** |
 | [T724](.tasks/T724.md) | **P1** | **Bound hats-embed-guard.test.ts Query-Chain Slicing Across Promise.all Array Items and Order Admin Impersonation Hats by granted_at** | cp | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T723](.tasks/T723.md) | **P1** | **Collapse Public /services and /solutions to 1-Click Fast Register + Direct Package Checkout and Keep Source/Target Infra Selector Strictly Post-Signup in /o/[org]** | web, cp | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T722](.tasks/T722.md) | **P0** | **Fix Astro v6 locals.runtime.env SSR Crashes (blueprints/order & CP), Classify Recovered Deploy Retries, and Ship Full-Scope Admin Member & Client Impersonation** | web, tooling | openspec/specs/auth/spec.md | ✅ **done** |

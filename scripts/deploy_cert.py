@@ -43,8 +43,16 @@ if str(_SCRIPTS_DIR) not in sys.path:
 
 from obsidian_vault_guard import inspect_repo_worktree  # noqa: E402
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 INLINE_CRED_RE = r"(postgres|postgresql|mysql|mongodb|redis|amqp)://[A-Za-z0-9._%+-]+:[A-Za-z0-9._%+~!-]{6,}@"
+OSV_LOCKFILE_TARGETS: tuple[str, ...] = (
+    "w0m-web/pnpm-lock.yaml",
+    "w0m-api/pnpm-lock.yaml",
+    "w0m-cf/pnpm-lock.yaml",
+    "w0m-ext/pnpm-lock.yaml",
+    "w0m-ext/extension/pnpm-lock.yaml",
+    "w0m-skills/pnpm-lock.yaml",
+)
 
 CommandRunner = Callable[[Sequence[str], Path, Mapping[str, str] | None], int]
 
@@ -330,22 +338,66 @@ def run_guardrails_raw(
     *,
     runner: CommandRunner = _default_runner,
 ) -> int:
-    print("🛡  Pre-deploy security gate (secrets + test-admin + connection-strings)...", flush=True)
+    print("🛡  First-place Code & Agent Security Gate (secrets, CVEs, SAST, worker-env, skills & sandbox)...", flush=True)
     steps: list[tuple[Sequence[str], Path]] = []
-    if (estate_root / "w0m-api" / ".git").exists():
-        steps.append((["pre-commit", "run", "gitleaks", "--all-files"], estate_root / "w0m-api"))
-    if (estate_root / "w0m-web" / ".git").exists():
-        steps.append((["pre-commit", "run", "gitleaks", "--all-files"], estate_root / "w0m-web"))
-        steps.append((["pre-commit", "run", "guard-test-admin", "--all-files"], estate_root / "w0m-web"))
+    repo_paths = discover_estate_repos(estate_root)
+
+    # 1. Secret scanning (`gitleaks`) + `guard-test-admin` across all estate git repos
+    for rel in repo_paths:
+        rdir = estate_root if rel == "." else (estate_root / rel)
+        if not (rdir / ".git").exists():
+            continue
+        pc_cfg = rdir / ".pre-commit-config.yaml"
+        has_gitleaks_hook = pc_cfg.is_file() and "id: gitleaks" in pc_cfg.read_text(encoding="utf-8", errors="ignore")
+        if rel in ("w0m-api", "w0m-web") or has_gitleaks_hook:
+            steps.append((["pre-commit", "run", "gitleaks", "--all-files"], rdir))
+        if rel == "w0m-web":
+            steps.append((["pre-commit", "run", "guard-test-admin", "--all-files"], rdir))
+
+    # 2. Dependency CVE scanning (`osv-scanner`) across all estate lockfiles (0 unused ignores, 0 CVEs)
+    osv_bin = shutil.which("osv-scanner")
+    if osv_bin:
+        for lock_rel in OSV_LOCKFILE_TARGETS:
+            lock_path = estate_root / lock_rel
+            if not lock_path.is_file():
+                continue
+            cfg_path = lock_path.parent / "osv-scanner.toml"
+            cmd_osv: list[str] = [osv_bin, "scan", "source"]
+            if cfg_path.is_file():
+                cmd_osv.append(f"--config={cfg_path}")
+            cmd_osv.extend(["-L", str(lock_path)])
+            steps.append((cmd_osv, estate_root))
+
+    # 3. Structural SAST (`ast-grep`) & Cloudflare Worker process.env isolation (`worker_env_gate.py`)
+    ast_grep_script = estate_root / "scripts" / "ast_grep_check.py"
+    if ast_grep_script.is_file():
+        steps.append(([sys.executable, str(ast_grep_script)], estate_root))
+
+    worker_env_script = estate_root / "w0m-web" / "project" / "scripts" / "worker_env_gate.py"
+    if worker_env_script.is_file():
+        steps.append(([sys.executable, str(worker_env_script)], estate_root))
+
+    # 4. Agent, Skill & Air-Gapped Sandbox Security (`skill_audit.ts`, `NVIDIA/SkillSpector --deep`, `w0m-sec`)
+    skill_audit_ts = estate_root / "w0m-skills" / "skill_audit.ts"
+    if skill_audit_ts.is_file():
+        steps.append((["pnpm", "exec", "tsx", "skill_audit.ts"], estate_root / "w0m-skills"))
+
+    spector_script = estate_root / "scripts" / "skill_spector_check.py"
+    if spector_script.is_file():
+        steps.append(([sys.executable, str(spector_script), "--deep"], estate_root))
+
+    w0m_sec_tests = estate_root / "w0m-sec" / "tests"
+    if w0m_sec_tests.is_dir():
+        steps.append(([sys.executable, "-m", "pytest", "w0m-sec/tests", "-q", "-p", "no:cacheprovider"], estate_root))
 
     for cmd, cwd in steps:
         rc = runner(cmd, cwd, None)
         if rc != 0:
             return rc
 
-    print("🔑 Inline-credential connection-string scan (gitleaks gap — T32)...", flush=True)
-    for sub in ("w0m-api", "w0m-web"):
-        rdir = estate_root / sub
+    print("🔑 Inline-credential connection-string scan across all estate repos (gitleaks gap — T32)...", flush=True)
+    for rel in repo_paths:
+        rdir = estate_root if rel == "." else (estate_root / rel)
         if not (rdir / ".git").exists():
             continue
         proc = subprocess.run(
@@ -356,10 +408,10 @@ def run_guardrails_raw(
         )
         if proc.returncode == 0 and proc.stdout.strip():
             print(proc.stdout, end="", flush=True)
-            print("❌ inline credential in tracked files — remove + rotate (see T32)", flush=True)
+            print(f"❌ inline credential in tracked files ({rel}) — remove + rotate (see T32)", flush=True)
             return 1
 
-    print("✅ security gate passed", flush=True)
+    print("✅ first-place code & agent security gate passed", flush=True)
     return 0
 
 

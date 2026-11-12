@@ -225,6 +225,39 @@ class DeployCertTests(unittest.TestCase):
         self.assertEqual(pre_names & rest_names, set())
         self.assertEqual(pre_names | rest_names, full_names)
 
+    def test_guardrails_executes_full_code_and_agent_security_suite_first_place(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_str:
+            tmp = Path(tmp_str)
+            estate = _make_fake_estate(tmp)
+            # Populate extra pre-commit repo, lockfile, SAST, worker-env, skill-audit, SkillSpector, and w0m-sec
+            (estate / ".pre-commit-config.yaml").write_text("repos:\n  - hooks:\n      - id: gitleaks\n", encoding="utf-8")
+            (estate / "scripts").mkdir(parents=True, exist_ok=True)
+            (estate / "scripts" / "ast_grep_check.py").write_text("# stub\n", encoding="utf-8")
+            (estate / "scripts" / "skill_spector_check.py").write_text("# stub\n", encoding="utf-8")
+            (estate / "w0m-web" / "pnpm-lock.yaml").write_text("lockfileVersion: '9.0'\n", encoding="utf-8")
+            (estate / "w0m-web" / "osv-scanner.toml").write_text("", encoding="utf-8")
+            (estate / "w0m-web" / "project" / "scripts").mkdir(parents=True, exist_ok=True)
+            (estate / "w0m-web" / "project" / "scripts" / "worker_env_gate.py").write_text("# stub\n", encoding="utf-8")
+            (estate / "w0m-skills").mkdir(parents=True, exist_ok=True)
+            (estate / "w0m-skills" / "skill_audit.ts").write_text("// stub\n", encoding="utf-8")
+            (estate / "w0m-sec" / "tests").mkdir(parents=True, exist_ok=True)
+
+            runner = RecordingRunner()
+            rc = dc.run_guardrails_raw(estate, runner=runner)
+            self.assertEqual(rc, 0)
+
+            flat_cmds = [" ".join(cmd) for cmd, _cwd, _env in runner.calls]
+            self.assertTrue(any("ast_grep_check.py" in c for c in flat_cmds))
+            self.assertTrue(any("worker_env_gate.py" in c for c in flat_cmds))
+            self.assertTrue(any("skill_audit.ts" in c for c in flat_cmds))
+            self.assertTrue(any("skill_spector_check.py --deep" in c for c in flat_cmds))
+            self.assertTrue(any("w0m-sec/tests" in c for c in flat_cmds))
+
+            # Fail-closed when any security step exits non-zero
+            fail_runner = RecordingRunner(rc=1)
+            self.assertEqual(dc.run_guardrails_raw(estate, runner=fail_runner), 1)
+            self.assertEqual(len(fail_runner.calls), 1)
+
 
 if __name__ == "__main__":
     res = unittest.main(verbosity=1, exit=False).result
