@@ -177,10 +177,22 @@ class TestEnvPruneDead(unittest.TestCase):
             self.assertEqual(result["mode"], "applied")
             self.assertEqual(result["deleted_keys"], ["CRON_SECRET", "SIGNOZ_API_KEY"])
             self.assertTrue(result["backup"]["verified"])
-            self.assertEqual(len(delete_calls), 2)
-            for cmd in delete_calls:
-                self.assertEqual(cmd[:3], ["infisical", "secrets", "delete"])
-                self.assertNotIn("PUBLIC_SUPABASE_URL", cmd)
+            self.assertEqual(len(delete_calls), 1)
+            self.assertEqual(
+                delete_calls[0],
+                [
+                    "infisical",
+                    "secrets",
+                    "delete",
+                    "CRON_SECRET",
+                    "SIGNOZ_API_KEY",
+                    "--type=shared",
+                    "--env=beta",
+                    "--projectId=proj-test-123",
+                    "--silent",
+                ],
+            )
+            self.assertNotIn("PUBLIC_SUPABASE_URL", delete_calls[0])
 
     def test_restore_encrypted_backup_dry_run_and_selective_apply(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -240,6 +252,7 @@ class TestEnvPruneDead(unittest.TestCase):
                     "secrets",
                     "set",
                     f"CRON_SECRET={sample_cron}",
+                    "--type=shared",
                     "--env=beta",
                     "--projectId=proj-test-123",
                     "--silent",

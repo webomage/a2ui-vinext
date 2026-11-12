@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T732](.tasks/T732.md) | **P0** | **Pass Explicit --type=shared on Infisical CLI Secret Delete & Restore Operations (env_prune_dead.py & rotate_leaked_secrets.py)** | tooling, api | openspec/specs/agent-security-and-mcp-audit/spec.md | ✅ **done** |
 | [T731](.tasks/T731.md) | **P0** | **Fail-Closed AES-256-GCM Pre-Prune Secret Backup, Verification & Restore for just env-prune-dead** | tooling, web, cf, ext | openspec/specs/agent-security-and-mcp-audit/spec.md | ✅ **done** |
 | [T730](.tasks/T730.md) | **P0** | **Add Infisical Dead-Env Prune Helper (just env-prune-dead), Skip Dead Keys in rotate_leaked_secrets.py, and Retire Disabled GEMINI_API_KEY Fallback** | tooling, api, ext | openspec/specs/agent-security-and-mcp-audit/spec.md | ✅ **done** |
 | [T729](.tasks/T729.md) | **P1** | **Audit Estate Infisical & Worker Environment Variable Code Usage, Prune Dead Env Residue, and Publish Repo-First Rotation/Deletion Ledger** | tooling, api, cf, web | — | ✅ **done** |

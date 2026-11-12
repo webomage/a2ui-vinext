@@ -402,6 +402,7 @@ def restore_encrypted_backup(
                         "secrets",
                         "set",
                         f"{k}={val}",
+                        "--type=shared",
                         f"--env={target_env}",
                         f"--projectId={target_project}",
                         "--silent",
@@ -493,20 +494,21 @@ def prune_dead_infisical_keys(
     if apply and dead_keys:
         if not backup_summary or not backup_summary.get("verified"):
             raise RuntimeError("Refusing to delete Infisical keys without a verified encrypted backup")
-        for key in dead_keys:
-            subprocess.run(
-                [
-                    "infisical",
-                    "secrets",
-                    "delete",
-                    key,
-                    f"--env={infisical_env}",
-                    f"--projectId={project_id}",
-                ],
-                check=True,
-                stdout=subprocess.DEVNULL,
-            )
-            deleted_keys.append(key)
+        subprocess.run(
+            [
+                "infisical",
+                "secrets",
+                "delete",
+                *dead_keys,
+                "--type=shared",
+                f"--env={infisical_env}",
+                f"--projectId={project_id}",
+                "--silent",
+            ],
+            check=True,
+            stdout=subprocess.DEVNULL,
+        )
+        deleted_keys.extend(dead_keys)
 
     mode = "applied" if apply else ("backed-up" if backup else "dry-run")
     return {
