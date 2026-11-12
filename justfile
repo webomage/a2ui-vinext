@@ -2354,6 +2354,19 @@ env-usage-audit *args:
 env-usage-audit-test:
     @python3 -m pytest scripts/tests/test_env_usage_audit.py -q -p no:cacheprovider
 
+env-prune-dead *args:
+    @python3 scripts/env_prune_dead.py {{ args }}
+
+env-prune-dead-test:
+    @python3 -m pytest scripts/tests/test_env_prune_dead.py -q -p no:cacheprovider
+
+# ── Multi-Dialect Client Project Spec Bootstrap & Portable Skills (T713) ────────
+client-spec-init *args:
+    @python3 scripts/client_spec_init.py {{ args }}
+
+client-spec-init-test:
+    @python3 -m pytest scripts/tests/test_client_spec_init.py -q -p no:cacheprovider
+
 
 
 

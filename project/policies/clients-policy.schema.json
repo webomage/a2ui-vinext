@@ -181,6 +181,9 @@
           },
           "knowledge_hub": {
             "$ref": "#/definitions/knowledge_hub"
+          },
+          "spec_dialect": {
+            "$ref": "#/definitions/spec_dialect"
           }
         },
         "allOf": [
@@ -775,6 +778,19 @@
           }
         }
       }
+    },
+    "spec_dialect": {
+      "type": "string",
+      "description": "T713 AC1 — Optional SDD specification dialect declared for this project. When omitted, scripts/client_inventory.py auto-detects from filesystem markers (.w0m/sdlc.json -> w0m-openspec, .specify/ -> github-speckit, .planning/ -> open-gsd, _bmad/ -> bmad, conductor/ -> conductor, .kiro/specs/ -> cc-sdd, openspec/ -> openspec).",
+      "enum": [
+        "w0m-openspec",
+        "openspec",
+        "github-speckit",
+        "open-gsd",
+        "bmad",
+        "conductor",
+        "cc-sdd"
+      ]
     }
   },
   "allOf": [

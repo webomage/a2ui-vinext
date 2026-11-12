@@ -41,9 +41,13 @@ import textwrap
 import sys
 from pathlib import Path
 
-from schema_check import validate_declared_schema
-
 HERE = Path(__file__).resolve()
+if str(HERE.parent) not in sys.path:
+    sys.path.insert(0, str(HERE.parent))
+
+from client_spec_bridge import detect_spec_dialect  # noqa: E402
+from schema_check import validate_declared_schema  # noqa: E402
+
 ROOT = HERE.parents[1]                       # …/@wom  — registry roots are relative to this
 CANONICAL = ROOT / "w0m-web"                 # …/w0m-web
 REGISTRY = ROOT / "project" / "policies" / "clients-policy.json"
@@ -643,8 +647,16 @@ def inventory(registry: Path = REGISTRY) -> tuple[dict, list[str]]:
     for p, root, g in resolved:
         decl = load_json(root / contract_file)
         keys = set(decl) if decl is not None else set()
+        ws_root = resolve_project_root(p["root"])
+        detected_dialect = detect_spec_dialect(ws_root) if ws_root.is_dir() else "unknown"
+        if detected_dialect == "unknown" and root.is_dir():
+            detected_dialect = detect_spec_dialect(root)
+        declared_dialect = p.get("spec_dialect")
         projects.append({
             "id": p["id"], "role": p["role"], "root": str(root), "note": p.get("note", ""),
+            "spec_dialect": declared_dialect or detected_dialect,
+            "spec_dialect_source": "declared" if declared_dialect else "detected",
+            "spec_dialect_detected": detected_dialect,
             "runtime": p.get("runtime", {}),
             "tier_reason": p.get("tier_reason", ""),
             "services": p.get("_effective_services", {}),
@@ -747,6 +759,7 @@ def report(rep: dict, quiet: bool) -> None:
     for p in rep["projects"]:
         d, c, s = p["declaration"], p["claude_md"], p["skills"]
         print(f"\n  ── {p['id']} ({p['role']}) — {p['root']}")
+        print(f"     spec dialect: {p.get('spec_dialect', 'unknown')} ({p.get('spec_dialect_source', 'detected')})")
         if p.get("runtime"):
             rt = p["runtime"]
             sub_label = rt.get("substrate", "—")

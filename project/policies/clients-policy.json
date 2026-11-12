@@ -7,6 +7,7 @@
     {
       "id": "w0m",
       "role": "w0m",
+      "spec_dialect": "w0m-openspec",
       "root": ".",
       "enabled": true,
       "runtime": {
@@ -566,6 +567,7 @@
     {
       "id": "k7",
       "role": "managed",
+      "spec_dialect": "w0m-openspec",
       "root": "k7",
       "runtime": {
         "substrate": "host"
@@ -1207,6 +1209,14 @@
         "automation_health": {
           "status": "out",
           "reason": "Governs the w0m estate's background automation staleness ceilings (T652: hooks, timers, and session-complete probes); estate background automations do not apply to this tier."
+        },
+        "development_modes": {
+          "status": "out",
+          "reason": "Governs the w0m estate's ultra/balance/wise verification depth during agent-tree landing (T705); estate agent-tree landing does not apply to this tier."
+        },
+        "elephant_goldfish_model": {
+          "status": "out",
+          "reason": "Governs the w0m estate's egm-* review loop configuration in wise mode (T705); estate-scoped."
         }
       },
       "non_contract_surfaces": {
@@ -1386,6 +1396,14 @@
         "automation_health": {
           "status": "out",
           "reason": "Governs the w0m estate's background automation staleness ceilings (T652: hooks, timers, and session-complete probes); estate background automations do not apply to this tier."
+        },
+        "development_modes": {
+          "status": "out",
+          "reason": "Governs the w0m estate's ultra/balance/wise verification depth during agent-tree landing (T705); estate agent-tree landing does not apply to this tier."
+        },
+        "elephant_goldfish_model": {
+          "status": "out",
+          "reason": "Governs the w0m estate's egm-* review loop configuration in wise mode (T705); estate-scoped."
         }
       },
       "non_contract_surfaces": {

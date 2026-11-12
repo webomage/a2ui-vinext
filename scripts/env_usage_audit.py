@@ -70,6 +70,8 @@ META_SKIP_SUBSTRINGS: tuple[str, ...] = (
     "test_rotate_leaked_secrets.py",
     "env_usage_audit.py",
     "test_env_usage_audit.py",
+    "env_prune_dead.py",
+    "test_env_prune_dead.py",
     "w0m_audit.py",
     "seo-geo-scanner.ts",
     "advanced-audit.ts",

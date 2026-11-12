@@ -1190,6 +1190,34 @@ relations:
 apiVersion: w0m.dev/v1alpha1
 kind: AiResource
 metadata:
+  name: skill-job-hunter
+  namespace: default
+  title: 'Skill: job-hunter'
+  description: Governed agent skill `job-hunter` (provider=w0m-native, version=canonical).
+  annotations:
+    w0m.dev/skill-observed-version: 2026.11.12-1794513627
+    w0m.dev/skill-provider: w0m-native
+    w0m.dev/skill-version: canonical
+    w0m.dev/source-register: .w0m/skills.json
+  tags:
+  - skill
+  - ai-resource
+  - w0m-native
+spec:
+  type: agent-skill
+  owner: group:default/platform
+  system: system:default/w0m
+  provider: w0m-native
+  version: canonical
+relations:
+- type: ownedBy
+  targetRef: group:default/platform
+- type: partOf
+  targetRef: system:default/w0m
+---
+apiVersion: w0m.dev/v1alpha1
+kind: AiResource
+metadata:
   name: skill-landing-page-design
   namespace: default
   title: 'Skill: landing-page-design'

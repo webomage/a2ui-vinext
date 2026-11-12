@@ -15,12 +15,8 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T707](/home/aleksei/Projects/!self/w0m/.tasks/T707.md) | [#707](https://github.com/webomage/wom7board/issues/707) | P1 | queued | skills | 75 | Audit and Adopt casualuser/job-hunter-skill into w0m-skills & Estate Skill  📄 live spec |
-| 2 | [T708](/home/aleksei/Projects/!self/w0m/.tasks/T708.md) | [#708](https://github.com/webomage/wom7board/issues/708) | P1 | queued | tools | 75 | k7 WASM Git Navigation Browser in TUI with GitHub, GitLab & New LLM Git Fla 📄 live spec |
-| 3 | [T713](/home/aleksei/Projects/!self/w0m/.tasks/T713.md) | [#713](https://github.com/webomage/wom7board/issues/713) | P1 | queued | sdlc | 75 | Client Project Multi-Dialect Spec Bootstrap & Registry (clients-policy.json 📄 live spec |
-| 4 | [T715](/home/aleksei/Projects/!self/w0m/.tasks/T715.md) | [#715](https://github.com/webomage/wom7board/issues/715) | P1 | queued | product | 75 | Client Portal (apps/cp) Onboarding Wizard & Project Settings: Selectable SD 📄 live spec |
-| 5 | [T719](/home/aleksei/Projects/!self/w0m/.tasks/T719.md) | ⚠️ not mirrored | P2 | queued | tools | 40 | Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vi 📄 live spec |
-| 6 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 1 | [T719](/home/aleksei/Projects/!self/w0m/.tasks/T719.md) | ⚠️ not mirrored | P2 | queued | tools | 40 | Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vi 📄 live spec |
+| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -28,20 +24,16 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 10 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **10** are
+> ⚠️ **0 of 6 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **6** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T707](/home/aleksei/Projects/!self/w0m/.tasks/T707.md) | [#707](https://github.com/webomage/wom7board/issues/707) | P1 | queued | skills | 0/4 | `░░░░░░░░░░` 0% | — | Audit and Adopt casualuser/job-hunter-skill into w0m-skills  |
-| 2 | [T708](/home/aleksei/Projects/!self/w0m/.tasks/T708.md) | [#708](https://github.com/webomage/wom7board/issues/708) | P1 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | k7 WASM Git Navigation Browser in TUI with GitHub, GitLab &  |
-| 3 | [T713](/home/aleksei/Projects/!self/w0m/.tasks/T713.md) | [#713](https://github.com/webomage/wom7board/issues/713) | P1 | queued | sdlc | 0/4 | `░░░░░░░░░░` 0% | — | Client Project Multi-Dialect Spec Bootstrap & Registry (clie |
-| 4 | [T715](/home/aleksei/Projects/!self/w0m/.tasks/T715.md) | [#715](https://github.com/webomage/wom7board/issues/715) | P1 | queued | product | 0/4 | `░░░░░░░░░░` 0% | — | Client Portal (apps/cp) Onboarding Wizard & Project Settings |
-| 5 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
-| 6 | [T719](/home/aleksei/Projects/!self/w0m/.tasks/T719.md) | ⚠️ not mirrored | P2 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | Benchmark Stack-Aligned Context & Code-Graph Tools (PageInde |
+| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 2 | [T719](/home/aleksei/Projects/!self/w0m/.tasks/T719.md) | ⚠️ not mirrored | P2 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | Benchmark Stack-Aligned Context & Code-Graph Tools (PageInde |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -52,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t725-t729-security-ui-env` | 0 | **n/a — NO UPSTREAM** | `4106b544e` |
-| `w0m-api` | `agent/t725-t729-security-ui-env` | 0 | **n/a — NO UPSTREAM** | `765f9f0` |
-| `w0m-cf` | `agent/t725-t729-security-ui-env` | 0 | **n/a — NO UPSTREAM** | `20ee0bb` |
-| `w0m-skills` | `agent/t725-t729-security-ui-env` | 0 | **n/a — NO UPSTREAM** | `0ea3e68` |
-| `w0m-ext` | `agent/t725-t729-security-ui-env` | 0 | **n/a — NO UPSTREAM** | `e8f705f` |
-| `w0m-sec` | `agent/t725-t729-security-ui-env` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/t725-t729-security-ui-env` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `a9178b1de` |
+| `w0m-api` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `d5afb2c` |
+| `w0m-cf` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `20ee0bb` |
+| `w0m-skills` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `99d2200` |
+| `w0m-ext` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `a930b83` |
+| `w0m-sec` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/t730-t713-t715-t707-t708` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 10 open · 729 TASKS.md rows · 357/729 specced (6/10 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 730 TASKS.md rows · 358/730 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T707","T708","T713","T715","T719","T17"],"repos":{"w0m-api":{"branch":"agent/t725-t729-security-ui-env","dirty":0,"has_upstream":true,"head":"765f9f0","unpushed":null},"w0m-cf":{"branch":"agent/t725-t729-security-ui-env","dirty":0,"has_upstream":true,"head":"20ee0bb","unpushed":null},"w0m-ext":{"branch":"agent/t725-t729-security-ui-env","dirty":0,"has_upstream":true,"head":"e8f705f","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t725-t729-security-ui-env","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t725-t729-security-ui-env","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t725-t729-security-ui-env","dirty":0,"has_upstream":true,"head":"0ea3e68","unpushed":null},"w0m-web":{"branch":"agent/t725-t729-security-ui-env","dirty":0,"has_upstream":true,"head":"4106b544e","unpushed":null}},"tickets":{"open":10,"rowless_open":[],"rows":729,"specced":357,"specced_open":6,"total":729,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T719","T17"],"repos":{"w0m-api":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"d5afb2c","unpushed":null},"w0m-cf":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"20ee0bb","unpushed":null},"w0m-ext":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"a930b83","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"99d2200","unpushed":null},"w0m-web":{"branch":"agent/t730-t713-t715-t707-t708","dirty":0,"has_upstream":true,"head":"a9178b1de","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":730,"specced":358,"specced_open":2,"total":730,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,7 +107,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-11-11 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-11-12 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
@@ -123,18 +115,13 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (10):
+#### Completed today (5):
 
-- **T720** — Sync w0m-api/deno.lock and Enforce --frozen=true + Workspace Parity Across deno-check, deno-test & Pre-Commit to Prevent Release Worktree Mutation ((agy:t720-api-deno-lock): Completed AC1–AC3 (status: done, closed_as: completed). Verified release/2026.11.11-1794403906 (releases/2026.11.11-1794403906.json published across all repos after clearing the 2-line w0m-api/deno.lock side-effect in the detached release worktree), implemented w0m-api/scripts/deno_lock_parity_check.py + scripts/tests/test_deno_lock_parity.py (proven RED with RED_EXIT=1 BYTE_IDENTICAL=yes, then GREEN 4/4), enforced --frozen=true across just/estate.just and w0m-api/.pre-commit-config.yaml, and captured lesson in LESSONS.md.)
-- **T721** — Audit Recent casualuser Forks, Migrate Approved OSS Forks to webomage/, Install Real NVIDIA/SkillSpector v2.12.0 & Vendor Vetted Skills ((agy:t721-skillspector-forks): Completed AC1–AC4. Mirrored 9 permissive casualuser forks to github.com/webomage/<repo>, quarantined job-hunter-skill (NOASSERTION + REJECT) and short-video-factory (AGPL-3.0), installed NVIDIA/SkillSpector v2.12.0 (skillspector[mcp]), wired scripts/skill_spector_check.py + .skillspector-baseline.yaml + just skillspector-estate + just floorplan, vendored skill-inspector (0/100 LOW SAFE) into w0m-skills (68 canonical skills), recorded lesson in LESSONS.md, and published repo-first audit report.)
-- **T722** — Fix Astro v6 locals.runtime.env SSR Crashes (blueprints/order & CP), Classify Recovered Deploy Retries, and Ship Full-Scope Admin Member & Client Impersonation ((agy:t722-impersonation-astro6-deploy-audit): Completed AC1–AC4, verified worker_env_gate.py (0 violations), test_deploy_logged.py (33/33), vitest (81/81), svelte_typecheck_ratchet.py (0 errors across 155 .svelte files), supabase_surface_drift_check.py (0 findings), ds-conformance, and ui-ticket-leak-check. Recorded transferable lesson (GATE locals.runtime GETTERS UNDER @astrojs/cloudflare v13+ AND STAMP CANONICAL auth.users.id + CROSS-DOMAIN HANDOFF IN ADMIN IMPERSONATION) in LESSONS.md and mirrored report to .agents/reports/2026-11-11-t722-astro7-impersonation-and-services-checkout-review.md + w0m-web/docs/reports/. Awaiting owner Touch ID just deploy-logged to push updated Workers live.)
-- **T723** — Collapse Public /services and /solutions to 1-Click Fast Register + Direct Package Checkout and Keep Source/Target Infra Selector Strictly Post-Signup in /o/[org] ((agy:t723-services-solutions-fast-checkout): Completed AC1–AC3, verified service-action-order-configurator.test.ts, svelte_typecheck_ratchet.py, ds-conformance, and ui-ticket-leak-check. Recorded transferable conversion/SSOT rule in LESSONS.md (KEEP DEEP INFRASTRUCTURE SCOPING STRICTLY POST-SIGNUP IN /o/[org] SO PUBLIC /services & /solutions STAY 1-CLICK FAST REGISTER + DIRECT CHECKOUT).)
-- **T724** — Bound hats-embed-guard.test.ts Query-Chain Slicing Across Promise.all Array Items and Order Admin Impersonation Hats by granted_at ((agy:t724-fix-hats-embed-guard): Completed AC1–AC2; full vitest suite passed (193/193 files, 1,934/1,934 tests, exit 0), supabase-surface-drift passed (0 findings), and recorded transferable static-scanner rule in LESSONS.md (BOUND FLUENT QUERY-CHAIN STATIC SCANNERS AT DEPTH-0 , AND CLOSING DELIMITERS SO Promise.all([...]) ELEMENTS NEVER BLEED INTO SIBLING QUERIES).)
-- **T725** — Restore Cross-App /api/board and /api/vault/r2 Route Parity in apps/me, Fix FeatureVotingBoard Error Split-State, and Add Standing me-api-parity Gate ((agy:t725-t729-security-ui-env): Created and claimed T725 before implementation after live https://me.webomage.com/me/oss surfaced HTTP 403 Forbidden on /api/board/bulwarkid/virtual-fido. Completed AC1–AC3 (me-api-parity.test.ts 2/2 passed). Lesson captured in LESSONS.md (T725).)
-- **T726** — Wire First-Place Code & Agent Security Gate Across All Estate Repos and Fix NVIDIA SkillSpector SC9 node_modules Exclusion ((agy:t725-t729-security-ui-env): Created and claimed T726 before implementation to wire first-place Code + Agent security gates and fix SkillSpector SC9 node_modules cap exhaustion. Completed AC1–AC3 (just check-guardrails exits 0 across all 8 repos, 6 lockfiles, and 70 skills). Lesson captured in LESSONS.md (T726).)
-- **T727** — Accelerate Edge TTFB, Anonymous Edge Caching, SSR Query Parallelism, and Below-the-Fold Island Hydration Across web, me, and cp ((agy:t725-t729-security-ui-env): Created and claimed T727 before implementation after live TTFB audit measured 1,093ms on webomage.com/ and 1,505ms on me.webomage.com/. Completed AC1–AC2 (edge-cache-policy.test.ts 5/5 passed). Lesson captured in LESSONS.md (T727).)
-- **T728** — Harden Client JSON Parsing via Shared readJsonSafe, Eliminate Missing img Dimensions (CLS), and Replace transition-all Hotspots ((agy:t725-t729-security-ui-env): Created and claimed T728 before implementation to harden client fetch JSON parsing, eliminate CLS <img> gaps, and clean transition-all hotspots. Completed AC1–AC2 (json-safe.test.ts 5/5 passed, ds-conformance & ui-ticket-leak-check green). Lesson captured in LESSONS.md (T728).)
-- **T729** — Audit Estate Infisical & Worker Environment Variable Code Usage, Prune Dead Env Residue, and Publish Repo-First Rotation/Deletion Ledger ((agy:t725-t729-security-ui-env): Created and claimed T729 before implementation to audit which Infisical / historical-digest env vars are still read in code vs already dead. Completed AC1–AC2 (43 dead keys incl. 5 historical-digest keys identified for deletion). Lesson captured in LESSONS.md (T729).)
+- **T707** — Audit and Adopt casualuser/job-hunter-skill into w0m-skills & Estate Skill Manifests ((agy:t730-t713-t715-t707-t708): Completed AC1–AC4. Audited casualuser/job-hunter-skill (REJECT preserved in QUARANTINED_CASUALUSER_FORKS), authored clean-room w0m-skills/skills/job-hunter/SKILL.md (0/100 LOW · SAFE), synced across estate manifests (69 canonical skills), and recorded YARA YR4 passive-data framing lesson in LESSONS.md.)
+- **T708** — k7 WASM Git Navigation Browser in TUI with GitHub, GitLab & New LLM Git Flavours Support ((agy:t730-t713-t715-t707-t708): Completed AC1–AC4. Shipped k7hub commit 8acca23 (7/7 Rust tests + k7hub.wasm wasm32-unknown-unknown build), wired k7-git-browser.ts + CrewToolkitAndTabLinuxConsole.svelte + K7-FAMILY.md, and recorded wasm32 u64 vs usize shard-size lesson in LESSONS.md.)
+- **T713** — Client Project Multi-Dialect Spec Bootstrap & Registry (clients-policy.json, GENERIC-SDLC-SET.md, just client-spec-init for Spec Kit, OpenGSD & OpenSpec) ((agy:t730-t713-t715-t707-t708): Completed AC1–AC4. Added spec_dialect schema + client_inventory.py auto-detection, shipped just client-spec-init (7/7 pytest green), updated w0m-skills/GENERIC-SDLC-SET.md, and recorded clients-policy.json tier synchronization lesson in LESSONS.md.)
+- **T715** — Client Portal (apps/cp) Onboarding Wizard & Project Settings: Selectable SDD Spec Dialect (GitHub Spec Kit, OpenGSD, OpenSpec, Webomage SDLC) ((agy:t730-t713-t715-t707-t708): Completed AC1–AC4. Shipped selectable SDD dialect catalog, onboarding wizard + project settings persistence, normalized spec/phase progress card, and Vitest regression coverage; lesson disposition covered by T713/T703 rules in LESSONS.md.)
+- **T730** — Add Infisical Dead-Env Prune Helper (just env-prune-dead), Skip Dead Keys in rotate_leaked_secrets.py, and Retire Disabled GEMINI_API_KEY Fallback ((agy:t730-t713-t715-t707-t708): Completed AC1–AC3. Delivered fail-closed just env-prune-dead (44 dead Infisical beta keys identified in dry-run, including GEMINI_API_KEY), updated rotate_leaked_secrets.py, retired GEMINI_API_KEY runtime reads with 0 deno.lock drift, and recorded transferable rule (META_SKIP_SUBSTRINGS + frozen deno.lock preservation) in LESSONS.md.)
 
 ## 3. Other open threads (in TASKS.md)
 
