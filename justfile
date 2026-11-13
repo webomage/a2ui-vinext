@@ -1431,7 +1431,7 @@ kb-clusters *args:
     @python3 scripts/w0m_kb_vector.py clusters {{ args }}
 
 kb-vector-test:
-    @python3 scripts/tests/test_w0m_kb_vector.py && python3 scripts/tests/test_w0m_prs_orca_audit.py
+    @python3 scripts/tests/test_w0m_kb_vector.py && python3 scripts/tests/test_w0m_prs_orca_audit.py && python3 scripts/tests/test_tech_explainer_check.py
 
 # ── Skills Platform (Level 1 & Level 2) ──────────────────────────────────────
 skills-sync mode="":
@@ -2367,8 +2367,8 @@ client-spec-init *args:
 client-spec-init-test:
     @python3 -m pytest scripts/tests/test_client_spec_init.py -q -p no:cacheprovider
 
-# ── Self-Contained Interactive Visual Architecture Explainer (T735) ─────────────
+# ── Self-Contained Interactive Visual Architecture Explainer (T735/T736) ────────
 tech-explainer mode="open":
-    @python3 -c 'import pathlib, re, subprocess, sys; root = pathlib.Path("{{justfile_directory()}}"); a = root / "docs/visuals/w0m-tech-landscape-explainer.html"; b = root / "w0m-web/docs/walkthroughs/w0m-tech-landscape-explainer.html"; mode = "{{mode}}"; assert a.is_file() and b.is_file(), "missing explainer HTML"; ta = a.read_text(encoding="utf-8"); assert ta == b.read_text(encoding="utf-8"), "visual explainer mirror drift"; assert not re.search(r"<(?:script|link)\\b[^>]+(?:src|href)=[\x27\"]https?://", ta, re.I), "external CDN dependency forbidden"; print(a) if mode == "path" else (print("[OK] w0m-tech-landscape-explainer.html self-contained & mirrored") if mode == "check" else subprocess.run(["xdg-open" if sys.platform.startswith("linux") else "open", str(a)], check=False))'
+    @python3 scripts/tech_explainer_check.py --mode {{mode}}
 
 

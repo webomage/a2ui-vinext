@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Webomage (w0m) — Interactive Technology Landscape &amp; Architecture Explainer</title>
-  <!-- Standalone explanatory document governed by eli5 (T183) and T735: zero external CDN requests -->
+  <title>Webomage (@wom) — Interactive Technology Landscape &amp; Architecture Explainer</title>
+  <!-- Self-contained standalone visual architecture explainer: zero external CDN requests -->
   <style>
     :root {
       --rgb-bg: 2, 6, 23;
@@ -38,21 +38,21 @@
     }
 
     @media (prefers-color-scheme: light) {
-      html:not([data-theme="dark"]) {
+      :root:not([data-theme="dark"]) {
         --rgb-bg: 248, 250, 252;
         --rgb-surface: 255, 255, 255;
         --rgb-glass: 15, 23, 42;
         --rgb-text: 15, 23, 42;
-        --rgb-muted: 71, 85, 105;
-        --rgb-brand: 2, 132, 199;
-        --rgb-indigo: 79, 70, 229;
-        --rgb-emerald: 5, 150, 105;
-        --rgb-amber: 180, 83, 9;
-        --rgb-rose: 225, 29, 72;
-        --surface-card: rgba(255, 255, 255, 0.88);
-        --surface-elevated: rgba(255, 255, 255, 0.96);
-        --surface-hover: rgba(15, 23, 42, 0.045);
-        --border-hairline: rgba(15, 23, 42, 0.13);
+        --rgb-muted: 51, 65, 85;
+        --rgb-brand: 3, 105, 161;
+        --rgb-indigo: 67, 56, 202;
+        --rgb-emerald: 4, 120, 87;
+        --rgb-amber: 146, 64, 14;
+        --rgb-rose: 190, 18, 60;
+        --surface-card: rgba(255, 255, 255, 0.92);
+        --surface-elevated: rgba(255, 255, 255, 0.98);
+        --surface-hover: rgba(15, 23, 42, 0.055);
+        --border-hairline: rgba(15, 23, 42, 0.16);
       }
     }
 
@@ -61,16 +61,16 @@
       --rgb-surface: 255, 255, 255;
       --rgb-glass: 15, 23, 42;
       --rgb-text: 15, 23, 42;
-      --rgb-muted: 71, 85, 105;
-      --rgb-brand: 2, 132, 199;
-      --rgb-indigo: 79, 70, 229;
-      --rgb-emerald: 5, 150, 105;
-      --rgb-amber: 180, 83, 9;
-      --rgb-rose: 225, 29, 72;
-      --surface-card: rgba(255, 255, 255, 0.88);
-      --surface-elevated: rgba(255, 255, 255, 0.96);
-      --surface-hover: rgba(15, 23, 42, 0.045);
-      --border-hairline: rgba(15, 23, 42, 0.13);
+      --rgb-muted: 51, 65, 85;
+      --rgb-brand: 3, 105, 161;
+      --rgb-indigo: 67, 56, 202;
+      --rgb-emerald: 4, 120, 87;
+      --rgb-amber: 146, 64, 14;
+      --rgb-rose: 190, 18, 60;
+      --surface-card: rgba(255, 255, 255, 0.92);
+      --surface-elevated: rgba(255, 255, 255, 0.98);
+      --surface-hover: rgba(15, 23, 42, 0.055);
+      --border-hairline: rgba(15, 23, 42, 0.16);
     }
 
     *, *::before, *::after {
@@ -516,8 +516,8 @@
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      grid-auto-rows: 1fr;
       gap: 16px;
+      align-items: stretch;
     }
 
     .tech-card {
@@ -601,12 +601,12 @@
           </p>
         </div>
         <div>
-          <button type="button" class="btn" id="theme-toggle" aria-label="Toggle dark and light theme">Theme: Dark</button>
+          <button type="button" class="btn" id="theme-toggle" aria-pressed="true" aria-label="Toggle dark and light theme">Theme: Dark</button>
         </div>
       </div>
 
       <div class="kpi-strip" aria-label="Measured estate metrics">
-        <div class="kpi"><div class="kpi-val">10</div><div class="kpi-lbl">Git Repos (@wom + 9)</div></div>
+        <div class="kpi"><div class="kpi-val">10</div><div class="kpi-lbl">Git Repos (Root + 7 + 2)</div></div>
         <div class="kpi"><div class="kpi-val">6</div><div class="kpi-lbl">Active CF Workers</div></div>
         <div class="kpi"><div class="kpi-val">19 + 5</div><div class="kpi-lbl">Workflows &amp; Crons</div></div>
         <div class="kpi"><div class="kpi-val">393 / 64</div><div class="kpi-lbl">SQL Migs / Edge Fns</div></div>
@@ -620,9 +620,9 @@
         <div class="audience-bar" role="group" aria-label="Audience explanation depth">
           <span class="audience-label">Audience Lens:</span>
           <button type="button" class="btn active" data-audience="novice" aria-pressed="true">1. Novice (ELI5)</button>
-          <button type="button" class="btn" data-audience="product" aria-pressed="false">2. Product &amp; Business</button>
-          <button type="button" class="btn" data-audience="architect" aria-pressed="false">3. Architecture &amp; Security</button>
-          <button type="button" class="btn" data-audience="systems" aria-pressed="false">4. Systems Engineer</button>
+          <button type="button" class="btn" data-audience="junior" aria-pressed="false">2. Junior Dev</button>
+          <button type="button" class="btn" data-audience="product" aria-pressed="false">3. Product &amp; PM</button>
+          <button type="button" class="btn" data-audience="executive" aria-pressed="false">4. Executive &amp; Architect</button>
         </div>
         <div style="font-size:0.8rem;color:var(--text-secondary);font-family:var(--font-mono);">
           Tip: Click any diagram node or use Left/Right arrow keys in walkthroughs
@@ -661,7 +661,7 @@
           <button type="button" class="btn" id="reset-map-btn" style="min-height:36px;padding:4px 12px;font-size:0.78rem;">Show All Connections</button>
         </div>
         <div class="svg-wrap">
-          <svg class="topo" viewBox="0 0 1080 620" role="img" aria-label="Webomage four-tier architecture map">
+          <svg class="topo" viewBox="0 0 1080 620" role="group" aria-label="Webomage four-tier architecture map">
             <defs>
               <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                 <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" style="color: rgba(148,163,184,0.65);" />
@@ -679,10 +679,10 @@
             <text class="lane-title" x="26" y="178">Tier 1 &amp; 1b — Cloudflare Free-Tier Edge (6 Active Workers, $0-Egress R2) + Scoped Mistral</text>
 
             <rect class="lane-rect" x="12" y="316" width="1056" height="132" />
-            <text class="lane-title" x="26" y="336">Tier 2 — Supabase Relational, GoTrue Auth, 4-Axis RBAC &amp; 64 Frozen Deno 2 Edge Functions</text>
+            <text class="lane-title" x="26" y="336">Tier 2 — Supabase Relational (PG 17.6), GoTrue Auth, 4-Axis RBAC &amp; 64 Deno 2 Edge Function Dirs (--frozen=true)</text>
 
             <rect class="lane-rect" x="12" y="464" width="1056" height="142" />
-            <text class="lane-title" x="26" y="484">Tier 3 — Local Apple Silicon MLX, 92.5k Graphify + 2.3k-Doc Vector KB &amp; First-Place Security Gate</text>
+            <text class="lane-title" x="26" y="484">Tier 3 — Local Apple Silicon MLX, 92.5k Graphify + ~2k Curated Vector KB &amp; First-Place Security Gate</text>
 
             <!-- Directional Edges -->
             <g id="svg-edges">
@@ -690,21 +690,22 @@
               <path class="edge" data-from="n-cp" data-to="n-ssr" d="M 255 124 L 220 196" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-me" data-to="n-ssr" d="M 405 124 L 260 196" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-demo" data-to="n-ssr" d="M 555 124 L 300 196" marker-end="url(#arrow)" />
-              <path class="edge" data-from="n-ext" data-to="n-func" d="M 715 124 L 460 196" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-ext" data-to="n-ssr" d="M 650 124 L 310 196" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-ext" data-to="n-edgefn" d="M 715 124 L 780 354" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-ext" data-to="n-r2" d="M 735 124 L 820 196" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-k7" data-to="n-cp" d="M 875 84 L 320 84" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-orca" data-to="n-mlx" d="M 990 124 L 220 502" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-orca" data-to="n-kb" d="M 1005 124 L 540 502" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-orca" data-to="n-gate" d="M 1015 124 L 960 502" marker-end="url(#arrow)" />
 
               <path class="edge" data-from="n-ssr" data-to="n-gotrue" d="M 210 278 L 210 354" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-ssr" data-to="n-pg" d="M 250 278 L 490 354" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-ssr" data-to="n-edgefn" d="M 290 278 L 760 354" marker-end="url(#arrow)" />
-              <path class="edge" data-from="n-ssr" data-to="n-r2" d="M 330 236 L 745 236" marker-end="url(#arrow)" />
-              <path class="edge" data-from="n-ssr" data-to="n-api" d="M 330 250 L 565 250" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-ssr" data-to="n-r2" d="M 330 212 Q 538 182 746 212" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-ssr" data-to="n-api" d="M 330 254 L 562 254" marker-end="url(#arrow)" />
 
-              <path class="edge" data-from="n-func" data-to="n-api" d="M 540 236 L 565 236" marker-end="url(#arrow)" />
-              <path class="edge" data-from="n-func" data-to="n-ai" d="M 540 220 L 915 220" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-func" data-to="n-api" d="M 540 228 L 562 228" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-func" data-to="n-ai" d="M 540 212 Q 727 186 914 212" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-api" data-to="n-pg" d="M 650 278 L 530 354" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-edgefn" data-to="n-pg" d="M 740 392 L 640 392" marker-end="url(#arrow)" />
               <path class="edge" data-from="n-edgefn" data-to="n-ai" d="M 840 354 L 965 278" marker-end="url(#arrow)" />
@@ -774,7 +775,7 @@
             <g class="node" data-node="n-api" tabindex="0" role="button" aria-label="wom7api Worker in w0m-api">
               <rect x="562" y="196" width="166" height="82" />
               <text class="n-title" x="575" y="224">wom7api (w0m-api)</text>
-              <text class="n-sub" x="575" y="244">Hono &gt;=4.13.16</text>
+              <text class="n-sub" x="575" y="244">Hono 4.13.18 (&gt;=4.13.16)</text>
               <text class="n-sub" x="575" y="261">19 Workflows + DO</text>
             </g>
             <g class="node" data-node="n-r2" tabindex="0" role="button" aria-label="Cloudflare R2, KV, and Turnstile">
@@ -786,8 +787,8 @@
             <g class="node" data-node="n-ai" tabindex="0" role="button" aria-label="Workers AI and Scoped Mistral Free Tier">
               <rect x="914" y="196" width="142" height="82" />
               <text class="n-title" x="926" y="224">Edge &amp; Mistral AI</text>
-              <text class="n-sub" x="926" y="244">Workers AI + T677</text>
-              <text class="n-sub" x="926" y="261">Scoped Project Keys</text>
+              <text class="n-sub" x="926" y="244">Workers AI + Scoped Keys</text>
+              <text class="n-sub" x="926" y="261">Isolated Project Vaults</text>
             </g>
 
             <!-- Tier 2 Nodes -->
@@ -797,9 +798,9 @@
               <text class="n-sub" x="110" y="401">PKCE OAuth x3 · TOTP MFA</text>
               <text class="n-sub" x="110" y="417">WebAuthn FIDO2 + LATAM ID</text>
             </g>
-            <g class="node" data-node="n-pg" tabindex="0" role="button" aria-label="PostgreSQL 15 and 4-Axis RBAC">
+            <g class="node" data-node="n-pg" tabindex="0" role="button" aria-label="PostgreSQL 17.6 and 4-Axis RBAC">
               <rect x="366" y="354" width="274" height="78" />
-              <text class="n-title" x="380" y="382">PostgreSQL 15 (393 Migrations)</text>
+              <text class="n-title" x="380" y="382">PostgreSQL 17.6 (393 Migrations)</text>
               <text class="n-sub" x="380" y="401">4-Axis RBAC public.wom_can · hats</text>
               <text class="n-sub" x="380" y="417">Append-Only *_audit_log Triggers</text>
             </g>
@@ -807,7 +808,7 @@
               <rect x="676" y="354" width="290" height="78" />
               <text class="n-title" x="690" y="382">64 Deno 2 Edge Functions</text>
               <text class="n-sub" x="690" y="401">Frozen deno.lock Parity · Stripe/MP</text>
-              <text class="n-sub" x="690" y="417">AI Personas · Resume/PDF · Connectors</text>
+              <text class="n-sub" x="690" y="417">AI Personas · Resume/PDF · 7 Connectors</text>
             </g>
 
             <!-- Tier 3 Nodes -->
@@ -821,13 +822,13 @@
               <rect x="384" y="502" width="316" height="84" />
               <text class="n-title" x="398" y="530">Graphify + Codegraph + Vector KB</text>
               <text class="n-sub" x="398" y="550">92,477 Graph Nodes · codegraph v1.6.2</text>
-              <text class="n-sub" x="398" y="567">2.3k+ Docs FTS5 BM25 + 128-Dim SVD RRF</text>
+              <text class="n-sub" x="398" y="567">~2k Curated Docs · FTS5 + 128-Dim SVD</text>
             </g>
             <g class="node" data-node="n-gate" tabindex="0" role="button" aria-label="First-Place Security, Skills and Deploy Cert Gate">
               <rect x="734" y="502" width="314" height="84" />
               <text class="n-title" x="748" y="530">First-Place Gate &amp; Deploy Certs</text>
               <text class="n-sub" x="748" y="550">SkillSpector v2.12 · osv · gitleaks · ast-grep</text>
-              <text class="n-sub" x="748" y="567">Infisical (71 Keys) · 18 Wrap-Up Gates</text>
+              <text class="n-sub" x="748" y="567">Infisical (71 Keys) · 16/18 Wrap-Up Gates</text>
             </g>
           </svg>
         </div>
@@ -860,9 +861,9 @@
       <h2>Step-by-Step Guided Flows (Highlights Live Topology Above)</h2>
       <div class="flow-tabs" role="tablist" aria-label="Select architecture flow" id="flow-tabs"></div>
 
-      <div class="walkthrough-box">
+      <div class="walkthrough-box" id="walkthrough-panel" role="tabpanel" tabindex="0">
         <div class="step-header">
-          <span class="step-badge" id="walk-counter">Step 1 of 5</span>
+          <span class="step-badge" id="walk-counter" aria-live="polite">Step 1 of 5</span>
           <div class="step-dots" id="walk-dots"></div>
           <div class="step-controls">
             <button type="button" class="btn" id="prev-step-btn" style="min-height:38px;">Previous</button>
@@ -890,14 +891,15 @@
           aria-label="Search subsystems"
         />
         <div class="filter-pills" id="catalog-filters" role="group" aria-label="Filter by layer">
-          <button type="button" class="btn active" data-cat="all">All (18)</button>
-          <button type="button" class="btn" data-cat="web">Web &amp; UI</button>
-          <button type="button" class="btn" data-cat="edge">Edge &amp; Data</button>
-          <button type="button" class="btn" data-cat="rust">Rust &amp; WASM</button>
-          <button type="button" class="btn" data-cat="ai">AI &amp; Knowledge</button>
-          <button type="button" class="btn" data-cat="sec">Security &amp; SDLC</button>
+          <button type="button" class="btn active" data-cat="all" aria-pressed="true">All (18)</button>
+          <button type="button" class="btn" data-cat="web" aria-pressed="false">Web &amp; UI</button>
+          <button type="button" class="btn" data-cat="edge" aria-pressed="false">Edge &amp; Data</button>
+          <button type="button" class="btn" data-cat="rust" aria-pressed="false">Rust &amp; WASM</button>
+          <button type="button" class="btn" data-cat="ai" aria-pressed="false">AI &amp; Knowledge</button>
+          <button type="button" class="btn" data-cat="sec" aria-pressed="false">Security &amp; SDLC</button>
         </div>
       </div>
+      <div id="catalog-status" aria-live="polite" style="font-size:0.8rem;color:var(--text-secondary);font-family:var(--font-mono);margin-bottom:10px;"></div>
       <div class="cards-grid" id="catalog-grid"></div>
       <div class="empty-state" id="catalog-empty" hidden>
         No subsystem matched your filter. Clear the search box or switch category pills above.
@@ -905,692 +907,698 @@
     </section>
   </div>
 
-  <script>
-    (function () {
-      const LADDERS = {
-        novice: {
-          heading: "Plain-English Core Truth (Novice / ELI5)",
-          truth: "Webomage runs four fast storefront websites on a worldwide network of edge counters, keeps private files in zero-fee cloud lockers, locks customer and staff permissions inside a four-key database vault, and checks every AI helper with an automated safety inspector before anything goes live.",
-          analogy: "Think of a modern international airport: passengers do quick self-check-in on their own phone first (Tier 0 Browser), breeze through regional express counters right in their city (Tier 1 Cloudflare Edge + free luggage lockers), only open the central passport vault when identity or payment rules apply (Tier 2 Supabase), while mechanics backstage use local diagnostic benches and safety X-rays before clearing any plane for takeoff (Tier 3 Local MLX + Guardrails).",
-          boundary: "Where the analogy breaks down: Unlike a physical airport where a guard glances at a badge once, PostgreSQL Row-Level Security (public.wom_can) re-verifies all four permission axes on every single database row read or write, and anonymous public pages never touch the database if cached at the edge.",
-          rows: [
+  <script type="application/json" id="explainer-data">
+    {
+      "LADDERS": {
+        "novice": {
+          "heading": "Level 1 — Novice (ELI5): Plain-English Core Truth",
+          "truth": "Webomage runs four fast storefront websites on a worldwide network of edge counters, keeps private files in zero-fee cloud lockers, locks customer and staff permissions inside a four-key database vault, and checks every AI helper with an automated safety inspector before anything goes live.",
+          "analogy": "Think of a modern international airport: passengers do quick self-check-in on their own device first (Tier 0 Browser), breeze through regional express counters right in their city (Tier 1 Cloudflare Edge + free luggage lockers), only open the central passport vault when identity or payment rules apply (Tier 2 Supabase), while mechanics backstage use local diagnostic benches and safety X-rays before clearing any plane for takeoff (Tier 3 Local MLX + Guardrails).",
+          "boundary": "Where the analogy breaks down: Unlike a physical airport where a guard glances at a badge once, PostgreSQL Row-Level Security (public.wom_can) re-verifies all four permission axes on every single database row read or write, and anonymous public pages never touch the database if cached at the edge.",
+          "rows": [
             ["Phone self-check-in", "Browser FIPS SHA-256 + WebMCP + v86 WASM", "Hashes prompts, renders TUI frames, and validates diagrams at $0 server cost"],
             ["City express desks & free lockers", "6 Cloudflare Workers + R2 Vaults", "Serves SSR pages globally and stores vaults/PDFs with $0 egress fees"],
             ["Four-key central passport vault", "Supabase GoTrue + PostgreSQL wom_can", "Checks org, unit, worn hat, and MFA before returning or mutating rows"],
             ["Pre-flight X-ray & flight certificate", "SkillSpector v2.12 + deploy_cert.py", "Blocks secrets, CVEs, or unsafe agent skills and stamps a 10-repo SHA-256 cert"]
           ]
         },
-        product: {
-          heading: "Product, Conversion & Unit-Economics Lens",
-          truth: "Every surface is engineered so anonymous visitors get instant cached pages and 1-click OAuth checkout, clients get isolated project vaults and a 7-dialect spec wizard, talent members get a unified portfolio/calendar/roadmap hub, and infrastructure marginal cost stays near $0.",
-          analogy: "Product journeys flow from discovery on webomage.com (/services, /solutions, /audit) -> 1-click Google/LinkedIn/GitHub PKCE signup + fixed-price Stripe Checkout -> guided onboarding & Spec-Driven Development dialect selection in cp.webomage.com -> ongoing collaboration via me.webomage.com and cross-platform Obsidian R2 sync.",
-          boundary: "Product boundary to remember: Retired standalone portals (apps/join and apps/job) were consolidated into apps/me so members maintain one identity, one session, and one portfolio URL (/u/[slug]) across assessments, calendars, and feature voting.",
-          rows: [
-            ["1-Click Fast Checkout", "apps/web + stripe-checkout Edge Fn", "PKCE OAuth login + fixed-price Stripe session with automatic CP onboarding"],
+        "junior": {
+          "heading": "Level 2 — Junior Dev: Stack Building Blocks & Data Paths",
+          "truth": "Each surface is built from modular primitives: 4 Astro 7.3.3 SSR Workers share 9 packages (220 .svelte components: 206 direct Svelte 5 runes + 8 rune-free wrappers + 6 legacy export let files, alongside 25 UI primitives), call Hono 4.13.18 RPC APIs and 64 Deno 2 Edge Function dirs (--frozen=true) over typed contracts, and verify everything via 377 local test suites.",
+          "analogy": "Imagine a modular toolkit where every app is a specialized dashboard built out of the same LEGO bricks (@webomage/ui), wired to shared auth/capability libraries (@webomage/lib, @wom/authz), reading data from typed Supabase queries or streaming vaults from R2.",
+          "boundary": "Developer gotcha to remember: Cloudflare Workers run on Edge isolates without full Node builtins, so packages/lib/src/index.ts must stay 100% node:*-free (tested automatically), runtime secrets come via import { env } from 'cloudflare:workers', and 206/220 .svelte files use runes directly (+ 8 rune-free wrappers, 6 remaining legacy export let files).",
+          "rows": [
+            ["Shared UI Bricks & Styles", "packages/ui (25 primitives) + RGB CSS vars", "Enforces consistent buttons, inputs, cards, and accessible focus across 4 apps"],
+            ["Browser-Safe Utilities", "packages/lib (FIPS SHA-256, readJsonSafe)", "Works cleanly in both browser islands and Cloudflare Workers with 0 node:* warnings"],
+            ["Typed Workflows & Edge Fns", "wom7api (Hono 4.13.18) + 64 Deno 2 Functions", "Separates 19 long-running durable jobs from transactional database mutations"],
+            ["Specs & Local Verification", "just kb-search · 7 SDD dialects · 377 suites", "Lets developers inspect symbols, past decisions, and tests locally before pushing"]
+          ]
+        },
+        "product": {
+          "heading": "Level 3 — Product & PM: Conversion, Cost & Collaboration Journeys",
+          "truth": "Every surface is engineered so anonymous visitors get instant cached pages and 1-click OAuth checkout, clients get isolated project vaults and a 7-dialect spec wizard, talent members get a unified portfolio/calendar/roadmap hub, and marginal cloud spend stays on Free Tiers.",
+          "analogy": "Product journeys flow from discovery on webomage.com (/services, /solutions, /audit) -> 1-click Google/LinkedIn/GitHub PKCE signup + fixed-price Stripe Checkout -> guided onboarding & 7-dialect SDD selection in cp.webomage.com -> ongoing collaboration via me.webomage.com and cross-platform Obsidian R2 sync.",
+          "boundary": "Product boundary to remember: Retired standalone portals (apps/join and apps/job) were consolidated into apps/me so members keep one identity, one session, and one portfolio URL (/u/[slug]) across assessments, calendars, and feature voting.",
+          "rows": [
+            ["1-Click Fast Checkout", "apps/web + stripe-checkout Edge Fn", "PKCE OAuth login + fixed-price Stripe/MercadoPago session with automatic CP onboarding"],
             ["Unified Talent & Member Hub", "apps/me (me.webomage.com)", "Combines /u/[slug], Resume Studio, .ics calendars, /board voting, and R2 vaults"],
-            ["Client Control Plane & Impersonation", "apps/cp (cp.webomage.com)", "7-dialect SDD selector, printable PDF audit dossiers, and audited admin support handoff"],
-            ["Zero-Egress Client Vaults", "Cloudflare R2 + Per-Project Mistral", "Dedicated AI quota and isolated Obsidian sync per client without cloud egress bills"]
+            ["Client Control Plane & Support", "apps/cp (cp.webomage.com)", "7-dialect SDD selector, printable PDF audit dossiers, and audited admin impersonation"],
+            ["Zero-Egress Client Vaults", "Cloudflare R2 ($0) + 500 MB DB / 1 GB Cap", "Stores binary assets on R2 ($0 egress) while keeping Supabase strictly for relational metadata"]
           ]
         },
-        architect: {
-          heading: "System Architecture, Tenancy & Security Invariants",
-          truth: "A strict 4-tier Free-Tier-First topology pairs 6 stateless/durable Cloudflare Workers and R2 object storage with a fail-closed PostgreSQL 15 4-axis RBAC ledger, 64 lockfile-frozen Deno 2 Edge Functions, and a single-branch beta trunk gated by 18 wrap-up checks.",
-          analogy: "Compute and blobs live at the Cloudflare edge (4 Astro 7.3 SSR Workers + wom7api 19 Durable Workflows + wom7func 5/5 account crons); relational state and auth live in Supabase under SECURITY DEFINER append-only *_audit_log triggers; AI/skill supply chain is gated by NVIDIA SkillSpector v2.12 + mcp_ratchet.py.",
-          boundary: "Critical architectural boundary: Never introduce silent provider fallbacks, compatibility shims, Cloudflare Queues/D1, or Supabase binary blobs — external client Mistral scopes enforce allow_global_key_fallback = False and cross_project_access = False.",
-          rows: [
-            ["Edge SSR & Workflow Split", "w0m-web (4) + wom7api + wom7func", "Separates SSR, 19 durable workflows + ChatMemoryDO, and 5 account crons"],
-            ["4-Axis Capability RBAC", "public.wom_can + @wom/authz + hats", "Enforces tenant, role, worn hat, and AAL2 MFA with 0/18 red authz probes"],
-            ["Agent & Skill Supply Chain", "SkillSpector v2.12 + skill_audit.ts", "Scans 71 unique skill roots via YARA + tree-sitter AST (crit/high = 0)"],
-            ["Zero-.env Secret Governance", "Infisical beta (71 active keys)", "Runtime process injection only; 44 dead keys AES-256-GCM backed up & pruned"]
-          ]
-        },
-        systems: {
-          heading: "Systems Engineering, Compilers & Runtime Internals",
-          truth: "Astro 7.3.3 + Vite 7.3.7/Rolldown 1.2.14 bundle 220 Svelte 5 runes components against cloudflare:workers env (zero node:* in @webomage/lib barrel), backed by Hono >=4.13.16, 550 B #![no_std] Rust WASM, 16 @k7 Cargo crates, and a 128-dim Randomized SVD + SQLite FTS5 RRF knowledge index.",
-          analogy: "Every hot loop uses the tightest tool for its constraint: 550-byte raw (389 B gzipped) Rust 2024 wasm32-unknown-unknown for FNV-1a/Levenshtein in wom7func; pure isomorphic FIPS 180-4 SHA-256 in @webomage/lib; numpy Halko-2011 Randomized SVD + Porter FTS5 in w0m_kb_vector.py; mlx-rs 0.33 + omlx 0.7.3 on Apple Metal.",
-          boundary: "Low-level invariant: w0m-api/deno.lock and supabase/functions/deno.lock must stay byte-identical under --frozen=true; agent-tree materializes independent node_modules when lockfiles diverge; deploy_logged.py filters zero-finding osv/ast-grep pass summaries while failing on real warnings.",
-          rows: [
-            ["Browser Barrel Gate", "browser-barrel-node-free.test.ts", "Walks transitive imports from packages/lib/src/index.ts blocking any node:* import"],
-            ["Ultra-Compact Edge WASM", "w0m-cf/crates/w0m-wasm-utils", "#![no_std] Rust -> 550 B WASM for FNV-1a 64-bit hash & token-overlap scoring"],
-            ["Hybrid RRF Knowledge Index", "scripts/w0m_kb_vector.py (corpus.sqlite)", "SHA-256-deduplicated 2,300+ docs, FTS5 BM25 + 128-dim SVD cosine RRF (k=60)"],
-            ["Tree-Set Deploy Certificate", "scripts/deploy_cert.py + session_complete.py", "Hashes git tree SHA across all 10 repos for <0.2s warm pre-deploy verification"]
+        "executive": {
+          "heading": "Level 4 — Executive & Architect: Security, Economics & Runtime Invariants",
+          "truth": "A Free-Tier-First 4-tier architecture pairs 6 Cloudflare Workers, R2 object storage, and isolated per-project Mistral keys with PostgreSQL 17.6 4-axis RBAC, 550 B #![no_std] Rust WASM, local Apple Silicon MLX, and a 16/18-gate certified single-branch beta pipeline.",
+          "analogy": "Compute and blobs stay on $0-egress Cloudflare edge primitives; sensitive identity, billing, and append-only *_audit_log trails sit in PostgreSQL 17.6; deep code intelligence uses offline 92.5k Graphify + FTS5/128-dim SVD vectors; supply chain gates scan every lockfile and AI skill.",
+          "boundary": "Architectural invariant: Zero compatibility shims or silent fallbacks; external client Mistral scopes enforce allow_global_key_fallback = False and cross_project_access = False (un-scoped w0m/self paths retain controlled shared key fallback); live deploys/migrations stay strictly Touch-ID gated.",
+          "rows": [
+            ["Tenancy, RBAC & Audit Ledger", "PostgreSQL 17.6 · public.wom_can · *_audit_log", "Checks tenant, unit, worn hat, and AAL2 MFA with append-only DB audit triggers"],
+            ["Free-Tier Resource Split", "CF R2 ($0 egress) + Supabase 500 MB DB / 1 GB", "Routes blobs/vaults to R2, queues/crons to Workers, relational metadata to Supabase"],
+            ["Systems & Edge Performance", "w0m-wasm-utils (550 B) · 16 @k7 Crates · MLX", "Combines #![no_std] edge WASM, wasm32 TUI frame rendering, and local Metal inference"],
+            ["Supply-Chain & Release Seal", "SkillSpector v2.12 · deploy_cert.py · 16/18 Gates", "Audits 71 unique skill roots, freezes Deno/pnpm lockfiles, and seals 10-repo beta tree"]
           ]
         }
-      };
+      },
 
-      const NODES = {
+      "NODES": {
         "n-web": {
-          tier: "Tier 0 / Tier 1 · w0m-web",
-          title: "apps/web (webomage.com :4321)",
-          specs: "Worker: webomage · Astro 7.3.3 + Svelte 5.56.4 · Pagefind 1.5.2 · Edge HTML Cache",
-          paths: "w0m-web/apps/web/wrangler.jsonc · apps/web/src/pages/{services,solutions,audit}",
-          guard: "Anonymous public HTML cached at edge only when Cookie, Authorization, and Set-Cookie are absent.",
-          desc: {
-            novice: "The front door website where visitors explore Webomage services, run a free website/AI safety check, and buy fixed-price packages in one click.",
-            product: "Primary acquisition & conversion funnel featuring 1-click PKCE OAuth registration + direct Stripe Checkout on /services and /solutions, /audit intake, and /blueprints.",
-            architect: "Public Cloudflare SSR Worker without SUPABASE_SERVICE_ROLE_KEY; delegates privileged mutations to authenticated Supabase Edge Functions and R2 resolvers.",
-            systems: "Astro 7.3.3 Worker using cloudflare:workers env, applyAnonymousHtmlEdgeCache + BoundedTtlCache, Pagefind 1.5.2 non-AVX2 index, and RFC 9116 security.txt."
+          "tier": "Tier 0 / Tier 1 · w0m-web",
+          "title": "apps/web (webomage.com :4321)",
+          "specs": "Worker: webomage · Astro 7.3.3 + Svelte 5.56.4 (^5.56.7) · Pagefind 1.5.2 · Edge Cache",
+          "paths": "w0m-web/apps/web/wrangler.jsonc · apps/web/src/pages/{services,solutions,audit}",
+          "guard": "Anonymous public HTML cached at edge only when Cookie, Authorization, and Set-Cookie are absent.",
+          "desc": {
+            "novice": "The front door website where visitors explore Webomage services, run a free website/AI safety check, and buy fixed-price packages in one click.",
+            "junior": "Astro 7.3.3 SSR Worker using cloudflare:workers env, Pagefind 1.5.2 non-AVX2 search index, and shared @webomage/ui Svelte 5 components.",
+            "product": "Primary acquisition & conversion funnel featuring 1-click PKCE OAuth registration + direct Stripe Checkout on /services and /solutions, /audit intake, and /blueprints.",
+            "executive": "Public Cloudflare SSR Worker with zero SUPABASE_SERVICE_ROLE_KEY exposure; delegates privileged mutations to JWT-scoped Supabase Edge Functions and R2 resolvers."
           }
         },
         "n-cp": {
-          tier: "Tier 0 / Tier 1 · w0m-web",
-          title: "apps/cp (cp.webomage.com / cp.w0m.xyz :4325)",
-          specs: "Worker: webomage-cp · Multi-Tenant /o/[org] · 7 SDD Dialects · Admin Impersonation",
-          paths: "w0m-web/apps/cp/ · CrewToolkitAndTabLinuxConsole.svelte · packages/ui",
-          guard: "ds-conformance + ui-ticket-leak-check enforce 100% @webomage/ui primitives, CSS tokens, and zero leaked tracker IDs.",
-          desc: {
-            novice: "The mission-control dashboard where client teams and Webomage crew manage projects, print audit reports, and switch team hats safely.",
-            product: "Unified Organization, Client & Crew Control Plane with post-signup Onboarding Wizard, Services Configurator, 7-dialect SDD selector, and printable multi-page Audit PDF Dossiers.",
-            architect: "Enforces 4-axis RBAC, worn public.hats, AAL2 MFA on admin mutations, and HMAC-signed /api/auth/impersonate-handoff for audited client/member support.",
-            systems: "Mounts CrewToolkitAndTabLinuxConsole.svelte backed by packages/lib/src/security/k7-git-browser.ts (buildK7GitWasmTuiFrame across 5 Git/LLM flavours)."
+          "tier": "Tier 0 / Tier 1 · w0m-web",
+          "title": "apps/cp (cp.webomage.com / cp.w0m.xyz :4325)",
+          "specs": "Worker: webomage-cp · Multi-Tenant /o/[org] · 7 SDD Dialects · Admin Impersonation",
+          "paths": "w0m-web/apps/cp/ · CrewToolkitAndTabLinuxConsole.svelte · packages/ui",
+          "guard": "ds-conformance + ui-ticket-leak-check enforce 100% @webomage/ui primitives, CSS tokens, and zero leaked tracker IDs.",
+          "desc": {
+            "novice": "The mission-control dashboard where client teams and Webomage crew manage projects, print audit reports, and switch team hats safely.",
+            "junior": "Mounts CrewToolkitAndTabLinuxConsole.svelte backed by packages/lib/src/security/k7-git-browser.ts (buildK7GitWasmTuiFrame across 5 Git/LLM flavours).",
+            "product": "Unified Organization, Client & Crew Control Plane with post-signup Onboarding Wizard, Services Configurator, 7-dialect SDD selector, and printable Audit PDF Dossiers.",
+            "executive": "Enforces 4-axis RBAC, worn public.hats, AAL2 MFA on admin mutations, and HMAC-signed /api/auth/impersonate-handoff for audited client/member support."
           }
         },
         "n-me": {
-          tier: "Tier 0 / Tier 1 · w0m-web",
-          title: "apps/me (me.webomage.com :4323)",
-          specs: "Worker: webomage-me · Consolidated Talent Hub · .ics/CalDAV · /board · /api/vault/r2",
-          paths: "w0m-web/apps/me/ · apps/me/src/__tests__/me-api-parity.test.ts",
-          guard: "me-pages-own-rows.test.ts + me-api-parity.test.ts enforce explicit profile_id scoping (even for admins) and route parity.",
-          desc: {
-            novice: "Every member's personal home for their public portfolio, resume builder, schedule calendar, skill challenges, and feature voting board.",
-            product: "Unified Personal Identity & Talent Cloud (absorbing retired join & job apps): /u/[slug], Resume Studio, Hume voice interviews, .ics calendars, and GitHub-backed /board voting.",
-            architect: "Serves visibility-gated R2 vault streams (/api/vault/r2/*) via SHA-256-hashed w0m_vst_ device tokens and proxies GitHub Issues SSOT on /api/board/*.",
-            systems: "Astro 7.3 Worker using readJsonSafe in FeatureVotingBoard.svelte / TodoWorkspace.svelte and zero node:* imports in @webomage/lib."
+          "tier": "Tier 0 / Tier 1 · w0m-web",
+          "title": "apps/me (me.webomage.com :4323)",
+          "specs": "Worker: webomage-me · Consolidated Talent Hub · .ics/CalDAV · /board · /api/vault/r2",
+          "paths": "w0m-web/apps/me/ · apps/me/src/__tests__/me-api-parity.test.ts",
+          "guard": "me-pages-own-rows.test.ts + me-api-parity.test.ts enforce explicit profile_id scoping (even for admins) and route parity.",
+          "desc": {
+            "novice": "Every member's personal home for their public portfolio, resume builder, schedule calendar, skill challenges, and feature voting board.",
+            "junior": "Astro 7.3 Worker using readJsonSafe in FeatureVotingBoard.svelte / TodoWorkspace.svelte, zero node:* imports, and /api/outreach-clip-ingest endpoint.",
+            "product": "Unified Personal Identity & Talent Cloud (absorbing retired join & job apps): /u/[slug], Resume Studio, Hume voice interviews, .ics calendars, and /board voting.",
+            "executive": "Serves visibility-gated R2 vault streams (/api/vault/r2/*) via SHA-256-hashed w0m_vst_ device tokens and proxies GitHub Issues SSOT on /api/board/*."
           }
         },
         "n-demo": {
-          tier: "Tier 0 / Tier 1 · w0m-web",
-          title: "apps/demo (demo.webomage.com :4324)",
-          specs: "Worker: webomage-demo · Zero-Signup Interactive Product Walkthroughs",
-          paths: "w0m-web/apps/demo/wrangler.jsonc",
-          guard: "Stateless sandbox tours isolated from production tenant mutations.",
-          desc: {
-            novice: "A safe playground where anyone can test-drive Webomage screens and workflows without creating an account.",
-            product: "Interactive guided tours and live @webomage/ui component showcase for prospective clients and talent.",
-            architect: "Dedicated Cloudflare SSR Worker isolating demo traffic and synthetic tour state from tenant portals.",
-            systems: "Built in lockstep on Astro 7.3.3 + @astrojs/cloudflare 14.3.4 alongside web, cp, and me."
+          "tier": "Tier 0 / Tier 1 · w0m-web",
+          "title": "apps/demo (demo.webomage.com :4324)",
+          "specs": "Worker: webomage-demo · Zero-Signup Interactive Product Walkthroughs",
+          "paths": "w0m-web/apps/demo/wrangler.jsonc",
+          "guard": "Stateless sandbox tours isolated from production tenant mutations.",
+          "desc": {
+            "novice": "A safe playground where anyone can test-drive Webomage screens and workflows without creating an account.",
+            "junior": "Built in lockstep on Astro 7.3.3 + @astrojs/cloudflare 14.3.4 alongside web, cp, and me.",
+            "product": "Interactive guided tours and live @webomage/ui component showcase for prospective clients and talent.",
+            "executive": "Dedicated Cloudflare SSR Worker isolating demo traffic and synthetic tour state from tenant portals."
           }
         },
         "n-ext": {
-          tier: "Tier 0 · w0m-ext",
-          title: "w0m-ext MV3 + obsidian-w0m Sync",
-          specs: "Chromium · Firefox · macOS/iOS 16.4+ Safari · Orion iOS · Orca Electron · Obsidian 1.0",
-          paths: "w0m-ext/extension/specs/*.json · w0m-ext/obsidian-w0m/ · scripts/orca_ext_install.py",
-          guard: "captchaDetector.js fails closed on anti-bot gates; never bypasses CAPTCHAs or Turnstile.",
-          desc: {
-            novice: "A browser helper for computers and iPhones plus an Obsidian notebook plugin that clips jobs and syncs project notes straight to cloud lockers.",
-            product: "Assists talent sourcing across 11 external job marketplaces and syncs shared client/crew Obsidian vaults across Desktop and mobile.",
-            architect: "Dual local transport: exposes ws://127.0.0.1:8008 as an MCP server for local agents while acting as a client to ZeroClaw (:42617) and R2 vault APIs.",
-            systems: "Single-source TypeScript + esbuild MV3 bundle with 11 external platform specs (upwork, linkedin, toptal, contra, wellfound, etc.), jose, and pkce-challenge."
+          "tier": "Tier 0 · w0m-ext",
+          "title": "w0m-ext MV3 + obsidian-w0m Sync",
+          "specs": "Chromium · Firefox · macOS/iOS 16.4+ Safari · Orion iOS · Orca Electron · Obsidian 1.0",
+          "paths": "w0m-ext/extension/specs/*.json · w0m-ext/obsidian-w0m/ · scripts/orca_ext_install.py",
+          "guard": "captchaDetector.js fails closed on anti-bot gates; never bypasses CAPTCHAs or Turnstile.",
+          "desc": {
+            "novice": "A browser helper for computers and iPhones plus an Obsidian notebook plugin that clips jobs and syncs project notes straight to cloud lockers.",
+            "junior": "Single-source TypeScript + esbuild MV3 bundle with 11 external platform specs (upwork, linkedin, toptal, contra, wellfound, etc.), jose, and pkce-challenge.",
+            "product": "Assists talent sourcing across 11 external job marketplaces and syncs shared client/crew Obsidian vaults across Desktop and mobile.",
+            "executive": "Connects over HTTPS to POST /api/outreach-clip-ingest and R2 vault APIs (local WS ports :8008/:8009 retired) alongside optional local ZeroClaw (:42617)."
           }
         },
         "n-k7": {
-          tier: "Tier 0 · Sibling Rust Toolchain",
-          title: "@k7 Super-TUI & 5-Flavour Git Browser",
-          specs: "Rust >=1.95 (1.99.1) · 16 Cargo Packages (k7hub + 10 Top-Level Crates + 5 k7c Tools)",
-          paths: "/home/aleksei/Projects/!self/k7 · w0m-web/packages/lib/src/security/k7-git-browser.ts",
-          guard: "u64 byte lengths prevent 32-bit overflow on >4 GiB .safetensors/.gguf model shards.",
-          desc: {
-            novice: "A super-fast keyboard terminal app written in Rust that lets engineers manage secrets, cloud costs, and browse Git/AI model repositories.",
-            product: "Gives operators one unified command center (k7) for environment secrets, Kubernetes, Terraform cost graphs, and LLM model repo inspection.",
-            architect: "Unites k7env, k7pwd, k7d, k7s, k7c (6 Cargo packages), k7llm, k7spec, k7sol, k7tg, and k7kb under k7hub with a shared Infisical bus.",
-            systems: "k7hub::git_browser compiles to wasm32-unknown-unknown (ratatui TestBackend) supporting GitHub, GitLab, HuggingFaceHub, ForgejoGitea, and LlmAgentCheckpoint."
+          "tier": "Tier 0 · Sibling Rust Toolchain",
+          "title": "@k7 Super-TUI & 5-Flavour Git Browser",
+          "specs": "Rust >=1.95 (1.99.1) · 16 Cargo Packages (k7hub + 10 Top-Level Crates + 5 k7c Tools)",
+          "paths": "sibling k7 workspace · w0m-web/packages/lib/src/security/k7-git-browser.ts",
+          "guard": "u64 byte lengths prevent 32-bit overflow on >4 GiB .safetensors/.gguf model shards.",
+          "desc": {
+            "novice": "A super-fast keyboard terminal app written in Rust that lets engineers manage secrets, cloud costs, and browse Git/AI model repositories.",
+            "junior": "k7hub::git_browser compiles to wasm32-unknown-unknown (8/10 top-level crates using ratatui TestBackend) across 5 Git/LLM flavours.",
+            "product": "Gives operators one unified command center (k7) for environment secrets, Kubernetes, Terraform cost graphs, and LLM model repo inspection.",
+            "executive": "Unites k7env, k7pwd, k7d, k7s, k7c (6 Cargo packages), k7llm, k7spec, k7sol, k7tg, and k7kb under k7hub with a shared Infisical bus."
           }
         },
         "n-orca": {
-          tier: "Tier 0 · Agent IDE & WASM Linux",
-          title: "Orca ACP + LinuxOnTab (v86 WASM)",
-          specs: "Agent Client Protocol (ACP) · Isolated 10-Repo Worktrees · Alpine Linux in Browser RAM",
-          paths: "w0m-pr/orca · w0m-pr/linuxontab · scripts/linuxontab_serve.py (:8770)",
-          guard: "COOP/COEP SharedArrayBuffer isolation + single-branch agent-tree worktree discipline.",
-          desc: {
-            novice: "The developer cockpit that gives every AI helper its own clean copy of the codebase and even boots a tiny Linux computer inside a browser tab.",
-            product: "Lets multiple AI agents (Claude, Codex, Gemini, Antigravity, OpenCode, Vibe) build and review features in parallel without stepping on each other.",
-            architect: "First-class ACP client orchestrating ~/.w0m/work/<name>/w0m worktrees and embedded MV3 browser verification.",
-            systems: "Serves LinuxOnTab v86 WASM Alpine Linux on :8770 with #k7-module bar and COOP/COEP headers."
+          "tier": "Tier 0 · Agent IDE & WASM Linux",
+          "title": "Orca ACP + LinuxOnTab (v86 WASM)",
+          "specs": "Agent Client Protocol (ACP) · Isolated 10-Repo Worktrees · Alpine Linux in Browser RAM",
+          "paths": "w0m-pr/orca · w0m-pr/linuxontab · scripts/linuxontab_serve.py (:8770)",
+          "guard": "COOP/COEP SharedArrayBuffer isolation + single-branch agent-tree worktree discipline.",
+          "desc": {
+            "novice": "The developer cockpit that gives every AI helper its own clean copy of the codebase and even boots a tiny Linux computer inside a browser tab.",
+            "junior": "Serves LinuxOnTab v86 WASM Alpine Linux on optional :8770 with #k7-module bar and COOP/COEP isolation headers.",
+            "product": "Lets multiple AI agents (Claude, Codex, Gemini, Antigravity, OpenCode, Vibe) build and review features in parallel without stepping on each other.",
+            "executive": "First-class ACP client orchestrating isolated ~/.w0m/work/<name>/w0m worktrees and embedded MV3 browser verification."
           }
         },
         "n-ssr": {
-          tier: "Tier 1 · Cloudflare Edge SSR",
-          title: "4 Astro 7.3.3 SSR Workers & 9 Shared Packages",
-          specs: "Astro 7.3.3 · @astrojs/cloudflare 14.3.4 · Vite 7.3.7 / Rolldown 1.2.14 · 220 .svelte Files",
-          paths: "w0m-web/packages/{ui,lib,authz,webmcp,fingerprint,crawler,kyc,logger,mcp-aws-fundamentals}",
-          guard: "worker_env_gate.py enforces cloudflare:workers env; browser-barrel-node-free.test.ts bans node:* in client barrel.",
-          desc: {
-            novice: "Four globally distributed edge servers that render pages close to every user in milliseconds using a shared set of 25 glassmorphic UI building blocks.",
-            product: "Delivers consistent dark-first glassmorphic branding and mobile/tablet/desktop responsiveness across web, cp, me, and demo.",
-            architect: "9 workspace packages share auth, CASL abilities, WebMCP, device fingerprinting, multi-engine crawling, and WebAuthn/LATAM KYC logic.",
-            systems: "TypeScript 6.0.3 + Tailwind 4.3.3 + LightningCSS; 0 svelte-check errors and 0 Vite/Rolldown node:* externalization warnings."
+          "tier": "Tier 1 · Cloudflare Edge SSR",
+          "title": "4 Astro 7.3.3 SSR Workers & 9 Shared Packages",
+          "specs": "Astro 7.3.3 · @astrojs/cloudflare 14.3.4 · Vite 7.3.7 / Rolldown 1.2.14 · 206 Runes / 220 Svelte",
+          "paths": "w0m-web/packages/{ui,lib,authz,webmcp,fingerprint,crawler,kyc,logger,mcp-aws-fundamentals}",
+          "guard": "worker_env_gate.py enforces cloudflare:workers env; browser-barrel-node-free.test.ts bans node:* in client barrel.",
+          "desc": {
+            "novice": "Four globally distributed edge servers that render pages close to every user in milliseconds using a shared set of 25 glassmorphic UI building blocks.",
+            "junior": "220 git-tracked .svelte files (206 Svelte 5 runes + 8 rune-free wrappers + 6 legacy export let files), TypeScript 6.0.3, Tailwind 4.3.3, 0 svelte-check errors.",
+            "product": "Delivers consistent dark-first glassmorphic branding and mobile/tablet/desktop responsiveness across web, cp, me, and demo.",
+            "executive": "9 workspace packages share auth, CASL abilities, WebMCP, device fingerprinting, multi-engine crawling, and WebAuthn/LATAM KYC logic."
           }
         },
         "n-func": {
-          tier: "Tier 1 · w0m-cf Edge Worker",
-          title: "wom7func (5/5 Crons, POST /mcp, 550 B Rust WASM)",
-          specs: "Hono >=4.13.16 · Port :8790 · 5 Account Crons · #![no_std] w0m-wasm-utils (389 B gzip)",
-          paths: "w0m-cf/src/index.ts · w0m-cf/wrangler.jsonc · w0m-cf/crates/w0m-wasm-utils/src/lib.rs",
-          guard: "Consolidates 100% of Cloudflare account cron triggers (5/5 free-tier cap; absorbed webnames-crawler).",
-          desc: {
-            novice: "The background clockwork server that runs scheduled cleanups, hosts AI chat/search helpers, and uses a tiny 550-byte Rust chip for fast text matching.",
-            product: "Powers automated job-board polling, scheduled syncs, inbound email routing, and remote MCP tool access at $0 compute cost.",
-            architect: "Hosts all 5 Cloudflare cron schedules, stateless JSON-RPC 2.0 POST /mcp, /ai/chat & /ai/embed proxies, and Huntflow/Merge ATS adapters.",
-            systems: "Embeds #![no_std] Rust 2024 wasm32-unknown-unknown crate (550 B raw / 389 B gzipped) for FNV-1a 64-bit hashing, Levenshtein distance, and token overlap."
+          "tier": "Tier 1 · w0m-cf Edge Worker",
+          "title": "wom7func (5/5 Crons, POST /mcp, 550 B Rust WASM)",
+          "specs": "Hono 4.13.18 (>=4.13.16) · Port :8790 · 5 Account Crons · #![no_std] w0m-wasm-utils",
+          "paths": "w0m-cf/src/index.ts · w0m-cf/wrangler.jsonc · w0m-cf/crates/w0m-wasm-utils/src/lib.rs",
+          "guard": "Consolidates 100% of Cloudflare account cron triggers (5/5 free-tier cap; absorbed webnames-crawler).",
+          "desc": {
+            "novice": "The background clockwork server that runs scheduled cleanups, hosts AI chat/search helpers, and uses a tiny 550-byte Rust chip for fast text matching.",
+            "junior": "Embeds #![no_std] Rust 2024 wasm32-unknown-unknown crate (550 B raw / 389 B gzipped) for FNV-1a 64-bit hashing, Levenshtein distance, and token overlap.",
+            "product": "Powers automated job-board polling, scheduled syncs, inbound email routing, and remote MCP tool access at $0 compute cost.",
+            "executive": "Hosts all 5 Cloudflare cron schedules, stateless JSON-RPC 2.0 POST /mcp, /ai/chat & /ai/embed proxies, and Huntflow/Merge ATS adapters."
           }
         },
         "n-api": {
-          tier: "Tier 1 · w0m-api Cloudflare Worker",
-          title: "wom7api (19 Durable Workflows + ChatMemoryDO)",
-          specs: "Hono >=4.13.16 · 19 Workflow Classes · SQLite Durable Object (CHAT_MEMORY)",
-          paths: "w0m-api/src/index.ts · w0m-api/src/workflows/ · w0m-api/wrangler.jsonc",
-          guard: "Lockstep hono >=4.13.16 enforced across w0m-web, w0m-api, w0m-cf, and w0m-ext (0 OSV CVEs).",
-          desc: {
-            novice: "A reliable step-by-step coordinator that finishes multi-step jobs (like generating PDFs, scanning domains, or syncing LinkedIn) even if a network hiccup happens.",
-            product: "Executes resilient background pipelines for CV/deck/PDF generation, domain security scans, certifications, newsletters, and job scoring.",
-            architect: "Cleanly splits durable multi-step Cloudflare Workflows (19 classes) and SQLite ChatMemoryDO in w0m-api from cron triggers in w0m-cf.",
-            systems: "Typed Hono RPC AppType consumed by Astro SSR clients with materialized per-repo node_modules version parity."
+          "tier": "Tier 1 · w0m-api Cloudflare Worker",
+          "title": "wom7api (19 Durable Workflows + ChatMemoryDO)",
+          "specs": "Hono 4.13.18 (>=4.13.16) · 19 Workflow Classes · SQLite Durable Object (CHAT_MEMORY)",
+          "paths": "w0m-api/src/index.ts · w0m-api/src/workflows/ · w0m-api/wrangler.jsonc",
+          "guard": "Lockstep hono 4.13.18 (>=4.13.16) enforced across w0m-web, w0m-api, w0m-cf, and w0m-ext (0 OSV CVEs).",
+          "desc": {
+            "novice": "A reliable step-by-step coordinator that finishes multi-step jobs (like generating PDFs, scanning domains, or syncing LinkedIn) even if a network hiccup happens.",
+            "junior": "Typed Hono RPC AppType consumed by Astro SSR clients with materialized per-repo node_modules version parity.",
+            "product": "Executes resilient background pipelines for CV/deck/PDF generation, domain security scans, certifications, newsletters, and job scoring.",
+            "executive": "Cleanly splits durable multi-step Cloudflare Workflows (19 classes) and SQLite ChatMemoryDO in w0m-api from cron triggers in w0m-cf."
           }
         },
         "n-r2": {
-          tier: "Tier 1 · Edge Storage & Bot Defense",
-          title: "Cloudflare R2 ($0 Egress), KV & Turnstile",
-          specs: "R2: wom-engagement-vaults, wom-public-assets · KV: SESSION, SETTINGS · Turnstile",
-          paths: "w0m-web/packages/fingerprint/ · apps/me/src/pages/api/vault/r2/",
-          guard: "Zero binary blobs in Supabase PostgreSQL; public scan endpoints gated by Turnstile + @webomage/fingerprint.",
-          desc: {
-            novice: "Zero-fee cloud storage lockers for documents/media plus a smart front-gate bouncer that blocks spam bots before they waste resources.",
-            product: "Enables generous file/vault sync and public audit previews without bandwidth overage charges.",
-            architect: "Implements Free-Tier-First storage: all Obsidian vaults, resumes, extension bundles, and media live in R2 ($0 egress) with KV session/config caching.",
-            systems: "Visibility-scoped R2 streaming backed by SHA-256 w0m_vst_ tokens and narrow SECURITY DEFINER resolvers."
+          "tier": "Tier 1 · Edge Storage & Bot Defense",
+          "title": "Cloudflare R2 ($0 Egress), KV & Turnstile",
+          "specs": "R2: wom-engagement-vaults (engagements/eg-<slug>), wom-public-assets · KV · Turnstile",
+          "paths": "w0m-web/packages/fingerprint/ · apps/me/src/pages/api/vault/r2/",
+          "guard": "Zero binary blobs in Supabase 500 MB DB / 1 GB Storage; public scan endpoints gated by Turnstile + @webomage/fingerprint.",
+          "desc": {
+            "novice": "Zero-fee cloud storage lockers for documents/media plus a smart front-gate bouncer that blocks spam bots before they waste resources.",
+            "junior": "Visibility-scoped R2 streaming backed by SHA-256 w0m_vst_ tokens and narrow SECURITY DEFINER resolvers.",
+            "product": "Enables generous file/vault sync and public audit previews without bandwidth overage charges.",
+            "executive": "Implements Free-Tier-First storage: Obsidian vaults, resumes, and media live in R2 ($0 egress) under engagements/eg-<slug> with KV caching."
           }
         },
         "n-ai": {
-          tier: "Tier 1 & 1b · Edge & Scoped LLM Inference",
-          title: "Cloudflare Workers AI & Scoped Mistral Free Tier",
-          specs: "Mistral Small 3.1 · Llama 3.3 70B · BGE-M3 · Qwen3-Embed · Per-Project Mistral Keys",
-          paths: "scripts/mistral_project_scope.py · project/policies/clients-policy.json",
-          guard: "Non-w0m client projects enforce allow_global_key_fallback = False and cross_project_access = False.",
-          desc: {
-            novice: "Dedicated AI brains at the edge where every client project gets its own separate AI key and private notebook folder that never mixes with others.",
-            product: "Delivers fast AI copilot, resume parsing, and architecture guidance while guaranteeing strict client data confidentiality.",
-            architect: "Pairs Cloudflare Workers AI primary models with per-project Mistral Free-Tier accounts (<project>@webomage.com) bound to projects/<slug>/vault.",
-            systems: "Base64 32 KB chunking for whisper-large-v3-turbo voice notes + 1024-dim Qwen3/BGE embeddings + Opik/OTel tracing."
+          "tier": "Tier 1 & 1b · Edge & Scoped LLM Inference",
+          "title": "Cloudflare Workers AI & Scoped Mistral Free Tier",
+          "specs": "Mistral Small 3.1 · Llama 3.3 70B · BGE-M3 · Qwen3-Embed · Per-Project Mistral Keys",
+          "paths": "scripts/mistral_project_scope.py · project/policies/clients-policy.json",
+          "guard": "External client scopes enforce allow_global_key_fallback = False and cross_project_access = False; w0m/self paths allow shared fallback.",
+          "desc": {
+            "novice": "Dedicated AI brains at the edge where every client project gets its own separate AI key and private notebook folder that never mixes with others.",
+            "junior": "Base64 32 KB chunking for whisper-large-v3-turbo voice notes + 1024-dim Qwen3/BGE embeddings + Opik/OTel tracing.",
+            "product": "Delivers fast AI copilot, resume parsing, and architecture guidance while guaranteeing strict client data confidentiality.",
+            "executive": "Pairs Cloudflare Workers AI primary models with per-project Mistral Free-Tier accounts (<project>@webomage.com) bound to projects/<slug>/vault."
           }
         },
         "n-gotrue": {
-          tier: "Tier 2 · Identity & Biometric KYC",
-          title: "Supabase GoTrue Auth & @wom/kyc",
-          specs: "3 PKCE OAuth Providers (Google, LinkedIn OIDC, GitHub) · TOTP MFA · WebAuthn FIDO2",
-          paths: "w0m-web/packages/lib/src/auth/handlers.ts · w0m-web/packages/kyc/",
-          guard: "handlers.ts whitelist strictly rejects unapproved OAuth providers; admin mutations require AAL2 MFA.",
-          desc: {
-            novice: "The sign-in and identity desk supporting Google/LinkedIn/GitHub login, two-factor codes, and hardware fingerprint/FaceID passkeys.",
-            product: "Frictionless 1-click social login for buyers and candidates, upgraded seamlessly to hardware passkey & LATAM tax/ID verification for contracts.",
-            architect: "Combines GoTrue JWT/PKCE sessions with W3C WebAuthn hardware enclave attestation and regional fiscal validators across 13 LATAM jurisdictions.",
-            systems: "Deterministic cookie chunking across SSR Workers + virtual-fido Go FIDO2/U2F token emulation for automated E2E verification."
+          "tier": "Tier 2 · Identity & Biometric KYC",
+          "title": "Supabase GoTrue Auth & @wom/kyc",
+          "specs": "3 PKCE OAuth Providers (Google, LinkedIn OIDC, GitHub) · TOTP MFA · WebAuthn FIDO2",
+          "paths": "w0m-web/packages/lib/src/auth/handlers.ts · w0m-web/packages/kyc/",
+          "guard": "handlers.ts whitelist strictly rejects unapproved OAuth providers; admin mutations require AAL2 MFA.",
+          "desc": {
+            "novice": "The sign-in and identity desk supporting Google/LinkedIn/GitHub login, two-factor codes, and hardware fingerprint/FaceID passkeys.",
+            "junior": "Deterministic cookie chunking across SSR Workers + virtual-fido Go FIDO2/U2F token emulation for automated E2E verification.",
+            "product": "Frictionless 1-click social login for buyers and candidates, upgraded seamlessly to hardware passkey & LATAM tax/ID verification for contracts.",
+            "executive": "Combines GoTrue JWT/PKCE sessions with W3C WebAuthn hardware enclave attestation and regional fiscal validators across 13 LATAM jurisdictions."
           }
         },
         "n-pg": {
-          tier: "Tier 2 · Relational Ledger & RBAC",
-          title: "PostgreSQL 15 (393 Migrations & 4-Axis wom_can)",
-          specs: "393 SQL Migrations · public.orgs · public.hats · Append-Only *_audit_log",
-          paths: "w0m-api/supabase/migrations/ · w0m-web/project/scripts/supabase_surface_drift_check.py",
-          guard: "Never grant anon blanket USING (true) beside scoped policies; 18 live authz red probes verify isolation.",
-          desc: {
-            novice: "The master ledger book where every contract, role, and setting is protected by four independent locks and an un-erasable change history.",
-            product: "Powers multi-org engagements (<contractor>.<engagement>.<client>), deterministic role/hat switching, and compliance-ready audit trails.",
-            architect: "4-axis capability model (public.wom_can) + SECURITY DEFINER triggers writing actor, old/new JSON, and timestamp into append-only *_audit_log tables.",
-            systems: "100% migration-managed (just db-migrate Touch ID gated), verified against TypeScript callers by supabase_surface_drift_check.py and anon_execute_ratchet.py."
+          "tier": "Tier 2 · Relational Ledger & RBAC",
+          "title": "PostgreSQL 17.6 (393 Migrations & 4-Axis wom_can)",
+          "specs": "PostgreSQL 17.6 · 393 SQL Migrations · 500 MB DB / 1 GB Storage Cap · Append-Only *_audit_log",
+          "paths": "w0m-api/supabase/migrations/ · w0m-web/project/scripts/supabase_surface_drift_check.py",
+          "guard": "Never grant anon blanket USING (true) beside scoped policies; 18 live authz red probes verify isolation.",
+          "desc": {
+            "novice": "The master ledger book where every contract, role, and setting is protected by four independent locks and an un-erasable change history.",
+            "junior": "100% migration-managed (just db-migrate Touch ID gated), verified against TypeScript callers by supabase_surface_drift_check.py.",
+            "product": "Powers multi-org engagements (<contractor>.<engagement>.<client>), deterministic role/hat switching, and compliance-ready audit trails.",
+            "executive": "PostgreSQL 17.6 with 4-axis capability model (public.wom_can) + SECURITY DEFINER triggers writing actor, old/new JSONB, and timestamp to *_audit_log."
           }
         },
         "n-edgefn": {
-          tier: "Tier 2 · Serverless Transactional RPC",
-          title: "64 Frozen Deno 2 Supabase Edge Functions",
-          specs: "Deno 2 (--frozen=true) · Stripe & MercadoPago · 4 AI Persona Agents · 7 Connector Families",
-          paths: "w0m-api/supabase/functions/ · scripts/deno_lock_parity_check.py",
-          guard: "deno_lock_parity_check.py enforces byte-identical w0m-api/deno.lock and supabase/functions/deno.lock.",
-          desc: {
-            novice: "Sixty-four specialized secure back-office clerks handling payments, PDF resumes, voice interview tokens, and external app connections.",
-            product: "Processes Stripe and MercadoPago checkouts/webhooks, AI consultant/architect chats, resume PDFs, and GitHub/LinkedIn/Upwork/Telegram syncs.",
-            architect: "Constructs Supabase clients with caller Authorization headers so RLS applies end-to-end; stores external OAuth tokens AES-256-GCM encrypted in public.connections.",
-            systems: "64 isolated Deno 2 entrypoints sharing _shared/{otel,opik-tracer,ai-router} with strict lockfile parity."
+          "tier": "Tier 2 · Serverless Transactional RPC",
+          "title": "64 Deno 2 Edge Function Dirs (--frozen=true)",
+          "specs": "Deno 2 (--frozen=true) · Stripe & MercadoPago · 4 AI Persona Agents · 7 Connector Families",
+          "paths": "w0m-api/supabase/functions/ · scripts/deno_lock_parity_check.py",
+          "guard": "deno_lock_parity_check.py enforces byte-identical w0m-api/deno.lock and supabase/functions/deno.lock.",
+          "desc": {
+            "novice": "Sixty-four function directories handling payments, PDF resumes, voice interview tokens, and external app connections.",
+            "junior": "64 Deno 2 function directories sharing _shared/{otel,opik-tracer,ai-router} under frozen deno.lock parity.",
+            "product": "Processes Stripe and MercadoPago checkouts/webhooks, 4 AI personas, resume PDFs, and GitHub, LinkedIn, Upwork, Telegram, Google, HubSpot & Unified ATS sync.",
+            "executive": "Constructs Supabase clients with caller Authorization headers so RLS applies end-to-end; encrypts external OAuth tokens AES-256-GCM in public.connections."
           }
         },
         "n-mlx": {
-          tier: "Tier 3 · Local Apple Silicon AI",
-          title: "w0m-mlx (Rust Metal + omlx + mlx-vlm + Headroom)",
-          specs: "wom7-mlx-rs (:1339/:1340) · omlx 0.7.3 (:8888) · mlx-vlm 0.7.11 (:8080) · headroom 0.39 (:8787/:8788)",
-          paths: "w0m-mlx/w0m-mlx/ · w0m-pr/{mlx-rs,omlx,mlx-vlm,headroom}",
-          guard: "Headroom proxies run on dedicated ports (:8787/:8788) so CLI streams are never rewritten unexpectedly.",
-          desc: {
-            novice: "Private AI models running directly on local Apple Silicon chips for coding, vision, and image generation with zero cloud API bills.",
-            product: "Provides offline-capable multimodal reasoning, UI screenshot inspection, and context compression for high-velocity engineering sessions.",
-            architect: "Pairs Rust axum + mlx-rs 0.33 Metal server with Python omlx 0.7.3 (4-bit Gemma 4 fused decode guard) and 2-bit FLUX.2 image generation.",
-            systems: "Fronted by headroom 0.39.0 context compression (:8787 cloud / :8788 local) to shrink large tool payloads before LLM prefill."
+          "tier": "Tier 3 · Local Apple Silicon AI",
+          "title": "w0m-mlx (Rust Metal + omlx + mlx-vlm + Headroom)",
+          "specs": "wom7-mlx-rs (:1339/:1340) · omlx 0.7.3 (:8888) · mlx-vlm 0.7.11 (:8080) · headroom 0.39 (:8787/:8788)",
+          "paths": "w0m-mlx/w0m-mlx/ · w0m-pr/{mlx-rs,omlx,mlx-vlm,headroom}",
+          "guard": "Headroom proxies run on dedicated ports (:8787/:8788) so CLI streams are never rewritten unexpectedly.",
+          "desc": {
+            "novice": "Private AI models running directly on local Apple Silicon chips for coding, vision, and image generation with zero cloud API bills.",
+            "junior": "Fronted by headroom 0.39.0 context compression (:8787 cloud / :8788 local) to shrink large tool payloads before LLM prefill.",
+            "product": "Provides offline-capable multimodal reasoning, UI screenshot inspection, and context compression for high-velocity engineering sessions.",
+            "executive": "Pairs Rust axum + mlx-rs 0.33 Metal server with Python omlx 0.7.3 (4-bit Gemma 4 fused decode guard) and 2-bit FLUX.2 image generation."
           }
         },
         "n-kb": {
-          tier: "Tier 3 · Graph & Hybrid Vector Retrieval",
-          title: "Graphify (92.5k Nodes) + Codegraph + SVD/FTS5 Vector KB",
-          specs: "graphify 0.9.100 (92,477 Nodes / 136,105 Edges) · codegraph v1.6.2 · corpus.sqlite (2,300+ Docs)",
-          paths: "scripts/w0m_kb_vector.py · scripts/graph_health.py · w0m-web/docs/KNOWLEDGE-GRAPH.md",
-          guard: "SHA-256 mirror deduplication + classify_source_boundary prevent duplicate RRF hits and block client/personal files.",
-          desc: {
-            novice: "An instant local library map and semantic search engine over every code symbol, architecture decision, spec, and lesson — no internet needed.",
-            product: "Ensures engineers and AI agents reuse existing components and honor past architectural decisions instead of reinventing or breaking features.",
-            architect: "Graph-before-grep protocol: just ask and just kb-search fuse AST call graphs, 92.5k semantic nodes, and 2,300+ canonical docs at $0 API cost.",
-            systems: "SQLite FTS5 Porter BM25 + 128-dim numpy Randomized SVD unit embeddings fused via Reciprocal Rank Fusion (RRF k=60) + spherical k-means topic clusters."
+          "tier": "Tier 3 · Graph & Hybrid Vector Retrieval",
+          "title": "Graphify (92.5k Nodes) + Codegraph + SVD/FTS5 Vector KB",
+          "specs": "graphify 0.9.100 (92,477 Nodes / 136,105 Edges) · codegraph v1.6.2 · ~2k Curated Docs (0.75x Archive RRF)",
+          "paths": "scripts/w0m_kb_vector.py · scripts/graph_health.py · w0m-web/docs/KNOWLEDGE-GRAPH.md",
+          "guard": "Policy-driven client tokens + SHA-256 legacy hashes, max_chunks_per_doc=2, and archive delta/task dedup keep canonical docs top-ranked.",
+          "desc": {
+            "novice": "An instant local library map and semantic search engine over every code symbol, architecture decision, spec, and lesson — no internet needed.",
+            "junior": "SQLite FTS5 Porter BM25 + 128-dim numpy SVD (max_chars=1600) with RRF (k=60), openspec_archive 0.75x multiplier, --no-archive filter, and per-doc diversity cap.",
+            "product": "Ensures engineers and AI agents reuse existing components and honor past architectural decisions instead of reinventing or breaking features.",
+            "executive": "Graph-before-grep protocol: just ask and just kb-search fuse AST call graphs, 92.5k semantic nodes, and curated @wom docs with zero client leakage."
           }
         },
         "n-gate": {
-          tier: "Tier 3 · Security, Skills & Release Governance",
-          title: "First-Place Security Gate, 79 Skills & Certified Deploy",
-          specs: "SkillSpector v2.12 · gitleaks 8.30 · osv-scanner 2.7 · semgrep 1.183 · ast-grep 0.51 · 377 Suites",
-          paths: "w0m-skills/ · w0m-sec/ · scripts/{session_complete,deploy_cert,deploy_logged,env_prune_dead}.py",
-          guard: "Touch-ID-only deploys/migrations; AES-256-GCM pre-prune secret backups; 18 mandatory session-complete gates.",
-          desc: {
-            novice: "An eighteen-point automated safety checkpoint that scans code, dependencies, secrets, and AI skills before stamping a release certificate.",
-            product: "Protects customer trust and uptime with zero known dependency CVEs, air-gapped security auditing, and reproducible single-branch releases.",
-            architect: "Combines Elephant-Goldfish (egm-*) adversarial review, 7-dialect SDD governance, NVIDIA SkillSpector across 71 skill roots, and Infisical zero-.env injection.",
-            systems: "session_complete.py runs 18 gates, stamps deploy_cert.py tree-set SHA-256, lands member repos before @wom root, and audits transcripts via deploy_logged.py."
+          "tier": "Tier 3 · Security, Skills & Release Governance",
+          "title": "First-Place Security Gate, 79 Skills & Certified Deploy",
+          "specs": "SkillSpector v2.12 · gitleaks 8.30 · osv-scanner 2.7 · semgrep 1.183 · ast-grep 0.51 · 377 Suites",
+          "paths": "w0m-skills/ · w0m-sec/ · scripts/{session_complete,deploy_cert,deploy_logged,env_prune_dead}.py",
+          "guard": "Touch-ID-only deploys/migrations; AES-256-GCM pre-prune secret backups; 16 default (18 wise) session-complete gates.",
+          "desc": {
+            "novice": "A multi-point automated safety checkpoint that scans code, dependencies, secrets, and AI skills before stamping a release certificate.",
+            "junior": "session_complete.py runs 16 default (18 wise) gates, stamps deploy_cert.py tree-set SHA-256, lands member repos before @wom root, and audits logs.",
+            "product": "Protects customer trust and uptime with zero known dependency CVEs, air-gapped security auditing, and reproducible single-branch releases.",
+            "executive": "Combines Elephant-Goldfish (egm-*) adversarial review, 7-dialect SDD governance, NVIDIA SkillSpector across 71 skill roots, and Infisical zero-.env injection."
           }
         }
-      };
+      },
 
-      const FLOWS = [
+      "FLOWS": [
         {
-          id: "checkout",
-          label: "1. 1-Click OAuth & Checkout",
-          steps: [
+          "id": "checkout",
+          "label": "1. 1-Click OAuth & Checkout",
+          "steps": [
             {
-              nodes: ["n-web", "n-ssr"],
-              edges: [["n-web", "n-ssr"]],
-              title: "Visitor selects a fixed-price package on /services or /solutions",
-              code: "w0m-web/apps/web/src/pages/{services,solutions} · edge-cache-policy.ts",
-              text: {
-                novice: "A buyer opens webomage.com, views instant edge-cached service tiers, and clicks Buy without filling out a long intake form.",
-                product: "Anonymous public SSR delivers sub-100ms edge-cached pages and a single clear CTA per fixed-price service tier.",
-                architect: "Cloudflare SSR Worker serves cached HTML for anonymous requests while bypassing cache the instant auth cookies appear.",
-                systems: "applyAnonymousHtmlEdgeCache inspects Cookie/Authorization/Set-Cookie headers before storing public HTML in BoundedTtlCache."
+              "nodes": ["n-web", "n-ssr"],
+              "edges": [["n-web", "n-ssr"]],
+              "title": "Visitor selects a fixed-price package on /services or /solutions",
+              "code": "w0m-web/apps/web/src/pages/{services,solutions} · edge-cache-policy.ts",
+              "text": {
+                "novice": "A buyer opens webomage.com, views instant edge-cached service tiers, and clicks Buy without filling out a long intake form.",
+                "junior": "applyAnonymousHtmlEdgeCache inspects Cookie/Authorization/Set-Cookie headers before storing public HTML in BoundedTtlCache.",
+                "product": "Anonymous public SSR delivers sub-100ms edge-cached pages and a single clear CTA per fixed-price service tier.",
+                "executive": "Cloudflare SSR Worker serves cached HTML for anonymous requests while bypassing cache the instant auth cookies appear."
               }
             },
             {
-              nodes: ["n-ssr", "n-gotrue"],
-              edges: [["n-ssr", "n-gotrue"]],
-              title: "1-Click PKCE OAuth registration via GoTrue (Google, LinkedIn OIDC, GitHub)",
-              code: "w0m-web/packages/lib/src/auth/handlers.ts (OAUTH_PROVIDERS)",
-              text: {
-                novice: "They sign in with one click using Google, LinkedIn, or GitHub.",
-                product: "Eliminates password friction while capturing verified identity before payment.",
-                architect: "GoTrue PKCE OAuth exchange restricted to the 3 audited providers in handlers.ts, issuing SSR-compatible session cookies.",
-                systems: "PKCE code_verifier exchange sets chunked HttpOnly/Secure Supabase session cookies shared across webomage.com subdomains."
+              "nodes": ["n-ssr", "n-gotrue"],
+              "edges": [["n-ssr", "n-gotrue"]],
+              "title": "1-Click PKCE OAuth registration via GoTrue (Google, LinkedIn OIDC, GitHub)",
+              "code": "w0m-web/packages/lib/src/auth/handlers.ts (OAUTH_PROVIDERS)",
+              "text": {
+                "novice": "They sign in with one click using Google, LinkedIn, or GitHub.",
+                "junior": "PKCE code_verifier exchange sets chunked HttpOnly/Secure Supabase session cookies shared across webomage.com subdomains.",
+                "product": "Eliminates password friction while capturing verified identity before payment.",
+                "executive": "GoTrue PKCE OAuth exchange restricted to the 3 audited providers in handlers.ts, issuing SSR-compatible session cookies."
               }
             },
             {
-              nodes: ["n-ssr", "n-edgefn"],
-              edges: [["n-ssr", "n-edgefn"]],
-              title: "Authenticated checkout session created via stripe-checkout Edge Function",
-              code: "w0m-api/supabase/functions/stripe-checkout/index.ts",
-              text: {
-                novice: "A secure back-office clerk creates a Stripe payment link tied to their new account.",
-                product: "Routes fixed-price tiers directly to Stripe Checkout (or MercadoPago in LATAM) with pre-bound user metadata.",
-                architect: "SSR invokes frozen Deno 2 stripe-checkout Edge Function forwarding the caller's JWT Authorization header.",
-                systems: "Deno 2 --frozen=true function validates catalog SKU/price server-side and creates a Stripe Checkout Session."
+              "nodes": ["n-ssr", "n-edgefn"],
+              "edges": [["n-ssr", "n-edgefn"]],
+              "title": "Authenticated checkout session created via stripe-checkout Edge Function",
+              "code": "w0m-api/supabase/functions/stripe-checkout/index.ts",
+              "text": {
+                "novice": "A secure back-office clerk creates a Stripe payment link tied to their new account.",
+                "junior": "Deno 2 --frozen=true function validates catalog SKU/price server-side and creates a Stripe Checkout Session.",
+                "product": "Routes fixed-price tiers directly to Stripe Checkout (or MercadoPago in LATAM) with pre-bound user metadata.",
+                "executive": "SSR invokes frozen Deno 2 stripe-checkout Edge Function forwarding the caller's JWT Authorization header."
               }
             },
             {
-              nodes: ["n-edgefn", "n-pg"],
-              edges: [["n-edgefn", "n-pg"]],
-              title: "Webhook settlement & append-only commercial *_audit_log record",
-              code: "w0m-api/supabase/functions/stripe-webhook/ · PostgreSQL *_audit_log",
-              text: {
-                novice: "When payment succeeds, the master ledger records the contract and writes a permanent receipt.",
-                product: "Automatically provisions client org entitlement so onboarding starts immediately.",
-                architect: "stripe-webhook verifies signature, updates relational contract state under RLS, and fires SECURITY DEFINER *_audit_log triggers.",
-                systems: "Idempotent webhook upsert into PostgreSQL 15 with old/new JSONB payload logged atomically in transaction."
+              "nodes": ["n-edgefn", "n-pg"],
+              "edges": [["n-edgefn", "n-pg"]],
+              "title": "Webhook settlement & append-only commercial *_audit_log record",
+              "code": "w0m-api/supabase/functions/stripe-webhook/ · PostgreSQL *_audit_log",
+              "text": {
+                "novice": "When payment succeeds, the master ledger records the contract and writes a permanent receipt.",
+                "junior": "Idempotent webhook upsert into PostgreSQL 17.6 with old/new JSONB payload logged atomically in transaction.",
+                "product": "Automatically provisions client org entitlement so onboarding starts immediately.",
+                "executive": "stripe-webhook verifies signature, updates relational contract state under RLS, and fires SECURITY DEFINER *_audit_log triggers."
               }
             },
             {
-              nodes: ["n-cp", "n-ssr", "n-pg"],
-              edges: [["n-cp", "n-ssr"], ["n-ssr", "n-pg"]],
-              title: "Client lands in apps/cp Onboarding Wizard & selects SDD Spec Dialect",
-              code: "w0m-web/apps/cp/ · scripts/client_spec_init.py (7 SDD dialects)",
-              text: {
-                novice: "The buyer arrives in their new Control Panel workspace and picks how they want project specs organized.",
-                product: "Embedded Services Configurator + 7-dialect SDD selector (OpenSpec, Spec-Kit, GSD, BMAD, Conductor, cc-sdd) kickstarts delivery.",
-                architect: "Tenant-scoped /o/[org] workspace binds dedicated R2 vault prefix and per-project Mistral Free-Tier scope.",
-                systems: "4-axis wom_can authorizes org member access while client_spec_init scaffolds the chosen spec directory contract."
+              "nodes": ["n-cp", "n-ssr", "n-pg"],
+              "edges": [["n-cp", "n-ssr"], ["n-ssr", "n-pg"]],
+              "title": "Client lands in apps/cp Onboarding Wizard & selects SDD Spec Dialect",
+              "code": "w0m-web/apps/cp/ · scripts/client_spec_init.py (7 SDD dialects)",
+              "text": {
+                "novice": "The buyer arrives in their new Control Panel workspace and picks how they want project specs organized.",
+                "junior": "4-axis wom_can authorizes org member access while client_spec_init scaffolds the chosen spec directory contract.",
+                "product": "Embedded Services Configurator + 7-dialect SDD selector (w0m-openspec, openspec, github-speckit, open-gsd, bmad, conductor, cc-sdd) kickstarts delivery.",
+                "executive": "Tenant-scoped /o/[org] workspace binds dedicated R2 vault prefix (engagements/eg-<slug>) and per-project Mistral Free-Tier scope."
               }
             }
           ]
         },
         {
-          id: "impersonate",
-          label: "2. Admin Impersonation Handoff",
-          steps: [
+          "id": "impersonate",
+          "label": "2. Admin Impersonation Handoff",
+          "steps": [
             {
-              nodes: ["n-cp", "n-gotrue"],
-              edges: [["n-cp", "n-ssr"], ["n-ssr", "n-gotrue"]],
-              title: "Platform Admin authenticates with AAL2 TOTP/Passkey MFA on apps/cp",
-              code: "w0m-web/packages/ui/MfaChallenge · wom_jwt_is_aal2()",
-              text: {
-                novice: "An administrator unlocks their control panel using both their login and a second hardware/authenticator check.",
-                product: "Protects sensitive support tools behind mandatory multi-factor authentication.",
-                architect: "Admin credentials preserve platform capability across domains without silent hostname role demotion, gated by AAL2.",
-                systems: "Supabase JWT aal == 'aal2' verified in Astro middleware and PostgreSQL wom_jwt_is_aal2()."
+              "nodes": ["n-cp", "n-ssr", "n-gotrue"],
+              "edges": [["n-cp", "n-ssr"], ["n-ssr", "n-gotrue"]],
+              "title": "Platform Admin authenticates with AAL2 TOTP/Passkey MFA on apps/cp",
+              "code": "w0m-web/packages/ui/MfaChallenge · wom_jwt_is_aal2()",
+              "text": {
+                "novice": "An administrator unlocks their control panel using both their login and a second hardware/authenticator check.",
+                "junior": "Supabase JWT aal == 'aal2' verified in Astro middleware and PostgreSQL wom_jwt_is_aal2().",
+                "product": "Protects sensitive support tools behind mandatory multi-factor authentication.",
+                "executive": "Admin credentials preserve platform capability across domains without silent hostname role demotion, gated by AAL2."
               }
             },
             {
-              nodes: ["n-cp", "n-ssr", "n-pg"],
-              edges: [["n-cp", "n-ssr"], ["n-ssr", "n-pg"]],
-              title: "HMAC handoff token minted at /api/auth/impersonate-handoff",
-              code: "w0m-web/apps/cp/src/pages/api/auth/impersonate-handoff.ts",
-              text: {
-                novice: "The system prints a short-lived, tamper-proof visitor pass naming both the admin and the user they are helping.",
-                product: "Lets support engineers troubleshoot exact client or talent views across subdomains safely.",
-                architect: "Signs target profile/org + actor ID + short expiry with cloudflare:workers env secret and logs the event.",
-                systems: "Reads signing secret via import { env } from 'cloudflare:workers' (zero locals.runtime.env)."
+              "nodes": ["n-cp", "n-ssr", "n-pg"],
+              "edges": [["n-cp", "n-ssr"], ["n-ssr", "n-pg"]],
+              "title": "HMAC handoff token minted at /api/auth/impersonate-handoff",
+              "code": "w0m-web/apps/cp/src/pages/api/auth/impersonate-handoff.ts",
+              "text": {
+                "novice": "The system prints a short-lived, tamper-proof visitor pass naming both the admin and the user they are helping.",
+                "junior": "Reads signing secret via import { env } from 'cloudflare:workers' (zero locals.runtime.env).",
+                "product": "Lets support engineers troubleshoot exact client or talent views across subdomains safely.",
+                "executive": "Signs target profile/org + actor ID + short expiry with cloudflare:workers env secret and logs the event."
               }
             },
             {
-              nodes: ["n-me", "n-ssr", "n-pg"],
-              edges: [["n-me", "n-ssr"], ["n-ssr", "n-pg"]],
-              title: "Target portal (apps/me or client view) renders exact scoped rows",
-              code: "w0m-web/apps/me/ · me-pages-own-rows.test.ts",
-              text: {
-                novice: "Opening me.webomage.com shows strictly that member's own items — never mixing in anyone else's data.",
-                product: "Reproduces the exact member experience with a clear impersonation banner and one-click exit.",
-                architect: "Explicit profile_id = acting_profile_id filters ensure an admin viewing /me sees only the target profile's rows.",
-                systems: "Enforced statically by me-pages-own-rows.test.ts and audited in append-only security logs."
+              "nodes": ["n-me", "n-ssr", "n-pg"],
+              "edges": [["n-me", "n-ssr"], ["n-ssr", "n-pg"]],
+              "title": "Target portal (apps/me or client view) renders exact scoped rows",
+              "code": "w0m-web/apps/me/ · me-pages-own-rows.test.ts",
+              "text": {
+                "novice": "Opening me.webomage.com shows strictly that member's own items — never mixing in anyone else's data.",
+                "junior": "Enforced statically by me-pages-own-rows.test.ts and audited in append-only security logs.",
+                "product": "Reproduces the exact member experience with a clear impersonation banner and one-click exit.",
+                "executive": "Explicit profile_id = acting_profile_id filters ensure an admin viewing /me sees only the target profile's rows."
               }
             }
           ]
         },
         {
-          id: "vault",
-          label: "3. Obsidian R2 Vault & @k7 Git TUI",
-          steps: [
+          "id": "vault",
+          "label": "3. Obsidian R2 Vault & @k7 Git TUI",
+          "steps": [
             {
-              nodes: ["n-ext", "n-me", "n-r2"],
-              edges: [["n-ext", "n-r2"], ["n-me", "n-ssr"], ["n-ssr", "n-r2"]],
-              title: "obsidian-w0m syncs project vault deltas to Cloudflare R2 ($0 egress)",
-              code: "w0m-ext/obsidian-w0m/ · apps/me/src/pages/api/vault/r2/",
-              text: {
-                novice: "Notes edited in Obsidian on laptop or phone sync straight to zero-fee Cloudflare lockers.",
-                product: "Cross-device markdown collaboration for engagements without hourly token logouts or bandwidth fees.",
-                architect: "Uses revocable SHA-256-hashed w0m_vst_ device tokens instead of 1-hour browser JWTs, streaming directly to/from R2.",
-                systems: "me-api-parity.test.ts enforces /api/vault/r2 route parity; binary objects never touch Supabase 500 MB storage."
+              "nodes": ["n-ext", "n-me", "n-ssr", "n-r2"],
+              "edges": [["n-ext", "n-r2"], ["n-me", "n-ssr"], ["n-ssr", "n-r2"]],
+              "title": "obsidian-w0m syncs project vault deltas to Cloudflare R2 ($0 egress)",
+              "code": "w0m-ext/obsidian-w0m/ · apps/me/src/pages/api/vault/r2/",
+              "text": {
+                "novice": "Notes edited in Obsidian on laptop or phone sync straight to zero-fee Cloudflare lockers.",
+                "junior": "me-api-parity.test.ts enforces /api/vault/r2 route parity; binary objects never touch Supabase 500 MB DB / 1 GB storage.",
+                "product": "Cross-device markdown collaboration for engagements without hourly token logouts or bandwidth fees.",
+                "executive": "Uses revocable SHA-256-hashed w0m_vst_ device tokens instead of 1-hour browser JWTs, streaming directly to/from R2."
               }
             },
             {
-              nodes: ["n-k7", "n-cp"],
-              edges: [["n-k7", "n-cp"]],
-              title: "Crew inspects 5 Git & LLM remote flavours in CrewToolkitAndTabLinuxConsole",
-              code: "k7hub/src/git_browser.rs · packages/lib/src/security/k7-git-browser.ts",
-              text: {
-                novice: "Inside the Control Panel, engineers browse GitHub, GitLab, Gitea, HuggingFace models, and AI agent checkpoints in a crisp terminal view.",
-                product: "Unified visibility over code branches, multi-gigabyte model weight shards, and agent checkpoints.",
-                architect: "Mirrors k7hub::git_browser (wasm32-unknown-unknown) with TypeScript buildK7GitWasmTuiFrame in apps/cp.",
-                systems: "Uses u64 byte counters for >4 GiB .safetensors/.gguf shards across GitHub, GitLab, HuggingFaceHub, ForgejoGitea, and LlmAgentCheckpoint."
+              "nodes": ["n-k7", "n-cp"],
+              "edges": [["n-k7", "n-cp"]],
+              "title": "Crew inspects 5 Git & LLM remote flavours in CrewToolkitAndTabLinuxConsole",
+              "code": "k7hub/src/git_browser.rs · packages/lib/src/security/k7-git-browser.ts",
+              "text": {
+                "novice": "Inside the Control Panel, engineers browse GitHub, GitLab, Gitea, HuggingFace models, and AI agent checkpoints in a crisp terminal view.",
+                "junior": "Uses u64 byte counters for >4 GiB .safetensors/.gguf shards across GitHub, GitLab, HuggingFaceHub, ForgejoGitea, and LlmAgentCheckpoint.",
+                "product": "Unified visibility over code branches, multi-gigabyte model weight shards, and agent checkpoints.",
+                "executive": "Mirrors k7hub::git_browser (wasm32-unknown-unknown) with TypeScript buildK7GitWasmTuiFrame in apps/cp."
               }
             }
           ]
         },
         {
-          id: "guardrails",
-          label: "4. Guardrails, SkillSpector & Deploy Cert",
-          steps: [
+          "id": "guardrails",
+          "label": "4. Guardrails, SkillSpector & Deploy Cert",
+          "steps": [
             {
-              nodes: ["n-orca", "n-gate"],
-              edges: [["n-orca", "n-kb"]],
-              title: "Isolated 10-repo worktree cut via just agent-tree <name>",
-              code: "w0m-web/project/scripts/agent_tree.py · .tasks/T##.md",
-              text: {
-                novice: "Before changing a single line, the developer or AI creates a private sandbox copy of all 10 repositories and files a ticket.",
-                product: "Prevents concurrent sessions from colliding while keeping the live checkout clean for owner releases.",
-                architect: "Single-branch beta model (AgDR-0032): local branch agent/<name> cut from origin/beta inside ~/.w0m/work/<name>/w0m.",
-                systems: "ensure_prepush_deps materializes independent node_modules whenever repo lockfiles diverge from canonical root."
+              "nodes": ["n-orca", "n-gate"],
+              "edges": [["n-orca", "n-gate"]],
+              "title": "Isolated 10-repo worktree cut via just agent-tree <name>",
+              "code": "w0m-web/project/scripts/agent_tree.py · .tasks/<ticket>.md",
+              "text": {
+                "novice": "Before changing a single line, the developer or AI creates a private sandbox copy of all 10 repositories and claims a ticket.",
+                "junior": "ensure_prepush_deps materializes independent node_modules whenever repo lockfiles diverge from canonical root.",
+                "product": "Prevents concurrent sessions from colliding while keeping the live checkout clean for owner releases.",
+                "executive": "Single-branch beta trunk model: local branch agent/<name> cut from origin/beta inside ~/.w0m/work/<name>/w0m."
               }
             },
             {
-              nodes: ["n-gate", "n-ssr", "n-edgefn"],
-              edges: [["n-gate", "n-ssr"], ["n-gate", "n-edgefn"]],
-              title: "First-Place Guardrails scan code, lockfiles, barrel imports & 71 skill roots",
-              code: "scripts/skill_spector_check.py · osv-scanner · gitleaks · browser-barrel-node-free.test.ts",
-              text: {
-                novice: "Automated scanners check for leaked passwords, vulnerable packages, unsafe AI skill instructions, and browser bundle mistakes.",
-                product: "Zero critical/high CVEs or prompt-injected skills can slip into production.",
-                architect: "Runs gitleaks, osv-scanner (6 pnpm lockfiles), semgrep, ast-grep, NVIDIA SkillSpector v2.12 (YARA + AST), and mcp_ratchet.py.",
-                systems: "Walks @webomage/lib transitive barrel to guarantee 0 node:* imports and 0 Vite/Rolldown build warnings."
+              "nodes": ["n-gate", "n-ssr", "n-edgefn"],
+              "edges": [["n-gate", "n-ssr"], ["n-gate", "n-edgefn"]],
+              "title": "First-Place Guardrails scan code, lockfiles, barrel imports & 71 skill roots",
+              "code": "scripts/skill_spector_check.py · osv-scanner · gitleaks · browser-barrel-node-free.test.ts",
+              "text": {
+                "novice": "Automated scanners check for leaked passwords, vulnerable packages, unsafe AI skill instructions, and browser bundle mistakes.",
+                "junior": "Walks @webomage/lib transitive barrel to guarantee 0 node:* imports and 0 Vite/Rolldown build warnings.",
+                "product": "Zero critical/high CVEs or prompt-injected skills can slip into production.",
+                "executive": "Runs gitleaks, osv-scanner (6 pnpm lockfiles), semgrep, ast-grep, NVIDIA SkillSpector v2.12 (YARA + AST), and mcp_ratchet.py."
               }
             },
             {
-              nodes: ["n-gate"],
-              edges: [],
-              title: "session_complete.py passes 18 gates, stamps deploy_cert.py & lands atomically",
-              code: "scripts/session_complete.py · scripts/deploy_cert.py · scripts/deploy_logged.py",
-              text: {
-                novice: "Eighteen final checks pass, a cryptographic seal is stamped across all 10 repos, and the live workspace fast-forwards cleanly.",
-                product: "Cuts warm deploy verification to <0.2s while keeping live production releases strictly owner Touch-ID gated.",
-                architect: "Pushes member repos to origin/beta before @wom root, archives session transcript, and verifies state-check exits 0 last.",
-                systems: "deploy_logged.py classifies zero-finding osv/ast-grep pass summaries cleanly so build_warnings=0 and other_trouble=0."
+              "nodes": ["n-gate"],
+              "edges": [],
+              "title": "session_complete.py passes 16/18 gates, stamps deploy_cert.py & lands atomically",
+              "code": "scripts/session_complete.py · scripts/deploy_cert.py · scripts/deploy_logged.py",
+              "text": {
+                "novice": "Automated final checks pass, a cryptographic seal is stamped across all 10 repos, and the live workspace fast-forwards cleanly.",
+                "junior": "deploy_logged.py classifies zero-finding osv/ast-grep pass summaries cleanly so build_warnings=0 and other_trouble=0.",
+                "product": "Cuts warm deploy verification to <0.2s while keeping live production releases strictly owner Touch-ID gated.",
+                "executive": "Runs 16 default (18 wise) checks, pushes member repos before @wom root, archives transcripts, and verifies state-check exits 0 last."
               }
             }
           ]
         },
         {
-          id: "ask-mlx",
-          label: "5. Local Graph + Vector KB + Apple MLX",
-          steps: [
+          "id": "ask-mlx",
+          "label": "5. Local Graph + Vector KB + Apple MLX",
+          "steps": [
             {
-              nodes: ["n-orca", "n-kb"],
-              edges: [["n-orca", "n-kb"]],
-              title: "Agent runs just ask / just kb-search before touching grep or cloud APIs",
-              code: "scripts/w0m_kb_vector.py · codegraph · graphify (92,477 nodes)",
-              text: {
-                novice: "Before writing code, the AI checks a local map of 92,000+ code connections and 2,300+ engineering documents on disk.",
-                product: "Instant architectural recall at $0 API cost and zero cloud data exposure.",
-                architect: "Combines codegraph symbol/caller AST, 92,477-node graphify graph, and SHA-256-deduplicated corpus.sqlite.",
-                systems: "Reciprocal Rank Fusion (k=60) merges SQLite FTS5 Porter BM25 ranks with 128-dim numpy Randomized SVD cosine similarity."
+              "nodes": ["n-orca", "n-kb"],
+              "edges": [["n-orca", "n-kb"]],
+              "title": "Agent runs just ask / just kb-search before touching grep or cloud APIs",
+              "code": "scripts/w0m_kb_vector.py · codegraph · graphify (92,477 nodes)",
+              "text": {
+                "novice": "Before writing code, the AI checks a local map of 92,000+ code connections and ~2,000 curated engineering documents on disk.",
+                "junior": "Reciprocal Rank Fusion (k=60) merges SQLite FTS5 Porter BM25 ranks with 128-dim SVD cosine similarity (0.75x openspec_archive, --no-archive opt-out).",
+                "product": "Instant architectural recall at $0 API cost and zero cloud data exposure.",
+                "executive": "Combines codegraph symbol/caller AST, 92,477-node graphify graph, and SHA-256-deduplicated corpus.sqlite with policy client isolation."
               }
             },
             {
-              nodes: ["n-kb", "n-mlx"],
-              edges: [["n-kb", "n-mlx"]],
-              title: "Headroom compresses context into local Apple Silicon MLX inference",
-              code: "headroom (:8788) -> omlx 0.7.3 (:8888) / wom7-mlx-rs (:1339) / mlx-vlm 0.7.11 (:8080)",
-              text: {
-                novice: "A smart compressor trims extra text and feeds the question to local AI models running on Mac Metal GPUs.",
-                product: "Enables rapid local coding, vision inspection, and image generation without external token limits.",
-                architect: "Dedicated proxy ports (:8787 cloud / :8788 local) front Rust axum mlx-rs 0.33 and Python omlx Gemma 4 / FLUX servers.",
-                systems: "4-bit Gemma 4 fused decode guard on :8888 + 2-bit FLUX.2 on :8080 + Rust safetensors/tokenizers serving on :1339/:1340."
+              "nodes": ["n-kb", "n-mlx"],
+              "edges": [["n-kb", "n-mlx"]],
+              "title": "Headroom compresses context into local Apple Silicon MLX inference",
+              "code": "headroom (:8788) -> omlx 0.7.3 (:8888) / wom7-mlx-rs (:1339) / mlx-vlm 0.7.11 (:8080)",
+              "text": {
+                "novice": "A smart compressor trims extra text and feeds the question to local AI models running on Mac Metal GPUs.",
+                "junior": "4-bit Gemma 4 fused decode guard on :8888 + 2-bit FLUX.2 on :8080 + Rust safetensors/tokenizers serving on :1339/:1340.",
+                "product": "Enables rapid local coding, vision inspection, and image generation without external token limits.",
+                "executive": "Dedicated proxy ports (:8787 cloud / :8788 local) front Rust axum mlx-rs 0.33 and Python omlx Gemma 4 / FLUX servers."
               }
             }
           ]
         }
-      ];
+      ],
 
-      const CATALOG = [
+      "CATALOG": [
         {
-          cat: "web",
-          tag: "w0m-web · Edge SSR",
-          title: "Astro 7.3.3 + Svelte 5.56.4 + Rolldown Toolchain",
-          summary: "4 Cloudflare Workers SSR apps (web, cp, me, demo) compiled with Vite 7.3.7 / Rolldown 1.2.14, Tailwind 4.3.3, and TypeScript 6.0.3.",
-          details: [
-            "220 git-tracked .svelte components using 100% Svelte 5 runes ($props, $state, $derived, $effect)",
+          "cat": "web",
+          "tag": "w0m-web · Edge SSR",
+          "title": "Astro 7.3.3 + Svelte 5.56.4 + Rolldown Toolchain",
+          "summary": "4 Cloudflare Workers SSR apps (web, cp, me, demo) compiled with Vite 7.3.7 / Rolldown 1.2.14, Tailwind 4.3.3, and TypeScript 6.0.3.",
+          "details": [
+            "220 git-tracked .svelte components (206 direct Svelte 5 runes + 8 rune-free wrappers + 6 legacy export let files)",
             "cloudflare:workers env enforced mechanically by worker_env_gate.py (zero locals.runtime.env)",
             "Anonymous public HTML edge cache (edge-cache-policy.ts) + readJsonSafe island resilience"
           ]
         },
         {
-          cat: "web",
-          tag: "@webomage/ui · Design System",
-          title: "25 Canonical Dark-First Glassmorphic Primitives",
-          summary: "Single-source design-system/ -> packages/ui library with [data-app] brand tokens and 4-posture responsive contract.",
-          details: [
+          "cat": "web",
+          "tag": "@webomage/ui · Design System",
+          "title": "25 Canonical Dark-First Glassmorphic Primitives",
+          "summary": "Single-source design-system/ -> packages/ui library with [data-app] brand tokens and 4-posture responsive contract.",
+          "details": [
             "Primitives: Badge, Button, Card, Checkbox, Input, Label, Separator, AppShell, Breadcrumb, ContextSwitcher, EmptyState, PageHeader, SideNav, Tabs, BlueprintCard, ComplexityBadge, GlassCard, SegmentBadge, StatusDot, TechIcon, Dialog, Select, BugReportWidget, QuickViewModal, Table",
-            "Enforces RGB-triplet rgba(var(--...), alpha) tokens and zero internal T##/AgDR leaks (ui-ticket-leak-check)"
+            "Enforces RGB-triplet rgba(var(--...), alpha) tokens and zero internal identifier leaks in UI copy"
           ]
         },
         {
-          cat: "web",
-          tag: "w0m-web/packages/* · 9 Libraries",
-          title: "Isomorphic Shared Workspace Packages",
-          summary: "Shared auth, 4-axis guards, browser WebMCP, bot fingerprinting, multi-engine crawling, and WebAuthn/LATAM KYC.",
-          details: [
+          "cat": "web",
+          "tag": "w0m-web/packages/* · 9 Libraries",
+          "title": "Isomorphic Shared Workspace Packages",
+          "summary": "Shared auth, 4-axis guards, browser WebMCP, bot fingerprinting, multi-engine crawling, and WebAuthn/LATAM KYC.",
+          "details": [
             "packages: ui, lib, authz, webmcp, fingerprint, crawler, kyc, logger, mcp-aws-fundamentals",
             "browser-barrel-node-free.test.ts walks packages/lib/src/index.ts to block any node:* import (isomorphic FIPS 180-4 SHA-256)"
           ]
         },
         {
-          cat: "edge",
-          tag: "w0m-api · wom7api Worker",
-          title: "Hono >=4.13.16 API Gateway, 19 Workflows & ChatMemoryDO",
-          summary: "Durable multi-step Cloudflare Workflows and SQLite-backed conversational state Durable Object.",
-          details: [
+          "cat": "edge",
+          "tag": "w0m-api · wom7api Worker",
+          "title": "Hono 4.13.18 (>=4.13.16) API Gateway, 19 Workflows & ChatMemoryDO",
+          "summary": "Durable multi-step Cloudflare Workflows and SQLite-backed conversational state Durable Object.",
+          "details": [
             "19 Workflow classes: GamificationEvent, DomainScanner, JobScanner, LinkedinSync, LinkedinBroadcast, LinkedinDataErasure, CertEvaluator, CertIngestion, JobAggregator, JobScorer, VectorizeJob, VectorizeProfile, VectorizeVault, Newsletter, CvGenerator, DeckGenerator, WebnamesBatch, Crawler, PdfGenerator",
-            "Lockstep hono >=4.13.16 across all repos (0 OSV vulnerabilities)"
+            "Lockstep hono 4.13.18 (>=4.13.16) across all repos (0 OSV vulnerabilities)"
           ]
         },
         {
-          cat: "edge",
-          tag: "w0m-cf · wom7func Worker",
-          title: "5/5 Account Crons, Stateless POST /mcp & AI Proxy",
-          summary: "Consolidates every Cloudflare Free-Tier cron schedule (:8790 dev), JSON-RPC MCP tools, Workers AI, and ATS adapters.",
-          details: [
+          "cat": "edge",
+          "tag": "w0m-cf · wom7func Worker",
+          "title": "5/5 Account Crons, Stateless POST /mcp & AI Proxy",
+          "summary": "Consolidates every Cloudflare Free-Tier cron schedule (:8790 dev), JSON-RPC MCP tools, Workers AI, and ATS adapters.",
+          "details": [
             "Cron schedules: */15, */30, 0 8 * * *, 0 */6 * * *, 0 14 * * SUN (absorbed webnames-crawler)",
             "Stateless JSON-RPC 2.0 POST /mcp (@modelcontextprotocol/sdk/types.js), /ai/chat, /ai/embed, Huntflow & Merge ATS"
           ]
         },
         {
-          cat: "edge",
-          tag: "Supabase · PostgreSQL 15",
-          title: "393 SQL Migrations, 4-Axis wom_can & *_audit_log",
-          summary: "Relational ledger of record enforcing tenant, unit, worn hat, and MFA capabilities with append-only audit triggers.",
-          details: [
+          "cat": "edge",
+          "tag": "Supabase · PostgreSQL 17.6",
+          "title": "393 SQL Migrations, 4-Axis wom_can & *_audit_log",
+          "summary": "Relational ledger of record on PostgreSQL 17.6 (local CLI :54322) enforcing tenant, unit, worn hat, and MFA capabilities with append-only audit triggers.",
+          "details": [
             "Unified public.orgs (<org>.<unit>), 2-party engagements, deterministic public.hats ordering",
             "supabase_surface_drift_check.py + anon_execute_ratchet.py + 18 live authz probes (0 RED)"
           ]
         },
         {
-          cat: "edge",
-          tag: "Supabase · Deno 2",
-          title: "64 Frozen Deno 2 Edge Functions & 7 Connector Families",
-          summary: "Serverless RPCs for Stripe/MercadoPago billing, 4 AI personas, PDF/resume generation, and AES-256-GCM connectors.",
-          details: [
+          "cat": "edge",
+          "tag": "Supabase · Deno 2",
+          "title": "64 Edge Function Dirs & 7 Connector Families",
+          "summary": "Serverless RPCs (64 function directories including decommissioned trigger-hatchet-workflow/) for billing, 4 AI personas, PDFs, and AES-256-GCM connectors.",
+          "details": [
             "Byte-identical w0m-api/deno.lock == supabase/functions/deno.lock enforced by deno_lock_parity_check.py",
             "GoTrue PKCE OAuth x3 (google, linkedin_oidc, github) + strict DMARC p=quarantine mail (Google Workspace + Resend)"
           ]
         },
         {
-          cat: "edge",
-          tag: "Cloudflare R2 + Mistral Scope",
-          title: "$0-Egress Engagement Vaults & Isolated Project AI",
-          summary: "Stores all Obsidian vaults, PDFs, and media in R2 while isolating per-project Mistral Free-Tier keys.",
-          details: [
-            "wom-engagement-vaults + wom-public-assets buckets + KV (SESSION, SETTINGS)",
-            "scripts/mistral_project_scope.py enforces allow_global_key_fallback = False for non-w0m projects"
+          "cat": "edge",
+          "tag": "Cloudflare R2 + Mistral Scope",
+          "title": "$0-Egress Engagement Vaults & Isolated Project AI",
+          "summary": "Stores all Obsidian vaults, PDFs, and media under engagements/eg-<slug> in R2 while isolating per-project Mistral Free-Tier keys.",
+          "details": [
+            "wom-engagement-vaults (engagements/eg-<slug>) + wom-public-assets buckets + KV (SESSION, SETTINGS)",
+            "scripts/mistral_project_scope.py disables global fallback for external client scopes while permitting scoped fallback for shared workspace runs"
           ]
         },
         {
-          cat: "rust",
-          tag: "w0m-cf · #![no_std] Rust WASM",
-          title: "w0m-wasm-utils (550 Bytes Raw / 389 Bytes Gzipped)",
-          summary: "Zero-allocator Rust 2024 wasm32-unknown-unknown micro-kernel embedded inside wom7func.",
-          details: [
+          "cat": "rust",
+          "tag": "w0m-cf · #![no_std] Rust WASM",
+          "title": "w0m-wasm-utils (550 Bytes Raw / 389 Bytes Gzipped)",
+          "summary": "Zero-allocator Rust 2024 wasm32-unknown-unknown micro-kernel embedded inside wom7func.",
+          "details": [
             "Exports fnv1a64 hashing, bounded Levenshtein edit distance, and token-overlap similarity scoring",
             "Stays orders of magnitude under the 300 KB gzipped edge WASM budget"
           ]
         },
         {
-          cat: "rust",
-          tag: "@k7 · 16 Cargo Packages",
-          title: "k7hub Super-TUI & 5-Flavour Git/LLM Browser",
-          summary: "11 top-level Rust crates (plus 5 k7c FinOps/Terraform subcrates) and wasm32-unknown-unknown git_browser.",
-          details: [
+          "cat": "rust",
+          "tag": "@k7 · 16 Cargo Packages",
+          "title": "k7hub Super-TUI & 5-Flavour Git/LLM Browser",
+          "summary": "11 top-level Rust crates (plus 5 k7c FinOps/Terraform subcrates), 8/10 @k7 crates on ratatui, and wasm32-unknown-unknown git_browser.",
+          "details": [
             "Top-level crates: k7hub, k7env, k7pwd, k7d, k7s, k7c (6 packages), k7llm, k7spec, k7sol, k7tg, k7kb",
             "5 GitProviderFlavour variants: GitHub, GitLab, HuggingFaceHub (u64 >4 GiB shards), ForgejoGitea, LlmAgentCheckpoint"
           ]
         },
         {
-          cat: "rust",
-          tag: "w0m-mlx · Rust Metal Server",
-          title: "wom7-mlx-rs (mlx-rs 0.33 + axum 0.7)",
-          summary: "Native Apple Silicon Metal tensor inference server on ports :1339/:1340.",
-          details: [
+          "cat": "rust",
+          "tag": "w0m-mlx · Rust Metal Server",
+          "title": "wom7-mlx-rs (mlx-rs 0.33 + axum 0.7)",
+          "summary": "Native Apple Silicon Metal tensor inference server on optional companion ports :1339/:1340.",
+          "details": [
             "Built on mlx-rs 0.33.0, tokio, axum 0.7, safetensors, and HuggingFace tokenizers",
-            "Paired with Python omlx 0.7.3 (:8888) and mlx-vlm 0.7.11 (:8080)"
+            "Paired with Python omlx 0.7.3 (:8888) and mlx-vlm 0.7.11 (:8080); legacy port :8008 retired"
           ]
         },
         {
-          cat: "ai",
-          tag: "Hybrid Vector KB · corpus.sqlite",
-          title: "SQLite FTS5 BM25 + 128-Dim Randomized SVD (RRF)",
-          summary: "Zero-API-cost semantic + lexical search across 2,300+ deduplicated canonical @wom documents and 21,000+ chunks.",
-          details: [
-            "Indexes root docs, .agents/reports, active w0m-web/docs, decisions, .tasks, openspec, LESSONS.md, ROADMAP.md",
-            "SHA-256 deduplication eliminates mirrored report twins; classify_source_boundary excludes client/personal files"
+          "cat": "ai",
+          "tag": "Hybrid Vector KB · corpus.sqlite",
+          "title": "SQLite FTS5 BM25 + 128-Dim Randomized SVD (RRF)",
+          "summary": "Zero-API-cost semantic + lexical search across ~2,000 curated, deduplicated canonical @wom documents (max_chars=1600).",
+          "details": [
+            "Indexes root docs, .agents/reports, active w0m-web/docs, decisions, .tasks, openspec (active + 0.75-weighted unique archive specs/designs), LESSONS.md, ROADMAP.md",
+            "SHA-256 deduplication removes mirrored report twins; policy-derived + hashed client boundaries exclude non-workspace files"
           ]
         },
         {
-          cat: "ai",
-          tag: "AST & Semantic Graphs",
-          title: "Graphify (92,477 Nodes) + Codegraph v1.6.2 + Serena",
-          summary: "Pre-built symbol call graphs, 136,105 semantic edges, D3 AST viewer (:8765), and .astro LSP support.",
-          details: [
+          "cat": "ai",
+          "tag": "AST & Semantic Graphs",
+          "title": "Graphify (92,477 Nodes) + Codegraph v1.6.2 + Serena",
+          "summary": "Pre-built symbol call graphs, 136,105 semantic edges, D3 AST viewer (:8765), and .astro LSP support.",
+          "details": [
             "codegraph sync refreshes per commit; just ask queries AST symbols + Vector KB + Graphify together",
             "Custom serena v1.7.0-w0m.1 fork adds native Astro language-server protocol support"
           ]
         },
         {
-          cat: "ai",
-          tag: "w0m-skills · 79 Registered Skills",
-          title: "Elephant-Goldfish (egm-*) & 3-Tier Dev Modes",
-          summary: "69 top-level skill directories (79 registry entries, 42 deployed) separating stateful builders from fresh-context reviewers.",
-          details: [
-            "Includes 10 w0m-sdlc-* gates, 7 Google egm-* skills, fact-checker, doubt-driven-development, socrates, torvalds, eli5, job-hunter",
+          "cat": "ai",
+          "tag": "w0m-skills · 79 Registered Skills",
+          "title": "Elephant-Goldfish (egm-*) & 3-Tier Dev Modes",
+          "summary": "69 top-level skill directories (79 registry entries, 42 deployed) separating stateful builders from fresh-context reviewers.",
+          "details": [
+            "Includes 10 sdlc gates, 7 Google egm-* skills, fact-checker, doubt-driven-development, socrates, torvalds, eli5, job-hunter",
             "scripts/dev_mode.py tunes execution across ultra (25-45s), balance (60-90s), and wise (8-15m)"
           ]
         },
         {
-          cat: "sec",
-          tag: "7-Dialect SDD Bridge",
-          title: "Multi-Dialect Spec Bootstrap & Anti-Slopsquatting",
-          summary: "First-class detection, UI selection, and scaffolding across 7 Spec-Driven Development ecosystems.",
-          details: [
+          "cat": "sec",
+          "tag": "7-Dialect SDD Bridge",
+          "title": "Multi-Dialect Spec Bootstrap & Anti-Slopsquatting",
+          "summary": "First-class detection, UI selection, and scaffolding across 7 Spec-Driven Development ecosystems.",
+          "details": [
             "Dialects: w0m-openspec, github-speckit (.specify/), open-gsd (.planning/), openspec, bmad (_bmad/), conductor, cc-sdd (.kiro/specs/)",
             "package_legitimacy_check.py blocks hallucinated/slopsquatted packages across all repos"
           ]
         },
         {
-          cat: "sec",
-          tag: "First-Place Security Gate",
-          title: "NVIDIA SkillSpector v2.12 + w0m-sec Air-Gapped Runner",
-          summary: "Simultaneous YARA + tree-sitter AST skill auditing, SAST, lockfile CVE scanning, and --network none containment.",
-          details: [
+          "cat": "sec",
+          "tag": "First-Place Security Gate",
+          "title": "NVIDIA SkillSpector v2.12 + w0m-sec Air-Gapped Runner",
+          "summary": "Simultaneous YARA + tree-sitter AST skill auditing, SAST, lockfile CVE scanning, and --network none containment.",
+          "details": [
             "Scans 71 unique skill roots (crit/high = 0, SC9 = 0) + 14 governed MCP servers (mcp_ratchet.py)",
             "gitleaks 8.30.1, osv-scanner 2.7.0 (6 pnpm lockfiles), semgrep 1.183.0, ast-grep 0.51.0, 17/17 w0m-sec pytest"
           ]
         },
         {
-          cat: "sec",
-          tag: "Infisical + Certified Release",
-          title: "71 Active Cloud Secrets, AES-256-GCM Backups & 18 Gates",
-          summary: "Zero .env files in repo; process-injected secrets, tree-set SHA-256 deploy certs, and calibrated deploy logs.",
-          details: [
+          "cat": "sec",
+          "tag": "Infisical + Certified Release",
+          "title": "71 Active Cloud Secrets, AES-256-GCM Backups & 16/18 Gates",
+          "summary": "Zero .env files in repo; process-injected secrets, tree-set SHA-256 deploy certs, and 16 (balance) / 18 (wise) wrap-up gates.",
+          "details": [
             "44 retired beta keys backed up via verified AES-256-GCM (0600) and pruned via --type=shared (115 -> 71)",
-            "377 registered suites in test-suites.json (Vitest 4.1, Playwright 1.61, Gauge 1.6, mypy 2.4.0, oxlint 1.74)"
+            "377 registered suites in test-suites.json (Vitest 4.1, Playwright 1.61, Gauge 1.6, mypy min 1.15.0 / host 2.4.0, oxlint 1.74)"
           ]
         },
         {
-          cat: "sec",
-          tag: "w0m-ext + w0m-pr/* Forks",
-          title: "Cross-Browser/iOS MV3 & 63 Governed Upstream Forks",
-          summary: "Desktop/iOS/Orca extensions plus 23 local w0m-pr/* checkouts and 48 cataloged AI-tool forks.",
-          details: [
+          "cat": "sec",
+          "tag": "w0m-ext + w0m-pr/* Forks",
+          "title": "Cross-Browser/iOS MV3 & 63 Governed Upstream Forks",
+          "summary": "Desktop/iOS/Orca extensions plus 23 local w0m-pr/* checkouts and 48 cataloged AI-tool forks.",
+          "details": [
             "scripts/w0m_prs.py enforces 6 gates (CONTRIBUTING, template, duplicate check, Fixes #, GPG -S, git merge-tree)",
             "Active forks include SkillSpector, orca, linuxontab, graphify, headroom, omlx, mlx-rs, mlx-vlm, virtual-fido"
           ]
         }
-      ];
+      ]
+    }
+  </script>
+  <script>
+    (function () {
+      const DATA = JSON.parse(document.getElementById("explainer-data").textContent);
+      const { LADDERS, NODES, FLOWS, CATALOG } = DATA;
 
       let currentAudience = "novice";
       let selectedNode = "n-web";
@@ -1704,27 +1712,51 @@
         });
       }
 
-      function renderFlowTabs() {
+      function renderFlowTabs(focusSelected) {
         const wrap = document.getElementById("flow-tabs");
+        const panel = document.getElementById("walkthrough-panel");
         wrap.innerHTML = "";
         FLOWS.forEach((flow, idx) => {
+          const isSelected = idx === currentFlowIdx;
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.className = "btn" + (idx === currentFlowIdx ? " active" : "");
+          btn.id = "flow-tab-" + flow.id;
+          btn.className = "btn" + (isSelected ? " active" : "");
           btn.setAttribute("role", "tab");
-          btn.setAttribute("aria-selected", idx === currentFlowIdx ? "true" : "false");
+          btn.setAttribute("aria-selected", isSelected ? "true" : "false");
+          btn.setAttribute("aria-controls", "walkthrough-panel");
+          btn.setAttribute("tabindex", isSelected ? "0" : "-1");
           btn.textContent = flow.label;
           btn.addEventListener("click", () => {
             currentFlowIdx = idx;
             currentStepIdx = 0;
-            renderFlowTabs();
-            renderWalkthrough(true);
+            renderFlowTabs(true);
+            renderWalkthrough(true, false);
+          });
+          btn.addEventListener("keydown", (ev) => {
+            let nextIdx = null;
+            if (ev.key === "ArrowRight") nextIdx = (idx + 1) % FLOWS.length;
+            else if (ev.key === "ArrowLeft") nextIdx = (idx - 1 + FLOWS.length) % FLOWS.length;
+            else if (ev.key === "Home") nextIdx = 0;
+            else if (ev.key === "End") nextIdx = FLOWS.length - 1;
+            if (nextIdx !== null) {
+              ev.preventDefault();
+              currentFlowIdx = nextIdx;
+              currentStepIdx = 0;
+              renderFlowTabs(true);
+              renderWalkthrough(true, false);
+            }
           });
           wrap.appendChild(btn);
         });
+        panel.setAttribute("aria-labelledby", "flow-tab-" + FLOWS[currentFlowIdx].id);
+        if (focusSelected) {
+          const activeBtn = document.getElementById("flow-tab-" + FLOWS[currentFlowIdx].id);
+          if (activeBtn) activeBtn.focus();
+        }
       }
 
-      function renderWalkthrough(syncTopology) {
+      function renderWalkthrough(syncTopology, focusStepIdx) {
         const flow = FLOWS[currentFlowIdx];
         const step = flow.steps[currentStepIdx];
         document.getElementById("walk-counter").textContent =
@@ -1746,10 +1778,14 @@
           }
           dot.addEventListener("click", () => {
             currentStepIdx = sIdx;
-            renderWalkthrough(true);
+            renderWalkthrough(true, sIdx);
           });
           dots.appendChild(dot);
         });
+
+        if (typeof focusStepIdx === "number" && dots.children[focusStepIdx]) {
+          dots.children[focusStepIdx].focus();
+        }
 
         if (syncTopology && step.nodes.length > 0) {
           selectedNode = step.nodes[0];
@@ -1805,6 +1841,10 @@
         });
 
         empty.hidden = shown > 0;
+        const statusEl = document.getElementById("catalog-status");
+        if (statusEl) {
+          statusEl.textContent = "Showing " + shown + " of " + CATALOG.length + " subsystems";
+        }
       }
 
       // Wire Audience Buttons
@@ -1818,7 +1858,7 @@
           });
           renderLadder();
           renderInspector();
-          renderWalkthrough(false);
+          renderWalkthrough(false, false);
         });
       });
 
@@ -1837,27 +1877,29 @@
         highlightTopology([], null);
       });
 
-      // Wire Step Controls & Arrow Keys
+      // Wire Step Controls & Arrow Keys (preserve modifier shortcuts and tablist navigation)
       document.getElementById("prev-step-btn").addEventListener("click", () => {
         const len = FLOWS[currentFlowIdx].steps.length;
         currentStepIdx = (currentStepIdx - 1 + len) % len;
-        renderWalkthrough(true);
+        renderWalkthrough(true, false);
       });
       document.getElementById("next-step-btn").addEventListener("click", () => {
         const len = FLOWS[currentFlowIdx].steps.length;
         currentStepIdx = (currentStepIdx + 1) % len;
-        renderWalkthrough(true);
+        renderWalkthrough(true, false);
       });
       document.addEventListener("keydown", (ev) => {
-        if (ev.target && (ev.target.tagName === "INPUT" || ev.target.tagName === "TEXTAREA")) return;
+        if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+        const t = ev.target;
+        if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || (t.closest && t.closest('[role="tablist"]')))) return;
         if (ev.key === "ArrowRight") {
           const len = FLOWS[currentFlowIdx].steps.length;
           currentStepIdx = (currentStepIdx + 1) % len;
-          renderWalkthrough(true);
+          renderWalkthrough(true, false);
         } else if (ev.key === "ArrowLeft") {
           const len = FLOWS[currentFlowIdx].steps.length;
           currentStepIdx = (currentStepIdx - 1 + len) % len;
-          renderWalkthrough(true);
+          renderWalkthrough(true, false);
         }
       });
 
@@ -1866,25 +1908,36 @@
       document.querySelectorAll("[data-cat]").forEach((btn) => {
         btn.addEventListener("click", () => {
           currentCat = btn.dataset.cat;
-          document.querySelectorAll("[data-cat]").forEach((b) => b.classList.toggle("active", b === btn));
+          document.querySelectorAll("[data-cat]").forEach((b) => {
+            const active = b === btn;
+            b.classList.toggle("active", active);
+            b.setAttribute("aria-pressed", active ? "true" : "false");
+          });
           renderCatalog();
         });
       });
 
-      // Wire Theme Toggle
+      // Sync Initial Theme with OS Preference & Wire Theme Toggle
       const themeBtn = document.getElementById("theme-toggle");
+      const htmlEl = document.documentElement;
+      const initialTheme = htmlEl.getAttribute("data-theme") ||
+        (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      htmlEl.setAttribute("data-theme", initialTheme);
+      themeBtn.textContent = "Theme: " + (initialTheme === "dark" ? "Dark" : "Light");
+      themeBtn.setAttribute("aria-pressed", initialTheme === "dark" ? "true" : "false");
+
       themeBtn.addEventListener("click", () => {
-        const html = document.documentElement;
-        const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        html.setAttribute("data-theme", next);
+        const next = htmlEl.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        htmlEl.setAttribute("data-theme", next);
         themeBtn.textContent = "Theme: " + (next === "dark" ? "Dark" : "Light");
+        themeBtn.setAttribute("aria-pressed", next === "dark" ? "true" : "false");
       });
 
       // Initial Render
       renderLadder();
       renderInspector();
-      renderFlowTabs();
-      renderWalkthrough(false);
+      renderFlowTabs(false);
+      renderWalkthrough(false, false);
       renderCatalog();
     })();
   </script>

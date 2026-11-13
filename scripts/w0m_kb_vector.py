@@ -61,24 +61,70 @@ DEFAULT_RECOVERY_DIR = ESTATE_ROOT / "w0m-web" / "docs" / "reports" / "mac-recov
 EMBED_DIM = 128
 MAX_VOCAB = 4096
 RRF_K = 60
+ARCHIVE_RRF_WEIGHT = 0.75
 
-CLIENT_MARKERS = (
-    "lahore",
-    "evercred",
-    "nexrizen",
-    "bridgeroad",
-    "artemio",
-    "openhome",
-    "dpoint",
-    "infatica",
-    "barterbackup",
-    "atos",
-    "clara",
-    "mallow",
-    "_proj/",
-    "client-projects/",
-    "obsidian_and_project_vaults/",
+CLIENT_PATH_PREFIXES = (
+    "/_proj/",
+    "/!proj/",
+    "/client-projects/",
+    "/obsidian_and_project_vaults/",
 )
+
+# SHA-256 hashes of legacy non-policy archive client tokens (T302: keep plaintext
+# client names out of tracked source files while blocking Mac backup leakage).
+LEGACY_CLIENT_TOKEN_SHA256 = frozenset(
+    {
+        "feb81ca45117d135c1f6d86f24454e7527f5a50eb5345b706d5a553b4d69975f",
+        "2dec202fa7f96c96a0d17d69d021fd89abc5d7ee171453584d63424a192be2bc",
+        "9148a0361d07975ad15c7b715ce6253a9750832824dd0b804b8e4a742abc93de",
+        "df3319f617aa755f4c674c86e7cf99d469fb7039bd8455ff4cf48acd4b3768cc",
+        "643c0883dc8d3d86764fcc0571aa6e364d15e0de320be1e93668fca6b0dabf0d",
+        "46ff0b8f24ecd60dcf6a931fec474dba499edea0edfbf0fe43b78c1f272f877b",
+        "7814459b3f23f455e4e9bea9c80508ef91609ef4f42818f1167836583bee3c6d",
+        "b3af2d2033225bb482d0acb0897ed7199d347be0921279dfbefc0fe9587b5582",
+        "f17f811abba1b66a61badeb196a76dc669b04b43f5b5004efeb1e1d84546c110",
+        "edcf27a66a5453a89e3b84305485a21b6e4ea57c590ff8392ab319801a8158da",
+    }
+)
+
+_POLICY_BOUNDARY_CACHE: dict[Path, tuple[int, tuple[frozenset[str], frozenset[str]]]] = {}
+
+
+def _load_policy_boundaries(root: Path = ESTATE_ROOT) -> tuple[frozenset[str], frozenset[str]]:
+    """Load `(client_tokens, self_product_tokens)` dynamically from `clients-policy.json`."""
+    policy_path = (root / "project" / "policies" / "clients-policy.json").resolve()
+    if not policy_path.is_file():
+        return (frozenset(), frozenset())
+
+    try:
+        mtime_ns = policy_path.stat().st_mtime_ns
+    except OSError:
+        mtime_ns = -1
+    cached = _POLICY_BOUNDARY_CACHE.get(policy_path)
+    if cached is not None and cached[0] == mtime_ns:
+        return cached[1]
+
+    client_tokens: set[str] = set()
+    self_product_tokens: set[str] = set()
+    try:
+        payload = json.loads(policy_path.read_text(encoding="utf-8"))
+        for item in payload.get("projects", []):
+            role = str(item.get("role", "")).strip().lower()
+            pid = str(item.get("id", "")).strip().lower()
+            p_root = str(item.get("root", "")).replace("\\", "/").lower()
+            if not pid or role == "w0m":
+                continue
+            if role == "self-managed" or "!proj/" in p_root or "_self/delivery/" in p_root:
+                client_tokens.add(pid)
+            else:
+                self_product_tokens.add(pid)
+    except Exception:
+        pass
+
+    result = (frozenset(client_tokens), frozenset(self_product_tokens))
+    _POLICY_BOUNDARY_CACHE[policy_path] = (mtime_ns, result)
+    return result
+
 
 PERSONAL_MARKERS = (
     "aleksei_cv",
@@ -94,10 +140,10 @@ PERSONAL_MARKERS = (
 
 SELF_PRODUCT_MARKERS = (
     "servicios777",
-    "1945/",
-    "personaje0/",
-    "orql_mvp/",
-    "k7tg/",
+    "1945",
+    "personaje0",
+    "orql_mvp",
+    "k7tg",
     "mantrabox",
     "birds-echo",
 )
@@ -111,6 +157,10 @@ SECRET_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
 )
 
 TOKEN_RE = re.compile(r"[a-z][a-z0-9_\-]{2,28}")
+WORD_TOKEN_RE = re.compile(r"[a-z0-9]+")
+KB_POLICY_CLIENT_RE = re.compile(r"^\s*kb_policy\s*:\s*['\"]?client['\"]?\s*$", re.M | re.I)
+KB_POLICY_PERSONAL_RE = re.compile(r"^\s*kb_policy\s*:\s*['\"]?personal['\"]?\s*$", re.M | re.I)
+OPENSPEC_ARCHIVE_SPEC_RE = re.compile(r"/openspec/changes/archive/[^/]+/specs/([^/]+)/spec\.md$")
 STOPWORDS = {
     "the", "and", "for", "with", "that", "this", "from", "into", "are", "was", "were",
     "have", "has", "had", "not", "but", "you", "all", "can", "her", "his", "one", "our",
@@ -129,22 +179,49 @@ STOPWORDS = {
 }
 
 
-def classify_source_boundary(path_str: str, text_sample: str = "") -> str:
+def classify_source_boundary(
+    path_str: str,
+    text_sample: str = "",
+    *,
+    is_untrusted_archive: bool = False,
+    root: Path = ESTATE_ROOT,
+) -> str:
     """Classify a document or archive member into one of the 4 governance tiers."""
     lower_path = path_str.lower().replace("\\", "/")
-    lower_head = text_sample[:1000].lower()
+    norm_path = f"/{lower_path.lstrip('/')}"
+    segments = {seg for seg in lower_path.split("/") if seg}
+    path_tokens = set(WORD_TOKEN_RE.findall(lower_path))
+    path_hashes = {hashlib.sha256(tok.encode("utf-8")).hexdigest() for tok in path_tokens}
 
-    if any(m in lower_path for m in PERSONAL_MARKERS):
+    frontmatter_head = "\n".join(text_sample.splitlines()[:30])
+    if KB_POLICY_PERSONAL_RE.search(frontmatter_head):
         return "personal_private"
-    if any(m in lower_path for m in CLIENT_MARKERS):
+    if any(m in lower_path for m in PERSONAL_MARKERS if m not in ("private.md", "private.pdf")):
+        return "personal_private"
+    if "private.md" in segments or "private.pdf" in segments:
+        return "personal_private"
+
+    if KB_POLICY_CLIENT_RE.search(frontmatter_head):
         return "client_confidential"
-    # Check if an archive delivery report is for client artemio
-    if "delivery_reports_2026-09" in lower_path and ("artemio" in lower_path or "artemio" in lower_head or "dish" in lower_path):
+    if any(prefix in norm_path for prefix in CLIENT_PATH_PREFIXES):
         return "client_confidential"
-    if "lahore" in lower_head or "evercred" in lower_head or "nexrizen" in lower_head:
+
+    client_tokens, self_product_tokens = _load_policy_boundaries(root)
+    if (path_tokens & client_tokens) or (path_hashes & LEGACY_CLIENT_TOKEN_SHA256):
+        return "client_confidential"
+
+    # Untrusted Mac backup archive members additionally undergo 1 KB body token screening.
+    if is_untrusted_archive:
+        lower_head = text_sample[:1000].lower()
         if "kb-content-policy" not in lower_head and "excluded from public kb" not in lower_head:
-            return "client_confidential"
-    if any(m in lower_path for m in SELF_PRODUCT_MARKERS):
+            head_tokens = set(WORD_TOKEN_RE.findall(lower_head))
+            head_hashes = {hashlib.sha256(tok.encode("utf-8")).hexdigest() for tok in head_tokens}
+            if (head_tokens & client_tokens) or (head_hashes & LEGACY_CLIENT_TOKEN_SHA256):
+                return "client_confidential"
+
+    if (path_tokens & self_product_tokens) or any(
+        m in segments or m in path_tokens for m in SELF_PRODUCT_MARKERS
+    ):
         return "self_product"
     return "w0m_canonical"
 
@@ -438,9 +515,9 @@ def rescue_mac_backup_research(
     Enforces `kb-content-policy` (`T302`):
       - `w0m_canonical` and `wom7mlx` benchmark/architecture docs not already in `_in/ledger.json`
         are scrubbed for secrets and written to `out_dir`.
-      - `client_confidential` (`Lahore_*`, `Evercred`, `nexrizen`, `artemio` delivery reports) and
-        `personal_private` (`Aleksei_CV_*`, Apple Notes) are NEVER written to `out_dir`; only their
-        redacted metadata & headings are recorded in `catalog_path`.
+      - `client_confidential` (policy-declared client scopes, `_proj/*`, hashed legacy tokens)
+        and `personal_private` (CVs, Apple Notes, local exports) are NEVER written to `out_dir`;
+        only their redacted metadata & headings are recorded in `catalog_path`.
     """
     if ledger_path is None:
         ledger_path = ESTATE_ROOT / "_in" / "ledger.json"
@@ -478,7 +555,7 @@ def rescue_mac_backup_research(
                 if secret_kinds:
                     redacted_secret_hits += len(secret_kinds)
 
-                boundary = classify_source_boundary(m_name, scrubbed)
+                boundary = classify_source_boundary(m_name, scrubbed, is_untrusted_archive=True)
                 sha256_hex = hashlib.sha256(raw_bytes).hexdigest()
                 headings = extract_headings(scrubbed, limit=6)
                 title = extract_title(scrubbed, Path(m_name).stem)
@@ -546,7 +623,7 @@ def rescue_mac_backup_research(
     index_lines = [
         "# Mac Backup Rescued `@wom` Research & Benchmark Corpus (T669)",
         "",
-        "> **Governance (`T109` · `T302` · `AgDR-0055`):** Only `@wom`-scoped (`w0m_canonical`) architectural proposals, audits, and MLX benchmark matrices that were absent from `_in/ledger.json` are rescued here. Client-scoped (`_proj/*`, `Lahore_*`, `Evercred`, `nexrizen`, `artemio`) and personal (`Aleksei_CV_*`, Apple Notes) artifacts are strictly excluded and cataloged metadata-only in `~/.w0m/knowledge-index/mac-backup-catalog.json`.",
+        "> **Governance (`T109` · `T302` · `AgDR-0055`):** Only `@wom`-scoped (`w0m_canonical`) architectural proposals, audits, and MLX benchmark matrices that were absent from `_in/ledger.json` are rescued here. Client-scoped (`_proj/*`, policy-declared clients, and hashed legacy tokens) and personal (CVs, Apple Notes) artifacts are strictly excluded and cataloged metadata-only in `~/.w0m/knowledge-index/mac-backup-catalog.json`.",
         "",
         "| File | Title | Source Archive Member | SHA-256 | Size |",
         "| :--- | :--- | :--- | :--- | ---: |",
@@ -594,20 +671,21 @@ def collect_estate_documents(root: Path = ESTATE_ROOT) -> list[dict[str, Any]]:
         ("repo_readme", root / "w0m-clips" / "README.md"),
     ]
 
+    resolved_root = root.resolve()
     seen_paths: set[Path] = set()
     seen_sha256: set[str] = set()
+    blocked_sha256: set[str] = set()
     docs: list[dict[str, Any]] = []
 
     def _add_file(category: str, file_path: Path) -> None:
         resolved = file_path.resolve()
         if resolved in seen_paths or not resolved.is_file():
             return
+        if not resolved.is_relative_to(resolved_root):
+            return
         if resolved.suffix.lower() not in (".md", ".mmd"):
             return
-        try:
-            rel_path = str(resolved.relative_to(root.resolve())).replace("\\", "/")
-        except ValueError:
-            rel_path = str(resolved)
+        rel_path = str(resolved.relative_to(resolved_root)).replace("\\", "/")
         # Skip archived tickets, archived web docs, and raw session transcripts
         norm_rel = f"/{rel_path}"
         if (
@@ -616,11 +694,29 @@ def collect_estate_documents(root: Path = ESTATE_ROOT) -> list[dict[str, Any]]:
             or "/w0m-web/docs/sessions/" in norm_rel
         ):
             return
-        raw_text = resolved.read_text(encoding="utf-8", errors="replace")
-        boundary = classify_source_boundary(rel_path, raw_text)
-        if boundary in ("client_confidential", "personal_private"):
+
+        effective_category = category
+        if category == "openspec" and "/openspec/changes/archive/" in norm_rel:
+            if resolved.name.lower() == "tasks.md":
+                return
+            m_spec = OPENSPEC_ARCHIVE_SPEC_RE.search(norm_rel)
+            if m_spec:
+                cap_name = m_spec.group(1)
+                if (resolved_root / "w0m-web" / "openspec" / "specs" / cap_name / "spec.md").is_file():
+                    return
+            effective_category = "openspec_archive"
+
+        raw_bytes = resolved.read_bytes()
+        sha256_hex = hashlib.sha256(raw_bytes).hexdigest()
+        if sha256_hex in blocked_sha256:
+            seen_paths.add(resolved)
             return
-        sha256_hex = hashlib.sha256(raw_text.encode("utf-8", errors="replace")).hexdigest()
+        raw_text = raw_bytes.decode("utf-8", errors="replace")
+        boundary = classify_source_boundary(rel_path, raw_text, root=resolved_root)
+        if boundary in ("client_confidential", "personal_private"):
+            blocked_sha256.add(sha256_hex)
+            seen_paths.add(resolved)
+            return
         # Deduplicate byte-identical mirrored files (e.g. .agents/reports/* -> w0m-web/docs/reports/*)
         if sha256_hex in seen_sha256:
             seen_paths.add(resolved)
@@ -632,11 +728,11 @@ def collect_estate_documents(root: Path = ESTATE_ROOT) -> list[dict[str, Any]]:
         docs.append(
             {
                 "rel_path": rel_path,
-                "category": category,
+                "category": effective_category,
                 "boundary": boundary,
                 "title": title,
                 "sha256": sha256_hex,
-                "size_bytes": len(raw_text.encode("utf-8", errors="replace")),
+                "size_bytes": len(raw_bytes),
                 "text": scrubbed_text,
             }
         )
@@ -645,10 +741,10 @@ def collect_estate_documents(root: Path = ESTATE_ROOT) -> list[dict[str, Any]]:
         if fpath.is_file():
             _add_file(cat, fpath)
 
-    # Ensure more specific directories (`mac_rescued`, `web_report`, `decision`, etc.) run before parent dirs
+    # Canonical `.agents/reports` runs BEFORE `mac_rescued`/`web_report` so mirrors resolve to canonical path first.
     ordered_sources = [
-        ("mac_rescued", root / "w0m-web" / "docs" / "reports" / "mac-recovery"),
         ("agent_report", root / ".agents" / "reports"),
+        ("mac_rescued", root / "w0m-web" / "docs" / "reports" / "mac-recovery"),
         ("web_report", root / "w0m-web" / "docs" / "reports"),
         ("web_research", root / "w0m-web" / "docs" / "research"),
         ("web_design", root / "w0m-web" / "docs" / "design"),
@@ -674,6 +770,7 @@ def build_hybrid_index(
     embed_dim: int = EMBED_DIM,
     n_clusters: int = 12,
     show_progress: bool = False,
+    ticket: str = "T736",
 ) -> dict[str, Any]:
     """Build the SQLite FTS5 BM25 + 128-dim dense SVD vector index and semantic clusters."""
     t0 = time.monotonic()
@@ -864,7 +961,7 @@ def build_hybrid_index(
         cat_counts = dict(Counter(d["category"] for d in docs))
         meta_rows = [
             ("built_at", datetime.now(timezone.utc).isoformat()),
-            ("ticket", "T669"),
+            ("ticket", ticket),
             ("doc_count", str(len(docs))),
             ("chunk_count", str(len(all_chunks))),
             ("embed_dim", str(actual_dim)),
@@ -898,10 +995,14 @@ def search_hybrid_index(
     top_k: int = 10,
     mode: str = "hybrid",
     category: str | None = None,
+    include_archive: bool = True,
+    max_chunks_per_doc: int = 2,
 ) -> list[dict[str, Any]]:
     """Run hybrid BM25 + dense cosine similarity search with Reciprocal Rank Fusion (RRF)."""
     if not db_path.is_file():
         raise FileNotFoundError(f"Knowledge index database not found at {db_path}; run `just kb-index` first.")
+    if not include_archive and category == "openspec_archive":
+        return []
 
     conn = sqlite3.connect(str(db_path))
     try:
@@ -927,6 +1028,8 @@ def search_hybrid_index(
             if category:
                 sql += " AND category = ?"
                 params.append(category)
+            elif not include_archive:
+                sql += " AND category != 'openspec_archive'"
             sql += " ORDER BY score ASC LIMIT 100"
             for rank_idx, (chunk_id, raw_bm25) in enumerate(conn.execute(sql, params).fetchall(), 1):
                 bm25_ranks[int(chunk_id)] = rank_idx
@@ -943,6 +1046,10 @@ def search_hybrid_index(
                         "SELECT chunk_id, embedding FROM chunks WHERE category = ?",
                         (category,),
                     ).fetchall()
+                elif not include_archive:
+                    rows = conn.execute(
+                        "SELECT chunk_id, embedding FROM chunks WHERE category != 'openspec_archive'"
+                    ).fetchall()
                 else:
                     rows = conn.execute("SELECT chunk_id, embedding FROM chunks").fetchall()
                 if rows:
@@ -957,10 +1064,28 @@ def search_hybrid_index(
                             vec_ranks[cid] = rank_idx
                             vec_scores[cid] = round(sim_val, 4)
 
-        # 3. Combine via Reciprocal Rank Fusion (RRF)
-        candidate_ids = set(bm25_ranks.keys()) | set(vec_ranks.keys())
-        scored_candidates: list[tuple[float, int]] = []
+        # 3. Combine via Reciprocal Rank Fusion (RRF), apply archive down-weight & per-doc cap
+        candidate_ids = sorted(set(bm25_ranks.keys()) | set(vec_ranks.keys()))
+        if not candidate_ids:
+            return []
+
+        placeholders = ",".join("?" for _ in candidate_ids)
+        chunk_rows = {
+            int(r[0]): r
+            for r in conn.execute(
+                f"SELECT chunk_id, rel_path, category, title, heading, content FROM chunks WHERE chunk_id IN ({placeholders})",
+                candidate_ids,
+            ).fetchall()
+        }
+
+        scored_candidates: list[tuple[float, str, int]] = []
         for cid in candidate_ids:
+            row = chunk_rows.get(cid)
+            if not row:
+                continue
+            _, rel_path, cat, _, _, _ = row
+            if not include_archive and cat == "openspec_archive":
+                continue
             if mode == "bm25":
                 if cid not in bm25_ranks:
                     continue
@@ -973,28 +1098,23 @@ def search_hybrid_index(
                 r_bm25 = 1.0 / (RRF_K + bm25_ranks[cid]) if cid in bm25_ranks else 0.0
                 r_vec = 1.0 / (RRF_K + vec_ranks[cid]) if cid in vec_ranks else 0.0
                 rrf = r_bm25 + r_vec
-            scored_candidates.append((rrf, cid))
+            if cat == "openspec_archive" and category != "openspec_archive":
+                rrf *= ARCHIVE_RRF_WEIGHT
+            scored_candidates.append((rrf, rel_path, cid))
 
-        scored_candidates.sort(key=lambda x: x[0], reverse=True)
-        top_cids = [cid for _, cid in scored_candidates[:top_k]]
-        if not top_cids:
-            return []
+        scored_candidates.sort(key=lambda x: (-x[0], x[1], x[2]))
 
-        placeholders = ",".join("?" for _ in top_cids)
-        chunk_rows = {
-            int(r[0]): r
-            for r in conn.execute(
-                f"SELECT chunk_id, rel_path, category, title, heading, content FROM chunks WHERE chunk_id IN ({placeholders})",
-                top_cids,
-            ).fetchall()
-        }
-
+        cap = max_chunks_per_doc if (top_k >= 3 and max_chunks_per_doc > 0) else 0
+        doc_counts: dict[str, int] = {}
         results: list[dict[str, Any]] = []
-        for rrf_score, cid in scored_candidates[:top_k]:
+        for rrf_score, rel_path, cid in scored_candidates:
+            if cap and doc_counts.get(rel_path, 0) >= cap:
+                continue
             row = chunk_rows.get(cid)
             if not row:
                 continue
             _, rel_path, cat, title, heading, content = row
+            doc_counts[rel_path] = doc_counts.get(rel_path, 0) + 1
             snippet = " ".join(content.split())[:260]
             results.append(
                 {
@@ -1009,6 +1129,8 @@ def search_hybrid_index(
                     "snippet": snippet,
                 }
             )
+            if len(results) >= top_k:
+                break
         return results
     finally:
         conn.close()
@@ -1086,6 +1208,7 @@ def main(argv: list[str] | None = None) -> int:
     p_search.add_argument("--top-k", type=int, default=10)
     p_search.add_argument("--mode", choices=("hybrid", "bm25", "vector"), default="hybrid")
     p_search.add_argument("--category", type=str, default=None)
+    p_search.add_argument("--no-archive", action="store_true", help="Exclude openspec_archive hits")
     p_search.add_argument("--json", action="store_true")
 
     p_clusters = sub.add_parser("clusters", help="Show semantic roadmap topic clusters")
@@ -1136,6 +1259,7 @@ def main(argv: list[str] | None = None) -> int:
             top_k=args.top_k,
             mode=args.mode,
             category=args.category,
+            include_archive=not bool(args.no_archive),
         )
         if args.json:
             print(json.dumps(hits, indent=2))

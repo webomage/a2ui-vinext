@@ -38,7 +38,7 @@
     "eli5": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.10.21-1792642959"
+      "observed_version": "2026.11.13-1794579916"
     },
     "fact-checker": {
       "provider": "w0m-native",

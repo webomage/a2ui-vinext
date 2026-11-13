@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-11-12T20:00:29.839Z",
+  "generatedAt": "2026-11-13T14:25:17.769Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -183,7 +183,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/eli5",
-      "integrity": "sha256-471ce694d7750fee9c2eca2895d422eea0e301fd859746aeb3bc0750267ce55c"
+      "integrity": "sha256-7d5d1858d8e0ca08d9e5a2e88aae8402d47a613face3e5976ac221437de30bd8"
     },
     "mmd-validate": {
       "provider": "w0m-native",

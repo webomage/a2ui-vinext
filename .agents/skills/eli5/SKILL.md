@@ -2,7 +2,7 @@
 name: eli5
 description: Explain complex technical concepts, architectures, and workflows through progressive audience-adaptive simplification (5-year-old, junior developer, product manager, executive) and self-contained interactive visual HTML explainers with SVG diagrams, guided walkthroughs, and click-to-reveal details. Trigger when asked to "ELI5", "explain like I'm 5", "make this simple", or build a visual architecture explainer.
 metadata:
-  version: "2026.10.21-1792642959"
+  version: "2026.11.13-1794579916"
 ---
 
 # ELI5 — Progressive Simplification & Interactive Visual Explainer
@@ -21,8 +21,8 @@ Trigger this skill when the user asks to:
 ## Boundary with Design System & Production UI (`[[T183]]`)
 
 > **Strict Separation of Surfaces (`[[T183]]`):**
-> `eli5`'s standalone HTML output and self-contained CSS palettes apply **exclusively** to throwaway explanatory artifacts (such as `/tmp/eli5-*.html` or scratch architectural walkthroughs).
-> - **Never** use `eli5` ad-hoc HTML, inline styles, or standalone color palettes inside production application routes, `.astro` pages, `.svelte` components, or shared UI libraries.
+> `eli5`'s standalone HTML output and self-contained CSS palettes apply **exclusively** to throwaway explanatory artifacts (such as `/tmp/eli5-*.html` or scratch architectural walkthroughs) and designated standalone visual documentation folders (`docs/visuals/`).
+> - **Never** use `eli5` ad-hoc HTML, inline styles, or standalone color palettes inside production application routes (`apps/*`), `.astro` pages, `.svelte` components, shared UI libraries (`packages/ui/*`), or public documentation walkthrough hubs (`docs/walkthroughs/`).
 > - Production interfaces and control-plane views are strictly governed by the canonical Design System (`@webomage/ui` in `packages/ui`, `[[T183]]`) and must use semantic CSS custom properties (`var(--...)`) and Design System primitives (`Button`, `Input`, `Select`, `Badge`, `Card`, `PageHeader`).
 > - Complementarity with `feynman`: Use `feynman` to interrogate a convoluted bug or expose hidden gaps in your own understanding via the four-step Feynman Technique; use `eli5` to **communicate** a verified architecture or concept outward through calibrated prose ladders or interactive visual HTML explainers.
 

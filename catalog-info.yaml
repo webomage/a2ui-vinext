@@ -1056,7 +1056,7 @@ metadata:
   title: 'Skill: eli5'
   description: Governed agent skill `eli5` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.10.21-1792642959
+    w0m.dev/skill-observed-version: 2026.11.13-1794579916
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
