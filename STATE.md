@@ -44,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t735-tech-kb-visual-explainer` | 0 | **n/a — NO UPSTREAM** | `9a33495dd` |
-| `w0m-api` | `agent/t735-tech-kb-visual-explainer` | 0 | **n/a — NO UPSTREAM** | `1f4f9c1` |
-| `w0m-cf` | `agent/t735-tech-kb-visual-explainer` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
-| `w0m-skills` | `agent/t735-tech-kb-visual-explainer` | 0 | **n/a — NO UPSTREAM** | `99d2200` |
-| `w0m-ext` | `agent/t735-tech-kb-visual-explainer` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
-| `w0m-sec` | `agent/t735-tech-kb-visual-explainer` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/t735-tech-kb-visual-explainer` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t736-kb-explainer-reconcile` | 0 | **n/a — NO UPSTREAM** | `0fbfea815` |
+| `w0m-api` | `agent/t736-kb-explainer-reconcile` | 0 | **n/a — NO UPSTREAM** | `b32b611` |
+| `w0m-cf` | `agent/t736-kb-explainer-reconcile` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
+| `w0m-skills` | `agent/t736-kb-explainer-reconcile` | 0 | **n/a — NO UPSTREAM** | `ae7ad42` |
+| `w0m-ext` | `agent/t736-kb-explainer-reconcile` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
+| `w0m-sec` | `agent/t736-kb-explainer-reconcile` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/t736-kb-explainer-reconcile` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 735 TASKS.md rows · 361/735 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 736 TASKS.md rows · 361/736 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T719","T17"],"repos":{"w0m-api":{"branch":"agent/t735-tech-kb-visual-explainer","dirty":0,"has_upstream":true,"head":"1f4f9c1","unpushed":null},"w0m-cf":{"branch":"agent/t735-tech-kb-visual-explainer","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t735-tech-kb-visual-explainer","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t735-tech-kb-visual-explainer","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t735-tech-kb-visual-explainer","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t735-tech-kb-visual-explainer","dirty":0,"has_upstream":true,"head":"99d2200","unpushed":null},"w0m-web":{"branch":"agent/t735-tech-kb-visual-explainer","dirty":0,"has_upstream":true,"head":"9a33495dd","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":735,"specced":361,"specced_open":2,"total":735,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T719","T17"],"repos":{"w0m-api":{"branch":"agent/t736-kb-explainer-reconcile","dirty":0,"has_upstream":true,"head":"b32b611","unpushed":null},"w0m-cf":{"branch":"agent/t736-kb-explainer-reconcile","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t736-kb-explainer-reconcile","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t736-kb-explainer-reconcile","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t736-kb-explainer-reconcile","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t736-kb-explainer-reconcile","dirty":0,"has_upstream":true,"head":"ae7ad42","unpushed":null},"w0m-web":{"branch":"agent/t736-kb-explainer-reconcile","dirty":0,"has_upstream":true,"head":"0fbfea815","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":736,"specced":361,"specced_open":2,"total":736,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,9 +115,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (1):
+#### Completed today (2):
 
 - **T735** — Deep Adversarial Review of Estate Tech Docs, Full Hybrid Vector KB Indexing, and Self-Contained Interactive Visual Architecture Explainer ((agy:t735-tech-kb-visual-explainer): Completed 3-cycle adversarial review (PASS from 93915c6b-7d7c-4a7a-bc5c-7a401de44491 with 0 remaining findings across 39 reconciled items), published canonical docs/TECH-LANDSCAPE.md + reconciled docs/ARCHITECTURE.md and w0m-web/docs/{ARCHITECTURE,00-MOC-ARCHITECTURE,ECOSYSTEM}.md + .agents/reports/t735-deep-tech-review-and-kb-verification.md (mirrored to w0m-web/docs/reports/), expanded scripts/w0m_kb_vector.py with active w0m-web/docs/ (web_doc, skipping all archive/ & sessions/), AGENTS.md/CLAUDE.md, all 9 member-repo README.mds, and seen_sha256 mirror deduplication (7/7 kb-vector-test, mypy 0 errors, corpus.sqlite rebuilt and verified across hybrid/vector/bm25), and shipped self-contained docs/visuals/w0m-tech-landscape-explainer.html + w0m-web/docs/walkthroughs/w0m-tech-landscape-explainer.html + just tech-explainer (just layout-check 0 unclassified, just mmd-validate 8/8 diagrams valid). Lessons: none (existing T183, T669, and T734 rules applied).)
+- **T736** — Remediate Cross-Model Audit Findings across Hybrid Vector KB, Visual Architecture Explainer, and Canonical Tech Docs ((agy:t736-kb-explainer-reconcile): Completed AC1–AC3, re-verified after fresh research subagent (8ea912f1-c63a-4522-9c2b-d1ecea25ff91) flagged .svelte rune/legacy breakdown (206 direct runes + 8 rune-free wrappers + 6 legacy export let files). All gates green (just kb-vector-test 8+2+5, mypy 0 issues, just tech-explainer check, just mmd-validate 528/2702, just layout-check 11207 files, just emoji-check, just reports-ticket-check 146/0, just ui-ticket-leak-check 503/0, just suites-drift 377/0). Lesson disposition: w0m_kb_vector client-policy derivation & tech_explainer_check script boundary already codified mechanically in code/tests; no separate LESSONS.md entry required.)
 
 ## 3. Other open threads (in TASKS.md)
 
