@@ -573,6 +573,17 @@ Node 25/26 defines an experimental `globalThis.localStorage` getter that returns
 ⇒ **In Vitest component tests that exercise `window.localStorage`, define a deterministic in-memory `Storage` stub via `Object.defineProperty(window, "localStorage", ...)` in `beforeEach` rather than relying on the ambient Node/jsdom global.**
 ⭐ **The tell:** Node printing `Warning: `--localstorage-file` was not provided` followed by `window.localStorage.getItem/setItem/clear is not a function` in a Vitest `jsdom` suite.
 
+### GATE ROOT BROWSER BARRELS TRANSITIVELY AGAINST `node:*` AND CALIBRATE `deploy_logged.py` WHENEVER ADDING DEPLOY GATES
+**2026-11-12, T734. Bit twice (after T666 on `linkedin-manual-intake.ts`/`@wom/kyc` and T523 on Gauge `0 failed`).**
+
+Production release `2026.11.12-1794538248` exited `0` (`smoke-live` `3/3` green, `browser_errors: 0`), yet `deploy-2026.11.12-1794538248.audit.json` flagged two advisory rises (`build_warnings: 0 -> 2` and `other_trouble: 0 -> 5`):
+1. `T666` had added a single-file `node:*` check on `linkedin-manual-intake.ts`, leaving `packages/lib/src/ai/prompt-workflow-library.ts` (`import { createHash } from "node:crypto"`) reachable from `@webomage/lib`'s root barrel (`packages/lib/src/index.ts`). As soon as browser Svelte islands (`FeatureVotingBoard.svelte`, `TodoWorkspace.svelte`) imported `readJsonSafe` from `@webomage/lib` (`T725`/`T727`), Rolldown emitted `[WARN] [vite] [plugin rolldown:vite-resolve] Module "node:crypto" has been externalized for browser compatibility` in both `apps/me` and `apps/cp` before tree-shaking it out.
+2. `T726` wired `just check-guardrails` into `_deploy-all-chain` without checking its clean-pass stdout against `scripts/deploy_logged.py` (`TROUBLE`). `osv-scanner` printed `Filtered 19 / 2 / 2 / 9 vulnerabilities from output` (`.osv-scanner.toml` suppression counts right before `No issues found`) and `ast-grep` printed `[ast-grep] Checked 3 rules (...) -> 0 finding(s) (0 error, 0 warning)` — matching `vulnerab\w*`, `error`, and `warning` by word shape despite zero findings.
+
+⇒ **Gate every browser-importable workspace barrel (`packages/lib/src/index.ts`) via a transitive relative-import graph test (`browser-barrel-node-free.test.ts`, using pure isomorphic primitives for synchronous browser+Worker digests), and whenever wiring a new CLI gate into `_deploy-all-chain`, verify its zero-finding stdout against `audit_transcript()` in `scripts/deploy_logged.py` (`rx_harmless_trouble`) with paired green (zero-finding) and red (non-zero finding) probes in `scripts/tests/test_deploy_logged.py`.**
+⭐ **The tell:** Adding a single-file `not.toMatch(/node:/)` assertion instead of walking the barrel's transitive graph, `[WARN] [vite] Module "node:..." has been externalized for browser compatibility` appearing after a Svelte island imports a pure helper from `@webomage/lib`, or `deploy-audit-latest.json` reporting `other_trouble` rises on lines reading `0 error, 0 warning` or `Filtered N vulnerabilities from output`.
+⚠️ Anchor `rx_harmless_trouble` patterns strictly to zero-finding / suppression-count lines (`-> 0 finding(s) (0 error, 0 warning)`, `^Filtered \d+ vulnerabilit(?:y|ies) from output$`) so real `osv-scanner` (`Total N package(s) affected...`) and `ast-grep` (`-> 1 finding(s)`) failures continue surfacing in `other_trouble`.
+
 
 ## 3. Deploys and platforms
 

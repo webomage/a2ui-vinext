@@ -11,28 +11,28 @@ The `@wom` workspace root orchestrates the first-party estate repositories along
 | Repository / Surface | Primary Stack | Role & Live Runtime Boundary |
 |---|---|---|
 | **`@wom` (root)** | Python 3.12+ · `just` · Git | Estate control plane, `.tasks/T##.md` tracker, `STATE.md`, `LESSONS.md`, `scripts/session_complete.py`, `scripts/deploy_cert.py`, `scripts/mistral_project_scope.py`, `scripts/w0m_prs.py` |
-| **`w0m-web`** | Astro 6 SSR · Svelte 5 · Tailwind | 5 Cloudflare Workers web apps (`web`, `cp`, `me`, `join`, `job`), `@webomage/ui` design system (`25` canonical primitives), OpenSpec specs, and SDLC gates |
-| **`w0m-api`** | Supabase (Postgres 15 + Deno) · Hono | 115+ SQL migrations, 4-axis RBAC (`public.wom_can`), 40+ Supabase Edge Functions, Hono API worker (`wom7api`), and 19 Cloudflare Workflows |
-| **`w0m-cf`** | Cloudflare Workers · Rust/WASM | Account-level cron triggers (`5/5` free-tier crons), queues, `/ai/chat` & `/ai/embed` Workers AI + Mistral Free-Tier proxy (`wom7func`) |
-| **`w0m-ext`** | Chrome MV3 · TypeScript · WebMCP | Webomage browser extensions (Job & Lead Clipper, Obsidian Vault Sync, WebMCP `navigator.modelContext` bridge) |
-| **`w0m-sec`** | Python · Rust (`@k7`) · Nuclei | 4-tier security audit probes, RLS/RBAC verifiers, and cloud posture scanners |
-| **`w0m-skills`** | Agent Skill Spec v1.0 · Python | Canonical `SKILL.md` registry (`w0m-skills/skills-registry.json`) and portable `w0m` CLI (`w0m_portable_cli.py`) |
-| **`w0m-mlx/w0m-mlx`** | Apple MLX · Python · Rust | Local Apple Silicon inference (`mlx-community/gemma-4-26b-a4b-it-4bit`) and `oMLX`/`headroom` context compression |
-| **`@k7` (`k7hub` + 9 crates)** | Rust · `ratatui` · `crossterm` · `tokio` | Unified `@k7` Super-TUI (`k7`) + 9 standalone/plugin modules (`k7env`, `k7pwd`, `k7d`, `k7s`, `k7c`, `k7llm`, `k7spec`, `k7sol`, `k7tg`) |
-| **`w0m-pr/*`** | Git Forks (`github.com/webomage/*`) | First-class upstream forks including `orca` (`stablyai/orca`), `linuxontab` (`kilian-ai/linuxontab`), `agent-client-protocol`, `headroom`, `omlx`, `tart` |
+| **`w0m-web`** | Astro 7.3 SSR · Svelte 5 · Tailwind 4 | 4 Cloudflare Workers web apps (`web`, `cp`, `me`, `demo`; `AgDR-0056` retired `join` & `job` into `me`), 9 `packages/*` libraries, `@webomage/ui` design system (`25` canonical primitives), OpenSpec specs, and SDLC gates |
+| **`w0m-api`** | Supabase (Postgres 15 + Deno 2) · Hono | 393 SQL migrations, 4-axis RBAC (`public.wom_can`), 64 Supabase Edge Functions (`--frozen=true`), Hono `>=4.13.16` API worker (`wom7api`), `ChatMemoryDO` SQLite DO, and 19 Cloudflare Workflows |
+| **`w0m-cf`** | Cloudflare Workers · Hono · Rust/WASM | Account-level cron triggers (`5/5` free-tier crons), `POST /mcp` Streamable HTTP MCP server, `#![no_std]` `w0m-wasm-utils` (`550 B`), `/ai/chat` & `/ai/embed` Workers AI + Mistral Free-Tier proxy (`wom7func`) |
+| **`w0m-ext`** | Cross-Browser MV3 · TypeScript · WebMCP | Desktop & iOS Safari/Orion MV3 extensions (`Webomage Agent`, 17-platform `specEngine`, Orca loader `T710`), `obsidian-w0m` R2 delta sync plugin, WebSocket/WebMCP bridge |
+| **`w0m-sec`** | Python · Docker `--network none` · Pytest | Air-gapped containment runner, RFC 9116 `security.txt` audit, and `AgDR-0047` Touch-ID-gated bug-bounty governance |
+| **`w0m-skills`** | Agent Skill Spec v1.0 · TypeScript (`tsx`) | 69 canonical skills (`79` registry entries, `71` `NVIDIA/SkillSpector v2.12.0`-audited units), 7-dialect SDD (`GENERIC-SDLC-SET.md`), and Elephant-Goldfish (`egm-*`) workflows |
+| **`w0m-mlx/w0m-mlx`** | Apple MLX (`mlx-rs` 0.33 + `omlx` 0.7.3) | Local Apple Silicon Metal inference (`wom7-mlx-rs` Rust server + `omlx` `:8888` + `mlx-vlm` Gemma 4 & FLUX `:8080`) and `headroom` context compression |
+| **`@k7` (`k7hub` + 11 crates)** | Rust 1.95 · `ratatui` · `ratzilla` WASM | Unified `@k7` Super-TUI (`k7`) + standalone modules (`k7env`, `k7pwd`, `k7d`, `k7s`, `k7c`, `k7llm`, `k7spec`, `k7sol`, `k7tg`, `k7kb`, `k7log`) + `k7hub.wasm` (`wasm32-unknown-unknown` Git TUI Browser, `T708`) |
+| **`w0m-pr/*`** | Git Forks (`github.com/webomage/*`) | 23 local / 48 org-governed upstream forks (`AgDR-0058` 6-gate `w0m_prs.py`), including `SkillSpector`, `orca`, `linuxontab`, `graphify`, `headroom`, `omlx`, `mlx-rs`, `mlx-vlm`, `serena`, `virtual-fido` |
 
 ```mermaid
 flowchart TD
     subgraph ClientLayer["Client, IDE & Browser Layer"]
-        Browser["Browser Apps (web, cp, me, join, job)"]
-        Ext["w0m-ext (Chrome MV3 + WebMCP)"]
+        Browser["Browser Apps (web, cp, me, demo)"]
+        Ext["w0m-ext (Desktop + iOS MV3 + obsidian-w0m + WebMCP)"]
         Orca["Orca ACP Desktop / CLI / Mobile"]
         LOT["LinuxOnTab (v86 WASM Alpine + @k7 Module Bar)"]
-        K7["@k7 Unified Super-TUI (k7hub + 9 Rust TUIs)"]
+        K7["@k7 Unified Super-TUI (k7hub + k7hub.wasm Git Browser)"]
     end
 
     subgraph EdgeLayer["Tier 1: Cloudflare Free-Tier Edge (AgDR-0055)"]
-        CFPages["Cloudflare Workers SSR (5 Apps)"]
+        CFPages["Cloudflare Workers SSR (4 Apps: web, cp, me, demo)"]
         CFWork["w0m-cf (Crons, Queues, /ai/chat, /ai/embed)"]
         CFApi["w0m-api Worker (Hono + 19 CF Workflows)"]
         CFR2["Cloudflare R2 ($0 Egress Vaults, Media & Artifacts)"]

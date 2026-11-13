@@ -180,16 +180,20 @@ def audit_transcript(text: str) -> dict[str, list[str]]:
         r"advisory suite\(s\) failing)",
         re.IGNORECASE,
     )
-    # T523 AC4 + T666 AC3 — Exclude harmless summary/driver/asset lines that match `TROUBLE` only by word shape:
+    # T523 AC4 + T666 AC3 + T734 AC2 — Exclude harmless summary/driver/asset lines that match `TROUBLE` only by word shape:
     # 1. Gauge summary lines with 0 failures (`Specifications: 2 executed 2 passed 0 failed`)
     # 2. Chromium WebGL GPU driver performance hints (`[Browser WARNING]: ... GL Driver Message ... GL_CLOSE_PATH_NV`)
     # 3. Headless Chromium WebGPU adapter probe (`[Browser WARNING]: No available adapters.`)
     # 4. Supabase CLI asset upload paths whose filename contains `-failure.ts` (`Uploading asset (...): supabase/functions/...`)
+    # 5. osv-scanner `.osv-scanner.toml` suppression count (`Filtered 19 vulnerabilities from output`; real CVEs still print `Total N package(s) affected...`)
+    # 6. ast-grep zero-finding pass summary (`[ast-grep] Checked 3 rules (...) -> 0 finding(s) (0 error, 0 warning)`)
     rx_harmless_trouble = re.compile(
         r"(?:^(?:Specifications|Scenarios):\s+\d+\s+executed\s+\d+\s+passed\s+0\s+failed\b|"
         r"\[Browser WARNING\]:.*GL Driver Message.*(?:GL_CLOSE_PATH_NV|ReadPixels|Performance)|"
         r"\[Browser (?:WARNING|Console)\]:\s*No available adapters\.|"
-        r"^Uploading asset \([^)]+\):\s+supabase/functions/)",
+        r"^Uploading asset \([^)]+\):\s+supabase/functions/|"
+        r"^Filtered\s+\d+\s+vulnerabilit(?:y|ies)\s+from\s+output$|"
+        r"^\[ast-grep\]\s+Checked\s+\d+\s+rules?.*->\s*0\s+finding\(s\)\s*\(0\s+errors?,\s*0\s+warnings?\)$)",
         re.IGNORECASE,
     )
 

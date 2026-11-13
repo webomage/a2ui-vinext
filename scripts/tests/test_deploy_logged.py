@@ -274,6 +274,37 @@ proc_audit_bad = subprocess.run(
 )
 check("T722 AC2 (RED): --audit-check exits 1 when unrecovered other_trouble > 0", proc_audit_bad.returncode == 1, proc_audit_bad.stdout)
 
+# ── T734 AC2: check-guardrails zero-finding pass summaries vs real osv-scanner / ast-grep findings ──
+guardrails_clean_log = (
+    "Filtered 19 vulnerabilities from output\n"
+    "No issues found\n"
+    "Filtered 2 vulnerabilities from output\n"
+    "No issues found\n"
+    "[ast-grep] Checked 3 rules (w0m-no-bare-except-pass-py, w0m-no-eval-call-ts, w0m-no-env-fallback-chain) -> 0 finding(s) (0 error, 0 warning)\n"
+)
+gr_clean = dl.audit_transcript(guardrails_clean_log)
+check(
+    "T734 AC2: excludes osv-scanner Filtered N vulnerabilities and ast-grep 0 finding(s) pass summaries from other_trouble",
+    len(gr_clean["other_trouble"]) == 0,
+    repr(gr_clean),
+)
+
+guardrails_dirty_log = (
+    "Filtered 19 vulnerabilities from output\n"
+    "Total 1 package affected by 5 known vulnerabilities (0 Critical, 0 High, 4 Medium, 1 Low, 0 Unknown) from 1 ecosystem.\n"
+    "5 vulnerabilities can be fixed.\n"
+    "[ast-grep] Checked 3 rules (w0m-no-bare-except-pass-py, w0m-no-eval-call-ts, w0m-no-env-fallback-chain) -> 1 finding(s) (1 error, 0 warning)\n"
+)
+gr_dirty = dl.audit_transcript(guardrails_dirty_log)
+check(
+    "T734 AC2 (RED): still flags real osv-scanner vulnerability totals and non-zero ast-grep findings in other_trouble",
+    len(gr_dirty["other_trouble"]) == 3
+    and any("Total 1 package affected" in ln for ln in gr_dirty["other_trouble"])
+    and any("5 vulnerabilities can be fixed" in ln for ln in gr_dirty["other_trouble"])
+    and any("-> 1 finding(s)" in ln for ln in gr_dirty["other_trouble"]),
+    repr(gr_dirty),
+)
+
 print("\n" + ("✅ all deploy-logged probes passed" if not fails
               else f"❌ {fails} probe(s) failed"))
 raise SystemExit(1 if fails else 0)
