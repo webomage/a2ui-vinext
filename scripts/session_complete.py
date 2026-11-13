@@ -1628,20 +1628,49 @@ def fast_forward_canonical_checkout(
 
 
 def ensure_prepush_deps(worktree_root: Path) -> None:
-    """Link local pnpm store into `w0m-web/node_modules` when `w0m-web` has commits to land."""
+    """Materialize local pnpm store into `w0m-api`, `w0m-cf`, and `w0m-web` `node_modules` when commits land.
+
+    `w0m-web` RPC clients (`apps/{web,cp}/src/lib/rpc.ts`) import `AppType` across repo boundaries from
+    `w0m-cf/src/index` and `w0m-api/src/index` (`T733`). If `w0m-cf/node_modules` or `w0m-api/node_modules`
+    remains a symlink to the canonical checkout while `pnpm-lock.yaml` bumped `hono`, TypeScript resolves two
+    distinct `hono` versions across `hc<AppType>` and fails `astro check`.
+    """
     web_dir = worktree_root / "w0m-web"
-    if not (web_dir / ".git").exists() or not (web_dir / "pnpm-lock.yaml").is_file():
-        return
-    if (web_dir / "node_modules" / ".modules.yaml").is_file():
+    if not (web_dir / ".git").exists():
         return
     counts = _git(web_dir, "rev-list", "--left-right", "--count", f"{BASE_REF}...HEAD")
-    if counts.returncode != 0:
-        return
-    parts = counts.stdout.split()
-    if len(parts) != 2 or int(parts[1]) <= 0:
-        return
-    print("[session-complete] Linking w0m-web/node_modules from pnpm store for pre-push gates ...", file=sys.stderr, flush=True)
-    _run(["pnpm", "install", "--frozen-lockfile", "--prefer-offline"], cwd=web_dir, check=True)
+    web_ahead = (
+        counts.returncode == 0
+        and len(counts.stdout.split()) == 2
+        and int(counts.stdout.split()[1]) > 0
+    )
+
+    for rel in ("w0m-api", "w0m-cf", "w0m-web"):
+        repo_dir = worktree_root / rel
+        if not (repo_dir / ".git").exists() or not (repo_dir / "pnpm-lock.yaml").is_file():
+            continue
+        nm = repo_dir / "node_modules"
+        lock_diff = _git(repo_dir, "diff", "--name-only", f"{BASE_REF}...HEAD", "--", "pnpm-lock.yaml")
+        lock_changed = lock_diff.returncode == 0 and bool(lock_diff.stdout.strip())
+        needs_install = False
+        if rel == "w0m-web" and web_ahead and (nm.is_symlink() or not (nm / ".modules.yaml").is_file()):
+            needs_install = True
+        elif lock_changed and (nm.is_symlink() or not (nm / ".modules.yaml").is_file()):
+            needs_install = True
+        if not needs_install:
+            continue
+        if nm.is_symlink():
+            nm.unlink()
+        print(
+            f"[session-complete] Materializing {rel}/node_modules from pnpm store for pre-push gates ...",
+            file=sys.stderr,
+            flush=True,
+        )
+        _run(
+            ["pnpm", "install", "--frozen-lockfile", "--prefer-offline", "--config.confirmModulesPurge=false"],
+            cwd=repo_dir,
+            check=True,
+        )
 
 
 def certify_estate_tree(
