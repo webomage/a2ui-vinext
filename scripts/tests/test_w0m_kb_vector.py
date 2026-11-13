@@ -5,12 +5,14 @@ from __future__ import annotations
 
 import io
 from pathlib import Path
+import re
 import sys
 import tarfile
 import tempfile
 import unittest
 
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
+ESTATE_ROOT = SCRIPT_DIR.parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
@@ -143,6 +145,81 @@ class TestW0mKbVector(unittest.TestCase):
             stats = kb.load_stats(db_path=db_path, catalog_path=root / "nonexistent.json")
             self.assertTrue(stats["db_exists"])
             self.assertEqual(stats["doc_count"], 3)
+
+    def test_collect_estate_documents_indexes_web_docs_and_entrypoints_while_skipping_archive(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir(parents=True)
+            (root / "w0m-web" / "docs" / "backend").mkdir(parents=True)
+            (root / "w0m-web" / "docs" / "archive").mkdir(parents=True)
+
+            (root / "AGENTS.md").write_text("# Root Agents Entrypoint\nCanonical invariants.\n", encoding="utf-8")
+            (root / "docs" / "TECH-LANDSCAPE.md").write_text(
+                "# Webomage Tech Landscape\nEdge-first architecture.\n", encoding="utf-8"
+            )
+            (root / "w0m-web" / "docs" / "CODEMAP.md").write_text(
+                "# Workspace Codemap\nApps and shared packages.\n", encoding="utf-8"
+            )
+            (root / "w0m-web" / "docs" / "backend" / "KB-INDEX.md").write_text(
+                "# Backend KB Index\nSupabase migrations and Edge Functions.\n", encoding="utf-8"
+            )
+            (root / "w0m-web" / "docs" / "backend" / "archive").mkdir(parents=True)
+            (root / "w0m-web" / "docs" / "archive" / "retired-draft.md").write_text(
+                "# Archived Draft\nMust be skipped from live KB.\n", encoding="utf-8"
+            )
+            (root / "w0m-web" / "docs" / "backend" / "archive" / "nested-retired.md").write_text(
+                "# Nested Archived Draft\nMust also be skipped.\n", encoding="utf-8"
+            )
+
+            collected = kb.collect_estate_documents(root=root)
+            by_rel = {d["rel_path"]: d["category"] for d in collected}
+            self.assertEqual(by_rel.get("AGENTS.md"), "estate_entry")
+            self.assertEqual(by_rel.get("docs/TECH-LANDSCAPE.md"), "estate_doc")
+            self.assertEqual(by_rel.get("w0m-web/docs/CODEMAP.md"), "web_doc")
+            self.assertEqual(by_rel.get("w0m-web/docs/backend/KB-INDEX.md"), "web_doc")
+            self.assertNotIn("w0m-web/docs/archive/retired-draft.md", by_rel)
+            self.assertNotIn("w0m-web/docs/backend/archive/nested-retired.md", by_rel)
+
+    def test_collect_estate_documents_deduplicates_mirrored_reports_by_sha256(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / ".agents" / "reports").mkdir(parents=True)
+            (root / "w0m-web" / "docs" / "reports").mkdir(parents=True)
+
+            body = "# T734 Tech Overview\nIdentical mirrored report content.\n"
+            (root / ".agents" / "reports" / "t734-overview.md").write_text(body, encoding="utf-8")
+            (root / "w0m-web" / "docs" / "reports" / "t734-overview.md").write_text(body, encoding="utf-8")
+
+            collected = kb.collect_estate_documents(root=root)
+            self.assertEqual(len(collected), 1)
+            self.assertEqual(collected[0]["rel_path"], ".agents/reports/t734-overview.md")
+            self.assertEqual(collected[0]["category"], "agent_report")
+
+    def test_interactive_visual_explainer_is_self_contained_and_mirrored(self) -> None:
+        primary = ESTATE_ROOT / "docs" / "visuals" / "w0m-tech-landscape-explainer.html"
+        mirrored = ESTATE_ROOT / "w0m-web" / "docs" / "walkthroughs" / "w0m-tech-landscape-explainer.html"
+        self.assertTrue(primary.is_file(), f"Missing visual explainer: {primary}")
+        self.assertTrue(mirrored.is_file(), f"Missing mirrored walkthrough: {mirrored}")
+
+        html_text = primary.read_text(encoding="utf-8")
+        self.assertEqual(
+            html_text,
+            mirrored.read_text(encoding="utf-8"),
+            "docs/visuals and w0m-web/docs/walkthroughs HTML explainers must match byte-for-byte",
+        )
+        self.assertIsNone(
+            re.search(r"<(?:script|link)\b[^>]+(?:src|href)=['\"]https?://", html_text, re.IGNORECASE),
+            "Visual HTML explainer must not depend on external CDN scripts or stylesheets",
+        )
+        self.assertIsNone(
+            re.search(r"@import\s+url\(['\"]?https?://", html_text, re.IGNORECASE),
+            "Visual HTML explainer must not use external @import font/style URLs",
+        )
+        for audience in ("novice", "product", "architect", "systems"):
+            self.assertIn(f'data-audience="{audience}"', html_text)
+        self.assertIn('<svg class="topo"', html_text)
+        self.assertIn('id="theme-toggle"', html_text)
+        self.assertIn("prefers-reduced-motion: reduce", html_text)
 
 
 if __name__ == "__main__":

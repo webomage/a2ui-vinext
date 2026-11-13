@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T735](.tasks/T735.md) | **P1** | **Deep Adversarial Review of Estate Tech Docs, Full Hybrid Vector KB Indexing, and Self-Contained Interactive Visual Architecture Explainer** | web, tooling | — | ✅ **done** |
 | [T734](.tasks/T734.md) | **P1** | **Eliminate Vite node:crypto Browser-Barrel Build Warnings, Classify Zero-Finding check-guardrails Pass Summaries in deploy_logged.py, Log Lesson, and Publish Estate Tech Overview** | web, tooling | — | ✅ **done** |
 | [T733](.tasks/T733.md) | **P0** | **Bump hono Override to >=4.13.16 Across Estate Lockfiles to Resolve 5 Newly Published OSV Advisories** | web, api, cf, ext | openspec/specs/agent-security-and-mcp-audit/spec.md | ✅ **done** |
 | [T732](.tasks/T732.md) | **P0** | **Pass Explicit --type=shared on Infisical CLI Secret Delete & Restore Operations (env_prune_dead.py & rotate_leaked_secrets.py)** | tooling, api | openspec/specs/agent-security-and-mcp-audit/spec.md | ✅ **done** |

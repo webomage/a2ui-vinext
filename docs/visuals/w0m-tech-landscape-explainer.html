@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Webomage (w0m) — Interactive Technology Landscape &amp; Architecture Explainer</title>
+  <!-- Standalone explanatory document governed by eli5 (T183) and T735: zero external CDN requests -->
+  <style>
+    :root {
+      --rgb-bg: 2, 6, 23;
+      --rgb-surface: 15, 23, 42;
+      --rgb-glass: 255, 255, 255;
+      --rgb-text: 248, 250, 252;
+      --rgb-muted: 148, 163, 184;
+      --rgb-brand: 56, 189, 248;
+      --rgb-indigo: 129, 140, 248;
+      --rgb-emerald: 52, 211, 153;
+      --rgb-amber: 251, 191, 36;
+      --rgb-rose: 251, 113, 133;
+
+      --bg-canvas: rgb(var(--rgb-bg));
+      --surface-card: rgba(var(--rgb-glass), 0.035);
+      --surface-elevated: rgba(var(--rgb-surface), 0.86);
+      --surface-hover: rgba(var(--rgb-glass), 0.065);
+      --border-hairline: rgba(var(--rgb-glass), 0.11);
+      --border-active: rgba(var(--rgb-brand), 0.65);
+      --text-primary: rgb(var(--rgb-text));
+      --text-secondary: rgb(var(--rgb-muted));
+      --accent-sky: rgb(var(--rgb-brand));
+      --accent-indigo: rgb(var(--rgb-indigo));
+      --accent-emerald: rgb(var(--rgb-emerald));
+      --accent-amber: rgb(var(--rgb-amber));
+      --accent-rose: rgb(var(--rgb-rose));
+      --radius-outer: 20px;
+      --radius-inner: 12px;
+      --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme="dark"]) {
+        --rgb-bg: 248, 250, 252;
+        --rgb-surface: 255, 255, 255;
+        --rgb-glass: 15, 23, 42;
+        --rgb-text: 15, 23, 42;
+        --rgb-muted: 71, 85, 105;
+        --rgb-brand: 2, 132, 199;
+        --rgb-indigo: 79, 70, 229;
+        --rgb-emerald: 5, 150, 105;
+        --rgb-amber: 180, 83, 9;
+        --rgb-rose: 225, 29, 72;
+        --surface-card: rgba(255, 255, 255, 0.88);
+        --surface-elevated: rgba(255, 255, 255, 0.96);
+        --surface-hover: rgba(15, 23, 42, 0.045);
+        --border-hairline: rgba(15, 23, 42, 0.13);
+      }
+    }
+
+    html[data-theme="light"] {
+      --rgb-bg: 248, 250, 252;
+      --rgb-surface: 255, 255, 255;
+      --rgb-glass: 15, 23, 42;
+      --rgb-text: 15, 23, 42;
+      --rgb-muted: 71, 85, 105;
+      --rgb-brand: 2, 132, 199;
+      --rgb-indigo: 79, 70, 229;
+      --rgb-emerald: 5, 150, 105;
+      --rgb-amber: 180, 83, 9;
+      --rgb-rose: 225, 29, 72;
+      --surface-card: rgba(255, 255, 255, 0.88);
+      --surface-elevated: rgba(255, 255, 255, 0.96);
+      --surface-hover: rgba(15, 23, 42, 0.045);
+      --border-hairline: rgba(15, 23, 42, 0.13);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(var(--rgb-brand), 0.12), transparent 42%),
+        radial-gradient(circle at 88% 8%, rgba(var(--rgb-indigo), 0.11), transparent 38%),
+        var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 1400px;
+      margin-inline: auto;
+      padding: 20px 16px 64px;
+    }
+
+    @media (min-width: 768px) {
+      .shell {
+        padding: 28px 24px 80px;
+      }
+    }
+
+    .glass {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-outer);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    header.hero {
+      padding: 24px;
+      margin-bottom: 20px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent-sky);
+      background: rgba(var(--rgb-brand), 0.12);
+      border: 1px solid rgba(var(--rgb-brand), 0.28);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    h1 {
+      margin: 10px 0 6px;
+      font-size: clamp(1.55rem, 3.2vw, 2.35rem);
+      line-height: 1.18;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--text-secondary);
+      max-width: 72ch;
+      font-size: 0.98rem;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .audience-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .audience-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-right: 4px;
+    }
+
+    button.btn {
+      appearance: none;
+      border: 1px solid var(--border-hairline);
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      min-height: 44px;
+      padding: 8px 14px;
+      border-radius: var(--radius-inner);
+      cursor: pointer;
+      transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 160ms ease, background 160ms ease;
+    }
+
+    button.btn:hover {
+      background: var(--surface-hover);
+      border-color: rgba(var(--rgb-brand), 0.45);
+    }
+
+    button.btn:focus-visible,
+    input.search-input:focus-visible,
+    g.node:focus-visible {
+      outline: 2px solid var(--accent-sky);
+      outline-offset: 2px;
+    }
+
+    button.btn[aria-pressed="true"],
+    button.btn[aria-selected="true"],
+    button.btn.active {
+      background: rgba(var(--rgb-brand), 0.16);
+      border-color: var(--border-active);
+      color: var(--accent-sky);
+    }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px;
+    }
+
+    .kpi {
+      padding: 12px 14px;
+      border-radius: var(--radius-inner);
+      background: rgba(var(--rgb-glass), 0.025);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .kpi-val {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--accent-emerald);
+    }
+
+    .kpi-lbl {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .section-grid {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 1024px) {
+      .ladder-grid {
+        grid-template-columns: 1.15fr 1fr;
+      }
+      .map-grid {
+        grid-template-columns: 1.65fr 1fr;
+        align-items: start;
+      }
+    }
+
+    .panel {
+      padding: 20px;
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 1.15rem;
+      letter-spacing: -0.01em;
+    }
+
+    .truth-callout {
+      padding: 14px 16px;
+      border-radius: var(--radius-inner);
+      background: rgba(var(--rgb-brand), 0.09);
+      border-left: 3px solid var(--accent-sky);
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+
+    .boundary-callout {
+      padding: 12px 14px;
+      border-radius: var(--radius-inner);
+      background: rgba(var(--rgb-amber), 0.09);
+      border: 1px solid rgba(var(--rgb-amber), 0.3);
+      font-size: 0.86rem;
+      margin-top: 12px;
+    }
+
+    table.map-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    table.map-table th,
+    table.map-table td {
+      text-align: left;
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border-hairline);
+      vertical-align: top;
+    }
+
+    table.map-table th {
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.81em;
+      background: rgba(var(--rgb-glass), 0.07);
+      padding: 2px 5px;
+      border-radius: 5px;
+    }
+
+    .svg-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-inner);
+      border: 1px solid var(--border-hairline);
+      background: rgba(var(--rgb-surface), 0.65);
+      padding: 8px;
+    }
+
+    svg.topo {
+      width: 100%;
+      height: auto;
+      min-width: 760px;
+      display: block;
+    }
+
+    .lane-rect {
+      fill: rgba(var(--rgb-glass), 0.02);
+      stroke: var(--border-hairline);
+      stroke-width: 1;
+      rx: 14;
+    }
+
+    .lane-title {
+      fill: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    path.edge {
+      fill: none;
+      stroke: rgba(var(--rgb-muted), 0.32);
+      stroke-width: 1.6;
+      transition: stroke 180ms ease, stroke-width 180ms ease, opacity 180ms ease;
+    }
+
+    path.edge.highlighted {
+      stroke: var(--accent-sky);
+      stroke-width: 2.8;
+      opacity: 1;
+    }
+
+    path.edge.dimmed {
+      opacity: 0.14;
+    }
+
+    g.node {
+      cursor: pointer;
+      transition: opacity 180ms ease;
+    }
+
+    g.node rect {
+      fill: rgba(var(--rgb-surface), 0.95);
+      stroke: rgba(var(--rgb-glass), 0.22);
+      stroke-width: 1.4;
+      rx: 10;
+      transition: stroke 160ms ease, fill 160ms ease;
+    }
+
+    g.node:hover rect {
+      stroke: var(--accent-sky);
+      fill: rgba(var(--rgb-brand), 0.13);
+    }
+
+    g.node.active rect {
+      stroke: var(--accent-emerald);
+      stroke-width: 2.4;
+      fill: rgba(var(--rgb-emerald), 0.15);
+    }
+
+    g.node.dimmed {
+      opacity: 0.32;
+    }
+
+    g.node text.n-title {
+      fill: var(--text-primary);
+      font-size: 12px;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    g.node text.n-sub {
+      fill: var(--text-secondary);
+      font-size: 10px;
+      font-family: var(--font-mono);
+      pointer-events: none;
+    }
+
+    .inspector-meta {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .meta-box {
+      padding: 11px 13px;
+      border-radius: var(--radius-inner);
+      background: rgba(var(--rgb-glass), 0.03);
+      border: 1px solid var(--border-hairline);
+      font-size: 0.86rem;
+    }
+
+    .meta-box strong {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent-sky);
+      margin-bottom: 4px;
+    }
+
+    .flow-tabs,
+    .filter-pills,
+    .step-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .walkthrough-box {
+      margin-top: 14px;
+      padding: 18px;
+      border-radius: var(--radius-inner);
+      border: 1px solid var(--border-hairline);
+      background: rgba(var(--rgb-glass), 0.028);
+      display: grid;
+      gap: 12px;
+    }
+
+    .step-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-badge {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      background: rgba(var(--rgb-emerald), 0.12);
+      border: 1px solid rgba(var(--rgb-emerald), 0.32);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .step-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    button.step-dot {
+      min-width: 36px;
+      min-height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border-hairline);
+      background: var(--surface-elevated);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.step-dot[aria-current="step"] {
+      background: rgba(var(--rgb-emerald), 0.18);
+      border-color: var(--accent-emerald);
+      color: var(--accent-emerald);
+    }
+
+    .catalog-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    input.search-input {
+      min-height: 44px;
+      min-width: 260px;
+      flex: 1 1 280px;
+      max-width: 420px;
+      padding: 8px 14px;
+      border-radius: var(--radius-inner);
+      border: 1px solid var(--border-hairline);
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-auto-rows: 1fr;
+      gap: 16px;
+    }
+
+    .tech-card {
+      padding: 18px;
+      border-radius: var(--radius-outer);
+      border: 1px solid var(--border-hairline);
+      background: var(--surface-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(var(--rgb-indigo), 0.14);
+      color: var(--accent-indigo);
+      border: 1px solid rgba(var(--rgb-indigo), 0.3);
+    }
+
+    .tech-card h3 {
+      margin: 8px 0 6px;
+      font-size: 1.02rem;
+    }
+
+    .tech-card p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+    }
+
+    details.deep-dive {
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-hairline);
+      font-size: 0.84rem;
+    }
+
+    details.deep-dive summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--accent-sky);
+      padding: 4px 0;
+    }
+
+    details.deep-dive ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state {
+      padding: 28px;
+      text-align: center;
+      color: var(--text-secondary);
+      border: 1px dashed var(--border-hairline);
+      border-radius: var(--radius-inner);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero glass">
+      <div class="hero-top">
+        <div>
+          <span class="eyebrow">Webomage (@wom) · Reality-Verified Architecture Explainer</span>
+          <h1>Webomage Technology Landscape: Big Picture &amp; Deep System Explorer</h1>
+          <p class="subtitle" id="hero-subtitle">
+            An edge-first, agent-native software delivery, talent cloud, and security platform spanning 10 first-party Git repositories, 6 Cloudflare Workers, 393 SQL migrations, 64 Deno 2 Edge Functions, 18 Rust/WASM packages, and local Apple Silicon MLX + Hybrid Vector retrieval.
+          </p>
+        </div>
+        <div>
+          <button type="button" class="btn" id="theme-toggle" aria-label="Toggle dark and light theme">Theme: Dark</button>
+        </div>
+      </div>
+
+      <div class="kpi-strip" aria-label="Measured estate metrics">
+        <div class="kpi"><div class="kpi-val">10</div><div class="kpi-lbl">Git Repos (@wom + 9)</div></div>
+        <div class="kpi"><div class="kpi-val">6</div><div class="kpi-lbl">Active CF Workers</div></div>
+        <div class="kpi"><div class="kpi-val">19 + 5</div><div class="kpi-lbl">Workflows &amp; Crons</div></div>
+        <div class="kpi"><div class="kpi-val">393 / 64</div><div class="kpi-lbl">SQL Migs / Edge Fns</div></div>
+        <div class="kpi"><div class="kpi-val">9 / 25</div><div class="kpi-lbl">Web Pkgs / UI Primitives</div></div>
+        <div class="kpi"><div class="kpi-val">18</div><div class="kpi-lbl">Rust &amp; WASM Crates</div></div>
+        <div class="kpi"><div class="kpi-val">79 / 7</div><div class="kpi-lbl">Skills / SDD Dialects</div></div>
+        <div class="kpi"><div class="kpi-val">377 / 0</div><div class="kpi-lbl">Test Suites / OSV CVEs</div></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="audience-bar" role="group" aria-label="Audience explanation depth">
+          <span class="audience-label">Audience Lens:</span>
+          <button type="button" class="btn active" data-audience="novice" aria-pressed="true">1. Novice (ELI5)</button>
+          <button type="button" class="btn" data-audience="product" aria-pressed="false">2. Product &amp; Business</button>
+          <button type="button" class="btn" data-audience="architect" aria-pressed="false">3. Architecture &amp; Security</button>
+          <button type="button" class="btn" data-audience="systems" aria-pressed="false">4. Systems Engineer</button>
+        </div>
+        <div style="font-size:0.8rem;color:var(--text-secondary);font-family:var(--font-mono);">
+          Tip: Click any diagram node or use Left/Right arrow keys in walkthroughs
+        </div>
+      </div>
+    </header>
+
+    <!-- Section 1: Audience-Adaptive Progressive Ladder -->
+    <section class="section-grid ladder-grid" aria-label="Progressive simplification overview">
+      <div class="panel glass">
+        <h2 id="ladder-heading">Core Truth &amp; Mental Model</h2>
+        <div class="truth-callout" id="ladder-truth"></div>
+        <p id="ladder-analogy" style="margin:0;color:var(--text-secondary);font-size:0.92rem;"></p>
+        <div class="boundary-callout" id="ladder-boundary"></div>
+      </div>
+      <div class="panel glass">
+        <h2>Analogy-to-Reality Mapping</h2>
+        <table class="map-table">
+          <thead>
+            <tr>
+              <th>Mental Model</th>
+              <th>Real w0m Surface</th>
+              <th>What It Actually Enforces</th>
+            </tr>
+          </thead>
+          <tbody id="ladder-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 2: Interactive 4-Tier SVG Topology + Inspector -->
+    <section class="section-grid map-grid" aria-label="Interactive estate architecture diagram">
+      <div class="panel glass">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+          <h2 style="margin:0;">Interactive 4-Tier Estate Topology</h2>
+          <button type="button" class="btn" id="reset-map-btn" style="min-height:36px;padding:4px 12px;font-size:0.78rem;">Show All Connections</button>
+        </div>
+        <div class="svg-wrap">
+          <svg class="topo" viewBox="0 0 1080 620" role="img" aria-label="Webomage four-tier architecture map">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" style="color: rgba(148,163,184,0.65);" />
+              </marker>
+              <marker id="arrow-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8" />
+              </marker>
+            </defs>
+
+            <!-- Swimlanes -->
+            <rect class="lane-rect" x="12" y="10" width="1056" height="132" />
+            <text class="lane-title" x="26" y="30">Tier 0 — Client, Browser, Mobile MV3 &amp; @k7 Rust TUI ($0 Server Cost)</text>
+
+            <rect class="lane-rect" x="12" y="158" width="1056" height="142" />
+            <text class="lane-title" x="26" y="178">Tier 1 &amp; 1b — Cloudflare Free-Tier Edge (6 Active Workers, $0-Egress R2) + Scoped Mistral</text>
+
+            <rect class="lane-rect" x="12" y="316" width="1056" height="132" />
+            <text class="lane-title" x="26" y="336">Tier 2 — Supabase Relational, GoTrue Auth, 4-Axis RBAC &amp; 64 Frozen Deno 2 Edge Functions</text>
+
+            <rect class="lane-rect" x="12" y="464" width="1056" height="142" />
+            <text class="lane-title" x="26" y="484">Tier 3 — Local Apple Silicon MLX, 92.5k Graphify + 2.3k-Doc Vector KB &amp; First-Place Security Gate</text>
+
+            <!-- Directional Edges -->
+            <g id="svg-edges">
+              <path class="edge" data-from="n-web" data-to="n-ssr" d="M 105 124 L 180 196" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-cp" data-to="n-ssr" d="M 255 124 L 220 196" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-me" data-to="n-ssr" d="M 405 124 L 260 196" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-demo" data-to="n-ssr" d="M 555 124 L 300 196" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-ext" data-to="n-func" d="M 715 124 L 460 196" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-ext" data-to="n-edgefn" d="M 715 124 L 780 354" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-ext" data-to="n-r2" d="M 735 124 L 820 196" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-k7" data-to="n-cp" d="M 875 84 L 320 84" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-orca" data-to="n-mlx" d="M 990 124 L 220 502" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-orca" data-to="n-kb" d="M 1005 124 L 540 502" marker-end="url(#arrow)" />
+
+              <path class="edge" data-from="n-ssr" data-to="n-gotrue" d="M 210 278 L 210 354" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-ssr" data-to="n-pg" d="M 250 278 L 490 354" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-ssr" data-to="n-edgefn" d="M 290 278 L 760 354" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-ssr" data-to="n-r2" d="M 330 236 L 745 236" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-ssr" data-to="n-api" d="M 330 250 L 565 250" marker-end="url(#arrow)" />
+
+              <path class="edge" data-from="n-func" data-to="n-api" d="M 540 236 L 565 236" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-func" data-to="n-ai" d="M 540 220 L 915 220" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-api" data-to="n-pg" d="M 650 278 L 530 354" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-edgefn" data-to="n-pg" d="M 740 392 L 640 392" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-edgefn" data-to="n-ai" d="M 840 354 L 965 278" marker-end="url(#arrow)" />
+
+              <path class="edge" data-from="n-gate" data-to="n-ssr" d="M 860 502 L 240 278" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-gate" data-to="n-edgefn" d="M 890 502 L 820 432" marker-end="url(#arrow)" />
+              <path class="edge" data-from="n-kb" data-to="n-mlx" d="M 410 542 L 350 542" marker-end="url(#arrow)" />
+            </g>
+
+            <!-- Tier 0 Nodes -->
+            <g class="node active" data-node="n-web" tabindex="0" role="button" aria-label="apps/web corporate platform">
+              <rect x="28" y="46" width="138" height="78" />
+              <text class="n-title" x="40" y="74">apps/web</text>
+              <text class="n-sub" x="40" y="93">webomage.com :4321</text>
+              <text class="n-sub" x="40" y="109">1-Click Checkout</text>
+            </g>
+            <g class="node" data-node="n-cp" tabindex="0" role="button" aria-label="apps/cp control plane">
+              <rect x="178" y="46" width="142" height="78" />
+              <text class="n-title" x="190" y="74">apps/cp</text>
+              <text class="n-sub" x="190" y="93">cp.webomage :4325</text>
+              <text class="n-sub" x="190" y="109">Org/Admin + 7 SDD</text>
+            </g>
+            <g class="node" data-node="n-me" tabindex="0" role="button" aria-label="apps/me personal and talent hub">
+              <rect x="332" y="46" width="142" height="78" />
+              <text class="n-title" x="344" y="74">apps/me</text>
+              <text class="n-sub" x="344" y="93">me.webomage :4323</text>
+              <text class="n-sub" x="344" y="109">Talent, .ics, /board</text>
+            </g>
+            <g class="node" data-node="n-demo" tabindex="0" role="button" aria-label="apps/demo interactive sandbox">
+              <rect x="486" y="46" width="132" height="78" />
+              <text class="n-title" x="498" y="74">apps/demo</text>
+              <text class="n-sub" x="498" y="93">demo :4324</text>
+              <text class="n-sub" x="498" y="109">Guided Tours</text>
+            </g>
+            <g class="node" data-node="n-ext" tabindex="0" role="button" aria-label="w0m-ext browser and vault extensions">
+              <rect x="630" y="46" width="166" height="78" />
+              <text class="n-title" x="642" y="74">w0m-ext + Vault</text>
+              <text class="n-sub" x="642" y="93">Desktop + iOS MV3</text>
+              <text class="n-sub" x="642" y="109">11 Specs + obsidian</text>
+            </g>
+            <g class="node" data-node="n-k7" tabindex="0" role="button" aria-label="k7 Rust TUI family">
+              <rect x="808" y="46" width="124" height="78" />
+              <text class="n-title" x="820" y="74">@k7 TUI</text>
+              <text class="n-sub" x="820" y="93">16 Cargo Pkgs</text>
+              <text class="n-sub" x="820" y="109">5-Git Browser</text>
+            </g>
+            <g class="node" data-node="n-orca" tabindex="0" role="button" aria-label="Orca ACP and LinuxOnTab">
+              <rect x="942" y="46" width="114" height="78" />
+              <text class="n-title" x="952" y="74">Orca ACP</text>
+              <text class="n-sub" x="952" y="93">LinuxOnTab v86</text>
+              <text class="n-sub" x="952" y="109">Agent Trees</text>
+            </g>
+
+            <!-- Tier 1 Nodes -->
+            <g class="node" data-node="n-ssr" tabindex="0" role="button" aria-label="4 Astro 7.3 Cloudflare SSR Workers">
+              <rect x="96" y="196" width="234" height="82" />
+              <text class="n-title" x="110" y="224">4 Astro 7.3 SSR Workers</text>
+              <text class="n-sub" x="110" y="244">@astrojs/cloudflare 14.3.4</text>
+              <text class="n-sub" x="110" y="261">Svelte 5 Runes + Edge HTML Cache</text>
+            </g>
+            <g class="node" data-node="n-func" tabindex="0" role="button" aria-label="wom7func Worker in w0m-cf">
+              <rect x="352" y="196" width="188" height="82" />
+              <text class="n-title" x="366" y="224">wom7func (w0m-cf)</text>
+              <text class="n-sub" x="366" y="244">5/5 Crons · POST /mcp</text>
+              <text class="n-sub" x="366" y="261">550 B #![no_std] WASM</text>
+            </g>
+            <g class="node" data-node="n-api" tabindex="0" role="button" aria-label="wom7api Worker in w0m-api">
+              <rect x="562" y="196" width="166" height="82" />
+              <text class="n-title" x="575" y="224">wom7api (w0m-api)</text>
+              <text class="n-sub" x="575" y="244">Hono &gt;=4.13.16</text>
+              <text class="n-sub" x="575" y="261">19 Workflows + DO</text>
+            </g>
+            <g class="node" data-node="n-r2" tabindex="0" role="button" aria-label="Cloudflare R2, KV, and Turnstile">
+              <rect x="746" y="196" width="152" height="82" />
+              <text class="n-title" x="758" y="224">R2 + KV + Bot Gate</text>
+              <text class="n-sub" x="758" y="244">$0 Egress Vaults</text>
+              <text class="n-sub" x="758" y="261">Turnstile + Fingerprint</text>
+            </g>
+            <g class="node" data-node="n-ai" tabindex="0" role="button" aria-label="Workers AI and Scoped Mistral Free Tier">
+              <rect x="914" y="196" width="142" height="82" />
+              <text class="n-title" x="926" y="224">Edge &amp; Mistral AI</text>
+              <text class="n-sub" x="926" y="244">Workers AI + T677</text>
+              <text class="n-sub" x="926" y="261">Scoped Project Keys</text>
+            </g>
+
+            <!-- Tier 2 Nodes -->
+            <g class="node" data-node="n-gotrue" tabindex="0" role="button" aria-label="Supabase GoTrue Auth and Passkeys">
+              <rect x="96" y="354" width="234" height="78" />
+              <text class="n-title" x="110" y="382">GoTrue Auth &amp; @wom/kyc</text>
+              <text class="n-sub" x="110" y="401">PKCE OAuth x3 · TOTP MFA</text>
+              <text class="n-sub" x="110" y="417">WebAuthn FIDO2 + LATAM ID</text>
+            </g>
+            <g class="node" data-node="n-pg" tabindex="0" role="button" aria-label="PostgreSQL 15 and 4-Axis RBAC">
+              <rect x="366" y="354" width="274" height="78" />
+              <text class="n-title" x="380" y="382">PostgreSQL 15 (393 Migrations)</text>
+              <text class="n-sub" x="380" y="401">4-Axis RBAC public.wom_can · hats</text>
+              <text class="n-sub" x="380" y="417">Append-Only *_audit_log Triggers</text>
+            </g>
+            <g class="node" data-node="n-edgefn" tabindex="0" role="button" aria-label="64 Supabase Deno 2 Edge Functions">
+              <rect x="676" y="354" width="290" height="78" />
+              <text class="n-title" x="690" y="382">64 Deno 2 Edge Functions</text>
+              <text class="n-sub" x="690" y="401">Frozen deno.lock Parity · Stripe/MP</text>
+              <text class="n-sub" x="690" y="417">AI Personas · Resume/PDF · Connectors</text>
+            </g>
+
+            <!-- Tier 3 Nodes -->
+            <g class="node" data-node="n-mlx" tabindex="0" role="button" aria-label="Local Apple Silicon MLX and Headroom">
+              <rect x="64" y="502" width="286" height="84" />
+              <text class="n-title" x="78" y="530">Local Apple MLX &amp; Headroom</text>
+              <text class="n-sub" x="78" y="550">wom7-mlx-rs Metal · omlx :8888</text>
+              <text class="n-sub" x="78" y="567">mlx-vlm 0.7.11 · Headroom :8787/:8788</text>
+            </g>
+            <g class="node" data-node="n-kb" tabindex="0" role="button" aria-label="Unified Knowledge Graph and Hybrid Vector KB">
+              <rect x="384" y="502" width="316" height="84" />
+              <text class="n-title" x="398" y="530">Graphify + Codegraph + Vector KB</text>
+              <text class="n-sub" x="398" y="550">92,477 Graph Nodes · codegraph v1.6.2</text>
+              <text class="n-sub" x="398" y="567">2.3k+ Docs FTS5 BM25 + 128-Dim SVD RRF</text>
+            </g>
+            <g class="node" data-node="n-gate" tabindex="0" role="button" aria-label="First-Place Security, Skills and Deploy Cert Gate">
+              <rect x="734" y="502" width="314" height="84" />
+              <text class="n-title" x="748" y="530">First-Place Gate &amp; Deploy Certs</text>
+              <text class="n-sub" x="748" y="550">SkillSpector v2.12 · osv · gitleaks · ast-grep</text>
+              <text class="n-sub" x="748" y="567">Infisical (71 Keys) · 18 Wrap-Up Gates</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Node Inspector Panel -->
+      <aside class="panel glass" aria-live="polite" id="node-inspector">
+        <div class="eyebrow" id="insp-tier">Tier 0</div>
+        <h2 id="insp-title" style="margin-top:10px;">apps/web</h2>
+        <p id="insp-desc" style="margin:0;color:var(--text-secondary);font-size:0.92rem;"></p>
+        <div class="inspector-meta">
+          <div class="meta-box">
+            <strong>Measured Specs &amp; Runtime</strong>
+            <span id="insp-specs"></span>
+          </div>
+          <div class="meta-box">
+            <strong>Canonical Repo Paths</strong>
+            <code id="insp-paths"></code>
+          </div>
+          <div class="meta-box">
+            <strong>Key Invariant / Guardrail</strong>
+            <span id="insp-guard"></span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 3: Guided Step-by-Step Walkthroughs -->
+    <section class="panel glass" style="margin-bottom:20px;" aria-label="Step-by-step guided architecture flows">
+      <h2>Step-by-Step Guided Flows (Highlights Live Topology Above)</h2>
+      <div class="flow-tabs" role="tablist" aria-label="Select architecture flow" id="flow-tabs"></div>
+
+      <div class="walkthrough-box">
+        <div class="step-header">
+          <span class="step-badge" id="walk-counter">Step 1 of 5</span>
+          <div class="step-dots" id="walk-dots"></div>
+          <div class="step-controls">
+            <button type="button" class="btn" id="prev-step-btn" style="min-height:38px;">Previous</button>
+            <button type="button" class="btn" id="next-step-btn" style="min-height:38px;">Next</button>
+          </div>
+        </div>
+        <h3 id="walk-title" style="margin:0;font-size:1.08rem;"></h3>
+        <p id="walk-body" style="margin:0;color:var(--text-secondary);font-size:0.93rem;"></p>
+        <div style="font-size:0.83rem;">
+          <strong style="color:var(--accent-sky);">Code &amp; Gate Trace:</strong>
+          <code id="walk-code"></code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Searchable & Filterable Deep-Dive Catalog -->
+    <section class="panel glass" aria-label="Searchable technology catalog">
+      <h2>Full Subsystem Deep-Dive Explorer (Click to Reveal Internals)</h2>
+      <div class="catalog-toolbar">
+        <input
+          type="search"
+          id="catalog-search"
+          class="search-input"
+          placeholder="Search tech, crate, Worker, port, policy (e.g. WASM, RBAC, SVD, SkillSpector, Hono)..."
+          aria-label="Search subsystems"
+        />
+        <div class="filter-pills" id="catalog-filters" role="group" aria-label="Filter by layer">
+          <button type="button" class="btn active" data-cat="all">All (18)</button>
+          <button type="button" class="btn" data-cat="web">Web &amp; UI</button>
+          <button type="button" class="btn" data-cat="edge">Edge &amp; Data</button>
+          <button type="button" class="btn" data-cat="rust">Rust &amp; WASM</button>
+          <button type="button" class="btn" data-cat="ai">AI &amp; Knowledge</button>
+          <button type="button" class="btn" data-cat="sec">Security &amp; SDLC</button>
+        </div>
+      </div>
+      <div class="cards-grid" id="catalog-grid"></div>
+      <div class="empty-state" id="catalog-empty" hidden>
+        No subsystem matched your filter. Clear the search box or switch category pills above.
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const LADDERS = {
+        novice: {
+          heading: "Plain-English Core Truth (Novice / ELI5)",
+          truth: "Webomage runs four fast storefront websites on a worldwide network of edge counters, keeps private files in zero-fee cloud lockers, locks customer and staff permissions inside a four-key database vault, and checks every AI helper with an automated safety inspector before anything goes live.",
+          analogy: "Think of a modern international airport: passengers do quick self-check-in on their own phone first (Tier 0 Browser), breeze through regional express counters right in their city (Tier 1 Cloudflare Edge + free luggage lockers), only open the central passport vault when identity or payment rules apply (Tier 2 Supabase), while mechanics backstage use local diagnostic benches and safety X-rays before clearing any plane for takeoff (Tier 3 Local MLX + Guardrails).",
+          boundary: "Where the analogy breaks down: Unlike a physical airport where a guard glances at a badge once, PostgreSQL Row-Level Security (public.wom_can) re-verifies all four permission axes on every single database row read or write, and anonymous public pages never touch the database if cached at the edge.",
+          rows: [
+            ["Phone self-check-in", "Browser FIPS SHA-256 + WebMCP + v86 WASM", "Hashes prompts, renders TUI frames, and validates diagrams at $0 server cost"],
+            ["City express desks & free lockers", "6 Cloudflare Workers + R2 Vaults", "Serves SSR pages globally and stores vaults/PDFs with $0 egress fees"],
+            ["Four-key central passport vault", "Supabase GoTrue + PostgreSQL wom_can", "Checks org, unit, worn hat, and MFA before returning or mutating rows"],
+            ["Pre-flight X-ray & flight certificate", "SkillSpector v2.12 + deploy_cert.py", "Blocks secrets, CVEs, or unsafe agent skills and stamps a 10-repo SHA-256 cert"]
+          ]
+        },
+        product: {
+          heading: "Product, Conversion & Unit-Economics Lens",
+          truth: "Every surface is engineered so anonymous visitors get instant cached pages and 1-click OAuth checkout, clients get isolated project vaults and a 7-dialect spec wizard, talent members get a unified portfolio/calendar/roadmap hub, and infrastructure marginal cost stays near $0.",
+          analogy: "Product journeys flow from discovery on webomage.com (/services, /solutions, /audit) -> 1-click Google/LinkedIn/GitHub PKCE signup + fixed-price Stripe Checkout -> guided onboarding & Spec-Driven Development dialect selection in cp.webomage.com -> ongoing collaboration via me.webomage.com and cross-platform Obsidian R2 sync.",
+          boundary: "Product boundary to remember: Retired standalone portals (apps/join and apps/job) were consolidated into apps/me so members maintain one identity, one session, and one portfolio URL (/u/[slug]) across assessments, calendars, and feature voting.",
+          rows: [
+            ["1-Click Fast Checkout", "apps/web + stripe-checkout Edge Fn", "PKCE OAuth login + fixed-price Stripe session with automatic CP onboarding"],
+            ["Unified Talent & Member Hub", "apps/me (me.webomage.com)", "Combines /u/[slug], Resume Studio, .ics calendars, /board voting, and R2 vaults"],
+            ["Client Control Plane & Impersonation", "apps/cp (cp.webomage.com)", "7-dialect SDD selector, printable PDF audit dossiers, and audited admin support handoff"],
+            ["Zero-Egress Client Vaults", "Cloudflare R2 + Per-Project Mistral", "Dedicated AI quota and isolated Obsidian sync per client without cloud egress bills"]
+          ]
+        },
+        architect: {
+          heading: "System Architecture, Tenancy & Security Invariants",
+          truth: "A strict 4-tier Free-Tier-First topology pairs 6 stateless/durable Cloudflare Workers and R2 object storage with a fail-closed PostgreSQL 15 4-axis RBAC ledger, 64 lockfile-frozen Deno 2 Edge Functions, and a single-branch beta trunk gated by 18 wrap-up checks.",
+          analogy: "Compute and blobs live at the Cloudflare edge (4 Astro 7.3 SSR Workers + wom7api 19 Durable Workflows + wom7func 5/5 account crons); relational state and auth live in Supabase under SECURITY DEFINER append-only *_audit_log triggers; AI/skill supply chain is gated by NVIDIA SkillSpector v2.12 + mcp_ratchet.py.",
+          boundary: "Critical architectural boundary: Never introduce silent provider fallbacks, compatibility shims, Cloudflare Queues/D1, or Supabase binary blobs — external client Mistral scopes enforce allow_global_key_fallback = False and cross_project_access = False.",
+          rows: [
+            ["Edge SSR & Workflow Split", "w0m-web (4) + wom7api + wom7func", "Separates SSR, 19 durable workflows + ChatMemoryDO, and 5 account crons"],
+            ["4-Axis Capability RBAC", "public.wom_can + @wom/authz + hats", "Enforces tenant, role, worn hat, and AAL2 MFA with 0/18 red authz probes"],
+            ["Agent & Skill Supply Chain", "SkillSpector v2.12 + skill_audit.ts", "Scans 71 unique skill roots via YARA + tree-sitter AST (crit/high = 0)"],
+            ["Zero-.env Secret Governance", "Infisical beta (71 active keys)", "Runtime process injection only; 44 dead keys AES-256-GCM backed up & pruned"]
+          ]
+        },
+        systems: {
+          heading: "Systems Engineering, Compilers & Runtime Internals",
+          truth: "Astro 7.3.3 + Vite 7.3.7/Rolldown 1.2.14 bundle 220 Svelte 5 runes components against cloudflare:workers env (zero node:* in @webomage/lib barrel), backed by Hono >=4.13.16, 550 B #![no_std] Rust WASM, 16 @k7 Cargo crates, and a 128-dim Randomized SVD + SQLite FTS5 RRF knowledge index.",
+          analogy: "Every hot loop uses the tightest tool for its constraint: 550-byte raw (389 B gzipped) Rust 2024 wasm32-unknown-unknown for FNV-1a/Levenshtein in wom7func; pure isomorphic FIPS 180-4 SHA-256 in @webomage/lib; numpy Halko-2011 Randomized SVD + Porter FTS5 in w0m_kb_vector.py; mlx-rs 0.33 + omlx 0.7.3 on Apple Metal.",
+          boundary: "Low-level invariant: w0m-api/deno.lock and supabase/functions/deno.lock must stay byte-identical under --frozen=true; agent-tree materializes independent node_modules when lockfiles diverge; deploy_logged.py filters zero-finding osv/ast-grep pass summaries while failing on real warnings.",
+          rows: [
+            ["Browser Barrel Gate", "browser-barrel-node-free.test.ts", "Walks transitive imports from packages/lib/src/index.ts blocking any node:* import"],
+            ["Ultra-Compact Edge WASM", "w0m-cf/crates/w0m-wasm-utils", "#![no_std] Rust -> 550 B WASM for FNV-1a 64-bit hash & token-overlap scoring"],
+            ["Hybrid RRF Knowledge Index", "scripts/w0m_kb_vector.py (corpus.sqlite)", "SHA-256-deduplicated 2,300+ docs, FTS5 BM25 + 128-dim SVD cosine RRF (k=60)"],
+            ["Tree-Set Deploy Certificate", "scripts/deploy_cert.py + session_complete.py", "Hashes git tree SHA across all 10 repos for <0.2s warm pre-deploy verification"]
+          ]
+        }
+      };
+
+      const NODES = {
+        "n-web": {
+          tier: "Tier 0 / Tier 1 · w0m-web",
+          title: "apps/web (webomage.com :4321)",
+          specs: "Worker: webomage · Astro 7.3.3 + Svelte 5.56.4 · Pagefind 1.5.2 · Edge HTML Cache",
+          paths: "w0m-web/apps/web/wrangler.jsonc · apps/web/src/pages/{services,solutions,audit}",
+          guard: "Anonymous public HTML cached at edge only when Cookie, Authorization, and Set-Cookie are absent.",
+          desc: {
+            novice: "The front door website where visitors explore Webomage services, run a free website/AI safety check, and buy fixed-price packages in one click.",
+            product: "Primary acquisition & conversion funnel featuring 1-click PKCE OAuth registration + direct Stripe Checkout on /services and /solutions, /audit intake, and /blueprints.",
+            architect: "Public Cloudflare SSR Worker without SUPABASE_SERVICE_ROLE_KEY; delegates privileged mutations to authenticated Supabase Edge Functions and R2 resolvers.",
+            systems: "Astro 7.3.3 Worker using cloudflare:workers env, applyAnonymousHtmlEdgeCache + BoundedTtlCache, Pagefind 1.5.2 non-AVX2 index, and RFC 9116 security.txt."
+          }
+        },
+        "n-cp": {
+          tier: "Tier 0 / Tier 1 · w0m-web",
+          title: "apps/cp (cp.webomage.com / cp.w0m.xyz :4325)",
+          specs: "Worker: webomage-cp · Multi-Tenant /o/[org] · 7 SDD Dialects · Admin Impersonation",
+          paths: "w0m-web/apps/cp/ · CrewToolkitAndTabLinuxConsole.svelte · packages/ui",
+          guard: "ds-conformance + ui-ticket-leak-check enforce 100% @webomage/ui primitives, CSS tokens, and zero leaked tracker IDs.",
+          desc: {
+            novice: "The mission-control dashboard where client teams and Webomage crew manage projects, print audit reports, and switch team hats safely.",
+            product: "Unified Organization, Client & Crew Control Plane with post-signup Onboarding Wizard, Services Configurator, 7-dialect SDD selector, and printable multi-page Audit PDF Dossiers.",
+            architect: "Enforces 4-axis RBAC, worn public.hats, AAL2 MFA on admin mutations, and HMAC-signed /api/auth/impersonate-handoff for audited client/member support.",
+            systems: "Mounts CrewToolkitAndTabLinuxConsole.svelte backed by packages/lib/src/security/k7-git-browser.ts (buildK7GitWasmTuiFrame across 5 Git/LLM flavours)."
+          }
+        },
+        "n-me": {
+          tier: "Tier 0 / Tier 1 · w0m-web",
+          title: "apps/me (me.webomage.com :4323)",
+          specs: "Worker: webomage-me · Consolidated Talent Hub · .ics/CalDAV · /board · /api/vault/r2",
+          paths: "w0m-web/apps/me/ · apps/me/src/__tests__/me-api-parity.test.ts",
+          guard: "me-pages-own-rows.test.ts + me-api-parity.test.ts enforce explicit profile_id scoping (even for admins) and route parity.",
+          desc: {
+            novice: "Every member's personal home for their public portfolio, resume builder, schedule calendar, skill challenges, and feature voting board.",
+            product: "Unified Personal Identity & Talent Cloud (absorbing retired join & job apps): /u/[slug], Resume Studio, Hume voice interviews, .ics calendars, and GitHub-backed /board voting.",
+            architect: "Serves visibility-gated R2 vault streams (/api/vault/r2/*) via SHA-256-hashed w0m_vst_ device tokens and proxies GitHub Issues SSOT on /api/board/*.",
+            systems: "Astro 7.3 Worker using readJsonSafe in FeatureVotingBoard.svelte / TodoWorkspace.svelte and zero node:* imports in @webomage/lib."
+          }
+        },
+        "n-demo": {
+          tier: "Tier 0 / Tier 1 · w0m-web",
+          title: "apps/demo (demo.webomage.com :4324)",
+          specs: "Worker: webomage-demo · Zero-Signup Interactive Product Walkthroughs",
+          paths: "w0m-web/apps/demo/wrangler.jsonc",
+          guard: "Stateless sandbox tours isolated from production tenant mutations.",
+          desc: {
+            novice: "A safe playground where anyone can test-drive Webomage screens and workflows without creating an account.",
+            product: "Interactive guided tours and live @webomage/ui component showcase for prospective clients and talent.",
+            architect: "Dedicated Cloudflare SSR Worker isolating demo traffic and synthetic tour state from tenant portals.",
+            systems: "Built in lockstep on Astro 7.3.3 + @astrojs/cloudflare 14.3.4 alongside web, cp, and me."
+          }
+        },
+        "n-ext": {
+          tier: "Tier 0 · w0m-ext",
+          title: "w0m-ext MV3 + obsidian-w0m Sync",
+          specs: "Chromium · Firefox · macOS/iOS 16.4+ Safari · Orion iOS · Orca Electron · Obsidian 1.0",
+          paths: "w0m-ext/extension/specs/*.json · w0m-ext/obsidian-w0m/ · scripts/orca_ext_install.py",
+          guard: "captchaDetector.js fails closed on anti-bot gates; never bypasses CAPTCHAs or Turnstile.",
+          desc: {
+            novice: "A browser helper for computers and iPhones plus an Obsidian notebook plugin that clips jobs and syncs project notes straight to cloud lockers.",
+            product: "Assists talent sourcing across 11 external job marketplaces and syncs shared client/crew Obsidian vaults across Desktop and mobile.",
+            architect: "Dual local transport: exposes ws://127.0.0.1:8008 as an MCP server for local agents while acting as a client to ZeroClaw (:42617) and R2 vault APIs.",
+            systems: "Single-source TypeScript + esbuild MV3 bundle with 11 external platform specs (upwork, linkedin, toptal, contra, wellfound, etc.), jose, and pkce-challenge."
+          }
+        },
+        "n-k7": {
+          tier: "Tier 0 · Sibling Rust Toolchain",
+          title: "@k7 Super-TUI & 5-Flavour Git Browser",
+          specs: "Rust >=1.95 (1.99.1) · 16 Cargo Packages (k7hub + 10 Top-Level Crates + 5 k7c Tools)",
+          paths: "/home/aleksei/Projects/!self/k7 · w0m-web/packages/lib/src/security/k7-git-browser.ts",
+          guard: "u64 byte lengths prevent 32-bit overflow on >4 GiB .safetensors/.gguf model shards.",
+          desc: {
+            novice: "A super-fast keyboard terminal app written in Rust that lets engineers manage secrets, cloud costs, and browse Git/AI model repositories.",
+            product: "Gives operators one unified command center (k7) for environment secrets, Kubernetes, Terraform cost graphs, and LLM model repo inspection.",
+            architect: "Unites k7env, k7pwd, k7d, k7s, k7c (6 Cargo packages), k7llm, k7spec, k7sol, k7tg, and k7kb under k7hub with a shared Infisical bus.",
+            systems: "k7hub::git_browser compiles to wasm32-unknown-unknown (ratatui TestBackend) supporting GitHub, GitLab, HuggingFaceHub, ForgejoGitea, and LlmAgentCheckpoint."
+          }
+        },
+        "n-orca": {
+          tier: "Tier 0 · Agent IDE & WASM Linux",
+          title: "Orca ACP + LinuxOnTab (v86 WASM)",
+          specs: "Agent Client Protocol (ACP) · Isolated 10-Repo Worktrees · Alpine Linux in Browser RAM",
+          paths: "w0m-pr/orca · w0m-pr/linuxontab · scripts/linuxontab_serve.py (:8770)",
+          guard: "COOP/COEP SharedArrayBuffer isolation + single-branch agent-tree worktree discipline.",
+          desc: {
+            novice: "The developer cockpit that gives every AI helper its own clean copy of the codebase and even boots a tiny Linux computer inside a browser tab.",
+            product: "Lets multiple AI agents (Claude, Codex, Gemini, Antigravity, OpenCode, Vibe) build and review features in parallel without stepping on each other.",
+            architect: "First-class ACP client orchestrating ~/.w0m/work/<name>/w0m worktrees and embedded MV3 browser verification.",
+            systems: "Serves LinuxOnTab v86 WASM Alpine Linux on :8770 with #k7-module bar and COOP/COEP headers."
+          }
+        },
+        "n-ssr": {
+          tier: "Tier 1 · Cloudflare Edge SSR",
+          title: "4 Astro 7.3.3 SSR Workers & 9 Shared Packages",
+          specs: "Astro 7.3.3 · @astrojs/cloudflare 14.3.4 · Vite 7.3.7 / Rolldown 1.2.14 · 220 .svelte Files",
+          paths: "w0m-web/packages/{ui,lib,authz,webmcp,fingerprint,crawler,kyc,logger,mcp-aws-fundamentals}",
+          guard: "worker_env_gate.py enforces cloudflare:workers env; browser-barrel-node-free.test.ts bans node:* in client barrel.",
+          desc: {
+            novice: "Four globally distributed edge servers that render pages close to every user in milliseconds using a shared set of 25 glassmorphic UI building blocks.",
+            product: "Delivers consistent dark-first glassmorphic branding and mobile/tablet/desktop responsiveness across web, cp, me, and demo.",
+            architect: "9 workspace packages share auth, CASL abilities, WebMCP, device fingerprinting, multi-engine crawling, and WebAuthn/LATAM KYC logic.",
+            systems: "TypeScript 6.0.3 + Tailwind 4.3.3 + LightningCSS; 0 svelte-check errors and 0 Vite/Rolldown node:* externalization warnings."
+          }
+        },
+        "n-func": {
+          tier: "Tier 1 · w0m-cf Edge Worker",
+          title: "wom7func (5/5 Crons, POST /mcp, 550 B Rust WASM)",
+          specs: "Hono >=4.13.16 · Port :8790 · 5 Account Crons · #![no_std] w0m-wasm-utils (389 B gzip)",
+          paths: "w0m-cf/src/index.ts · w0m-cf/wrangler.jsonc · w0m-cf/crates/w0m-wasm-utils/src/lib.rs",
+          guard: "Consolidates 100% of Cloudflare account cron triggers (5/5 free-tier cap; absorbed webnames-crawler).",
+          desc: {
+            novice: "The background clockwork server that runs scheduled cleanups, hosts AI chat/search helpers, and uses a tiny 550-byte Rust chip for fast text matching.",
+            product: "Powers automated job-board polling, scheduled syncs, inbound email routing, and remote MCP tool access at $0 compute cost.",
+            architect: "Hosts all 5 Cloudflare cron schedules, stateless JSON-RPC 2.0 POST /mcp, /ai/chat & /ai/embed proxies, and Huntflow/Merge ATS adapters.",
+            systems: "Embeds #![no_std] Rust 2024 wasm32-unknown-unknown crate (550 B raw / 389 B gzipped) for FNV-1a 64-bit hashing, Levenshtein distance, and token overlap."
+          }
+        },
+        "n-api": {
+          tier: "Tier 1 · w0m-api Cloudflare Worker",
+          title: "wom7api (19 Durable Workflows + ChatMemoryDO)",
+          specs: "Hono >=4.13.16 · 19 Workflow Classes · SQLite Durable Object (CHAT_MEMORY)",
+          paths: "w0m-api/src/index.ts · w0m-api/src/workflows/ · w0m-api/wrangler.jsonc",
+          guard: "Lockstep hono >=4.13.16 enforced across w0m-web, w0m-api, w0m-cf, and w0m-ext (0 OSV CVEs).",
+          desc: {
+            novice: "A reliable step-by-step coordinator that finishes multi-step jobs (like generating PDFs, scanning domains, or syncing LinkedIn) even if a network hiccup happens.",
+            product: "Executes resilient background pipelines for CV/deck/PDF generation, domain security scans, certifications, newsletters, and job scoring.",
+            architect: "Cleanly splits durable multi-step Cloudflare Workflows (19 classes) and SQLite ChatMemoryDO in w0m-api from cron triggers in w0m-cf.",
+            systems: "Typed Hono RPC AppType consumed by Astro SSR clients with materialized per-repo node_modules version parity."
+          }
+        },
+        "n-r2": {
+          tier: "Tier 1 · Edge Storage & Bot Defense",
+          title: "Cloudflare R2 ($0 Egress), KV & Turnstile",
+          specs: "R2: wom-engagement-vaults, wom-public-assets · KV: SESSION, SETTINGS · Turnstile",
+          paths: "w0m-web/packages/fingerprint/ · apps/me/src/pages/api/vault/r2/",
+          guard: "Zero binary blobs in Supabase PostgreSQL; public scan endpoints gated by Turnstile + @webomage/fingerprint.",
+          desc: {
+            novice: "Zero-fee cloud storage lockers for documents/media plus a smart front-gate bouncer that blocks spam bots before they waste resources.",
+            product: "Enables generous file/vault sync and public audit previews without bandwidth overage charges.",
+            architect: "Implements Free-Tier-First storage: all Obsidian vaults, resumes, extension bundles, and media live in R2 ($0 egress) with KV session/config caching.",
+            systems: "Visibility-scoped R2 streaming backed by SHA-256 w0m_vst_ tokens and narrow SECURITY DEFINER resolvers."
+          }
+        },
+        "n-ai": {
+          tier: "Tier 1 & 1b · Edge & Scoped LLM Inference",
+          title: "Cloudflare Workers AI & Scoped Mistral Free Tier",
+          specs: "Mistral Small 3.1 · Llama 3.3 70B · BGE-M3 · Qwen3-Embed · Per-Project Mistral Keys",
+          paths: "scripts/mistral_project_scope.py · project/policies/clients-policy.json",
+          guard: "Non-w0m client projects enforce allow_global_key_fallback = False and cross_project_access = False.",
+          desc: {
+            novice: "Dedicated AI brains at the edge where every client project gets its own separate AI key and private notebook folder that never mixes with others.",
+            product: "Delivers fast AI copilot, resume parsing, and architecture guidance while guaranteeing strict client data confidentiality.",
+            architect: "Pairs Cloudflare Workers AI primary models with per-project Mistral Free-Tier accounts (<project>@webomage.com) bound to projects/<slug>/vault.",
+            systems: "Base64 32 KB chunking for whisper-large-v3-turbo voice notes + 1024-dim Qwen3/BGE embeddings + Opik/OTel tracing."
+          }
+        },
+        "n-gotrue": {
+          tier: "Tier 2 · Identity & Biometric KYC",
+          title: "Supabase GoTrue Auth & @wom/kyc",
+          specs: "3 PKCE OAuth Providers (Google, LinkedIn OIDC, GitHub) · TOTP MFA · WebAuthn FIDO2",
+          paths: "w0m-web/packages/lib/src/auth/handlers.ts · w0m-web/packages/kyc/",
+          guard: "handlers.ts whitelist strictly rejects unapproved OAuth providers; admin mutations require AAL2 MFA.",
+          desc: {
+            novice: "The sign-in and identity desk supporting Google/LinkedIn/GitHub login, two-factor codes, and hardware fingerprint/FaceID passkeys.",
+            product: "Frictionless 1-click social login for buyers and candidates, upgraded seamlessly to hardware passkey & LATAM tax/ID verification for contracts.",
+            architect: "Combines GoTrue JWT/PKCE sessions with W3C WebAuthn hardware enclave attestation and regional fiscal validators across 13 LATAM jurisdictions.",
+            systems: "Deterministic cookie chunking across SSR Workers + virtual-fido Go FIDO2/U2F token emulation for automated E2E verification."
+          }
+        },
+        "n-pg": {
+          tier: "Tier 2 · Relational Ledger & RBAC",
+          title: "PostgreSQL 15 (393 Migrations & 4-Axis wom_can)",
+          specs: "393 SQL Migrations · public.orgs · public.hats · Append-Only *_audit_log",
+          paths: "w0m-api/supabase/migrations/ · w0m-web/project/scripts/supabase_surface_drift_check.py",
+          guard: "Never grant anon blanket USING (true) beside scoped policies; 18 live authz red probes verify isolation.",
+          desc: {
+            novice: "The master ledger book where every contract, role, and setting is protected by four independent locks and an un-erasable change history.",
+            product: "Powers multi-org engagements (<contractor>.<engagement>.<client>), deterministic role/hat switching, and compliance-ready audit trails.",
+            architect: "4-axis capability model (public.wom_can) + SECURITY DEFINER triggers writing actor, old/new JSON, and timestamp into append-only *_audit_log tables.",
+            systems: "100% migration-managed (just db-migrate Touch ID gated), verified against TypeScript callers by supabase_surface_drift_check.py and anon_execute_ratchet.py."
+          }
+        },
+        "n-edgefn": {
+          tier: "Tier 2 · Serverless Transactional RPC",
+          title: "64 Frozen Deno 2 Supabase Edge Functions",
+          specs: "Deno 2 (--frozen=true) · Stripe & MercadoPago · 4 AI Persona Agents · 7 Connector Families",
+          paths: "w0m-api/supabase/functions/ · scripts/deno_lock_parity_check.py",
+          guard: "deno_lock_parity_check.py enforces byte-identical w0m-api/deno.lock and supabase/functions/deno.lock.",
+          desc: {
+            novice: "Sixty-four specialized secure back-office clerks handling payments, PDF resumes, voice interview tokens, and external app connections.",
+            product: "Processes Stripe and MercadoPago checkouts/webhooks, AI consultant/architect chats, resume PDFs, and GitHub/LinkedIn/Upwork/Telegram syncs.",
+            architect: "Constructs Supabase clients with caller Authorization headers so RLS applies end-to-end; stores external OAuth tokens AES-256-GCM encrypted in public.connections.",
+            systems: "64 isolated Deno 2 entrypoints sharing _shared/{otel,opik-tracer,ai-router} with strict lockfile parity."
+          }
+        },
+        "n-mlx": {
+          tier: "Tier 3 · Local Apple Silicon AI",
+          title: "w0m-mlx (Rust Metal + omlx + mlx-vlm + Headroom)",
+          specs: "wom7-mlx-rs (:1339/:1340) · omlx 0.7.3 (:8888) · mlx-vlm 0.7.11 (:8080) · headroom 0.39 (:8787/:8788)",
+          paths: "w0m-mlx/w0m-mlx/ · w0m-pr/{mlx-rs,omlx,mlx-vlm,headroom}",
+          guard: "Headroom proxies run on dedicated ports (:8787/:8788) so CLI streams are never rewritten unexpectedly.",
+          desc: {
+            novice: "Private AI models running directly on local Apple Silicon chips for coding, vision, and image generation with zero cloud API bills.",
+            product: "Provides offline-capable multimodal reasoning, UI screenshot inspection, and context compression for high-velocity engineering sessions.",
+            architect: "Pairs Rust axum + mlx-rs 0.33 Metal server with Python omlx 0.7.3 (4-bit Gemma 4 fused decode guard) and 2-bit FLUX.2 image generation.",
+            systems: "Fronted by headroom 0.39.0 context compression (:8787 cloud / :8788 local) to shrink large tool payloads before LLM prefill."
+          }
+        },
+        "n-kb": {
+          tier: "Tier 3 · Graph & Hybrid Vector Retrieval",
+          title: "Graphify (92.5k Nodes) + Codegraph + SVD/FTS5 Vector KB",
+          specs: "graphify 0.9.100 (92,477 Nodes / 136,105 Edges) · codegraph v1.6.2 · corpus.sqlite (2,300+ Docs)",
+          paths: "scripts/w0m_kb_vector.py · scripts/graph_health.py · w0m-web/docs/KNOWLEDGE-GRAPH.md",
+          guard: "SHA-256 mirror deduplication + classify_source_boundary prevent duplicate RRF hits and block client/personal files.",
+          desc: {
+            novice: "An instant local library map and semantic search engine over every code symbol, architecture decision, spec, and lesson — no internet needed.",
+            product: "Ensures engineers and AI agents reuse existing components and honor past architectural decisions instead of reinventing or breaking features.",
+            architect: "Graph-before-grep protocol: just ask and just kb-search fuse AST call graphs, 92.5k semantic nodes, and 2,300+ canonical docs at $0 API cost.",
+            systems: "SQLite FTS5 Porter BM25 + 128-dim numpy Randomized SVD unit embeddings fused via Reciprocal Rank Fusion (RRF k=60) + spherical k-means topic clusters."
+          }
+        },
+        "n-gate": {
+          tier: "Tier 3 · Security, Skills & Release Governance",
+          title: "First-Place Security Gate, 79 Skills & Certified Deploy",
+          specs: "SkillSpector v2.12 · gitleaks 8.30 · osv-scanner 2.7 · semgrep 1.183 · ast-grep 0.51 · 377 Suites",
+          paths: "w0m-skills/ · w0m-sec/ · scripts/{session_complete,deploy_cert,deploy_logged,env_prune_dead}.py",
+          guard: "Touch-ID-only deploys/migrations; AES-256-GCM pre-prune secret backups; 18 mandatory session-complete gates.",
+          desc: {
+            novice: "An eighteen-point automated safety checkpoint that scans code, dependencies, secrets, and AI skills before stamping a release certificate.",
+            product: "Protects customer trust and uptime with zero known dependency CVEs, air-gapped security auditing, and reproducible single-branch releases.",
+            architect: "Combines Elephant-Goldfish (egm-*) adversarial review, 7-dialect SDD governance, NVIDIA SkillSpector across 71 skill roots, and Infisical zero-.env injection.",
+            systems: "session_complete.py runs 18 gates, stamps deploy_cert.py tree-set SHA-256, lands member repos before @wom root, and audits transcripts via deploy_logged.py."
+          }
+        }
+      };
+
+      const FLOWS = [
+        {
+          id: "checkout",
+          label: "1. 1-Click OAuth & Checkout",
+          steps: [
+            {
+              nodes: ["n-web", "n-ssr"],
+              edges: [["n-web", "n-ssr"]],
+              title: "Visitor selects a fixed-price package on /services or /solutions",
+              code: "w0m-web/apps/web/src/pages/{services,solutions} · edge-cache-policy.ts",
+              text: {
+                novice: "A buyer opens webomage.com, views instant edge-cached service tiers, and clicks Buy without filling out a long intake form.",
+                product: "Anonymous public SSR delivers sub-100ms edge-cached pages and a single clear CTA per fixed-price service tier.",
+                architect: "Cloudflare SSR Worker serves cached HTML for anonymous requests while bypassing cache the instant auth cookies appear.",
+                systems: "applyAnonymousHtmlEdgeCache inspects Cookie/Authorization/Set-Cookie headers before storing public HTML in BoundedTtlCache."
+              }
+            },
+            {
+              nodes: ["n-ssr", "n-gotrue"],
+              edges: [["n-ssr", "n-gotrue"]],
+              title: "1-Click PKCE OAuth registration via GoTrue (Google, LinkedIn OIDC, GitHub)",
+              code: "w0m-web/packages/lib/src/auth/handlers.ts (OAUTH_PROVIDERS)",
+              text: {
+                novice: "They sign in with one click using Google, LinkedIn, or GitHub.",
+                product: "Eliminates password friction while capturing verified identity before payment.",
+                architect: "GoTrue PKCE OAuth exchange restricted to the 3 audited providers in handlers.ts, issuing SSR-compatible session cookies.",
+                systems: "PKCE code_verifier exchange sets chunked HttpOnly/Secure Supabase session cookies shared across webomage.com subdomains."
+              }
+            },
+            {
+              nodes: ["n-ssr", "n-edgefn"],
+              edges: [["n-ssr", "n-edgefn"]],
+              title: "Authenticated checkout session created via stripe-checkout Edge Function",
+              code: "w0m-api/supabase/functions/stripe-checkout/index.ts",
+              text: {
+                novice: "A secure back-office clerk creates a Stripe payment link tied to their new account.",
+                product: "Routes fixed-price tiers directly to Stripe Checkout (or MercadoPago in LATAM) with pre-bound user metadata.",
+                architect: "SSR invokes frozen Deno 2 stripe-checkout Edge Function forwarding the caller's JWT Authorization header.",
+                systems: "Deno 2 --frozen=true function validates catalog SKU/price server-side and creates a Stripe Checkout Session."
+              }
+            },
+            {
+              nodes: ["n-edgefn", "n-pg"],
+              edges: [["n-edgefn", "n-pg"]],
+              title: "Webhook settlement & append-only commercial *_audit_log record",
+              code: "w0m-api/supabase/functions/stripe-webhook/ · PostgreSQL *_audit_log",
+              text: {
+                novice: "When payment succeeds, the master ledger records the contract and writes a permanent receipt.",
+                product: "Automatically provisions client org entitlement so onboarding starts immediately.",
+                architect: "stripe-webhook verifies signature, updates relational contract state under RLS, and fires SECURITY DEFINER *_audit_log triggers.",
+                systems: "Idempotent webhook upsert into PostgreSQL 15 with old/new JSONB payload logged atomically in transaction."
+              }
+            },
+            {
+              nodes: ["n-cp", "n-ssr", "n-pg"],
+              edges: [["n-cp", "n-ssr"], ["n-ssr", "n-pg"]],
+              title: "Client lands in apps/cp Onboarding Wizard & selects SDD Spec Dialect",
+              code: "w0m-web/apps/cp/ · scripts/client_spec_init.py (7 SDD dialects)",
+              text: {
+                novice: "The buyer arrives in their new Control Panel workspace and picks how they want project specs organized.",
+                product: "Embedded Services Configurator + 7-dialect SDD selector (OpenSpec, Spec-Kit, GSD, BMAD, Conductor, cc-sdd) kickstarts delivery.",
+                architect: "Tenant-scoped /o/[org] workspace binds dedicated R2 vault prefix and per-project Mistral Free-Tier scope.",
+                systems: "4-axis wom_can authorizes org member access while client_spec_init scaffolds the chosen spec directory contract."
+              }
+            }
+          ]
+        },
+        {
+          id: "impersonate",
+          label: "2. Admin Impersonation Handoff",
+          steps: [
+            {
+              nodes: ["n-cp", "n-gotrue"],
+              edges: [["n-cp", "n-ssr"], ["n-ssr", "n-gotrue"]],
+              title: "Platform Admin authenticates with AAL2 TOTP/Passkey MFA on apps/cp",
+              code: "w0m-web/packages/ui/MfaChallenge · wom_jwt_is_aal2()",
+              text: {
+                novice: "An administrator unlocks their control panel using both their login and a second hardware/authenticator check.",
+                product: "Protects sensitive support tools behind mandatory multi-factor authentication.",
+                architect: "Admin credentials preserve platform capability across domains without silent hostname role demotion, gated by AAL2.",
+                systems: "Supabase JWT aal == 'aal2' verified in Astro middleware and PostgreSQL wom_jwt_is_aal2()."
+              }
+            },
+            {
+              nodes: ["n-cp", "n-ssr", "n-pg"],
+              edges: [["n-cp", "n-ssr"], ["n-ssr", "n-pg"]],
+              title: "HMAC handoff token minted at /api/auth/impersonate-handoff",
+              code: "w0m-web/apps/cp/src/pages/api/auth/impersonate-handoff.ts",
+              text: {
+                novice: "The system prints a short-lived, tamper-proof visitor pass naming both the admin and the user they are helping.",
+                product: "Lets support engineers troubleshoot exact client or talent views across subdomains safely.",
+                architect: "Signs target profile/org + actor ID + short expiry with cloudflare:workers env secret and logs the event.",
+                systems: "Reads signing secret via import { env } from 'cloudflare:workers' (zero locals.runtime.env)."
+              }
+            },
+            {
+              nodes: ["n-me", "n-ssr", "n-pg"],
+              edges: [["n-me", "n-ssr"], ["n-ssr", "n-pg"]],
+              title: "Target portal (apps/me or client view) renders exact scoped rows",
+              code: "w0m-web/apps/me/ · me-pages-own-rows.test.ts",
+              text: {
+                novice: "Opening me.webomage.com shows strictly that member's own items — never mixing in anyone else's data.",
+                product: "Reproduces the exact member experience with a clear impersonation banner and one-click exit.",
+                architect: "Explicit profile_id = acting_profile_id filters ensure an admin viewing /me sees only the target profile's rows.",
+                systems: "Enforced statically by me-pages-own-rows.test.ts and audited in append-only security logs."
+              }
+            }
+          ]
+        },
+        {
+          id: "vault",
+          label: "3. Obsidian R2 Vault & @k7 Git TUI",
+          steps: [
+            {
+              nodes: ["n-ext", "n-me", "n-r2"],
+              edges: [["n-ext", "n-r2"], ["n-me", "n-ssr"], ["n-ssr", "n-r2"]],
+              title: "obsidian-w0m syncs project vault deltas to Cloudflare R2 ($0 egress)",
+              code: "w0m-ext/obsidian-w0m/ · apps/me/src/pages/api/vault/r2/",
+              text: {
+                novice: "Notes edited in Obsidian on laptop or phone sync straight to zero-fee Cloudflare lockers.",
+                product: "Cross-device markdown collaboration for engagements without hourly token logouts or bandwidth fees.",
+                architect: "Uses revocable SHA-256-hashed w0m_vst_ device tokens instead of 1-hour browser JWTs, streaming directly to/from R2.",
+                systems: "me-api-parity.test.ts enforces /api/vault/r2 route parity; binary objects never touch Supabase 500 MB storage."
+              }
+            },
+            {
+              nodes: ["n-k7", "n-cp"],
+              edges: [["n-k7", "n-cp"]],
+              title: "Crew inspects 5 Git & LLM remote flavours in CrewToolkitAndTabLinuxConsole",
+              code: "k7hub/src/git_browser.rs · packages/lib/src/security/k7-git-browser.ts",
+              text: {
+                novice: "Inside the Control Panel, engineers browse GitHub, GitLab, Gitea, HuggingFace models, and AI agent checkpoints in a crisp terminal view.",
+                product: "Unified visibility over code branches, multi-gigabyte model weight shards, and agent checkpoints.",
+                architect: "Mirrors k7hub::git_browser (wasm32-unknown-unknown) with TypeScript buildK7GitWasmTuiFrame in apps/cp.",
+                systems: "Uses u64 byte counters for >4 GiB .safetensors/.gguf shards across GitHub, GitLab, HuggingFaceHub, ForgejoGitea, and LlmAgentCheckpoint."
+              }
+            }
+          ]
+        },
+        {
+          id: "guardrails",
+          label: "4. Guardrails, SkillSpector & Deploy Cert",
+          steps: [
+            {
+              nodes: ["n-orca", "n-gate"],
+              edges: [["n-orca", "n-kb"]],
+              title: "Isolated 10-repo worktree cut via just agent-tree <name>",
+              code: "w0m-web/project/scripts/agent_tree.py · .tasks/T##.md",
+              text: {
+                novice: "Before changing a single line, the developer or AI creates a private sandbox copy of all 10 repositories and files a ticket.",
+                product: "Prevents concurrent sessions from colliding while keeping the live checkout clean for owner releases.",
+                architect: "Single-branch beta model (AgDR-0032): local branch agent/<name> cut from origin/beta inside ~/.w0m/work/<name>/w0m.",
+                systems: "ensure_prepush_deps materializes independent node_modules whenever repo lockfiles diverge from canonical root."
+              }
+            },
+            {
+              nodes: ["n-gate", "n-ssr", "n-edgefn"],
+              edges: [["n-gate", "n-ssr"], ["n-gate", "n-edgefn"]],
+              title: "First-Place Guardrails scan code, lockfiles, barrel imports & 71 skill roots",
+              code: "scripts/skill_spector_check.py · osv-scanner · gitleaks · browser-barrel-node-free.test.ts",
+              text: {
+                novice: "Automated scanners check for leaked passwords, vulnerable packages, unsafe AI skill instructions, and browser bundle mistakes.",
+                product: "Zero critical/high CVEs or prompt-injected skills can slip into production.",
+                architect: "Runs gitleaks, osv-scanner (6 pnpm lockfiles), semgrep, ast-grep, NVIDIA SkillSpector v2.12 (YARA + AST), and mcp_ratchet.py.",
+                systems: "Walks @webomage/lib transitive barrel to guarantee 0 node:* imports and 0 Vite/Rolldown build warnings."
+              }
+            },
+            {
+              nodes: ["n-gate"],
+              edges: [],
+              title: "session_complete.py passes 18 gates, stamps deploy_cert.py & lands atomically",
+              code: "scripts/session_complete.py · scripts/deploy_cert.py · scripts/deploy_logged.py",
+              text: {
+                novice: "Eighteen final checks pass, a cryptographic seal is stamped across all 10 repos, and the live workspace fast-forwards cleanly.",
+                product: "Cuts warm deploy verification to <0.2s while keeping live production releases strictly owner Touch-ID gated.",
+                architect: "Pushes member repos to origin/beta before @wom root, archives session transcript, and verifies state-check exits 0 last.",
+                systems: "deploy_logged.py classifies zero-finding osv/ast-grep pass summaries cleanly so build_warnings=0 and other_trouble=0."
+              }
+            }
+          ]
+        },
+        {
+          id: "ask-mlx",
+          label: "5. Local Graph + Vector KB + Apple MLX",
+          steps: [
+            {
+              nodes: ["n-orca", "n-kb"],
+              edges: [["n-orca", "n-kb"]],
+              title: "Agent runs just ask / just kb-search before touching grep or cloud APIs",
+              code: "scripts/w0m_kb_vector.py · codegraph · graphify (92,477 nodes)",
+              text: {
+                novice: "Before writing code, the AI checks a local map of 92,000+ code connections and 2,300+ engineering documents on disk.",
+                product: "Instant architectural recall at $0 API cost and zero cloud data exposure.",
+                architect: "Combines codegraph symbol/caller AST, 92,477-node graphify graph, and SHA-256-deduplicated corpus.sqlite.",
+                systems: "Reciprocal Rank Fusion (k=60) merges SQLite FTS5 Porter BM25 ranks with 128-dim numpy Randomized SVD cosine similarity."
+              }
+            },
+            {
+              nodes: ["n-kb", "n-mlx"],
+              edges: [["n-kb", "n-mlx"]],
+              title: "Headroom compresses context into local Apple Silicon MLX inference",
+              code: "headroom (:8788) -> omlx 0.7.3 (:8888) / wom7-mlx-rs (:1339) / mlx-vlm 0.7.11 (:8080)",
+              text: {
+                novice: "A smart compressor trims extra text and feeds the question to local AI models running on Mac Metal GPUs.",
+                product: "Enables rapid local coding, vision inspection, and image generation without external token limits.",
+                architect: "Dedicated proxy ports (:8787 cloud / :8788 local) front Rust axum mlx-rs 0.33 and Python omlx Gemma 4 / FLUX servers.",
+                systems: "4-bit Gemma 4 fused decode guard on :8888 + 2-bit FLUX.2 on :8080 + Rust safetensors/tokenizers serving on :1339/:1340."
+              }
+            }
+          ]
+        }
+      ];
+
+      const CATALOG = [
+        {
+          cat: "web",
+          tag: "w0m-web · Edge SSR",
+          title: "Astro 7.3.3 + Svelte 5.56.4 + Rolldown Toolchain",
+          summary: "4 Cloudflare Workers SSR apps (web, cp, me, demo) compiled with Vite 7.3.7 / Rolldown 1.2.14, Tailwind 4.3.3, and TypeScript 6.0.3.",
+          details: [
+            "220 git-tracked .svelte components using 100% Svelte 5 runes ($props, $state, $derived, $effect)",
+            "cloudflare:workers env enforced mechanically by worker_env_gate.py (zero locals.runtime.env)",
+            "Anonymous public HTML edge cache (edge-cache-policy.ts) + readJsonSafe island resilience"
+          ]
+        },
+        {
+          cat: "web",
+          tag: "@webomage/ui · Design System",
+          title: "25 Canonical Dark-First Glassmorphic Primitives",
+          summary: "Single-source design-system/ -> packages/ui library with [data-app] brand tokens and 4-posture responsive contract.",
+          details: [
+            "Primitives: Badge, Button, Card, Checkbox, Input, Label, Separator, AppShell, Breadcrumb, ContextSwitcher, EmptyState, PageHeader, SideNav, Tabs, BlueprintCard, ComplexityBadge, GlassCard, SegmentBadge, StatusDot, TechIcon, Dialog, Select, BugReportWidget, QuickViewModal, Table",
+            "Enforces RGB-triplet rgba(var(--...), alpha) tokens and zero internal T##/AgDR leaks (ui-ticket-leak-check)"
+          ]
+        },
+        {
+          cat: "web",
+          tag: "w0m-web/packages/* · 9 Libraries",
+          title: "Isomorphic Shared Workspace Packages",
+          summary: "Shared auth, 4-axis guards, browser WebMCP, bot fingerprinting, multi-engine crawling, and WebAuthn/LATAM KYC.",
+          details: [
+            "packages: ui, lib, authz, webmcp, fingerprint, crawler, kyc, logger, mcp-aws-fundamentals",
+            "browser-barrel-node-free.test.ts walks packages/lib/src/index.ts to block any node:* import (isomorphic FIPS 180-4 SHA-256)"
+          ]
+        },
+        {
+          cat: "edge",
+          tag: "w0m-api · wom7api Worker",
+          title: "Hono >=4.13.16 API Gateway, 19 Workflows & ChatMemoryDO",
+          summary: "Durable multi-step Cloudflare Workflows and SQLite-backed conversational state Durable Object.",
+          details: [
+            "19 Workflow classes: GamificationEvent, DomainScanner, JobScanner, LinkedinSync, LinkedinBroadcast, LinkedinDataErasure, CertEvaluator, CertIngestion, JobAggregator, JobScorer, VectorizeJob, VectorizeProfile, VectorizeVault, Newsletter, CvGenerator, DeckGenerator, WebnamesBatch, Crawler, PdfGenerator",
+            "Lockstep hono >=4.13.16 across all repos (0 OSV vulnerabilities)"
+          ]
+        },
+        {
+          cat: "edge",
+          tag: "w0m-cf · wom7func Worker",
+          title: "5/5 Account Crons, Stateless POST /mcp & AI Proxy",
+          summary: "Consolidates every Cloudflare Free-Tier cron schedule (:8790 dev), JSON-RPC MCP tools, Workers AI, and ATS adapters.",
+          details: [
+            "Cron schedules: */15, */30, 0 8 * * *, 0 */6 * * *, 0 14 * * SUN (absorbed webnames-crawler)",
+            "Stateless JSON-RPC 2.0 POST /mcp (@modelcontextprotocol/sdk/types.js), /ai/chat, /ai/embed, Huntflow & Merge ATS"
+          ]
+        },
+        {
+          cat: "edge",
+          tag: "Supabase · PostgreSQL 15",
+          title: "393 SQL Migrations, 4-Axis wom_can & *_audit_log",
+          summary: "Relational ledger of record enforcing tenant, unit, worn hat, and MFA capabilities with append-only audit triggers.",
+          details: [
+            "Unified public.orgs (<org>.<unit>), 2-party engagements, deterministic public.hats ordering",
+            "supabase_surface_drift_check.py + anon_execute_ratchet.py + 18 live authz probes (0 RED)"
+          ]
+        },
+        {
+          cat: "edge",
+          tag: "Supabase · Deno 2",
+          title: "64 Frozen Deno 2 Edge Functions & 7 Connector Families",
+          summary: "Serverless RPCs for Stripe/MercadoPago billing, 4 AI personas, PDF/resume generation, and AES-256-GCM connectors.",
+          details: [
+            "Byte-identical w0m-api/deno.lock == supabase/functions/deno.lock enforced by deno_lock_parity_check.py",
+            "GoTrue PKCE OAuth x3 (google, linkedin_oidc, github) + strict DMARC p=quarantine mail (Google Workspace + Resend)"
+          ]
+        },
+        {
+          cat: "edge",
+          tag: "Cloudflare R2 + Mistral Scope",
+          title: "$0-Egress Engagement Vaults & Isolated Project AI",
+          summary: "Stores all Obsidian vaults, PDFs, and media in R2 while isolating per-project Mistral Free-Tier keys.",
+          details: [
+            "wom-engagement-vaults + wom-public-assets buckets + KV (SESSION, SETTINGS)",
+            "scripts/mistral_project_scope.py enforces allow_global_key_fallback = False for non-w0m projects"
+          ]
+        },
+        {
+          cat: "rust",
+          tag: "w0m-cf · #![no_std] Rust WASM",
+          title: "w0m-wasm-utils (550 Bytes Raw / 389 Bytes Gzipped)",
+          summary: "Zero-allocator Rust 2024 wasm32-unknown-unknown micro-kernel embedded inside wom7func.",
+          details: [
+            "Exports fnv1a64 hashing, bounded Levenshtein edit distance, and token-overlap similarity scoring",
+            "Stays orders of magnitude under the 300 KB gzipped edge WASM budget"
+          ]
+        },
+        {
+          cat: "rust",
+          tag: "@k7 · 16 Cargo Packages",
+          title: "k7hub Super-TUI & 5-Flavour Git/LLM Browser",
+          summary: "11 top-level Rust crates (plus 5 k7c FinOps/Terraform subcrates) and wasm32-unknown-unknown git_browser.",
+          details: [
+            "Top-level crates: k7hub, k7env, k7pwd, k7d, k7s, k7c (6 packages), k7llm, k7spec, k7sol, k7tg, k7kb",
+            "5 GitProviderFlavour variants: GitHub, GitLab, HuggingFaceHub (u64 >4 GiB shards), ForgejoGitea, LlmAgentCheckpoint"
+          ]
+        },
+        {
+          cat: "rust",
+          tag: "w0m-mlx · Rust Metal Server",
+          title: "wom7-mlx-rs (mlx-rs 0.33 + axum 0.7)",
+          summary: "Native Apple Silicon Metal tensor inference server on ports :1339/:1340.",
+          details: [
+            "Built on mlx-rs 0.33.0, tokio, axum 0.7, safetensors, and HuggingFace tokenizers",
+            "Paired with Python omlx 0.7.3 (:8888) and mlx-vlm 0.7.11 (:8080)"
+          ]
+        },
+        {
+          cat: "ai",
+          tag: "Hybrid Vector KB · corpus.sqlite",
+          title: "SQLite FTS5 BM25 + 128-Dim Randomized SVD (RRF)",
+          summary: "Zero-API-cost semantic + lexical search across 2,300+ deduplicated canonical @wom documents and 21,000+ chunks.",
+          details: [
+            "Indexes root docs, .agents/reports, active w0m-web/docs, decisions, .tasks, openspec, LESSONS.md, ROADMAP.md",
+            "SHA-256 deduplication eliminates mirrored report twins; classify_source_boundary excludes client/personal files"
+          ]
+        },
+        {
+          cat: "ai",
+          tag: "AST & Semantic Graphs",
+          title: "Graphify (92,477 Nodes) + Codegraph v1.6.2 + Serena",
+          summary: "Pre-built symbol call graphs, 136,105 semantic edges, D3 AST viewer (:8765), and .astro LSP support.",
+          details: [
+            "codegraph sync refreshes per commit; just ask queries AST symbols + Vector KB + Graphify together",
+            "Custom serena v1.7.0-w0m.1 fork adds native Astro language-server protocol support"
+          ]
+        },
+        {
+          cat: "ai",
+          tag: "w0m-skills · 79 Registered Skills",
+          title: "Elephant-Goldfish (egm-*) & 3-Tier Dev Modes",
+          summary: "69 top-level skill directories (79 registry entries, 42 deployed) separating stateful builders from fresh-context reviewers.",
+          details: [
+            "Includes 10 w0m-sdlc-* gates, 7 Google egm-* skills, fact-checker, doubt-driven-development, socrates, torvalds, eli5, job-hunter",
+            "scripts/dev_mode.py tunes execution across ultra (25-45s), balance (60-90s), and wise (8-15m)"
+          ]
+        },
+        {
+          cat: "sec",
+          tag: "7-Dialect SDD Bridge",
+          title: "Multi-Dialect Spec Bootstrap & Anti-Slopsquatting",
+          summary: "First-class detection, UI selection, and scaffolding across 7 Spec-Driven Development ecosystems.",
+          details: [
+            "Dialects: w0m-openspec, github-speckit (.specify/), open-gsd (.planning/), openspec, bmad (_bmad/), conductor, cc-sdd (.kiro/specs/)",
+            "package_legitimacy_check.py blocks hallucinated/slopsquatted packages across all repos"
+          ]
+        },
+        {
+          cat: "sec",
+          tag: "First-Place Security Gate",
+          title: "NVIDIA SkillSpector v2.12 + w0m-sec Air-Gapped Runner",
+          summary: "Simultaneous YARA + tree-sitter AST skill auditing, SAST, lockfile CVE scanning, and --network none containment.",
+          details: [
+            "Scans 71 unique skill roots (crit/high = 0, SC9 = 0) + 14 governed MCP servers (mcp_ratchet.py)",
+            "gitleaks 8.30.1, osv-scanner 2.7.0 (6 pnpm lockfiles), semgrep 1.183.0, ast-grep 0.51.0, 17/17 w0m-sec pytest"
+          ]
+        },
+        {
+          cat: "sec",
+          tag: "Infisical + Certified Release",
+          title: "71 Active Cloud Secrets, AES-256-GCM Backups & 18 Gates",
+          summary: "Zero .env files in repo; process-injected secrets, tree-set SHA-256 deploy certs, and calibrated deploy logs.",
+          details: [
+            "44 retired beta keys backed up via verified AES-256-GCM (0600) and pruned via --type=shared (115 -> 71)",
+            "377 registered suites in test-suites.json (Vitest 4.1, Playwright 1.61, Gauge 1.6, mypy 2.4.0, oxlint 1.74)"
+          ]
+        },
+        {
+          cat: "sec",
+          tag: "w0m-ext + w0m-pr/* Forks",
+          title: "Cross-Browser/iOS MV3 & 63 Governed Upstream Forks",
+          summary: "Desktop/iOS/Orca extensions plus 23 local w0m-pr/* checkouts and 48 cataloged AI-tool forks.",
+          details: [
+            "scripts/w0m_prs.py enforces 6 gates (CONTRIBUTING, template, duplicate check, Fixes #, GPG -S, git merge-tree)",
+            "Active forks include SkillSpector, orca, linuxontab, graphify, headroom, omlx, mlx-rs, mlx-vlm, virtual-fido"
+          ]
+        }
+      ];
+
+      let currentAudience = "novice";
+      let selectedNode = "n-web";
+      let currentFlowIdx = 0;
+      let currentStepIdx = 0;
+      let currentCat = "all";
+
+      const elTruth = document.getElementById("ladder-truth");
+      const elHeading = document.getElementById("ladder-heading");
+      const elAnalogy = document.getElementById("ladder-analogy");
+      const elBoundary = document.getElementById("ladder-boundary");
+      const elTableBody = document.getElementById("ladder-table-body");
+
+      const elInspTier = document.getElementById("insp-tier");
+      const elInspTitle = document.getElementById("insp-title");
+      const elInspDesc = document.getElementById("insp-desc");
+      const elInspSpecs = document.getElementById("insp-specs");
+      const elInspPaths = document.getElementById("insp-paths");
+      const elInspGuard = document.getElementById("insp-guard");
+
+      const svgNodes = Array.from(document.querySelectorAll("g.node"));
+      const svgEdges = Array.from(document.querySelectorAll("path.edge"));
+
+      function renderLadder() {
+        const data = LADDERS[currentAudience];
+        elHeading.textContent = data.heading;
+        elTruth.textContent = data.truth;
+        elAnalogy.textContent = data.analogy;
+        elBoundary.textContent = data.boundary;
+        elTableBody.innerHTML = "";
+        data.rows.forEach((row) => {
+          const tr = document.createElement("tr");
+          row.forEach((cell, idx) => {
+            const td = document.createElement("td");
+            if (idx === 1) {
+              const c = document.createElement("code");
+              c.textContent = cell;
+              td.appendChild(c);
+            } else {
+              td.textContent = cell;
+            }
+            tr.appendChild(td);
+          });
+          elTableBody.appendChild(tr);
+        });
+      }
+
+      function renderInspector() {
+        const n = NODES[selectedNode];
+        if (!n) return;
+        elInspTier.textContent = n.tier;
+        elInspTitle.textContent = n.title;
+        elInspDesc.textContent = n.desc[currentAudience];
+        elInspSpecs.textContent = n.specs;
+        elInspPaths.textContent = n.paths;
+        elInspGuard.textContent = n.guard;
+      }
+
+      function highlightTopology(activeNodeIds, activeEdgePairs) {
+        if (!activeNodeIds || activeNodeIds.length === 0) {
+          svgNodes.forEach((g) => {
+            g.classList.remove("dimmed");
+            g.classList.toggle("active", g.dataset.node === selectedNode);
+          });
+          svgEdges.forEach((p) => {
+            p.classList.remove("dimmed", "highlighted");
+            p.setAttribute("marker-end", "url(#arrow)");
+          });
+          return;
+        }
+        const nodeSet = new Set(activeNodeIds);
+        svgNodes.forEach((g) => {
+          const id = g.dataset.node;
+          g.classList.toggle("active", nodeSet.has(id));
+          g.classList.toggle("dimmed", !nodeSet.has(id));
+        });
+        svgEdges.forEach((p) => {
+          const from = p.dataset.from;
+          const to = p.dataset.to;
+          const match = activeEdgePairs
+            ? activeEdgePairs.some((pair) => pair[0] === from && pair[1] === to)
+            : (nodeSet.has(from) || nodeSet.has(to));
+          p.classList.toggle("highlighted", match);
+          p.classList.toggle("dimmed", !match);
+          p.setAttribute("marker-end", match ? "url(#arrow-active)" : "url(#arrow)");
+        });
+      }
+
+      function selectSingleNode(nodeId) {
+        selectedNode = nodeId;
+        renderInspector();
+        const connectedNodes = new Set([nodeId]);
+        const connectedEdges = [];
+        svgEdges.forEach((p) => {
+          if (p.dataset.from === nodeId || p.dataset.to === nodeId) {
+            connectedNodes.add(p.dataset.from);
+            connectedNodes.add(p.dataset.to);
+            connectedEdges.push([p.dataset.from, p.dataset.to]);
+          }
+        });
+        svgNodes.forEach((g) => {
+          const id = g.dataset.node;
+          g.classList.toggle("active", id === nodeId);
+          g.classList.toggle("dimmed", !connectedNodes.has(id));
+        });
+        svgEdges.forEach((p) => {
+          const isConn = p.dataset.from === nodeId || p.dataset.to === nodeId;
+          p.classList.toggle("highlighted", isConn);
+          p.classList.toggle("dimmed", !isConn);
+          p.setAttribute("marker-end", isConn ? "url(#arrow-active)" : "url(#arrow)");
+        });
+      }
+
+      function renderFlowTabs() {
+        const wrap = document.getElementById("flow-tabs");
+        wrap.innerHTML = "";
+        FLOWS.forEach((flow, idx) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "btn" + (idx === currentFlowIdx ? " active" : "");
+          btn.setAttribute("role", "tab");
+          btn.setAttribute("aria-selected", idx === currentFlowIdx ? "true" : "false");
+          btn.textContent = flow.label;
+          btn.addEventListener("click", () => {
+            currentFlowIdx = idx;
+            currentStepIdx = 0;
+            renderFlowTabs();
+            renderWalkthrough(true);
+          });
+          wrap.appendChild(btn);
+        });
+      }
+
+      function renderWalkthrough(syncTopology) {
+        const flow = FLOWS[currentFlowIdx];
+        const step = flow.steps[currentStepIdx];
+        document.getElementById("walk-counter").textContent =
+          "Step " + (currentStepIdx + 1) + " of " + flow.steps.length;
+        document.getElementById("walk-title").textContent = step.title;
+        document.getElementById("walk-body").textContent = step.text[currentAudience];
+        document.getElementById("walk-code").textContent = step.code;
+
+        const dots = document.getElementById("walk-dots");
+        dots.innerHTML = "";
+        flow.steps.forEach((_, sIdx) => {
+          const dot = document.createElement("button");
+          dot.type = "button";
+          dot.className = "step-dot";
+          dot.textContent = String(sIdx + 1);
+          dot.setAttribute("aria-label", "Go to step " + (sIdx + 1));
+          if (sIdx === currentStepIdx) {
+            dot.setAttribute("aria-current", "step");
+          }
+          dot.addEventListener("click", () => {
+            currentStepIdx = sIdx;
+            renderWalkthrough(true);
+          });
+          dots.appendChild(dot);
+        });
+
+        if (syncTopology && step.nodes.length > 0) {
+          selectedNode = step.nodes[0];
+          renderInspector();
+          highlightTopology(step.nodes, step.edges);
+        }
+      }
+
+      function renderCatalog() {
+        const q = document.getElementById("catalog-search").value.trim().toLowerCase();
+        const grid = document.getElementById("catalog-grid");
+        const empty = document.getElementById("catalog-empty");
+        grid.innerHTML = "";
+        let shown = 0;
+
+        CATALOG.forEach((item) => {
+          if (currentCat !== "all" && item.cat !== currentCat) return;
+          const hay = (item.tag + " " + item.title + " " + item.summary + " " + item.details.join(" ")).toLowerCase();
+          if (q && !hay.includes(q)) return;
+          shown += 1;
+
+          const card = document.createElement("article");
+          card.className = "tech-card";
+
+          const top = document.createElement("div");
+          const badge = document.createElement("span");
+          badge.className = "card-tag";
+          badge.textContent = item.tag;
+          const h3 = document.createElement("h3");
+          h3.textContent = item.title;
+          const p = document.createElement("p");
+          p.textContent = item.summary;
+          top.appendChild(badge);
+          top.appendChild(h3);
+          top.appendChild(p);
+
+          const det = document.createElement("details");
+          det.className = "deep-dive";
+          const sum = document.createElement("summary");
+          sum.textContent = "Inspect internals & invariants";
+          const ul = document.createElement("ul");
+          item.details.forEach((d) => {
+            const li = document.createElement("li");
+            li.textContent = d;
+            ul.appendChild(li);
+          });
+          det.appendChild(sum);
+          det.appendChild(ul);
+
+          card.appendChild(top);
+          card.appendChild(det);
+          grid.appendChild(card);
+        });
+
+        empty.hidden = shown > 0;
+      }
+
+      // Wire Audience Buttons
+      document.querySelectorAll("[data-audience]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          currentAudience = btn.dataset.audience;
+          document.querySelectorAll("[data-audience]").forEach((b) => {
+            const active = b === btn;
+            b.classList.toggle("active", active);
+            b.setAttribute("aria-pressed", active ? "true" : "false");
+          });
+          renderLadder();
+          renderInspector();
+          renderWalkthrough(false);
+        });
+      });
+
+      // Wire SVG Nodes
+      svgNodes.forEach((g) => {
+        g.addEventListener("click", () => selectSingleNode(g.dataset.node));
+        g.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            selectSingleNode(g.dataset.node);
+          }
+        });
+      });
+
+      document.getElementById("reset-map-btn").addEventListener("click", () => {
+        highlightTopology([], null);
+      });
+
+      // Wire Step Controls & Arrow Keys
+      document.getElementById("prev-step-btn").addEventListener("click", () => {
+        const len = FLOWS[currentFlowIdx].steps.length;
+        currentStepIdx = (currentStepIdx - 1 + len) % len;
+        renderWalkthrough(true);
+      });
+      document.getElementById("next-step-btn").addEventListener("click", () => {
+        const len = FLOWS[currentFlowIdx].steps.length;
+        currentStepIdx = (currentStepIdx + 1) % len;
+        renderWalkthrough(true);
+      });
+      document.addEventListener("keydown", (ev) => {
+        if (ev.target && (ev.target.tagName === "INPUT" || ev.target.tagName === "TEXTAREA")) return;
+        if (ev.key === "ArrowRight") {
+          const len = FLOWS[currentFlowIdx].steps.length;
+          currentStepIdx = (currentStepIdx + 1) % len;
+          renderWalkthrough(true);
+        } else if (ev.key === "ArrowLeft") {
+          const len = FLOWS[currentFlowIdx].steps.length;
+          currentStepIdx = (currentStepIdx - 1 + len) % len;
+          renderWalkthrough(true);
+        }
+      });
+
+      // Wire Search & Category Filters
+      document.getElementById("catalog-search").addEventListener("input", renderCatalog);
+      document.querySelectorAll("[data-cat]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          currentCat = btn.dataset.cat;
+          document.querySelectorAll("[data-cat]").forEach((b) => b.classList.toggle("active", b === btn));
+          renderCatalog();
+        });
+      });
+
+      // Wire Theme Toggle
+      const themeBtn = document.getElementById("theme-toggle");
+      themeBtn.addEventListener("click", () => {
+        const html = document.documentElement;
+        const next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", next);
+        themeBtn.textContent = "Theme: " + (next === "dark" ? "Dark" : "Light");
+      });
+
+      // Initial Render
+      renderLadder();
+      renderInspector();
+      renderFlowTabs();
+      renderWalkthrough(false);
+      renderCatalog();
+    })();
+  </script>
+</body>
+</html>

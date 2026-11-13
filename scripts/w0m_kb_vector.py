@@ -576,24 +576,26 @@ def rescue_mac_backup_research(
 
 def collect_estate_documents(root: Path = ESTATE_ROOT) -> list[dict[str, Any]]:
     """Collect all canonical `@wom` Markdown documents across the estate for Tier 2 indexing."""
-    sources: list[tuple[str, Path]] = [
-        ("agent_report", root / ".agents" / "reports"),
-        ("web_report", root / "w0m-web" / "docs" / "reports"),
-        ("mac_rescued", root / "w0m-web" / "docs" / "reports" / "mac-recovery"),
-        ("web_research", root / "w0m-web" / "docs" / "research"),
-        ("web_design", root / "w0m-web" / "docs" / "design"),
-        ("decision", root / "docs" / "decisions"),
-        ("estate_doc", root / "docs"),
-        ("ticket", root / ".tasks"),
-        ("openspec", root / "w0m-web" / "openspec"),
-    ]
     single_files: list[tuple[str, Path]] = [
+        ("estate_entry", root / "AGENTS.md"),
+        ("estate_entry", root / "CLAUDE.md"),
         ("lessons", root / "LESSONS.md"),
         ("tech_debt", root / "TECH-DEBT.md"),
         ("roadmap", root / "ROADMAP.md"),
+        ("skills_doc", root / "w0m-skills" / "GENERIC-SDLC-SET.md"),
+        ("repo_readme", root / "w0m-web" / "README.md"),
+        ("repo_readme", root / "w0m-api" / "README.md"),
+        ("repo_readme", root / "w0m-cf" / "README.md"),
+        ("repo_readme", root / "w0m-ext" / "README.md"),
+        ("repo_readme", root / "w0m-sec" / "README.md"),
+        ("repo_readme", root / "w0m-skills" / "README.md"),
+        ("repo_readme", root / "w0m-mlx" / "w0m-mlx" / "README.md"),
+        ("repo_readme", root / "w0m-ava" / "README.md"),
+        ("repo_readme", root / "w0m-clips" / "README.md"),
     ]
 
     seen_paths: set[Path] = set()
+    seen_sha256: set[str] = set()
     docs: list[dict[str, Any]] = []
 
     def _add_file(category: str, file_path: Path) -> None:
@@ -606,17 +608,27 @@ def collect_estate_documents(root: Path = ESTATE_ROOT) -> list[dict[str, Any]]:
             rel_path = str(resolved.relative_to(root.resolve())).replace("\\", "/")
         except ValueError:
             rel_path = str(resolved)
-        # Skip archived tickets folder if huge or keep top-level tickets
-        if "/.tasks/archive/" in f"/{rel_path}":
+        # Skip archived tickets, archived web docs, and raw session transcripts
+        norm_rel = f"/{rel_path}"
+        if (
+            "/.tasks/archive/" in norm_rel
+            or (norm_rel.startswith("/w0m-web/docs/") and "/archive/" in norm_rel)
+            or "/w0m-web/docs/sessions/" in norm_rel
+        ):
             return
         raw_text = resolved.read_text(encoding="utf-8", errors="replace")
         boundary = classify_source_boundary(rel_path, raw_text)
         if boundary in ("client_confidential", "personal_private"):
             return
+        sha256_hex = hashlib.sha256(raw_text.encode("utf-8", errors="replace")).hexdigest()
+        # Deduplicate byte-identical mirrored files (e.g. .agents/reports/* -> w0m-web/docs/reports/*)
+        if sha256_hex in seen_sha256:
+            seen_paths.add(resolved)
+            return
         scrubbed_text, _ = scrub_secrets(raw_text)
         title = extract_title(scrubbed_text, resolved.stem)
-        sha256_hex = hashlib.sha256(raw_text.encode("utf-8", errors="replace")).hexdigest()
         seen_paths.add(resolved)
+        seen_sha256.add(sha256_hex)
         docs.append(
             {
                 "rel_path": rel_path,
@@ -633,19 +645,19 @@ def collect_estate_documents(root: Path = ESTATE_ROOT) -> list[dict[str, Any]]:
         if fpath.is_file():
             _add_file(cat, fpath)
 
-    # Ensure more specific directories (`mac_rescued`, `decision`) are scanned before parent dirs
+    # Ensure more specific directories (`mac_rescued`, `web_report`, `decision`, etc.) run before parent dirs
     ordered_sources = [
         ("mac_rescued", root / "w0m-web" / "docs" / "reports" / "mac-recovery"),
         ("agent_report", root / ".agents" / "reports"),
         ("web_report", root / "w0m-web" / "docs" / "reports"),
         ("web_research", root / "w0m-web" / "docs" / "research"),
         ("web_design", root / "w0m-web" / "docs" / "design"),
+        ("web_doc", root / "w0m-web" / "docs"),
         ("decision", root / "docs" / "decisions"),
         ("estate_doc", root / "docs"),
         ("ticket", root / ".tasks"),
         ("openspec", root / "w0m-web" / "openspec"),
     ]
-    del sources
     for cat, dir_path in ordered_sources:
         if not dir_path.is_dir():
             continue
