@@ -25,6 +25,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T739](.tasks/T739.md) | **P1** | 🆕 **Adopt Google A2UI 1.0 generative agentic UI protocol across w0m-ext (@a2ui/lit 1.0) and w0m-web (@webomage/ui + AI Agent Helper + CP)** | ext, web, lib, tooling | — | ⚪ **queued** |
 | [T719](.tasks/T719.md) | **P2** | 🆕 **Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vibe-Skills, tilth, agtx) & Prototype AgDR Decision Evidence-Decay Check** | tooling, skills, web | openspec/specs/sdlc_toolchain/spec.md | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
@@ -34,6 +35,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T738](.tasks/T738.md) | **P0** | **Fix /solutions & /services direct package checkout and hats_profile_id_fkey profile ID resolution across w0m-api and w0m-web** | api, web | — | ✅ **done** |
 | [T737](.tasks/T737.md) | **P1** | **Wire just tech-explainer into Orca embedded browser & integrate 12-Tool Security Audit Arsenal across w0m-sec and @webomage/lib** | sec, web, lib, tooling | — | ✅ **done** |
 | [T736](.tasks/T736.md) | **P1** | **Remediate Cross-Model Audit Findings across Hybrid Vector KB, Visual Architecture Explainer, and Canonical Tech Docs** | web, tooling | — | ✅ **done** |
 | [T735](.tasks/T735.md) | **P1** | **Deep Adversarial Review of Estate Tech Docs, Full Hybrid Vector KB Indexing, and Self-Contained Interactive Visual Architecture Explainer** | web, tooling | — | ✅ **done** |
