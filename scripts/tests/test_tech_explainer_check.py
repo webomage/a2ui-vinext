@@ -3,18 +3,19 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
+from pathlib import Path
+from unittest import mock
 
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
 ESTATE_ROOT = SCRIPT_DIR.parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-import tech_explainer_check as check  # noqa: E402
-
+import tech_explainer_check as check
 
 MINIMAL_VALID_HTML = """<!doctype html>
 <html lang="en" data-theme="dark">
@@ -97,6 +98,114 @@ class TestTechExplainerCheck(unittest.TestCase):
             errors = check.validate_explainer_html(root)
             self.assertTrue(any("Deprecated duplicate explainer" in e for e in errors), errors)
             self.assertTrue(any("T667" in e for e in errors), errors)
+
+    def test_open_in_orca_browser_creates_and_focuses_new_tab(self) -> None:
+        target = ESTATE_ROOT / check.PRIMARY_REL
+        calls: list[list[str]] = []
+
+        def fake_runner(cmd: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+            calls.append(cmd)
+            if cmd[1:3] == ["tab", "list"]:
+                return subprocess.CompletedProcess(cmd, 0, '{"ok": true, "result": {"tabs": []}}', "")
+            if cmd[1:3] == ["tab", "create"]:
+                return subprocess.CompletedProcess(
+                    cmd,
+                    0,
+                    '{"ok": true, "result": {"browserPageId": "page-99"}}',
+                    "",
+                )
+            if cmd[1:3] == ["tab", "switch"]:
+                return subprocess.CompletedProcess(cmd, 0, '{"ok": true}', "")
+            raise AssertionError(f"Unexpected cmd: {cmd}")
+
+        ok, detail = check.open_in_orca_browser(target, orca_bin="/fake/orca", runner=fake_runner)
+        self.assertTrue(ok)
+        self.assertEqual(detail, "orca:page-99:created")
+        self.assertEqual(
+            calls,
+            [
+                ["/fake/orca", "tab", "list", "--json"],
+                ["/fake/orca", "tab", "create", "--url", target.resolve().as_uri(), "--json"],
+                ["/fake/orca", "tab", "switch", "--page", "page-99", "--focus", "--json"],
+            ],
+        )
+
+    def test_open_in_orca_browser_reuses_and_reloads_existing_tab(self) -> None:
+        target = ESTATE_ROOT / check.PRIMARY_REL
+        target_uri = target.resolve().as_uri()
+        calls: list[list[str]] = []
+
+        def fake_runner(cmd: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+            calls.append(cmd)
+            if cmd[1:3] == ["tab", "list"]:
+                payload = f'{{"ok": true, "result": {{"tabs": [{{"browserPageId": "page-7", "url": "{target_uri}#sec", "active": false}}]}}}}'
+                return subprocess.CompletedProcess(cmd, 0, payload, "")
+            if cmd[1:3] == ["tab", "switch"]:
+                return subprocess.CompletedProcess(cmd, 0, '{"ok": true}', "")
+            if cmd[1] == "reload":
+                return subprocess.CompletedProcess(cmd, 0, '{"ok": true}', "")
+            raise AssertionError(f"Unexpected cmd: {cmd}")
+
+        ok, detail = check.open_in_orca_browser(target, orca_bin="/fake/orca", runner=fake_runner)
+        self.assertTrue(ok)
+        self.assertEqual(detail, "orca:page-7:reused")
+        self.assertEqual(
+            calls,
+            [
+                ["/fake/orca", "tab", "list", "--json"],
+                ["/fake/orca", "tab", "switch", "--page", "page-7", "--focus", "--json"],
+                ["/fake/orca", "reload", "--page", "page-7", "--json"],
+            ],
+        )
+
+    def test_open_in_orca_browser_split_pane(self) -> None:
+        target = ESTATE_ROOT / check.PRIMARY_REL
+        calls: list[list[str]] = []
+
+        def fake_runner(cmd: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+            calls.append(cmd)
+            return subprocess.CompletedProcess(
+                cmd,
+                0,
+                '{"ok": true, "data": {"browserPageId": "page-split"}}',
+                "",
+            )
+
+        ok, detail = check.open_in_orca_browser(
+            target, split="right", orca_bin="/fake/orca", runner=fake_runner
+        )
+        self.assertTrue(ok)
+        self.assertEqual(detail, "orca:page-split:split-right")
+        self.assertEqual(
+            calls,
+            [
+                ["/fake/orca", "tab", "create", "--url", target.resolve().as_uri(), "--split", "right", "--json"],
+            ],
+        )
+
+    def test_main_fails_closed_inside_orca_session_without_system_fallback(self) -> None:
+        with (
+            mock.patch.dict("os.environ", {"ORCA_CLI_COMMAND": "/fake/orca"}, clear=False),
+            mock.patch.object(check, "open_in_orca_browser", return_value=(False, "daemon down")),
+            mock.patch.object(check, "_open_in_system_browser") as sys_open,
+        ):
+            rc = check.main(["--root", str(ESTATE_ROOT), "--mode", "open"])
+            self.assertEqual(rc, 1)
+            sys_open.assert_not_called()
+
+            rc_orca = check.main(["--root", str(ESTATE_ROOT), "--mode", "orca"])
+            self.assertEqual(rc_orca, 1)
+            sys_open.assert_not_called()
+
+    def test_main_falls_back_to_system_only_outside_orca(self) -> None:
+        with (
+            mock.patch.dict("os.environ", {"ORCA_CLI_COMMAND": "", "ORCA_TAB_ID": ""}, clear=False),
+            mock.patch.object(check, "open_in_orca_browser", return_value=(False, "orca not running")),
+            mock.patch.object(check, "_open_in_system_browser") as sys_open,
+        ):
+            rc = check.main(["--root", str(ESTATE_ROOT), "--mode", "open"])
+            self.assertEqual(rc, 0)
+            sys_open.assert_called_once()
 
 
 if __name__ == "__main__":

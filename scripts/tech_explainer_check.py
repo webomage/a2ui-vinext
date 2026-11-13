@@ -1,27 +1,36 @@
 #!/usr/bin/env python3
-"""Governance, Self-Containment, A11y & Consistency Gate for the Interactive Visual Explainer (T736)."""
+"""Governance, Self-Containment, A11y, Consistency & Orca Browser Gate for the Interactive Visual Explainer."""
 
 from __future__ import annotations
 
 import argparse
 import html.parser
 import json
-from pathlib import Path
+import os
 import re
 import subprocess
 import sys
+from collections.abc import Callable, Mapping
+from pathlib import Path
+from typing import Any
 
 ESTATE_ROOT = Path(__file__).resolve().parents[1]
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+
+from agent_provider import resolve_orca_bin
+
 PRIMARY_REL = Path("docs/visuals/w0m-tech-landscape-explainer.html")
 DEPRECATED_REL = Path("w0m-web/docs/walkthroughs/w0m-tech-landscape-explainer.html")
 
 EXTERNAL_NET_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
-    ("external tag src/href", re.compile(r"<(?:script|link|img|iframe)\b[^>]+(?:src|href)\s*=\s*['\"]?(?:https?:)?//", re.I)),
-    ("external SVG <image> href", re.compile(r"<image\b[^>]+(?:href|xlink:href)\s*=\s*['\"]?(?:https?:)?//", re.I)),
-    ("external CSS @import", re.compile(r"@import\s+(?:url\(\s*)?['\"]?(?:https?:)?//", re.I)),
-    ("external CSS url()", re.compile(r"url\(\s*['\"]?(?:https?:)?//", re.I)),
-    ("external srcset", re.compile(r"\bsrcset\s*=\s*['\"][^'\"]*(?:https?:)?//", re.I)),
-    ("runtime fetch/dynamic import", re.compile(r"\b(?:fetch|import)\(\s*['\"](?:https?:)?//", re.I)),
+    ("external tag src/href", re.compile(r"<(?:script|link|img|iframe)\b[^>]+(?:src|href)\s*=\s*['\"]?(?:https?:)?//", re.IGNORECASE)),
+    ("external SVG <image> href", re.compile(r"<image\b[^>]+(?:href|xlink:href)\s*=\s*['\"]?(?:https?:)?//", re.IGNORECASE)),
+    ("external CSS @import", re.compile(r"@import\s+(?:url\(\s*)?['\"]?(?:https?:)?//", re.IGNORECASE)),
+    ("external CSS url()", re.compile(r"url\(\s*['\"]?(?:https?:)?//", re.IGNORECASE)),
+    ("external srcset", re.compile(r"\bsrcset\s*=\s*['\"][^'\"]*(?:https?:)?//", re.IGNORECASE)),
+    ("runtime fetch/dynamic import", re.compile(r"\b(?:fetch|import)\(\s*['\"](?:https?:)?//", re.IGNORECASE)),
 )
 
 TICKET_OR_AGDR_LEAK_RE = re.compile(r"\b(?:T\d{2,4}|AgDR-\d{4}|ADR-\d{4}|AC\d+)\b")
@@ -86,12 +95,12 @@ def validate_explainer_html(root: Path = ESTATE_ROOT) -> list[str]:
         errors.append("Missing prefers-reduced-motion: reduce media query")
 
     # 3. SVG container & interactive node accessibility
-    svg_match = re.search(r"<svg\b[^>]*class\s*=\s*['\"][^'\"]*\btopo\b[^'\"]*['\"][^>]*>", html_text, re.I)
+    svg_match = re.search(r"<svg\b[^>]*class\s*=\s*['\"][^'\"]*\btopo\b[^'\"]*['\"][^>]*>", html_text, re.IGNORECASE)
     if not svg_match:
         errors.append("Missing <svg class=\"topo\"> topology diagram")
     else:
         svg_tag = svg_match.group(0)
-        if re.search(r"\brole\s*=\s*['\"]img['\"]", svg_tag, re.I):
+        if re.search(r"\brole\s*=\s*['\"]img['\"]", svg_tag, re.IGNORECASE):
             errors.append('<svg class="topo"> must NOT have role="img" (hides interactive focusable child buttons)')
 
     node_tags = DATA_NODE_RE.findall(html_text)
@@ -128,7 +137,7 @@ def validate_explainer_html(root: Path = ESTATE_ROOT) -> list[str]:
     data_match = re.search(
         r"""<script\b[^>]*id\s*=\s*['"]explainer-data['"][^>]*>(.*?)</script>""",
         html_text,
-        re.DOTALL | re.I,
+        re.DOTALL | re.IGNORECASE,
     )
     if not data_match:
         errors.append('Missing <script type="application/json" id="explainer-data"> structured dataset block')
@@ -175,10 +184,149 @@ def validate_explainer_html(root: Path = ESTATE_ROOT) -> list[str]:
     return errors
 
 
+def _in_orca_session(env: Mapping[str, str] | None = None) -> bool:
+    env_map: Mapping[str, str] = os.environ if env is None else env
+    return bool(env_map.get("ORCA_CLI_COMMAND", "").strip() or env_map.get("ORCA_TAB_ID", "").strip())
+
+
+def _parse_json_stdout(proc: subprocess.CompletedProcess[str]) -> dict[str, Any]:
+    raw = (proc.stdout or "").strip()
+    if not raw:
+        return {}
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def _extract_payload_body(payload: dict[str, Any]) -> dict[str, Any]:
+    for key in ("result", "data"):
+        candidate = payload.get(key)
+        if isinstance(candidate, dict):
+            return candidate
+    return payload
+
+
+def _extract_tabs_list(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    body = _extract_payload_body(payload)
+    tabs = body.get("tabs") if isinstance(body.get("tabs"), list) else payload.get("tabs")
+    if isinstance(tabs, list):
+        return [t for t in tabs if isinstance(t, dict)]
+    return []
+
+
+def _extract_browser_page_id(payload: dict[str, Any]) -> str:
+    body = _extract_payload_body(payload)
+    return str(
+        body.get("browserPageId")
+        or payload.get("browserPageId")
+        or body.get("tabId")
+        or payload.get("tabId")
+        or ""
+    ).strip()
+
+
+def _find_existing_explainer_page(tabs_payload: dict[str, Any], target_uri: str, basename: str) -> str | None:
+    suffix = f"/{basename}"
+    for tab in _extract_tabs_list(tabs_payload):
+        if tab.get("type") not in (None, "browser"):
+            continue
+        raw_url = str(tab.get("url") or "").split("#", 1)[0].split("?", 1)[0]
+        if raw_url == target_uri or raw_url.endswith(suffix):
+            page_id = str(tab.get("browserPageId") or tab.get("id") or "").strip()
+            if page_id:
+                return page_id
+    return None
+
+
+def _run_orca_cmd(
+    runner: Callable[..., subprocess.CompletedProcess[str]],
+    cmd: list[str],
+    *,
+    timeout: int,
+) -> tuple[subprocess.CompletedProcess[str] | None, str | None]:
+    try:
+        proc = runner(cmd, capture_output=True, text=True, timeout=timeout, check=False)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return None, f"{cmd[0]}: {exc}"
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout or "").strip() or f"{' '.join(cmd[:3])} exited {proc.returncode}"
+        return proc, detail
+    return proc, None
+
+
+def open_in_orca_browser(
+    target_path: Path,
+    *,
+    split: str | None = None,
+    orca_bin: str | None = None,
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    env: Mapping[str, str] | None = None,
+) -> tuple[bool, str]:
+    """Open, focus, reload, or split `target_path` inside the active Orca embedded browser."""
+    target_uri = target_path.resolve().as_uri()
+    cli = orca_bin or resolve_orca_bin(env=env)
+
+    if split is None:
+        list_proc, list_err = _run_orca_cmd(runner, [cli, "tab", "list", "--json"], timeout=5)
+        if list_proc is not None and list_err is None:
+            existing_id = _find_existing_explainer_page(_parse_json_stdout(list_proc), target_uri, target_path.name)
+            if existing_id:
+                _, sw_err = _run_orca_cmd(
+                    runner,
+                    [cli, "tab", "switch", "--page", existing_id, "--focus", "--json"],
+                    timeout=5,
+                )
+                if sw_err:
+                    return False, sw_err
+                _, rel_err = _run_orca_cmd(runner, [cli, "reload", "--page", existing_id, "--json"], timeout=5)
+                if rel_err:
+                    return False, rel_err
+                return True, f"orca:{existing_id}:reused"
+
+    create_cmd = [cli, "tab", "create", "--url", target_uri]
+    if split:
+        create_cmd.extend(["--split", split])
+    create_cmd.append("--json")
+
+    create_proc, create_err = _run_orca_cmd(runner, create_cmd, timeout=10)
+    if create_err or create_proc is None:
+        return False, create_err or "orca tab create failed"
+
+    page_id = _extract_browser_page_id(_parse_json_stdout(create_proc))
+    if split is None and page_id:
+        _, sw_err = _run_orca_cmd(
+            runner,
+            [cli, "tab", "switch", "--page", page_id, "--focus", "--json"],
+            timeout=5,
+        )
+        if sw_err:
+            return False, sw_err
+
+    mode_tag = f"split-{split}" if split else "created"
+    return True, f"orca:{page_id or 'new'}:{mode_tag}"
+
+
+def _open_in_system_browser(target_path: Path) -> None:
+    opener = "xdg-open" if sys.platform.startswith("linux") else "open"
+    subprocess.run([opener, str(target_path)], check=False)
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(description=(__doc__ or "Visual Explainer Gate").splitlines()[0])
     parser.add_argument("--root", type=Path, default=ESTATE_ROOT)
-    parser.add_argument("--mode", choices=("check", "path", "open"), default="check")
+    parser.add_argument(
+        "--mode",
+        choices=("check", "path", "open", "orca", "split", "system"),
+        default="check",
+    )
+    parser.add_argument(
+        "--split",
+        choices=("right", "left", "down", "up"),
+        default=None,
+        help="Split direction when opening in Orca embedded browser",
+    )
     args = parser.parse_args(argv)
 
     primary = args.root / PRIMARY_REL
@@ -199,8 +347,29 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[OK] {PRIMARY_REL} validated (single-SSOT, zero-CDN, a11y, DOM/SVG parity, T667 clean)")
         return 0
 
-    opener = "xdg-open" if sys.platform.startswith("linux") else "open"
-    subprocess.run([opener, str(primary)], check=False)
+    if args.mode == "system":
+        _open_in_system_browser(primary)
+        return 0
+
+    split_dir = (args.split or "right") if args.mode == "split" else args.split
+    if args.mode in ("orca", "split"):
+        ok, detail = open_in_orca_browser(primary, split=split_dir)
+        if not ok:
+            print(f"[FAIL] Orca embedded browser open failed: {detail}", file=sys.stderr)
+            return 1
+        print(f"[OK] Opened {PRIMARY_REL} in Orca embedded browser ({detail})")
+        return 0
+
+    ok, detail = open_in_orca_browser(primary, split=args.split)
+    if ok:
+        print(f"[OK] Opened {PRIMARY_REL} in Orca embedded browser ({detail})")
+        return 0
+
+    if _in_orca_session():
+        print(f"[FAIL] Orca embedded browser open failed: {detail}", file=sys.stderr)
+        return 1
+
+    _open_in_system_browser(primary)
     return 0
 
 

@@ -1040,16 +1040,16 @@
           }
         },
         "n-orca": {
-          "tier": "Tier 0 · Agent IDE & WASM Linux",
-          "title": "Orca ACP + LinuxOnTab (v86 WASM)",
-          "specs": "Agent Client Protocol (ACP) · Isolated 10-Repo Worktrees · Alpine Linux in Browser RAM",
-          "paths": "w0m-pr/orca · w0m-pr/linuxontab · scripts/linuxontab_serve.py (:8770)",
-          "guard": "COOP/COEP SharedArrayBuffer isolation + single-branch agent-tree worktree discipline.",
+          "tier": "Tier 0 · Agent IDE, Embedded Browser & WASM Linux",
+          "title": "Orca ACP, Embedded Explainer Browser & LinuxOnTab",
+          "specs": "Agent Client Protocol (ACP) · Embedded MV3 Browser (just tech-explainer) · 10-Repo Worktrees",
+          "paths": "w0m-pr/orca · scripts/tech_explainer_check.py · scripts/linuxontab_serve.py (:8770)",
+          "guard": "Fails closed inside Orca sessions (no silent external browser fallback); enforces single-branch agent-tree worktrees.",
           "desc": {
-            "novice": "The developer cockpit that gives every AI helper its own clean copy of the codebase and even boots a tiny Linux computer inside a browser tab.",
-            "junior": "Serves LinuxOnTab v86 WASM Alpine Linux on optional :8770 with #k7-module bar and COOP/COEP isolation headers.",
-            "product": "Lets multiple AI agents (Claude, Codex, Gemini, Antigravity, OpenCode, Vibe) build and review features in parallel without stepping on each other.",
-            "executive": "First-class ACP client orchestrating isolated ~/.w0m/work/<name>/w0m worktrees and embedded MV3 browser verification."
+            "novice": "The developer cockpit that opens live architecture explainers right inside its built-in browser tab, gives every AI helper an isolated codebase copy, and boots Alpine Linux in RAM.",
+            "junior": "just tech-explainer opens/focuses this page in Orca's embedded browser via resolve_orca_bin() (supporting orca, split, and reload); LinuxOnTab serves v86 WASM on :8770.",
+            "product": "Keeps architecture explainers, live app previews, and multi-agent code workspaces side-by-side inside a single Orca worktree window.",
+            "executive": "First-class ACP client orchestrating isolated ~/.w0m/work/<name>/w0m worktrees, embedded browser verification, and fail-closed session ergonomics."
           }
         },
         "n-ssr": {
@@ -1183,16 +1183,16 @@
           }
         },
         "n-gate": {
-          "tier": "Tier 3 · Security, Skills & Release Governance",
-          "title": "First-Place Security Gate, 79 Skills & Certified Deploy",
-          "specs": "SkillSpector v2.12 · gitleaks 8.30 · osv-scanner 2.7 · semgrep 1.183 · ast-grep 0.51 · 377 Suites",
-          "paths": "w0m-skills/ · w0m-sec/ · scripts/{session_complete,deploy_cert,deploy_logged,env_prune_dead}.py",
+          "tier": "Tier 3 · Security, 12-Tool Audit Arsenal & Release Governance",
+          "title": "First-Place Security Gate, 12-Tool Audit Arsenal & 79 Skills",
+          "specs": "12-Tool Audit Matrix (Strix, CF Sec Audit, Trivy, Nuclei, TruffleHog, SkillSpector, Semgrep, Codex Sec, ClamAV, Claude Sec, BLA, PyRIT)",
+          "paths": "w0m-skills/ · w0m-sec/scripts/sandbox_audit_runner.py · packages/lib/src/security/advanced-audit.ts",
           "guard": "Touch-ID-only deploys/migrations; AES-256-GCM pre-prune secret backups; 16 default (18 wise) session-complete gates.",
           "desc": {
-            "novice": "A multi-point automated safety checkpoint that scans code, dependencies, secrets, and AI skills before stamping a release certificate.",
-            "junior": "session_complete.py runs 16 default (18 wise) gates, stamps deploy_cert.py tree-set SHA-256, lands member repos before @wom root, and audits logs.",
-            "product": "Protects customer trust and uptime with zero known dependency CVEs, air-gapped security auditing, and reproducible single-branch releases.",
-            "executive": "Combines Elephant-Goldfish (egm-*) adversarial review, 7-dialect SDD governance, NVIDIA SkillSpector across 71 skill roots, and Infisical zero-.env injection."
+            "novice": "A multi-layer automated security vault using 12 industry scanners across web URLs, quarantined code, secrets, malware, and AI prompt boundaries.",
+            "junior": "Pairs 12-Tool Security Audit Arsenal (SECURITY_AUDIT_12_TOOL_MATRIX) with gitleaks, osv-scanner, ast-grep, and SkillSpector v2.12 inside --network none quarantine.",
+            "product": "Protects customer trust and uptime across Tiers 1-4 with DAST (Strix, Nuclei), deep secrets (TruffleHog), quarantine AV (ClamAV), and AI red-teaming (PyRIT, BLA).",
+            "executive": "Unifies deterministic guardrails (Semgrep, Trivy, ClamAV, SkillSpector, TruffleHog, Nuclei) and agentic/AI red-team security reviews across 377 registered suites."
           }
         }
       },
@@ -1564,12 +1564,12 @@
         },
         {
           "cat": "sec",
-          "tag": "First-Place Security Gate",
-          "title": "NVIDIA SkillSpector v2.12 + w0m-sec Air-Gapped Runner",
-          "summary": "Simultaneous YARA + tree-sitter AST skill auditing, SAST, lockfile CVE scanning, and --network none containment.",
+          "tag": "12-Tool Security Audit Arsenal",
+          "title": "NVIDIA SkillSpector + Strix, Nuclei, TruffleHog, ClamAV & PyRIT",
+          "summary": "Tier 1-4 security matrix combining offline quarantined SAST/SCA/AV/secret checks with DAST and AI red-teaming.",
           "details": [
-            "Scans 71 unique skill roots (crit/high = 0, SC9 = 0) + 14 governed MCP servers (mcp_ratchet.py)",
-            "gitleaks 8.30.1, osv-scanner 2.7.0 (6 pnpm lockfiles), semgrep 1.183.0, ast-grep 0.51.0, 17/17 w0m-sec pytest"
+            "12-Tool Arsenal: Strix, Cloudflare Security Audit, Trivy, Nuclei, TruffleHog, NVIDIA SkillSpector, Semgrep, OpenAI Codex Security, ClamAV, Claude Code Security Review, BLA, Microsoft PyRIT",
+            "Plus gitleaks 8.30.1, osv-scanner 2.7.0 (6 pnpm lockfiles), ast-grep 0.51.0, and 14 governed MCP servers (mcp_ratchet.py)"
           ]
         },
         {

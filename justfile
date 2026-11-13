@@ -2367,8 +2367,8 @@ client-spec-init *args:
 client-spec-init-test:
     @python3 -m pytest scripts/tests/test_client_spec_init.py -q -p no:cacheprovider
 
-# ── Self-Contained Interactive Visual Architecture Explainer (T735/T736) ────────
-tech-explainer mode="open":
-    @python3 scripts/tech_explainer_check.py --mode {{mode}}
+# ── Self-Contained Interactive Visual Architecture Explainer (T735/T736/T737) ───
+tech-explainer mode="open" *args:
+    @python3 scripts/tech_explainer_check.py --mode {{mode}} {{args}}
 
 

@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T737](.tasks/T737.md) | **P1** | **Wire just tech-explainer into Orca embedded browser & integrate 12-Tool Security Audit Arsenal across w0m-sec and @webomage/lib** | sec, web, lib, tooling | — | ✅ **done** |
 | [T736](.tasks/T736.md) | **P1** | **Remediate Cross-Model Audit Findings across Hybrid Vector KB, Visual Architecture Explainer, and Canonical Tech Docs** | web, tooling | — | ✅ **done** |
 | [T735](.tasks/T735.md) | **P1** | **Deep Adversarial Review of Estate Tech Docs, Full Hybrid Vector KB Indexing, and Self-Contained Interactive Visual Architecture Explainer** | web, tooling | — | ✅ **done** |
 | [T734](.tasks/T734.md) | **P1** | **Eliminate Vite node:crypto Browser-Barrel Build Warnings, Classify Zero-Finding check-guardrails Pass Summaries in deploy_logged.py, Log Lesson, and Publish Estate Tech Overview** | web, tooling | — | ✅ **done** |

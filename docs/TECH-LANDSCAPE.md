@@ -54,7 +54,24 @@
 ### 3.3 `@k7` Rust Family, Extensions, Local MLX & Security Gates
 - **`@k7` Git TUI Browser (`T708`):** `5` Git & LLM remote flavours (`GitHub`, `GitLab`, `HuggingFaceHub` with `u64` `>4 GiB` shard lengths, `ForgejoGitea`, and `LlmAgentCheckpoint` for GitButler/Orca/Agent Lanes).
 - **7-Dialect SDD Bridge (`T712`–`T715`, `T718`):** `w0m-openspec`, `github-speckit` (`.specify/`), `open-gsd` (`.planning/`), `openspec`, `bmad` (`_bmad/`), `conductor` (`conductor/`), and `cc-sdd` (`.kiro/specs/`), protected against slopsquatting by `package_legitimacy_check.py`.
-- **Hybrid Knowledge & Interactive Explainer Commands:**
+- **12-Tool Security Audit Arsenal (`T737`, `SECURITY_AUDIT_12_TOOL_MATRIX` in `w0m-sec/scripts/sandbox_audit_runner.py` & `@webomage/lib/security/advanced-audit`):**
+
+| # | Tool | Upstream Repo | Tier(s) | `@wom` Surface & Role |
+|---:|---|---|---|---|
+| 1 | **Strix** | `usestrix/strix` | Tier 2 | Autonomous AI DAST & BOLA/IDOR/SSRF penetration agent |
+| 2 | **Cloudflare Security Audit** | `cloudflare/security-audit-skill` | Tier 3 | 6-phase multi-agent defensive source audit (`.agents/skills/security-audit`) |
+| 3 | **Trivy** | `aquasecurity/trivy` | Tier 3–4 | SCA, lockfile, container & IaC CVE / SBOM scanner |
+| 4 | **Nuclei** | `projectdiscovery/nuclei` | Tier 1–2 | Template-based CVE, exposed-panel & debug/actuator scanner |
+| 5 | **TruffleHog** | `trufflesecurity/trufflehog` | Tier 3 | Deep entropy, PAT & private-key detector paired with Gitleaks |
+| 6 | **NVIDIA SkillSpector** | `NVIDIA/SkillSpector` (`v2.12.0`) | Tier 3 | YARA + `tree-sitter` AST skill & plugin scanner (`71` roots) |
+| 7 | **Semgrep** | `semgrep/semgrep` (`1.183.0`) | Tier 3 | Polyglot AST SAST across TS/JS, Python, Go, Rust, SQL |
+| 8 | **OpenAI Codex Security** | `openai/codex` | Tier 3 | Agentic security code review & patch verification (`egm-review`) |
+| 9 | **ClamAV** | `Cisco-Talos/clamav` | Tier 3 | Quarantine malware, EICAR, webshell & archive signature scanner |
+| 10 | **Claude Code Security Review** | `anthropics/claude-code-security-review` | Tier 3 | Diff-aware AI PR & commit security reviewer (`egm-security`) |
+| 11 | **BLA (Blind LLM Agents)** | `BLA` | Tier 2–3 | Blind/adversarial multi-agent tool-misuse evaluation harness |
+| 12 | **Microsoft PyRIT** | `Azure/PyRIT` | Tier 2–3 | Generative AI prompt-injection & system-boundary red-teaming |
+
+- **Hybrid Knowledge & Interactive Explainer Commands (`just tech-explainer` opens/focuses directly in the active Orca embedded browser; supports `orca`, `split`, `check`, `path`, `system`):**
 
 ```bash
 cd ~/Projects/'!self'/w0m
@@ -62,4 +79,6 @@ just kb-index
 just kb-search "4-tier free-tier-first architecture"
 just ask "computePromptChecksum"
 just tech-explainer
+just tech-explainer split
+just tech-explainer check
 ```
