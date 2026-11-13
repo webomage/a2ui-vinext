@@ -44,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t733-hono-4-13-16` | 0 | **n/a — NO UPSTREAM** | `a30408cdf` |
-| `w0m-api` | `agent/t733-hono-4-13-16` | 0 | **n/a — NO UPSTREAM** | `1f4f9c1` |
-| `w0m-cf` | `agent/t733-hono-4-13-16` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
-| `w0m-skills` | `agent/t733-hono-4-13-16` | 0 | **n/a — NO UPSTREAM** | `99d2200` |
-| `w0m-ext` | `agent/t733-hono-4-13-16` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
-| `w0m-sec` | `agent/t733-hono-4-13-16` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
-| `w0m-mlx/w0m-mlx` | `agent/t733-hono-4-13-16` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t734-deploy-log-hygiene` | 0 | **n/a — NO UPSTREAM** | `d04e337ec` |
+| `w0m-api` | `agent/t734-deploy-log-hygiene` | 0 | **n/a — NO UPSTREAM** | `1f4f9c1` |
+| `w0m-cf` | `agent/t734-deploy-log-hygiene` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
+| `w0m-skills` | `agent/t734-deploy-log-hygiene` | 0 | **n/a — NO UPSTREAM** | `99d2200` |
+| `w0m-ext` | `agent/t734-deploy-log-hygiene` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
+| `w0m-sec` | `agent/t734-deploy-log-hygiene` | 0 | **n/a — NO UPSTREAM** | `049d0c7` |
+| `w0m-mlx/w0m-mlx` | `agent/t734-deploy-log-hygiene` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 733 TASKS.md rows · 361/733 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 734 TASKS.md rows · 361/734 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T719","T17"],"repos":{"w0m-api":{"branch":"agent/t733-hono-4-13-16","dirty":0,"has_upstream":true,"head":"1f4f9c1","unpushed":null},"w0m-cf":{"branch":"agent/t733-hono-4-13-16","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t733-hono-4-13-16","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t733-hono-4-13-16","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t733-hono-4-13-16","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t733-hono-4-13-16","dirty":0,"has_upstream":true,"head":"99d2200","unpushed":null},"w0m-web":{"branch":"agent/t733-hono-4-13-16","dirty":0,"has_upstream":true,"head":"a30408cdf","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":733,"specced":361,"specced_open":2,"total":733,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T719","T17"],"repos":{"w0m-api":{"branch":"agent/t734-deploy-log-hygiene","dirty":0,"has_upstream":true,"head":"1f4f9c1","unpushed":null},"w0m-cf":{"branch":"agent/t734-deploy-log-hygiene","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t734-deploy-log-hygiene","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t734-deploy-log-hygiene","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t734-deploy-log-hygiene","dirty":0,"has_upstream":true,"head":"049d0c7","unpushed":null},"w0m-skills":{"branch":"agent/t734-deploy-log-hygiene","dirty":0,"has_upstream":true,"head":"99d2200","unpushed":null},"w0m-web":{"branch":"agent/t734-deploy-log-hygiene","dirty":0,"has_upstream":true,"head":"d04e337ec","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":734,"specced":361,"specced_open":2,"total":734,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,7 +115,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (8):
+#### Completed today (9):
 
 - **T707** — Audit and Adopt casualuser/job-hunter-skill into w0m-skills & Estate Skill Manifests ((agy:t730-t713-t715-t707-t708): Completed AC1–AC4. Audited casualuser/job-hunter-skill (REJECT preserved in QUARANTINED_CASUALUSER_FORKS), authored clean-room w0m-skills/skills/job-hunter/SKILL.md (0/100 LOW · SAFE), synced across estate manifests (69 canonical skills), and recorded YARA YR4 passive-data framing lesson in LESSONS.md.)
 - **T708** — k7 WASM Git Navigation Browser in TUI with GitHub, GitLab & New LLM Git Flavours Support ((agy:t730-t713-t715-t707-t708): Completed AC1–AC4. Shipped k7hub commit 8acca23 (7/7 Rust tests + k7hub.wasm wasm32-unknown-unknown build), wired k7-git-browser.ts + CrewToolkitAndTabLinuxConsole.svelte + K7-FAMILY.md, and recorded wasm32 u64 vs usize shard-size lesson in LESSONS.md.)
@@ -125,6 +125,7 @@ No tickets currently in-progress. Pick next work via `just tasks hot` or `just t
 - **T731** — Fail-Closed AES-256-GCM Pre-Prune Secret Backup, Verification & Restore for just env-prune-dead ((agy:t731-env-prune-backup): Completed AC1–AC3. Shipped fail-closed AES-256-GCM pre-prune secret backup, round-trip verification, and restore in scripts/env_prune_dead.py (5/5 tests green) and patched @hono/node-server, @astrojs/svelte, and basic-ftp overrides across w0m-web, w0m-cf, and w0m-ext. Lesson disposition: covered by LESSONS.md infisical run --silent non-plaintext secret handling rules (T201, T729, T730).)
 - **T732** — Pass Explicit --type=shared on Infisical CLI Secret Delete & Restore Operations (env_prune_dead.py & rotate_leaked_secrets.py) ((agy:t732-infisical-delete-shared): Completed AC1–AC3. Added explicit --type=shared to scripts/env_prune_dead.py (batched delete + restore) and w0m-api/scripts/rotate_leaked_secrets.py, proved unit tests green, and recorded the Infisical CLI --type=personal vs --type=shared default asymmetry rule in LESSONS.md.)
 - **T733** — Bump hono Override to >=4.13.16 Across Estate Lockfiles to Resolve 5 Newly Published OSV Advisories ((agy:t733-hono-4-13-16): Completed AC1–AC2. Bumped hono to >=4.13.16 across w0m-web, w0m-api, w0m-cf, and w0m-ext/extension (0 OSV findings across all 6 lockfiles, 0 deno.lock parity errors), updated ensure_prepush_deps in scripts/session_complete.py to materialize w0m-api/w0m-cf node_modules when their lockfiles change so cross-repo hc<AppType> type-checks stay aligned, and recorded the symlinked cross-repo RPC node_modules rule in LESSONS.md.)
+- **T734** — Eliminate Vite node:crypto Browser-Barrel Build Warnings, Classify Zero-Finding check-guardrails Pass Summaries in deploy_logged.py, Log Lesson, and Publish Estate Tech Overview ((agy:t734-deploy-log-hygiene): Completed T734)
 
 ## 3. Other open threads (in TASKS.md)
 
