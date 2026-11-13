@@ -15,8 +15,9 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T719](/home/aleksei/Projects/!self/w0m/.tasks/T719.md) | ⚠️ not mirrored | P2 | queued | tools | 40 | Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vi 📄 live spec |
-| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 1 | [T739](/home/aleksei/Projects/!self/w0m/.tasks/T739.md) | ⚠️ not mirrored | P1 | queued | ai | 60 | Adopt Google A2UI 1.0 generative agentic UI protocol across w0m-ext (@a2ui/lit 1.0) and  |
+| 2 | [T719](/home/aleksei/Projects/!self/w0m/.tasks/T719.md) | ⚠️ not mirrored | P2 | queued | tools | 40 | Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vi 📄 live spec |
+| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -24,16 +25,17 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 6 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **6** are
+> ⚠️ **0 of 7 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **7** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
-| 2 | [T719](/home/aleksei/Projects/!self/w0m/.tasks/T719.md) | ⚠️ not mirrored | P2 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | Benchmark Stack-Aligned Context & Code-Graph Tools (PageInde |
+| 1 | [T739](/home/aleksei/Projects/!self/w0m/.tasks/T739.md) | ⚠️ not mirrored | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Adopt Google A2UI 1.0 generative agentic UI protocol across  |
+| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 3 | [T719](/home/aleksei/Projects/!self/w0m/.tasks/T719.md) | ⚠️ not mirrored | P2 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | Benchmark Stack-Aligned Context & Code-Graph Tools (PageInde |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -44,18 +46,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t737-orca-browser-explainer` | 0 | **n/a — NO UPSTREAM** | `d14086beb` |
-| `w0m-api` | `agent/t737-orca-browser-explainer` | 0 | **n/a — NO UPSTREAM** | `b32b611` |
-| `w0m-cf` | `agent/t737-orca-browser-explainer` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
-| `w0m-skills` | `agent/t737-orca-browser-explainer` | 0 | **n/a — NO UPSTREAM** | `ae7ad42` |
-| `w0m-ext` | `agent/t737-orca-browser-explainer` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
-| `w0m-sec` | `agent/t737-orca-browser-explainer` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
-| `w0m-mlx/w0m-mlx` | `agent/t737-orca-browser-explainer` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t738-solutions-checkout-and-a2ui` | 0 | **n/a — NO UPSTREAM** | `e03531598` |
+| `w0m-api` | `agent/t738-solutions-checkout-and-a2ui` | 0 | **n/a — NO UPSTREAM** | `d928032` |
+| `w0m-cf` | `agent/t738-solutions-checkout-and-a2ui` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
+| `w0m-skills` | `agent/t738-solutions-checkout-and-a2ui` | 0 | **n/a — NO UPSTREAM** | `ae7ad42` |
+| `w0m-ext` | `agent/t738-solutions-checkout-and-a2ui` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
+| `w0m-sec` | `agent/t738-solutions-checkout-and-a2ui` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
+| `w0m-mlx/w0m-mlx` | `agent/t738-solutions-checkout-and-a2ui` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 737 TASKS.md rows · 361/737 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 7 open · 739 TASKS.md rows · 361/739 specced (2/7 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T719","T17"],"repos":{"w0m-api":{"branch":"agent/t737-orca-browser-explainer","dirty":0,"has_upstream":true,"head":"b32b611","unpushed":null},"w0m-cf":{"branch":"agent/t737-orca-browser-explainer","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t737-orca-browser-explainer","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t737-orca-browser-explainer","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t737-orca-browser-explainer","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t737-orca-browser-explainer","dirty":0,"has_upstream":true,"head":"ae7ad42","unpushed":null},"w0m-web":{"branch":"agent/t737-orca-browser-explainer","dirty":0,"has_upstream":true,"head":"d14086beb","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":737,"specced":361,"specced_open":2,"total":737,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T739","T719","T17"],"repos":{"w0m-api":{"branch":"agent/t738-solutions-checkout-and-a2ui","dirty":0,"has_upstream":true,"head":"d928032","unpushed":null},"w0m-cf":{"branch":"agent/t738-solutions-checkout-and-a2ui","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t738-solutions-checkout-and-a2ui","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t738-solutions-checkout-and-a2ui","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t738-solutions-checkout-and-a2ui","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t738-solutions-checkout-and-a2ui","dirty":0,"has_upstream":true,"head":"ae7ad42","unpushed":null},"w0m-web":{"branch":"agent/t738-solutions-checkout-and-a2ui","dirty":0,"has_upstream":true,"head":"e03531598","unpushed":null}},"tickets":{"open":7,"rowless_open":[],"rows":739,"specced":361,"specced_open":2,"total":739,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -115,11 +117,12 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (3):
+#### Completed today (4):
 
 - **T735** — Deep Adversarial Review of Estate Tech Docs, Full Hybrid Vector KB Indexing, and Self-Contained Interactive Visual Architecture Explainer ((agy:t735-tech-kb-visual-explainer): Completed 3-cycle adversarial review (PASS from 93915c6b-7d7c-4a7a-bc5c-7a401de44491 with 0 remaining findings across 39 reconciled items), published canonical docs/TECH-LANDSCAPE.md + reconciled docs/ARCHITECTURE.md and w0m-web/docs/{ARCHITECTURE,00-MOC-ARCHITECTURE,ECOSYSTEM}.md + .agents/reports/t735-deep-tech-review-and-kb-verification.md (mirrored to w0m-web/docs/reports/), expanded scripts/w0m_kb_vector.py with active w0m-web/docs/ (web_doc, skipping all archive/ & sessions/), AGENTS.md/CLAUDE.md, all 9 member-repo README.mds, and seen_sha256 mirror deduplication (7/7 kb-vector-test, mypy 0 errors, corpus.sqlite rebuilt and verified across hybrid/vector/bm25), and shipped self-contained docs/visuals/w0m-tech-landscape-explainer.html + w0m-web/docs/walkthroughs/w0m-tech-landscape-explainer.html + just tech-explainer (just layout-check 0 unclassified, just mmd-validate 8/8 diagrams valid). Lessons: none (existing T183, T669, and T734 rules applied).)
 - **T736** — Remediate Cross-Model Audit Findings across Hybrid Vector KB, Visual Architecture Explainer, and Canonical Tech Docs ((agy:t736-kb-explainer-reconcile): Completed AC1–AC3, re-verified after fresh research subagent (8ea912f1-c63a-4522-9c2b-d1ecea25ff91) flagged .svelte rune/legacy breakdown (206 direct runes + 8 rune-free wrappers + 6 legacy export let files). All gates green (just kb-vector-test 8+2+5, mypy 0 issues, just tech-explainer check, just mmd-validate 528/2702, just layout-check 11207 files, just emoji-check, just reports-ticket-check 146/0, just ui-ticket-leak-check 503/0, just suites-drift 377/0). Lesson disposition: w0m_kb_vector client-policy derivation & tech_explainer_check script boundary already codified mechanically in code/tests; no separate LESSONS.md entry required.)
 - **T737** — Wire just tech-explainer into Orca embedded browser & integrate 12-Tool Security Audit Arsenal across w0m-sec and @webomage/lib ((agy:t737-orca-browser-explainer): Implemented Orca embedded browser integration (resolve_orca_bin, result + data JSON envelope handling, BrowserTabInfo reuse without type field, --mode check|path|open|orca|split|system, fail-closed inside Orca) and 12-Tool Security Audit Arsenal (SECURITY_AUDIT_12_TOOL_MATRIX + trufflehog/clamav/nuclei/pyrit offline checks) across w0m-sec, @webomage/lib, docs/TECH-LANDSCAPE.md, and docs/visuals/w0m-tech-landscape-explainer.html. Verified all test suites and live Orca browser tab create/focus/reload (1ca6179b-7c19-4b9f-a11e-3268b763040f). Lesson disposition: resolve_orca_bin + live Orca RPC envelope (result.tabs / BrowserTabInfo) + fail-closed Orca open & 12-tool arsenal codified mechanically in code and tests; no separate LESSONS.md entry required.)
+- **T738** — Fix /solutions & /services direct package checkout and hats_profile_id_fkey profile ID resolution across w0m-api and w0m-web ((agy:t738-solutions-checkout-and-a2ui): Fixed hats_profile_id_fkey across client-register, client-api, stripe-checkout, stripe-portal, mercadopago-checkout, lead-api, seed-demo, and verify-credential via _shared/auth.ts (ensureProfileIdForAuthUser, resolveCandidateProfileIds, resolvePrimaryProfile) + DB normalization trigger migration 20261113210000_t738_hats_profile_id_normalize_trigger.sql. Updated validateAuditCheckoutPayload for custom package_price_usd, service_slug, service_title, and optional/bare-domain repo_url, and updated w0m-web (security-audit.ts, ServiceOrderSection.astro, audit.astro, ServiceActionOrderConfigurator.svelte, AuditPricing.svelte) to sanitize DB errors, pass supabaseAnonKey headers to stripe-checkout, and handle checkout errors cleanly. Verified just deno-check (64 entrypoints), just deno-test (395 passed, 0 failed), Vitest (16 passed across 2 suites), supabase_surface_drift_check.py (0 findings), and just ui-ticket-leak-check (0 leaks). Lesson disposition: claim_profile_for_account decoupled profiles.id (gen_random_uuid()) from auth.users.id (profiles.auth_user_id), and wom_normalize_hat_profile_id() + shared _shared/auth.ts helpers + unit tests now enforce this mechanically across code and SQL; no separate LESSONS.md entry required unless repeated after deploy.)
 
 ## 3. Other open threads (in TASKS.md)
 
