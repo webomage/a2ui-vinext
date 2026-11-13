@@ -2,6 +2,27 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.13-1794605256
+_First deployed: 2026-11-13 21:48:19.650994+00_
+
+### Features
+- **tooling**: wire just tech-explainer into Orca embedded browser and 12-tool docs (T737) ([T737](file:///.tasks/T737.md))
+- **kb,docs**: expand hybrid vector kb, reconcile tech landscape, and add visual explainer (T735) ([T735](file:///.tasks/T735.md))
+
+### Fixes
+- **kb**: harden client boundary, curate openspec archive, and fix explainer gates (T736) ([T736](file:///.tasks/T736.md))
+- **deploy,lessons**: classify zero-finding guardrails output and log T734 lesson (T734) ([T734](file:///.tasks/T734.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `e0684b4` | 2026-11-13 21:48:19.650994+00 |
+| demo | `e0684b4` | 2026-11-13 21:47:35.785083+00 |
+| me | `e0684b4` | 2026-11-13 21:46:49.688451+00 |
+| cp | `e0684b4` | 2026-11-13 21:45:15.222519+00 |
+| web | `e0684b4` | 2026-11-13 21:43:03.689488+00 |
+| release | `e0684b4` | 2026-11-13 21:40:47.514526+00 |
+| api | `e0684b4` | 2026-11-13 21:40:42.099902+00 |
+
 ## 2026.11.12-1794538248
 _First deployed: 2026-11-13 03:11:47.119987+00_
 
