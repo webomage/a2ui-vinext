@@ -35,6 +35,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T740](.tasks/T740.md) | **P0** | **Fix AI Agent Helper click close race across funnels, unify /solutions selector, and compare claw/audit runtimes vs ZeroClaw** | web | — | ✅ **done** |
 | [T738](.tasks/T738.md) | **P0** | **Fix /solutions & /services direct package checkout and hats_profile_id_fkey profile ID resolution across w0m-api and w0m-web** | api, web | — | ✅ **done** |
 | [T737](.tasks/T737.md) | **P1** | **Wire just tech-explainer into Orca embedded browser & integrate 12-Tool Security Audit Arsenal across w0m-sec and @webomage/lib** | sec, web, lib, tooling | — | ✅ **done** |
 | [T736](.tasks/T736.md) | **P1** | **Remediate Cross-Model Audit Findings across Hybrid Vector KB, Visual Architecture Explainer, and Canonical Tech Docs** | web, tooling | — | ✅ **done** |
