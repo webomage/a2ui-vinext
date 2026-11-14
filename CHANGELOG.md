@@ -2,6 +2,22 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.14-1794689464
+_First deployed: 2026-11-14 22:00:08.138996+00_
+
+### Fixes
+- **deploy**: T742 auto-heal WARP IPv6 tunnel on PMTU drop and run check-warp in preflight ([T742](file:///.tasks/T742.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `d97390a` | 2026-11-14 22:00:08.138996+00 |
+| demo | `d97390a` | 2026-11-14 21:58:00.471374+00 |
+| me | `d97390a` | 2026-11-14 21:56:48.194416+00 |
+| cp | `d97390a` | 2026-11-14 21:53:55.784033+00 |
+| web | `d97390a` | 2026-11-14 21:49:30.936727+00 |
+| release | `d97390a` | 2026-11-14 21:44:46.631839+00 |
+| api | `d97390a` | 2026-11-14 21:44:35.412882+00 |
+
 ## 2026.11.13-1794605256
 _First deployed: 2026-11-13 21:48:19.650994+00_
 
