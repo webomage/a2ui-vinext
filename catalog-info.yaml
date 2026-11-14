@@ -1195,7 +1195,7 @@ metadata:
   title: 'Skill: job-hunter'
   description: Governed agent skill `job-hunter` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.11.12-1794513627
+    w0m.dev/skill-observed-version: 2026.11.14-1794698448
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json

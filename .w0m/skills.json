@@ -62,7 +62,7 @@
     "job-hunter": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.11.12-1794513627"
+      "observed_version": "2026.11.14-1794698448"
     },
     "landing-page-design": {
       "provider": "w0m-native",

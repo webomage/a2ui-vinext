@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "generatedAt": "2026-11-13T14:25:17.769Z",
+  "generatedAt": "2026-11-14T23:21:10.470Z",
   "skills": {
     "doubt-driven-development": {
       "provider": "skills.sh",
@@ -296,7 +296,7 @@
       "resolved": "canonical",
       "scope": "project",
       "path": ".agents/skills/job-hunter",
-      "integrity": "sha256-fcbf8087da83c25392ce1917432de0e9828586dac4e3d03af0e38dc3d73c0e45"
+      "integrity": "sha256-b8f7fc6910210de1737041455c2f7187fd567348a21f4e362beac8948ffca2cd"
     }
   }
 }
