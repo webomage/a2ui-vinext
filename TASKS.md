@@ -25,6 +25,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T741](.tasks/T741.md) | **P1** | 🆕 **Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite RSC + Workers) and contribute to a2ui.org/ecosystem/renderers** | web, lib, cf, tooling | — | ⚪ **queued** |
 | [T739](.tasks/T739.md) | **P1** | 🆕 **Adopt Google A2UI 1.0 generative agentic UI protocol across w0m-ext (@a2ui/lit 1.0) and w0m-web (@webomage/ui + AI Agent Helper + CP)** | ext, web, lib, tooling | — | ⚪ **queued** |
 | [T719](.tasks/T719.md) | **P2** | 🆕 **Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vibe-Skills, tilth, agtx) & Prototype AgDR Decision Evidence-Decay Check** | tooling, skills, web | openspec/specs/sdlc_toolchain/spec.md | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
