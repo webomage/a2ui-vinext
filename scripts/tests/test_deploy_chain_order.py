@@ -44,6 +44,11 @@ def flatten(rs: dict, name: str, seen: list[str] | None = None) -> list[str]:
     return seen
 
 
+def recipe_body(rs: dict, name: str) -> list[str]:
+    """Flatten `just --dump --dump-format json` recipe body lines into strings."""
+    return ["".join(f if isinstance(f, str) else "{{}}" for f in line) for line in rs[name]["body"]]
+
+
 def order_problems(order: list[str]) -> list[str]:
     """What is wrong with an execution order, as sentences. Empty = fine. Pure, so the red probe can call it."""
     problems = []
@@ -98,6 +103,23 @@ class TestDeployChainOrder(unittest.TestCase):
 
     def test_red_probe_a_chain_without_the_migration_is_not_vacuously_clean(self):
         self.assertTrue(order_problems(["test", "check-guardrails"]))
+
+    def test_preflight_runs_check_warp_before_db_drift_check(self):
+        """T742: WARP must be connected and healthy BEFORE db-drift-check invokes psql."""
+        lines = recipe_body(self.rs, "_deploy-preflight")
+        warp_idx = next((i for i, ln in enumerate(lines) if "just check-warp" in ln), None)
+        drift_idx = next((i for i, ln in enumerate(lines) if "just db-drift-check" in ln), None)
+        self.assertIsNotNone(warp_idx, "_deploy-preflight must invoke `just check-warp` when warp-cli is installed")
+        self.assertIsNotNone(drift_idx, "_deploy-preflight must invoke `just db-drift-check`")
+        self.assertLess(warp_idx, drift_idx, "_deploy-preflight must invoke `just check-warp` before `just db-drift-check`")
+
+    def test_check_warp_self_heals_when_db_host_probe_fails_while_connected(self):
+        """T742: A Connected IPv4-only WARP session (pmtu < 1280 flushing IPv6 routes) must cycle once before failing."""
+        body = "\n".join(recipe_body(self.rs, "check-warp"))
+        self.assertGreaterEqual(body.count("scripts/check_db_host.py"), 2, "check-warp must retry check_db_host.py after reconnect")
+        self.assertIn("warp-cli --accept-tos disconnect", body)
+        self.assertIn("warp-cli --accept-tos connect", body)
+        self.assertGreater(body.rfind("scripts/check_db_host.py"), body.find("warp-cli --accept-tos disconnect"))
 
 
 if __name__ == "__main__":

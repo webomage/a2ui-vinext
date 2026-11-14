@@ -802,7 +802,19 @@ check-warp:
     	fi; \
     	echo "  ✅ $host reachable (HTTP $code)"; \
     done
-    @python3 scripts/check_db_host.py --host db.{{ project_ref }}.supabase.co
+    @if ! python3 scripts/check_db_host.py --host db.{{ project_ref }}.supabase.co; then \
+    	echo "  ⚠️  WARP reports Connected but IPv6 DB host is unreachable (e.g. tunnel MTU < 1280 flushed IPv6 routes) — cycling WARP once..."; \
+    	warp-cli --accept-tos disconnect >/dev/null 2>&1 || true; \
+    	sleep 2; \
+    	warp-cli --accept-tos connect >/dev/null 2>&1 || true; \
+    	for i in $(seq 1 30); do \
+    		sleep 1; \
+    		status=$(warp-cli --accept-tos status 2>/dev/null | head -1); \
+    		if echo "$status" | grep -q "Connected"; then break; fi; \
+    	done; \
+    	sleep 2; \
+    	python3 scripts/check_db_host.py --host db.{{ project_ref }}.supabase.co; \
+    fi
 
 check-auth:
     @echo "Verifying Supabase project access for {{ project_ref }}..."
@@ -995,6 +1007,7 @@ _deploy-chain: _deploy-preflight (_confirm "deploy") _deploy-gates _deploy-ship
 # Pre-push runs the same set (w0m-web/.husky/pre-push), so a red ratchet is normally found where the change is made, not at deploy time.
 _deploy-preflight:
     @python3 scripts/deploy_cert.py preflight
+    @if command -v warp-cli >/dev/null 2>&1; then just check-warp; fi
     @just db-drift-check
     @just state-check
 

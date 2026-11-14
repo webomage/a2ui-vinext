@@ -48,18 +48,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t741-a2ui-vinext-ecosystem` | 0 | **n/a — NO UPSTREAM** | `df92f80c4` |
-| `w0m-api` | `agent/t741-a2ui-vinext-ecosystem` | 0 | **n/a — NO UPSTREAM** | `d928032` |
-| `w0m-cf` | `agent/t741-a2ui-vinext-ecosystem` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
-| `w0m-skills` | `agent/t741-a2ui-vinext-ecosystem` | 0 | **n/a — NO UPSTREAM** | `ae7ad42` |
-| `w0m-ext` | `agent/t741-a2ui-vinext-ecosystem` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
-| `w0m-sec` | `agent/t741-a2ui-vinext-ecosystem` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
-| `w0m-mlx/w0m-mlx` | `agent/t741-a2ui-vinext-ecosystem` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t742-warp-ipv6-self-heal` | 0 | **n/a — NO UPSTREAM** | `0cdbb93ba` |
+| `w0m-api` | `agent/t742-warp-ipv6-self-heal` | 0 | **n/a — NO UPSTREAM** | `d928032` |
+| `w0m-cf` | `agent/t742-warp-ipv6-self-heal` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
+| `w0m-skills` | `agent/t742-warp-ipv6-self-heal` | 0 | **n/a — NO UPSTREAM** | `ae7ad42` |
+| `w0m-ext` | `agent/t742-warp-ipv6-self-heal` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
+| `w0m-sec` | `agent/t742-warp-ipv6-self-heal` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
+| `w0m-mlx/w0m-mlx` | `agent/t742-warp-ipv6-self-heal` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 741 TASKS.md rows · 361/741 specced (2/8 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 8 open · 742 TASKS.md rows · 361/742 specced (2/8 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T739","T741","T719","T17"],"repos":{"w0m-api":{"branch":"agent/t741-a2ui-vinext-ecosystem","dirty":0,"has_upstream":true,"head":"d928032","unpushed":null},"w0m-cf":{"branch":"agent/t741-a2ui-vinext-ecosystem","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t741-a2ui-vinext-ecosystem","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t741-a2ui-vinext-ecosystem","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t741-a2ui-vinext-ecosystem","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t741-a2ui-vinext-ecosystem","dirty":0,"has_upstream":true,"head":"ae7ad42","unpushed":null},"w0m-web":{"branch":"agent/t741-a2ui-vinext-ecosystem","dirty":0,"has_upstream":true,"head":"df92f80c4","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":741,"specced":361,"specced_open":2,"total":741,"unmirrored_open":3}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T739","T741","T719","T17"],"repos":{"w0m-api":{"branch":"agent/t742-warp-ipv6-self-heal","dirty":0,"has_upstream":true,"head":"d928032","unpushed":null},"w0m-cf":{"branch":"agent/t742-warp-ipv6-self-heal","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t742-warp-ipv6-self-heal","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t742-warp-ipv6-self-heal","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t742-warp-ipv6-self-heal","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t742-warp-ipv6-self-heal","dirty":0,"has_upstream":true,"head":"ae7ad42","unpushed":null},"w0m-web":{"branch":"agent/t742-warp-ipv6-self-heal","dirty":0,"has_upstream":true,"head":"0cdbb93ba","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":742,"specced":361,"specced_open":2,"total":742,"unmirrored_open":3}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -119,9 +119,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (1):
+#### Completed today (2):
 
 - **T740** — Fix AI Agent Helper click close race across funnels, unify /solutions selector, and compare claw/audit runtimes vs ZeroClaw ((agy:t740-ai-helper-and-solutions-funnel): Claimed T740 in isolated worktree agent/t740-ai-helper-and-solutions-funnel. Fixed same-click window overlay close race in apps/web and apps/cp ChatApp.svelte (lastOpenedAt < 300ms + [data-chat-trigger] exclusion + Guided Q&A prefill), unified /solutions/ to a single configurator grid (SolutionsPage.astro + per-card AI Agent Helper triggers in ServiceActionOrderConfigurator.svelte), updated triggers across BlueprintOrderFlow.svelte, SecurityAuditWidget.svelte, and AuditPricing.svelte, verified Vitest (3 files / 25 tests), svelte-typecheck-ratchet (155 files, 0 errors), ui-ticket-leak-check (503 files, 0 leaks), mmd-validate (2 diagrams valid), reports-ticket-check (148 reports valid), and ticket_schema_check (0 T740 issues). Lesson disposition: Lessons: none — covered directly by funnel hygiene Vitest assertions (audit-blueprint-order-ui.test.ts and service-action-order-configurator.test.ts).)
+- **T742** — Auto-heal degraded Cloudflare WARP IPv6 tunnel on PMTU drop below 1280 and ensure check-warp runs before db-drift-check in _deploy-preflight ((agy:t742-warp-ipv6-self-heal): Verified root cause in journalctl -u warp-svc -b (pmtu=1222 triggered kernel DelRoute across CloudflareWARP / table 65743). Cycled WARP on host (mtu 1300, global IPv6 restored, check_db_host.py, just check-warp, and just db-drift-check all exited 0). Implemented justfile self-heal (check-warp + _deploy-preflight ordering), added regression tests in scripts/tests/test_deploy_chain_order.py, wrote .agents/reports/t742-warp-ipv6-pmtud-self-heal.md (mirrored to w0m-web/docs/reports/t742-warp-ipv6-pmtud-self-heal.md), and recorded transferable rule in LESSONS.md.)
 
 ## 3. Other open threads (in TASKS.md)
 
