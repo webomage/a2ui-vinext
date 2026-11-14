@@ -44,7 +44,7 @@
         "STRIPE_WEBHOOK_SECRET"
       ],
       "expected_absent": true,
-      "note": "🔴 No STRIPE_* key exists in infisical dev, yet the stripe-checkout and stripe-webhook edge functions are DEPLOYED and ACTIVE. Either they are configured through another store, or they cannot work. The catalog should render this as declared ✅ / configured ❌ — which is true and is the point.",
+      "note": "Infisical beta now holds STRIPE_SECRET_KEY (sk_test_...) and w0m-api/scripts/sync_supabase_secrets.py syncs both STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET on just sync-secrets, while STRIPE_WEBHOOK_SECRET awaits Stripe Dashboard webhook endpoint registration (T290 / T743) and dev remains intentionally unprovisioned.",
       "docs": "docs/backend/connectors/stripe.md",
       "probe": {
         "kind": "none"

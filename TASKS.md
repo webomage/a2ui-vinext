@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T743](.tasks/T743.md) | **P1** | **Fix Stripe secret sync allowlist and Client Portal Stripe checkout headers/payloads** | api, web | openspec/specs/commercial-billing/spec.md | ✅ **done** |
 | [T742](.tasks/T742.md) | **P1** | **Auto-heal degraded Cloudflare WARP IPv6 tunnel on PMTU drop below 1280 and ensure check-warp runs before db-drift-check in _deploy-preflight** | infra, tooling, web | — | ✅ **done** |
 | [T740](.tasks/T740.md) | **P0** | **Fix AI Agent Helper click close race across funnels, unify /solutions selector, and compare claw/audit runtimes vs ZeroClaw** | web | — | ✅ **done** |
 | [T738](.tasks/T738.md) | **P0** | **Fix /solutions & /services direct package checkout and hats_profile_id_fkey profile ID resolution across w0m-api and w0m-web** | api, web | — | ✅ **done** |
