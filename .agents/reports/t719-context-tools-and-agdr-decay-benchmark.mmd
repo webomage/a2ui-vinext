@@ -1,0 +1,19 @@
+flowchart TD
+    Q["Agent / CLI Lookup Request"] --> C1{"Cold Doc / Spec Lookup?"}
+    C1 -- "Yes (963 docs, ~1.257M tok)" --> KB["w0m_kb_vector.py (SQLite BM25 + 128d, 853-941 ms)"]
+    KB --> H1["PageIndex Pattern: Heading Tree Index (Zero LLM Index Cost)"]
+
+    C1 -- "No: Code / Symbol Lookup" --> C2{"Zero-Index AST Needed?"}
+    C2 -- "Yes (Fast Local / Ultra Diff)" --> TI["tilth Pattern (MIT, Rust tree-sitter outline)"]
+    C2 -- "No (Cross-Repo Semantic)" --> ASK["just ask (codegraph + graphify, 35-40 s cold)"]
+
+    Q --> SK["Skill Routing (42 governed vs 129 w0m-web)"]
+    SK --> SK1["Keep Static 42 Core Prefix-Cache-Safe"]
+    SK1 --> SK2["Prune 87 Un-governed Duplicates (-71.9% tok)"]
+
+    Q --> AG["AgDR Governance (50 Active / 57 Total)"]
+    AG --> DEC["just decisions --stale (check_agdr_evidence_decay)"]
+    DEC --> OK["0 Stale Citations (Exit 0)"]
+
+    Q --> K7["Multi-Agent TUI Blackboard (T708)"]
+    K7 --> AGTX["agtx Pattern (ratatui + rusqlite + worktree + hook_status)"]

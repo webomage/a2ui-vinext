@@ -18,8 +18,9 @@ impossible because nothing is retyped.
 🔴 IT REFUSES AN EMPTY SWEEP. Zero decisions found exits 1: the corpus is known to hold ~59, so an
 empty result means the matcher broke, not that nobody decided anything.
 
-Usage:  python3 scripts/decisions_index.py [--check]
+Usage:  python3 scripts/decisions_index.py [--check | --write | --stale [--json]]
 `--check` exits 1 if the committed index is stale — for the pre-push gate.
+`--stale` exits 1 if any non-superseded AgDR cites a missing repo path or gate script.
 """
 
 from __future__ import annotations
@@ -62,6 +63,18 @@ def die(msg: str, code: int = 1) -> NoReturn:
     raise SystemExit(code)
 
 
+def _parse_agdr_frontmatter(txt: str) -> dict[str, str] | None:
+    m = re.match(r"^---\n(.*?)\n---", txt, re.S)
+    if not m:
+        return None
+    fm: dict[str, str] = {}
+    for line in m.group(1).splitlines():
+        km = re.match(r"^([a-z_]+):\s*(.*)$", line)
+        if km:
+            fm[km.group(1)] = re.sub(r"\s+#.*$", "", km.group(2)).strip().strip('"')
+    return fm
+
+
 def agdr_records() -> list[dict]:
     """Structured AgDR records — read as FIRST-CLASS, not as another prose surface.
 
@@ -72,14 +85,9 @@ def agdr_records() -> list[dict]:
     out = []
     for p in sorted(ROOT.glob(AGDR_DIR)):
         txt = p.read_text(encoding="utf-8")
-        m = re.match(r"^---\n(.*?)\n---", txt, re.S)
-        if not m:
+        fm = _parse_agdr_frontmatter(txt)
+        if fm is None:
             continue
-        fm = {}
-        for line in m.group(1).splitlines():
-            km = re.match(r"^([a-z_]+):\s*(.*)$", line)
-            if km:
-                fm[km.group(1)] = re.sub(r"\s+#.*$", "", km.group(2)).strip().strip('"')
         y = re.search(r"^## Y-statement\s*\n+> (.+?)(?=\n\n)", txt, re.S | re.M)
         out.append({
             "kind": "agdr", "file": str(p.relative_to(ROOT)), "line": 1,
@@ -216,12 +224,114 @@ def _rel(f: str) -> str:
     return "../" + f
 
 
+ESTATE_PATH_PREFIXES = (
+    "scripts/",
+    "w0m-web/",
+    "w0m-api/",
+    "w0m-cf/",
+    "w0m-ext/",
+    "w0m-sec/",
+    "w0m-skills/",
+    "w0m-mlx/",
+    "project/",
+    "docs/",
+    ".w0m/",
+    ".tasks/",
+    ".agents/",
+)
+AMBIGUOUS_WEB_PREFIXES = ("scripts/", "project/", "docs/", ".agents/")
+SKIP_PLACEHOLDERS = ("*", "<", ">", "{", "}", "...", "##", "NNN", "XXXX", "$", "?")
+_EXTERNAL_BULLET_RE = re.compile(r"^\s*[-*]\s+\*\*`([a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+)`")
+
+
+def _clean_cited_path(tok: str) -> str | None:
+    """Return normalized repo-relative path candidate or None if token is prose/template."""
+    tok = tok.strip(".,;:()[]{}'\"")
+    if not tok or "://" in tok or any(p in tok for p in SKIP_PLACEHOLDERS):
+        return None
+    tok = re.sub(r":(?:L?\d+(?:-L?\d+)?).*$", "", tok)
+    tok = re.sub(r"#.*$", "", tok)
+    if tok.endswith("/") or not tok.startswith(ESTATE_PATH_PREFIXES):
+        return None
+    return tok
+
+
+def _path_exists_in_estate(rel_path: str) -> bool:
+    """Resolve cited path at estate root or pre-elevation `w0m-web/` location."""
+    if (ROOT / rel_path).exists():
+        return True
+    if rel_path.startswith(AMBIGUOUS_WEB_PREFIXES) and (ROOT / "w0m-web" / rel_path).exists():
+        return True
+    return False
+
+
+def check_agdr_evidence_decay() -> tuple[int, list[dict]]:
+    """T719 AC4 — flag non-superseded AgDRs whose cited estate paths/scripts no longer exist."""
+    findings: list[dict] = []
+    checked = 0
+    for p in sorted(ROOT.glob(AGDR_DIR)):
+        txt = p.read_text(encoding="utf-8")
+        fm = _parse_agdr_frontmatter(txt) or {}
+        if fm.get("status") == "superseded" or fm.get("superseded_by", "").strip():
+            continue
+        checked += 1
+        rel_file = str(p.relative_to(ROOT))
+        seen_paths: set[str] = set()
+        in_fence = False
+        for lineno, line in enumerate(txt.splitlines(), 1):
+            if line.lstrip().startswith("```"):
+                in_fence = not in_fence
+                continue
+            if in_fence:
+                continue
+            ext_m = _EXTERNAL_BULLET_RE.match(line)
+            if ext_m and not ext_m.group(1).startswith(ESTATE_PATH_PREFIXES + ("webomage/",)):
+                continue
+            for backtick in re.findall(r"`([^`\n]+)`", line):
+                for raw_tok in backtick.split():
+                    candidate = _clean_cited_path(raw_tok)
+                    if not candidate or candidate in seen_paths:
+                        continue
+                    # Ignore explicit deletion mandates (the deleted target existing previously is expected).
+                    if re.search(r"\b(?:[Dd]elete|[Rr]emove|[Dd]rop)\b[^\n.]*`" + re.escape(raw_tok), line):
+                        continue
+                    if not _path_exists_in_estate(candidate):
+                        seen_paths.add(candidate)
+                        findings.append({
+                            "id": fm.get("id", p.stem),
+                            "file": rel_file,
+                            "line": lineno,
+                            "path": candidate,
+                            "context": line.strip()[:160],
+                        })
+    return checked, findings
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--check", action="store_true", help="fail if the committed index is stale")
     ap.add_argument("--write", action="store_true", help="write the index (default when --check is not set)")
+    ap.add_argument("--stale", action="store_true", help="flag active AgDRs citing moved or deleted paths")
+    ap.add_argument("--json", action="store_true", help="emit machine-readable JSON (with --stale)")
     a = ap.parse_args()
+
+    if a.stale:
+        checked, findings = check_agdr_evidence_decay()
+        if a.json:
+            print(json.dumps({
+                "checked_agdrs": checked,
+                "stale_count": len(findings),
+                "findings": findings,
+            }, indent=2))
+        elif findings:
+            print(f"❌ AgDR evidence decay — {len(findings)} stale citation(s) across {checked} active AgDR(s):",
+                  file=sys.stderr)
+            for f in findings:
+                print(f"  - {f['id']} ({f['file']}:{f['line']}): missing `{f['path']}`", file=sys.stderr)
+        else:
+            print(f"✅ AgDR evidence fresh — 0 stale citations across {checked} active AgDR(s)")
+        return 1 if findings else 0
 
     rows = harvest() + agdr_records()
     if not rows:

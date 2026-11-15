@@ -36,7 +36,7 @@ Measured 2026-09-25 (research: `docs/research/tech/2026-09-25-developer-portals.
   Roadie's validator work on it offline; the canonical JSON Schemas ship in `@backstage/catalog-model`.
 - Backstage 2026 models MCP servers as `kind: API`, `spec.type: mcp-server`, and skills/rules as `kind: AiResource`
   (the latter's version per a community source, to verify), and serves the catalog to agents over MCP.
-- w0m's catalog data is spread across `project/stacks-policy.json` (T130), `.w0m/sdlc.json` (repos, MCP servers),
+- w0m's catalog data is spread across `project/policies/stacks-policy.json` (T130), `.w0m/sdlc.json` (repos, MCP servers),
   `.w0m/skills.json` and `project/test-suites.json`, each with its own shape. Only 7 estate Python scripts use
   dataclasses/TypedDict/Protocol; mypy (T188) runs without `disallow_untyped_defs`.
 

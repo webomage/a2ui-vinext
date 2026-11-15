@@ -149,6 +149,45 @@ def main() -> int:
                     ("AgDR" in rtxt or "decisions" in rtxt.lower()) and "DECISIONS.md" in rtxt,
                     f"{repo}/AGENTS.md lacks AgDR / DECISIONS reference")
 
+    # ── T719 AC4: AgDR EVIDENCE-DECAY CHECK (--stale) ───────────────────────────────────────
+    print("\n🔴 T719 AC4: AgDR EVIDENCE-DECAY CHECK (--stale)")
+    checked, clean_findings = di.check_agdr_evidence_decay()
+    p.check("active AgDR corpus is checked and currently clean", checked >= 10 and not clean_findings,
+            f"checked={checked} findings={clean_findings}")
+    stale_ok = subprocess.run(
+        [sys.executable, str(ROOT_T / "scripts/decisions_index.py"), "--stale", "--json"],
+        capture_output=True, text=True, check=False,
+    )
+    p.check("`--stale --json` exits 0 on current corpus", stale_ok.returncode == 0, stale_ok.stderr)
+    payload_ok = json.loads(stale_ok.stdout)
+    p.check("`--stale --json` reports stale_count == 0", payload_ok["stale_count"] == 0, stale_ok.stdout)
+
+    try:
+        injected = (
+            keep
+            + "\n- Probe missing path `scripts/nonexistent_gate_t719_probe.py`."
+            + "\n- Delete `w0m-web/apps/nonexistent_deleted_app` completely."
+            + "\n- **`otherorg/external-tool`**: Runs `scripts/external_only.py` in CI.\n"
+        )
+        src_file.write_text(injected, encoding="utf-8")
+        _, mut_findings = di.check_agdr_evidence_decay()
+        flagged = [f["path"] for f in mut_findings]
+        p.check("moved/deleted cited estate path is FLAGGED",
+                "scripts/nonexistent_gate_t719_probe.py" in flagged, str(mut_findings))
+        p.check("explicit Delete target is NOT false-positived",
+                "w0m-web/apps/nonexistent_deleted_app" not in flagged, str(mut_findings))
+        p.check("external repo comparison bullet is NOT false-positived",
+                "scripts/external_only.py" not in flagged, str(mut_findings))
+        stale_fail = subprocess.run(
+            [sys.executable, str(ROOT_T / "scripts/decisions_index.py"), "--stale", "--json"],
+            capture_output=True, text=True, check=False,
+        )
+        p.check("`--stale --json` exits 1 when decay exists", stale_fail.returncode == 1, stale_fail.stdout)
+    finally:
+        src_file.write_text(keep, encoding="utf-8")
+    _, restored_findings = di.check_agdr_evidence_decay()
+    p.check("restoring AgDR clears stale findings", not restored_findings, str(restored_findings))
+
     print("\n" + "-" * 76)
     if p.fail:
         print(f"FAIL — {len(p.fail)} of {p.n}:", file=sys.stderr)

@@ -54,7 +54,7 @@ Measured 2026-09-15 via `w0m skill gaps` (live) and `wom7skills/skills-registry.
 - **`w0m-prs`** — the workspace-root `justfile` already wires a `prs` recipe (line 16, landed
   under T345, commit `06a5a89`), and no other root has an equivalent recipe.
 
-T190's own "Out of scope" note (`project/tickets/T190.md`) confirms: *"AC3 requires each be
+T190's own "Out of scope" note (`.tasks/T190.md`) confirms: *"AC3 requires each be
 decided, not that any be added — several are persona skills whose value is a judgement call."*
 Deliberately-excluded-with-a-reason is therefore a fully valid AC3 outcome, not a fallback.
 
