@@ -178,6 +178,68 @@ def test_harvest_friction() -> None:
             failures.append("test_harvest_friction: expected 3 persisted JSONL rows in state_file")
 
 
+def test_harvest_friction_scoping_and_digest_clarity() -> None:
+    with tempfile.TemporaryDirectory(prefix="t748-friction-") as td:
+        tdir = Path(td)
+        tr_other = tdir / "other-conv" / ".system_generated" / "logs" / "transcript.jsonl"
+        tr_other.parent.mkdir(parents=True, exist_ok=True)
+        tr_other.write_text(
+            json.dumps({"content": "usage: p\np: error: unrecognized arguments: --stale-other"}) + "\n",
+            encoding="utf-8",
+        )
+        tr_cur = tdir / "cur-conv" / ".system_generated" / "logs" / "transcript.jsonl"
+        tr_cur.parent.mkdir(parents=True, exist_ok=True)
+        tr_cur.write_text(
+            json.dumps({"content": "refused: dirty: modified tracked files in w0m-web"}) + "\n",
+            encoding="utf-8",
+        )
+        state_file = tdir / "landing-friction.jsonl"
+
+        res = run_tool(
+            "--harvest-friction",
+            "--transcript",
+            str(tr_other),
+            "--transcript",
+            str(tr_cur),
+            "--state-file",
+            str(state_file),
+            "--tree-name",
+            "t748-cur",
+            "--current-tree-source",
+            "cur-conv",
+            "--current-tree",
+            "--json",
+        )
+        if res.returncode != 0:
+            failures.append(f"test_harvest_friction_scoping: exit {res.returncode}: {res.stderr}")
+            return
+        rep = json.loads(res.stdout)
+        if rep.get("harvested_count") != 1 or rep.get("cross_session_total") != 2:
+            failures.append(
+                f"test_harvest_friction_scoping: expected harvested_count=1, cross_session_total=2, got {rep}"
+            )
+            return
+
+        txt_res = run_tool(
+            "--harvest-friction",
+            "--transcript",
+            str(tr_other),
+            "--state-file",
+            str(state_file),
+            "--tree-name",
+            "t748-cur",
+            "--current-tree-source",
+            "cur-conv",
+        )
+        if txt_res.returncode != 0:
+            failures.append(f"test_harvest_friction_scoping (text): exit {txt_res.returncode}: {txt_res.stderr}")
+            return
+        if "Late-Learn Friction Digest" not in txt_res.stdout or "info-only" not in txt_res.stdout.lower():
+            failures.append(
+                f"test_harvest_friction_scoping: expected explicit info-only cross-session header, got:\n{txt_res.stdout}"
+            )
+
+
 def main() -> int:
     test_live_summary()
     test_live_search()
@@ -187,6 +249,7 @@ def main() -> int:
     test_harness2_index()
     test_synthetic_fixture()
     test_harvest_friction()
+    test_harvest_friction_scoping_and_digest_clarity()
 
     if failures:
         print(f"FAILED — {len(failures)} test(s) failed:")
@@ -194,7 +257,7 @@ def main() -> int:
             print(f"  • {f}")
         return 1
 
-    print("[PASS] test_lessons_query: 8/8 tests passed.")
+    print("[PASS] test_lessons_query: 9/9 tests passed.")
     return 0
 
 

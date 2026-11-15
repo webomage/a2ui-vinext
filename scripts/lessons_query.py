@@ -372,6 +372,8 @@ def main() -> int:
     parser.add_argument("--harvest-friction", action="store_true", help="Harvest recent session transcripts & worktree landing events for Late-Learn friction (T602 AC4)")
     parser.add_argument("--since-hours", type=float, default=12.0, help="Hours of transcripts to scan (default: 12.0)")
     parser.add_argument("--tree-name", default=None, help="Optional agent tree set name")
+    parser.add_argument("--current-tree", action="store_true", help="Filter digest output to items from the active tree/session while still logging cross-session state")
+    parser.add_argument("--current-tree-source", default=None, help="Explicit transcript conversation ID or stem considered the active session")
     parser.add_argument("--record-event", default=None, help="Optional JSON friction event to record")
     parser.add_argument("--transcript", action="append", default=None, help="Explicit transcript file path(s) to scan (test seam)")
     parser.add_argument("--state-file", default=None, help="Override landing-friction.jsonl path (test seam)")
@@ -397,6 +399,8 @@ def main() -> int:
             state_file=s_file,
             extra_events=extra,
             transcript_paths=t_paths,
+            tree_only=args.current_tree,
+            current_tree_source=args.current_tree_source,
         )
         if args.json:
             print(json.dumps(report, indent=2, ensure_ascii=False))
@@ -590,6 +594,8 @@ def harvest_session_friction(
     state_file: Path = FRICTION_STATE_FILE,
     extra_events: list[dict[str, str]] | None = None,
     transcript_paths: list[Path] | None = None,
+    tree_only: bool = False,
+    current_tree_source: str | None = None,
 ) -> dict[str, object]:
     """Scan recent session transcripts and landing events for friction, persist to JSONL, and recommend Late-Learn actions (T602 AC4)."""
     import hashlib
@@ -621,10 +627,19 @@ def harvest_session_friction(
                 except OSError:
                     pass
 
-    raw_events: list[dict[str, str]] = list(extra_events or [])
+    raw_events: list[dict[str, str]] = [
+        {"tree": tree_name or "", **ev} for ev in (extra_events or [])
+    ]
+    worktree_re = re.compile(r"/\.w0m/work/([a-z0-9][a-z0-9-]{0,39})/w0m\b")
     for tp in candidates:
         try:
-            for line in tp.read_text(encoding="utf-8", errors="ignore").splitlines():
+            tp_text = tp.read_text(encoding="utf-8", errors="ignore")
+            tp_trees = worktree_re.findall(tp_text)
+            inferred_tree = tp_trees[-1] if tp_trees else ""
+            tp_src = tp.parent.parent.parent.name if ".system_generated" in str(tp) else tp.stem
+            if current_tree_source and tp_src == current_tree_source and tree_name:
+                inferred_tree = tree_name
+            for line in tp_text.splitlines():
                 if not line.strip():
                     continue
                 try:
@@ -648,7 +663,11 @@ def harvest_session_friction(
                         "refused:",
                     )
                 ):
-                    raw_events.extend(_scan_text_for_friction(content, tp.parent.parent.parent.name if ".system_generated" in str(tp) else tp.stem, ws_root, index))
+                    line_trees = worktree_re.findall(content)
+                    line_tree = line_trees[-1] if line_trees else inferred_tree
+                    for found in _scan_text_for_friction(content, tp_src, ws_root, index):
+                        found.setdefault("tree", line_tree)
+                        raw_events.append(found)
         except OSError:
             continue
 
@@ -674,7 +693,7 @@ def harvest_session_friction(
         fp = hashlib.sha1(key_str.encode("utf-8")).hexdigest()[:12]
         rec = {
             "timestamp": iso_now,
-            "tree": tree_name or "",
+            "tree": str(ev.get("tree") or ""),
             "fingerprint": fp,
             **ev,
         }
@@ -689,7 +708,16 @@ def harvest_session_friction(
             for r in new_records:
                 f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
-    active_items = list(deduped_session.values())
+    all_items = list(deduped_session.values())
+    if tree_only and (current_tree_source or tree_name):
+        active_items = [
+            it
+            for it in all_items
+            if (current_tree_source and it.get("source") == current_tree_source)
+            or (tree_name and (it.get("tree") == tree_name or tree_name in str(it.get("attempted") or "")))
+        ]
+    else:
+        active_items = all_items
     by_category: dict[str, list[dict[str, str]]] = {
         "location_miss": [],
         "parameter_or_cli_error": [],
@@ -727,7 +755,11 @@ def harvest_session_friction(
 
     return {
         "harvested_count": len(active_items),
+        "cross_session_total": len(all_items),
         "newly_recorded_count": len(new_records),
+        "tree_only": tree_only,
+        "tree_name": tree_name or "",
+        "since_hours": since_hours,
         "state_file": str(state_file),
         "by_category": by_category,
         "recommendations": recommendations,
@@ -737,16 +769,32 @@ def harvest_session_friction(
 def print_friction_digest(report: dict[str, object]) -> None:
     """Print human-readable Late-Learn Friction Digest at worktree landing or via `just lessons-harvest`."""
     total = int(str(report.get("harvested_count") or 0))
+    cross_total = int(str(report.get("cross_session_total") or total))
     new_cnt = int(str(report.get("newly_recorded_count") or 0))
+    since_h = report.get("since_hours") or 12.0
+    tree_only = bool(report.get("tree_only"))
+    tree_name = str(report.get("tree_name") or "").strip()
     by_cat: dict[str, list[dict[str, str]]] = report.get("by_category") or {}  # type: ignore[assignment]
     recs: list[dict[str, str]] = report.get("recommendations") or []  # type: ignore[assignment]
 
+    if tree_only and tree_name:
+        scope_note = (
+            f"tree={tree_name}: {total} in this tree, {cross_total} cross-session in last {since_h:g}h"
+        )
+    else:
+        scope_note = f"{total} cross-session historical item(s) across last {since_h:g}h"
+
     print(
-        f"▶ Late-Learn Friction Digest — {total} session friction item(s) "
+        f"▶ Late-Learn Friction Digest (info-only) — {scope_note} "
         f"({new_cnt} newly logged to {report.get('state_file')})"
     )
     if total == 0:
-        print("  ✅ 0 location misses, parameter errors, or gate refusals in recent transcripts.")
+        if tree_only and cross_total > 0:
+            print(
+                f"  ✅ 0 friction items in `{tree_name}` (info-only: {cross_total} item(s) remain from sibling sessions; run `just lessons-harvest` to inspect)."
+            )
+        else:
+            print("  ✅ 0 location misses, parameter errors, or gate refusals in recent transcripts.")
         return
 
     for cat, label in (

@@ -87,7 +87,7 @@ Claude Code runs session-start hooks automatically (`.claude/settings.local.json
 | **Ticket Queue & Reality Audit** | `TASKS.md` (`just tasks`, `just reality-verify`) | Ranked task queue + completed ticket/spec reality check |
 | **Technical Debt** | `TECH-DEBT.md` (`just debt-check`) | Decided debts + `## Closed-Debt Ledger` |
 | **Late-Learn Friction** | `just lessons-harvest` | Transcript & `agent-tree-land` friction harvester (T602) |
-| **Stacks, Ports & Layout** | `project/policies/{stacks,ports,layout}-policy.json` | `just discovery`, `just ports-check`, `just layout-check` |
+| **Stacks, Ports & Layout** | `project/policies/stacks-policy.json`, `w0m-web/project/{ports,layout}-policy.json` | `just discovery`, `just ports-check`, `just layout-check` |
 | **Inbound Tray (`_in/`)** | `_in/INDEX.md` (`just in-triage`, `just in-check`) | Disposition ledger & ticket/spec matcher (T447) |
 | **System Standards & Topology** | `docs/standards/SYSTEM-STANDARDS-MATRIX.md`, `docs/ARCHITECTURE.md` | `just standards-check`, service flows, `docs/backend/KB-INDEX.md` |
 
@@ -95,9 +95,11 @@ Claude Code runs session-start hooks automatically (`.claude/settings.local.json
 
 | Surface | Canonical Path | Never Guess / Stale Path |
 |---|---|---|
-| **Ticket Files & Queue** | `.tasks/T##.md` & `TASKS.md` | `w0m-web/TASKS.md`, `project/tickets/T##.md` |
+| **Ticket Files & Queue** | `.tasks/T##.md`, `TASKS.md`, `scripts/tasks_render.py`, `scripts/sync_github.py` | `w0m-web/TASKS.md`, `scripts/tickets_render.py`, `scripts/gh_tasks_sync.py` |
 | **Technical Debt Register** | `TECH-DEBT.md` & `scripts/debt_register_check.py` | `w0m-web/TECH-DEBT.md`, `w0m-web/project/scripts/debt_register_check.py` |
 | **Lessons & Harvester** | `LESSONS.md`, `scripts/lessons_query.py`, `w0m-web/project/scripts/lessons_check.py` | `w0m-web/LESSONS.md`, `scripts/lessons_check.py` |
+| **Emoji & Mermaid Gates** | `scripts/emoji_policy_check.py` & `just mmd-validate` | `w0m-web/project/scripts/emoji_policy_check.py`, `w0m-web/project/scripts/mmd_validate.py` |
+| **Ports, Layout & Standards** | `w0m-web/project/{ports,layout,standards,hooks-llm}-policy.json` | `project/policies/ports-policy.json`, `project/policies/layout-policy.json` |
 | **Supabase Drift Gate** | `w0m-web/project/scripts/supabase_surface_drift_check.py` | `scripts/supabase_surface_drift_check.py` |
 | **`justfile` Entrypoints** | `justfile` (`@wom`), `w0m-api/justfile`, `w0m-cf/justfile`, `w0m-ext/justfile` | `w0m-web/justfile` |
 | **Agent Tree & Release** | `w0m-web/project/scripts/agent_tree.py` & `scripts/release.py` | `scripts/agent_tree.py` |
