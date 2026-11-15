@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"],
+    "paths": {
+      "@webomage/a2ui-vinext": ["./src/index.ts"],
+      "@webomage/a2ui-vinext/catalog": ["./src/catalog.ts"],
+      "@webomage/a2ui-vinext/client": ["./src/client/index.ts"],
+      "@webomage/a2ui-vinext/server": ["./src/server/index.ts"],
+      "@webomage/a2ui-vinext/workers": ["./src/workers/index.ts"],
+      "@webomage/a2ui-vinext/vite": ["./src/vite/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx"]
+}

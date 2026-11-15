@@ -1,0 +1,36 @@
+{
+  "name": "a2ui-vinext-cloudflare-worker-example",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "postinstall": "tsc -p ../../tsconfig.build.json",
+    "predev": "tsc -p ../../tsconfig.build.json",
+    "dev": "vite dev",
+    "prebuild": "tsc -p ../../tsconfig.build.json",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@a2ui/web_core": "^0.15.0",
+    "@cloudflare/vite-plugin": "^1.69.1",
+    "@vitejs/plugin-react": "^6.3.0",
+    "@vitejs/plugin-rsc": "^0.5.39",
+    "@webomage/a2ui-vinext": "link:../..",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "vinext": "^1.4.5",
+    "vite": "^8.3.8",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260405.0",
+    "@types/node": "^25.3.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.160.0"
+  }
+}

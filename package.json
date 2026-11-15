@@ -1,0 +1,97 @@
+{
+  "name": "@webomage/a2ui-vinext",
+  "version": "0.1.0",
+  "description": "A2UI v1.0 & v0.9.1 React 19 RSC renderer, catalog validator, Vite SSR/HMR plugin, and Cloudflare Workers edge streaming adapter for cloudflare/vinext.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webomage/a2ui-vinext.git"
+  },
+  "homepage": "https://github.com/webomage/a2ui-vinext#readme",
+  "bugs": {
+    "url": "https://github.com/webomage/a2ui-vinext/issues"
+  },
+  "keywords": [
+    "a2ui",
+    "a2ui-v1",
+    "vinext",
+    "cloudflare-workers",
+    "workerd",
+    "react",
+    "rsc",
+    "vite",
+    "generative-ui",
+    "ai-agents"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./catalog": {
+      "types": "./dist/catalog.d.ts",
+      "import": "./dist/catalog.js",
+      "default": "./dist/catalog.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.js",
+      "default": "./dist/client/index.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "import": "./dist/server/index.js",
+      "default": "./dist/server/index.js"
+    },
+    "./workers": {
+      "types": "./dist/workers/index.d.ts",
+      "import": "./dist/workers/index.js",
+      "default": "./dist/workers/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite/index.d.ts",
+      "import": "./dist/vite/index.js",
+      "default": "./dist/vite/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepare": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "files": [
+    "src",
+    "examples",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@a2ui/web_core": "^0.15.0",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "jsdom": "^29.1.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^6.0.3",
+    "vinext": "^1.4.5",
+    "vitest": "^4.1.12"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
