@@ -15,7 +15,7 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | in-progress | ai | 100 | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare  📄 live spec |
+| 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | [#746](https://github.com/webomage/wom7board/issues/746) | P1 | in-progress | ai | 100 | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare  📄 live spec |
 | 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
@@ -32,7 +32,7 @@
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | in-progress | ai | 2/4 | `█████░░░░░` 50% | — | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer  |
+| 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | [#746](https://github.com/webomage/wom7board/issues/746) | P1 | in-progress | ai | 2/4 | `█████░░░░░` 50% | — | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer  |
 | 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
 
 ### MECHANICAL STATE — generated, never hand-edited
@@ -53,9 +53,9 @@
 | `w0m-mlx/w0m-mlx` | `agent/t747-services-matrix-6` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 746 TASKS.md rows · 368/747 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 747 TASKS.md rows · 368/747 specced (2/6 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"4524809","unpushed":null},"w0m-cf":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"d904e4b","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"552a05425","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":746,"specced":368,"specced_open":2,"total":747,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"4524809","unpushed":null},"w0m-cf":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"d904e4b","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t747-services-matrix-6","dirty":0,"has_upstream":true,"head":"552a05425","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":747,"specced":368,"specced_open":2,"total":747,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
