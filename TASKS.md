@@ -26,7 +26,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
 | [T741](.tasks/T741.md) | **P1** | 🆕 **Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite RSC + Workers) and contribute to a2ui.org/ecosystem/renderers** | web, lib, cf, tooling | — | ⚪ **queued** |
-| [T739](.tasks/T739.md) | **P1** | 🆕 **Adopt Google A2UI 1.0 generative agentic UI protocol across w0m-ext (@a2ui/lit 1.0) and w0m-web (@webomage/ui + AI Agent Helper + CP)** | ext, web, lib, tooling | — | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | P3 | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 💤 **paused** |
@@ -40,6 +39,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T743](.tasks/T743.md) | **P1** | **Fix Stripe secret sync allowlist and Client Portal Stripe checkout headers/payloads** | api, web | openspec/specs/commercial-billing/spec.md | ✅ **done** |
 | [T742](.tasks/T742.md) | **P1** | **Auto-heal degraded Cloudflare WARP IPv6 tunnel on PMTU drop below 1280 and ensure check-warp runs before db-drift-check in _deploy-preflight** | infra, tooling, web | — | ✅ **done** |
 | [T740](.tasks/T740.md) | **P0** | **Fix AI Agent Helper click close race across funnels, unify /solutions selector, and compare claw/audit runtimes vs ZeroClaw** | web | — | ✅ **done** |
+| [T739](.tasks/T739.md) | **P1** | 🆕 **Adopt Google A2UI 1.0 generative agentic UI protocol across w0m-ext (@a2ui/lit 1.0) and w0m-web (@webomage/ui + AI Agent Helper + CP)** | ext, web, lib, tooling | — | ✅ **done** |
 | [T738](.tasks/T738.md) | **P0** | **Fix /solutions & /services direct package checkout and hats_profile_id_fkey profile ID resolution across w0m-api and w0m-web** | api, web | — | ✅ **done** |
 | [T737](.tasks/T737.md) | **P1** | **Wire just tech-explainer into Orca embedded browser & integrate 12-Tool Security Audit Arsenal across w0m-sec and @webomage/lib** | sec, web, lib, tooling | — | ✅ **done** |
 | [T736](.tasks/T736.md) | **P1** | **Remediate Cross-Model Audit Findings across Hybrid Vector KB, Visual Architecture Explainer, and Canonical Tech Docs** | web, tooling | — | ✅ **done** |

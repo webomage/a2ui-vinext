@@ -15,9 +15,8 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T739](/home/aleksei/Projects/!self/w0m/.tasks/T739.md) | ⚠️ not mirrored | P1 | queued | ai | 60 | Adopt Google A2UI 1.0 generative agentic UI protocol across w0m-ext (@a2ui/lit 1.0) and  |
-| 2 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | queued | ai | 60 | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite |
-| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | queued | ai | 60 | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite |
+| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -25,17 +24,16 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 7 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **7** are
+> ⚠️ **0 of 6 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **6** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T739](/home/aleksei/Projects/!self/w0m/.tasks/T739.md) | ⚠️ not mirrored | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Adopt Google A2UI 1.0 generative agentic UI protocol across  |
-| 2 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer  |
-| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer  |
+| 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -46,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `95dd8942c` |
-| `w0m-api` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `4524809` |
-| `w0m-cf` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `10fe527` |
-| `w0m-skills` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
-| `w0m-ext` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
-| `w0m-sec` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
-| `w0m-mlx/w0m-mlx` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `7415a4497` |
+| `w0m-api` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `4524809` |
+| `w0m-cf` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `10fe527` |
+| `w0m-skills` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
+| `w0m-ext` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `d904e4b` |
+| `w0m-sec` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
+| `w0m-mlx/w0m-mlx` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 7 open · 745 TASKS.md rows · 364/745 specced (1/7 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 745 TASKS.md rows · 365/745 specced (1/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T739","T741","T17"],"repos":{"w0m-api":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"4524809","unpushed":null},"w0m-cf":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"95dd8942c","unpushed":null}},"tickets":{"open":7,"rowless_open":[],"rows":745,"specced":364,"specced_open":1,"total":745,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"4524809","unpushed":null},"w0m-cf":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"d904e4b","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"7415a4497","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":745,"specced":365,"specced_open":1,"total":745,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -117,9 +115,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (2):
+#### Completed today (3):
 
 - **T719** — Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vibe-Skills, tilth, agtx) & Prototype AgDR Decision Evidence-Decay Check (Completed AC1–AC4 in t719-context-tools. Verified just decisions --stale (0 stale across 50 active AgDRs), just decisions-check (386 decisions), just decisions-test (66/66), just package-legitimacy-check (VERIFIED=357, SUS=0, SLOP=0), just dep-licenses-check (fail=0), just reports-ticket-check (0 missing ticket links). Lesson disposition: no new LESSONS.md rule needed (existing prefix-cache vs proxy findings already recorded in T162, and AgDR-0032 tree isolation followed cleanly).)
+- **T739** — Adopt Google A2UI 1.0 generative agentic UI protocol across w0m-ext (@a2ui/lit 1.0) and w0m-web (@webomage/ui + AI Agent Helper + CP) ((agy:t739-a2ui-guided-qa): Implemented and verified A2UI 1.0 catalog guard + Svelte 5 renderer (w0m-web/packages/webmcp/src/a2ui.ts, w0m-web/packages/ui/src/lib/a2ui/), upgraded w0m-ext/extension to @a2ui/lit@^0.15.0 (0.15.0) with a2uiCatalogGuard.ts, and added non-secret AI Guided Q&A context persistence (ORDER_FORM_STORAGE_KEYS.publicAgentContext) + 1-click Google/GitHub/LinkedIn OAuth lead-in across apps/web/src/components/ChatApp.svelte, apps/cp/src/components/ChatApp.svelte, AIAgentWorkspace.svelte, and ClientDashboard.svelte. Verified with w0m-web Vitest (11 files, 63 tests passed), astro check (web 168 files 0 errors; cp 288 files 0 errors), w0m-ext runAllTests.ts (25 passed, 0 failed) + just typecheck + just build-chrome, oxlint (0 errors), ds-conformance, and ui-ticket-leak-check. Archived OpenSpec 2026-11-15-a2ui-v1-agentic-ui-and-guided-qa-oauth. Report: .agents/reports/t739-a2ui-v1-and-guided-qa-oauth-report.md. Lesson disposition: none — reused existing @webomage/ui, @webomage/webmcp, and @webomage/lib/security/order-form-state contracts.)
 - **T745** — k7 WASM job-hunter multi-channel search with include/exclude source filter and vector/graph rubric ((agy:t745-k7-job-hunter): Verified AC1–AC4 across w0m-cf (vitest-pool-workers 18/18 passed with static .wasm import, tsc --noEmit 0, wasm_worker_check.py --check passed), k7hub (cargo test 9/9 passed + wasm32-unknown-unknown build succeeded), w0m-web (vitest 6/6 passed, ui-ticket-leak-check 0 leaks across 503 files), CLI (pytest scripts/tests/test_w0m_job_hunter.py 4/4 passed, just job-search verified), and just mmd-validate (2 valid diagrams across 2 report files). Lesson disposition: recorded static .wasm ES module import rule for workerd in LESSONS.md (T745).)
 
 ## 3. Other open threads (in TASKS.md)

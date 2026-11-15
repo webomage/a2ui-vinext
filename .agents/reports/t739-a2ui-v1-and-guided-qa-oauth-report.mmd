@@ -1,0 +1,16 @@
+flowchart LR
+  User["Visitor or Operator"] --> WebChat["apps/web ChatApp and Guided Q&A"]
+  User --> ExtPopup["w0m-ext Popup @a2ui/lit 0.15.0"]
+  User --> CpApps["apps/cp ChatApp and AIAgentWorkspace"]
+
+  WebChat -->|persist non-secret context| Storage["ORDER_FORM_STORAGE_KEYS.publicAgentContext"]
+  WebChat -->|Google, GitHub, LinkedIn OAuth| OAuthRoute["/api/auth/oauth Redirect"]
+  OAuthRoute -->|goal, stack, service params| Portal["apps/cp ClientDashboard Onboarding"]
+  Storage -->|restore across reloads| Portal
+
+  WebChat -->|emit or extract a2ui| Guard["validateA2uiEnvelope Catalog Guard"]
+  CpApps -->|emit or extract a2ui| Guard
+  ExtPopup -->|strict-v1 guard| ExtGuard["validateExtensionA2uiEnvelope"]
+
+  Guard -->|block disallowed tags and secrets| Blocked["Fail-Closed Diagnostic"]
+  Guard -->|approved primitives and tokens| Surface["A2uiSurface Renderer"]
