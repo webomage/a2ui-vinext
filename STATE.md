@@ -15,7 +15,7 @@
 
 | # | Ticket | Issue | Prio | Status | Area | Score | Title |
 |---|---|---|---|---|---|---|---|
-| 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | queued | ai | 60 | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite |
+| 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | in-progress | ai | 100 | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare  📄 live spec |
 | 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
@@ -32,7 +32,7 @@
 
 | # | Ticket | Issue | Prio | Status | Area | ACs | Done | Blocked by | Title |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer  |
+| 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | in-progress | ai | 2/4 | `█████░░░░░` 50% | — | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer  |
 | 2 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
 
 ### MECHANICAL STATE — generated, never hand-edited
@@ -44,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `7415a4497` |
-| `w0m-api` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `4524809` |
-| `w0m-cf` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `10fe527` |
-| `w0m-skills` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
-| `w0m-ext` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `d904e4b` |
-| `w0m-sec` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
-| `w0m-mlx/w0m-mlx` | `agent/t739-a2ui-guided-qa` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t741-a2ui-vinext` | 0 | **n/a — NO UPSTREAM** | `15fd4b563` |
+| `w0m-api` | `agent/t741-a2ui-vinext` | 0 | **n/a — NO UPSTREAM** | `4524809` |
+| `w0m-cf` | `agent/t741-a2ui-vinext` | 0 | **n/a — NO UPSTREAM** | `10fe527` |
+| `w0m-skills` | `agent/t741-a2ui-vinext` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
+| `w0m-ext` | `agent/t741-a2ui-vinext` | 0 | **n/a — NO UPSTREAM** | `d904e4b` |
+| `w0m-sec` | `agent/t741-a2ui-vinext` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
+| `w0m-mlx/w0m-mlx` | `agent/t741-a2ui-vinext` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
-**Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 745 TASKS.md rows · 365/745 specced (1/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=🔴 1 · `secrets`=✅ 0
+**Tickets:** 6 open · 745 TASKS.md rows · 366/745 specced (2/6 open specced) · 1 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"4524809","unpushed":null},"w0m-cf":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"d904e4b","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t739-a2ui-guided-qa","dirty":0,"has_upstream":true,"head":"7415a4497","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":745,"specced":365,"specced_open":1,"total":745,"unmirrored_open":1}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":1,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/t741-a2ui-vinext","dirty":0,"has_upstream":true,"head":"4524809","unpushed":null},"w0m-cf":{"branch":"agent/t741-a2ui-vinext","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/t741-a2ui-vinext","dirty":0,"has_upstream":true,"head":"d904e4b","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t741-a2ui-vinext","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t741-a2ui-vinext","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t741-a2ui-vinext","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t741-a2ui-vinext","dirty":0,"has_upstream":true,"head":"15fd4b563","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":745,"specced":366,"specced_open":2,"total":745,"unmirrored_open":1}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,7 +113,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
+#### In-flight tickets (1):
+
+- **T741** — Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite RSC + Workers) and contribute to a2ui.org/ecosystem/renderers
+  - **2026-11-15** (today): (agy:t741-a2ui-vinext): Completed AC1, AC2, local A2UI conformance/test/security/license verification, and scripts/w0m_prs.py registration for a2ui-project/a2ui (cla_required, requires_gpg_signature: True). Public GitHub repository creation/push (webomage/a2ui-vinext), live Cloudflare Workers deploy, Google CLA confirmation (https://cla.developers.google.com/), and upstream just pr-open submission remain owner-gated (docs/DEPLOY-CONFIRM.md, AgDR-0058).
 
 #### Completed today (3):
 

@@ -67,6 +67,7 @@ PRESET_REPOS = {
         "cloudflare/security-audit-skill",
         "agentclientprotocol/agent-client-protocol",
         "kilian-ai/linuxontab",
+        "a2ui-project/a2ui",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -91,6 +92,7 @@ PRESET_REPOS = {
         "cloudflare/security-audit-skill",
         "agentclientprotocol/agent-client-protocol",
         "kilian-ai/linuxontab",
+        "a2ui-project/a2ui",
     ],
 }
 
@@ -2685,6 +2687,7 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
     "agent-client-protocol": "agentclientprotocol/agent-client-protocol",
     "linuxontab": "kilian-ai/linuxontab",
     "just": "casey/just",
+    "a2ui": "a2ui-project/a2ui",
 }
 
 # Per-repository upstream contribution rules registry (`AgDR-0058` / `T655`)
@@ -2755,6 +2758,20 @@ UPSTREAM_CONTRIBUTION_RULES: dict[str, dict[str, Any]] = {
         "max_open_prs": None,
         "max_loc": None,
         "policy_note": "Requires signed Google Individual/Corporate CLA (cla/google).",
+    },
+    "a2ui-project/a2ui": {
+        "automation_mode": "cla_required",
+        "template_profile": "standard",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": (
+            "Google-governed repo: requires signed Google Individual/Corporate CLA (cla/google), "
+            "run ./scripts/fix_format.sh for docs/site/src/content/docs/ecosystem/renderers.mdx updates."
+        ),
     },
     "headroomlabs-ai/headroom": {
         "automation_mode": "strict_governance",
