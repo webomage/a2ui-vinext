@@ -46,18 +46,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `a9e9df12b` |
-| `w0m-api` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `4524809` |
-| `w0m-cf` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
-| `w0m-skills` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
-| `w0m-ext` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
-| `w0m-sec` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
-| `w0m-mlx/w0m-mlx` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `20cfdfb37` |
+| `w0m-api` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `4524809` |
+| `w0m-cf` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `10fe527` |
+| `w0m-skills` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
+| `w0m-ext` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
+| `w0m-sec` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
+| `w0m-mlx/w0m-mlx` | `agent/t745-k7-job-hunter` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 7 open · 744 TASKS.md rows · 363/744 specced (1/7 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 7 open · 745 TASKS.md rows · 364/745 specced (1/7 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T739","T741","T17"],"repos":{"w0m-api":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"4524809","unpushed":null},"w0m-cf":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"a9e9df12b","unpushed":null}},"tickets":{"open":7,"rowless_open":[],"rows":744,"specced":363,"specced_open":1,"total":744,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T739","T741","T17"],"repos":{"w0m-api":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"4524809","unpushed":null},"w0m-cf":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t745-k7-job-hunter","dirty":0,"has_upstream":true,"head":"20cfdfb37","unpushed":null}},"tickets":{"open":7,"rowless_open":[],"rows":745,"specced":364,"specced_open":1,"total":745,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -117,9 +117,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (1):
+#### Completed today (2):
 
 - **T719** — Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vibe-Skills, tilth, agtx) & Prototype AgDR Decision Evidence-Decay Check (Completed AC1–AC4 in t719-context-tools. Verified just decisions --stale (0 stale across 50 active AgDRs), just decisions-check (386 decisions), just decisions-test (66/66), just package-legitimacy-check (VERIFIED=357, SUS=0, SLOP=0), just dep-licenses-check (fail=0), just reports-ticket-check (0 missing ticket links). Lesson disposition: no new LESSONS.md rule needed (existing prefix-cache vs proxy findings already recorded in T162, and AgDR-0032 tree isolation followed cleanly).)
+- **T745** — k7 WASM job-hunter multi-channel search with include/exclude source filter and vector/graph rubric ((agy:t745-k7-job-hunter): Verified AC1–AC4 across w0m-cf (vitest-pool-workers 18/18 passed with static .wasm import, tsc --noEmit 0, wasm_worker_check.py --check passed), k7hub (cargo test 9/9 passed + wasm32-unknown-unknown build succeeded), w0m-web (vitest 6/6 passed, ui-ticket-leak-check 0 leaks across 503 files), CLI (pytest scripts/tests/test_w0m_job_hunter.py 4/4 passed, just job-search verified), and just mmd-validate (2 valid diagrams across 2 report files). Lesson disposition: recorded static .wasm ES module import rule for workerd in LESSONS.md (T745).)
 
 ## 3. Other open threads (in TASKS.md)
 

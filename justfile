@@ -255,6 +255,14 @@ search *args:
 search-test:
     @python3 -m pytest scripts/tests/test_estate_search.py -q
 
+# ── Multi-Channel Job Hunter (T745) ───────────────────────────────────────────
+[positional-arguments]
+job-search *args:
+    @python3 scripts/w0m_job_hunter.py "$@"
+
+job-search-test:
+    @python3 -m pytest scripts/tests/test_w0m_job_hunter.py -q
+
 # ── Coordinated Multi-Agent Worktrees (T411 AC5) ─────────────────────────────
 worktree-agent id *args:
     @python3 scripts/worktree_agent.py create {{ id }} {{ args }}
