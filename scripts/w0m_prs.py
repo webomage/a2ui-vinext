@@ -3078,6 +3078,25 @@ INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
 
 # Canonical Why / What For / How PR Proposals for Prepared Contribution Branches (T593 AC4 / T569 AC4 / T597)
 CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
+    "a2ui-project/a2ui:docs/add-a2ui-vinext-renderer": {
+        "ticket": "T741",
+        "title": "docs(ecosystem): add @webomage/a2ui-vinext A2UI v1.0 renderer for Cloudflare Vinext",
+        "why": (
+            "The ecosystem renderers directory (`docs/site/src/content/docs/ecosystem/renderers.mdx`) does not yet list an "
+            "A2UI v1.0 renderer tailored for Cloudflare Vinext (`cloudflare/vinext` React 19 Server Components + Vite + "
+            "Cloudflare Workers `workerd`)."
+        ),
+        "what_for": (
+            "Lists `@webomage/a2ui-vinext` (`https://github.com/webomage/a2ui-vinext`, Apache-2.0) covering all 18 v1.0 "
+            "Basic Catalog components, fail-closed Zod v4 catalog validation, server-side secret redaction prior to edge "
+            "egress, and Cloudflare `workerd` SSE / `A2UI Express` JSONL streaming."
+        ),
+        "how": (
+            "- **`docs/site/src/content/docs/ecosystem/renderers.mdx`**: Adds `@webomage/a2ui-vinext` (v1.0 & v0.9.1/v0.8, "
+            "React 19 RSC / Cloudflare Vinext / `workerd`) formatted via `./scripts/fix_format.sh` after public repo + "
+            "Worker demo publication and Google CLA confirmation."
+        ),
+    },
     "agentclientprotocol/agent-client-protocol:docs/add-orca-client": {
         "ticket": "T676",
         "title": "docs(clients): add Orca to Desktop, CLI, and Mobile clients",
@@ -4374,6 +4393,11 @@ PROPOSAL_COMPLIANCE_META: dict[str, dict[str, Any]] = {
         "linked_issue": None,
         "visual_change": False,
         "visual_proof_na_reason": "Native macOS NSAlert button actions covered by ServerProcessIntegrationTests.",
+    },
+    "a2ui-project/a2ui:docs/add-a2ui-vinext-renderer": {
+        "linked_issue": None,
+        "visual_change": False,
+        "visual_proof_na_reason": "Documentation listing update in docs/site/src/content/docs/ecosystem/renderers.mdx.",
     },
 }
 

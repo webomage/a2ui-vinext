@@ -502,8 +502,8 @@ def main() -> int:
     # 8f. Contribution Proposals & AgDR-0058 Gate-Enforced Auto-Mode Governance (T593, T608, T621, T655)
     proposals_list = w0m_prs.build_pr_proposals(forks_dir=Path("/nonexistent-forks"))
     check(
-        "build_pr_proposals returns 36 active contribution proposals including T608, T618, T621, T635, T638, T653, T655, and T706 PRs",
-        len(proposals_list) == 36
+        "build_pr_proposals returns 37 active contribution proposals including T608, T618, T621, T635, T638, T653, T655, T706, and T741 PRs",
+        len(proposals_list) == 37
         and any(p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter" for p in proposals_list)
@@ -1149,12 +1149,15 @@ def main() -> int:
         and "lazydocker" in t638_proposals[0]["body"],
     )
 
+    a2ui_props = w0m_prs.build_pr_proposals(branch_filter="a2ui", forks_dir=Path("/nonexistent-forks"))
     a2ui_rule = w0m_prs.UPSTREAM_CONTRIBUTION_RULES.get("a2ui-project/a2ui")
     check(
-        "a2ui-project/a2ui registered under w0m-pr + FORK_UPSTREAM_MAP + cla_required rule",
+        "a2ui-project/a2ui registered under w0m-pr + FORK_UPSTREAM_MAP + cla_required rule + T741 proposal",
         "a2ui-project/a2ui" in w0m_prs.PRESET_REPOS["w0m-pr"]
         and "a2ui-project/a2ui" in w0m_prs.PRESET_REPOS["wom7open"]
         and w0m_prs.FORK_UPSTREAM_MAP.get("a2ui") == "a2ui-project/a2ui"
+        and len(a2ui_props) == 1
+        and a2ui_props[0]["key"] == "a2ui-project/a2ui:docs/add-a2ui-vinext-renderer"
         and isinstance(a2ui_rule, dict)
         and a2ui_rule.get("automation_mode") == "cla_required"
         and a2ui_rule.get("requires_gpg_signature") is True,
