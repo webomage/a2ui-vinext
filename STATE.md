@@ -17,8 +17,7 @@
 |---|---|---|---|---|---|---|---|
 | 1 | [T739](/home/aleksei/Projects/!self/w0m/.tasks/T739.md) | ⚠️ not mirrored | P1 | queued | ai | 60 | Adopt Google A2UI 1.0 generative agentic UI protocol across w0m-ext (@a2ui/lit 1.0) and  |
 | 2 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | queued | ai | 60 | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite |
-| 3 | [T719](/home/aleksei/Projects/!self/w0m/.tasks/T719.md) | ⚠️ not mirrored | P2 | queued | tools | 40 | Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vi 📄 live spec |
-| 4 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -26,8 +25,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 8 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **8** are
+> ⚠️ **0 of 7 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **7** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -37,7 +36,6 @@
 | 1 | [T739](/home/aleksei/Projects/!self/w0m/.tasks/T739.md) | ⚠️ not mirrored | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Adopt Google A2UI 1.0 generative agentic UI protocol across  |
 | 2 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | ⚠️ not mirrored | P1 | queued | ai | 0/4 | `░░░░░░░░░░` 0% | — | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer  |
 | 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
-| 4 | [T719](/home/aleksei/Projects/!self/w0m/.tasks/T719.md) | ⚠️ not mirrored | P2 | queued | tools | 0/4 | `░░░░░░░░░░` 0% | — | Benchmark Stack-Aligned Context & Code-Graph Tools (PageInde |
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -48,18 +46,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t744-job-hunter-modular-upgrade` | 0 | **n/a — NO UPSTREAM** | `f2a82bb20` |
-| `w0m-api` | `agent/t744-job-hunter-modular-upgrade` | 0 | **n/a — NO UPSTREAM** | `4524809` |
-| `w0m-cf` | `agent/t744-job-hunter-modular-upgrade` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
-| `w0m-skills` | `agent/t744-job-hunter-modular-upgrade` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
-| `w0m-ext` | `agent/t744-job-hunter-modular-upgrade` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
-| `w0m-sec` | `agent/t744-job-hunter-modular-upgrade` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
-| `w0m-mlx/w0m-mlx` | `agent/t744-job-hunter-modular-upgrade` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `a9e9df12b` |
+| `w0m-api` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `4524809` |
+| `w0m-cf` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `b2ee6ff` |
+| `w0m-skills` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
+| `w0m-ext` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `0d3bd07` |
+| `w0m-sec` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
+| `w0m-mlx/w0m-mlx` | `agent/t719-context-tools` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 744 TASKS.md rows · 363/744 specced (2/8 open specced) · 3 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 7 open · 744 TASKS.md rows · 363/744 specced (1/7 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T739","T741","T719","T17"],"repos":{"w0m-api":{"branch":"agent/t744-job-hunter-modular-upgrade","dirty":0,"has_upstream":true,"head":"4524809","unpushed":null},"w0m-cf":{"branch":"agent/t744-job-hunter-modular-upgrade","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t744-job-hunter-modular-upgrade","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t744-job-hunter-modular-upgrade","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t744-job-hunter-modular-upgrade","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t744-job-hunter-modular-upgrade","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t744-job-hunter-modular-upgrade","dirty":0,"has_upstream":true,"head":"f2a82bb20","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":744,"specced":363,"specced_open":2,"total":744,"unmirrored_open":3}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T739","T741","T17"],"repos":{"w0m-api":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"4524809","unpushed":null},"w0m-cf":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"b2ee6ff","unpushed":null},"w0m-ext":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"0d3bd07","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t719-context-tools","dirty":0,"has_upstream":true,"head":"a9e9df12b","unpushed":null}},"tickets":{"open":7,"rowless_open":[],"rows":744,"specced":363,"specced_open":1,"total":744,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -111,7 +109,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-11-14 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-11-15 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
@@ -119,12 +117,9 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 
 No tickets currently in-progress. Pick next work via `just tasks hot` or `just tasks sdlc`.
 
-#### Completed today (4):
+#### Completed today (1):
 
-- **T740** — Fix AI Agent Helper click close race across funnels, unify /solutions selector, and compare claw/audit runtimes vs ZeroClaw ((agy:t740-ai-helper-and-solutions-funnel): Claimed T740 in isolated worktree agent/t740-ai-helper-and-solutions-funnel. Fixed same-click window overlay close race in apps/web and apps/cp ChatApp.svelte (lastOpenedAt < 300ms + [data-chat-trigger] exclusion + Guided Q&A prefill), unified /solutions/ to a single configurator grid (SolutionsPage.astro + per-card AI Agent Helper triggers in ServiceActionOrderConfigurator.svelte), updated triggers across BlueprintOrderFlow.svelte, SecurityAuditWidget.svelte, and AuditPricing.svelte, verified Vitest (3 files / 25 tests), svelte-typecheck-ratchet (155 files, 0 errors), ui-ticket-leak-check (503 files, 0 leaks), mmd-validate (2 diagrams valid), reports-ticket-check (148 reports valid), and ticket_schema_check (0 T740 issues). Lesson disposition: Lessons: none — covered directly by funnel hygiene Vitest assertions (audit-blueprint-order-ui.test.ts and service-action-order-configurator.test.ts).)
-- **T742** — Auto-heal degraded Cloudflare WARP IPv6 tunnel on PMTU drop below 1280 and ensure check-warp runs before db-drift-check in _deploy-preflight ((agy:t742-warp-ipv6-self-heal): Verified root cause in journalctl -u warp-svc -b (pmtu=1222 triggered kernel DelRoute across CloudflareWARP / table 65743). Cycled WARP on host (mtu 1300, global IPv6 restored, check_db_host.py, just check-warp, and just db-drift-check all exited 0). Implemented justfile self-heal (check-warp + _deploy-preflight ordering), added regression tests in scripts/tests/test_deploy_chain_order.py, wrote .agents/reports/t742-warp-ipv6-pmtud-self-heal.md (mirrored to w0m-web/docs/reports/t742-warp-ipv6-pmtud-self-heal.md), and recorded transferable rule in LESSONS.md.)
-- **T743** — Fix Stripe secret sync allowlist and Client Portal Stripe checkout headers/payloads ((agy:t743-fix-stripe-checkout-and-secret-sync): Completed AC1–AC4 across w0m-api, w0m-web, and @wom root. Verified: sync_supabase_secrets.py --dry-run (Prepared STRIPE_SECRET_KEY (107 chars), STRIPE_WEBHOOK_SECRET skipped cleanly), deno-check (64 entrypoints, 0 errors), deno-test (397 passed, 0 failed across 34 files, including 15 passed in stripe-billing.test.ts), test_stripe_reconcile.py (6/6), Vitest (21/21 across services-policy.spec.ts, service-action-order-configurator.test.ts, and client-links.test.ts), svelte-typecheck-ratchet (4/4 apps, 155 files, 0 errors), ui-ticket-leak-check (503 files, 0 leaks), client_services_check.py, check_connectors.py, supabase_surface_drift_check.py (0 findings), test_client_ds_migration.py (18/18), test_client_portal_firstrun.py (15/15), mmd-validate (2/2), and reports-ticket-check (0 errors). Lesson disposition: sync_supabase_secrets.py allowlist omits new Edge Function env vars until explicitly registered in keys_to_sync, and Client Portal Svelte callers of JWT-verified Supabase Edge Functions must send apikey + Authorization headers; both invariants are now enforced mechanically via client_services_check.py and Vitest (service-action-order-configurator.test.ts), and running deno test inside repo root creates an untracked deno.lock unless cleaned (LESSONS.md not separately duplicated).)
-- **T744** — Upgrade job-hunter skill with modular references/ and multi-channel discovery workflows ((agy:t744-job-hunter-modular-upgrade): Completed AC1–AC4. Upgraded job-hunter to SKILL.md + 4 modular references/.md files (2026.11.14-1794698448), synced 5 files across root and w0m-web, verified SkillSpector (0/100 LOW · SAFE, 0 findings), skill-audit (0 findings across 240 .md files), skill-test (174/174), audit_vendoring (0 dangling), skills-catalog-test (4/4), k7-git-browser.test.ts (3/3), emoji-check, and mmd-validate (2/2). Lesson disposition: confirmed existing install_generic marker hygiene (avoiding internal workspace tokens keeps multi-file skills portable) and SkillSpector passive-data framing (0/100); also noted just skills-sync bumps generatedAt in unrelated consumer lockfiles (w0m-api/.w0m/skills.lock.json), reverted cleanly before committing (existing LESSONS.md rules cover portability markers and YR4 framing, no new duplicate lesson required).)
+- **T719** — Benchmark Stack-Aligned Context & Code-Graph Tools (PageIndex, lean-ctx, Vibe-Skills, tilth, agtx) & Prototype AgDR Decision Evidence-Decay Check (Completed AC1–AC4 in t719-context-tools. Verified just decisions --stale (0 stale across 50 active AgDRs), just decisions-check (386 decisions), just decisions-test (66/66), just package-legitimacy-check (VERIFIED=357, SUS=0, SLOP=0), just dep-licenses-check (fail=0), just reports-ticket-check (0 missing ticket links). Lesson disposition: no new LESSONS.md rule needed (existing prefix-cache vs proxy findings already recorded in T162, and AgDR-0032 tree isolation followed cleanly).)
 
 ## 3. Other open threads (in TASKS.md)
 
