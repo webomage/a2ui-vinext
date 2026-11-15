@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T746](.tasks/T746.md) | **P1** | **k7 WASM job hunter DB persistence, live multi-channel API, and outreach & employment pipeline in crew CP** | api, web, tooling | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T745](.tasks/T745.md) · [#742](https://github.com/casualuser/webomage.com/issues/742) | **P1** | **k7 WASM job-hunter multi-channel search with include/exclude source filter and vector/graph rubric** | tooling, cf, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T744](.tasks/T744.md) | **P1** | **Upgrade job-hunter skill with modular references/ and multi-channel discovery workflows** | skills, web | openspec/specs/sdlc_toolchain/spec.md | ✅ **done** |
 | [T743](.tasks/T743.md) | **P1** | **Fix Stripe secret sync allowlist and Client Portal Stripe checkout headers/payloads** | api, web | openspec/specs/commercial-billing/spec.md | ✅ **done** |
