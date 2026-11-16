@@ -44,18 +44,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t750-member-cp-all-prs` | 0 | **n/a — NO UPSTREAM** | `caba788c8` |
-| `w0m-api` | `agent/t750-member-cp-all-prs` | 0 | **n/a — NO UPSTREAM** | `9d2ecdf` |
-| `w0m-cf` | `agent/t750-member-cp-all-prs` | 0 | **n/a — NO UPSTREAM** | `10fe527` |
-| `w0m-skills` | `agent/t750-member-cp-all-prs` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
-| `w0m-ext` | `agent/t750-member-cp-all-prs` | 0 | **n/a — NO UPSTREAM** | `d904e4b` |
-| `w0m-sec` | `agent/t750-member-cp-all-prs` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
-| `w0m-mlx/w0m-mlx` | `agent/t750-member-cp-all-prs` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/cp-sidebar-ux-isolation` | 0 | **n/a — NO UPSTREAM** | `8c47b7cec` |
+| `w0m-api` | `agent/cp-sidebar-ux-isolation` | 0 | **n/a — NO UPSTREAM** | `9d2ecdf` |
+| `w0m-cf` | `agent/cp-sidebar-ux-isolation` | 0 | **n/a — NO UPSTREAM** | `10fe527` |
+| `w0m-skills` | `agent/cp-sidebar-ux-isolation` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
+| `w0m-ext` | `agent/cp-sidebar-ux-isolation` | 0 | **n/a — NO UPSTREAM** | `d904e4b` |
+| `w0m-sec` | `agent/cp-sidebar-ux-isolation` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
+| `w0m-mlx/w0m-mlx` | `agent/cp-sidebar-ux-isolation` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 751 TASKS.md rows · 371/751 specced (2/6 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 752 TASKS.md rows · 372/752 specced (2/6 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/t750-member-cp-all-prs","dirty":0,"has_upstream":true,"head":"9d2ecdf","unpushed":null},"w0m-cf":{"branch":"agent/t750-member-cp-all-prs","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/t750-member-cp-all-prs","dirty":0,"has_upstream":true,"head":"d904e4b","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t750-member-cp-all-prs","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t750-member-cp-all-prs","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t750-member-cp-all-prs","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t750-member-cp-all-prs","dirty":0,"has_upstream":true,"head":"caba788c8","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":751,"specced":371,"specced_open":2,"total":751,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/cp-sidebar-ux-isolation","dirty":0,"has_upstream":true,"head":"9d2ecdf","unpushed":null},"w0m-cf":{"branch":"agent/cp-sidebar-ux-isolation","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/cp-sidebar-ux-isolation","dirty":0,"has_upstream":true,"head":"d904e4b","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/cp-sidebar-ux-isolation","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/cp-sidebar-ux-isolation","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/cp-sidebar-ux-isolation","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/cp-sidebar-ux-isolation","dirty":0,"has_upstream":true,"head":"8c47b7cec","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":752,"specced":372,"specced_open":2,"total":752,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
