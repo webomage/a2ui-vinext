@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T757](.tasks/T757.md) | **P1** | **Align Webomage color tokens, contrast, and design-system package with OpenDesign (od-design-system-project/v1)** | web | — | ✅ **done** |
 | [T756](.tasks/T756.md) | **P1** | **Consolidate duplicated web/cp components, burn down CP hex/control DS debt, extend ds-conformance, and publish OpenDesign Webomage DS package** | web | — | ✅ **done** |
 | [T755](.tasks/T755.md) | **P1** | **Fix P1 apps/web funnel polish, StackVisualizer brand tokens, 44px tap targets, hydration & Svelte a11y warnings** | web | — | ✅ **done** |
 | [T754](.tasks/T754.md) | **P0** | **Fix P0 BaseLayout sticky footer clipping, --muted contrast collision, AuthForm/CP monospace regression, Me anonymous UX, and remove right-side Codemap** | web | — | ✅ **done** |
