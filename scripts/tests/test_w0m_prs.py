@@ -1163,6 +1163,78 @@ def main() -> int:
         and a2ui_rule.get("requires_gpg_signature") is True,
     )
 
+    # 8h. T749 Public-leak guardrail in validate_pr_compliance, #37510 scrubbed proposal, and submit_prepared_prs
+    nested_prop = next(
+        p for p in proposals_list if p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo"
+    )
+    nested_comp = w0m_prs.validate_pr_compliance(
+        "stablyai/orca",
+        nested_prop["title"],
+        nested_prop["body"],
+        visual_change=False,
+    )
+    check(
+        "T749: refactored #37510 proposal is compliant and free of .w0m/k7/client/ticket leaks",
+        nested_comp["compliant"] is True
+        and not nested_comp.get("publicLeakFindings")
+        and ".w0m" not in nested_prop["title"]
+        and ".w0m" not in nested_prop["body"],
+    )
+
+    leaked_comp = w0m_prs.validate_pr_compliance(
+        "stablyai/orca",
+        "feat: resolve .w0m/sdlc.json for bridgeroad-app",
+        orca_theme_prop["body"].replace("Theme contrast", "k7hub /home/aleksei/Projects"),
+        visual_change=False,
+    )
+    check(
+        "T749: validate_pr_compliance blocks internal-tech leaks in PR title/body",
+        leaked_comp["compliant"] is False
+        and len(leaked_comp.get("publicLeakFindings") or []) >= 3
+        and any("Public-leak guardrail violation" in f for f in leaked_comp["findings"]),
+    )
+
+    a2ui_comp = w0m_prs.validate_pr_compliance(
+        "a2ui-project/a2ui",
+        a2ui_props[0]["title"],
+        a2ui_props[0]["body"],
+        visual_change=False,
+        allow_public_leak_tokens=tuple(
+            w0m_prs.get_enriched_proposal(a2ui_props[0]["key"]).get("allow_public_leak_tokens") or ()
+        ),
+    )
+    check("T749: allowlisted `webomage` in a2ui ecosystem listing passes compliance", a2ui_comp["compliant"] is True)
+
+    with tempfile.TemporaryDirectory() as td_leak:
+        fdir_leak = Path(td_leak)
+        repo_leak = fdir_leak / "orca"
+        repo_leak.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["git", "init", "-b", "main"], cwd=str(repo_leak), check=True, capture_output=True)
+        subprocess.run(["git", "config", "user.name", "Test"], cwd=str(repo_leak), check=True, capture_output=True)
+        subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=str(repo_leak), check=True, capture_output=True)
+        (repo_leak / "README.md").write_text("base\n", encoding="utf-8")
+        subprocess.run(["git", "add", "README.md"], cwd=str(repo_leak), check=True, capture_output=True)
+        subprocess.run(["git", "commit", "-m", "base"], cwd=str(repo_leak), check=True, capture_output=True)
+        base_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(repo_leak), check=True, capture_output=True, text=True).stdout.strip()
+        subprocess.run(["git", "update-ref", "refs/remotes/upstream/main", base_sha], cwd=str(repo_leak), check=True, capture_output=True)
+        subprocess.run(["git", "checkout", "-b", "fix/mobile-terminal-theme-enforcement"], cwd=str(repo_leak), check=True, capture_output=True)
+        (repo_leak / ".w0m").mkdir(parents=True, exist_ok=True)
+        (repo_leak / ".w0m/sdlc.json").write_text('{"k7": true}\n', encoding="utf-8")
+        subprocess.run(["git", "add", ".w0m/sdlc.json"], cwd=str(repo_leak), check=True, capture_output=True)
+        subprocess.run(["git", "commit", "-m", "leak .w0m config"], cwd=str(repo_leak), check=True, capture_output=True)
+
+        refused_leak = w0m_prs.submit_prepared_prs(
+            branch_filter="stablyai/orca:fix/mobile-terminal-theme-enforcement",
+            forks_dir=fdir_leak,
+            dry_run=True,
+        )
+        check(
+            "T749: submit_prepared_prs refuses branch with .w0m/ diff leak (`REFUSED-PUBLIC-LEAK`)",
+            refused_leak["ok"] is False
+            and len(refused_leak["results"]) == 1
+            and refused_leak["results"][0]["status"] == "REFUSED-PUBLIC-LEAK",
+        )
+
     print("─" * 60)
     print(f"Results: {checks - len(fails)}/{checks} passed")
     if fails:

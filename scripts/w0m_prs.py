@@ -21,13 +21,14 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional, Sequence, cast
 
 _SCRIPTS_DIR = str(Path(__file__).resolve().parent)
 if _SCRIPTS_DIR not in sys.path:
     sys.path.insert(0, _SCRIPTS_DIR)
 
 from agent_provider import resolve_agent_provider, resolve_orca_bin  # noqa: E402
+import public_leak_guardrail  # noqa: E402
 
 CANONICAL_FORK_ORG = "webomage"
 CANONICAL_CONTRIBUTOR = "casualuser"
@@ -3285,29 +3286,30 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
     },
     "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo": {
         "ticket": "T608",
-        "title": "feat(projects): discover nested subfolder git repos inside umbrella roots and resolve .w0m/sdlc.json issue targets",
+        "title": "feat(project-groups,sidebar): discover nested subfolder git repos under git roots and nest umbrella sections",
         "why": (
-            "1. When adding an umbrella or governance repository (such as a multi-repo estate root or a `-w0m` client wrapper whose root "
-            "`.gitignore` contains `/*` or member exclusions like `w0m-*`), `scanNestedRepos` short-circuited on the outer `.git` marker (`git_repo`) "
-            "and never scanned direct child repositories (`w0m-web`, `bridgeroad-app`, etc.), or filtered them out via `git check-ignore` before "
-            "checking for a nested `.git` marker (complementary to `#32872`, which handles plain non-git subfolders inside an outer repo).\n"
-            "2. Multi-repo workspaces and `-w0m` wrapper projects often track issues and PRs in a dedicated board repository declared in "
-            "`.w0m/sdlc.json` (`vcs.repo`, e.g. `webomage/wom7board`) or inside the nested application repository (`canonical_repo`, e.g. "
-            "`Bridgeroad-app/bridgeroad-app`), so querying the wrapper's `origin` remote returned zero or wrong issues/PRs."
+            "1. When adding an umbrella or monorepo workspace directory whose root `.gitignore` ignores child folders (such as "
+            "`/*`), `scanNestedRepos` short-circuited on the outer `.git` marker (`git_repo`) and never scanned top-level child "
+            "repositories, or filtered them out via `git check-ignore` before checking for a nested `.git` marker (complementary "
+            "to `#32872`, which handles plain non-git subfolders inside an outer repo).\n"
+            "2. Child project groups discovered inside an umbrella container were rendered as separate flat top-level sidebar groups "
+            "instead of nesting cleanly under an expandable parent umbrella section across Desktop and Mobile."
         ),
         "what_for": (
-            "Allows users to add umbrella/meta-repositories as grouped multi-repo projects even when the root `.gitignore` ignores member "
-            "subfolders (`/*`), while automatically resolving the canonical GitHub Issue and PR repository from `.w0m/sdlc.json` (`vcs.repo` "
-            "or nested `canonical_repo` git remote)."
+            "Allows users to add umbrella/meta-repositories as grouped multi-repo projects even when the root `.gitignore` ignores "
+            "member subfolders (`/*`), and nests nested repository child groups inside an expandable umbrella container section with "
+            "Desktop and Mobile sidebar parity."
         ),
         "how": (
-            "- **`src/main/project-groups/nested-repo-discovery.ts` & `nested-repo-scan-rules.ts`**: Scans inside root git repositories for nested "
-            "child repos (`rootIsGitRepo: true`), checks `hasGitMarker(childPath)` at `depth === 0` before `.gitignore` filtering so explicit "
-            "top-level child repos survive `/*` ignore rules, and skips worktree/clone container directories (`.w0m`, `.worktrees`, `w0m-pr`).\n"
-            "- **`src/main/github/sdlc-issue-repository.ts`, `github-api-repository.ts`, & `work-item-list-request.ts`**: Resolves `.w0m/sdlc.json` "
-            "`vcs.repo` (when distinct from root `origin`) and falls back to the nested `canonical_repo` remote when the root repo is a `-w0m` wrapper.\n"
-            "- **Verification**: `64/64` Vitest unit tests passing across `sdlc-issue-repository.test.ts` (3/3), `nested-repo-discovery.test.ts` "
-            "(36/36), and `github-api-repository.test.ts` (25/25)."
+            "- **`src/main/project-groups/nested-repo-discovery.ts`, `nested-repo-scan-rules.ts`, & `nested-repo-discovery-queue.ts`**: "
+            "Scans inside root git repositories for nested child repos (`rootIsGitRepo: true`), checks `hasGitMarker(childPath)` at "
+            "`depth === 0` before `.gitignore` filtering so explicit top-level child repos survive `/*` ignore rules, skips worktree/"
+            "temp directories, and keeps explicit parent-group child paths sortable and deterministic.\n"
+            "- **`src/shared/sidebar/project-group-sort.ts`, `sidebar-feed-rows.ts`, `src/main/project-groups/project-groups.ts`, & "
+            "`mobile/src/worktree/project-sections/project-group-tree-sections.ts`**: Builds parent-child umbrella project sections "
+            "and expandable nested group rendering across Desktop and Mobile.\n"
+            "- **Verification**: `47/47` Vitest unit tests passing across nested repo discovery, folder workspace status, "
+            "project-group sorting, sidebar feed rows, and desktop/mobile parity, plus `tc:node` and `tc:web` typechecks."
         ),
     },
     "stablyai/orca:feat/mobile-session-tab-reorder": {
@@ -4111,24 +4113,24 @@ PROPOSAL_COMPLIANCE_META: dict[str, dict[str, Any]] = {
     },
     "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo": {
         "eli5": (
-            "Finds nested git repositories inside umbrella/monorepo folders even when the root `.gitignore` uses `/*`, and lets "
-            "workspaces resolve their canonical GitHub Issues/PRs target from `.w0m/sdlc.json`."
+            "Finds nested git repositories inside umbrella/monorepo folders even when the root `.gitignore` uses `/*`, and "
+            "nests nested repo project groups cleanly inside an expandable umbrella section on Desktop and Mobile."
         ),
         "linked_issue": 23385,
         "issue_kind": "feature",
         "visual_change": False,
         "visual_proof_na_reason": (
-            "Main-process nested git discovery (`src/main/project-groups/*`) and GitHub repository target resolution "
-            "(`src/main/github/*`) only; zero renderer or mobile UI changes."
+            "Main-process nested git discovery (`src/main/project-groups/*`) and shared sidebar grouping parity "
+            "(`src/shared/sidebar/*`, `mobile/src/worktree/*`) using existing collapsible project-group headers."
         ),
         "sibling_notes": (
             "Complements `#32872` (plain non-git subfolders inside a single git repo) by discovering actual nested `.git` "
-            "repositories inside umbrella git roots (`#23385`) while skipping `.worktrees`/`.w0m` clone containers."
+            "repositories inside umbrella git roots (`#23385`) and nesting sibling child groups under parent umbrella sections."
         ),
         "risk_level": "Low",
         "risk_summary": (
-            "Bounded directory scan in `nested-repo-discovery.ts` explicitly excludes `.git`, `node_modules`, `.worktrees`, and "
-            "`.w0m` worktree containers; `.w0m/sdlc.json` lookup is a fast no-op when absent. Plain revert backs out cleanly."
+            "Bounded directory scan in `nested-repo-discovery.ts` explicitly excludes `.git`, `node_modules`, and `.worktrees` "
+            "containers; umbrella child grouping falls back to top-level section lists when no parent matches. Plain revert backs out cleanly."
         ),
     },
     "stablyai/orca:feat/mobile-session-tab-reorder": {
@@ -4394,10 +4396,17 @@ PROPOSAL_COMPLIANCE_META: dict[str, dict[str, Any]] = {
         "visual_change": False,
         "visual_proof_na_reason": "Native macOS NSAlert button actions covered by ServerProcessIntegrationTests.",
     },
+    "BodhiDev/bodhi7packages:feat/moksha-snap-and-icon-backports": {
+        "allow_public_leak_tokens": ["casualuser"],
+    },
+    "BodhiDev/bodhi8packages:feat/moksha-snap-and-icon-backports": {
+        "allow_public_leak_tokens": ["casualuser"],
+    },
     "a2ui-project/a2ui:docs/add-a2ui-vinext-renderer": {
         "linked_issue": None,
         "visual_change": False,
         "visual_proof_na_reason": "Documentation listing update in docs/site/src/content/docs/ecosystem/renderers.mdx.",
+        "allow_public_leak_tokens": ["webomage"],
     },
 }
 
@@ -4536,8 +4545,10 @@ def validate_pr_compliance(
     *,
     visual_change: bool = False,
     mergeable: str = "MERGEABLE",
+    allow_public_leak_tokens: Sequence[str] = (),
+    require_public_leak_clean: bool = True,
 ) -> dict[str, Any]:
-    """Validate a PR title and Markdown body against `UPSTREAM_CONTRIBUTION_RULES` (`AgDR-0058` / `T655`)."""
+    """Validate a PR title and Markdown body against `UPSTREAM_CONTRIBUTION_RULES` (`AgDR-0058` / `T655` / `T749`)."""
     rules = get_repo_contribution_rules(repo)
     profile = rules.get("template_profile", "standard")
     findings: list[str] = []
@@ -4624,6 +4635,21 @@ def validate_pr_compliance(
     if mergeable == "CONFLICTING":
         warnings.append("PR is currently CONFLICTING with upstream base branch and needs rebase")
 
+    public_leak_findings: list[dict[str, str]] = []
+    if require_public_leak_clean:
+        leak_hits = public_leak_guardrail.scan_upstream_pr_bundle(
+            title=title or "",
+            body=text,
+            allow_tokens=allow_public_leak_tokens,
+        )
+        public_leak_findings = [lf.to_dict() for lf in leak_hits]
+        for lf in leak_hits[:10]:
+            findings.append(
+                f"Public-leak guardrail violation [{lf.rule}] at {lf.location}: {lf.match!r} ({lf.message})"
+            )
+        if len(leak_hits) > 10:
+            findings.append(f"... plus {len(leak_hits) - 10} additional public-leak violation(s)")
+
     compliant = len(findings) == 0
     if not compliant:
         status = "NON_COMPLIANT"
@@ -4640,6 +4666,7 @@ def validate_pr_compliance(
         "templateProfile": profile,
         "findings": findings,
         "warnings": warnings,
+        "publicLeakFindings": public_leak_findings,
     }
 
 
@@ -5559,6 +5586,27 @@ def submit_prepared_prs(
         rules = get_repo_contribution_rules(upstream_repo)
         auto_mode = rules.get("automation_mode", "auto")
         enriched = get_enriched_proposal(item["key"])
+        allow_leak_tokens = tuple(enriched.get("allow_public_leak_tokens") or ())
+
+        # Gate 0: Fail-closed public-leak check on PR title & proposal body (`T749`)
+        bundle_leak_hits = public_leak_guardrail.scan_upstream_pr_bundle(
+            title=item["title"],
+            body=item["body"],
+            allow_tokens=allow_leak_tokens,
+        )
+        if bundle_leak_hits:
+            results.append(
+                {
+                    **item,
+                    "status": "REFUSED-PUBLIC-LEAK",
+                    "leakFindings": [lf.to_dict() for lf in bundle_leak_hits],
+                    "stderr": (
+                        "REFUSED-PUBLIC-LEAK: "
+                        + "; ".join(f"[{lf.rule}] {lf.location}: {lf.match!r}" for lf in bundle_leak_hits[:5])
+                    ),
+                }
+            )
+            continue
 
         # Gate 1: Target repository automation policy
         if auto_mode in ("banned", "human_description_required", "cla_required", "strict_governance"):
@@ -5645,6 +5693,30 @@ def submit_prepared_prs(
                             "status": "REFUSED-OBSOLETE",
                             "alignmentStatus": align["alignmentStatus"],
                             "stderr": f"REFUSED-OBSOLETE: {align.get('reason', '')}",
+                        }
+                    )
+                    continue
+
+                git_leak = public_leak_guardrail.scan_git_branch_upstream_pr(
+                    repo_path,
+                    f"refs/heads/{bname}",
+                    f"upstream/{item['base_branch']}",
+                    title=item["title"],
+                    body=item["body"],
+                    allow_tokens=allow_leak_tokens,
+                )
+                if not git_leak.get("ok"):
+                    leak_items = list(git_leak.get("findings") or [])
+                    leak_err = str(git_leak.get("error") or "")
+                    detail = leak_err or "; ".join(
+                        f"[{lf.get('rule')}] {lf.get('location')}: {lf.get('match')!r}" for lf in leak_items[:5]
+                    )
+                    results.append(
+                        {
+                            **item,
+                            "status": "REFUSED-PUBLIC-LEAK",
+                            "leakFindings": leak_items,
+                            "stderr": f"REFUSED-PUBLIC-LEAK: {detail}",
                         }
                     )
                     continue
@@ -5753,19 +5825,21 @@ def submit_prepared_prs(
             issue_source = str(ires.get("source", "resolved"))
             enriched = {**enriched, "linked_issue": resolved_issue}
 
-        # Gate 6: Render & validate target-native PR body
+        # Gate 6: Render & validate target-native PR body + final leak check
         final_body = format_pr_proposal_body(enriched, upstream_repo=upstream_repo)
         comp = validate_pr_compliance(
             upstream_repo,
             item["title"],
             final_body,
             visual_change=bool(enriched.get("visual_change", False)),
+            allow_public_leak_tokens=allow_leak_tokens,
         )
         if not comp["compliant"]:
+            status_code = "REFUSED-PUBLIC-LEAK" if comp.get("publicLeakFindings") else "REFUSED-TEMPLATE-NONCOMPLIANT"
             results.append(
                 {
                     **item,
-                    "status": "REFUSED-TEMPLATE-NONCOMPLIANT",
+                    "status": status_code,
                     "stderr": "; ".join(comp["findings"]),
                 }
             )
@@ -5881,6 +5955,7 @@ def audit_open_prs_compliance(
         has_prop = prop_key in CONTRIBUTION_PROPOSALS
         enriched = get_enriched_proposal(prop_key) if has_prop else {}
         vis_change = bool(enriched.get("visual_change", False))
+        allow_leak_tokens = tuple(enriched.get("allow_public_leak_tokens") or ())
 
         before_comp = validate_pr_compliance(
             repo,
@@ -5888,6 +5963,7 @@ def audit_open_prs_compliance(
             body,
             visual_change=vis_change,
             mergeable=mergeable,
+            allow_public_leak_tokens=allow_leak_tokens,
         )
         rules = get_repo_contribution_rules(repo)
         remediation_status = "NONE"
@@ -5926,19 +6002,24 @@ def audit_open_prs_compliance(
                     elif dry_run and ires.get("source") == "dry_run_would_create":
                         work_prop["linked_issue"] = 999999  # placeholder solely to validate dry-run template rendering
 
+                new_title = str(enriched.get("title") or title)
                 new_body = format_pr_proposal_body(work_prop, upstream_repo=repo)
                 after_comp = validate_pr_compliance(
                     repo,
-                    title,
+                    new_title,
                     new_body,
                     visual_change=vis_change,
                     mergeable=mergeable,
+                    allow_public_leak_tokens=allow_leak_tokens,
                 )
                 if dry_run:
                     remediation_status = "DRY_RUN_WOULD_REMEDIATE" if after_comp["compliant"] else "DRY_RUN_STILL_NONCOMPLIANT"
                 elif after_comp["compliant"]:
+                    edit_cmd = ["gh", "pr", "edit", str(num), "-R", repo, "--body", new_body]
+                    if new_title and new_title != title:
+                        edit_cmd.extend(["--title", new_title])
                     ecp = run_cmd(
-                        ["gh", "pr", "edit", str(num), "-R", repo, "--body", new_body],
+                        edit_cmd,
                         check=False,
                         timeout=25.0,
                     )

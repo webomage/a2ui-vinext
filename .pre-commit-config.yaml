@@ -108,6 +108,14 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      - id: public-leak-guardrail
+        name: Public-surface & upstream PR internal-tech leak guardrail (T749)
+        entry: python3 scripts/public_leak_guardrail.py --mode all
+        language: system
+        files: ^(scripts/w0m_prs\.py|scripts/public_leak_guardrail\.py|w0m-web/apps/.*/(public|src/content)/.*)$
+        pass_filenames: false
+        stages: [pre-commit]
+
       - id: package-legitimacy-check
         name: Package & Dependency Legitimacy Gate across all 7 estate repos (T714 AC3)
         entry: python3 scripts/package_legitimacy_check.py

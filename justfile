@@ -362,6 +362,15 @@ prs-launch-reports *args:
 prs-test:
     @python3 scripts/tests/test_w0m_prs.py
 
+pr-leak-check *args:
+    @python3 scripts/public_leak_guardrail.py --mode upstream-pr {{ args }}
+
+public-leak-check *args:
+    @python3 scripts/public_leak_guardrail.py --mode all {{ args }}
+
+public-leak-check-test:
+    @python3 scripts/tests/test_public_leak_guardrail.py
+
 # ── Unified Estate Resource Governance (T343) ──────────────────────────────
 resources *args:
     @python3 scripts/resource_monitor.py {{ args }}
