@@ -2,6 +2,28 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.16-1794818540
+_First deployed: 2026-11-16 09:04:18.506594+00_
+
+### Features
+- **T751**: register nexu-io/open-design fork and submit Node 26 LTS PR ([T751](file:///.tasks/T751.md))
+- **cp**: all PR states (T751) ([T751](file:///.tasks/T751.md))
+- **security**: add public-surface and upstream PR internal-tech security hardening & verification ([T749](file:///.tasks/T749.md))
+
+### Fixes
+- **cp**: resolve member GitHub handle dynamically in members projects API (T753) ([T753](file:///.tasks/T753.md))
+- **cp,me**: fix sidebar hat switcher scrollbars and isolate portal links (T752) ([T752](file:///.tasks/T752.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `c6c910d` | 2026-11-16 09:04:18.506594+00 |
+| demo | `c6c910d` | 2026-11-16 09:03:21.898057+00 |
+| me | `c6c910d` | 2026-11-16 09:02:34.125977+00 |
+| cp | `c6c910d` | 2026-11-16 09:00:01.324483+00 |
+| web | `c6c910d` | 2026-11-16 08:57:31.505805+00 |
+| release | `c6c910d` | 2026-11-16 08:55:16.700541+00 |
+| api | `c6c910d` | 2026-11-16 08:55:11.185849+00 |
+
 ## 2026.11.15-1794788547
 _First deployed: 2026-11-16 01:16:42.098582+00_
 
