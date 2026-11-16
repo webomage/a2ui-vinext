@@ -69,6 +69,7 @@ PRESET_REPOS = {
         "agentclientprotocol/agent-client-protocol",
         "kilian-ai/linuxontab",
         "a2ui-project/a2ui",
+        "nexu-io/open-design",
     ],
     # Backwards-compatibility alias
     "wom7open": [
@@ -94,6 +95,7 @@ PRESET_REPOS = {
         "agentclientprotocol/agent-client-protocol",
         "kilian-ai/linuxontab",
         "a2ui-project/a2ui",
+        "nexu-io/open-design",
     ],
 }
 
@@ -2689,6 +2691,7 @@ FORK_UPSTREAM_MAP: dict[str, str] = {
     "linuxontab": "kilian-ai/linuxontab",
     "just": "casey/just",
     "a2ui": "a2ui-project/a2ui",
+    "open-design": "nexu-io/open-design",
 }
 
 # Per-repository upstream contribution rules registry (`AgDR-0058` / `T655`)
@@ -2772,6 +2775,20 @@ UPSTREAM_CONTRIBUTION_RULES: dict[str, dict[str, Any]] = {
         "policy_note": (
             "Google-governed repo: requires signed Google Individual/Corporate CLA (cla/google), "
             "run ./scripts/fix_format.sh for docs/site/src/content/docs/ecosystem/renderers.mdx updates."
+        ),
+    },
+    "nexu-io/open-design": {
+        "automation_mode": "auto",
+        "template_profile": "open_design_template",
+        "requires_linked_issue": False,
+        "auto_create_issue": False,
+        "requires_gpg_signature": True,
+        "requires_visual_proof_for_ui": False,
+        "max_open_prs": None,
+        "max_loc": None,
+        "policy_note": (
+            "Apache-2.0 repo (`CONTRIBUTING.md`, `.github/pull_request_template.md`); requires `## Why`, "
+            "`## What users will see`, `## Surface area`, `## Validation`, `pnpm guard`, and `pnpm typecheck`."
         ),
     },
     "headroomlabs-ai/headroom": {
@@ -3079,6 +3096,35 @@ INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
 
 # Canonical Why / What For / How PR Proposals for Prepared Contribution Branches (T593 AC4 / T569 AC4 / T597)
 CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
+    "nexu-io/open-design:feat/support-node-26-lts": {
+        "ticket": "T751",
+        "title": "feat(runtime): support Node 26 Active LTS alongside Node 24",
+        "why": (
+            "Node 26 entered Active LTS on 2026-10-28 (as anticipated in `AGENTS.md` for WinGet's LTS roll in October 2026), "
+            "and developers tracking current LTS hit `ERR_PNPM_UNSUPPORTED_ENGINE` warnings across all 25 workspace manifests "
+            "plus a hard rejection from `tools-dev` (`SUPPORTED_NODE_MAJOR = 24`). Follows up on #8073 (auto-closed stale "
+            "prior to the Node 26 LTS transition): keeps `.node-version` at `24` for packaged/Docker lockstep while "
+            "supporting both LTS lines (`^24 || ^26`) across local development and the daemon runtime."
+        ),
+        "what_for": (
+            "- Developers running Node 26 Active LTS (`26.x`) can install with `pnpm install --frozen-lockfile` with zero "
+            "engine warnings and launch `pnpm tools-dev` without switching down to Node 24.\n"
+            "- Developers and packaged/Docker builds on Node 24 Maintenance LTS continue to work unchanged (`.node-version` stays `24`).\n"
+            "- Unsupported legacy Node 22 and non-LTS odd releases (Node 25) remain explicitly rejected."
+        ),
+        "how": (
+            "- **Workspace `engines.node` (`25` manifests):** Relaxed `\"~24\"` to `\"^24 || ^26\"` across root `package.json` and workspace `package.json` files.\n"
+            "- **`tools/dev/src/diagnostics.ts` & `tools/dev/tests/diagnostics.test.ts`:** Replaced single `SUPPORTED_NODE_MAJOR = 24` with `SUPPORTED_NODE_MAJORS = new Set([24, 26])` (`Node 24 or 26 (LTS)`), updated ABI mismatch guidance, and added unit tests covering `v24.15.0` (true), `v26.13.0` (true), `v25.0.0` (false), and `v22.22.3` (false).\n"
+            "- **Docs (`QUICKSTART.md`, `CONTRIBUTING.md`, `AGENTS.md`):** Documented `^24 || ^26` LTS support and `better-sqlite3` rebuild note when switching Node majors.\n"
+            "- **Verification (Linux x64, `node v26.13.0`, `NODE_MODULE_VERSION 147`, `pnpm@10.33.2`):**\n"
+            "  - `CI=true pnpm install --frozen-lockfile` (`better-sqlite3@12.10.0` built & loaded: `sqlite OK on v26.13.0`)\n"
+            "  - `pnpm --filter @open-design/tools-dev build && pnpm --filter @open-design/tools-dev test` (47/47 passed)\n"
+            "  - `pnpm --filter @open-design/tools-pack exec vitest run tests/linux.test.ts` (passed; `.node-version` lockstep intact)\n"
+            "  - `pnpm guard` (passed)\n"
+            "  - `pnpm typecheck` (passed across all 28 typechecked workspace projects)\n"
+            "  - Live daemon smoke via `pnpm exec tools-dev start daemon` on `v26.13.0` -> `GET /api/health` returned `{\"ok\":true,\"version\":\"0.27.2\",...}`"
+        ),
+    },
     "a2ui-project/a2ui:docs/add-a2ui-vinext-renderer": {
         "ticket": "T741",
         "title": "docs(ecosystem): add @webomage/a2ui-vinext A2UI v1.0 renderer for Cloudflare Vinext",
@@ -4531,6 +4577,18 @@ def format_pr_proposal_body(proposal: dict[str, Any], upstream_repo: str = "") -
             f"- [{vis_box}] For UI or UX changes, I attached before and after screenshots.\n"
         )
 
+    if profile == "open_design_template":
+        why = str(proposal.get("why") or "").strip()
+        what_for = str(proposal.get("what_for") or "").strip()
+        how = str(proposal.get("how") or "").strip()
+        return (
+            f"## Why\n\n{why}\n\n"
+            f"## What users will see\n\n{what_for}\n\n"
+            f"## Surface area\n\n"
+            f"- [x] **None** — runtime compatibility (`engines.node`, `tools/dev` LTS check), docs, and unit tests only\n\n"
+            f"## Validation\n\n{how}\n"
+        )
+
     return (
         f"## Why (Rationale & Problem)\n\n{proposal['why']}\n\n"
         f"## What For (Use Cases & Value)\n\n{proposal['what_for']}\n\n"
@@ -4627,6 +4685,11 @@ def validate_pr_compliance(
                 findings.append(f"Missing required Graphify heading `{h}`")
         if not re.match(r"^(feat|fix|docs|chore|refactor|test|perf|ci|build)(\([^)]+\))?!?:\s+.+", title or ""):
             findings.append("PR title does not follow Conventional Commits (`feat:`, `fix:`, etc.)")
+
+    elif profile == "open_design_template":
+        for h in ("## Why", "## What users will see", "## Surface area", "## Validation"):
+            if h not in text:
+                findings.append(f"Missing required nexu-io/open-design heading `{h}`")
 
     else:
         if len(text.strip()) < 40:
