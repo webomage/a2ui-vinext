@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T753](.tasks/T753.md) | **P1** | **Remove hardcoded personal GitHub handle from members projects API** | web | null | ✅ **done** |
 | [T752](.tasks/T752.md) | **P1** | **Fix sidebar hat switcher double-scrollbar UX and isolate cp vs me sidebar links** | web | null | ✅ **done** |
 | [T751](.tasks/T751.md) | **P1** | **Show all upstream PR states (open, closed, merged, draft) on member CP OSS page** | web, tooling | null | ✅ **done** |
 | [T750](.tasks/T750.md) | **P1** | **Refine /services/ stage-card CTAs, semantic accessibility, and track/stage configurator context** | web | — | ✅ **done** |
