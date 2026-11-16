@@ -2,6 +2,32 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.15-1794788547
+_First deployed: 2026-11-16 01:16:42.098582+00_
+
+### Features
+- **T741**: register a2ui-project/a2ui PR governance rule and T741 handoff state ([T741](file:///.tasks/T741.md))
+- **T745**: automate k7 WASM multi-channel job hunter search across w0m-cf, k7hub, w0m-cp, and CLI ([T745](file:///.tasks/T745.md))
+- **decisions**: add AgDR evidence-decay check and T719 benchmark report ([T719](file:///.tasks/T719.md))
+- **skills**: complete T744 modular job-hunter skill upgrade ([T744](file:///.tasks/T744.md))
+
+### Fixes
+- **T741**: add a2ui-project/a2ui prepared proposal and example build instructions ([T741](file:///.tasks/T741.md))
+- **billing**: record T743 Stripe secret sync and CP checkout fixes ([T743](file:///.tasks/T743.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `0560a56` | 2026-11-16 01:16:42.098582+00 |
+| demo | `0560a56` | 2026-11-16 01:15:37.63026+00 |
+| me | `0560a56` | 2026-11-16 01:14:27.700106+00 |
+| cp | `0560a56` | 2026-11-16 01:09:03.371106+00 |
+| web | `0560a56` | 2026-11-16 01:06:52.271121+00 |
+| release | `0560a56` | 2026-11-16 01:04:44.566883+00 |
+| api | `0560a56` | 2026-11-16 01:04:38.46878+00 |
+| web | `0560a56` | 2026-11-16 00:42:38.084057+00 |
+| release | `0560a56` | 2026-11-16 00:40:25.095148+00 |
+| api | `0560a56` | 2026-11-16 00:40:19.319735+00 |
+
 ## 2026.11.14-1794689464
 _First deployed: 2026-11-14 22:00:08.138996+00_
 
