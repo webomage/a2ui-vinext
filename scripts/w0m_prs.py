@@ -7042,6 +7042,85 @@ def get_prs_enriched(
     return items
 
 
+_MEMBER_PR_REPO_ALIASES: dict[str, str] = {
+    "neywa-labs/mlx-vlm": "blaizzy/mlx-vlm",
+}
+
+
+def get_member_prs(
+    *,
+    author: str = CANONICAL_CONTRIBUTOR,
+    preset: str = "w0m-pr",
+    limit: int = 120,
+) -> list[dict[str, Any]]:
+    """Fetch all upstream PRs across open, closed, merged, and draft states for the Member CP OSS view (`T750`)."""
+    raw = search_prs(author=author, preset=None, limit=max(1, limit))
+    org_repos = {r.lower() for r in PRESET_REPOS.get(preset, [])}
+    org_repos_expanded = set(org_repos) | set(_MEMBER_PR_REPO_ALIASES.keys())
+    self_prefixes = tuple(dict.fromkeys([f"{CANONICAL_FORK_ORG.lower()}/", f"{author.lower()}/"]))
+
+    seen: set[tuple[str, int]] = set()
+    items: list[dict[str, Any]] = []
+    for entry in raw:
+        repo_info = entry.get("repository") or {}
+        repo = str(repo_info.get("nameWithOwner") or entry.get("repo") or "").strip()
+        num = entry.get("number")
+        if not repo or not isinstance(num, int):
+            continue
+        repo_low = repo.lower()
+        if repo_low.startswith(self_prefixes):
+            continue
+        key = (repo_low, num)
+        if key in seen:
+            continue
+        seen.add(key)
+
+        raw_state = str(entry.get("state") or "open").strip().lower()
+        is_draft = bool(entry.get("isDraft"))
+        if raw_state == "merged":
+            status = "merged"
+        elif raw_state == "closed":
+            status = "closed"
+        elif is_draft:
+            status = "draft"
+        else:
+            status = "open"
+
+        created_raw = str(entry.get("createdAt") or "").strip()
+        closed_raw = str(entry.get("closedAt") or "").strip()
+        canonical_repo = _MEMBER_PR_REPO_ALIASES.get(repo_low, repo_low)
+        owner_type = "organization" if repo_low in org_repos_expanded or canonical_repo in org_repos else "personal"
+        items.append(
+            {
+                "pr": num,
+                "title": str(entry.get("title") or "").strip(),
+                "status": status,
+                "author": author,
+                "owner_type": owner_type,
+                "created_at": created_raw[:10] if created_raw else None,
+                "closed_at": closed_raw[:10] if closed_raw else None,
+                "url": str(entry.get("url") or f"https://github.com/{repo}/pull/{num}"),
+                "repo": repo,
+            }
+        )
+
+    items.sort(key=lambda item: (str(item.get("created_at") or ""), int(item.get("pr") or 0)), reverse=True)
+    return items
+
+
+def cmd_member_prs(args: argparse.Namespace) -> None:
+    items = get_member_prs(
+        author=args.author,
+        preset=args.preset,
+        limit=int(args.limit),
+    )
+    if args.json:
+        print(json.dumps(items, indent=2))
+        return
+    for it in items:
+        print(f"  {it['status']:6s} {it['repo']}#{it['pr']} | {it['title']}")
+
+
 def cmd_discover(args: argparse.Namespace) -> None:
     forks_dir = Path(args.dir) if getattr(args, "dir", None) else None
     res = discover_new_prs_and_branches(
@@ -7540,6 +7619,15 @@ def _register_t613_subparsers(subparsers: Any) -> None:
     p_pe.add_argument("--limit", type=int, default=30, help="Maximum PRs to return")
     p_pe.add_argument("--json", action="store_true", help="Output structured JSON")
     p_pe.set_defaults(func=cmd_prs_enriched)
+
+    p_mp = subparsers.add_parser(
+        "member-prs", help="Return all upstream PRs across open, closed, merged, and draft states (T750)"
+    )
+    p_mp.add_argument("--author", type=str, default=CANONICAL_CONTRIBUTOR, help="GitHub author username")
+    p_mp.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target")
+    p_mp.add_argument("--limit", type=int, default=120, help="Maximum PRs to return")
+    p_mp.add_argument("--json", action="store_true", help="Output structured JSON")
+    p_mp.set_defaults(func=cmd_member_prs)
 
     p_crs = subparsers.add_parser(
         "close-run-when-settled",

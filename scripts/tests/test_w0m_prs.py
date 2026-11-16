@@ -1235,6 +1235,72 @@ def main() -> int:
             and refused_leak["results"][0]["status"] == "REFUSED-PUBLIC-LEAK",
         )
 
+    # 8i. T750 Member CP all-state PR discovery (`open`, `closed`, `merged`, `draft`)
+    sample_member_search = [
+        {
+            "repository": {"nameWithOwner": "stablyai/orca"},
+            "number": 38863,
+            "state": "closed",
+            "isDraft": False,
+            "title": "fix(mobile): backload prompt text",
+            "url": "https://github.com/stablyai/orca/pull/38863",
+            "createdAt": "2026-11-06T00:00:00Z",
+            "closedAt": "2026-11-08T00:00:00Z",
+        },
+        {
+            "repository": {"nameWithOwner": "oraios/serena"},
+            "number": 2085,
+            "state": "merged",
+            "isDraft": False,
+            "title": "feat(solidlsp): add Astro",
+            "url": "https://github.com/oraios/serena/pull/2085",
+            "createdAt": "2026-09-20T00:00:00Z",
+            "closedAt": "2026-10-15T00:00:00Z",
+        },
+        {
+            "repository": {"nameWithOwner": "a2ui-project/a2ui"},
+            "number": 4243,
+            "state": "open",
+            "isDraft": False,
+            "title": "docs(ecosystem): add vinext renderer",
+            "url": "https://github.com/a2ui-project/a2ui/pull/4243",
+            "createdAt": "2026-11-15T00:00:00Z",
+            "closedAt": None,
+        },
+        {
+            "repository": {"nameWithOwner": "edelooff/sqlalchemy-json"},
+            "number": 44,
+            "state": "open",
+            "isDraft": True,
+            "title": "wip: test draft PR",
+            "url": "https://github.com/edelooff/sqlalchemy-json/pull/44",
+            "createdAt": "2026-11-01T00:00:00Z",
+            "closedAt": None,
+        },
+        {
+            "repository": {"nameWithOwner": "webomage/virtual-fido"},
+            "number": 10,
+            "state": "open",
+            "isDraft": False,
+            "title": "Internal fork PR should be filtered out",
+            "url": "https://github.com/webomage/virtual-fido/pull/10",
+            "createdAt": "2026-11-10T00:00:00Z",
+            "closedAt": None,
+        },
+    ]
+    with patch("w0m_prs.search_prs", return_value=sample_member_search):
+        mprs = w0m_prs.get_member_prs(limit=50)
+    statuses_by_num = {m["pr"]: (m["status"], m["owner_type"]) for m in mprs}
+    check(
+        "T750: get_member_prs keeps open, closed, merged, draft upstream PRs and filters self-fork PRs",
+        len(mprs) == 4
+        and statuses_by_num.get(38863) == ("closed", "organization")
+        and statuses_by_num.get(2085) == ("merged", "organization")
+        and statuses_by_num.get(4243) == ("open", "organization")
+        and statuses_by_num.get(44) == ("draft", "personal")
+        and 10 not in statuses_by_num,
+    )
+
     print("─" * 60)
     print(f"Results: {checks - len(fails)}/{checks} passed")
     if fails:

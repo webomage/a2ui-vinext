@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T751](.tasks/T751.md) | **P2** | **Show all upstream PR states (open, closed, merged, draft) on member CP OSS page** | web, tooling | null | ✅ **done** |
 | [T750](.tasks/T750.md) | **P1** | **Refine /services/ stage-card CTAs, semantic accessibility, and track/stage configurator context** | web | — | ✅ **done** |
 | [T749](.tasks/T749.md) | **P1** | **Public-surface and upstream PR internal-tech leak guardrails (w0m/k7/client/PII)** | web, tooling | null | ✅ **done** |
 | [T748](.tasks/T748.md) | **P2** | **Harden concurrent agent-tree landing, SSH timeout diagnostics, and cross-session friction harvesting** | web | null | ✅ **done** |
