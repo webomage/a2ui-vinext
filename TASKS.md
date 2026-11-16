@@ -34,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T750](.tasks/T750.md) | **P1** | **Refine /services/ stage-card CTAs, semantic accessibility, and track/stage configurator context** | web | — | ✅ **done** |
 | [T749](.tasks/T749.md) | **P1** | **Public-surface and upstream PR internal-tech leak guardrails (w0m/k7/client/PII)** | web, tooling | null | ✅ **done** |
 | [T748](.tasks/T748.md) | **P2** | **Harden concurrent agent-tree landing, SSH timeout diagnostics, and cross-session friction harvesting** | web | null | ✅ **done** |
 | [T747](.tasks/T747.md) · [#747](https://github.com/casualuser/webomage.com/issues/747) | **P1** | **Expand Core Services & Solutions matrix to 6 cards (3x2 / 2x3 / 1x6 across tablet and mobile orientations)** | web | openspec/changes/archive/2026-11-15-services-core-matrix-6/specs/services-core-matrix/spec.md | ✅ **done** |
