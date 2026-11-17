@@ -3125,6 +3125,62 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
             "  - Live daemon smoke via `pnpm exec tools-dev start daemon` on `v26.13.0` -> `GET /api/health` returned `{\"ok\":true,\"version\":\"0.27.2\",...}`"
         ),
     },
+    "nexu-io/open-design:fix/local-import-palette-fonts-logo": {
+        "ticket": "T759",
+        "title": "fix(design-systems): import local palettes, fonts manifests, and logos end to end",
+        "why": (
+            "Importing a local design-system package produced a starved kit: Identity rendered, but the Palette "
+            "section was always empty (the synthesized DESIGN.md carried only `var(--...)` token references with "
+            "zero concrete hex values, so `parseDesignMd` found no color rows and the record's `swatches` stayed "
+            "empty), the logo showed `No logo yet` (`parsedToKit` hardcoded `logoSrc: null` for non-brand kits "
+            "even when the importer had copied `assets/logo.svg` into the bundle), and typography specimens fell "
+            "back to serif because the 9 copied woff2 files had no `fonts/manifest.json` for `useBrandFonts` to "
+            "inject `@font-face` from. Complements #9447 (which wires `brand.json`-backed kits): this fixes the "
+            "no-`brand.json` import path the DESIGN.md fallback actually takes."
+        ),
+        "what_for": (
+            "- Imported local design systems now show a hex Palette table (role/name/hex/usage, resolved from "
+            "`design-tokens.json` or concrete CSS custom properties with slot-role fallbacks) and frontmatter "
+            "`colors:` on the synthesized DESIGN.md.\n"
+            "- Non-brand kits resolve `logoSrc` from the bundle (`assets/logo.svg` and siblings) and inject "
+            "`@font-face` from a bundle `fonts/manifest.json` written at import time (family/weight/style/format "
+            "detected from the copied woff2 files), so display/body/mono specimens render in the brand typefaces.\n"
+            "- The static route serves `fonts/manifest.json` and the font/asset files it declares (allowlist "
+            "extended; logo now `image/svg+xml`, fonts `font/woff2`, manifest `application/json`)."
+        ),
+        "how": (
+            "- **Importer (`apps/daemon/src/design-systems/import.ts`)**: `renderDesignMd` resolves a hex-only "
+            "color pool (concrete tokens first, `var()` refs excluded), emits frontmatter `colors:` (Canvas / "
+            "Foreground / Accent / Support via slot hints) and a `## Palette` markdown table (max 16 rows, deduped "
+            "first-wins); `copyFonts` writes `fonts/manifest.json` next to the woff2 files.\n"
+            "- **Static serving (`apps/daemon/src/design-systems/index.ts`)**: the file allowlist covers "
+            "`fonts/manifest.json` plus every font/asset file it declares.\n"
+            "- **Kit resolution (`apps/web/src/runtime/design-kit.ts`)**: `parsedToKit` derives `logoSrc` from "
+            "bundle paths (`assets/logo.svg`, `logo.svg`, `assets/logo.png`, favicon fallbacks) and "
+            "`fontsManifestUrl` from `fonts/manifest.json` availability for non-editing contexts.\n"
+            "- **Font injection (`apps/web/src/components/DesignKitView.tsx`)**: `useBrandFonts` accepts a bundle "
+            "manifest URL and derives each font file URL by rewriting the static route's `path=` query segment "
+            "(a `new URL(rel, base)` failed because the static route returns relative paths).\n"
+            "- **Tests (`apps/daemon/tests/design-systems/import.test.ts`)**: cover Palette rows, frontmatter "
+            "colors, and the manifest entry (family/weight/style/format).\n"
+            "- **Verification (Linux x64, Node v24.22.3, `pnpm@10.32.0`)**: `pnpm guard` passed; `pnpm typecheck` "
+            "passed across all workspace projects; importer tests 4/4; live end-to-end: re-imported a real local "
+            "package, logo `200 image/svg+xml`, woff2 `200 font/woff2`, manifest `200 application/json`, and the "
+            "rendered kit shows the Palette table, logo, and brand sans/mono typography with the injected "
+            "`style[data-brand-fonts]` element loading both woff2 families."
+        ),
+        "surface_area": (
+            "- `apps/daemon/src/design-systems/import.ts` (palette + fonts manifest emission), "
+            "`apps/daemon/src/design-systems/index.ts` (static-file allowlist), "
+            "`apps/web/src/runtime/design-kit.ts` (bundle `logoSrc` / `fontsManifestUrl`), "
+            "`apps/web/src/components/DesignKitView.tsx` (bundle `@font-face` injection), "
+            "`apps/daemon/tests/design-systems/import.test.ts` (coverage). Existing brand/`brand.json` kits are "
+            "unaffected; behavior changes only for non-brand imported bundles."
+        ),
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": "Additive importer emission + allowlist entries + kit fallbacks; plain `git revert` backs out cleanly.",
+    },
     "a2ui-project/a2ui:docs/add-a2ui-vinext-renderer": {
         "ticket": "T741",
         "title": "docs(ecosystem): add @webomage/a2ui-vinext A2UI v1.0 renderer for Cloudflare Vinext",
@@ -4581,11 +4637,14 @@ def format_pr_proposal_body(proposal: dict[str, Any], upstream_repo: str = "") -
         why = str(proposal.get("why") or "").strip()
         what_for = str(proposal.get("what_for") or "").strip()
         how = str(proposal.get("how") or "").strip()
+        surface_area = (
+            str(proposal.get("surface_area") or "").strip()
+            or "- [x] **None** — runtime compatibility (`engines.node`, `tools/dev` LTS check), docs, and unit tests only"
+        )
         return (
             f"## Why\n\n{why}\n\n"
             f"## What users will see\n\n{what_for}\n\n"
-            f"## Surface area\n\n"
-            f"- [x] **None** — runtime compatibility (`engines.node`, `tools/dev` LTS check), docs, and unit tests only\n\n"
+            f"## Surface area\n\n{surface_area}\n\n"
             f"## Validation\n\n{how}\n"
         )
 
