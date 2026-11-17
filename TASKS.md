@@ -21,7 +21,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 💤 **paused** |
 | [T741](.tasks/T741.md) | **P1** | 🆕 **Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite RSC + Workers) and contribute to a2ui.org/ecosystem/renderers** | web, lib, cf, tooling | — | 🟡 **in-progress** |
 | [T290](project/tickets/T290.md) | **P1** | 🆕 **Stage-4 Money had no ticket of its own, and `simulate_payment` is a live billing hole** — found 2026-08-26 on reaching the last unmet stage. Stage-4's exit is *invoices reconcile against Stripe, and simulate_payment is out of the production path*, but it named [[T9]] — **AI token accounting from epic §11**. Same defect stage-2 carried until 2026-08-18: the stage reads as progress whenever the wrong ticket moves. 🔴 `client-api:223` marks an invoice paid AND credits a treasury, and **an authenticated client passes its ownership check on their OWN invoice** — no caller anywhere in source, and `stripe-webhook` already does both writes. ✅ **CLOSED on production 2026-08-26** (release `2026.08.26-1787760232`): the deployed function now answers `400 Unknown action`, identical to the control — it answered `404 Invoice not found` before. A grep could never have told those two apart. ⚠️ Impact is small by LUCK — one invoice, already paid, no Stripe activity yet. 🔀 **Epic moved 2026-09-12**: §33 split into Alfa/Beta, this ticket is now Beta's (§34). | api | ROADMAP §34 | 💤 **paused** |
-| [T760](.tasks/T760.md) | **P2** | **Goal-aware Guided Q&A stack step — drop the contradictory 'Greenfield' option for existing-estate goals and fix the 'Recommend' label** | web | — | 🟡 **in-progress** |
 
 ## QUEUED & BACKLOG
 
@@ -35,6 +34,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T760](.tasks/T760.md) | **P2** | **Goal-aware Guided Q&A stack step — drop the contradictory 'Greenfield' option for existing-estate goals and fix the 'Recommend' label** | web | — | ✅ **done** |
 | [T759](.tasks/T759.md) | **P2** | 🆕 **Make the OpenDesign import of the Webomage design system render at full fidelity (palette, logo, fonts) estate-side and upstream** | web, tooling | — | ✅ **done** |
 | [T758](.tasks/T758.md) | **P2** | 🆕 **Balance homepage hero CTA spacing — equal padding above and below the CTA row** | web | — | ✅ **done** |
 | [T757](.tasks/T757.md) | **P1** | **Align Webomage color tokens, contrast, and design-system package with OpenDesign (od-design-system-project/v1)** | web | — | ✅ **done** |

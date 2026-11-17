@@ -764,6 +764,24 @@ When offloading workspaces and agent sessions from macOS (`/Users/proto`) to the
 
 ## 4. Dependencies and config
 
+### CANONICAL-REPO-ONLY `pnpm install` IN A FRESH TREE RED-HERRINGS SUITES VIA CROSS-REPO TEST IMPORTS
+**2026-11-16, [[T760]].** A fresh agent tree ships zero `node_modules` in every repo. Running
+`pnpm install` in the canonical repo (`w0m-web`) only and then the full vitest suite produced
+exactly **one unrelated failure**: `packages/webmcp/src/transport-stack.test.ts` (T220) imports
+`../w0m-ext/extension/src/services/supabaseService.ts` — source **across the repo boundary** —
+and Vite import-analysis died on the unresolved `@supabase/supabase-js`. Zero repo changes were
+involved; the diff under test was a Svelte component in `apps/web` with its own green suite and
+0-error `astro check`. Extends the T595 fresh-host rule (`just deps-install`, all 5 workspaces)
+from deploy binaries to **test-time imports**: the workspace dependency graph of a *suite* is
+defined by its `import` statements, not by the repo the failing file lives in.
+
+⇒ **In a fresh tree/checkout, classify a suite failure by whether its file (transitively)
+imports across a repo boundary before touching any code:** resolve it with `pnpm install` in the
+sibling workspace (`w0m-ext/extension` here) or `just deps-install` — never by "fixing" the test,
+and never by waving the diff through on a red suite. ⭐ **The tell:** a failure whose report is a
+`Failed to resolve import "<pkg>"` Vite error (not an assertion failure) from a file your diff
+never touched.
+
 ### ⛔ TOOLCHAIN CONFIG SHARED ACROSS RUNNERS MUST NOT SILENTLY COUPLE — ZERO WARNING TOLERANCE
 **2026-10-01, T520.** `pnpm` workspace settings in `.npmrc` (`enable-pre-post-scripts=true`, `verify-deps-before-run=true`) caused `npm` / `npx` to emit deprecation warnings: *"Unknown project config... This will stop working in the next major version of npm."*
 
