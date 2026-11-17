@@ -3181,6 +3181,47 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
         "risk_level": "Low",
         "risk_summary": "Additive importer emission + allowlist entries + kit fallbacks; plain `git revert` backs out cleanly.",
     },
+    "nexu-io/open-design:feat/kit-mono-specimen": {
+        "ticket": "T761",
+        "title": "feat(design-systems): let imported kits declare their mono type specimen",
+        "why": (
+            "The mono type sample in the design-system kit view is hardcoded to "
+            "`'const brand = await extract(url);'` (`apps/web/src/components/DesignKitView.tsx`), so every "
+            "imported design system — and every official preset — shows the same OpenDesign joke line while its "
+            "display/body specimens use the kit's own name. A design system should be able to declare its own "
+            "monospace sample line, the same way it declares its name and fonts."
+        ),
+        "what_for": (
+            "- A source package can declare `mono_specimen:` in its DESIGN.md frontmatter; the importer carries "
+            "it into the synthesized DESIGN.md frontmatter, `parseDesignMd` reads it back, and the kit view renders "
+            "it as the mono specimen.\n"
+            "- Kits that declare nothing keep the current default line, so behavior is unchanged for everyone else."
+        ),
+        "how": (
+            "- **Importer (`apps/daemon/src/design-systems/import.ts`)**: `scanProject` reads "
+            "`mono_specimen:` from the source package's DESIGN.md frontmatter (`readMonoSpecimen`); "
+            "`renderDesignMd` emits a frontmatter block with `mono_specimen:` when declared, omitted otherwise.\n"
+            "- **Parser (`apps/web/src/runtime/design-md-parse.ts`)**: `ParsedDesignMd` gains "
+            "`monoSpecimen` (frontmatter scalar, empty when absent).\n"
+            "- **Kit (`apps/web/src/runtime/design-kit.ts`)**: `DesignKit.monoSpecimen` set from the parsed doc.\n"
+            "- **Kit view (`apps/web/src/components/DesignKitView.tsx`)**: mono specimen renders "
+            "`kit.monoSpecimen || 'const brand = await extract(url);'`.\n"
+            "- **Tests (`apps/daemon/tests/design-systems/import.test.ts`)**: frontmatter passthrough when "
+            "declared, omitted when not.\n"
+            "- **Verification (Linux x64, Node v24.22.3)**: `pnpm typecheck` all workspaces pass, `pnpm guard` "
+            "passes, importer suite 6/6; live re-import of a package declaring `mono_specimen:\"deploy --prod "
+            "&& smoke-live green\"` renders that line as the mono specimen in the design-system kit view."
+        ),
+        "surface_area": (
+            "- `apps/daemon/src/design-systems/import.ts` (frontmatter passthrough), "
+            "`apps/web/src/runtime/design-md-parse.ts` + `apps/web/src/runtime/design-kit.ts` (new optional "
+            "`monoSpecimen` field), `apps/web/src/components/DesignKitView.tsx` (fall back to the existing default "
+            "when unset), `apps/daemon/tests/design-systems/import.test.ts` (coverage)."
+        ),
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": "Optional field with unchanged default; plain `git revert` backs out cleanly. Stacks trivially with #9500 (both touch DESIGN.md frontmatter emission).",
+    },
     "a2ui-project/a2ui:docs/add-a2ui-vinext-renderer": {
         "ticket": "T741",
         "title": "docs(ecosystem): add @webomage/a2ui-vinext A2UI v1.0 renderer for Cloudflare Vinext",
