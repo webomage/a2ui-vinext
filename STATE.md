@@ -46,18 +46,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t760-guided-qa-greenfield` | 0 | **n/a — NO UPSTREAM** | `3e83615ab` |
-| `w0m-api` | `agent/t760-guided-qa-greenfield` | 0 | **n/a — NO UPSTREAM** | `9d2ecdf` |
-| `w0m-cf` | `agent/t760-guided-qa-greenfield` | 0 | **n/a — NO UPSTREAM** | `10fe527` |
-| `w0m-skills` | `agent/t760-guided-qa-greenfield` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
-| `w0m-ext` | `agent/t760-guided-qa-greenfield` | 0 | **n/a — NO UPSTREAM** | `d904e4b` |
-| `w0m-sec` | `agent/t760-guided-qa-greenfield` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
-| `w0m-mlx/w0m-mlx` | `agent/t760-guided-qa-greenfield` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t761-mono-specimen` | 0 | **n/a — NO UPSTREAM** | `497417bbc` |
+| `w0m-api` | `agent/t761-mono-specimen` | 0 | **n/a — NO UPSTREAM** | `9d2ecdf` |
+| `w0m-cf` | `agent/t761-mono-specimen` | 0 | **n/a — NO UPSTREAM** | `10fe527` |
+| `w0m-skills` | `agent/t761-mono-specimen` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
+| `w0m-ext` | `agent/t761-mono-specimen` | 0 | **n/a — NO UPSTREAM** | `d904e4b` |
+| `w0m-sec` | `agent/t761-mono-specimen` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
+| `w0m-mlx/w0m-mlx` | `agent/t761-mono-specimen` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 760 TASKS.md rows · 372/760 specced (2/6 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 761 TASKS.md rows · 372/761 specced (2/6 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/t760-guided-qa-greenfield","dirty":0,"has_upstream":true,"head":"9d2ecdf","unpushed":null},"w0m-cf":{"branch":"agent/t760-guided-qa-greenfield","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/t760-guided-qa-greenfield","dirty":0,"has_upstream":true,"head":"d904e4b","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t760-guided-qa-greenfield","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t760-guided-qa-greenfield","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t760-guided-qa-greenfield","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t760-guided-qa-greenfield","dirty":0,"has_upstream":true,"head":"3e83615ab","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":760,"specced":372,"specced_open":2,"total":760,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/t761-mono-specimen","dirty":0,"has_upstream":true,"head":"9d2ecdf","unpushed":null},"w0m-cf":{"branch":"agent/t761-mono-specimen","dirty":0,"has_upstream":true,"head":"10fe527","unpushed":null},"w0m-ext":{"branch":"agent/t761-mono-specimen","dirty":0,"has_upstream":true,"head":"d904e4b","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t761-mono-specimen","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t761-mono-specimen","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t761-mono-specimen","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t761-mono-specimen","dirty":0,"has_upstream":true,"head":"497417bbc","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":761,"specced":372,"specced_open":2,"total":761,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -109,7 +109,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-11-16 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-11-17 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
@@ -118,12 +118,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 #### In-flight tickets (1):
 
 - **T741** — Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite RSC + Workers) and contribute to a2ui.org/ecosystem/renderers
-  - **2026-11-16** (today): (agy:main): T741 pickup gate re-measured. AC3/AC4 were already done beyond the recorded note (public repo + live demo + fork + PR — the previous "owner-gated, not done" note was stale; just ticket-audit contradiction flags were false positives on upstream-only paths). Fixed merge conflict on PR [a2ui-project/a2ui#4243](https://github.com/a2ui-project/a2ui/pull/4243): fork main fast-forwarded to upstream dc73cfc06, docs/add-a2ui-vinext-renderer rebuilt as minimal single-row renderers.mdx diff on the new base, formatted with prettier 3.8.4 / upstream .prettierrc, GPG-signed commit 3aba8c23a, pushed --force-with-lease. PR now MERGEABLE; only REVIEW_REQUIRED remains. Both ACs flipped with evidence; ready for w0m-sdlc-archive (PR review outcome tracked by Orca automation).
-
-#### Completed today (2):
-
-- **T758** — Balance homepage hero CTA spacing — equal padding above and below the CTA row (Filed from owner screenshot feedback on verify_v2_web_home_desktop.png.)
-- **T759** — Make the OpenDesign import of the Webomage design system render at full fidelity (palette, logo, fonts) estate-side and upstream (PR draft body (for just pr-auto/pr-open when owner approves))
+  - **2026-11-16** (1d ago): (agy:main): T741 pickup gate re-measured. AC3/AC4 were already done beyond the recorded note (public repo + live demo + fork + PR — the previous "owner-gated, not done" note was stale; just ticket-audit contradiction flags were false positives on upstream-only paths). Fixed merge conflict on PR [a2ui-project/a2ui#4243](https://github.com/a2ui-project/a2ui/pull/4243): fork main fast-forwarded to upstream dc73cfc06, docs/add-a2ui-vinext-renderer rebuilt as minimal single-row renderers.mdx diff on the new base, formatted with prettier 3.8.4 / upstream .prettierrc, GPG-signed commit 3aba8c23a, pushed --force-with-lease. PR now MERGEABLE; only REVIEW_REQUIRED remains. Both ACs flipped with evidence; ready for w0m-sdlc-archive (PR review outcome tracked by Orca automation).
 
 ## 3. Other open threads (in TASKS.md)
 
