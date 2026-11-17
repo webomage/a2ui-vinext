@@ -459,7 +459,16 @@ def trigger_overlay_build(overlay_repo: str) -> int:
                 file=sys.stderr,
             )
         return 1
-    print(f"Dispatched {WORKFLOW_FILE} successfully.")
+    run_id = ""
+    for _ in range(6):
+        time.sleep(2)
+        run_id = _active_ci_run_id(overlay_repo)
+        if run_id:
+            break
+    if run_id:
+        print(f"Dispatched {WORKFLOW_FILE} successfully (run #{run_id}).")
+    else:
+        print(f"Dispatched {WORKFLOW_FILE} successfully.")
     return 0
 
 
@@ -514,6 +523,20 @@ def _active_ci_run_id(overlay_repo: str) -> str:
     return ""
 
 
+def _is_latest_release_older_than_beta(overlay_repo: str) -> bool:
+    release = _gh_json(f"repos/{overlay_repo}/releases/latest")
+    if release is None:
+        return True
+    published_at = str(release.get("published_at") or "")
+    beta_commit = _gh_json(f"repos/{overlay_repo}/commits/beta")
+    commit_date = str(
+        ((beta_commit or {}).get("commit") or {}).get("committer", {}).get("date") or ""
+    )
+    if not published_at or not commit_date:
+        return False
+    return commit_date > published_at
+
+
 def apply_overlay(
     appimage_path: Path,
     backup_path: Path,
@@ -524,15 +547,11 @@ def apply_overlay(
 ) -> int:
     if wait_for_ci:
         in_progress_id = _active_ci_run_id(overlay_repo)
-        if not in_progress_id and _gh_json(f"repos/{overlay_repo}/releases/latest") is None:
+        if not in_progress_id and _is_latest_release_older_than_beta(overlay_repo):
             rc = trigger_overlay_build(overlay_repo)
             if rc != 0:
                 return rc
-            for _ in range(5):
-                time.sleep(3)
-                in_progress_id = _active_ci_run_id(overlay_repo)
-                if in_progress_id:
-                    break
+            in_progress_id = _active_ci_run_id(overlay_repo)
         if in_progress_id:
             print(f"Waiting for active overlay CI run #{in_progress_id} on {overlay_repo}...")
             watch = subprocess.run(
