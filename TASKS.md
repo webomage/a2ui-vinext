@@ -21,7 +21,6 @@ what's in flight, next, and done** — update it in the same commit as the work.
 | [T504](.tasks/T504.md) | **P0** | 🆕 **Google disabled the Gemini key as leaked; 29 credentials committed in May 2026 .dev.vars files are still live today** | web, api | — | 💤 **paused** |
 | [T741](.tasks/T741.md) | **P1** | 🆕 **Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite RSC + Workers) and contribute to a2ui.org/ecosystem/renderers** | web, lib, cf, tooling | — | 🟡 **in-progress** |
 | [T290](project/tickets/T290.md) | **P1** | 🆕 **Stage-4 Money had no ticket of its own, and `simulate_payment` is a live billing hole** — found 2026-08-26 on reaching the last unmet stage. Stage-4's exit is *invoices reconcile against Stripe, and simulate_payment is out of the production path*, but it named [[T9]] — **AI token accounting from epic §11**. Same defect stage-2 carried until 2026-08-18: the stage reads as progress whenever the wrong ticket moves. 🔴 `client-api:223` marks an invoice paid AND credits a treasury, and **an authenticated client passes its ownership check on their OWN invoice** — no caller anywhere in source, and `stripe-webhook` already does both writes. ✅ **CLOSED on production 2026-08-26** (release `2026.08.26-1787760232`): the deployed function now answers `400 Unknown action`, identical to the control — it answered `404 Invoice not found` before. A grep could never have told those two apart. ⚠️ Impact is small by LUCK — one invoice, already paid, no Stripe activity yet. 🔀 **Epic moved 2026-09-12**: §33 split into Alfa/Beta, this ticket is now Beta's (§34). | api | ROADMAP §34 | 💤 **paused** |
-| [T768](.tasks/T768.md) | **P2** | **Real apple-touch-icon and favicon set for apps/web - iOS Add to Home Screen falls back to a black letter tile** | web | — | 🟡 **in-progress** |
 | [T767](.tasks/T767.md) | P3 | 🆕 **Gate pinned security-hook revs against the gate-binary version (osv-scanner drift cost two deploys)** | tooling | — | ⚪ **queued** |
 
 ## QUEUED & BACKLOG
@@ -36,6 +35,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T768](.tasks/T768.md) | **P2** | **Real apple-touch-icon and favicon set for apps/web - iOS Add to Home Screen falls back to a black letter tile** | web | — | ✅ **done** |
 | [T766](.tasks/T766.md) | **P2** | 🆕 **Fix picomatch ReDoS (GHSA-fc5q-39xc-vjpf) via webomage fork instead of osv ignores** | web, api, tooling, ext | — | ✅ **done** |
 | [T765](.tasks/T765.md) | **P1** | 🆕 **Align osv-scanner ignores: add unfixable picomatch to w0m-api, drop unused deepmerge from w0m-web (deploy gate)** | tooling, api, web | — | ✅ **done** |
 | [T764](.tasks/T764.md) | P3 | 🆕 **Segmented 6-box OTP input on auth surfaces (010-101 placeholder, multi-format paste)** | web | — | ✅ **done** |
