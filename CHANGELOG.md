@@ -2,6 +2,23 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.18-1794983261
+_First deployed: 2026-11-18 06:46:13.933461+00_
+
+### Fixes
+- **T762**: trigger overlay build when latest release is older than beta, report run id ([T762](file:///.tasks/T762.md))
+- **ds**: align Webomage color tokens, contrast, and OpenDesign package (T757) ([T757](file:///.tasks/T757.md))
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `0c6fbf6` | 2026-11-18 06:46:13.933461+00 |
+| demo | `0c6fbf6` | 2026-11-18 06:45:22.863607+00 |
+| me | `0c6fbf6` | 2026-11-18 06:44:33.225501+00 |
+| cp | `0c6fbf6` | 2026-11-18 06:43:08.730103+00 |
+| web | `0c6fbf6` | 2026-11-18 06:41:08.333625+00 |
+| release | `0c6fbf6` | 2026-11-18 06:39:05.315187+00 |
+| api | `0c6fbf6` | 2026-11-18 06:38:59.832065+00 |
+
 ## 2026.11.16-1794818540
 _First deployed: 2026-11-16 09:04:18.506594+00_
 
