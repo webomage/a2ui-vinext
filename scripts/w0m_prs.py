@@ -3095,7 +3095,7 @@ INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
 }
 
 # Canonical Why / What For / How PR Proposals for Prepared Contribution Branches (T593 AC4 / T569 AC4 / T597)
-CONTRIBUTION_PROPOSALS: dict[str, dict[str, str]] = {
+CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
     "nexu-io/open-design:feat/support-node-26-lts": {
         "ticket": "T751",
         "title": "feat(runtime): support Node 26 Active LTS alongside Node 24",
