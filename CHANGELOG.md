@@ -2,6 +2,17 @@
 
 _Generated from the `deploy_log` table by `just changelog`. Each heading is one deploy stamp (`YYYY.MM.DD-<unixtimestamp>`)._
 
+## 2026.11.18-1795022299
+_First deployed: 2026-11-18 17:41:58.516205+00_
+
+| Service | Commit | Deployed at |
+|---|---|---|
+| release | `676aa9c` | 2026-11-18 17:41:58.516205+00 |
+| demo | `676aa9c` | 2026-11-18 17:41:08.913423+00 |
+| me | `676aa9c` | 2026-11-18 17:40:21.701777+00 |
+| cp | `676aa9c` | 2026-11-18 17:38:50.078822+00 |
+| web | `676aa9c` | 2026-11-18 17:36:55.499499+00 |
+
 ## 2026.11.18-1795017767
 _First deployed: 2026-11-18 16:18:03.519553+00_
 
