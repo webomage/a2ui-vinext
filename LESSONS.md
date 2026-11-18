@@ -149,6 +149,31 @@ A migration added `CREATE POLICY "device_sessions_select_anon" ON public.device_
 ⭐ **The tell:** A table definition where one policy scopes by profile/tenant ID and another policy on the same action grants `TO anon USING (true)`.
 
 
+### PRERENDER=FALSE ASTRO PAGES NEVER EXECUTE AT BUILD — A RENAMED-IMPORT TYPE ERROR SHIPS AS A BLANK PROD PAGE
+**2026-11-18, T769 (bit 1; cost a P1 estate-wide login outage across web/cp/me for ~10h).**
+
+T764 refactored `@webomage/ui`'s `AuthForm.astro`, replacing
+`import { Input as InputComponent }` with the `InputOtp` Svelte island
+import but leaving two `<InputComponent>` usages (email, password).
+Every consumer (`login.astro` in `web`, `cp`, `me`) is `prerender = false`,
+so the build NEVER rendered the page: `astro build`, `astro check`,
+`svelte-typecheck-ratchet`, and the vitest suite (`otp-digits.test.ts`,
+`MfaChallenge.test.ts`) all passed green. First production SSR render on
+release `2026.11.18-1794983261` threw `ReferenceError: InputComponent is
+not defined`, and the Cloudflare adapter streamed HTTP 200 with a **0-byte
+body** on every `/login` — no 5xx, nothing in crawler smokes
+(`_deploy-preflight` hits only non-auth surfaces). Diagnosis took minutes
+with `pnpm exec wrangler tail webomage-cp --format pretty` under
+`infisical run -- <cmd>` + one curl of the broken route: the exact
+exception and frame appeared immediately. Caveat: `astro dev` /
+`astro preview` with the Cloudflare adapter need remote KV access
+("Establishing remote connection... user account selection unavailable")
+and cannot be used for offline render checks of session-bound apps.
+
+⇒ **Any change to a component consumed by `prerender = false` pages needs a gate that actually RENDERS those pages before ship** — a build-time prerender smoke of a representative route set (login, board, mfa/challenge) or a Vitest SSR render of the component with stubbed Astro runtime. Until that gate exists (T769 AC2), treat a rename inside `@webomage/ui` `.astro` components as manual-verify: render the page locally with `wrangler tail` attached or grep the compiled `dist/server/chunks/*.mjs` for dangling identifiers before signing off.
+
+⭐ **The tell:** a refactor that renames an import shared between a component's usages, in a file whose pages are `prerender = false` (build never executes them); a prod page returning `200` with an empty/streamed-short body while `/api/*` on the same app stays healthy; green `astro check` + vitest with zero render-time coverage.
+
 ## 2. Instruments
 
 ### ⛔ NEVER RUN BLANKET GIT RESETS, CHECKOUTS, OR WHOLE-TREE FORMATTERS IN A SHARED WORKTREE
@@ -761,6 +786,23 @@ When offloading workspaces and agent sessions from macOS (`/Users/proto`) to the
 - Scan transferred workspaces with `find ~/Projects -type l` and rewrite any `/Users/<user>/...` symlink target to `/home/<user>/...` (or a relative symlink).
 ⭐ **The tell:** `ssh <host> 'just preflight --fast'` reporting missing tools that work fine in an interactive terminal tab, or `ls -l` showing red dangling symlinks pointing to `/Users/...` on a Linux host.
 
+
+### RELEASE DEPLOYS CUT FROM origin/beta TAGS — A HOTFIX COMMITTED ONLY IN A LOCAL TREE IS INVISIBLE TO THE DEPLOYER
+**2026-11-18, T769 (bit 1).**
+
+Login was down estate-wide and the fix was committed directly in the live
+root (deliberate hotfix fast-path, `w0m-web` `ebd5976e6`, unpushed). The
+next deploy attempt produced release `2026.11.18-1795017767` with "no app
+changed": T473's release pipeline tags `origin/beta`, checks it out under
+`~/.w0m/releases/<version>/w0m`, and builds from there — the local tree's
+hotfix never entered the fingerprint, so the broken build kept serving.
+The `deploy-*` per-app recipes (which build the local checkout) suggested
+ otherwise; the composed `just deploy` / `deploy-all` chain does not use
+them.
+
+⇒ **A prod hotfix is not "deployed" until its commits are ON `origin/beta` of the estate repo it touches** (root AND sub-repos — they release independently). If protocol forces the fast path, the very next instruction block after the fix compiles green is: push `beta` in the touched repos, then `just deploy`, then verify from the release health endpoint (`/api/health` reports version + `deployed_at`).
+
+⭐ **The tell:** a release log line reading "(no app changed)" on a deploy that was supposed to ship a fix; a fix commit existing only where the deploy pipeline does not look (live root, agent tree, any tree behind `origin/beta`).
 
 ## 4. Dependencies and config
 
