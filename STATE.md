@@ -46,18 +46,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t765-cf-picomatch-ignore` | 0 | **n/a — NO UPSTREAM** | `40f5d10ed` |
-| `w0m-api` | `agent/t765-cf-picomatch-ignore` | 0 | **n/a — NO UPSTREAM** | `6f596d2` |
-| `w0m-cf` | `agent/t765-cf-picomatch-ignore` | 0 | **n/a — NO UPSTREAM** | `6182406` |
-| `w0m-skills` | `agent/t765-cf-picomatch-ignore` | 0 | **n/a — NO UPSTREAM** | `aeaf897` |
-| `w0m-ext` | `agent/t765-cf-picomatch-ignore` | 0 | **n/a — NO UPSTREAM** | `27e8d58` |
-| `w0m-sec` | `agent/t765-cf-picomatch-ignore` | 0 | **n/a — NO UPSTREAM** | `dbe4b3d` |
-| `w0m-mlx/w0m-mlx` | `agent/t765-cf-picomatch-ignore` | 0 | **n/a — NO UPSTREAM** | `72fc983` |
+| `w0m-web` | `agent/t766-picomatch-fork-fix` | 0 | **n/a — NO UPSTREAM** | `29852cb95` |
+| `w0m-api` | `agent/t766-picomatch-fork-fix` | 0 | **n/a — NO UPSTREAM** | `8d96fbc` |
+| `w0m-cf` | `agent/t766-picomatch-fork-fix` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
+| `w0m-skills` | `agent/t766-picomatch-fork-fix` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
+| `w0m-ext` | `agent/t766-picomatch-fork-fix` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
+| `w0m-sec` | `agent/t766-picomatch-fork-fix` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
+| `w0m-mlx/w0m-mlx` | `agent/t766-picomatch-fork-fix` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 6 open · 765 TASKS.md rows · 372/765 specced (2/6 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 6 open · 766 TASKS.md rows · 372/766 specced (2/6 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/t765-cf-picomatch-ignore","dirty":0,"has_upstream":true,"head":"6f596d2","unpushed":null},"w0m-cf":{"branch":"agent/t765-cf-picomatch-ignore","dirty":0,"has_upstream":true,"head":"6182406","unpushed":null},"w0m-ext":{"branch":"agent/t765-cf-picomatch-ignore","dirty":0,"has_upstream":true,"head":"27e8d58","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t765-cf-picomatch-ignore","dirty":0,"has_upstream":true,"head":"72fc983","unpushed":null},"w0m-sec":{"branch":"agent/t765-cf-picomatch-ignore","dirty":0,"has_upstream":true,"head":"dbe4b3d","unpushed":null},"w0m-skills":{"branch":"agent/t765-cf-picomatch-ignore","dirty":0,"has_upstream":true,"head":"aeaf897","unpushed":null},"w0m-web":{"branch":"agent/t765-cf-picomatch-ignore","dirty":0,"has_upstream":true,"head":"40f5d10ed","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":765,"specced":372,"specced_open":2,"total":765,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T17"],"repos":{"w0m-api":{"branch":"agent/t766-picomatch-fork-fix","dirty":0,"has_upstream":true,"head":"8d96fbc","unpushed":null},"w0m-cf":{"branch":"agent/t766-picomatch-fork-fix","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/t766-picomatch-fork-fix","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t766-picomatch-fork-fix","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/t766-picomatch-fork-fix","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/t766-picomatch-fork-fix","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/t766-picomatch-fork-fix","dirty":0,"has_upstream":true,"head":"29852cb95","unpushed":null}},"tickets":{"open":6,"rowless_open":[],"rows":766,"specced":372,"specced_open":2,"total":766,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
