@@ -2399,3 +2399,10 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⇒ **Default `agent_tree.py` lock waits to `1200.0s`, preserve critical early disconnect/error lines in `_tail()`, 3-way merge disjoint ticket entries in `w0m-web/project/tickets-sync-index.json` and `project/tickets.json` during `_rebase` (still aborting on conflicting edits to the same ticket ID), scope post-land `Late-Learn Friction Digest` output to the active tree while labeling cross-session scans `info-only`, verify script flags with `just --show` / `--help`, and check `AGENTS.md`'s Canonical Script & Policy Locations table instead of guessing paths.**
 ⭐ **The tell:** `git push` failing right after `[25/25] Pre-push checks passed` (an immediate retry reuses the certified runmark checkpoint in `<3s`), `land_locked` timing out at `300s` behind a sibling `session-complete`, concurrent rebase aborting on `project/tickets-sync-index.json`, or a clean push ending with historical friction items from sibling conversations.
 
+### UPDATE DOM VERIFICATION PROBES ATOMICALLY WITH LAYOUT SHELL REFACTORS (IN-FLOW VS CHROME ANCHORING)
+**2026-11-18 (`T770`).** `apps/web/scripts/layout-matrix.mjs` (`measureAtBottom()`, established in `T261`) walked all text nodes inside `.content-scroll-area` to flag content occluded by the footer at max scroll. When `T754` (AgDR-0054) moved `<footer>` from fixed chrome outside the scroller to in-flow inside `.content-scroll-area`, the walker immediately visited the footer's own text nodes ("Webomage", "© 2026"), triggering 11/11 false "bottom-unreachable" violations on live production.
+
+⇒ **Whenever modifying global shell layout contracts (such as moving fixed header/footer chrome into scrollable viewports), update verification harness selectors and ancestor exclusions (`outOfFlow(el)`) in the same commit to prevent phantom regressions in automated visual/layout matrices.**
+⭐ **The tell:** `layout-matrix.mjs` reporting `bottom-unreachable` across all viewport pairs while the visual layout is completely healthy and `atBottom=true`, with flagged text nodes matching the footer's own text.
+
+
