@@ -36,6 +36,8 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T772](.tasks/T772.md) | **P2** | **Add oMLX BYOK provider preset and fix keyless local OpenAI-compatible provider requests in OpenDesign** | tooling | — | ✅ **done** |
+| [T771](.tasks/T771.md) | **P2** | **Surface components catalog, design tokens matrix, and interactive showcase on OpenDesign Design Systems page and Webomage design system** | web, tooling | — | ✅ **done** |
 | [T770](.tasks/T770.md) | **P2** | **Fix layout-matrix measureAtBottom() footer-assumption drift after T754 moved footer inside the scroll area** | web, tooling | — | ✅ **done** |
 | [T768](.tasks/T768.md) | **P2** | **Real apple-touch-icon and favicon set for apps/web - iOS Add to Home Screen falls back to a black letter tile** | web | — | ✅ **done** |
 | [T766](.tasks/T766.md) | **P2** | 🆕 **Fix picomatch ReDoS (GHSA-fc5q-39xc-vjpf) via webomage fork instead of osv ignores** | web, api, tooling, ext | — | ✅ **done** |

@@ -3222,6 +3222,112 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
         "risk_level": "Low",
         "risk_summary": "Optional field with unchanged default; plain `git revert` backs out cleanly. Stacks trivially with #9500 (both touch DESIGN.md frontmatter emission).",
     },
+    "nexu-io/open-design:feat/omlx-provider-keyless-local": {
+        "ticket": "T772",
+        "title": "feat(byok): add oMLX provider preset and fix keyless local OpenAI endpoints",
+        "why": (
+            "OpenDesign includes a `vLLM` preset with `requiresApiKey: false`, yet selecting `vLLM` — or any local "
+            "OpenAI-compatible server without an API key such as `oMLX` (`jundot/omlx`) — still fails in Settings, "
+            "EntryShell, InlineModelSwitcher, AvatarMenu, and daemon routes (`/api/provider/models`, "
+            "`/api/test/connection`, `/api/proxy/openai/stream`) with `baseUrl and apiKey are required` and "
+            "sends a blank `Authorization: Bearer ` header. Meanwhile, `oMLX` has no first-class BYOK preset."
+        ),
+        "what_for": (
+            "- Adds `oMLX` (`protocol: 'openai'`, default `http://localhost:8000/v1`, `requiresApiKey: false`, "
+            "preferred models `['model', 'qwen3', 'gemma4', 'llama3']`) alongside `vLLM` in Settings and pickers "
+            "(distinct from vLLM's `http://127.0.0.1:8000/v1` so preset matching never collides).\n"
+            "- Treats all loopback `openai` base URLs (`localhost`, `127.0.0.1`, `[::1]`) as keyless across web "
+            "validation, `api-proxy.ts`, daemon routes, and `byok-opencode.ts`, omitting `Authorization` when blank "
+            "while forwarding optional local keys when supplied.\n"
+            "- Remote non-local OpenAI-compatible hosts still fail closed with HTTP 400 when `apiKey` is missing."
+        ),
+        "how": (
+            "- **Web presets & validation (`apps/web/src/state/config.ts`, `apps/web/src/utils/byokProvider.ts`)**: "
+            "Adds `oMLX` to `KNOWN_PROVIDERS` and `BYOK_PROVIDER_PRESET_SPECS`; updates "
+            "`byokProviderRequiresApiKey` so loopback `openai` URLs return `false` even when customized.\n"
+            "- **Contracts & daemon routes (`packages/contracts/src/api/{providerModels,connectionTest,proxy}.ts`, "
+            "`apps/daemon/src/routes/chat.ts`, `connectionTest.ts`, `provider-models.ts`, `byok-opencode.ts`)**: "
+            "Adds optional `requiresApiKey?: boolean` and server-side loopback check "
+            "`isKeylessLocalProviderRequest`; omits `Authorization` headers whenever `apiKey` is blank.\n"
+            "- **Web callers (`SettingsDialog.tsx`, `EntryShell.tsx`, `InlineModelSwitcher.tsx`, `AvatarMenu.tsx`, "
+            "`api-proxy.ts`)**: Threads `requiresApiKey: false` only when keyless (preserving existing keyed payload "
+            "shapes) and stops showing missing-key warnings on keyless local setups.\n"
+            "- **Tests**: Added unit and route coverage in `apps/web/tests/state/config.test.ts`, "
+            "`apps/web/tests/components/byok-validation.test.ts`, `apps/daemon/tests/runtimes/byok-opencode.test.ts`, "
+            "and `apps/daemon/tests/connection-test.test.ts`.\n"
+            "- **Verification (Linux x64, Node v24.22.3)**: `@open-design/contracts` build, `pnpm typecheck`, "
+            "`pnpm guard`, `@open-design/web` BYOK suites (`config.test.ts` 74/74, `byok-validation` + "
+            "`SettingsDialog` suites 158/158, `InlineModelSwitcher.test.tsx` 36/36), and `@open-design/daemon` suites "
+            "(`connection-test.test.ts` 161/161, `byok-opencode.test.ts` 35/35, `proxy-routes.test.ts` 80/80, "
+            "`chat-route.test.ts` 85/85) all pass."
+        ),
+        "surface_area": (
+            "- `packages/contracts/src/api/{providerModels,connectionTest,proxy}.ts`, "
+            "`apps/web/src/state/config.ts`, `apps/web/src/utils/byokProvider.ts`, "
+            "`apps/web/src/components/{SettingsDialog,EntryShell,InlineModelSwitcher,AvatarMenu}.tsx`, "
+            "`apps/web/src/providers/api-proxy.ts`, `apps/daemon/src/{routes/chat,connectionTest,"
+            "integrations/provider-models,runtimes/byok-opencode}.ts`, and companion Vitest tests."
+        ),
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": "Keyless relaxation is gated strictly to `localhost`/`127.0.0.1`/`[::1]`; remote endpoints remain fail-closed.",
+    },
+    "nexu-io/open-design:feat/design-system-components-showcase": {
+        "ticket": "T771",
+        "title": "feat(design-systems): showcase imported components, tokens, and kit previews",
+        "why": (
+            "Local imported design systems (`user:*`) appear incomplete on the Design Systems page: "
+            "`parsedToKit` gated `staticUrl` on `!opts.editable`, hiding both the `components.html` iframe (`kit.system`) "
+            "and `preview/*.html` tiles (`kit.assets`); `GET /api/design-systems/:id/static` served HTML without "
+            "rewriting relative `./` or `../` paths (404ing `../tokens.css`); the token-contract builder picked "
+            "self-referential Tailwind v4 `@theme` declarations (`--radius-md: var(--radius-md)`) over concrete "
+            "`tokens.css` values; `importLocalDesignSystemProject` overwrote authored `components.html`, dropped "
+            "`DESIGN.md` `Typography`/`Voice & Tone`/`Imagery`/`Layout` sections, and turned Fontsource filenames into "
+            "raw strings like `'inter latin 400 normal'`; and `DesignKitView` lacked native component-catalog and "
+            "structural-token sections."
+        ),
+        "what_for": (
+            "- Unlocked the interactive `components.html` iframe (plus an Open-in-new-tab action) and the 6 "
+            "`preview/*.html` tiles for local-imported `user:*` design systems.\n"
+            "- Added native **Components** catalog (`components.manifest.json` group cards, selectors, and token "
+            "chips) and **Design tokens** matrix (`design-tokens.json` spacing, radii, type scale, elevation, and "
+            "motion previews) sections to `DesignKitView` across all 19 locales.\n"
+            "- Preserved authored `components.html` and structured `DESIGN.md` sections on local import, normalized "
+            "Fontsource family names (`inter-latin-400-normal.woff2` -> `Inter`), rejected self-referential tokens in "
+            "`token-contract.ts`, inlined `tokens.css` into generated `preview/*.html`, and rewrote HTML static asset "
+            "URLs on `/api/design-systems/:id/static`."
+        ),
+        "how": (
+            "- **Token contract (`apps/daemon/src/design-systems/token-contract.ts`)**: `valueIsUsableForSchema` and "
+            "`validateDesignTokenOutputs` reject self-references and `bindSchemaToken`/`bestCandidate` prefer concrete "
+            "declarations over `var(...)` aliases.\n"
+            "- **Local importer (`apps/daemon/src/design-systems/import.ts`)**: Preserves authored `components.html` "
+            "(detected safely with `@open-design/contracts/runtime/html-injection-points`), carries `Typography`, "
+            "`Voice & Tone`, `Imagery`, and `Layout` sections from source `DESIGN.md`, normalizes Fontsource family "
+            "names (`normalizeImportedFontFamily`), prioritizes `tokens.css` before `tailwind*` (stripping "
+            "self-references and raising the CSS variable cap from 80 to 240), and inlines `tokensCss` in "
+            "`preview/*.html`.\n"
+            "- **Static HTML route (`apps/daemon/src/routes/design-systems.ts`)**: Rewrites relative URLs in `text/html` "
+            "responses via `rewriteDesignSystemShowcaseAssetUrls`.\n"
+            "- **Kit model, UI & i18n (`apps/web/src/runtime/design-kit.ts`, `DesignKitView.tsx`, "
+            "`BrandPreviewCard.module.css`, `i18n/types.ts` + all 19 locales)**: Unlocks `staticUrl` when "
+            "`(!opts.projectId || !opts.editable)`, exposes `designTokensUrl`/`componentsManifestUrl`, renders native "
+            "**Components** and **Design tokens** sections using token-only CSS, and adds `.dsBar` new-tab action.\n"
+            "- **Verification (Linux x64, Node v24.22.3)**: `pnpm typecheck`, `pnpm guard`, `pnpm i18n:check`, "
+            "daemon design-system Vitest (3 files, 12/12: `token-contract.test.ts` 3/3, `import.test.ts` 6/6, "
+            "`design-system-showcase-assets.test.ts` 3/3), web design-kit Vitest (4 files, 23/23: `design-kit.test.ts` "
+            "3/3, `design-kit-published.test.tsx` 2/2, `DesignKitView.test.tsx` 14/14, `design-md-parse.test.ts` 4/4), "
+            "and live re-import (`56/56` source-backed tokens, score 100/excellent) all pass."
+        ),
+        "surface_area": (
+            "- `apps/daemon/src/design-systems/{token-contract,import}.ts`, `apps/daemon/src/routes/design-systems.ts`, "
+            "`apps/web/src/runtime/design-kit.ts`, `apps/web/src/components/{DesignKitView.tsx,"
+            "BrandPreviewCard.module.css}`, `apps/web/src/i18n/{types.ts,locales/*.ts}` (19 locales), and 5 Vitest files."
+        ),
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": "Additive kit sections and import fallbacks; existing brand.json kits and fixtures lacking authored components keep prior behavior.",
+    },
     "a2ui-project/a2ui:docs/add-a2ui-vinext-renderer": {
         "ticket": "T741",
         "title": "docs(ecosystem): add @webomage/a2ui-vinext A2UI v1.0 renderer for Cloudflare Vinext",

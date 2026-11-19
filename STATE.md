@@ -50,18 +50,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t770-layout-matrix-footer` | 0 | **n/a — NO UPSTREAM** | `5f5f270c0` |
-| `w0m-api` | `agent/t770-layout-matrix-footer` | 0 | **n/a — NO UPSTREAM** | `8d96fbc` |
-| `w0m-cf` | `agent/t770-layout-matrix-footer` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
-| `w0m-skills` | `agent/t770-layout-matrix-footer` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
-| `w0m-ext` | `agent/t770-layout-matrix-footer` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
-| `w0m-sec` | `agent/t770-layout-matrix-footer` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
-| `w0m-mlx/w0m-mlx` | `agent/t770-layout-matrix-footer` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
+| `w0m-web` | `agent/opendesign-omlx-ds` | 0 | **n/a — NO UPSTREAM** | `17e7086e0` |
+| `w0m-api` | `agent/opendesign-omlx-ds` | 0 | **n/a — NO UPSTREAM** | `8d96fbc` |
+| `w0m-cf` | `agent/opendesign-omlx-ds` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
+| `w0m-skills` | `agent/opendesign-omlx-ds` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
+| `w0m-ext` | `agent/opendesign-omlx-ds` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
+| `w0m-sec` | `agent/opendesign-omlx-ds` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
+| `w0m-mlx/w0m-mlx` | `agent/opendesign-omlx-ds` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 770 TASKS.md rows · 372/770 specced (2/8 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 8 open · 772 TASKS.md rows · 372/772 specced (2/8 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/t770-layout-matrix-footer","dirty":0,"has_upstream":true,"head":"8d96fbc","unpushed":null},"w0m-cf":{"branch":"agent/t770-layout-matrix-footer","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/t770-layout-matrix-footer","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t770-layout-matrix-footer","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/t770-layout-matrix-footer","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/t770-layout-matrix-footer","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/t770-layout-matrix-footer","dirty":0,"has_upstream":true,"head":"5f5f270c0","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":770,"specced":372,"specced_open":2,"total":770,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/opendesign-omlx-ds","dirty":0,"has_upstream":true,"head":"8d96fbc","unpushed":null},"w0m-cf":{"branch":"agent/opendesign-omlx-ds","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/opendesign-omlx-ds","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/opendesign-omlx-ds","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/opendesign-omlx-ds","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/opendesign-omlx-ds","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/opendesign-omlx-ds","dirty":0,"has_upstream":true,"head":"17e7086e0","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":772,"specced":372,"specced_open":2,"total":772,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,7 +113,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-11-18 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-11-19 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
@@ -122,14 +122,14 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 #### In-flight tickets (2):
 
 - **T741** — Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite RSC + Workers) and contribute to a2ui.org/ecosystem/renderers
-  - **2026-11-18** (today): (agy:main): Deploy-gate follow-up — codemap/CODEMAP nondeterminism traced to the example's generated build artifacts being indexed (packages/a2ui-vinext/examples/vinext-cloudflare-worker/.next/ + next-env.d.ts, gitignored, present only on machines where a dev run happened). codemap_gen.py now skips .next/ and generated typedef stubs (w0m-web 125840a), so live root and clean release worktrees produce identical counts (735 files / 1282 edges); also made the codemap-check-test package-count probe dynamic (workspace has 10 packages since this ticket added a2ui-vinext) and declared the generated paths in codegraph.json excludes.
+  - **2026-11-18** (1d ago): (agy:main): Deploy-gate follow-up — codemap/CODEMAP nondeterminism traced to the example's generated build artifacts being indexed (packages/a2ui-vinext/examples/vinext-cloudflare-worker/.next/ + next-env.d.ts, gitignored, present only on machines where a dev run happened). codemap_gen.py now skips .next/ and generated typedef stubs (w0m-web 125840a), so live root and clean release worktrees produce identical counts (735 files / 1282 edges); also made the codemap-check-test package-count probe dynamic (workspace has 10 packages since this ticket added a2ui-vinext) and declared the generated paths in codegraph.json excludes.
 - **T769** — HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR-blank (prod down)
-  - **2026-11-18** (today): Remaining: AC3 live verification of web/cp/me /login
+  - **2026-11-18** (1d ago): Remaining: AC3 live verification of web/cp/me /login
 
 #### Completed today (2):
 
-- **T766** — Fix picomatch ReDoS (GHSA-fc5q-39xc-vjpf) via webomage fork instead of osv ignores ((agent tree t766-picomatch-fork-fix): DONE. Forked)
-- **T770** — Fix layout-matrix measureAtBottom() footer-assumption drift after T754 moved footer inside the scroll area (Ticket created from /tmp/T770-draft.md (Mistral Vibe session)
+- **T771** — Surface components catalog, design tokens matrix, and interactive showcase on OpenDesign Design Systems page and Webomage design system (Verified upstream branch feat/design-system-components-showcase (GPG-signed 5c4e409a4 + e61486962 pushed to webomage/open-design) on Node v24.22.3: pnpm typecheck, pnpm guard, pnpm i18n:check, daemon token-contract.test.ts (3/3), import.test.ts (6/6), design-system-showcase-assets.test.ts (3/3 at 5c4e409a4; no route changes in e61486962), web design-kit.test.ts (3/3), design-kit-published.test.tsx (2/2), DesignKitView.test.tsx (14/14 at 5c4e409a4; no web changes in e61486962), and design-md-parse.test.ts (4/4 on local/sdlc-integration). Enriched w0m-web/design-system/ (just ui-ticket-leak-check 0 leaks, just ds-conformance --enforce green); live :7456 import produced 56/56 sourceBackedTokens, score: 100, grade: excellent, 9/9 component groups, and undeclaredReferenced: []. Lessons: none (routine delivery).)
+- **T772** — Add oMLX BYOK provider preset and fix keyless local OpenAI-compatible provider requests in OpenDesign (Verified upstream branch feat/omlx-provider-keyless-local (GPG-signed commit d9ddd45b06d37a67978f2ec937d461ab8b04a05d pushed to webomage/open-design) on Node v24.22.3: @open-design/contracts build, pnpm typecheck, pnpm guard, web config.test.ts (74/74), byok-validation + SettingsDialog suites (158/158), InlineModelSwitcher.test.tsx (36/36), daemon connection-test.test.ts (161/161), byok-opencode.test.ts (35/35), proxy-routes.test.ts (80/80), and chat-route.test.ts (85/85) all pass. Live :7456 (local/sdlc-integration @ d90c8852c) keyless POST /api/provider/models + POST /api/test/connection verified for http://localhost:8000/v1 and http://127.0.0.1:8888/v1; scripts/w0m_prs.py registered (T772). Lessons: none (routine delivery).)
 
 ## 3. Other open threads (in TASKS.md)
 
