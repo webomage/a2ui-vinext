@@ -133,7 +133,9 @@ sync-me-secrets: (_confirm "sync-me-secrets")
       echo "$SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SERVICE_ROLE_KEY --name webomage-me && \
       echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name webomage-me && \
       echo "$WORKERS_WEBHOOK_URL" | pnpm exec wrangler secret put WORKERS_WEBHOOK_URL --name webomage-me && \
-      echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WORKERS_WEBHOOK_SECRET --name webomage-me'
+      echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WORKERS_WEBHOOK_SECRET --name webomage-me && \
+      if [ -n "${CONNECTOR_TOKEN_KEY_VERSION:-}" ]; then echo "$CONNECTOR_TOKEN_KEY_VERSION" | pnpm exec wrangler secret put CONNECTOR_TOKEN_KEY_VERSION --name webomage-me; fi && \
+      if [ -n "${CONNECTOR_TOKEN_KEY_V1:-}" ]; then echo "$CONNECTOR_TOKEN_KEY_V1" | pnpm exec wrangler secret put CONNECTOR_TOKEN_KEY_V1 --name webomage-me; fi'
 
 # Sync secrets to apps/cp (cp.w0m.xyz)
 sync-cp-secrets: (_confirm "sync-cp-secrets")
@@ -147,6 +149,8 @@ sync-cp-secrets: (_confirm "sync-cp-secrets")
       echo "$LINKEDIN_APP_SECRET" | pnpm exec wrangler secret put LINKEDIN_APP_SECRET --name webomage-cp && \
       echo "$WORKERS_WEBHOOK_URL" | pnpm exec wrangler secret put WORKERS_WEBHOOK_URL --name webomage-cp && \
       echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WORKERS_WEBHOOK_SECRET --name webomage-cp && \
+      if [ -n "${CONNECTOR_TOKEN_KEY_VERSION:-}" ]; then echo "$CONNECTOR_TOKEN_KEY_VERSION" | pnpm exec wrangler secret put CONNECTOR_TOKEN_KEY_VERSION --name webomage-cp; fi && \
+      if [ -n "${CONNECTOR_TOKEN_KEY_V1:-}" ]; then echo "$CONNECTOR_TOKEN_KEY_V1" | pnpm exec wrangler secret put CONNECTOR_TOKEN_KEY_V1 --name webomage-cp; fi && \
       if [ -n "${TINYBIRD_TOKEN:-}" ]; then echo "$TINYBIRD_TOKEN" | pnpm exec wrangler secret put TINYBIRD_TOKEN --name webomage-cp; fi && \
       if [ -n "${TINYBIRD_URL:-}" ]; then echo "$TINYBIRD_URL" | pnpm exec wrangler secret put TINYBIRD_URL --name webomage-cp; fi'
 

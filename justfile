@@ -729,7 +729,9 @@ deploy-me: (_confirm "deploy-me")
         echo "$SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SERVICE_ROLE_KEY --name webomage-me && \
         echo "$SUPABASE_SERVICE_ROLE_KEY" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name webomage-me && \
         echo "$WORKERS_WEBHOOK_URL" | pnpm exec wrangler secret put WORKERS_WEBHOOK_URL --name webomage-me && \
-        echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WORKERS_WEBHOOK_SECRET --name webomage-me; \
+        echo "$WORKERS_WEBHOOK_SECRET" | pnpm exec wrangler secret put WORKERS_WEBHOOK_SECRET --name webomage-me && \
+        if [ -n "${CONNECTOR_TOKEN_KEY_VERSION:-}" ]; then echo "$CONNECTOR_TOKEN_KEY_VERSION" | pnpm exec wrangler secret put CONNECTOR_TOKEN_KEY_VERSION --name webomage-me; fi && \
+        if [ -n "${CONNECTOR_TOKEN_KEY_V1:-}" ]; then echo "$CONNECTOR_TOKEN_KEY_V1" | pnpm exec wrangler secret put CONNECTOR_TOKEN_KEY_V1 --name webomage-me; fi; \
       fi'
     @infisical run --projectId={{ infisical_project_id }} --env=beta -- python3 scripts/log_deploy.py me "{{ deploy_version }}" "{{ deploy_commit }}" "$(git config user.email || echo unknown)" --outcome "${W0M_DEPLOY_OUTCOME:-success}" --trigger "${W0M_DEPLOY_TRIGGER:-planned}" --incident-ref "${W0M_DEPLOY_INCIDENT_REF:-}"
 

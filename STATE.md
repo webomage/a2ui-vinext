@@ -50,18 +50,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t772-definer-acl-fix` | 0 | **n/a — NO UPSTREAM** | `abd49d602` |
-| `w0m-api` | `agent/t772-definer-acl-fix` | 0 | **n/a — NO UPSTREAM** | `29439e0` |
-| `w0m-cf` | `agent/t772-definer-acl-fix` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
-| `w0m-skills` | `agent/t772-definer-acl-fix` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
-| `w0m-ext` | `agent/t772-definer-acl-fix` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
-| `w0m-sec` | `agent/t772-definer-acl-fix` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
-| `w0m-mlx/w0m-mlx` | `agent/t772-definer-acl-fix` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
+| `w0m-web` | `agent/t774-social-hiring-search` | 0 | **n/a — NO UPSTREAM** | `b79c0badf` |
+| `w0m-api` | `agent/t774-social-hiring-search` | 0 | **n/a — NO UPSTREAM** | `29439e0` |
+| `w0m-cf` | `agent/t774-social-hiring-search` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
+| `w0m-skills` | `agent/t774-social-hiring-search` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
+| `w0m-ext` | `agent/t774-social-hiring-search` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
+| `w0m-sec` | `agent/t774-social-hiring-search` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
+| `w0m-mlx/w0m-mlx` | `agent/t774-social-hiring-search` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 773 TASKS.md rows · 372/773 specced (2/8 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 8 open · 774 TASKS.md rows · 373/774 specced (2/8 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/t772-definer-acl-fix","dirty":0,"has_upstream":true,"head":"29439e0","unpushed":null},"w0m-cf":{"branch":"agent/t772-definer-acl-fix","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/t772-definer-acl-fix","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t772-definer-acl-fix","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/t772-definer-acl-fix","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/t772-definer-acl-fix","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/t772-definer-acl-fix","dirty":0,"has_upstream":true,"head":"abd49d602","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":773,"specced":372,"specced_open":2,"total":773,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/t774-social-hiring-search","dirty":0,"has_upstream":true,"head":"29439e0","unpushed":null},"w0m-cf":{"branch":"agent/t774-social-hiring-search","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/t774-social-hiring-search","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t774-social-hiring-search","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/t774-social-hiring-search","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/t774-social-hiring-search","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/t774-social-hiring-search","dirty":0,"has_upstream":true,"head":"b79c0badf","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":774,"specced":373,"specced_open":2,"total":774,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -126,11 +126,12 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T769** — HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR-blank (prod down)
   - **2026-11-18** (1d ago): Remaining: AC3 live verification of web/cp/me /login
 
-#### Completed today (3):
+#### Completed today (4):
 
 - **T771** — Surface components catalog, design tokens matrix, and interactive showcase on OpenDesign Design Systems page and Webomage design system (Verified upstream branch feat/design-system-components-showcase (GPG-signed 5c4e409a4 + e61486962 pushed to webomage/open-design) on Node v24.22.3: pnpm typecheck, pnpm guard, pnpm i18n:check, daemon token-contract.test.ts (3/3), import.test.ts (6/6), design-system-showcase-assets.test.ts (3/3 at 5c4e409a4; no route changes in e61486962), web design-kit.test.ts (3/3), design-kit-published.test.tsx (2/2), DesignKitView.test.tsx (14/14 at 5c4e409a4; no web changes in e61486962), and design-md-parse.test.ts (4/4 on local/sdlc-integration). Enriched w0m-web/design-system/ (just ui-ticket-leak-check 0 leaks, just ds-conformance --enforce green); live :7456 import produced 56/56 sourceBackedTokens, score: 100, grade: excellent, 9/9 component groups, and undeclaredReferenced: []. Lessons: none (routine delivery).)
 - **T772** — Add oMLX BYOK provider preset and fix keyless local OpenAI-compatible provider requests in OpenDesign (Verified upstream branch feat/omlx-provider-keyless-local (GPG-signed commit d9ddd45b06d37a67978f2ec937d461ab8b04a05d pushed to webomage/open-design) on Node v24.22.3: @open-design/contracts build, pnpm typecheck, pnpm guard, web config.test.ts (74/74), byok-validation + SettingsDialog suites (158/158), InlineModelSwitcher.test.tsx (36/36), daemon connection-test.test.ts (161/161), byok-opencode.test.ts (35/35), proxy-routes.test.ts (80/80), and chat-route.test.ts (85/85) all pass. Live :7456 (local/sdlc-integration @ d90c8852c) keyless POST /api/provider/models + POST /api/test/connection verified for http://localhost:8000/v1 and http://127.0.0.1:8888/v1; scripts/w0m_prs.py registered (T772). Lessons: none (routine delivery).)
 - **T773** — Revoke default PUBLIC/anon/authenticated EXECUTE grants on SECURITY DEFINER trigger function wom_normalize_hat_profile_id (T738 G2 follow-up) (Authored T773 migration revoking PUBLIC, anon, and authenticated EXECUTE on public.wom_normalize_hat_profile_id() in isolated agent tree t772-definer-acl-fix. Lesson disposition: covered by existing T289 G2-definer-acl-explicit rule; no new LESSONS.md entry required.)
+- **T774** — Fix Telegram & Meta Threads hiring search errors and support multi-currency, multi-timezone discovery with per-user saved defaults (Owner applied T773 live DB migration (just authz-probe --enforce: 70 GREEN / 0 RED; G2-definer-acl-explicit cleared); landing T774 via just session-complete T774.)
 
 ## 3. Other open threads (in TASKS.md)
 
