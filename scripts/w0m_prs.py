@@ -3328,6 +3328,51 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
         "risk_level": "Low",
         "risk_summary": "Additive kit sections and import fallbacks; existing brand.json kits and fixtures lacking authored components keep prior behavior.",
     },
+    "nexu-io/open-design:feat/design-system-local-import": {
+        "ticket": "T776",
+        "title": "feat(design-systems): add direct local folder import with workspace scoping",
+        "why": (
+            "On the Design Systems page, clicking `+ Create` and choosing a local folder launches the AI creation "
+            "wizard, which falls back to a generic `Product` placeholder (`#ffffff`/`#111111`/`#1677ff`, `Inter 400/700`, "
+            "no logo) instead of calling `POST /api/design-systems/import/local`. Meanwhile, the web import helpers in "
+            "`registry.ts` omit `workspaceProjectHeaders(workspaceContext)` (so signed-in workspace calls cannot bind "
+            "ownership), and `importLocalDesignSystemProject` ignores `DESIGN.md` frontmatter `name:` when deriving the "
+            "display name and slug."
+        ),
+        "what_for": (
+            "- Adds a direct **Import folder** button next to **+ Create** on the Design Systems page (`DesignSystemsTab`) "
+            "backed by `openFolderDialog`, `importLocalDesignSystem`, catalog refresh, automatic selection of the imported "
+            "system in **Your systems**, and full 19-locale i18n coverage.\n"
+            "- Forwards `workspaceProjectHeaders(workspaceContext)` from `importLocalDesignSystem`, "
+            "`importGitHubDesignSystem`, and `importShadcnDesignSystem` (including `DesignSystemsSection` callers) so "
+            "signed-in imports bind cleanly to the caller's active workspace.\n"
+            "- Reads optional YAML frontmatter `name:` from source `DESIGN.md` / `design.md` before `package.json` `name` "
+            "and folder basename when `options.name` is omitted."
+        ),
+        "how": (
+            "- **Registry & Settings callers (`apps/web/src/providers/registry.ts`, `DesignSystemsSection.tsx`)**: Adds "
+            "optional `workspaceContext` parameter to `importLocalDesignSystem`, `importGitHubDesignSystem`, and "
+            "`importShadcnDesignSystem`, merging `workspaceProjectHeaders(workspaceContext)` when present.\n"
+            "- **Design Systems header UI & i18n (`DesignSystemsTab.tsx`, `DesignSystemsTab.module.css`, `i18n/types.ts` + "
+            "19 locales)**: Adds `Import folder` action button (`dsManager.importFolderAction` / `dsManager.importingFolder`), "
+            "opens native folder picker, imports with active workspace context, focuses the new system, and surfaces clean "
+            "errors without hardcoded colors.\n"
+            "- **Local importer name resolution (`apps/daemon/src/design-systems/import.ts`)**: Adds `readSourceDesignName` "
+            "and `ProjectScan.sourceDesignName`, checking frontmatter `name:` before `package.json` `name`.\n"
+            "- **Verification (Linux x64, Node v24.22.3)**: `pnpm typecheck` (all 28 workspace projects), `pnpm guard`, "
+            "`pnpm i18n:check`, daemon `import.test.ts` (5/5), and web `DesignSystemsTab.test.tsx` (17/17) + "
+            "`DesignSystemsSection.test.tsx` (6/6) + `registry.test.ts` (103/103) all pass."
+        ),
+        "surface_area": (
+            "- `apps/web/src/providers/registry.ts`, `apps/web/src/components/{DesignSystemsTab.tsx,"
+            "DesignSystemsTab.module.css,DesignSystemsSection.tsx}`, `apps/web/src/i18n/{types.ts,locales/*.ts}` (19 locales), "
+            "`apps/daemon/src/design-systems/import.ts`, and 3 Vitest files (`import.test.ts`, `DesignSystemsTab.test.tsx`, "
+            "`registry.test.ts`)."
+        ),
+        "visual_change": True,
+        "risk_level": "Low",
+        "risk_summary": "Additive secondary header button and optional `workspaceContext` parameter preserving existing unauthenticated callers.",
+    },
     "a2ui-project/a2ui:docs/add-a2ui-vinext-renderer": {
         "ticket": "T741",
         "title": "docs(ecosystem): add @webomage/a2ui-vinext A2UI v1.0 renderer for Cloudflare Vinext",

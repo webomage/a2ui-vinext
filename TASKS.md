@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T776](.tasks/T776.md) | **P2** | **Add direct local folder import button with workspace ownership scoping on OpenDesign Design Systems page** | tooling | — | ✅ **done** |
 | [T775](.tasks/T775.md) | **P1** | **Restore upgraded SocialHiringSearch.svelte component omitted from T774 tree promotion and wire Reset Default** | web, cp | openspec/specs/social-hiring-search-hardening/spec.md | ✅ **done** |
 | [T774](.tasks/T774.md) | **P1** | **Fix Telegram & Meta Threads hiring search errors and support multi-currency, multi-timezone discovery with per-user saved defaults** | web, cp, lib, tooling | openspec/specs/social-hiring-search-hardening/spec.md | ✅ **done** |
 | [T773](.tasks/T773.md) | **P1** | **Revoke default PUBLIC/anon/authenticated EXECUTE grants on SECURITY DEFINER trigger function wom_normalize_hat_profile_id (T738 G2 follow-up)** | api | — | ✅ **done** |
