@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T773](.tasks/T773.md) | **P1** | **Revoke default PUBLIC/anon/authenticated EXECUTE grants on SECURITY DEFINER trigger function wom_normalize_hat_profile_id (T738 G2 follow-up)** | api | — | ✅ **done** |
 | [T772](.tasks/T772.md) | **P2** | **Add oMLX BYOK provider preset and fix keyless local OpenAI-compatible provider requests in OpenDesign** | tooling | — | ✅ **done** |
 | [T771](.tasks/T771.md) | **P2** | **Surface components catalog, design tokens matrix, and interactive showcase on OpenDesign Design Systems page and Webomage design system** | web, tooling | — | ✅ **done** |
 | [T770](.tasks/T770.md) | **P2** | **Fix layout-matrix measureAtBottom() footer-assumption drift after T754 moved footer inside the scroll area** | web, tooling | — | ✅ **done** |
