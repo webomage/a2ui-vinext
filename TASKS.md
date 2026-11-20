@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T777](.tasks/T777.md) | **P2** | **Allow deleting workspace-owned design systems when team share transport is unconfigured** | tooling | — | ✅ **done** |
 | [T776](.tasks/T776.md) | **P2** | **Add direct local folder import button with workspace ownership scoping on OpenDesign Design Systems page** | tooling | — | ✅ **done** |
 | [T775](.tasks/T775.md) | **P1** | **Restore upgraded SocialHiringSearch.svelte component omitted from T774 tree promotion and wire Reset Default** | web, cp | openspec/specs/social-hiring-search-hardening/spec.md | ✅ **done** |
 | [T774](.tasks/T774.md) | **P1** | **Fix Telegram & Meta Threads hiring search errors and support multi-currency, multi-timezone discovery with per-user saved defaults** | web, cp, lib, tooling | openspec/specs/social-hiring-search-hardening/spec.md | ✅ **done** |

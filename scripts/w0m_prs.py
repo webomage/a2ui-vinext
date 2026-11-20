@@ -3373,6 +3373,42 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
         "risk_level": "Low",
         "risk_summary": "Additive secondary header button and optional `workspaceContext` parameter preserving existing unauthenticated callers.",
     },
+    "nexu-io/open-design:fix/design-system-delete-unconfigured-share": {
+        "ticket": "T777",
+        "title": "fix(design-systems): allow deleting design systems when team share transport is unconfigured",
+        "why": (
+            "In signed-in local workspaces without a configured Vela team-resource hub (`configured: false`), "
+            "`DELETE /api/design-systems/:id` still calls `unshareTeamDesignSystemIfShared`, which delegates to "
+            "`unshareIfCurrentlyShared` (`apps/daemon/src/collab/team-resource-share.ts`). Because "
+            "`unshareIfCurrentlyShared` always calls `service.sharedResources(scope, { authoritative: true })` "
+            "even when `service.configured === false`, the unconfigured stub throws "
+            "`authoritative Team resource listing is unavailable`, turning every local delete into HTTP `503`."
+        ),
+        "what_for": (
+            "- Short-circuits `unshareIfCurrentlyShared` when `service.configured === false`, returning `false` so "
+            "signed-in users can delete their own workspace design systems when team sharing is not configured.\n"
+            "- Preserves fail-closed `TeamResourceAuthorityUnavailableError` behavior whenever `service.configured !== false` "
+            "and a live hub read fails."
+        ),
+        "how": (
+            "- **`apps/daemon/src/collab/team-resource-share.ts`**: Accepts optional `configured?: boolean` on "
+            "`unshareIfCurrentlyShared`'s `service` parameter and returns `false` immediately when `service.configured === false`.\n"
+            "- **Tests (`design-system-delete-unshares-team-share.test.ts`, `team-resource-share.test.ts`)**: Added HTTP "
+            "route regression test (`DELETE` returns `204` with unconfigured `createTeamResourceShareService`) and unit "
+            "test covering both `configured: false` short-circuit and `configured: true` fail-closed `503` behavior.\n"
+            "- **Verification (Linux x64, Node v24.22.3)**: `@open-design/daemon typecheck`, `pnpm guard`, "
+            "`team-project-share.test.ts` (20/20), `team-resource-share.test.ts` (16/16), and "
+            "`design-system-delete-unshares-team-share.test.ts` (6/6) all pass (42/42 tests)."
+        ),
+        "surface_area": (
+            "- `apps/daemon/src/collab/team-resource-share.ts`, "
+            "`apps/daemon/tests/routes/design-system-delete-unshares-team-share.test.ts`, and "
+            "`apps/daemon/tests/team-resource-share.test.ts`."
+        ),
+        "visual_change": False,
+        "risk_level": "Low",
+        "risk_summary": "Only bypasses authoritative hub lookup when `service.configured === false`; active team hubs remain strictly fail-closed.",
+    },
     "a2ui-project/a2ui:docs/add-a2ui-vinext-renderer": {
         "ticket": "T741",
         "title": "docs(ecosystem): add @webomage/a2ui-vinext A2UI v1.0 renderer for Cloudflare Vinext",
