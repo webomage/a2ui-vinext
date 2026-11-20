@@ -17,8 +17,10 @@
 |---|---|---|---|---|---|---|---|
 | 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | [#746](https://github.com/webomage/wom7board/issues/746) | P1 | in-progress | ai | 100 | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare  📄 live spec |
 | 2 | [T769](/home/aleksei/Projects/!self/w0m/.tasks/T769.md) | ⚠️ not mirrored | P1 | in-progress | product | 85 | HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR- |
-| 3 | [T767](/home/aleksei/Projects/!self/w0m/.tasks/T767.md) | ⚠️ not mirrored | P3 | queued | tooling | 10 | Gate pinned security-hook revs against the gate-binary version (osv-scanner drift cost t |
-| 4 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 3 | [T782](/home/aleksei/Projects/!self/w0m/.tasks/T782.md) | ⚠️ not mirrored | P1 | queued | security | 60 | Achieve 100/100 mastered passive domain audit across webomage.com, me., and cp. and fix  |
+| 4 | [T783](/home/aleksei/Projects/!self/w0m/.tasks/T783.md) | ⚠️ not mirrored | P2 | queued | knowledge | 25 | Author Mexico and Global SaaS Business Automation Research Dossier and AgDR-0059 |
+| 5 | [T767](/home/aleksei/Projects/!self/w0m/.tasks/T767.md) | ⚠️ not mirrored | P3 | queued | tooling | 10 | Gate pinned security-hook revs against the gate-binary version (osv-scanner drift cost t |
+| 6 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -26,8 +28,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 8 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **8** are
+> ⚠️ **0 of 10 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **10** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -36,8 +38,10 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | [#746](https://github.com/webomage/wom7board/issues/746) | P1 | in-progress ⚠️ 100% — awaiting deploy/archive, NOT stale | ai | 4/4 | `██████████` 100% | — | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer  |
 | 2 | [T769](/home/aleksei/Projects/!self/w0m/.tasks/T769.md) | ⚠️ not mirrored | P1 | in-progress | product | 2/3 | `███████░░░` 67% | — | HOTFIX T764 regression — AuthForm.astro named-input import d |
-| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
-| 4 | [T767](/home/aleksei/Projects/!self/w0m/.tasks/T767.md) | ⚠️ not mirrored | P3 | queued | tooling | 0/4 | `░░░░░░░░░░` 0% | — | Gate pinned security-hook revs against the gate-binary versi |
+| 3 | [T782](/home/aleksei/Projects/!self/w0m/.tasks/T782.md) | ⚠️ not mirrored | P1 | queued | security | 0/5 | `░░░░░░░░░░` 0% | — | Achieve 100/100 mastered passive domain audit across webomag |
+| 4 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 5 | [T783](/home/aleksei/Projects/!self/w0m/.tasks/T783.md) | ⚠️ not mirrored | P2 | queued | knowledge | 0/3 | `░░░░░░░░░░` 0% | — | Author Mexico and Global SaaS Business Automation Research D |
+| 6 | [T767](/home/aleksei/Projects/!self/w0m/.tasks/T767.md) | ⚠️ not mirrored | P3 | queued | tooling | 0/4 | `░░░░░░░░░░` 0% | — | Gate pinned security-hook revs against the gate-binary versi |
 
   ⚠️  1 row(s) at 100% with a non-done status: T741. Every acceptance criterion is met — what remains is the DEPLOY and ARCHIVE gates, so the record is accurate, not stale. Confirm against the live site before reading it either way.
 
@@ -50,18 +54,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t779-t780-filters-pr-cleanup` | 0 | **n/a — NO UPSTREAM** | `1dee48280` |
-| `w0m-api` | `agent/t779-t780-filters-pr-cleanup` | 0 | **n/a — NO UPSTREAM** | `29439e0` |
-| `w0m-cf` | `agent/t779-t780-filters-pr-cleanup` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
-| `w0m-skills` | `agent/t779-t780-filters-pr-cleanup` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
-| `w0m-ext` | `agent/t779-t780-filters-pr-cleanup` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
-| `w0m-sec` | `agent/t779-t780-filters-pr-cleanup` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
-| `w0m-mlx/w0m-mlx` | `agent/t779-t780-filters-pr-cleanup` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
+| `w0m-web` | `agent/t779-legal-checkout-compliance` | 0 | **n/a — NO UPSTREAM** | `deff5ac05` |
+| `w0m-api` | `agent/t779-legal-checkout-compliance` | 0 | **n/a — NO UPSTREAM** | `ee80c47` |
+| `w0m-cf` | `agent/t779-legal-checkout-compliance` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
+| `w0m-skills` | `agent/t779-legal-checkout-compliance` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
+| `w0m-ext` | `agent/t779-legal-checkout-compliance` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
+| `w0m-sec` | `agent/t779-legal-checkout-compliance` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
+| `w0m-mlx/w0m-mlx` | `agent/t779-legal-checkout-compliance` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 780 TASKS.md rows · 376/780 specced (2/8 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 10 open · 783 TASKS.md rows · 377/783 specced (2/10 open specced) · 4 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/t779-t780-filters-pr-cleanup","dirty":0,"has_upstream":true,"head":"29439e0","unpushed":null},"w0m-cf":{"branch":"agent/t779-t780-filters-pr-cleanup","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/t779-t780-filters-pr-cleanup","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t779-t780-filters-pr-cleanup","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/t779-t780-filters-pr-cleanup","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/t779-t780-filters-pr-cleanup","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/t779-t780-filters-pr-cleanup","dirty":0,"has_upstream":true,"head":"1dee48280","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":780,"specced":376,"specced_open":2,"total":780,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T782","T783","T767","T17"],"repos":{"w0m-api":{"branch":"agent/t779-legal-checkout-compliance","dirty":0,"has_upstream":true,"head":"ee80c47","unpushed":null},"w0m-cf":{"branch":"agent/t779-legal-checkout-compliance","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/t779-legal-checkout-compliance","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t779-legal-checkout-compliance","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/t779-legal-checkout-compliance","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/t779-legal-checkout-compliance","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/t779-legal-checkout-compliance","dirty":0,"has_upstream":true,"head":"deff5ac05","unpushed":null}},"tickets":{"open":10,"rowless_open":[],"rows":783,"specced":377,"specced_open":2,"total":783,"unmirrored_open":4}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -126,7 +130,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T769** — HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR-blank (prod down)
   - **2026-11-18** (2d ago): Remaining: AC3 live verification of web/cp/me /login
 
-#### Completed today (7):
+#### Completed today (8):
 
 - **T771** — Surface components catalog, design tokens matrix, and interactive showcase on OpenDesign Design Systems page and Webomage design system ((T780): Opened upstream PR https://github.com/nexu-io/open-design/pull/9585 and aligned its description with the official ## Surface area checkbox template ([x] UI, [x] i18n keys).)
 - **T772** — Add oMLX BYOK provider preset and fix keyless local OpenAI-compatible provider requests in OpenDesign ((T780): Opened upstream PR https://github.com/nexu-io/open-design/pull/9584 and aligned its description with the official ## Surface area checkbox template ([x] UI, [x] API / contract).)
@@ -135,6 +139,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T778** — Fold Talent hub (/) into an overview hub, upgrade host CLI tools incl. supabase 3.2.0, and add Linux systemd user auto-checks (Completed all deliverables & verifications: promoted all 12 tools (ast-grep 0.51.3, fd 10.5.2, fzf 0.75.0, gh 2.105.0, infisical 0.45.13, osv-scanner 2.7.1, pdftotext 26.11.0, ruff 0.17.6, semgrep 1.186.0, supabase 3.2.0, uv 0.13.9, yq 4.54.3) and aligned deno 2.9.7 -> 2.9.8 (just tools-check 0 required-drift, just deno-check 64 functions 0 errors); installed & enabled all 5 com.w0m. Linux systemd --user timers pointing at /home/aleksei/Projects/!self/w0m; passed test_launchd_schedule.py (7/7), test_tools_check.py (20/20), test_tools_upgrade.py, test_toolchain_chain.py, test_run_suites.py, t496_job_join_ds_check.py (PASS), supabase_surface_drift_check.py (0 findings), ui-ticket-leak-check (0 leaked), ds-conformance (+0), emoji-check, spec-policy-check (0 closed unspecced), spec-drift, oxlint (0/3 files), vitest (10/10 across talent-hub-overview.test.ts + social-search.test.ts), and apps/me Astro build (46.61s, compiled TalentHubSavedSearchCard.Btx3bCuY.js containing wom.social_search_defaults.v1 and /jobs?social=1). Lesson disposition: scheduler worktree-to-canonical-root resolution is enforced by test_launchd_schedule.py; covered under T546 schedule rule, no separate LESSONS.md entry required.)
 - **T779** — Replace hardcoded role/currency social hiring presets with selectable Role, Currency, and Timezone filters (Replaced hardcoded role/currency presets and cycler buttons in w0m-web/apps/cp/src/components/member/outreach/SocialHiringSearch.svelte with three @webomage/ui Select dropdowns (Role: Any, Currency: Any, TZ: Any) synchronized with keyword edits, Quick stacks, Threads search, save_preferences, and reset_preferences; updated social-search.test.ts. Verified: oxlint (0 warnings/0 errors across both files), root Vitest (social-search.test.ts 7/7 + talent-hub-overview.test.ts 3/3 = 10/10), just ui-ticket-leak-check (483 files, 0 leaked), just ds-conformance (+0 diff on <select>=58 and hex=226), just emoji-check OK, sequential builds (me 58.77s, cp 1m 20s), and compiled chunks (SocialHiringSearch.C2eqjAsy.js + OutreachHub.BXTgJZ74.js) verified containing filter-role-mode/filter-currency-mode/filter-timezone-mode and zero old preset buttons. Live deployment to me/cp awaits owner Touch ID (just deploy me, just deploy cp). Lessons: none (routine UI refactor).)
 - **T780** — Fix OpenDesign PR #9586 CI failure, enforce Surface area checklist template, remediate open PRs, and sync PR registry (Fixed PR #9586 (feat/design-system-local-import) null workspaceContext 2nd-arg bug in DesignSystemsSection.tsx & DesignSystemsTab.tsx (+ signed-out test assertion in DesignSystemsTab.test.tsx); verified on Node v24.22.3 (SettingsDialog.execution.test.tsx + DesignSystemsTab.test.tsx + DesignSystemsSection.test.tsx + registry.test.ts: 284/284 passed; pnpm typecheck, pnpm guard, pnpm i18n:check passed), GPG-signed 6b30873c2 pushed to webomage/open-design and merged into local/sdlc-integration (65d0fbbbf, live :36427 & :7456 HTTP 200). Upgraded scripts/w0m_prs.py open_design_template (9 official ## Surface area checkboxes + ## Bug fix verification, --repo flag on compliance, all 7 branches registered in ACTIVE_OPEN_PR_HEAD_BRANCHES), passed just prs-test (102/102), remediated all 7 open nexu-io/open-design PRs (#9482, #9500, #9515, #9584, #9585, #9586, #9587: nonCompliant=0), confirmed just pr-auto --dry-run no longer lists them (evaluated=3), and cross-linked PRs #9584–#9587 in T771.md–T777.md. Lessons: none (routine PR & tooling maintenance).)
+- **T781** — Publish webomage.com legal compliance pack, footer legal nav, unchecked consent + policy version tracking, and Stripe tax ID / legal metadata (Published /terms, /refunds, /cancellation, /dpa, /sla, /cookies, /aviso-de-privacidad (LFPDPPP 2025 reform designating SABG), updated /privacy & /security, wired wrapped legal nav into Footer.astro & SharedFooter.astro, unchecked default consent toggles with /terms, /privacy, /refunds links, recorded tosPolicyVersion + tosAcceptedAt in /api/security-audit, and updated w0m-api Stripe checkout (tax_id_collection, customer_update, custom_text.submit.message, metadata.tos_policy_version). Lesson disposition: Stripe subscription checkouts with an existing customer and tax_id_collection require customer_update: { name: "auto", address: "auto" }; captured cleanly in stripe-billing.test.ts and OpenSpec design.md.)
 
 ## 3. Other open threads (in TASKS.md)
 

@@ -28,6 +28,8 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T782](.tasks/T782.md) | **P1** | 🆕 **Achieve 100/100 mastered passive domain audit across webomage.com, me., and cp. and fix Linux daily audit NOT RUN checks** | web, api, tooling | — | ⚪ **queued** |
+| [T783](.tasks/T783.md) | **P2** | 🆕 **Author Mexico and Global SaaS Business Automation Research Dossier and AgDR-0059** | web, api, research | — | ⚪ **queued** |
 | [T17](project/tickets/T17.md) · [#20](https://github.com/casualuser/webomage.com/issues/20) | **P2** | Purge `.env.bak` from wom7web git history (filter-repo + force-push). Untracking ≠ removal. | web | AUDIT-2026-06-13 | ⚪ **queued** |
 | [T526](.tasks/T526.md) | P3 | 🆕 **Upwork sync runs on each member's own connection: replace the single-person local runner** | web, api | — | 💤 **paused** |
 | [T537](.tasks/T537.md) | P3 | 🆕 **Upwork connector on the official MCP with per-member OAuth; the API connection is deprecated and hidden, not deleted** | api, web | — | 💤 **paused** |
@@ -36,6 +38,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T781](.tasks/T781.md) | **P1** | **Publish webomage.com legal compliance pack, footer legal nav, unchecked consent + policy version tracking, and Stripe tax ID / legal metadata** | web, api | openspec/specs/legal-and-checkout-compliance/spec.md | ✅ **done** |
 | [T780](.tasks/T780.md) | **P1** | **Fix OpenDesign PR #9586 CI failure, enforce Surface area checklist template, remediate open PRs, and sync PR registry** | tooling | — | ✅ **done** |
 | [T779](.tasks/T779.md) | **P1** | **Replace hardcoded role/currency social hiring presets with selectable Role, Currency, and Timezone filters** | web, cp | openspec/specs/social-hiring-search-hardening/spec.md | ✅ **done** |
 | [T778](.tasks/T778.md) | **P1** | **Fold Talent hub (/) into an overview hub, upgrade host CLI tools incl. supabase 3.2.0, and add Linux systemd user auto-checks** | web, tooling | openspec/specs/me-talent-hub-and-linux-scheduler/spec.md | ✅ **done** |
