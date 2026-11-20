@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T785](.tasks/T785.md) | **P1** | **Fix OpenDesign PR #9500 bundle font/logo probing when packageInfo.availableFiles is absent** | tooling | — | ✅ **done** |
 | [T784](.tasks/T784.md) | **P1** | **Address OpenDesign PR #9584 loopback host review requirement and rebase PRs #9500, #9585, and #9586 onto upstream/main** | tooling | — | ✅ **done** |
 | [T783](.tasks/T783.md) | **P2** | 🆕 **Author Mexico and Global SaaS Business Automation Research Dossier and AgDR-0059** | web, api, research | — | ✅ **done** |
 | [T782](.tasks/T782.md) | **P1** | 🆕 **Achieve 100/100 mastered passive domain audit across webomage.com, me., and cp. and fix Linux daily audit NOT RUN checks** | web, api, tooling | — | ✅ **done** |
