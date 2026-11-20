@@ -227,6 +227,83 @@ class TestHostPostureProbes(unittest.TestCase):
             self.assertEqual(entry["status"], host_posture.NOT_MEASURED)
             self.assertTrue(len(entry["reason"]) > 10)
 
+    # ── Native Linux Host Security Controls (T782 AC4) ──────────────────────
+
+    def test_linux_firewall_active_passes(self):
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=0, stdout="active\ninactive\ninactive\n")
+            res = host_posture.check_linux_firewall()
+            self.assertEqual(res["status"], host_posture.PASS)
+            self.assertTrue(res["enabled"])
+            self.assertIn("ufw", res["active_services"])
+
+    def test_linux_firewall_inactive_fails(self):
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=3, stdout="inactive\ninactive\ninactive\n")
+            res = host_posture.check_linux_firewall()
+            self.assertEqual(res["status"], host_posture.FAIL)
+            self.assertFalse(res["enabled"])
+
+    def test_linux_disk_encryption_luks_passes(self):
+        lsblk_json = json.dumps({
+            "blockdevices": [
+                {
+                    "name": "nvme0n1",
+                    "type": "disk",
+                    "fstype": None,
+                    "children": [
+                        {
+                            "name": "nvme0n1p3",
+                            "type": "part",
+                            "fstype": "crypto_LUKS",
+                            "children": [
+                                {"name": "cryptroot", "type": "crypt", "fstype": "ext4"}
+                            ],
+                        }
+                    ],
+                }
+            ]
+        })
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = MagicMock(returncode=0, stdout=lsblk_json)
+            res = host_posture.check_linux_disk_encryption()
+            self.assertEqual(res["status"], host_posture.PASS)
+            self.assertTrue(res["enabled"])
+            self.assertIn("cryptroot", res["crypt_devices"])
+
+    def test_linux_kernel_lsm_and_yama_passes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            lsm_p = Path(tmp) / "lsm"
+            ptrace_p = Path(tmp) / "ptrace_scope"
+            lsm_p.write_text("lockdown,capability,landlock,yama,apparmor\n", encoding="utf-8")
+            ptrace_p.write_text("1\n", encoding="utf-8")
+            res = host_posture.check_linux_kernel_lsm(lsm_path=lsm_p, ptrace_path=ptrace_p)
+            self.assertEqual(res["status"], host_posture.PASS)
+            self.assertTrue(res["enabled"])
+            self.assertIn("apparmor", res["modules"])
+            self.assertEqual(res["ptrace_scope"], 1)
+
+    def test_linux_startup_surface_registered_timers_passes(self):
+        baseline = {
+            "user_launch_agents": {
+                "com.w0m.audit-daily": {"status": "loaded", "reason": "daily audit"},
+                "com.w0m.backup-daily": {"status": "loaded", "reason": "daily backup"},
+            },
+            "limits": {"unregistered_agents_max": 0},
+        }
+        with tempfile.NamedTemporaryFile("w", suffix=".json") as f:
+            json.dump(baseline, f)
+            f.flush()
+            with patch("subprocess.run") as mock_run:
+                mock_run.return_value = MagicMock(
+                    returncode=0,
+                    stdout="com.w0m.audit-daily.timer enabled enabled\ncom.w0m.backup-daily.timer enabled enabled\n",
+                )
+                res = host_posture.check_linux_startup_surface(baseline_path=Path(f.name))
+                self.assertEqual(res["status"], host_posture.PASS)
+                self.assertEqual(len(res["unregistered_agents"]), 0)
+                self.assertEqual(len(res["enabled_timers"]), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

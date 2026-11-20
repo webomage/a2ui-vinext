@@ -402,19 +402,240 @@ def check_unmeasured_dimensions() -> Dict[str, Dict[str, str]]:
     }
 
 
+# ── Native Linux Host Controls & Startup Surface (T782 AC4) ───────────────────
+
+def check_linux_firewall() -> Dict[str, Any]:
+    """Inspect Linux host firewall status (ufw / nftables / firewalld) and netfilter kernel modules."""
+    services = ["ufw", "nftables", "firewalld"]
+    active_services: List[str] = []
+    try:
+        proc = subprocess.run(
+            ["systemctl", "is-active", *services],
+            capture_output=True, text=True, check=False
+        )
+        statuses = [ln.strip().lower() for ln in proc.stdout.splitlines() if ln.strip()]
+        for svc, st in zip(services, statuses):
+            if st == "active":
+                active_services.append(svc)
+    except Exception as e:
+        return {
+            "name": "Linux Firewall (ufw/nftables)",
+            "status": FAIL,
+            "enabled": False,
+            "active_services": [],
+            "detail": f"Error querying systemctl firewall state: {e}"
+        }
+
+    nf_loaded = Path("/sys/module/nf_tables").exists() or Path("/sys/module/ip_tables").exists()
+    enabled = len(active_services) > 0
+    detail_parts = []
+    if enabled:
+        detail_parts.append(f"active firewall service(s): {', '.join(active_services)}")
+    else:
+        detail_parts.append("no active firewall service (ufw/nftables/firewalld inactive)")
+    if nf_loaded:
+        detail_parts.append("netfilter kernel tables loaded")
+
+    return {
+        "name": "Linux Firewall (ufw/nftables)",
+        "status": PASS if enabled else FAIL,
+        "enabled": enabled,
+        "active_services": active_services,
+        "detail": "; ".join(detail_parts)
+    }
+
+
+def check_linux_disk_encryption() -> Dict[str, Any]:
+    """Inspect Linux block devices for LUKS / dm-crypt encryption."""
+    try:
+        proc = subprocess.run(
+            ["lsblk", "-J", "-o", "NAME,TYPE,FSTYPE,MOUNTPOINTS"],
+            capture_output=True, text=True, check=False
+        )
+        data = json.loads(proc.stdout or "{}")
+    except Exception as e:
+        return {
+            "name": "Disk Encryption (LUKS/dm-crypt)",
+            "status": WARN,
+            "enabled": False,
+            "detail": f"Could not inspect block devices via lsblk: {e}"
+        }
+
+    crypt_devices: List[str] = []
+
+    def _walk(nodes: List[Dict[str, Any]]) -> None:
+        for node in nodes:
+            ntype = str(node.get("type") or "").lower()
+            fstype = str(node.get("fstype") or "").lower()
+            name = str(node.get("name") or "?")
+            if ntype == "crypt" or "luks" in fstype:
+                crypt_devices.append(name)
+            children = node.get("children")
+            if isinstance(children, list):
+                _walk(children)
+
+    _walk(data.get("blockdevices", []))
+    enabled = len(crypt_devices) > 0
+    return {
+        "name": "Disk Encryption (LUKS/dm-crypt)",
+        "status": PASS if enabled else WARN,
+        "enabled": enabled,
+        "crypt_devices": crypt_devices,
+        "detail": (
+            f"LUKS/dm-crypt active on {', '.join(crypt_devices)}"
+            if enabled
+            else "No active dm-crypt/crypto_LUKS volume detected (advisory on Linux workstation)"
+        )
+    }
+
+
+def check_linux_kernel_lsm(
+    lsm_path: Path = Path("/sys/kernel/security/lsm"),
+    ptrace_path: Path = Path("/proc/sys/kernel/yama/ptrace_scope"),
+) -> Dict[str, Any]:
+    """Inspect active Linux Security Modules (AppArmor/Landlock/Lockdown/Yama) and ptrace_scope."""
+    if not lsm_path.exists():
+        return {
+            "name": "Kernel LSM & Yama ptrace",
+            "status": FAIL,
+            "enabled": False,
+            "modules": [],
+            "ptrace_scope": None,
+            "detail": f"Missing {lsm_path}"
+        }
+
+    try:
+        raw_lsm = lsm_path.read_text(encoding="utf-8").strip()
+        modules = [m.strip().lower() for m in raw_lsm.split(",") if m.strip()]
+    except Exception as e:
+        return {
+            "name": "Kernel LSM & Yama ptrace",
+            "status": FAIL,
+            "enabled": False,
+            "modules": [],
+            "ptrace_scope": None,
+            "detail": f"Could not read {lsm_path}: {e}"
+        }
+
+    ptrace_scope: int | None = None
+    if ptrace_path.exists():
+        try:
+            ptrace_scope = int(ptrace_path.read_text(encoding="utf-8").strip())
+        except Exception:
+            ptrace_scope = None
+
+    mac_modules = [m for m in modules if m in ("apparmor", "selinux", "landlock", "lockdown")]
+    ptrace_ok = ptrace_scope is None or ptrace_scope >= 1
+    enabled = len(mac_modules) > 0 and ptrace_ok
+    detail = f"LSMs=[{', '.join(modules)}]"
+    if ptrace_scope is not None:
+        detail += f", yama.ptrace_scope={ptrace_scope}"
+
+    return {
+        "name": "Kernel LSM & Yama ptrace",
+        "status": PASS if enabled else FAIL,
+        "enabled": enabled,
+        "modules": modules,
+        "ptrace_scope": ptrace_scope,
+        "detail": detail
+    }
+
+
+def check_linux_startup_surface(baseline_path: Path = DEFAULT_BASELINE) -> Dict[str, Any]:
+    """Audit Linux systemd --user com.w0m.* timers against declared user_launch_agents baseline."""
+    if not baseline_path.exists():
+        return {
+            "name": "Startup Surface Ratchet (systemd)",
+            "status": FAIL,
+            "detail": f"Missing baseline file: {baseline_path}",
+            "unregistered_agents": [],
+            "enabled_timers": []
+        }
+
+    try:
+        baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        return {
+            "name": "Startup Surface Ratchet (systemd)",
+            "status": FAIL,
+            "detail": f"Failed to parse baseline: {e}",
+            "unregistered_agents": [],
+            "enabled_timers": []
+        }
+
+    expected_agents = baseline.get("user_launch_agents", {})
+    limits = baseline.get("limits", {})
+    max_agents = limits.get("unregistered_agents_max", 0)
+
+    enabled_timers: List[str] = []
+    all_w0m_timers: List[str] = []
+    try:
+        proc = subprocess.run(
+            ["systemctl", "--user", "list-unit-files", "com.w0m.*.timer", "--no-legend"],
+            capture_output=True, text=True, check=False
+        )
+        for line in proc.stdout.splitlines():
+            parts = line.strip().split()
+            if not parts:
+                continue
+            unit_name = parts[0]
+            state = parts[1].lower() if len(parts) > 1 else ""
+            stem = re.sub(r"\.timer$", "", unit_name)
+            all_w0m_timers.append(stem)
+            if state == "enabled":
+                enabled_timers.append(stem)
+    except Exception as e:
+        return {
+            "name": "Startup Surface Ratchet (systemd)",
+            "status": FAIL,
+            "detail": f"Error querying systemctl --user: {e}",
+            "unregistered_agents": [],
+            "enabled_timers": []
+        }
+
+    unregistered = [u for u in all_w0m_timers if u not in expected_agents]
+    status = FAIL if len(unregistered) > max_agents else PASS
+    detail = (
+        f"{len(unregistered)} unregistered systemd user timer(s): {', '.join(unregistered)}"
+        if len(unregistered) > max_agents
+        else f"{len(enabled_timers)}/{len(all_w0m_timers)} com.w0m.* systemd user timer(s) enabled and registered in baseline"
+    )
+    return {
+        "name": "Startup Surface Ratchet (systemd)",
+        "status": status,
+        "detail": detail,
+        "unregistered_agents": unregistered,
+        "enabled_timers": enabled_timers
+    }
+
+
 # ── Posture Evaluation & Runner ───────────────────────────────────────────────
 
-def evaluate_host_posture(baseline_path: Path = DEFAULT_BASELINE, enforce: bool = False) -> Dict[str, Any]:
+def evaluate_host_posture(
+    baseline_path: Path = DEFAULT_BASELINE,
+    enforce: bool = False,
+    platform: str | None = None,
+) -> Dict[str, Any]:
     """Run all host checks and return aggregated posture report."""
-    checks = [
-        check_firewall(),
-        check_filevault(),
-        check_sip(),
-        check_gatekeeper(),
-        check_postgres_binding(),
-        check_startup_surface(baseline_path),
-        check_tcc_grants(),
-    ]
+    active_platform = (platform or sys.platform).lower()
+    if active_platform.startswith("linux"):
+        checks = [
+            check_linux_firewall(),
+            check_linux_disk_encryption(),
+            check_linux_kernel_lsm(),
+            check_postgres_binding(),
+            check_linux_startup_surface(baseline_path),
+        ]
+    else:
+        checks = [
+            check_firewall(),
+            check_filevault(),
+            check_sip(),
+            check_gatekeeper(),
+            check_postgres_binding(),
+            check_startup_surface(baseline_path),
+            check_tcc_grants(),
+        ]
 
     unmeasured = check_unmeasured_dimensions()
 
@@ -463,7 +684,7 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.test:
-        test_file = ROOT / "w0m-web" / "project" / "scripts" / "tests" / "test_host_posture.py"
+        test_file = ROOT / "scripts" / "tests" / "test_host_posture.py"
         proc = subprocess.run([sys.executable, str(test_file)])
         return proc.returncode
 

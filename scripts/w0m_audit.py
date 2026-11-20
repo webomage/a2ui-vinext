@@ -45,6 +45,21 @@ MONO_ROOT = Path(__file__).resolve().parents[1]         # …/@wom
 WEB_ROOT = MONO_ROOT / "w0m-web"                        # w0m-web/
 SDLC_JSON = MONO_ROOT / ".w0m" / "sdlc.json"
 API_ROOT = MONO_ROOT / "w0m-api"
+INFISICAL_PROJECT_ID = "87a1718d-17c6-4c5e-b0c1-f8bb2fd9d13c"
+
+
+def _extract_json_payload(raw_stdout: str):
+    """Parse JSON from stdout even when infisical prefixes an INF log line."""
+    text = (raw_stdout or "").strip()
+    for ch_open, ch_close in (("[", "]"), ("{", "}")):
+        start = text.find(ch_open)
+        end = text.rfind(ch_close)
+        if start != -1 and end != -1 and end > start:
+            try:
+                return json.loads(text[start : end + 1])
+            except Exception:
+                continue
+    return json.loads(text)
 
 APPS = {  # app → public host serving /api/health
     "web": "https://webomage.com",
@@ -530,7 +545,7 @@ def check_authz():
     else:
         add(SKIP, "authz", "admin-client-ratchet", "authz_admin_client_triage.py not found")
 
-    # 2. Database authorization probes (T198/T200/T329) — requires infisical / DB connection
+    # 2. Database authorization probes (T198/T200/T329/T782) — requires infisical / DB connection
     probe_script = WEB_ROOT / "project" / "scripts" / "authz_probe_suite.py"
     if not probe_script.exists():
         add(SKIP, "authz", "authz-probe-suite", "authz_probe_suite.py not found")
@@ -539,20 +554,33 @@ def check_authz():
     else:
         try:
             r = subprocess.run(
-                ["infisical", "run", "--env=beta", "--silent", "--", sys.executable, str(probe_script), "--quiet"],
-                cwd=WEB_ROOT, capture_output=True, text=True, timeout=120
+                [
+                    "infisical", "run",
+                    f"--projectId={INFISICAL_PROJECT_ID}",
+                    "--env=beta", "--silent", "--",
+                    sys.executable, str(probe_script), "--json", "--enforce",
+                ],
+                cwd=WEB_ROOT, capture_output=True, text=True, timeout=300
             )
             if r.returncode == 0:
-                summary_lines = [l.strip() for l in r.stdout.splitlines() if "probes passed" in l or "18/18" in l or l.startswith("✅")]
-                add(PASS, "authz", "authz-probes", summary_lines[-1] if summary_lines else "all authorization probes passed")
+                try:
+                    probes_json = _extract_json_payload(r.stdout)
+                    green_n = sum(1 for p in probes_json if not p.get("red") and not p.get("unmeasured"))
+                    add(PASS, "authz", "authz-probes", f"{green_n}/{len(probes_json)} authorization probes GREEN (0 RED)")
+                except Exception:
+                    summary_lines = [l.strip() for l in r.stdout.splitlines() if "GREEN" in l or l.startswith("✅")]
+                    add(PASS, "authz", "authz-probes", summary_lines[-1] if summary_lines else "all authorization probes passed")
+            elif r.returncode == 3:
+                tail = [l.strip() for l in (r.stderr or r.stdout).splitlines() if l.strip()]
+                add(WARN, "authz", "authz-probes", f"DB unmeasurable (WARP/network): {tail[-1][:80]}" if tail else "DB unmeasurable")
             else:
                 tail = [l.strip() for l in (r.stderr or r.stdout).splitlines() if l.strip()]
                 if any("connection refused" in t.lower() or "timeout" in t.lower() or "could not connect" in t.lower() for t in tail):
-                    add(SKIP, "authz", "authz-probes", f"DB unreachable (WARP down?): {tail[-1][:80]}")
+                    add(WARN, "authz", "authz-probes", f"DB unreachable (WARP down?): {tail[-1][:80]}")
                 else:
                     add(FAIL, "authz", "authz-probes", tail[-1][:120] if tail else "authz probes failed")
         except Exception as e:
-            add(SKIP, "authz", "authz-probes", f"could not run ({type(e).__name__}: {e})")
+            add(WARN, "authz", "authz-probes", f"could not run ({type(e).__name__}: {e})")
 
 
 # ── PLATFORM: leakage, limits & exposure (T233) ────────────────────────────────────
@@ -577,17 +605,36 @@ def check_platform_security():
     if limits_script.exists() and shutil.which("infisical"):
         try:
             r = subprocess.run(
-                ["infisical", "run", "--env=beta", "--silent", "--", sys.executable, str(limits_script), "--summary"],
-                cwd=API_ROOT, capture_output=True, text=True, timeout=60
+                [
+                    "infisical", "run",
+                    f"--projectId={INFISICAL_PROJECT_ID}",
+                    "--env=beta", "--silent", "--",
+                    sys.executable, str(limits_script), "--json",
+                ],
+                cwd=API_ROOT, capture_output=True, text=True, timeout=90
             )
             if r.returncode == 0:
-                tail = [l.strip() for l in r.stdout.splitlines() if l.strip()]
-                add(PASS, "platform", "supabase-limits", tail[-1] if tail else "within operational limits")
+                try:
+                    data = _extract_json_payload(r.stdout)
+                    rows = data.get("rows", [])
+                    warns = data.get("warns", [])
+                    summary_parts = [
+                        f"{row['kind']}:{row['name']}={row['percent']}%"
+                        for row in rows
+                        if isinstance(row, dict) and "kind" in row and "percent" in row
+                    ]
+                    detail = ", ".join(summary_parts) if summary_parts else "within operational limits"
+                    if warns:
+                        detail += f" ({len(warns)} warning(s))"
+                    add(WARN if warns else PASS, "platform", "supabase-limits", detail)
+                except Exception:
+                    tail = [l.strip() for l in r.stdout.splitlines() if l.strip()]
+                    add(PASS, "platform", "supabase-limits", tail[-1] if tail else "within operational limits")
             else:
                 tail = [l.strip() for l in (r.stderr or r.stdout).splitlines() if l.strip()]
-                add(WARN if "warn" in "".join(tail).lower() else SKIP, "platform", "supabase-limits", tail[-1][:100] if tail else "limits check skipped")
+                add(WARN, "platform", "supabase-limits", tail[-1][:100] if tail else "limits check warning")
         except Exception as e:
-            add(SKIP, "platform", "supabase-limits", f"could not run ({type(e).__name__}: {e})")
+            add(WARN, "platform", "supabase-limits", f"could not run ({type(e).__name__}: {e})")
     else:
         add(SKIP, "platform", "supabase-limits", "supabase_limits.py or infisical not available")
 
@@ -903,13 +950,15 @@ def check_knowledge():
     Composes the existing `graph_health.py` rather than re-deriving freshness here.
     """
     print("\n▶ KNOWLEDGE — code-graph freshness")
-    script = WEB_ROOT / "project" / "scripts" / "graph_health.py"
+    script = MONO_ROOT / "scripts" / "graph_health.py"
+    if not script.exists():
+        script = WEB_ROOT / "project" / "scripts" / "graph_health.py"
     if not script.exists():
         add(SKIP, "knowledge", "graph freshness", "graph_health.py not found")
         return
     try:
         r = subprocess.run([sys.executable, str(script), "--json"],
-                           cwd=WEB_ROOT, capture_output=True, text=True, timeout=120)
+                           cwd=MONO_ROOT, capture_output=True, text=True, timeout=120)
         data = json.loads(r.stdout)
     except Exception as e:
         add(SKIP, "knowledge", "graph freshness", f"graph_health unreadable ({type(e).__name__})")
