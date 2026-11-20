@@ -50,18 +50,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/opendesign-delete-fix` | 0 | **n/a — NO UPSTREAM** | `90b9b7b64` |
-| `w0m-api` | `agent/opendesign-delete-fix` | 0 | **n/a — NO UPSTREAM** | `29439e0` |
-| `w0m-cf` | `agent/opendesign-delete-fix` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
-| `w0m-skills` | `agent/opendesign-delete-fix` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
-| `w0m-ext` | `agent/opendesign-delete-fix` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
-| `w0m-sec` | `agent/opendesign-delete-fix` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
-| `w0m-mlx/w0m-mlx` | `agent/opendesign-delete-fix` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
+| `w0m-web` | `agent/t778-talent-hub-tools-systemd` | 0 | **n/a — NO UPSTREAM** | `78be7c1cb` |
+| `w0m-api` | `agent/t778-talent-hub-tools-systemd` | 0 | **n/a — NO UPSTREAM** | `29439e0` |
+| `w0m-cf` | `agent/t778-talent-hub-tools-systemd` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
+| `w0m-skills` | `agent/t778-talent-hub-tools-systemd` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
+| `w0m-ext` | `agent/t778-talent-hub-tools-systemd` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
+| `w0m-sec` | `agent/t778-talent-hub-tools-systemd` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
+| `w0m-mlx/w0m-mlx` | `agent/t778-talent-hub-tools-systemd` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 777 TASKS.md rows · 374/777 specced (2/8 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 8 open · 778 TASKS.md rows · 375/778 specced (2/8 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/opendesign-delete-fix","dirty":0,"has_upstream":true,"head":"29439e0","unpushed":null},"w0m-cf":{"branch":"agent/opendesign-delete-fix","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/opendesign-delete-fix","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/opendesign-delete-fix","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/opendesign-delete-fix","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/opendesign-delete-fix","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/opendesign-delete-fix","dirty":0,"has_upstream":true,"head":"90b9b7b64","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":777,"specced":374,"specced_open":2,"total":777,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/t778-talent-hub-tools-systemd","dirty":0,"has_upstream":true,"head":"29439e0","unpushed":null},"w0m-cf":{"branch":"agent/t778-talent-hub-tools-systemd","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/t778-talent-hub-tools-systemd","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t778-talent-hub-tools-systemd","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/t778-talent-hub-tools-systemd","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/t778-talent-hub-tools-systemd","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/t778-talent-hub-tools-systemd","dirty":0,"has_upstream":true,"head":"78be7c1cb","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":778,"specced":375,"specced_open":2,"total":778,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -126,9 +126,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T769** — HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR-blank (prod down)
   - **2026-11-18** (2d ago): Remaining: AC3 live verification of web/cp/me /login
 
-#### Completed today (1):
+#### Completed today (2):
 
 - **T777** — Allow deleting workspace-owned design systems when team share transport is unconfigured (Verified upstream branch fix/design-system-delete-unconfigured-share (GPG-signed commit 7e37e6f12ca18c4d83aa0746ba2cc1bc4cccadaa pushed to webomage/open-design, merged into local/sdlc-integration) on Node v24.22.3: @open-design/daemon typecheck, pnpm guard, team-project-share.test.ts (20/20), team-resource-share.test.ts (16/16), and design-system-delete-unshares-team-share.test.ts (6/6) all pass (42/42) with zero webomage leak hits. Restarted daemon (:36427) + web (:7456), confirmed /api/health and /design-systems HTTP 200, and registered in scripts/w0m_prs.py (T777). Lessons: none (routine delivery).)
+- **T778** — Fold Talent hub (/) into an overview hub, upgrade host CLI tools incl. supabase 3.2.0, and add Linux systemd user auto-checks (Completed all deliverables & verifications: promoted all 12 tools (ast-grep 0.51.3, fd 10.5.2, fzf 0.75.0, gh 2.105.0, infisical 0.45.13, osv-scanner 2.7.1, pdftotext 26.11.0, ruff 0.17.6, semgrep 1.186.0, supabase 3.2.0, uv 0.13.9, yq 4.54.3) and aligned deno 2.9.7 -> 2.9.8 (just tools-check 0 required-drift, just deno-check 64 functions 0 errors); installed & enabled all 5 com.w0m. Linux systemd --user timers pointing at /home/aleksei/Projects/!self/w0m; passed test_launchd_schedule.py (7/7), test_tools_check.py (20/20), test_tools_upgrade.py, test_toolchain_chain.py, test_run_suites.py, t496_job_join_ds_check.py (PASS), supabase_surface_drift_check.py (0 findings), ui-ticket-leak-check (0 leaked), ds-conformance (+0), emoji-check, spec-policy-check (0 closed unspecced), spec-drift, oxlint (0/3 files), vitest (10/10 across talent-hub-overview.test.ts + social-search.test.ts), and apps/me Astro build (46.61s, compiled TalentHubSavedSearchCard.Btx3bCuY.js containing wom.social_search_defaults.v1 and /jobs?social=1). Lesson disposition: scheduler worktree-to-canonical-root resolution is enforced by test_launchd_schedule.py; covered under T546 schedule rule, no separate LESSONS.md entry required.)
 
 ## 3. Other open threads (in TASKS.md)
 

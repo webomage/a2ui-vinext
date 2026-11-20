@@ -375,17 +375,29 @@ def report_outdated(tools: dict[str, Any], cache: bool = False) -> int:
 
 
 LAUNCH_AGENT = Path.home() / "Library/LaunchAgents/com.w0m.tools-weekly.plist"
+SYSTEMD_TIMER = Path.home() / ".config/systemd/user/com.w0m.tools-weekly.timer"
+LINUX_TOOLS_LOG = Path.home() / ".local/state/w0m/logs/w0m-tools-weekly.log"
 
 
 def _refresh_cadence_days() -> int | None:
     """How often the cache is SUPPOSED to be refreshed.
 
-    Multi-OS safe (T164): on non-macOS (`sys.platform != 'darwin'`, e.g. Linux `x86_64`), returns
-    the 7-day weekly cadence directly without probing `~/Library/LaunchAgents`. On macOS, reads
-    the installed launchd plist via `plistlib`.
+    Multi-OS safe (T164 / T778): on non-macOS (`sys.platform != 'darwin'`, e.g. Linux `x86_64`),
+    reads `SYSTEMD_TIMER` (`OnCalendar=`) if installed, falling back to the 7-day weekly cadence
+    without probing `~/Library/LaunchAgents`. On macOS, reads the installed launchd plist via
+    `plistlib`.
     """
     plat: str = getattr(sys, "platform", "")
     if plat != "darwin":
+        try:
+            timer_text = SYSTEMD_TIMER.read_text(encoding="utf-8")
+        except OSError:
+            return 7
+        for raw_line in timer_text.splitlines():
+            line = raw_line.strip()
+            if line.startswith("OnCalendar="):
+                cal = line.split("=", 1)[1].strip()
+                return 1 if cal.startswith("*-*-*") else 7
         return 7
     import plistlib
 
@@ -446,8 +458,10 @@ def warn_cached() -> int:
         )
         if getattr(sys, "platform", "") == "darwin":
             print("     check `~/Library/Logs/w0m-tools-weekly.log`, then `just tools-weekly`")
+        elif SYSTEMD_TIMER.exists():
+            print(f"     check `{LINUX_TOOLS_LOG}`, then `just tools-weekly`")
         else:
-            print("     run `just tools-weekly` to refresh the outdated cache and propose verified bumps")
+            print("     run `just tools-schedule` to enable timers and `just tools-weekly` to refresh")
 
     if ups:
         n_auto = sum(1 for u in ups if u.get("mode") == "AUTO")

@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T778](.tasks/T778.md) | **P1** | **Fold Talent hub (/) into an overview hub, upgrade host CLI tools incl. supabase 3.2.0, and add Linux systemd user auto-checks** | web, tooling | openspec/specs/me-talent-hub-and-linux-scheduler/spec.md | ✅ **done** |
 | [T777](.tasks/T777.md) | **P2** | **Allow deleting workspace-owned design systems when team share transport is unconfigured** | tooling | — | ✅ **done** |
 | [T776](.tasks/T776.md) | **P2** | **Add direct local folder import button with workspace ownership scoping on OpenDesign Design Systems page** | tooling | — | ✅ **done** |
 | [T775](.tasks/T775.md) | **P1** | **Restore upgraded SocialHiringSearch.svelte component omitted from T774 tree promotion and wire Reset Default** | web, cp | openspec/specs/social-hiring-search-hardening/spec.md | ✅ **done** |

@@ -1705,6 +1705,9 @@ tools-promote *args:
 tools-upgrade-test:
     @python3 scripts/tests/test_tools_upgrade.py
 
+tools-schedule-test:
+    @python3 scripts/tests/test_launchd_schedule.py
+
 toolchain-chain-test:
     @python3 scripts/tests/test_toolchain_chain.py
 

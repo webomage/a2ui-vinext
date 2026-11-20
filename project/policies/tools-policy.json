@@ -37,7 +37,7 @@
     },
     "ast-grep": {
       "min": "0.38.0",
-      "known_good": "0.51.0",
+      "known_good": "0.51.3",
       "required": false,
       "source": "brew",
       "auto": "minor",
@@ -218,7 +218,7 @@
     },
     "fd": {
       "min": "10.0.0",
-      "known_good": "10.5.0",
+      "known_good": "10.5.2",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -227,7 +227,7 @@
     },
     "fzf": {
       "min": "0.50.0",
-      "known_good": "0.74.5",
+      "known_good": "0.75.0",
       "required": false,
       "source": "brew",
       "auto": "minor",
@@ -266,7 +266,7 @@
     },
     "gh": {
       "min": "2.60.0",
-      "known_good": "2.103.3",
+      "known_good": "2.105.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -355,7 +355,7 @@
     },
     "infisical": {
       "min": "0.40.0",
-      "known_good": "0.44.11",
+      "known_good": "0.45.13",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -490,7 +490,7 @@
     },
     "osv-scanner": {
       "min": "2.0.0",
-      "known_good": "2.7.0",
+      "known_good": "2.7.1",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -499,7 +499,7 @@
     },
     "pdftotext": {
       "min": "24.0.0",
-      "known_good": "26.10.0",
+      "known_good": "26.11.0",
       "required": false,
       "source": "brew",
       "formula": "poppler",
@@ -565,7 +565,7 @@
     },
     "ruff": {
       "min": "0.10.0",
-      "known_good": "0.17.3",
+      "known_good": "0.17.6",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -610,7 +610,7 @@
     },
     "semgrep": {
       "min": "1.100.0",
-      "known_good": "1.183.0",
+      "known_good": "1.186.0",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -659,11 +659,11 @@
     },
     "supabase": {
       "min": "2.100.0",
-      "known_good": "2.122.0",
+      "known_good": "3.2.0",
       "required": true,
       "source": "brew",
       "auto": "patch",
-      "note": "PROD-GATING: edge-fn deploy + migrations. A CLI bump changed prod behavior before (2026-07-10), which is WHY it now carries a real smoke rather than staying auto:none — `migration list` against the live ledger exercises the connection + migration-parsing path a bump would break, and is non-mutating. Same posture as infisical: patch auto-applies IF the smoke passes; minor/major stay manual. The pending 2.109.1 -> 2.113.0 is a MINOR, so this policy deliberately does NOT take it — review + deploy smoke by hand.",
+      "note": "PROD-GATING: edge-fn deploy + migrations. A CLI bump changed prod behavior before (2026-07-10), which is WHY it now carries a real smoke rather than staying auto:none — `migration list` against the live ledger exercises the connection + migration-parsing path a bump would break, and is non-mutating. Same posture as infisical: patch auto-applies IF the smoke passes; minor/major stay manual. Upgraded & verified 2.121.0 -> 3.2.0 (`T778`: live `migration list`, `check-supabase`, and `db-drift-check`).",
       "smoke": "cd ../w0m-api && infisical run --env=beta --silent -- sh -c 'supabase migration list --db-url \"$DATABASE_URL\" >/dev/null'"
     },
     "tart": {
@@ -695,7 +695,7 @@
     },
     "uv": {
       "min": "0.5.0",
-      "known_good": "0.13.6",
+      "known_good": "0.13.9",
       "required": true,
       "source": "brew",
       "auto": "minor",
@@ -761,7 +761,7 @@
     },
     "yq": {
       "min": "4.40.0",
-      "known_good": "4.54.1",
+      "known_good": "4.54.3",
       "required": true,
       "source": "brew",
       "auto": "minor",

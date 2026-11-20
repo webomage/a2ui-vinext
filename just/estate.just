@@ -2080,15 +2080,16 @@ public-chat-check:
       gauge run specs/api/056-w0m-consultant-api.spec
 
 # Weekly toolchain maintenance: refresh the outdated cache (so pre-push can warn instantly) then
-# apply the safe auto-upgrades with smokes. Run by hand weekly, or schedule via launchd (see
-# w0m-web/docs/DEPS-ALIGNMENT.md §Weekly). Prod/cloud/non-brew tools are report-only (never touched).
-# Install / inspect / remove the LaunchAgents declared in w0m-web/project/launchd/schedules.jsonc.
-# `just tools-schedule` installs+loads · `--status` reports · `--remove` unloads and deletes.
+# apply the safe auto-upgrades with smokes. Run by hand weekly, or schedule via launchd / systemd
+# (see w0m-web/docs/DEPS-ALIGNMENT.md §Weekly). Prod/cloud/non-brew tools stay manual unless forced.
+# Install / inspect / remove the scheduled jobs declared in w0m-web/project/launchd/schedules.jsonc
+# (`launchd` on macOS, `systemd --user` timers on Linux).
+# `just tools-schedule` installs+enables · `--status` reports · `--remove` disables and deletes.
 #
 # 🔑 Exists because `auto: patch` in tools-policy.json was a CLAIM: nothing ran `tools-weekly`, so
 # the outdated cache sat 20 days stale (measured 2026-08-10) and 12 updates piled up — including
 # the infisical bump that printed an upgrade notice into the middle of a production deploy.
-# Source of truth is JSONC (owner preference); the XML plist is GENERATED, never hand-written.
+# Source of truth is JSONC (owner preference); plists and systemd units are GENERATED, never hand-written.
 tools-schedule *args:
     @python3 scripts/launchd_schedule.py {{ if args == "" { "--install" } else { args } }}
 
