@@ -502,15 +502,17 @@ def main() -> int:
     # 8f. Contribution Proposals & AgDR-0058 Gate-Enforced Auto-Mode Governance (T593, T608, T621, T655)
     proposals_list = w0m_prs.build_pr_proposals(forks_dir=Path("/nonexistent-forks"))
     check(
-        "build_pr_proposals returns 38 active contribution proposals including T608, T618, T621, T635, T638, T653, T655, T706, T741, and T751 PRs",
-        len(proposals_list) == 38
+        "build_pr_proposals returns 44 active contribution proposals including T608..T777 PRs",
+        len(proposals_list) == 44
         and any(p["key"] == "stablyai/orca:feat/nested-subfolder-git-and-sdlc-repo" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-session-tab-reorder" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:feat/mobile-terminal-triple-tap-enter" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:fix/mobile-terminal-theme-enforcement" for p in proposals_list)
         and any(p["key"] == "stablyai/orca:perf/terminal-chat-redraw-and-tab-caching" for p in proposals_list)
         and any(p["key"] == "jundot/omlx:fix/menubar-adopt-external-omlx" for p in proposals_list)
-        and any(p["key"] == "nexu-io/open-design:feat/support-node-26-lts" for p in proposals_list),
+        and any(p["key"] == "nexu-io/open-design:feat/support-node-26-lts" for p in proposals_list)
+        and any(p["key"] == "nexu-io/open-design:feat/design-system-local-import" for p in proposals_list)
+        and any(p["key"] == "nexu-io/open-design:fix/design-system-delete-unconfigured-share" for p in proposals_list),
     )
     check(
         "build_pr_proposals renders target-native PR templates (orca 11-section, omlx 3-section, open_design_template, and standard Why/What For/How)",
@@ -1168,23 +1170,40 @@ def main() -> int:
         and a2ui_rule.get("requires_gpg_signature") is True,
     )
 
-    od_props = w0m_prs.build_pr_proposals(branch_filter="feat/support-node-26-lts", forks_dir=Path("/nonexistent-forks"))
+    od_props = w0m_prs.build_pr_proposals(branch_filter="nexu-io/open-design", forks_dir=Path("/nonexistent-forks"))
     od_rule = w0m_prs.UPSTREAM_CONTRIBUTION_RULES.get("nexu-io/open-design")
-    od_comp = (
-        w0m_prs.validate_pr_compliance("nexu-io/open-design", od_props[0]["title"], od_props[0]["body"])
-        if od_props
-        else {"compliant": False}
+    od_plain_comp = w0m_prs.validate_pr_compliance(
+        "nexu-io/open-design",
+        "fix(design-systems): plain surface bullet should fail",
+        "## Why\n\nFix delete.\n\n## What users will see\n\nWorks.\n\n## Surface area\n\n- `apps/daemon/src/file.ts`\n\n## Validation\n\n- tests pass.\n",
     )
+    od_expected_branches = {
+        "feat/support-node-26-lts",
+        "fix/local-import-palette-fonts-logo",
+        "feat/kit-mono-specimen",
+        "feat/omlx-provider-keyless-local",
+        "feat/design-system-components-showcase",
+        "feat/design-system-local-import",
+        "fix/design-system-delete-unconfigured-share",
+    }
     check(
-        "nexu-io/open-design registered under w0m-pr + open_design_template + T751 Node 26 LTS proposal",
+        "nexu-io/open-design registered under w0m-pr + official 9-checkbox Surface area + Bug fix verification + active branch tracking",
         "nexu-io/open-design" in w0m_prs.PRESET_REPOS["w0m-pr"]
         and "nexu-io/open-design" in w0m_prs.PRESET_REPOS["wom7open"]
         and w0m_prs.FORK_UPSTREAM_MAP.get("open-design") == "nexu-io/open-design"
-        and len(od_props) == 1
-        and od_props[0]["key"] == "nexu-io/open-design:feat/support-node-26-lts"
+        and len(od_props) == 7
+        and od_expected_branches.issubset(w0m_prs.ACTIVE_OPEN_PR_HEAD_BRANCHES)
         and isinstance(od_rule, dict)
         and od_rule.get("template_profile") == "open_design_template"
-        and od_comp.get("compliant") is True,
+        and od_plain_comp.get("compliant") is False
+        and any("Surface area" in f for f in od_plain_comp.get("findings", []))
+        and all(
+            "- [x] **" in p["body"]
+            and p["body"].count("\n- [") >= 8
+            and ("## Bug fix verification" in p["body"] if p["title"].startswith("fix") else True)
+            and w0m_prs.validate_pr_compliance("nexu-io/open-design", p["title"], p["body"])["compliant"] is True
+            for p in od_props
+        ),
     )
 
     # 8h. T749 Public-leak guardrail in validate_pr_compliance, #37510 scrubbed proposal, and submit_prepared_prs

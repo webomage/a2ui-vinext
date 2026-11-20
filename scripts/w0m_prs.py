@@ -3059,7 +3059,44 @@ ACTIVE_OPEN_PR_HEAD_BRANCHES: set[str] = {
     "feat/moksha-snap-and-icon-backports",                  # BodhiDev/bodhi7packages#10 & BodhiDev/bodhi8packages#8
     "feat/mlx-lm-gemma4-arch",                              # oxiglade/mlx-rs#442
     "perf/gemma4-kv-shared-prefill-and-moe-sanitize",       # ml-explore/mlx-lm#2026
+    "feat/support-node-26-lts",                             # nexu-io/open-design#9482
+    "fix/local-import-palette-fonts-logo",                  # nexu-io/open-design#9500
+    "feat/kit-mono-specimen",                               # nexu-io/open-design#9515
+    "feat/omlx-provider-keyless-local",                     # nexu-io/open-design#9584
+    "feat/design-system-components-showcase",               # nexu-io/open-design#9585
+    "feat/design-system-local-import",                      # nexu-io/open-design#9586
+    "fix/design-system-delete-unconfigured-share",          # nexu-io/open-design#9587
 }
+
+OPEN_DESIGN_SURFACE_AREA_ITEMS: tuple[tuple[str, str], ...] = (
+    (
+        "ui",
+        "**UI** — new page / dialog / panel / menu item / setting / empty state in `apps/web` or `apps/desktop` (including Electron menu bar)",
+    ),
+    ("keyboard", "**Keyboard shortcut** — new or changed"),
+    (
+        "cli",
+        "**CLI / env var** — new `od` subcommand or flag, new `tools-dev` / `tools-pack` flag, or new `OD_*` env var",
+    ),
+    (
+        "api",
+        "**API / contract** — new `/api/*` endpoint, new SSE event, or changed shape in `packages/contracts`",
+    ),
+    (
+        "extension",
+        "**Extension point** — new entry under `skills/`, `design-systems/`, `design-templates/`, or `craft/`, or change to the skills protocol",
+    ),
+    ("i18n", "**i18n keys** — added new translation keys (see `TRANSLATIONS.md` for the locale workflow)"),
+    (
+        "dependency",
+        "**New top-level dependency** — adding any new entry to the **root** `package.json` (`dependencies` or `devDependencies`); workspace-package `package.json` files are out of scope.",
+    ),
+    (
+        "default_behavior",
+        "**Default behavior change** — changes what existing users experience without opting in (default model, default setting, file/SQLite schema, auto-network on startup, auto-install)",
+    ),
+    ("none", "**None** — internal refactor, docs, tests, or translation update only"),
+)
 
 # Internal / archived / superseded / inherited-upstream sub-branches (excluded from unsubmitted pending branch list)
 INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
@@ -3095,10 +3132,16 @@ INTERNAL_OR_SUPERSEDED_BRANCHES: set[str] = {
 }
 
 # Canonical Why / What For / How PR Proposals for Prepared Contribution Branches (T593 AC4 / T569 AC4 / T597)
-CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
+CONTRIBUTION_PROPOSALS: dict[str, dict[str, Any]] = {
     "nexu-io/open-design:feat/support-node-26-lts": {
         "ticket": "T751",
         "title": "feat(runtime): support Node 26 Active LTS alongside Node 24",
+        "surface_area_flags": ["none"],
+        "surface_area": (
+            "- `package.json` + 24 workspace `package.json` manifests (`engines.node`), "
+            "`tools/dev/src/diagnostics.ts`, `tools/dev/tests/diagnostics.test.ts`, and LTS docs "
+            "(`QUICKSTART.md`, `CONTRIBUTING.md`, `AGENTS.md`)."
+        ),
         "why": (
             "Node 26 entered Active LTS on 2026-10-28 (as anticipated in `AGENTS.md` for WinGet's LTS roll in October 2026), "
             "and developers tracking current LTS hit `ERR_PNPM_UNSUPPORTED_ENGINE` warnings across all 25 workspace manifests "
@@ -3169,6 +3212,7 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
             "rendered kit shows the Palette table, logo, and brand sans/mono typography with the injected "
             "`style[data-brand-fonts]` element loading both woff2 families."
         ),
+        "surface_area_flags": ["ui"],
         "surface_area": (
             "- `apps/daemon/src/design-systems/import.ts` (palette + fonts manifest emission), "
             "`apps/daemon/src/design-systems/index.ts` (static-file allowlist), "
@@ -3176,6 +3220,13 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
             "`apps/web/src/components/DesignKitView.tsx` (bundle `@font-face` injection), "
             "`apps/daemon/tests/design-systems/import.test.ts` (coverage). Existing brand/`brand.json` kits are "
             "unaffected; behavior changes only for non-brand imported bundles."
+        ),
+        "bug_fix_verification": (
+            "- **Test path that reproduces the bug:** `apps/daemon/tests/design-systems/import.test.ts`\n"
+            "- **Did the test go red on `main` and green on this branch?** Yes — on `main`, importing a local "
+            "design-system package without `brand.json` emitted no concrete Palette rows (empty `colors:` frontmatter "
+            "and empty `## Palette`), omitted `fonts/manifest.json`, and left non-brand `logoSrc` unset (`No logo yet`); "
+            "all importer and kit-resolution assertions pass on this branch."
         ),
         "visual_change": True,
         "risk_level": "Low",
@@ -3212,6 +3263,7 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
             "passes, importer suite 6/6; live re-import of a package declaring `mono_specimen:\"deploy --prod "
             "&& smoke-live green\"` renders that line as the mono specimen in the design-system kit view."
         ),
+        "surface_area_flags": ["ui"],
         "surface_area": (
             "- `apps/daemon/src/design-systems/import.ts` (frontmatter passthrough), "
             "`apps/web/src/runtime/design-md-parse.ts` + `apps/web/src/runtime/design-kit.ts` (new optional "
@@ -3261,6 +3313,7 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
             "(`connection-test.test.ts` 161/161, `byok-opencode.test.ts` 35/35, `proxy-routes.test.ts` 80/80, "
             "`chat-route.test.ts` 85/85) all pass."
         ),
+        "surface_area_flags": ["ui", "api"],
         "surface_area": (
             "- `packages/contracts/src/api/{providerModels,connectionTest,proxy}.ts`, "
             "`apps/web/src/state/config.ts`, `apps/web/src/utils/byokProvider.ts`, "
@@ -3319,6 +3372,7 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
             "3/3, `design-kit-published.test.tsx` 2/2, `DesignKitView.test.tsx` 14/14, `design-md-parse.test.ts` 4/4), "
             "and live re-import (`56/56` source-backed tokens, score 100/excellent) all pass."
         ),
+        "surface_area_flags": ["ui", "i18n"],
         "surface_area": (
             "- `apps/daemon/src/design-systems/{token-contract,import}.ts`, `apps/daemon/src/routes/design-systems.ts`, "
             "`apps/web/src/runtime/design-kit.ts`, `apps/web/src/components/{DesignKitView.tsx,"
@@ -3361,8 +3415,10 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
             "and `ProjectScan.sourceDesignName`, checking frontmatter `name:` before `package.json` `name`.\n"
             "- **Verification (Linux x64, Node v24.22.3)**: `pnpm typecheck` (all 28 workspace projects), `pnpm guard`, "
             "`pnpm i18n:check`, daemon `import.test.ts` (5/5), and web `DesignSystemsTab.test.tsx` (17/17) + "
-            "`DesignSystemsSection.test.tsx` (6/6) + `registry.test.ts` (103/103) all pass."
+            "`DesignSystemsSection.test.tsx` (6/6) + `SettingsDialog.execution.test.tsx` (158/158) + `registry.test.ts` "
+            "(103/103) all pass."
         ),
+        "surface_area_flags": ["ui", "i18n"],
         "surface_area": (
             "- `apps/web/src/providers/registry.ts`, `apps/web/src/components/{DesignSystemsTab.tsx,"
             "DesignSystemsTab.module.css,DesignSystemsSection.tsx}`, `apps/web/src/i18n/{types.ts,locales/*.ts}` (19 locales), "
@@ -3400,10 +3456,20 @@ CONTRIBUTION_PROPOSALS: dict[str, dict[str, str | bool]] = {
             "`team-project-share.test.ts` (20/20), `team-resource-share.test.ts` (16/16), and "
             "`design-system-delete-unshares-team-share.test.ts` (6/6) all pass (42/42 tests)."
         ),
+        "surface_area_flags": ["none"],
         "surface_area": (
             "- `apps/daemon/src/collab/team-resource-share.ts`, "
             "`apps/daemon/tests/routes/design-system-delete-unshares-team-share.test.ts`, and "
             "`apps/daemon/tests/team-resource-share.test.ts`."
+        ),
+        "bug_fix_verification": (
+            "- **Test path that reproduces the bug:** "
+            "`apps/daemon/tests/routes/design-system-delete-unshares-team-share.test.ts` and "
+            "`apps/daemon/tests/team-resource-share.test.ts`\n"
+            "- **Did the test go red on `main` and green on this branch?** Yes — on `main`, calling "
+            "`DELETE /api/design-systems/:id` in a signed-in workspace without a configured Vela team-resource hub "
+            "(`configured: false`) returned HTTP `503` (`authoritative Team resource listing is unavailable`); on "
+            "this branch it returns HTTP `204` while keeping `configured: true` live-hub lookup failures fail-closed (`503`)."
         ),
         "visual_change": False,
         "risk_level": "Low",
@@ -4865,16 +4931,36 @@ def format_pr_proposal_body(proposal: dict[str, Any], upstream_repo: str = "") -
         why = str(proposal.get("why") or "").strip()
         what_for = str(proposal.get("what_for") or "").strip()
         how = str(proposal.get("how") or "").strip()
-        surface_area = (
-            str(proposal.get("surface_area") or "").strip()
-            or "- [x] **None** — runtime compatibility (`engines.node`, `tools/dev` LTS check), docs, and unit tests only"
+        raw_flags = proposal.get("surface_area_flags")
+        selected_flags = (
+            {str(f).strip().lower() for f in raw_flags if str(f).strip()}
+            if isinstance(raw_flags, (list, tuple, set))
+            else {"none"}
         )
-        return (
-            f"## Why\n\n{why}\n\n"
-            f"## What users will see\n\n{what_for}\n\n"
-            f"## Surface area\n\n{surface_area}\n\n"
-            f"## Validation\n\n{how}\n"
-        )
+        if not selected_flags:
+            selected_flags = {"none"}
+        checkbox_lines = [
+            f"- [{'x' if key in selected_flags else ' '}] {label}"
+            for key, label in OPEN_DESIGN_SURFACE_AREA_ITEMS
+        ]
+        surface_area_detail = str(proposal.get("surface_area") or "").strip()
+        surface_area_section = "\n".join(checkbox_lines)
+        if surface_area_detail:
+            surface_area_section += f"\n\n**Touched files:**\n{surface_area_detail}"
+
+        sections = [
+            f"## Why\n\n{why}",
+            f"## What users will see\n\n{what_for}",
+            f"## Surface area\n\n{surface_area_section}",
+        ]
+        visual_urls = [str(u).strip() for u in (proposal.get("visual_proof_urls") or []) if str(u).strip()]
+        if visual_urls:
+            sections.append("## Screenshots\n\n" + "\n\n".join(visual_urls))
+        bug_fix_verification = str(proposal.get("bug_fix_verification") or "").strip()
+        if bug_fix_verification:
+            sections.append(f"## Bug fix verification\n\n{bug_fix_verification}")
+        sections.append(f"## Validation\n\n{how}")
+        return "\n\n".join(sections) + "\n"
 
     return (
         f"## Why (Rationale & Problem)\n\n{proposal['why']}\n\n"
@@ -4977,6 +5063,22 @@ def validate_pr_compliance(
         for h in ("## Why", "## What users will see", "## Surface area", "## Validation"):
             if h not in text:
                 findings.append(f"Missing required nexu-io/open-design heading `{h}`")
+        sa_match = re.search(r"## Surface area\s*\n+(.*?)(?=\n## |\Z)", text, flags=re.DOTALL)
+        sa_body = sa_match.group(1) if sa_match else ""
+        checklist_items = re.findall(
+            r"^- \[[ x]\] \*\*(?:UI|Keyboard shortcut|CLI / env var|API / contract|Extension point|i18n keys|New top-level dependency|Default behavior change|None)\*\*",
+            sa_body,
+            flags=re.MULTILINE,
+        )
+        checked_item = re.search(
+            r"^- \[x\] \*\*(?:UI|Keyboard shortcut|CLI / env var|API / contract|Extension point|i18n keys|New top-level dependency|Default behavior change|None)\*\*",
+            sa_body,
+            flags=re.MULTILINE,
+        )
+        if len(checklist_items) < 5 or not checked_item:
+            findings.append("Missing official nexu-io/open-design ## Surface area checklist with at least one selected box")
+        if (title or "").strip().lower().startswith("fix") and "## Bug fix verification" not in text:
+            findings.append("Missing required nexu-io/open-design heading `## Bug fix verification` for fix PR")
 
     else:
         if len(text.strip()) < 40:
@@ -6249,12 +6351,13 @@ def audit_open_prs_compliance(
     *,
     author: str = CANONICAL_CONTRIBUTOR,
     preset: str = "w0m-pr",
+    repo: Optional[str] = None,
     remediate: bool = False,
     dry_run: bool = True,
     auto_create_issues: bool = True,
 ) -> dict[str, Any]:
     """Audit all open external PRs against per-repo contribution rules and optionally remediate bodies (`AgDR-0058`)."""
-    repos = PRESET_REPOS.get(preset, PRESET_REPOS["w0m-pr"])
+    repos = [repo] if repo else PRESET_REPOS.get(preset, PRESET_REPOS["w0m-pr"])
 
     def _fetch_open_with_body(r: str) -> list[dict[str, Any]]:
         cp = run_cmd(
@@ -8002,6 +8105,12 @@ def _register_t613_subparsers(subparsers: Any) -> None:
     )
     p_comp.add_argument("--author", type=str, default=CANONICAL_CONTRIBUTOR, help="GitHub author username")
     p_comp.add_argument("--preset", type=str, choices=list(PRESET_REPOS.keys()), default="w0m-pr", help="Preset target")
+    p_comp.add_argument(
+        "--repo",
+        type=str,
+        default=None,
+        help="Filter compliance audit/remediation to a single GitHub repo (owner/name)",
+    )
     p_comp.add_argument("--remediate", action="store_true", help="Remediate non-compliant PR bodies on auto-mode repos")
     p_comp.add_argument(
         "--dry-run",
@@ -8035,6 +8144,7 @@ def cmd_compliance(args: argparse.Namespace) -> None:
     res = audit_open_prs_compliance(
         author=args.author,
         preset=args.preset,
+        repo=getattr(args, "repo", None),
         remediate=bool(args.remediate),
         dry_run=bool(args.dry_run),
         auto_create_issues=not bool(args.no_create_issues),
