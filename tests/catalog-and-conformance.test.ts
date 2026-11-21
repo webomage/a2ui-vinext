@@ -8,6 +8,7 @@ import {
   hasPrototypePollutionKey,
   isSafeUrl,
   redactSensitiveDataModel,
+  resolveDynamicValue,
   validateA2uiVinextEnvelope,
 } from "../src/catalog.js";
 import { createRendererActionEvent } from "../src/server/index.js";
@@ -232,5 +233,69 @@ describe("@webomage/a2ui-vinext catalog & A2UI conformance", () => {
     expect(actionEvt.version).toBe("1.0");
     expect(actionEvt.action.context.ok).toBe(true);
     expect(actionEvt.action.context.apiKey).toBeUndefined();
+  });
+
+  it("supports A2UI v1.0 @path and @call dynamic bindings seamlessly alongside legacy path/call", () => {
+    const dataModel = {
+      greeting: "Hello v1.0",
+      user: { name: "Aleksei" },
+      count: 42,
+      active: true,
+      items: ["one", "two"],
+    };
+
+    // 1. Dynamic value resolution with @path
+    expect(resolveDynamicValue({ "@path": "/greeting" }, dataModel)).toBe("Hello v1.0");
+    expect(resolveDynamicValue({ "@path": "/user/name" }, dataModel)).toBe("Aleksei");
+    expect(resolveDynamicValue({ "@path": "name" }, dataModel, { name: "Scoped Name" })).toBe(
+      "Scoped Name",
+    );
+
+    // 2. Dynamic value resolution with @call
+    expect(
+      resolveDynamicValue(
+        { "@call": "formatString", "@args": { value: "Custom Formatted" } },
+        dataModel,
+      ),
+    ).toBe("Custom Formatted");
+
+    // 3. Validation of v1.0 envelope with @path and @call
+    const envelope = validateA2uiVinextEnvelope([
+      {
+        version: "1.0",
+        createSurface: {
+          surfaceId: "v1-bindings",
+          catalogId: A2UI_BASIC_CATALOG_ID,
+          dataModel,
+          components: [
+            { id: "root", component: "Card", child: "col" },
+            { id: "col", component: "Column", children: ["title", "list", "btn"] },
+            { id: "title", component: "Text", variant: "body", text: { "@path": "/greeting" } },
+            {
+              id: "list",
+              component: "List",
+              children: { componentId: "item", "@path": "/items" },
+            },
+            { id: "item", component: "Text", variant: "caption", text: { "@path": "value" } },
+            {
+              id: "btn",
+              component: "Button",
+              child: "btnText",
+              action: {
+                functionCall: {
+                  "@call": "openUrl",
+                  "@args": { url: "https://webomage.com/docs" },
+                },
+              },
+            },
+            { id: "btnText", component: "Text", text: "Open Docs" },
+          ],
+        },
+      },
+    ]);
+
+    expect(envelope.ok).toBe(true);
+    expect(envelope.issues).toHaveLength(0);
+    expect(envelope.surfaces["v1-bindings"]).toBeDefined();
   });
 });

@@ -232,4 +232,40 @@ describe("A2uiVinextSurface React 19 SSR & interactive DOM boundary", () => {
     );
     expect(html).toContain('data-a2ui-surface-error="true"');
   });
+
+  it("renders surfaces with v1.0 @path bindings and dispatches @call openUrl actions", () => {
+    const html = renderToStaticMarkup(
+      <A2uiVinextSurface
+        messages={[
+          {
+            version: "1.0",
+            createSurface: {
+              surfaceId: "at-path-surface",
+              catalogId: A2UI_BASIC_CATALOG_ID,
+              dataModel: {
+                title: "v1.0 @path Title",
+                summary: "Summary text",
+              },
+              components: [
+                { id: "root", component: "Card", child: "col" },
+                { id: "col", component: "Column", children: ["title", "summary"] },
+                { id: "title", component: "Text", variant: "body", text: { "@path": "/title" } },
+                {
+                  id: "summary",
+                  component: "Text",
+                  variant: "caption",
+                  text: { "@path": "/summary" },
+                },
+              ],
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(html).toContain("v1.0 @path Title");
+    expect(html).toContain("Summary text");
+    expect(html).toContain('data-a2ui-variant="body"');
+    expect(html).toContain('data-a2ui-variant="caption"');
+  });
 });

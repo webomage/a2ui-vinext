@@ -147,36 +147,48 @@ export interface A2uiCapabilitiesOptions {
 export const DynamicStringSchema = z.union([
   z.string(),
   z.object({ path: z.string().min(1) }).passthrough(),
+  z.object({ "@path": z.string().min(1) }).passthrough(),
   z.object({ call: z.string().min(1) }).passthrough(),
+  z.object({ "@call": z.string().min(1) }).passthrough(),
   z.object({ literalString: z.string() }),
 ]);
 
 export const DynamicNumberSchema = z.union([
   z.number(),
   z.object({ path: z.string().min(1) }).passthrough(),
+  z.object({ "@path": z.string().min(1) }).passthrough(),
   z.object({ call: z.string().min(1) }).passthrough(),
+  z.object({ "@call": z.string().min(1) }).passthrough(),
   z.object({ literalNumber: z.number() }),
 ]);
 
 export const DynamicBooleanSchema = z.union([
   z.boolean(),
   z.object({ path: z.string().min(1) }).passthrough(),
+  z.object({ "@path": z.string().min(1) }).passthrough(),
   z.object({ call: z.string().min(1) }).passthrough(),
+  z.object({ "@call": z.string().min(1) }).passthrough(),
   z.object({ literalBoolean: z.boolean() }),
 ]);
 
 export const DynamicStringListSchema = z.union([
   z.array(z.string()),
   z.object({ path: z.string().min(1) }).passthrough(),
+  z.object({ "@path": z.string().min(1) }).passthrough(),
   z.object({ literalArray: z.array(z.string()) }),
 ]);
 
 export const ChildListSchema = z.union([
   z.array(z.string().min(1)),
-  z.object({
-    componentId: z.string().min(1),
-    path: z.string().min(1),
-  }),
+  z
+    .object({
+      componentId: z.string().min(1),
+      path: z.string().min(1).optional(),
+      "@path": z.string().min(1).optional(),
+    })
+    .refine((data) => Boolean(data["@path"] || data.path), {
+      message: "ChildList requires @path or path",
+    }),
 ]);
 
 export const ActionSchema = z.union([
@@ -188,11 +200,17 @@ export const ActionSchema = z.union([
     }),
   }),
   z.object({
-    functionCall: z.object({
-      call: z.string().min(1),
-      args: z.record(z.string(), z.unknown()).optional(),
-      returnType: z.string().optional(),
-    }),
+    functionCall: z
+      .object({
+        call: z.string().min(1).optional(),
+        "@call": z.string().min(1).optional(),
+        args: z.record(z.string(), z.unknown()).optional(),
+        "@args": z.record(z.string(), z.unknown()).optional(),
+        returnType: z.string().optional(),
+      })
+      .refine((data) => Boolean(data["@call"] || data.call), {
+        message: "functionCall requires @call or call",
+      }),
   }),
 ]);
 
@@ -404,8 +422,15 @@ export function resolveDynamicValue(
   if (typeof binding.literalNumber === "number") return binding.literalNumber;
   if (typeof binding.literalBoolean === "boolean") return binding.literalBoolean;
   if (Array.isArray(binding.literalArray)) return binding.literalArray;
-  if (typeof binding.path === "string") {
-    const trimmedPath = binding.path.trim();
+
+  const rawPath =
+    typeof binding["@path"] === "string"
+      ? binding["@path"]
+      : typeof binding.path === "string"
+        ? binding.path
+        : null;
+  if (rawPath !== null) {
+    const trimmedPath = rawPath.trim();
     if (!trimmedPath.startsWith("/") && scopeItem) {
       const scoped = getDataAtPath(scopeItem, trimmedPath);
       if (scoped !== undefined) {
@@ -414,12 +439,24 @@ export function resolveDynamicValue(
     }
     return getDataAtPath(dataModel, trimmedPath);
   }
-  if (typeof binding.call === "string") {
-    if (binding.call === "formatString" && isPlainRecord(binding.args)) {
-      const rawValue = binding.args.value;
+
+  const rawCall =
+    typeof binding["@call"] === "string"
+      ? binding["@call"]
+      : typeof binding.call === "string"
+        ? binding.call
+        : null;
+  if (rawCall !== null) {
+    const rawArgs = isPlainRecord(binding["@args"])
+      ? binding["@args"]
+      : isPlainRecord(binding.args)
+        ? binding.args
+        : undefined;
+    if (rawCall === "formatString" && rawArgs) {
+      const rawValue = rawArgs.value;
       return typeof rawValue === "string" ? rawValue : String(rawValue ?? "");
     }
-    return binding.args ?? "";
+    return rawArgs ?? "";
   }
   return binding;
 }
@@ -473,10 +510,23 @@ function validateComponentUrlFields(
     checkUrlValue(props.url, "url", false);
   } else if (componentType === "Button") {
     const action = isPlainRecord(props.action) ? props.action : undefined;
-    if (action && isPlainRecord(action.functionCall) && action.functionCall.call === "openUrl") {
-      const args = isPlainRecord(action.functionCall.args) ? action.functionCall.args : undefined;
-      if (args) {
-        checkUrlValue(args.url, "action.functionCall.args.url", false);
+    if (action && isPlainRecord(action.functionCall)) {
+      const fnCall = action.functionCall;
+      const callName =
+        typeof fnCall["@call"] === "string"
+          ? fnCall["@call"]
+          : typeof fnCall.call === "string"
+            ? fnCall.call
+            : "";
+      if (callName === "openUrl") {
+        const args = isPlainRecord(fnCall["@args"])
+          ? fnCall["@args"]
+          : isPlainRecord(fnCall.args)
+            ? fnCall.args
+            : undefined;
+        if (args) {
+          checkUrlValue(args.url, "action.functionCall.args.url", false);
+        }
       }
     }
     if (props.href !== undefined) {
@@ -943,11 +993,13 @@ export function validateA2uiVinextEnvelope(
       const rawValue = body.value ?? body.contents;
       const redaction = redactSensitiveDataModelWithCount(rawValue);
       totalRedacted += redaction.redactedKeyCount;
-      const updatedModel = setDataAtPath(
-        current.dataModel,
-        typeof body.path === "string" ? body.path : undefined,
-        redaction.sanitized,
-      );
+      const pathValue =
+        typeof body["@path"] === "string"
+          ? body["@path"]
+          : typeof body.path === "string"
+            ? body.path
+            : undefined;
+      const updatedModel = setDataAtPath(current.dataModel, pathValue, redaction.sanitized);
       surfaceMap.set(surfaceId, {
         ...current,
         dataModel: updatedModel,

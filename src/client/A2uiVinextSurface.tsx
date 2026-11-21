@@ -92,8 +92,13 @@ function asStringArray(val: unknown): string[] {
 }
 
 function getBindingPath(prop: unknown): string | null {
-  if (isPlainRecord(prop) && typeof prop.path === "string" && prop.path.trim()) {
-    return prop.path.trim();
+  if (isPlainRecord(prop)) {
+    if (typeof prop["@path"] === "string" && prop["@path"].trim()) {
+      return prop["@path"].trim();
+    }
+    if (typeof prop.path === "string" && prop.path.trim()) {
+      return prop.path.trim();
+    }
   }
   return null;
 }
@@ -138,12 +143,16 @@ function resolveChildrenRefs(
       .filter((id): id is string => typeof id === "string" && id.length > 0)
       .map((id, idx) => ({ id, scopeItem, key: `${id}-${idx}` }));
   }
-  if (
-    isPlainRecord(childrenProp) &&
-    typeof childrenProp.componentId === "string" &&
-    typeof childrenProp.path === "string"
-  ) {
-    const rawList = resolveDynamicValue({ path: childrenProp.path }, dataModel, scopeItem);
+  const childPath =
+    isPlainRecord(childrenProp) && typeof childrenProp.componentId === "string"
+      ? typeof childrenProp["@path"] === "string"
+        ? childrenProp["@path"]
+        : typeof childrenProp.path === "string"
+          ? childrenProp.path
+          : null
+      : null;
+  if (childPath && isPlainRecord(childrenProp) && typeof childrenProp.componentId === "string") {
+    const rawList = resolveDynamicValue({ "@path": childPath }, dataModel, scopeItem);
     const items = Array.isArray(rawList)
       ? rawList
       : isPlainRecord(rawList)
@@ -282,22 +291,35 @@ export function A2uiVinextSurface({
     const action = isPlainRecord(node.props.action) ? node.props.action : null;
     if (!action) return;
 
-    if (isPlainRecord(action.functionCall) && action.functionCall.call === "openUrl") {
-      const args = isPlainRecord(action.functionCall.args) ? action.functionCall.args : {};
-      const resolvedUrl = asString(resolveDynamicValue(args.url, dataModel, scopeItem));
-      if (isSafeUrl(resolvedUrl)) {
-        if (onAction) {
-          onAction(
-            createRendererActionEvent({
-              name: "openUrl",
-              surfaceId: activeSurface.surfaceId,
-              sourceComponentId: node.id,
-              context: { url: resolvedUrl },
-            }),
-          );
-        }
-        if (typeof window !== "undefined") {
-          window.open(resolvedUrl, "_blank", "noopener,noreferrer");
+    if (isPlainRecord(action.functionCall)) {
+      const fnCall = action.functionCall;
+      const callName =
+        typeof fnCall["@call"] === "string"
+          ? fnCall["@call"]
+          : typeof fnCall.call === "string"
+            ? fnCall.call
+            : "";
+      if (callName === "openUrl") {
+        const args = isPlainRecord(fnCall["@args"])
+          ? fnCall["@args"]
+          : isPlainRecord(fnCall.args)
+            ? fnCall.args
+            : {};
+        const resolvedUrl = asString(resolveDynamicValue(args.url, dataModel, scopeItem));
+        if (isSafeUrl(resolvedUrl)) {
+          if (onAction) {
+            onAction(
+              createRendererActionEvent({
+                name: "openUrl",
+                surfaceId: activeSurface.surfaceId,
+                sourceComponentId: node.id,
+                context: { url: resolvedUrl },
+              }),
+            );
+          }
+          if (typeof window !== "undefined") {
+            window.open(resolvedUrl, "_blank", "noopener,noreferrer");
+          }
         }
       }
       return;
@@ -490,10 +512,9 @@ export function A2uiVinextSurface({
 
       case "Icon": {
         const rawName = props.name;
-        const iconName =
-          isPlainRecord(rawName) && typeof rawName.path === "string"
-            ? asString(resolveDynamicValue(rawName, dataModel, scopeItem))
-            : asString(rawName);
+        const iconName = isPlainRecord(rawName)
+          ? asString(resolveDynamicValue(rawName, dataModel, scopeItem))
+          : asString(rawName);
         const glyph = Object.entries(ICON_GLYPHS).find(([k]) => k === iconName)?.[1] ?? "*";
         return (
           <span

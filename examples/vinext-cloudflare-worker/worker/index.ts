@@ -45,8 +45,8 @@ export function buildDemoAgentMessages(
               "launchBtn",
             ],
           },
-          { id: "heading", component: "Text", variant: "h3", text: { path: "/title" } },
-          { id: "summary", component: "Text", variant: "body", text: { path: "/prompt" } },
+          { id: "heading", component: "Text", variant: "body", text: { "@path": "/title" } },
+          { id: "summary", component: "Text", variant: "body", text: { "@path": "/prompt" } },
           {
             id: "replicasSlider",
             component: "Slider",
@@ -54,20 +54,20 @@ export function buildDemoAgentMessages(
             min: 1,
             max: 16,
             steps: 15,
-            value: { path: "/replicas" },
+            value: { "@path": "/replicas" },
           },
           {
             id: "scaleCheck",
             component: "CheckBox",
             label: "Enable smart placement",
-            value: { path: "/autoScale" },
+            value: { "@path": "/autoScale" },
           },
           {
             id: "regionPicker",
             component: "ChoicePicker",
             label: "Primary Region",
             variant: "mutuallyExclusive",
-            value: { path: "/region" },
+            value: { "@path": "/region" },
             options: [
               { label: "US East (iad)", value: "iad" },
               { label: "EU West (fra)", value: "fra" },
@@ -83,9 +83,9 @@ export function buildDemoAgentMessages(
               event: {
                 name: "deploy_worker_config",
                 context: {
-                  replicas: { path: "/replicas" },
-                  autoScale: { path: "/autoScale" },
-                  region: { path: "/region" },
+                  replicas: { "@path": "/replicas" },
+                  autoScale: { "@path": "/autoScale" },
+                  region: { "@path": "/region" },
                 },
               },
             },
