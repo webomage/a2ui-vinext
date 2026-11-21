@@ -25,7 +25,7 @@ pnpm add @webomage/a2ui-vinext @a2ui/web_core react react-dom zod
 3. Render interactively inside a `"use client"` boundary via `<A2uiVinextSurface />` from `@webomage/a2ui-vinext/client`.
 4. Stream edge AI JSONL/SSE envelopes in `worker/index.ts` via `createA2uiSseResponse()` or `createA2uiJsonlResponse()` from `@webomage/a2ui-vinext/workers`.
 
-See [`examples/vinext-cloudflare-worker/`](examples/vinext-cloudflare-worker/README.md) for a complete runnable worker configuration (`wrangler.jsonc`, `vite.config.ts`, App Router RSC page, and `/api/a2ui/stream` endpoint), and the [live Cloudflare Workers demo](https://a2ui.webomage.com/).
+See [`examples/vinext-cloudflare-worker/`](examples/vinext-cloudflare-worker/README.md) for a complete runnable worker configuration (`wrangler.jsonc`, `vite.config.ts`, App Router RSC page, and `/api/a2ui/stream` endpoint), and the [live Cloudflare Workers demo](https://a2ui.w0m.workers.dev/).
 
 ## Development & Tests
 
