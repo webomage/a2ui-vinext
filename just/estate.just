@@ -189,6 +189,23 @@ cf-apply: (_confirm "cf-apply")
       CLOUDFLARE_API_TOKEN="$CLOUDFLARE_API_TOKEN" AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
         terraform -chdir=w0m-api/cloudflare apply -auto-approve -lock=false'
 
+# T786: one-time import of live Cloudflare objects that exist outside Terraform state (idempotent; skips what is already in state).
+cf-import: (_confirm "cf-import")
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- sh -c ' \
+      export AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY"; \
+      T="terraform -chdir=w0m-api/cloudflare"; $T init -input=false >/dev/null || exit 1; \
+      W=b6bbac925ac5f37e7da05a703c17d669; X=6ef3055469ff713dc17c5ce6b461b69e; \
+      for pair in \
+        "cloudflare_record.webomage_w0m_verify_txt $W/e594ac64531a576364f3f1cc1608e1f7" \
+        "cloudflare_record.w0m_xyz_mx_route1 $X/dc76934f478df2065189c3801c905f59" \
+        "cloudflare_record.w0m_xyz_mx_route2 $X/48b891fe37e7e663f063cf16bba1e558" \
+        "cloudflare_record.w0m_xyz_mx_route3 $X/6eb848218d6436aef45bd3289633e146" \
+        "cloudflare_email_routing_rule.pandatransfer_tech_mailbox $X/5086f670ffe84462aaaffe08507d2399"; do \
+        set -- $pair; \
+        if $T state show "$1" >/dev/null 2>&1; then echo "already in state: $1"; \
+        else $T import -lock=false "$1" "$2" || exit 1; fi; \
+      done'
+
 # Azure jumphost Terraform helpers
 azure-jumphost-plan:
     @cd w0m-api && terraform -chdir=jumphost plan
