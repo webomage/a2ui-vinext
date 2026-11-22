@@ -50,18 +50,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/a2ui-vinext-update` | 0 | **n/a — NO UPSTREAM** | `cbe459034` |
-| `w0m-api` | `agent/a2ui-vinext-update` | 0 | **n/a — NO UPSTREAM** | `0e20708` |
-| `w0m-cf` | `agent/a2ui-vinext-update` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
-| `w0m-skills` | `agent/a2ui-vinext-update` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
-| `w0m-ext` | `agent/a2ui-vinext-update` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
-| `w0m-sec` | `agent/a2ui-vinext-update` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
-| `w0m-mlx/w0m-mlx` | `agent/a2ui-vinext-update` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
+| `w0m-web` | `agent/a2ui-maintainer` | 0 | **n/a — NO UPSTREAM** | `fb1263932` |
+| `w0m-api` | `agent/a2ui-maintainer` | 0 | **n/a — NO UPSTREAM** | `0e20708` |
+| `w0m-cf` | `agent/a2ui-maintainer` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
+| `w0m-skills` | `agent/a2ui-maintainer` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
+| `w0m-ext` | `agent/a2ui-maintainer` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
+| `w0m-sec` | `agent/a2ui-maintainer` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
+| `w0m-mlx/w0m-mlx` | `agent/a2ui-maintainer` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
 **Tickets:** 8 open · 795 TASKS.md rows · 382/795 specced (2/8 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/a2ui-vinext-update","dirty":0,"has_upstream":true,"head":"0e20708","unpushed":null},"w0m-cf":{"branch":"agent/a2ui-vinext-update","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/a2ui-vinext-update","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/a2ui-vinext-update","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/a2ui-vinext-update","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/a2ui-vinext-update","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/a2ui-vinext-update","dirty":0,"has_upstream":true,"head":"cbe459034","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":795,"specced":382,"specced_open":2,"total":795,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/a2ui-maintainer","dirty":0,"has_upstream":true,"head":"0e20708","unpushed":null},"w0m-cf":{"branch":"agent/a2ui-maintainer","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/a2ui-maintainer","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/a2ui-maintainer","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/a2ui-maintainer","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/a2ui-maintainer","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/a2ui-maintainer","dirty":0,"has_upstream":true,"head":"fb1263932","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":795,"specced":382,"specced_open":2,"total":795,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -122,7 +122,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 #### In-flight tickets (2):
 
 - **T741** — Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite RSC + Workers) and contribute to a2ui.org/ecosystem/renderers
-  - **2026-11-22** (today): (agy:a2ui-vinext-update): Bumped @webomage/a2ui-vinext to v0.1.1 across package manifests and examples, upgrading zod dependency to ^4.6.7. Added .npmignore to strip example build cache and node_modules from package tarball, shrinking it from 1.3 MB to ~45 KB. Verified 14/14 unit & conformance tests clean. Upstream PR #4243 confirmed mergeable on a2ui-project/a2ui.
+  - **2026-11-22** (today): (agy:a2ui-vinext-update): Bumped @webomage/a2ui-vinext to v0.1.1 across package manifests and examples, upgrading zod dependency to ^4.6.7. Added .npmignore to strip example build cache and node_modules from package tarball, shrinking it from 1.3 MB to ~45 KB. Verified 14/14 unit & conformance tests clean. Published @webomage/a2ui-vinext@0.1.1 to npm registry (verified live). Upstream PR #4243 confirmed mergeable on a2ui-project/a2ui. Engaged upstream on PR #4352 (comment [a2ui#4352#issuecomment-7083674840](https://github.com/a2ui-project/a2ui/pull/4352#issuecomment-7083674840)) endorsing the removal of hardcoded Zod 3 in favor of @a2ui/validator-cfworker and Standard Schema Zod 4.
 - **T769** — HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR-blank (prod down)
   - **2026-11-18** (4d ago): Remaining: AC3 live verification of web/cp/me /login
 
