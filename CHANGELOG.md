@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1 - 2026-11-22
+
+- Upgraded `zod` dependency to `^4.6.7` across package manifests and examples.
+- Added canonical A2UI v1.0 `@path` and `@call` expression resolution support.
+- Excluded `examples/**/node_modules/` and build caches from npm tarball via `.npmignore`, reducing published package footprint from 1.3 MB to ~45 KB.
+- Replaced deprecated `h3` `Text` variant in starter example with standard `h2`/`h4` headings.
+
 ## 0.1.0 - 2026-11-15
 
 - Initial release of `@webomage/a2ui-vinext` (Apache-2.0).

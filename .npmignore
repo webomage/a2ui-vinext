@@ -1,0 +1,10 @@
+examples/**/node_modules/
+examples/**/.next/
+examples/**/dist/
+examples/**/.wrangler/
+examples/**/.vinext/
+examples/**/pnpm-lock.yaml
+tests/
+tsconfig*.json
+*.tsbuildinfo
+.turbo/
