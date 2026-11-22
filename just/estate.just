@@ -3017,6 +3017,20 @@ tf-drift:
       AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
         terraform plan -refresh-only -lock=false'
 
+# Run Terraform drift detector and print changes (T787 AC1)
+tf-drift-check *args:
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- \
+      python3 scripts/tf_drift_check.py --check {{ args }}
+
+# Run Terraform drift detector and dispatch Telegram alert on drift (T787 AC1)
+tf-drift-alert *args:
+    @infisical run --projectId={{ infisical_project_id }} --env=beta --silent -- \
+      python3 scripts/tf_drift_check.py --alert {{ args }}
+
+# Run unit tests for Terraform drift detector (T787 AC2)
+tf-drift-test:
+    @python3 scripts/tests/test_tf_drift.py
+
 # ── Supabase auth-settings Terraform (T324) ─────────────────────────────────────────────────
 # Declares ONLY auth.site_url + auth.uri_allow_list via the supabase_settings resource — see
 # supabase-settings/main.tf for why the provider's partial-update semantics make this safe
