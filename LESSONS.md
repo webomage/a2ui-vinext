@@ -2417,5 +2417,12 @@ In canonical MLX Gemma 4 (`ml-explore/mlx-lm`, `Blaizzy/mlx-vlm`, and `oMLX`), g
 ⇒ **When promoting files across agent trees, always compare `git diff --stat` against the source tree before committing, add a source-contract regression assertion when UI and API actions evolve together (`readJsonSafe`, action payloads, neutral defaults), and grep the built/live client asset chunk (`_astro/*.js`) for expected strings before declaring UI changes shipped.**
 ⭐ **The tell:** A chained `cp && cp` aborting partway on a missing parent directory, followed by a clean green API test run and clean build that silently ship an untouched Svelte component.
 
+### ACTIVE ROLE / HAT COOKIES MUST CARRY TENANT BOUNDARY METADATA AND NEVER FALL BACK TO MISLEADING ENTITY LABELS
+**2026-11-21 (`T789`).** Navigating to an unstaffed client organization (`https://cp.webomage.com/o/aleksei-tcelishchev/money/contracts`) rendered `ACTIVE ROLE [Project Manager] [Artemio, quiero comer!] [Client side]` in the header while the sidebar hat switcher trigger printed `Role: Solar Mobile`. Postgres RLS correctly blocked all data leakage (0 contracts returned), but the ambient UI desynced because: (1) `sb-active-role` stored `projectId` globally for `.webomage.com` with no org boundary check, so `middleware.ts` blindly populated `locals.activeProject` from the previous organization; and (2) `SidebarHatSwitcher.svelte` formatted an unstaffed project as `${t.active_role_prefix}: ${selectedProject.title}` when `wornRoleLabel` was absent, misleading the user into thinking `Solar Mobile` was a role.
+
+⇒ **Always include `contractorOrgSlug` and `clientOrgSlug` in signed role/hat session cookies (`sb-active-role`), nullify `locals.activeProject` in middleware and shell derivations when visiting disjoint organization routes (`/o/<org>`, `/me`, `/admin`), and format unstaffed project triggers explicitly as `Project: <name>`, never `${active_role_prefix}: <project_name>`.**
+⭐ **The tell:** A foreign project's title and active hat rendering in the ambient HUD across organization switches, or an unstaffed project button rendering `Role: <project_name>` when no hat is worn on that project.
+
+
 
 

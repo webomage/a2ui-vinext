@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T789](.tasks/T789.md) · [#null](https://github.com/casualuser/webomage.com/issues/null) | **P1** | **Audit and harden 4-axis RBAC, project hat boundaries, context switching, and UI hat synchronization** | api, web, tooling | openspec/specs/project-roles/spec.md | ✅ **done** |
 | [T788](.tasks/T788.md) · [#null](https://github.com/casualuser/webomage.com/issues/null) | **P1** | **Support multiple SPEI accounts in LATAM self-accounting KYC and streamline Me to-dos navigation title** | web | null | ✅ **done** |
 | [T787](.tasks/T787.md) · [#null](https://github.com/casualuser/webomage.com/issues/null) | **P1** | **Terraform drift detection with Telegram alerts, DNS/Pages cleanup, AgDR-0060, and TabLinux WASM client domain audit** | api, web, tooling | — | ✅ **done** |
 | [T786](.tasks/T786.md) | **P1** | **Reconcile Cloudflare Terraform state: import live w0m.xyz MX + _w0m-verify TXT, align MX priorities, document token scopes** | api, tooling | null | ✅ **done** |
