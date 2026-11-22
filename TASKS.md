@@ -36,6 +36,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T795](.tasks/T795.md) | **P1** | **Purge unused @tinybirdco/sdk to eliminate Zod v3, bump smol-toml override floor, and register D70 in TECH-DEBT** | root, web | — | ✅ **done** |
 | [T794](.tasks/T794.md) | **P1** | **Unblock deploy-all: classify spec exemptions for T792/T793, ratchet eslint comment, and mock mermaidHydrate in KnowledgeHub test** | root, web | — | ✅ **done** |
 | [T793](.tasks/T793.md) | **P1** | **Segregate security audit workbench by archetype, banner sample fixtures, and add interactive message composer on empty client threads** | web | null | ✅ **done** |
 | [T792](.tasks/T792.md) | **P2** | **Universal independent Mermaid diagram component for @webomage/ui across all portals** | web | null | ✅ **done** |
