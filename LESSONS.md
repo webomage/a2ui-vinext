@@ -1416,6 +1416,12 @@ Tickets T545 to T548 were committed without `just tasks-render`, so `TASKS.md` h
 ⭐ **The tell:** a `.tasks/T*.md` in the diff with no `TASKS.md` change beside it.
 ⚠️ `STATE.md` ticket links currently embed the generating tree's absolute path (T548).
 
+### ⛔ NEVER PUSH ESTATE ROOT AFTER REBASING A MEMBER REPO WITHOUT RE-HARVESTING `STATE.md`
+**2026-11-21 (T789 / T790).** During multi-repo landing, `w0m-web` was rebased onto `origin/beta` (`b4a3901ed`), rewriting its local commit SHA from `eb5974364` to `613bf68c9`. Because `STATE.md` at estate root was generated *before* that rebase, pushing the root commit (`1e1daf4`) embedded the dead SHA into `origin/beta`. The subsequent `just state-check` immediately failed with `recorded w0m-web head eb5974364 is NOT an ancestor of HEAD`.
+
+⇒ **When any member repository (e.g. `w0m-web`) is rebased, amended, or resequenced during landing, ALWAYS regenerate derived estate surfaces (`just state-save`) and re-verify (`just state-check`) before pushing estate root `@wom`. In automation (`session_complete.py` / `agent_tree.py`), rebase member repos first, refresh root derived surfaces against the new post-rebase member HEADs, and only then commit and push root.**
+⭐ **The tell:** A `git rebase` or SHA change in `w0m-web` followed immediately by a push of root `@wom` without an intermediate `just state-save` updating the `Repo | branch | ... | HEAD` table.
+
 
 ## 6. UI/UX & Interactions
 
