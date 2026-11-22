@@ -3,6 +3,13 @@
   "version": "0.1.1",
   "description": "A2UI v1.0 & v0.9.1 React 19 RSC renderer, catalog validator, Vite SSR/HMR plugin, and Cloudflare Workers edge streaming adapter for cloudflare/vinext.",
   "license": "Apache-2.0",
+  "author": "Aleksei Tcelishchev <casualuser@gmail.com>",
+  "maintainers": [
+    {
+      "name": "casualuser",
+      "email": "casualuser@gmail.com"
+    }
+  ],
   "publishConfig": {
     "access": "public"
   },
