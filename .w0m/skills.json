@@ -140,7 +140,7 @@
     "w0m-sdlc-new": {
       "provider": "w0m-native",
       "version": "canonical",
-      "observed_version": "2026.09.24-1790250554"
+      "observed_version": "2026.11.22-1795386861"
     },
     "w0m-sdlc-research": {
       "provider": "w0m-native",

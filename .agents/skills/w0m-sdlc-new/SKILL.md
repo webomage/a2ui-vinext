@@ -10,7 +10,7 @@ metadata:
   author: w0m
   namespace: w0m-sdlc
   gate: new
-  version: "2026.09.24-1790250554"
+  version: "2026.11.22-1795386861"
 ---
 
 # w0m-sdlc-new — the task-creation gate
@@ -26,10 +26,14 @@ Read `.w0m/sdlc.json` (walk up from cwd; if none, check one level down into chil
 ## Steps
 1. **Capture the request.** What outcome is wanted, and why. Note the originating source (audit
    finding, roadmap epic, owner ask, bug).
-2. **Allocate the id.** Check if any recyclable duplicate tickets exist: `just ticket-recycle --list`.
-   If an eligible duplicate ticket is available and approved for reuse, recycle it: `just ticket-recycle --recycle <id> --draft <draft>`.
-   Otherwise, next free id = max existing `{id_prefix}<n>` across `tickets.dir` + board + 1. **Never manually overwrite or reuse a retired/delivered id.**
-3. **Draft the ticket** from `tickets.template`: frontmatter (`id`, `title` imperative, `status:
+2. **Allocate the id & scaffold the ticket.**
+   - Check if an eligible duplicate ticket can be recycled: `just ticket-recycle --list`.
+   - If not recycling, allocate atomically:
+     `just ticket-new "<Title in imperative mood>" --epic <epic> --area <area> --priority <P1|P2|P3>`
+     (or query the next free ID via `just ticket-next`).
+   - **NEVER manually guess or calculate next ticket numbers.** `just ticket-new` atomically queries `origin/beta`, local `.tasks/`, and active worktrees with file-locking to prevent ID collisions (`ticket_collision`) and gaps (`ticket_gap`).
+   - In an agent worktree, `just ticket-new` creates `.tasks/DRAFT-<slug>.md` (or `--immediate` for immediate `T<N>`), promoted and compacted on `session-complete` offload.
+3. **Refine ticket sections** in `{tickets.dir}/{pattern}`: frontmatter (`id`, `title` imperative, `status:
    queued`, `queue`, `priority`, `repos`, `epic`, `spec`, `tags`, `created`), then `## Summary`,
    `## Acceptance criteria` (observable/testable checkboxes — required), `## Definition of Done`
    (per `specs.standard`), `## Links` (epic/spec/related `[[T..]]`).
@@ -41,9 +45,10 @@ Read `.w0m/sdlc.json` (walk up from cwd; if none, check one level down into chil
      - **duplicate / merge** → fold into the existing ticket instead; don't create a second.
      - **revise** → apply its edits (right-size scope, fix claims, add prior-art + dependency links).
      - **proceed** → continue.
-5. **Finalize (same commit).** Write the ticket to `{tickets.dir}/{pattern}`. Do not edit `TASKS.md` —
-   `just land` regenerates it deterministically from `.tasks/` (T425). If github-mirrored, run
-   `tickets.sync`. Commit ticket, id referenced (`chore(T##): create`).
+5. **Finalize & Sync (same commit).** Write/save the ticket to `{tickets.dir}/{pattern}`. Run
+   `just tasks-render` to refresh `TASKS.md`. Run `just sync-tickets` to mirror the ticket to GitHub
+   Issues + Projects v2 and record `gh_issue` frontmatter. Commit ticket and board together:
+   `git add .tasks/T##.md TASKS.md w0m-web/project/tickets*.json && git commit -m "chore(T##): create <title>"`.
 
 ## Conventions
 From config `conventions`: conventional commits w/ id, never skip hooks, no coauthor trailer, tool

@@ -90,7 +90,28 @@ def _ticket_seq_lock(repo_dir: Path) -> Iterator[None]:
             fh.close()
 
 
-def _remote_ticket_ids(repo_dir: Path, remote_ref: str = "origin/beta") -> set[int]:
+def _fetch_remote(repo_dir: Path, remote_name: str = "origin", branch_name: str = "beta") -> None:
+    """Fetch latest remote commits so origin/beta reflects the true remote ticket set."""
+    try:
+        subprocess.run(
+            ["git", "fetch", "-q", remote_name, branch_name],
+            cwd=str(repo_dir),
+            capture_output=True,
+            timeout=10,
+            check=False,
+        )
+    except Exception:
+        pass
+
+
+def _remote_ticket_ids(
+    repo_dir: Path,
+    remote_ref: str = "origin/beta",
+    fetch: bool = True,
+) -> set[int]:
+    if fetch and "/" in remote_ref:
+        remote_name, branch_name = remote_ref.split("/", 1)
+        _fetch_remote(repo_dir, remote_name, branch_name)
     proc = subprocess.run(
         ["git", "ls-tree", "--name-only", remote_ref, ".tasks/"],
         cwd=str(repo_dir),
@@ -120,13 +141,49 @@ def _local_ticket_ids(tickets_dir: Path) -> set[int]:
     return ids
 
 
+def get_known_ticket_ids(repo_dir: Path = ROOT_DIR, fetch: bool = True) -> set[int]:
+    """Union of ticket integer IDs across origin/beta, local .tasks/, and linked worktrees."""
+    repo_dir = Path(repo_dir).resolve()
+    t_dir = repo_dir / ".tasks"
+    return (
+        _remote_ticket_ids(repo_dir, fetch=fetch)
+        | _local_ticket_ids(t_dir)
+        | _linked_worktree_ticket_ids(repo_dir)
+    )
+
+
+def get_next_ticket_id(repo_dir: Path = ROOT_DIR, fetch: bool = True) -> int:
+    """Atomically calculate the next free ticket integer ID across remote, local, and worktrees."""
+    repo_dir = Path(repo_dir).resolve()
+    with _ticket_seq_lock(repo_dir):
+        known = get_known_ticket_ids(repo_dir, fetch=fetch)
+        return (max(known) + 1) if known else 1
+
+
+def check_ticket_sequence(
+    repo_dir: Path = ROOT_DIR,
+    fetch: bool = False,
+) -> tuple[bool, list[int], int]:
+    """Check for gaps in ticket sequence from 1 to max(known_ids).
+
+    Returns (is_valid, missing_ids, max_id).
+    """
+    repo_dir = Path(repo_dir).resolve()
+    known = get_known_ticket_ids(repo_dir, fetch=fetch)
+    if not known:
+        return True, [], 0
+    max_id = max(known)
+    missing = sorted(set(range(1, max_id + 1)) - known)
+    return len(missing) == 0, missing, max_id
+
+
 def _render_ticket_body(
     ticket_id: str,
     title: str,
     *,
     area: str = "sdlc",
     priority: str = "P2",
-    epic: str = "sdlc-tooling",
+    epic: str = "sdlc_tooling_platform",
     status: str = "backlog",
     why: str = "Describe the problem and why it matters.",
     ac: Sequence[str] | None = None,
@@ -180,7 +237,7 @@ def allocate_ticket(
     tasks_md_path: Path | None = None,
     area: str = "sdlc",
     priority: str = "P2",
-    epic: str = "sdlc-tooling",
+    epic: str = "sdlc_tooling_platform",
     status: str = "backlog",
     why: str = "Describe the problem and why it matters.",
     ac: Sequence[str] | None = None,
@@ -236,11 +293,7 @@ def allocate_ticket(
         return ticket_id, ticket_path
 
     with _ticket_seq_lock(repo_dir):
-        known_ids = (
-            _remote_ticket_ids(repo_dir)
-            | _local_ticket_ids(t_dir)
-            | _linked_worktree_ticket_ids(repo_dir)
-        )
+        known_ids = get_known_ticket_ids(repo_dir, fetch=True)
         next_num = (max(known_ids) + 1) if known_ids else 1
 
         while True:
@@ -319,7 +372,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Atomically allocate the next T-id (or create DRAFT-<slug> in a worktree) and create .tasks/ ticket."
     )
-    parser.add_argument("title", help="Ticket title")
+    parser.add_argument("title", nargs="?", default=None, help="Ticket title")
+    parser.add_argument(
+        "--next-id",
+        action="store_true",
+        help="Print the next available ticket ID (e.g. T797) and exit without creating a ticket.",
+    )
+    parser.add_argument(
+        "--check-sequence",
+        action="store_true",
+        help="Verify ticket sequence integrity and report any gaps in T1..T<max>.",
+    )
     parser.add_argument("--area", default="sdlc", help="Ticket area (default: sdlc)")
     parser.add_argument("--priority", default="P2", help="Ticket priority (default: P2)")
     parser.add_argument("--epic", default="sdlc-tooling", help="Epic slug (default: sdlc-tooling)")
@@ -343,6 +406,25 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     repo_path = Path(args.repo).resolve()
+
+    if args.next_id:
+        next_num = get_next_ticket_id(repo_path, fetch=True)
+        print(f"T{next_num}")
+        return 0
+
+    if args.check_sequence:
+        valid, missing, max_id = check_ticket_sequence(repo_path, fetch=False)
+        if valid:
+            print(f"✅ Ticket sequence is contiguous: T1..T{max_id} ({max_id} tickets, 0 gaps)")
+            return 0
+        print(
+            f"❌ Ticket sequence has gaps in T1..T{max_id}: {', '.join(f'T{n}' for n in missing[:20])}",
+            file=sys.stderr,
+        )
+        return 1
+
+    if not args.title or not args.title.strip():
+        parser.error("the following arguments are required: title (or specify --next-id / --check-sequence)")
     draft_slug: str | None = None
     if not args.immediate:
         if args.draft == "auto":

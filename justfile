@@ -129,6 +129,9 @@ sync-tickets *args:
 sync-tickets-test:
     @python3 scripts/tests/test_ticket_sync.py
 
+ticket-new-test:
+    @python3 scripts/tests/test_ticket_new.py
+
 [positional-arguments]
 diagram *args:
     @python3 scripts/diagram_view.py "$@"
@@ -1141,6 +1144,14 @@ session-complete-test:
 [positional-arguments]
 commit *args:
     @python3 "{{justfile_directory()}}/scripts/commit_by_path.py" "$@"
+
+# Print next available ticket ID (T<N>) from origin/beta + local tasks (read-only)
+ticket-next:
+    @python3 "{{justfile_directory()}}/scripts/ticket_new.py" --next-id
+
+# Check contiguous ticket ID sequence (1..max)
+ticket-check-seq:
+    @python3 "{{justfile_directory()}}/scripts/ticket_new.py" --check-sequence
 
 [positional-arguments]
 ticket-new *args:

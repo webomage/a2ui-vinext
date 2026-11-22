@@ -22,6 +22,9 @@
     "pattern": "T{id}.md",
     "template": "project/templates/ticket.md",
     "id_prefix": "T",
+    "allocator": "scripts/ticket_new.py",
+    "next_id_command": "just ticket-next",
+    "new_command": "just ticket-new",
     "sync": "scripts/sync_github.py"
   },
   "milestones": [

@@ -2122,19 +2122,32 @@ def sync_tickets_to_github(
     keys, `w0m-web/project/tickets.json`, and `w0m-web/project/tickets-sync-index.json` are committed
     in the same wrap-up commit (preventing stale-open GitHub issues in `webomage/wom7board`).
     """
-    tids = [t.strip().upper() for t in target_tickets if t and t.strip()]
+    tids_set = {t.strip().upper() for t in target_tickets if t and t.strip()}
+    tickets_dir = worktree_root / ".tasks"
+    if tickets_dir.is_dir():
+        for p in tickets_dir.glob("T*.md"):
+            m = TICKET_FILE_RE.match(p.name)
+            if not m:
+                continue
+            try:
+                txt = p.read_text(encoding="utf-8")
+                if not re.search(r"^gh_issue:\s*\d+", txt, re.M):
+                    tids_set.add(f"T{m.group(1)}")
+            except OSError:
+                pass
+    sorted_tids = sorted(tids_set, key=lambda x: int(x[1:]) if x[1:].isdigit() else 999999)
     if dry_run:
-        return {"mode": "dry_run", "tickets": tids}
+        return {"mode": "dry_run", "tickets": sorted_tids}
     if skip:
-        return {"mode": "skipped", "tickets": tids}
-    if not tids:
+        return {"mode": "skipped", "tickets": sorted_tids}
+    if not sorted_tids:
         return {"mode": "no_tickets", "tickets": []}
 
     sync_script = worktree_root / "scripts" / "sync_github.py"
     if not sync_script.is_file():
-        return {"mode": "missing_script", "tickets": tids}
+        return {"mode": "missing_script", "tickets": sorted_tids}
 
-    csv_tids = ",".join(tids)
+    csv_tids = ",".join(sorted_tids)
     print(
         f"[session-complete] Syncing ticket(s) {csv_tids} to GitHub tracker ...",
         file=sys.stderr,
@@ -2147,7 +2160,7 @@ def sync_tickets_to_github(
     if proc.returncode == 0:
         return {
             "mode": "full_sync",
-            "tickets": tids,
+            "tickets": sorted_tids,
             "output": (proc.stdout or "").strip()[-800:],
         }
 
@@ -2167,7 +2180,7 @@ def sync_tickets_to_github(
         if proc_issues.returncode == 0:
             return {
                 "mode": "issues_only_missing_project_scope",
-                "tickets": tids,
+                "tickets": sorted_tids,
                 "output": (proc_issues.stdout or "").strip()[-800:],
             }
         combined = f"{proc_issues.stderr or ''}\n{proc_issues.stdout or ''}"

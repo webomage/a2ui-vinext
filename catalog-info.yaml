@@ -1641,7 +1641,7 @@ metadata:
   title: 'Skill: w0m-sdlc-new'
   description: Governed agent skill `w0m-sdlc-new` (provider=w0m-native, version=canonical).
   annotations:
-    w0m.dev/skill-observed-version: 2026.09.24-1790250554
+    w0m.dev/skill-observed-version: 2026.11.22-1795386861
     w0m.dev/skill-provider: w0m-native
     w0m.dev/skill-version: canonical
     w0m.dev/source-register: .w0m/skills.json
