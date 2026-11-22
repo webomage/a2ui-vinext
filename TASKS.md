@@ -37,6 +37,7 @@ what's in flight, next, and done** — update it in the same commit as the work.
 
 | # | Prio | Task | Repos | Ref | Status |
 |---|------|------|-------|-----|--------|
+| [T793](.tasks/T793.md) | **P1** | **Segregate security audit workbench by archetype, banner sample fixtures, and add interactive message composer on empty client threads** | web | null | ✅ **done** |
 | [T792](.tasks/T792.md) | **P2** | **Universal independent Mermaid diagram component for @webomage/ui across all portals** | web | null | ✅ **done** |
 | [T790](.tasks/T790.md) · [#null](https://github.com/casualuser/webomage.com/issues/null) | **P1** | **Sidebar collapsible role selector dropdown, default highest available role active, and offices catalog RLS policy** | web, api | null | ✅ **done** |
 | [T789](.tasks/T789.md) · [#null](https://github.com/casualuser/webomage.com/issues/null) | **P1** | **Audit and harden 4-axis RBAC, project hat boundaries, context switching, and UI hat synchronization** | api, web, tooling | openspec/specs/project-roles/spec.md | ✅ **done** |
