@@ -50,18 +50,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/spei-todos` | 0 | **n/a — NO UPSTREAM** | `b2049d59e` |
-| `w0m-api` | `agent/spei-todos` | 0 | **n/a — NO UPSTREAM** | `3c355e3` |
-| `w0m-cf` | `agent/spei-todos` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
-| `w0m-skills` | `agent/spei-todos` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
-| `w0m-ext` | `agent/spei-todos` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
-| `w0m-sec` | `agent/spei-todos` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
-| `w0m-mlx/w0m-mlx` | `agent/spei-todos` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
+| `w0m-web` | `agent/t788-rbac-roles-audit` | 0 | **n/a — NO UPSTREAM** | `41e1b6734` |
+| `w0m-api` | `agent/t788-rbac-roles-audit` | 0 | **n/a — NO UPSTREAM** | `a5fa868` |
+| `w0m-cf` | `agent/t788-rbac-roles-audit` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
+| `w0m-skills` | `agent/t788-rbac-roles-audit` | 0 | **n/a — NO UPSTREAM** | `47a0651` |
+| `w0m-ext` | `agent/t788-rbac-roles-audit` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
+| `w0m-sec` | `agent/t788-rbac-roles-audit` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
+| `w0m-mlx/w0m-mlx` | `agent/t788-rbac-roles-audit` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 788 TASKS.md rows · 380/788 specced (2/8 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 8 open · 789 TASKS.md rows · 381/789 specced (2/8 open specced) · 2 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/spei-todos","dirty":0,"has_upstream":true,"head":"3c355e3","unpushed":null},"w0m-cf":{"branch":"agent/spei-todos","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/spei-todos","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/spei-todos","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/spei-todos","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/spei-todos","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/spei-todos","dirty":0,"has_upstream":true,"head":"b2049d59e","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":788,"specced":380,"specced_open":2,"total":788,"unmirrored_open":2}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/t788-rbac-roles-audit","dirty":0,"has_upstream":true,"head":"a5fa868","unpushed":null},"w0m-cf":{"branch":"agent/t788-rbac-roles-audit","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/t788-rbac-roles-audit","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t788-rbac-roles-audit","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/t788-rbac-roles-audit","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/t788-rbac-roles-audit","dirty":0,"has_upstream":true,"head":"47a0651","unpushed":null},"w0m-web":{"branch":"agent/t788-rbac-roles-audit","dirty":0,"has_upstream":true,"head":"41e1b6734","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":789,"specced":381,"specced_open":2,"total":789,"unmirrored_open":2}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -126,10 +126,11 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T769** — HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR-blank (prod down)
   - **2026-11-18** (3d ago): Remaining: AC3 live verification of web/cp/me /login
 
-#### Completed today (2):
+#### Completed today (3):
 
 - **T786** — Reconcile Cloudflare Terraform state: import live w0m.xyz MX + _w0m-verify TXT, align MX priorities, document token scopes (Token check (read-only): valid and active; zone DNS and Email Routing rules/catch-all reads OK; Email Routing settings (email/routing) and account destination addresses return Authentication error, so the token needs Account → Email Routing Addresses: Edit and, if settings still fail, Zone Settings: Edit on w0m.xyz. Live state: rule 5086f670… named "PandaTransfer Tech Mailing List (T664)" is enabled; catch-all is disabled/drop while Terraform declares it enabled to wom7func, so applying changes live mail routing. Lessons: none (routine Terraform state reconciliation).)
 - **T787** — Terraform drift detection with Telegram alerts, DNS/Pages cleanup, AgDR-0060, and TabLinux WASM client domain audit (AC1-AC6 implemented and verified. All unit tests passing 100%. AgDR-0060 authored and indexed. Terraform state untracked and configuration aligned. Ready for wrap-up.)
+- **T789** — Audit and harden 4-axis RBAC, project hat boundaries, context switching, and UI hat synchronization ((agy:t789-rbac-roles-audit): Completed comprehensive audit of 4-axis RBAC and role mechanics across Postgres RLS/RPCs, HTTP token/cookie mechanics, and CP reactive UI components. Certified that Postgres database RLS remained uncompromised (no cross-tenant data leaked; contracts list returned empty as expected). Diagnosed and remediated the root causes of the UI desync)
 
 ## 3. Other open threads (in TASKS.md)
 
