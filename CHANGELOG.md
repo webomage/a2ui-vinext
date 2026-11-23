@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 - 2026-11-23
+
+- Trimmed the published tarball to build output + docs: `files` now ships only `dist`, `README.md`, `CHANGELOG.md`, `LICENSE`, `NOTICE` (33 files, ~40 kB packed / ~187 kB unpacked, down from 47 files / 59 kB / 277 kB).
+- Replaced the `prepare` hook with `prepublishOnly` (build + typecheck + tests only at publish time); added `publishConfig` with `access: public` and a pinned registry.
+- Set `maintainers` to `Aleksei Tcelishchev <casualuser@gmail.com>` (full-name form).
+- De-duplicated `.npmignore` against the `files` whitelist.
 ## 0.1.1 - 2026-11-22
 
 - Upgraded `zod` dependency to `^4.6.7` across package manifests and examples.
