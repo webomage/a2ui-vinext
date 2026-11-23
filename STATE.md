@@ -126,6 +126,10 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 - **T769** — HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR-blank (prod down)
   - **2026-11-18** (5d ago): Remaining: AC3 live verification of web/cp/me /login
 
+#### Completed today (1):
+
+- **T646** — Unify job & join portals + personal /me/* + public /u/* into me.webomage.com (apps/me) and realign cp.webomage.com strictly around org, project, crew & admin ((agy:npm-polish-t741, orphan-retire step EXECUTED): The queued human step from the status note above is done — orphaned Workers webomage-job and webomage-join deleted via wrangler (CLOUDFLARE_ACCOUNT_ID pinned), plus the dead Pages-era projects webomage-job (webomage-job.pages.dev) and webomage-join (wom7unit.pages.dev). PRE- Verified per precondition: job.webomage.com → 301 → me.webomage.com/jobs (200), join.webomage.com → 301 → me.webomage.com/ (200), me.webomage.com healthy. POST- Verified: redirects still 200 after deletion (zone-level, worker-independent), both pages.dev URLs dead (000). Account inventory: 4 resources removed at once.)
+
 ## 3. Other open threads (in TASKS.md)
 
 - **T364 (LATAM KYC & client subscription/trial access gating)** — filed in session `3698dfba` upon owner directive, queued in `TASKS.md` (Issue #365). Expands `@wom/kyc` to Costa Rica, Panama, and South America (BR, CO, AR, CL, PE) + implements `public.clients` subscription tiers and service quota gating.
