@@ -50,18 +50,18 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `beta` | 0 | 1 | `86b7e8a3b` |
-| `w0m-api` | `beta` | 0 | 0 | `0e20708` |
-| `w0m-cf` | `beta` | 0 | 0 | `2d0e154` |
-| `w0m-skills` | `beta` | 0 | 0 | `67db08b` |
-| `w0m-ext` | `beta` | 0 | 0 | `4d9167c` |
-| `w0m-sec` | `beta` | 0 | 0 | `b685cf3` |
-| `w0m-mlx/w0m-mlx` | `beta` | 0 | 0 | `fd84e66` |
+| `w0m-web` | `agent/npm-polish-t741` | 0 | **n/a — NO UPSTREAM** | `c63521cc0` |
+| `w0m-api` | `agent/npm-polish-t741` | 0 | **n/a — NO UPSTREAM** | `0e20708` |
+| `w0m-cf` | `agent/npm-polish-t741` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
+| `w0m-skills` | `agent/npm-polish-t741` | 0 | **n/a — NO UPSTREAM** | `67db08b` |
+| `w0m-ext` | `agent/npm-polish-t741` | 0 | **n/a — NO UPSTREAM** | `4d9167c` |
+| `w0m-sec` | `agent/npm-polish-t741` | 0 | **n/a — NO UPSTREAM** | `b685cf3` |
+| `w0m-mlx/w0m-mlx` | `agent/npm-polish-t741` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
 **Tickets:** 8 open · 796 TASKS.md rows · 383/796 specced (2/8 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"beta","dirty":0,"has_upstream":true,"head":"0e20708","unpushed":0},"w0m-cf":{"branch":"beta","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":0},"w0m-ext":{"branch":"beta","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":0},"w0m-mlx/w0m-mlx":{"branch":"beta","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":0},"w0m-sec":{"branch":"beta","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":0},"w0m-skills":{"branch":"beta","dirty":0,"has_upstream":true,"head":"67db08b","unpushed":0},"w0m-web":{"branch":"beta","dirty":0,"has_upstream":true,"head":"86b7e8a3b","unpushed":1}},"tickets":{"open":8,"rowless_open":[],"rows":796,"specced":383,"specced_open":2,"total":796,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/npm-polish-t741","dirty":0,"has_upstream":true,"head":"0e20708","unpushed":null},"w0m-cf":{"branch":"agent/npm-polish-t741","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/npm-polish-t741","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/npm-polish-t741","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/npm-polish-t741","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/npm-polish-t741","dirty":0,"has_upstream":true,"head":"67db08b","unpushed":null},"w0m-web":{"branch":"agent/npm-polish-t741","dirty":0,"has_upstream":true,"head":"c63521cc0","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":796,"specced":383,"specced_open":2,"total":796,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,7 +113,7 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-11-22 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-11-23 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
@@ -122,13 +122,9 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 #### In-flight tickets (2):
 
 - **T741** — Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite RSC + Workers) and contribute to a2ui.org/ecosystem/renderers
-  - **2026-11-22** (today): (agy:a2ui-vinext-update): Bumped @webomage/a2ui-vinext to v0.1.1 across package manifests and examples, upgrading zod dependency to ^4.6.7. Added .npmignore to strip example build cache and node_modules from package tarball, shrinking it from 1.3 MB to ~45 KB. Verified 14/14 unit & conformance tests clean. Published @webomage/a2ui-vinext@0.1.1 to npm registry (verified live). Upstream PR #4243 confirmed mergeable on a2ui-project/a2ui. Engaged upstream on PR #4352 (comment [a2ui#4352#issuecomment-7083674840](https://github.com/a2ui-project/a2ui/pull/4352#issuecomment-7083674840)) endorsing the removal of hardcoded Zod 3 in favor of @a2ui/validator-cfworker and Standard Schema Zod 4.
+  - **2026-11-23** (today): (agy:npm-polish-t741): Packaging polish on packages/a2ui-vinext (monorepo SSOT) — files trimmed to dist + README.md/CHANGELOG.md/LICENSE/NOTICE (dropped src + examples), prepare → prepublishOnly (build + typecheck only at publish time), added publishConfig: {access: public, registry: registry.npmjs.org}, .npmignore de-duplicated (example cache strips now unused). VERIFIED: npm pack --dry-run → 33 files, 40.1 kB packed / 187.1 kB unpacked (was 47 files, 59.0 kB / 276.9 kB), zero src//examples/ leakage, NOTICE included; tsc build clean; 14/14 a2ui-vinext vitest tests pass from w0m-web root. Next-publish flow (owner-gated, AgDR-0058): mirror package.json + .npmignore to standalone webomage/a2ui-vinext, bump 0.1.2, npm publish --provenance.
 - **T769** — HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR-blank (prod down)
-  - **2026-11-18** (4d ago): Remaining: AC3 live verification of web/cp/me /login
-
-#### Completed today (1):
-
-- **T791** — Align client milestones with hybrid quest tracks, render CF security audit coverage ledger, badge migration teaser, and fix billing portal role check (Implemented and landed)
+  - **2026-11-18** (5d ago): Remaining: AC3 live verification of web/cp/me /login
 
 ## 3. Other open threads (in TASKS.md)
 
