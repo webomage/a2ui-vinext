@@ -17,8 +17,7 @@
 |---|---|---|---|---|---|---|---|
 | 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | [#746](https://github.com/webomage/wom7board/issues/746) | P1 | in-progress | ai | 101 | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare  📄 live spec |
 | 2 | [T769](/home/aleksei/Projects/!self/w0m/.tasks/T769.md) | [#780](https://github.com/webomage/wom7board/issues/780) | P1 | in-progress | product | 85 | HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR- |
-| 3 | [T767](/home/aleksei/Projects/!self/w0m/.tasks/T767.md) | [#779](https://github.com/webomage/wom7board/issues/779) | P3 | in-progress | tooling | 35 | Gate pinned security-hook revs against the gate-binary version (osv-scanner drift cost t |
-| 4 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
+| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0 | Purge .env.bak from wom7web git history |
 
 ### TOP 10 SDLC — closest to DONE — generated, never hand-edited
 
@@ -26,8 +25,8 @@
 > table above, not a replacement — `hot` ranks what can be **started**, this ranks what is
 > closest to **finished**. A ticket can top one and be absent from the other, and that
 > disagreement is the signal.
-> ⚠️ **0 of 8 open tickets have NO acceptance criteria and are
-> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **8** are
+> ⚠️ **0 of 7 open tickets have NO acceptance criteria and are
+> EXCLUDED, not scored 0%** — unmeasurable is not unstarted. Only **7** are
 > rankable here, so do not read this as the whole queue.
 > ⚠️ A **0%** row usually means the ACs were never ticked as work landed, not that nothing
 > happened — see [[T135]] (42 of 61 tasks done, 0 of 12 ACs ticked).
@@ -36,10 +35,9 @@
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | [T741](/home/aleksei/Projects/!self/w0m/.tasks/T741.md) | [#746](https://github.com/webomage/wom7board/issues/746) | P1 | in-progress ⚠️ 100% — awaiting deploy/archive, NOT stale | ai | 4/4 | `██████████` 100% | — | Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer  |
 | 2 | [T769](/home/aleksei/Projects/!self/w0m/.tasks/T769.md) | [#780](https://github.com/webomage/wom7board/issues/780) | P1 | in-progress | product | 2/3 | `███████░░░` 67% | — | HOTFIX T764 regression — AuthForm.astro named-input import d |
-| 3 | [T767](/home/aleksei/Projects/!self/w0m/.tasks/T767.md) | [#779](https://github.com/webomage/wom7board/issues/779) | P3 | in-progress ⚠️ 100% — awaiting deploy/archive, NOT stale | tooling | 4/4 | `██████████` 100% | — | Gate pinned security-hook revs against the gate-binary versi |
-| 4 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
+| 3 | [T17](/home/aleksei/Projects/!self/w0m/.tasks/T17.md) | [#17](https://github.com/webomage/wom7board/issues/17) | P2 | queued | security | 0/2 | `░░░░░░░░░░` 0% | 🔴 [T504](/home/aleksei/Projects/!self/w0m/.tasks/T504.md) | Purge .env.bak from wom7web git history |
 
-  ⚠️  2 row(s) at 100% with a non-done status: T741, T767. Every acceptance criterion is met — what remains is the DEPLOY and ARCHIVE gates, so the record is accurate, not stale. Confirm against the live site before reading it either way.
+  ⚠️  1 row(s) at 100% with a non-done status: T741. Every acceptance criterion is met — what remains is the DEPLOY and ARCHIVE gates, so the record is accurate, not stale. Confirm against the live site before reading it either way.
 
 ### MECHANICAL STATE — generated, never hand-edited
 
@@ -50,7 +48,7 @@
 
 | Repo | branch | dirty | unpushed | HEAD |
 |---|---|---|---|---|
-| `w0m-web` | `agent/t767-hook-pin-drift` | **2** | **n/a — NO UPSTREAM** | `06f081fab` |
+| `w0m-web` | `agent/t767-hook-pin-drift` | **1** | **n/a — NO UPSTREAM** | `9bbb14bf1` |
 | `w0m-api` | `agent/t767-hook-pin-drift` | 0 | **n/a — NO UPSTREAM** | `0e20708` |
 | `w0m-cf` | `agent/t767-hook-pin-drift` | 0 | **n/a — NO UPSTREAM** | `2d0e154` |
 | `w0m-skills` | `agent/t767-hook-pin-drift` | 0 | **n/a — NO UPSTREAM** | `67db08b` |
@@ -59,9 +57,9 @@
 | `w0m-mlx/w0m-mlx` | `agent/t767-hook-pin-drift` | 0 | **n/a — NO UPSTREAM** | `fd84e66` |
 
 **Hygiene gates:** `annotations`=✅ 0 · `dep-licenses`=✅ 0 · `docs`=✅ 0 · `license`=✅ 0 · `secrets`=✅ 0
-**Tickets:** 8 open · 796 TASKS.md rows · 383/796 specced (2/8 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
+**Tickets:** 7 open · 796 TASKS.md rows · 383/796 specced (2/7 open specced) · 0 unmirrored open · **0 OPEN ticket(s) with no row:** none
 
-<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T767","T17"],"repos":{"w0m-api":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"0e20708","unpushed":null},"w0m-cf":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"67db08b","unpushed":null},"w0m-web":{"branch":"agent/t767-hook-pin-drift","dirty":2,"has_upstream":true,"head":"06f081fab","unpushed":null}},"tickets":{"open":8,"rowless_open":[],"rows":796,"specced":383,"specced_open":2,"total":796,"unmirrored_open":0}} -->
+<!-- W0M-STATE-DATA {"gates":{"annotations":0,"dep-licenses":0,"docs":0,"license":0,"secrets":0},"hot":["T741","T769","T17"],"repos":{"w0m-api":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"0e20708","unpushed":null},"w0m-cf":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"2d0e154","unpushed":null},"w0m-ext":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"4d9167c","unpushed":null},"w0m-mlx/w0m-mlx":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"fd84e66","unpushed":null},"w0m-sec":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"b685cf3","unpushed":null},"w0m-skills":{"branch":"agent/t767-hook-pin-drift","dirty":0,"has_upstream":true,"head":"67db08b","unpushed":null},"w0m-web":{"branch":"agent/t767-hook-pin-drift","dirty":1,"has_upstream":true,"head":"9bbb14bf1","unpushed":null}},"tickets":{"open":7,"rowless_open":[],"rows":796,"specced":383,"specced_open":2,"total":796,"unmirrored_open":0}} -->
 <!-- W0M-STATE:END -->
 
 **For the next agent picking up this work.** Last updated **2026-09-11. A session-start preflight is LIVE — `just preflight --fast` (1.6s) runs from a SessionStart hook and reports whether MCP servers, the graph index, the repos and the required binaries are actually reachable ([[T147]] AC5/AC6/AC7 done, AC1 half).** Both Obsidian vaults are now reachable over MCP ([[T144]]) — ⚠️ **restart before assuming they exist in your session.** 🔑 **The idea worth carrying forward: declared ≠ configured ≠ listening ≠ CONNECTED** — the Obsidian servers were the first three for twelve days while being none of the fourth, and no file or port can tell you the fourth. ⚠️ **`wom7mlx`'s 10 dirty paths and missing upstream are ANOTHER AGENT'S** — not yours to commit. ⚠️ **Estate-root config is now HALF-versioned — corrected 2026-09-08.** This line said `@wom/.mcp.json` and `@wom/.claude/settings.local.json` were both *"unversioned and invisible to every gate"*. The root became **`casualuser/w0m`** on **2026-09-02** and **`.mcp.json` is tracked there** (D32 paid down, [[T312]]); `settings.local.json` is still unversioned, but because `~/.gitignore_global:4` ignores it on this machine — a per-HOST rule, not an absent repo. The tracked record is still `.w0m/sdlc.json`, and the T161 deny rules still need `project/permissions-deny.json` copied back on a fresh host. **Owner actions are FOUR** — mailpit on the LAN is the one that matters.
@@ -113,24 +111,18 @@ Branch: **`beta`** (all repos). This file is the "read me first"; the living que
 2. Config for the gates: `.w0m/sdlc.json`. Queue: `TASKS.md` (NOW/NEXT/…). Debt: `TECH-DEBT.md`.
 3. `git pull` first — a **parallel Antigravity agent** also commits to `beta` (see Gotchas).
 
-## ⭐ PICK UP HERE — 2026-11-23 (generated) — in-flight tickets & session handoffs
+## ⭐ PICK UP HERE — 2026-11-24 (generated) — in-flight tickets & session handoffs
 
 > **Generated by `just state-save` from ticket Status notes (`.tasks/T*.md`).**
 > Each session records its handoff into its active ticket's `## Status notes`.
 > Operational how-to lives in §0 Orient; permanent gotchas live in §4 below.
 
-#### In-flight tickets (3):
+#### In-flight tickets (2):
 
 - **T741** — Build and publish @webomage/a2ui-vinext (A2UI v1.0 renderer for Cloudflare Vinext / Vite RSC + Workers) and contribute to a2ui.org/ecosystem/renderers
   - **2026-11-24** (today): (vibe:mistral, PR #4243 demo-evidence reply posted) — SUPERSEDED by the note above: comment id 7120407120 was deleted; the live reply is 7120676067.: Owner authorized upstream reply; measured live evidence first, then posted [a2ui#4243#issuecomment-7120407120](https://github.com/a2ui-project/a2ui/pull/4243#issuecomment-7120407120) to maintainer Varun-S10: demo https://a2ui.w0m.workers.dev/api/a2ui/stream freshly verified serving the new build ("@path" ×8, 0× "h3", 0× bare {"path": — the two exact staleness markers from the reviewer's 2026-11-23 10:19Z comment); cited GPG-signed standalone commits a493d94 (release 0.1.2: trim tarball to dist+docs, prepublishOnly, publishConfig) and dc56cf1 (example deploy script → vinext-generated dist/server/wrangler.json for wrangler 4.166), plus the orphan workers/custom-domain/temp-worker cleanup supersession. Registry state re-measured at post time: npm latest 0.1.2 (published 2026-11-23T09:58Z), author Aleksei Tcelishchev <casualuser@gmail.com>, maintainers w0m + womjoy, 33 files / 184 KiB unpacked. Upstream PR still open, mergeable_state: blocked — only REVIEW_REQUIRED remains; close-out state unchanged (awaiting upstream review, not our action). Resolves the draft scheduled by the abandoned state on 2026-11-23.
-- **T767** — Gate pinned security-hook revs against the gate-binary version (osv-scanner drift cost two deploys)
-  - **2026-11-30** (today): (build, agent tree t767-hook-pin-drift): checker
 - **T769** — HOTFIX T764 regression — AuthForm.astro named-input import dropped, all login pages SSR-blank (prod down)
-  - **2026-11-18** (5d ago): Remaining: AC3 live verification of web/cp/me /login
-
-#### Completed today (1):
-
-- **T646** — Unify job & join portals + personal /me/* + public /u/* into me.webomage.com (apps/me) and realign cp.webomage.com strictly around org, project, crew & admin ((agy:npm-polish-t741, orphan-retire step EXECUTED): The queued human step from the status note above is done — orphaned Workers webomage-job and webomage-join deleted via wrangler (CLOUDFLARE_ACCOUNT_ID pinned), plus the dead Pages-era projects webomage-job (webomage-job.pages.dev) and webomage-join (wom7unit.pages.dev). PRE- Verified per precondition: job.webomage.com → 301 → me.webomage.com/jobs (200), join.webomage.com → 301 → me.webomage.com/ (200), me.webomage.com healthy. POST- Verified: redirects still 200 after deletion (zone-level, worker-independent), both pages.dev URLs dead (000). Account inventory: 4 resources removed at once.)
+  - **2026-11-18** (6d ago): Remaining: AC3 live verification of web/cp/me /login
 
 ## 3. Other open threads (in TASKS.md)
 
