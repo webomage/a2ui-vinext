@@ -1661,6 +1661,29 @@ Meanwhile, adjacent standard Markdown links (`[WORKFLOW-COVERAGE.md](WORKFLOW-CO
 
 
 
+### ⛔ NEVER HAND-ENCODE JSON STRING VALUES THROUGH `gh -f` — PASS FILES OR PAYLOADS
+**2026-11-24, T741 (a2ui PR #4243 evidence reply).** A multi-paragraph upstream comment was posted
+via `gh api … -f body="$BODY"` where `$BODY` was the output of `python3 -c "json.dumps(…)"`. gh's
+`-f` transmits the value **verbatim**, so GitHub stored the JSON document itself: literal `\n`,
+`\u2014` escape sequences and wrapping quotes rendered on the upstream PR. A follow-up
+"verification" then double-decoded the mangling instead of catching it: `gh api --jq '.body'`
+printed the raw stored text (which already contained the wrapping quotes) and piping it through
+`json.loads` decoded its escapes — "proving" the body clean. The maintainer-visible screenshot was
+the only signal that survived.
+
+⇒ **Let gh do the encoding; verify on the untransformed object:**
+- `gh api … -f body="$(json.dumps …)"` is double encoding — never do it.
+- Correct paths: (1) `-f body=@/tmp/file.md` (gh reads the file content raw); (2) build a full
+  payload file `{"body": "…"}` with `json.dump` and send `--input payload.json`; (3) prefer the
+  purpose-built subcommands: `gh pr comment <n> -R <owner/repo> --body-file file.md`.
+- Verification must fetch the raw object (`gh api …/comments/<id>` → `json.load` of the whole
+  response) and assert on character facts — count of `chr(10)`, absence of backslash sequences —
+  never re-decode an already-printed string; each added decode layer keeps confirming the bug
+  gone.
+⭐ **The tell:** rendered text showing `\uXXXX` or `\n` sequences, or a body wrapped in `"…"`.
+The string was JSON-serialized at least once, and every further "clean" verification ran through
+one more decode layer.
+
 ## Auto-Mined Lessons — 2026-09-29 (T482)
 
 ### [SDLC Toolchain] Pre-commit gate rejection
