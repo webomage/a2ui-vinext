@@ -368,7 +368,15 @@ def run_guardrails_raw(
             cmd_osv.extend(["-L", str(lock_path)])
             steps.append((cmd_osv, estate_root))
 
-    # 3. Structural SAST (`ast-grep`) & Cloudflare Worker process.env isolation (`worker_env_gate.py`)
+    # 3. Security-hook pin ↔ gate-binary drift (`hook_pin_drift_check.py`, T767):
+    #    a pin is part of the vulnerability surface; the deploy gate's verdict
+    #    must be reproducible by every repo's pre-commit pin or the release is
+    #    cut on different evidence than commits pass on (T766: 2 wasted deploys).
+    hook_pin_script = estate_root / "scripts" / "hook_pin_drift_check.py"
+    if hook_pin_script.is_file():
+        steps.append(([sys.executable, str(hook_pin_script)], estate_root))
+
+    # 4. Structural SAST (`ast-grep`) & Cloudflare Worker process.env isolation (`worker_env_gate.py`)
     ast_grep_script = estate_root / "scripts" / "ast_grep_check.py"
     if ast_grep_script.is_file():
         steps.append(([sys.executable, str(ast_grep_script)], estate_root))
@@ -377,7 +385,7 @@ def run_guardrails_raw(
     if worker_env_script.is_file():
         steps.append(([sys.executable, str(worker_env_script)], estate_root))
 
-    # 4. Agent, Skill & Air-Gapped Sandbox Security (`skill_audit.ts`, `NVIDIA/SkillSpector --deep`, `w0m-sec`)
+    # 5. Agent, Skill & Air-Gapped Sandbox Security (`skill_audit.ts`, `NVIDIA/SkillSpector --deep`, `w0m-sec`)
     skill_audit_ts = estate_root / "w0m-skills" / "skill_audit.ts"
     if skill_audit_ts.is_file():
         steps.append((["pnpm", "exec", "tsx", "skill_audit.ts"], estate_root / "w0m-skills"))

@@ -791,6 +791,13 @@ check-infisical:
 check-guardrails:
     @python3 scripts/deploy_cert.py guardrails
 
+# T767 — pinned security-hook revs must reproduce the gate binary's verdict
+hook-pin-check:
+    @python3 scripts/hook_pin_drift_check.py
+
+hook-pin-test:
+    @python3 scripts/tests/test_hook_pin_drift_check.py
+
 check-warp:
     @echo "Checking Cloudflare WARP and deploy-host reachability..."
     @if ! command -v warp-cli >/dev/null 2>&1; then \
