@@ -1684,6 +1684,28 @@ the only signal that survived.
 The string was JSON-serialized at least once, and every further "clean" verification ran through
 one more decode layer.
 
+### ⛔ UPSTREAM PR COMMENTS ARE PUBLIC SURFACES — INFRA OPS NEVER LEAVES THE ESTATE
+**2026-11-24, T741 (a2ui PR #4243 evidence reply).** An upstream reply authorized as "update the PR
+with what was done lately" also cited a "Housekeeping" paragraph — retired worker names, a removed
+custom domain, and a deleted temp worker. The owner flagged it as internal estate information
+published without allowance (`AgDR-0047`/T749 discipline applies to comments, not just PR bodies
+and UI). Remediation had to go further than an edit: **GitHub keeps edit history**, so the true fix
+was delete + repost fresh. Residual channel: watchers' notification emails had already carried the
+original body — nothing client-side can retract that.
+
+⇒ **Apply the public-surface leak gate (`just pr-leak-check` / T749 mindset) to every upstream
+comment, issue reply, and discussion post — not just PR bodies and code:**
+- Public-visible facts only: the public demo URL, npm package, upstream commit SHAs, measured
+  payload behavior.
+- Never cite: worker/Page project names, domains, cleanup/retirement ops, account inventory,
+  owner-gated steps, or ticket/task identifiers.
+- When a posted comment must lose text, **delete + repost** rather than edit — edit history is
+  public and keeps the removed text retrievable.
+- Draft public upstream communication from an explicit list of allowed facts; anything not on the
+  list is omitted by default, not included until someone objects.
+⭐ **The tell:** a posted public message containing a "housekeeping"/"cleanup" section — estate
+operations under the guise of status reporting is exactly what that section always is.
+
 ## Auto-Mined Lessons — 2026-09-29 (T482)
 
 ### [SDLC Toolchain] Pre-commit gate rejection
